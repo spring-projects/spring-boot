@@ -87,6 +87,13 @@ class NativeImagePluginActionIntegrationTests {
 				"META-INF/native-image/org.jline/jline/3.21.0/resource-config.json");
 	}
 
+	@TestTemplate
+	void bootBuildImageIsConfiguredToBuildANativeImage() {
+		writeDummySpringApplicationAotProcessorMainClass();
+		BuildResult result = this.gradleBuild.build("bootBuildImageConfiguration");
+		assertThat(result.getOutput()).contains("paketobuildpacks/builder:tiny").contains("BP_NATIVE_IMAGE = true");
+	}
+
 	private void writeDummySpringApplicationAotProcessorMainClass() {
 		File examplePackage = new File(this.gradleBuild.getProjectDir(), "src/main/java/org/springframework/boot");
 		examplePackage.mkdirs();

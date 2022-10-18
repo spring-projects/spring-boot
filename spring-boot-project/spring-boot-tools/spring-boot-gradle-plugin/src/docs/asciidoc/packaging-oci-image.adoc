@@ -105,7 +105,7 @@ The following table summarizes the available properties and their default values
 | `builder`
 | `--builder`
 | Name of the Builder image to use.
-| `paketobuildpacks/builder:base`
+| `paketobuildpacks/builder:base` or `paketobuildpacks/builder:tiny` when {nbt-gradle-plugin}[GraalVM Native Image plugin] is applied.
 
 | `runImage`
 | `--runImage`
@@ -126,7 +126,7 @@ Acceptable values are `ALWAYS`, `NEVER`, and `IF_NOT_PRESENT`.
 | `environment`
 |
 | Environment variables that should be passed to the builder.
-|
+| Empty or `['BP_NATIVE_IMAGE': 'true']` when {nbt-gradle-plugin}[GraalVM Native Image plugin] is applied.
 
 | `buildpacks`
 |
