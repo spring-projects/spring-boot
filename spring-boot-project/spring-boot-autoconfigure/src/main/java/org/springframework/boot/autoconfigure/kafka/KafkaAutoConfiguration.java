@@ -86,13 +86,13 @@ public class KafkaAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ProducerListener.class)
-	public ProducerListener<Object, Object> kafkaProducerListener() {
+	public LoggingProducerListener<Object, Object> kafkaProducerListener() {
 		return new LoggingProducerListener<>();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(ConsumerFactory.class)
-	public ConsumerFactory<?, ?> kafkaConsumerFactory(
+	public DefaultKafkaConsumerFactory<?, ?> kafkaConsumerFactory(
 			ObjectProvider<DefaultKafkaConsumerFactoryCustomizer> customizers) {
 		DefaultKafkaConsumerFactory<Object, Object> factory = new DefaultKafkaConsumerFactory<>(
 				this.properties.buildConsumerProperties());
@@ -102,7 +102,7 @@ public class KafkaAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ProducerFactory.class)
-	public ProducerFactory<?, ?> kafkaProducerFactory(
+	public DefaultKafkaProducerFactory<?, ?> kafkaProducerFactory(
 			ObjectProvider<DefaultKafkaProducerFactoryCustomizer> customizers) {
 		DefaultKafkaProducerFactory<?, ?> factory = new DefaultKafkaProducerFactory<>(
 				this.properties.buildProducerProperties());
