@@ -385,7 +385,6 @@ public class SpringApplication {
 		if (this.logStartupInfo) {
 			logStartupInfo(context.getParent() == null);
 			logStartupProfileInfo(context);
-			logStartupAotMode();
 		}
 		// Add boot specific singleton beans
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
@@ -638,15 +637,6 @@ public class SpringApplication {
 						: activeProfiles.size() + " profiles are active: ";
 				log.info("The following " + message + StringUtils.collectionToDelimitedString(activeProfiles, ", "));
 			}
-		}
-	}
-
-	/**
-	 * Called to log the AOT mode.
-	 */
-	protected void logStartupAotMode() {
-		if (AotDetector.useGeneratedArtifacts()) {
-			logger.info("AOT mode enabled");
 		}
 	}
 
