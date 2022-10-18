@@ -47,6 +47,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.env.MockPropertySource;
+import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -176,6 +177,18 @@ class ConfigurationPropertiesReportEndpointTests {
 	}
 
 	@Test
+	void descriptorWithDataSizeProperty() {
+		String configSize = "1MB";
+		String stringifySize = DataSize.parse(configSize).toString();
+		this.contextRunner.withUserConfiguration(DataSizePropertiesConfiguration.class)
+				.withPropertyValues(String.format("data.size=%s", configSize)).run(assertProperties("data",
+						(properties) -> assertThat(properties.get("size")).isEqualTo(stringifySize), (inputs) -> {
+							Map<String, Object> size = (Map<String, Object>) inputs.get("size");
+							assertThat(size.get("value")).isEqualTo(configSize);
+							assertThat(size.get("origin")).isEqualTo("\"data.size\" from property source \"test\"");
+						}));
+	}
+
 	void sanitizeLists() {
 		new ApplicationContextRunner()
 				.withUserConfiguration(EndpointConfigWithShowNever.class, SensiblePropertiesConfiguration.class)
@@ -698,6 +711,27 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		public void setMixedBoolean(Boolean mixedBoolean) {
 			this.mixedBoolean = mixedBoolean;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(DataSizeProperties.class)
+	static class DataSizePropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties("data")
+	public static class DataSizeProperties {
+
+		private DataSize size;
+
+		public DataSize getSize() {
+			return this.size;
+		}
+
+		public void setSize(DataSize size) {
+			this.size = size;
 		}
 
 	}
