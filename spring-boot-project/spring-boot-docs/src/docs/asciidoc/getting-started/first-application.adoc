@@ -18,17 +18,17 @@ Before we begin, open a terminal and run the following commands to ensure that y
 [source,shell,indent=0,subs="verbatim"]
 ----
 	$ java -version
-	java version "1.8.0_102"
-	Java(TM) SE Runtime Environment (build 1.8.0_102-b14)
-	Java HotSpot(TM) 64-Bit Server VM (build 25.102-b14, mixed mode)
+	openjdk version "17.0.4.1" 2022-08-12 LTS
+	OpenJDK Runtime Environment (build 17.0.4.1+1-LTS)
+	OpenJDK 64-Bit Server VM (build 17.0.4.1+1-LTS, mixed mode, sharing)
 ----
 
 [source,shell,indent=0,subs="verbatim"]
 ----
 	$ mvn -v
-	Apache Maven 3.5.4 (1edded0938998edf8bf061f1ceb3cfdeccf443fe; 2018-06-17T14:33:14-04:00)
-	Maven home: /usr/local/Cellar/maven/3.3.9/libexec
-	Java version: 1.8.0_102, vendor: Oracle Corporation
+	Apache Maven 3.8.5 (3599d3414f046de2324203b78ddcf9b5e4388aa0)
+	Maven home: usr/Users/developer/tools/maven/3.8.5
+	Java version: 17.0.4.1, vendor: BellSoft, runtime: /Users/developer/sdkman/candidates/java/17.0.4.1-librca
 ----
 
 NOTE: This sample needs to be created in its own directory.
