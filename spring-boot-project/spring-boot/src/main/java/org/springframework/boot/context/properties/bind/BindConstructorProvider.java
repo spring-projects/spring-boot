@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,19 @@ public interface BindConstructorProvider {
 	 * when there's a single constructor and when the bindable has no existing value.
 	 */
 	BindConstructorProvider DEFAULT = new DefaultBindConstructorProvider();
+
+	/**
+	 * Return the bind constructor to use for the given type, or {@code null} if
+	 * constructor binding is not supported.
+	 * @param type the type to check
+	 * @param isNestedConstructorBinding if this binding is nested within a constructor
+	 * binding
+	 * @return the bind constructor or {@code null}
+	 * @since 3.0.0
+	 */
+	default Constructor<?> getBindConstructor(Class<?> type, boolean isNestedConstructorBinding) {
+		return getBindConstructor(Bindable.of(type), isNestedConstructorBinding);
+	}
 
 	/**
 	 * Return the bind constructor to use for the given bindable, or {@code null} if

@@ -62,7 +62,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.context.properties.BoundConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean;
-import org.springframework.boot.context.properties.ConfigurationPropertiesBindConstructorProvider;
+import org.springframework.boot.context.properties.bind.BindConstructorProvider;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Name;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
@@ -476,8 +476,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			List<BeanPropertyWriter> result = new ArrayList<>();
 			Class<?> beanClass = beanDesc.getType().getRawClass();
 			Bindable<?> bindable = Bindable.of(ClassUtils.getUserClass(beanClass));
-			Constructor<?> bindConstructor = ConfigurationPropertiesBindConstructorProvider.INSTANCE
-					.getBindConstructor(bindable, false);
+			Constructor<?> bindConstructor = BindConstructorProvider.DEFAULT.getBindConstructor(bindable, false);
 			for (BeanPropertyWriter writer : beanProperties) {
 				if (isCandidate(beanDesc, writer, bindConstructor)) {
 					result.add(writer);

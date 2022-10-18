@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-//
-package org.springframework.boot.context.properties;
+
+package org.springframework.boot.context.properties.bind;
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatIllegalStateException
@@ -22,14 +22,14 @@ import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 
 /**
- * Tests for `ConfigurationPropertiesBindConstructorProvider`.
+ * Tests for `DefaultBindConstructorProvider`.
  *
  * @author Madhura Bhave
  */
 @Suppress("unused")
-class ConfigurationPropertiesBindConstructorProviderTests {
+class KotlinDefaultBindConstructorProviderTests {
 
-	private val constructorProvider = ConfigurationPropertiesBindConstructorProvider()
+	private val constructorProvider = DefaultBindConstructorProvider()
 
 	@Test
 	fun `type with default constructor should register java bean`() {
@@ -119,66 +119,55 @@ class ConfigurationPropertiesBindConstructorProviderTests {
 		assertThat(bindConstructor).isNotNull();
 	}
 
-	@ConfigurationProperties(prefix = "foo")
 	class FooProperties
 
-	@ConfigurationProperties(prefix = "bar")
 	class PrimaryWithAutowiredSecondaryProperties constructor(val name: String?, val counter: Int = 42) {
 
 		@Autowired
 		constructor(@Suppress("UNUSED_PARAMETER") foo: String) : this(foo, 21)
 	}
 
-	@ConfigurationProperties(prefix = "bar")
 	class AutowiredSecondaryProperties {
 
 		@Autowired
 		constructor(@Suppress("UNUSED_PARAMETER") foo: String)
 	}
 
-	@ConfigurationProperties(prefix = "bar")
 	class AutowiredPrimaryProperties @Autowired constructor(val name: String?, val counter: Int = 42) {
 
 	}
 
-	@ConfigurationProperties(prefix = "bar")
 	class ConstructorBindingOnSecondaryAndAutowiredPrimaryProperties @Autowired constructor(val name: String?, val counter: Int = 42) {
 
 		@ConstructorBinding
 		constructor(@Suppress("UNUSED_PARAMETER") foo: String) : this(foo, 21)
 	}
 
-	@ConfigurationProperties(prefix = "bar")
 	class ConstructorBindingOnPrimaryAndAutowiredSecondaryProperties @ConstructorBinding constructor(val name: String?, val counter: Int = 42) {
 
 		@Autowired
 		constructor(@Suppress("UNUSED_PARAMETER") foo: String) : this(foo, 21)
 	}
 
-	@ConfigurationProperties(prefix = "bing")
 	class ConstructorBindingOnSecondaryWithPrimaryConstructor constructor(val name: String?, val counter: Int = 42) {
 
 		@ConstructorBinding
 		constructor(@Suppress("UNUSED_PARAMETER") foo: String) : this(foo, 21)
 	}
 
-	@ConfigurationProperties(prefix = "bing")
 	class ConstructorBindingOnPrimaryWithSecondaryConstructor @ConstructorBinding constructor(val name: String?, val counter: Int = 42) {
 
 		constructor(@Suppress("UNUSED_PARAMETER") foo: String) : this(foo, 21)
 	}
 
-	@ConfigurationProperties(prefix = "bing")
 	class ConstructorBindingPrimaryConstructorNoAnnotation(val name: String?, val counter: Int = 42)
 
-	@ConfigurationProperties(prefix = "bing")
 	class ConstructorBindingSecondaryConstructorNoAnnotation {
 
 		constructor(@Suppress("UNUSED_PARAMETER") foo: String)
 
 	}
 
-	@ConfigurationProperties(prefix = "bing")
 	class MultipleAmbiguousConstructors {
 
 		constructor()
@@ -187,7 +176,6 @@ class ConfigurationPropertiesBindConstructorProviderTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "bing")
 	class ConstructorBindingMultipleConstructors {
 
 		constructor(@Suppress("UNUSED_PARAMETER") bar: Int)
@@ -197,7 +185,6 @@ class ConfigurationPropertiesBindConstructorProviderTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "bing")
 	class ConstructorBindingMultipleAnnotatedConstructors {
 
 		@ConstructorBinding
@@ -208,7 +195,6 @@ class ConfigurationPropertiesBindConstructorProviderTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "bing")
 	class ConstructorBindingSecondaryAndPrimaryAnnotatedConstructors @ConstructorBinding constructor(val name: String?, val counter: Int = 42) {
 
 		@ConstructorBinding
@@ -216,7 +202,6 @@ class ConfigurationPropertiesBindConstructorProviderTests {
 
 	}
 
-	@ConfigurationProperties(prefix = "bing")
 	data class ConstructorBindingDataClassWithDefaultValues(val name: String = "Joan", val counter: Int = 42)
 
 }

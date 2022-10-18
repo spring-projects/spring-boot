@@ -27,7 +27,9 @@ import org.junit.jupiter.api.function.ThrowingConsumer;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod;
+import org.springframework.boot.context.properties.bind.BindConstructorProvider;
 import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -227,8 +229,26 @@ class ConfigurationPropertiesBeanTests {
 		Bindable<?> target = propertiesBean.asBindTarget();
 		assertThat(target.getType()).isEqualTo(ResolvableType.forClass(ConstructorBindingOnConstructor.class));
 		assertThat(target.getValue()).isNull();
-		assertThat(ConfigurationPropertiesBindConstructorProvider.INSTANCE
-				.getBindConstructor(ConstructorBindingOnConstructor.class, false)).isNotNull();
+		assertThat(BindConstructorProvider.DEFAULT.getBindConstructor(ConstructorBindingOnConstructor.class, false))
+				.isNotNull();
+	}
+
+	@Test
+	@Deprecated(since = "3.0.0", forRemoval = true)
+	void forValueObjectWithDeprecatedConstructorBindingAnnotatedClassReturnsBean() {
+		ConfigurationPropertiesBean propertiesBean = ConfigurationPropertiesBean
+				.forValueObject(DeprecatedConstructorBindingOnConstructor.class, "valueObjectBean");
+		assertThat(propertiesBean.getName()).isEqualTo("valueObjectBean");
+		assertThat(propertiesBean.getInstance()).isNull();
+		assertThat(propertiesBean.getType()).isEqualTo(DeprecatedConstructorBindingOnConstructor.class);
+		assertThat(propertiesBean.getBindMethod()).isEqualTo(BindMethod.VALUE_OBJECT);
+		assertThat(propertiesBean.getAnnotation()).isNotNull();
+		Bindable<?> target = propertiesBean.asBindTarget();
+		assertThat(target.getType())
+				.isEqualTo(ResolvableType.forClass(DeprecatedConstructorBindingOnConstructor.class));
+		assertThat(target.getValue()).isNull();
+		assertThat(BindConstructorProvider.DEFAULT.getBindConstructor(DeprecatedConstructorBindingOnConstructor.class,
+				false)).isNotNull();
 	}
 
 	@Test
@@ -249,8 +269,8 @@ class ConfigurationPropertiesBeanTests {
 		Bindable<?> target = propertiesBean.asBindTarget();
 		assertThat(target.getType()).isEqualTo(ResolvableType.forClass(implicitConstructorBinding));
 		assertThat(target.getValue()).isNull();
-		Constructor<?> bindConstructor = ConfigurationPropertiesBindConstructorProvider.INSTANCE
-				.getBindConstructor(implicitConstructorBinding, false);
+		Constructor<?> bindConstructor = BindConstructorProvider.DEFAULT.getBindConstructor(implicitConstructorBinding,
+				false);
 		assertThat(bindConstructor).isNotNull();
 		assertThat(bindConstructor.getParameterTypes()).containsExactly(String.class, Integer.class);
 	}
@@ -268,64 +288,64 @@ class ConfigurationPropertiesBeanTests {
 	}
 
 	@Test
-	void bindTypeForTypeWhenNoConstructorBindingReturnsJavaBean() {
-		BindMethod bindType = BindMethod.forType(NoConstructorBinding.class);
+	void bindMethodGetWhenNoConstructorBindingReturnsJavaBean() {
+		BindMethod bindType = BindMethod.get(NoConstructorBinding.class);
 		assertThat(bindType).isEqualTo(BindMethod.JAVA_BEAN);
 	}
 
 	@Test
-	void bindTypeForTypeWhenConstructorBindingOnConstructorReturnsValueObject() {
-		BindMethod bindType = BindMethod.forType(ConstructorBindingOnConstructor.class);
+	void bindMethodGetWhenConstructorBindingOnConstructorReturnsValueObject() {
+		BindMethod bindType = BindMethod.get(ConstructorBindingOnConstructor.class);
 		assertThat(bindType).isEqualTo(BindMethod.VALUE_OBJECT);
 	}
 
 	@Test
-	void bindTypeForTypeWhenNoConstructorBindingAnnotationOnSingleParameterizedConstructorReturnsValueObject() {
-		BindMethod bindType = BindMethod.forType(ConstructorBindingNoAnnotation.class);
+	void bindMethodGetWhenNoConstructorBindingAnnotationOnSingleParameterizedConstructorReturnsValueObject() {
+		BindMethod bindType = BindMethod.get(ConstructorBindingNoAnnotation.class);
 		assertThat(bindType).isEqualTo(BindMethod.VALUE_OBJECT);
 	}
 
 	@Test
-	void bindTypeForTypeWhenConstructorBindingOnMultipleConstructorsThrowsException() {
+	void bindMethodGetWhenConstructorBindingOnMultipleConstructorsThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> BindMethod.forType(ConstructorBindingOnMultipleConstructors.class))
+				.isThrownBy(() -> BindMethod.get(ConstructorBindingOnMultipleConstructors.class))
 				.withMessage(ConstructorBindingOnMultipleConstructors.class.getName()
 						+ " has more than one @ConstructorBinding constructor");
 	}
 
 	@Test
-	void bindTypeForTypeWithMultipleConstructorsReturnJavaBean() {
-		BindMethod bindType = BindMethod.forType(NoConstructorBindingOnMultipleConstructors.class);
+	void bindMethodGetWithMultipleConstructorsReturnJavaBean() {
+		BindMethod bindType = BindMethod.get(NoConstructorBindingOnMultipleConstructors.class);
 		assertThat(bindType).isEqualTo(BindMethod.JAVA_BEAN);
 	}
 
 	@Test
-	void bindTypeForTypeWithNoArgConstructorReturnsJavaBean() {
-		BindMethod bindType = BindMethod.forType(JavaBeanWithNoArgConstructor.class);
+	void bindMethodGetWithNoArgConstructorReturnsJavaBean() {
+		BindMethod bindType = BindMethod.get(JavaBeanWithNoArgConstructor.class);
 		assertThat(bindType).isEqualTo(BindMethod.JAVA_BEAN);
 	}
 
 	@Test
-	void bindTypeForTypeWithSingleArgAutowiredConstructorReturnsJavaBean() {
-		BindMethod bindType = BindMethod.forType(JavaBeanWithAutowiredConstructor.class);
+	void bindMethodGetWithSingleArgAutowiredConstructorReturnsJavaBean() {
+		BindMethod bindType = BindMethod.get(JavaBeanWithAutowiredConstructor.class);
 		assertThat(bindType).isEqualTo(BindMethod.JAVA_BEAN);
 	}
 
 	@Test
 	void constructorBindingAndAutowiredConstructorsShouldThrowException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> BindMethod.forType(ConstructorBindingAndAutowiredConstructors.class));
+				.isThrownBy(() -> BindMethod.get(ConstructorBindingAndAutowiredConstructors.class));
 	}
 
 	@Test
 	void innerClassWithSyntheticFieldShouldReturnJavaBean() {
-		BindMethod bindType = BindMethod.forType(Inner.class);
+		BindMethod bindType = BindMethod.get(Inner.class);
 		assertThat(bindType).isEqualTo(BindMethod.JAVA_BEAN);
 	}
 
 	@Test
 	void innerClassWithParameterizedConstructorShouldReturnJavaBean() {
-		BindMethod bindType = BindMethod.forType(ParameterizedConstructorInner.class);
+		BindMethod bindType = BindMethod.get(ParameterizedConstructorInner.class);
 		assertThat(bindType).isEqualTo(BindMethod.JAVA_BEAN);
 	}
 
@@ -529,6 +549,20 @@ class ConfigurationPropertiesBeanTests {
 
 		@ConstructorBinding
 		ConstructorBindingOnConstructor(String name, int age) {
+		}
+
+	}
+
+	@ConfigurationProperties
+	@SuppressWarnings("removal")
+	static class DeprecatedConstructorBindingOnConstructor {
+
+		DeprecatedConstructorBindingOnConstructor(String name) {
+			this(name, -1);
+		}
+
+		@org.springframework.boot.context.properties.ConstructorBinding
+		DeprecatedConstructorBindingOnConstructor(String name, int age) {
 		}
 
 	}

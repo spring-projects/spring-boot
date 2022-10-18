@@ -33,6 +33,7 @@ import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.beans.BeanInfoFactory;
 import org.springframework.beans.ExtendedBeanInfoFactory;
+import org.springframework.boot.context.properties.bind.BindConstructorProvider;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -88,7 +89,7 @@ public final class ConfigurationPropertiesReflectionHintsProcessor {
 
 	private static Constructor<?> getBindConstructor(Class<?> type, boolean nestedType) {
 		Bindable<?> bindable = Bindable.of(type);
-		return ConfigurationPropertiesBindConstructorProvider.INSTANCE.getBindConstructor(bindable, nestedType);
+		return BindConstructorProvider.DEFAULT.getBindConstructor(bindable, nestedType);
 	}
 
 	private void process(ReflectionHints reflectionHints) {

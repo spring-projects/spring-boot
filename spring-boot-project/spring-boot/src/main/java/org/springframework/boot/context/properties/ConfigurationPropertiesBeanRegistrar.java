@@ -89,7 +89,7 @@ final class ConfigurationPropertiesBeanRegistrar {
 	}
 
 	private BeanDefinition createBeanDefinition(String beanName, Class<?> type) {
-		BindMethod bindMethod = BindMethod.forType(type);
+		BindMethod bindMethod = BindMethod.get(type);
 		RootBeanDefinition definition = new RootBeanDefinition(type);
 		definition.setAttribute(BindMethod.class.getName(), bindMethod);
 		if (bindMethod == BindMethod.VALUE_OBJECT) {

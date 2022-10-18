@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.properties.bind;
 
-import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -366,7 +365,7 @@ class ValueObjectBinderTests {
 	}
 
 	@Test
-	void bindToRecordWithDefaultValue() throws IOException {
+	void bindToRecordWithDefaultValue() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("test.record.property1", "value-from-config-1");
 		this.sources.add(source);

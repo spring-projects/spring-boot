@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.properties;
+package org.springframework.boot.context.properties.bind;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -27,26 +27,13 @@ import java.lang.annotation.Target;
  * configuration properties using constructor arguments rather than by calling setters. A
  * single parameterized constructor implicitly indicates that constructor binding should
  * be used unless the constructor is annotated with `@Autowired`.
- * <p>
- * Note: To use constructor binding the class must be enabled using
- * {@link EnableConfigurationProperties @EnableConfigurationProperties} or configuration
- * property scanning. Constructor binding cannot be used with beans that are created by
- * the regular Spring mechanisms (e.g.
- * {@link org.springframework.stereotype.Component @Component} beans, beans created via
- * {@link org.springframework.context.annotation.Bean @Bean} methods or beans loaded using
- * {@link org.springframework.context.annotation.Import @Import}).
  *
  * @author Phillip Webb
- * @since 2.2.0
- * @see ConfigurationProperties
- * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
- * {@link org.springframework.boot.context.properties.bind.ConstructorBinding}
+ * @since 3.0.0
  */
 @Target({ ElementType.CONSTRUCTOR, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Deprecated(since = "3.0.0", forRemoval = true)
-@org.springframework.boot.context.properties.bind.ConstructorBinding
 public @interface ConstructorBinding {
 
 }

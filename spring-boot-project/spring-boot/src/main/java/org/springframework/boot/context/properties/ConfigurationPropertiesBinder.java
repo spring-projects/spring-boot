@@ -164,8 +164,7 @@ class ConfigurationPropertiesBinder {
 	private Binder getBinder() {
 		if (this.binder == null) {
 			this.binder = new Binder(getConfigurationPropertySources(), getPropertySourcesPlaceholdersResolver(),
-					getConversionServices(), getPropertyEditorInitializer(), null,
-					ConfigurationPropertiesBindConstructorProvider.INSTANCE);
+					getConversionServices(), getPropertyEditorInitializer(), null, null);
 		}
 		return this.binder;
 	}
