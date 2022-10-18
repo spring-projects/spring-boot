@@ -483,7 +483,6 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	private static final class ConfigurationPropertiesModule extends SimpleModule {
 
 		private ConfigurationPropertiesModule() {
-			super();
 			addSerializer(DataSize.class, ToStringSerializer.instance);
 		}
 
