@@ -90,6 +90,13 @@ class DefaultBindConstructorProviderTests {
 				.withMessageContaining("has more than one @ConstructorBinding");
 	}
 
+	@Test
+	void getBindConstructorWhenIsMemberTypeWithPrivateConstructorReturnsNull() {
+		Constructor<?> constructor = this.provider.getBindConstructor(MemberTypeWithPrivateConstructor.Member.class,
+				false);
+		assertThat(constructor).isNotNull();
+	}
+
 	static class OnlyDefaultConstructor {
 
 	}
@@ -166,6 +173,17 @@ class DefaultBindConstructorProviderTests {
 
 		@ConstructorBinding
 		TwoConstructorsWithBothConstructorBinding(String name, int age) {
+		}
+
+	}
+
+	static class MemberTypeWithPrivateConstructor {
+
+		static final class Member {
+
+			private Member(String name) {
+			}
+
 		}
 
 	}

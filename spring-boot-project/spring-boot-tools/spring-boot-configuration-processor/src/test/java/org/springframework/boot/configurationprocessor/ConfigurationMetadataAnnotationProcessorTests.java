@@ -31,6 +31,7 @@ import org.springframework.boot.configurationsample.simple.DescriptionProperties
 import org.springframework.boot.configurationsample.simple.HierarchicalProperties;
 import org.springframework.boot.configurationsample.simple.HierarchicalPropertiesGrandparent;
 import org.springframework.boot.configurationsample.simple.HierarchicalPropertiesParent;
+import org.springframework.boot.configurationsample.simple.InnerClassWithPrivateConstructor;
 import org.springframework.boot.configurationsample.simple.NotAnnotated;
 import org.springframework.boot.configurationsample.simple.SimpleArrayProperties;
 import org.springframework.boot.configurationsample.simple.SimpleCollectionProperties;
@@ -457,6 +458,13 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		ConfigurationMetadata metadata = compile(source);
 		assertThat(metadata).has(Metadata.withProperty("multi.some-string"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("multi.some-integer"));
+	}
+
+	@Test
+	void innerClassWithPrivateConstructor() {
+		ConfigurationMetadata metadata = compile(InnerClassWithPrivateConstructor.class);
+		assertThat(metadata).has(Metadata.withProperty("config.nested.name"));
+		assertThat(metadata).doesNotHave(Metadata.withProperty("config.nested.ignored"));
 	}
 
 }

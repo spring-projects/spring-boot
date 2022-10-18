@@ -80,7 +80,7 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			boolean hasAutowiredConstructor = isAutowiredPresent(candidateAnnotations);
 			Constructor<?> bind = getConstructorBindingAnnotated(type, candidates, candidateAnnotations);
 			if (bind == null && !hasAutowiredConstructor) {
-				bind = deduceBindConstructor(candidates);
+				bind = deduceBindConstructor(type, candidates);
 			}
 			if (bind == null && !hasAutowiredConstructor && isKotlinType(type)) {
 				bind = deduceKotlinBindConstructor(type);
@@ -142,8 +142,11 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 
 		}
 
-		private static Constructor<?> deduceBindConstructor(Constructor<?>[] candidates) {
+		private static Constructor<?> deduceBindConstructor(Class<?> type, Constructor<?>[] candidates) {
 			if (candidates.length == 1 && candidates[0].getParameterCount() > 0) {
+				if (type.isMemberClass() && Modifier.isPrivate(candidates[0].getModifiers())) {
+					return null;
+				}
 				return candidates[0];
 			}
 			Constructor<?> result = null;

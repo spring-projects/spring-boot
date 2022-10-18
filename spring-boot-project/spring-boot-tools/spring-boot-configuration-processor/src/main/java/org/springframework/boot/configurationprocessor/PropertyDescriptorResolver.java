@@ -24,6 +24,8 @@ import java.util.stream.Stream;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeMirror;
@@ -186,24 +188,30 @@ class PropertyDescriptorResolver {
 
 		static ConfigurationPropertiesTypeElement of(TypeElement type, MetadataGenerationEnvironment env) {
 			List<ExecutableElement> constructors = ElementFilter.constructorsIn(type.getEnclosedElements());
-			List<ExecutableElement> boundConstructors = getBoundConstructors(env, constructors);
+			List<ExecutableElement> boundConstructors = getBoundConstructors(type, env, constructors);
 			return new ConfigurationPropertiesTypeElement(type, constructors, boundConstructors);
 		}
 
-		private static List<ExecutableElement> getBoundConstructors(MetadataGenerationEnvironment env,
+		private static List<ExecutableElement> getBoundConstructors(TypeElement type, MetadataGenerationEnvironment env,
 				List<ExecutableElement> constructors) {
-			ExecutableElement bindConstructor = deduceBindConstructor(constructors, env);
+			ExecutableElement bindConstructor = deduceBindConstructor(type, constructors, env);
 			if (bindConstructor != null) {
 				return Collections.singletonList(bindConstructor);
 			}
 			return constructors.stream().filter(env::hasConstructorBindingAnnotation).toList();
 		}
 
-		private static ExecutableElement deduceBindConstructor(List<ExecutableElement> constructors,
+		private static ExecutableElement deduceBindConstructor(TypeElement type, List<ExecutableElement> constructors,
 				MetadataGenerationEnvironment env) {
-			if (constructors.size() == 1 && constructors.get(0).getParameters().size() > 0
-					&& !env.hasAutowiredAnnotation(constructors.get(0))) {
-				return constructors.get(0);
+			if (constructors.size() == 1) {
+				ExecutableElement candidate = constructors.get(0);
+				if (candidate.getParameters().size() > 0 && !env.hasAutowiredAnnotation(constructors.get(0))) {
+					if (type.getNestingKind() == NestingKind.MEMBER
+							&& candidate.getModifiers().contains(Modifier.PRIVATE)) {
+						return null;
+					}
+					return candidate;
+				}
 			}
 			return null;
 		}
