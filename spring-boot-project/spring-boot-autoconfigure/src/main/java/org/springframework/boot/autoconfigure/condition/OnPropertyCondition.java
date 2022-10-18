@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.condition;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Condition;
@@ -51,7 +50,7 @@ class OnPropertyCondition extends SpringBootCondition {
 		List<AnnotationAttributes> allAnnotationAttributes = metadata.getAnnotations()
 				.stream(ConditionalOnProperty.class.getName())
 				.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getMetaTypes))
-				.map(MergedAnnotation::asAnnotationAttributes).collect(Collectors.toList());
+				.map(MergedAnnotation::asAnnotationAttributes).toList();
 		List<ConditionMessage> noMatch = new ArrayList<>();
 		List<ConditionMessage> match = new ArrayList<>();
 		for (AnnotationAttributes annotationAttributes : allAnnotationAttributes) {

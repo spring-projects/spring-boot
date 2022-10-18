@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.lang.model.element.AnnotationMirror;
@@ -202,7 +201,7 @@ class PropertyDescriptorResolver {
 			if (bindConstructor != null) {
 				return Collections.singletonList(bindConstructor);
 			}
-			return constructors.stream().filter(env::hasConstructorBindingAnnotation).collect(Collectors.toList());
+			return constructors.stream().filter(env::hasConstructorBindingAnnotation).toList();
 		}
 
 		private static ExecutableElement deduceBindConstructor(List<ExecutableElement> constructors,

@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@ClassPathExclusions("httpclient-*.jar")
+@ClassPathExclusions("httpclient5-*.jar")
 class HttpWebServiceMessageSenderBuilderOkHttp3IntegrationTests {
 
 	private final HttpWebServiceMessageSenderBuilder builder = new HttpWebServiceMessageSenderBuilder();

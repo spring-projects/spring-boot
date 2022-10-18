@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.rsocket;
 
-import java.util.stream.Collectors;
-
 import io.rsocket.core.RSocketServer;
 import io.rsocket.frame.decoder.PayloadDecoder;
 import io.rsocket.transport.netty.server.TcpServerTransport;
@@ -99,7 +97,7 @@ public class RSocketServerAutoConfiguration {
 			map.from(properties.getServer().getPort()).to(factory::setPort);
 			map.from(properties.getServer().getFragmentSize()).to(factory::setFragmentSize);
 			map.from(properties.getServer().getSsl()).to(factory::setSsl);
-			factory.setRSocketServerCustomizers(customizers.orderedStream().collect(Collectors.toList()));
+			factory.setRSocketServerCustomizers(customizers.orderedStream().toList());
 			return factory;
 		}
 

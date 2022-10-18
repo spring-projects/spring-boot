@@ -50,7 +50,7 @@ class DynatraceMetricsExportAutoConfigurationTests {
 	@Test
 	void failsWithADeviceIdWithoutAUri() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.dynatrace.metrics.export.device-id:dev-1")
+				.withPropertyValues("management.dynatrace.metrics.export.v1.device-id:dev-1")
 				.run((context) -> assertThat(context).hasFailed());
 	}
 

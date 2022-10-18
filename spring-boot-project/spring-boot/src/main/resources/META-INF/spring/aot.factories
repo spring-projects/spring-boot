@@ -13,4 +13,5 @@ org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor=\
 org.springframework.boot.context.properties.ConfigurationPropertiesBeanFactoryInitializationAotProcessor
 
 org.springframework.beans.factory.aot.BeanRegistrationAotProcessor=\
-org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrationAotProcessor
+org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrationAotProcessor,\
+org.springframework.boot.jackson.JsonMixinModuleEntriesBeanRegistrationAotProcessor

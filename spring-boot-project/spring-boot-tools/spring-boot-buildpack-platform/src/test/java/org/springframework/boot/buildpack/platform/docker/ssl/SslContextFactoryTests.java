@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class SslContextFactoryTests {
 	@Test
 	void createKeyStoreWithCertChain() throws IOException {
 		this.fileWriter.writeFile("cert.pem", PemFileWriter.CERTIFICATE);
-		this.fileWriter.writeFile("key.pem", PemFileWriter.PRIVATE_KEY);
+		this.fileWriter.writeFile("key.pem", PemFileWriter.PRIVATE_RSA_KEY);
 		this.fileWriter.writeFile("ca.pem", PemFileWriter.CA_CERTIFICATE);
 		SSLContext sslContext = new SslContextFactory().forDirectory(this.fileWriter.getTempDir().toString());
 		assertThat(sslContext).isNotNull();

@@ -22,8 +22,6 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import org.neo4j.driver.AuthToken;
 import org.neo4j.driver.AuthTokens;
@@ -65,24 +63,19 @@ public class Neo4jAutoConfiguration {
 	public Driver neo4jDriver(Neo4jProperties properties, Environment environment,
 			ObjectProvider<ConfigBuilderCustomizer> configBuilderCustomizers) {
 		AuthToken authToken = mapAuthToken(properties.getAuthentication(), environment);
-		Config config = mapDriverConfig(properties,
-				configBuilderCustomizers.orderedStream().collect(Collectors.toList()));
+		Config config = mapDriverConfig(properties, configBuilderCustomizers.orderedStream().toList());
 		URI serverUri = determineServerUri(properties, environment);
 		return GraphDatabase.driver(serverUri, authToken, config);
 	}
 
 	URI determineServerUri(Neo4jProperties properties, Environment environment) {
-		return getOrFallback(properties.getUri(), () -> {
-			URI deprecatedProperty = environment.getProperty("spring.data.neo4j.uri", URI.class);
-			return (deprecatedProperty != null) ? deprecatedProperty : DEFAULT_SERVER_URI;
-		});
+		URI uri = properties.getUri();
+		return (uri != null) ? uri : DEFAULT_SERVER_URI;
 	}
 
 	AuthToken mapAuthToken(Neo4jProperties.Authentication authentication, Environment environment) {
-		String username = getOrFallback(authentication.getUsername(),
-				() -> environment.getProperty("spring.data.neo4j.username", String.class));
-		String password = getOrFallback(authentication.getPassword(),
-				() -> environment.getProperty("spring.data.neo4j.password", String.class));
+		String username = authentication.getUsername();
+		String password = authentication.getPassword();
 		String kerberosTicket = authentication.getKerberosTicket();
 		String realm = authentication.getRealm();
 
@@ -101,13 +94,6 @@ public class Neo4jAutoConfiguration {
 			return AuthTokens.kerberos(kerberosTicket);
 		}
 		return AuthTokens.none();
-	}
-
-	private <T> T getOrFallback(T value, Supplier<T> fallback) {
-		if (value != null) {
-			return value;
-		}
-		return fallback.get();
 	}
 
 	Config mapDriverConfig(Neo4jProperties properties, List<ConfigBuilderCustomizer> customizers) {

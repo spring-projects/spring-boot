@@ -16,50 +16,58 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.io.TempDir;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
+import org.springframework.boot.configurationprocessor.test.CompiledMetadataReader;
 import org.springframework.boot.configurationprocessor.test.TestConfigurationMetadataAnnotationProcessor;
-import org.springframework.boot.testsupport.compiler.TestCompiler;
+import org.springframework.core.test.tools.ResourceFile;
+import org.springframework.core.test.tools.SourceFile;
+import org.springframework.core.test.tools.TestCompiler;
 
 /**
  * Base test infrastructure for metadata generation tests.
  *
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 public abstract class AbstractMetadataGenerationTests {
 
-	@TempDir
-	File tempDir;
-
-	private TestCompiler compiler;
-
-	@BeforeEach
-	void createCompiler() throws IOException {
-		this.compiler = new TestCompiler(this.tempDir);
-	}
-
-	protected TestCompiler getCompiler() {
-		return this.compiler;
-	}
+	private static final String ADDITIONAL_METADATA_FILE = "META-INF/additional-spring-configuration-metadata.json";
 
 	protected ConfigurationMetadata compile(Class<?>... types) {
-		TestConfigurationMetadataAnnotationProcessor processor = new TestConfigurationMetadataAnnotationProcessor(
-				this.compiler.getOutputLocation());
-		this.compiler.getTask(types).call(processor);
-		return processor.getMetadata();
+		TestCompiler compiler = TestCompiler.forSystem().withSources(sourceFilesOf(types));
+		return compile(compiler);
 	}
 
-	protected ConfigurationMetadata compile(File... sources) {
-		TestConfigurationMetadataAnnotationProcessor processor = new TestConfigurationMetadataAnnotationProcessor(
-				this.compiler.getOutputLocation());
-		this.compiler.getTask(Arrays.asList(sources)).call(processor);
-		return processor.getMetadata();
+	protected ConfigurationMetadata compile(String additionalMetadata, Class<?> type, Class<?>... types) {
+		TestCompiler compiler = TestCompiler.forSystem().withSources(sourceFilesOf(type))
+				.withSources(sourceFilesOf(types))
+				.withResources(ResourceFile.of(ADDITIONAL_METADATA_FILE, additionalMetadata));
+		return compile(compiler);
+	}
+
+	protected ConfigurationMetadata compile(String... source) {
+		TestCompiler compiler = TestCompiler.forSystem().withSources(sourceFilesOf(source));
+		return compile(compiler);
+	}
+
+	private ConfigurationMetadata compile(TestCompiler compiler) {
+		TestConfigurationMetadataAnnotationProcessor processor = new TestConfigurationMetadataAnnotationProcessor();
+		compiler = compiler.withProcessors(processor);
+		AtomicReference<ConfigurationMetadata> configurationMetadata = new AtomicReference<>();
+		compiler.compile((compiled) -> configurationMetadata.set(CompiledMetadataReader.getMetadata(compiled)));
+		return configurationMetadata.get();
+	}
+
+	private List<SourceFile> sourceFilesOf(Class<?>... types) {
+		return Arrays.stream(types).map(SourceFile::forTestClass).toList();
+	}
+
+	private List<SourceFile> sourceFilesOf(String... content) {
+		return Arrays.stream(content).map(SourceFile::of).toList();
 	}
 
 }

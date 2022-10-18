@@ -37,8 +37,9 @@ The cache abstraction does not provide an actual store and relies on abstraction
 If you have not defined a bean of type `CacheManager` or a `CacheResolver` named `cacheResolver` (see {spring-framework-api}/cache/annotation/CachingConfigurer.html[`CachingConfigurer`]), Spring Boot tries to detect the following providers (in the indicated order):
 
 . <<io#io.caching.provider.generic,Generic>>
-. <<io#io.caching.provider.jcache,JCache (JSR-107)>> (EhCache 3, Hazelcast, and others)
+. <<io#io.caching.provider.jcache,JCache (JSR-107)>> (EhCache 3, Hazelcast, Infinispan, and others)
 . <<io#io.caching.provider.hazelcast,Hazelcast>>
+. <<io#io.caching.provider.infinispan,Infinispan>>
 . <<io#io.caching.provider.couchbase,Couchbase>>
 . <<io#io.caching.provider.redis,Redis>>
 . <<io#io.caching.provider.caffeine,Caffeine>>
@@ -75,7 +76,7 @@ A `CacheManager` wrapping all beans of that type is created.
 [[io.caching.provider.jcache]]
 ==== JCache (JSR-107)
 https://jcp.org/en/jsr/detail?id=107[JCache] is bootstrapped through the presence of a `javax.cache.spi.CachingProvider` on the classpath (that is, a JSR-107 compliant caching library exists on the classpath), and the `JCacheCacheManager` is provided by the `spring-boot-starter-cache` "`Starter`".
-Various compliant libraries are available, and Spring Boot provides dependency management for Ehcache 3 and Hazelcast.
+Various compliant libraries are available, and Spring Boot provides dependency management for Ehcache 3, Hazelcast, and Infinispan.
 Any other compliant library can be added as well.
 
 It might happen that more than one provider is present, in which case the provider must be explicitly specified.
@@ -111,6 +112,32 @@ No further customization is applied to it.
 ==== Hazelcast
 Spring Boot has <<io#io.hazelcast,general support for Hazelcast>>.
 If a `HazelcastInstance` has been auto-configured, it is automatically wrapped in a `CacheManager`.
+
+
+
+[[io.caching.provider.infinispan]]
+==== Infinispan
+https://infinispan.org/[Infinispan] has no default configuration file location, so it must be specified explicitly.
+Otherwise, the default bootstrap is used.
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  cache:
+	    infinispan:
+	      config: "infinispan.xml"
+----
+
+Caches can be created on startup by setting the configprop:spring.cache.cache-names[] property.
+If a custom `ConfigurationBuilder` bean is defined, it is used to customize the caches.
+
+To be compatible with Spring Boot's Jakarta EE 9 baseline, Infinispan's `-jakarta` modules must be used.
+For every module with a `-jakarta` variant, the variant must be used in place of the standard module.
+For example, `infinispan-core-jakarta` and `infinispan-commons-jakarta` must be used in place of `infinispan-core` and `infinispan-commons` respectively.
+
+NOTE: The support of Infinispan in Spring Boot is restricted to the embedded mode and is quite basic.
+If you want more options, you should use the official Infinispan Spring Boot starter instead.
+See https://github.com/infinispan/infinispan-spring-boot[Infinispan's documentation] for more details.
 
 
 

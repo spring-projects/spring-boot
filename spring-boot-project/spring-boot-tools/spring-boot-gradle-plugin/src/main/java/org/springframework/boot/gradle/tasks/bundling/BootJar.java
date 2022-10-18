@@ -136,9 +136,9 @@ public class BootJar extends Jar implements BootArchive {
 		if (!isLayeredDisabled()) {
 			LayerResolver layerResolver = new LayerResolver(this.resolvedDependencies, this.layered, this::isLibrary);
 			String layerToolsLocation = this.layered.isIncludeLayerTools() ? LIB_DIRECTORY : null;
-			return this.support.createCopyAction(this, layerResolver, layerToolsLocation);
+			return this.support.createCopyAction(this, this.resolvedDependencies, layerResolver, layerToolsLocation);
 		}
-		return this.support.createCopyAction(this);
+		return this.support.createCopyAction(this, this.resolvedDependencies);
 	}
 
 	@Override

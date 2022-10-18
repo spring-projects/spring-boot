@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -208,7 +208,7 @@ public class LayeredSpec {
 					"The 'layerOrder' must be defined when using custom layering");
 			return Layers.IMPLICIT;
 		}
-		List<Layer> layers = this.layerOrder.stream().map(Layer::new).collect(Collectors.toList());
+		List<Layer> layers = this.layerOrder.stream().map(Layer::new).toList();
 		return new CustomLayers(layers, this.application.asSelectors(), this.dependencies.asSelectors());
 	}
 
@@ -242,7 +242,7 @@ public class LayeredSpec {
 		}
 
 		<T> List<ContentSelector<T>> asSelectors(Function<IntoLayerSpec, ContentSelector<T>> selectorFactory) {
-			return this.intoLayers.stream().map(selectorFactory).collect(Collectors.toList());
+			return this.intoLayers.stream().map(selectorFactory).toList();
 		}
 
 	}
@@ -350,15 +350,13 @@ public class LayeredSpec {
 		ContentSelector<Library> asLibrarySelector(Function<String, ContentFilter<Library>> filterFactory) {
 			Layer layer = new Layer(getIntoLayer());
 			List<ContentFilter<Library>> includeFilters = getIncludes().stream().map(filterFactory)
-					.collect(Collectors.toList());
+					.collect(Collectors.toCollection(ArrayList::new));
 			if (this.includeProjectDependencies) {
-				includeFilters = new ArrayList<>(includeFilters);
 				includeFilters.add(Library::isLocal);
 			}
 			List<ContentFilter<Library>> excludeFilters = getExcludes().stream().map(filterFactory)
-					.collect(Collectors.toList());
+					.collect(Collectors.toCollection(ArrayList::new));
 			if (this.excludeProjectDependencies) {
-				excludeFilters = new ArrayList<>(excludeFilters);
 				excludeFilters.add(Library::isLocal);
 			}
 			return new IncludeExcludeContentSelector<>(layer, includeFilters, excludeFilters);

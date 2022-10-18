@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
@@ -73,8 +72,8 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 
 	private Yaml createYaml(LoaderOptions loaderOptions) {
 		BaseConstructor constructor = new OriginTrackingConstructor(loaderOptions);
-		Representer representer = new Representer();
 		DumperOptions dumperOptions = new DumperOptions();
+		Representer representer = new Representer(dumperOptions);
 		NoTimestampResolver resolver = new NoTimestampResolver();
 		return new Yaml(constructor, representer, dumperOptions, loaderOptions, resolver);
 	}
@@ -120,7 +119,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		}
 
 		private void replaceMappingNodeKeys(MappingNode node) {
-			node.setValue(node.getValue().stream().map(KeyScalarNode::get).collect(Collectors.toList()));
+			node.setValue(node.getValue().stream().map(KeyScalarNode::get).toList());
 		}
 
 		private Object constructTrackedObject(Node node, Object value) {

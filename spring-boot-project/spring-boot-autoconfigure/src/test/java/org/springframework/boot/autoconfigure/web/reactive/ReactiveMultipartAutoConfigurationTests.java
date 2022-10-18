@@ -26,6 +26,7 @@ import org.springframework.boot.test.context.runner.ReactiveWebApplicationContex
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.http.codec.multipart.DefaultPartHttpMessageReader;
+import org.springframework.http.codec.multipart.PartEventHttpMessageReader;
 import org.springframework.http.codec.support.DefaultServerCodecConfigurer;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
@@ -36,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ReactiveMultipartAutoConfiguration}.
  *
  * @author Chris Bono
+ * @author Brian Clozel
  */
 class ReactiveMultipartAutoConfigurationTests {
 
@@ -56,16 +58,17 @@ class ReactiveMultipartAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldConfigureMultipartProperties() {
-		this.contextRunner.withPropertyValues("spring.webflux.multipart.streaming:true",
-				"spring.webflux.multipart.max-in-memory-size=1GB", "spring.webflux.multipart.max-headers-size=16KB",
-				"spring.webflux.multipart.max-disk-usage-per-part=100MB", "spring.webflux.multipart.max-parts=7",
-				"spring.webflux.multipart.headers-charset:UTF_16").run((context) -> {
+	void shouldConfigureMultipartPropertiesForDefaultReader() {
+		this.contextRunner
+				.withPropertyValues("spring.webflux.multipart.max-in-memory-size=1GB",
+						"spring.webflux.multipart.max-headers-size=16KB",
+						"spring.webflux.multipart.max-disk-usage-per-part=100MB",
+						"spring.webflux.multipart.max-parts=7", "spring.webflux.multipart.headers-charset:UTF_16")
+				.run((context) -> {
 					CodecCustomizer customizer = context.getBean(CodecCustomizer.class);
 					DefaultServerCodecConfigurer configurer = new DefaultServerCodecConfigurer();
 					customizer.customize(configurer);
-					DefaultPartHttpMessageReader partReader = getPartReader(configurer);
-					assertThat(partReader).hasFieldOrPropertyWithValue("streaming", true);
+					DefaultPartHttpMessageReader partReader = getDefaultPartReader(configurer);
 					assertThat(partReader).hasFieldOrPropertyWithValue("maxParts", 7);
 					assertThat(partReader).hasFieldOrPropertyWithValue("maxHeadersSize",
 							Math.toIntExact(DataSize.ofKilobytes(16).toBytes()));
@@ -77,10 +80,33 @@ class ReactiveMultipartAutoConfigurationTests {
 				});
 	}
 
-	private DefaultPartHttpMessageReader getPartReader(DefaultServerCodecConfigurer codecConfigurer) {
+	@Test
+	void shouldConfigureMultipartPropertiesForPartEventReader() {
+		this.contextRunner.withPropertyValues("spring.webflux.multipart.max-in-memory-size=1GB",
+				"spring.webflux.multipart.max-headers-size=16KB", "spring.webflux.multipart.headers-charset:UTF_16")
+				.run((context) -> {
+					CodecCustomizer customizer = context.getBean(CodecCustomizer.class);
+					DefaultServerCodecConfigurer configurer = new DefaultServerCodecConfigurer();
+					customizer.customize(configurer);
+					PartEventHttpMessageReader partReader = getPartEventReader(configurer);
+					assertThat(partReader).hasFieldOrPropertyWithValue("maxHeadersSize",
+							Math.toIntExact(DataSize.ofKilobytes(16).toBytes()));
+					assertThat(partReader).hasFieldOrPropertyWithValue("headersCharset", StandardCharsets.UTF_16);
+					assertThat(partReader).hasFieldOrPropertyWithValue("maxInMemorySize",
+							Math.toIntExact(DataSize.ofGigabytes(1).toBytes()));
+				});
+	}
+
+	private DefaultPartHttpMessageReader getDefaultPartReader(DefaultServerCodecConfigurer codecConfigurer) {
 		return codecConfigurer.getReaders().stream().filter(DefaultPartHttpMessageReader.class::isInstance)
 				.map(DefaultPartHttpMessageReader.class::cast).findFirst()
 				.orElseThrow(() -> new IllegalStateException("Could not find DefaultPartHttpMessageReader"));
+	}
+
+	private PartEventHttpMessageReader getPartEventReader(DefaultServerCodecConfigurer codecConfigurer) {
+		return codecConfigurer.getReaders().stream().filter(PartEventHttpMessageReader.class::isInstance)
+				.map(PartEventHttpMessageReader.class::cast).findFirst()
+				.orElseThrow(() -> new IllegalStateException("Could not find PartEventHttpMessageReader"));
 	}
 
 }

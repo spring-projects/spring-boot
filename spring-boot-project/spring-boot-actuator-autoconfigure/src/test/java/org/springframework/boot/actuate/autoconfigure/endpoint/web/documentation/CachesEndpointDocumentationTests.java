@@ -38,7 +38,7 @@ import org.springframework.restdocs.request.ParameterDescriptor;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,7 +55,7 @@ class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 			fieldWithPath("cacheManager").description("Cache manager name."),
 			fieldWithPath("target").description("Fully qualified name of the native cache."));
 
-	private static final List<ParameterDescriptor> requestParameters = Collections
+	private static final List<ParameterDescriptor> queryParameters = Collections
 			.singletonList(parameterWithName("cacheManager").description(
 					"Name of the cacheManager to qualify the cache. May be omitted if the cache name is unique.")
 					.optional());
@@ -74,7 +74,7 @@ class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	@Test
 	void namedCache() throws Exception {
 		this.mockMvc.perform(get("/actuator/caches/cities")).andExpect(status().isOk()).andDo(MockMvcRestDocumentation
-				.document("caches/named", requestParameters(requestParameters), responseFields(levelFields)));
+				.document("caches/named", queryParameters(queryParameters), responseFields(levelFields)));
 	}
 
 	@Test
@@ -87,7 +87,7 @@ class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	void evictNamedCache() throws Exception {
 		this.mockMvc.perform(delete("/actuator/caches/countries?cacheManager=anotherCacheManager"))
 				.andExpect(status().isNoContent())
-				.andDo(MockMvcRestDocumentation.document("caches/evict-named", requestParameters(requestParameters)));
+				.andDo(MockMvcRestDocumentation.document("caches/evict-named", queryParameters(queryParameters)));
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -16,14 +16,13 @@
 
 package org.springframework.boot.docs.io.restclient.resttemplate.customization
 
-import org.apache.http.HttpException
-import org.apache.http.HttpHost
-import org.apache.http.HttpRequest
-import org.apache.http.client.HttpClient
-import org.apache.http.conn.routing.HttpRoutePlanner
-import org.apache.http.impl.client.HttpClientBuilder
-import org.apache.http.impl.conn.DefaultProxyRoutePlanner
-import org.apache.http.protocol.HttpContext
+import org.apache.hc.client5.http.classic.HttpClient
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder
+import org.apache.hc.client5.http.impl.routing.DefaultProxyRoutePlanner
+import org.apache.hc.client5.http.routing.HttpRoutePlanner
+import org.apache.hc.core5.http.HttpException
+import org.apache.hc.core5.http.HttpHost
+import org.apache.hc.core5.http.protocol.HttpContext
 import org.springframework.boot.web.client.RestTemplateCustomizer
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory
 import org.springframework.web.client.RestTemplate
@@ -39,11 +38,11 @@ class MyRestTemplateCustomizer : RestTemplateCustomizer {
 	internal class CustomRoutePlanner(proxy: HttpHost?) : DefaultProxyRoutePlanner(proxy) {
 
 		@Throws(HttpException::class)
-		public override fun determineProxy(target: HttpHost, request: HttpRequest, context: HttpContext): HttpHost? {
+		public override fun determineProxy(target: HttpHost, context: HttpContext): HttpHost? {
 			if (target.hostName == "192.168.0.5") {
 				return null
 			}
-			return  super.determineProxy(target, request, context)
+			return  super.determineProxy(target, context)
 		}
 
 	}

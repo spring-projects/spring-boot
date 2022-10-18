@@ -44,6 +44,10 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
 public class MailHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<MailHealthIndicator, JavaMailSenderImpl> {
 
+	public MailHealthContributorAutoConfiguration() {
+		super(MailHealthIndicator::new);
+	}
+
 	@Bean
 	@ConditionalOnMissingBean(name = { "mailHealthIndicator", "mailHealthContributor" })
 	public HealthContributor mailHealthContributor(Map<String, JavaMailSenderImpl> mailSenders) {

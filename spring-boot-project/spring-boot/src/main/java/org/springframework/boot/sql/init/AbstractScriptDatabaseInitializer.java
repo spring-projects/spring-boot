@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -142,12 +143,16 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 	}
 
 	private void runScripts(List<Resource> resources) {
-		runScripts(resources, this.settings.isContinueOnError(), this.settings.getSeparator(),
-				this.settings.getEncoding());
+		runScripts(new Scripts(resources).continueOnError(this.settings.isContinueOnError())
+				.separator(this.settings.getSeparator()).encoding(this.settings.getEncoding()));
 	}
 
-	protected abstract void runScripts(List<Resource> resources, boolean continueOnError, String separator,
-			Charset encoding);
+	/**
+	 * Initialize the database by running the given {@code scripts}.
+	 * @param scripts the scripts to run
+	 * @since 3.0.0
+	 */
+	protected abstract void runScripts(Scripts scripts);
 
 	private static class ScriptLocationResolver {
 
@@ -169,6 +174,59 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 				}
 			});
 			return resources;
+		}
+
+	}
+
+	/**
+	 * Scripts to be used to initialize the database.
+	 *
+	 * @since 3.0.0
+	 */
+	public static class Scripts implements Iterable<Resource> {
+
+		private final List<Resource> resources;
+
+		private boolean continueOnError = false;
+
+		private String separator = ";";
+
+		private Charset encoding;
+
+		public Scripts(List<Resource> resources) {
+			this.resources = resources;
+		}
+
+		@Override
+		public Iterator<Resource> iterator() {
+			return this.resources.iterator();
+		}
+
+		public Scripts continueOnError(boolean continueOnError) {
+			this.continueOnError = continueOnError;
+			return this;
+		}
+
+		public boolean isContinueOnError() {
+			return this.continueOnError;
+		}
+
+		public Scripts separator(String separator) {
+			this.separator = separator;
+			return this;
+		}
+
+		public String getSeparator() {
+			return this.separator;
+		}
+
+		public Scripts encoding(Charset encoding) {
+			this.encoding = encoding;
+			return this;
+		}
+
+		public Charset getEncoding() {
+			return this.encoding;
 		}
 
 	}

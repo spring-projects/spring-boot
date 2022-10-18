@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.devtools.tests;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.util.FileSystemUtils;
@@ -45,8 +44,7 @@ abstract class AbstractApplicationLauncher implements ApplicationLauncher {
 	}
 
 	protected final List<String> getDependencyJarPaths() {
-		return Stream.of(this.directories.getDependenciesDirectory().listFiles()).map(File::getAbsolutePath)
-				.collect(Collectors.toList());
+		return Stream.of(this.directories.getDependenciesDirectory().listFiles()).map(File::getAbsolutePath).toList();
 	}
 
 	protected final Directories getDirectories() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  */
 
 package org.springframework.boot.jdbc.init;
-
-import java.nio.charset.Charset;
-import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -76,14 +73,14 @@ public class DataSourceScriptDatabaseInitializer extends AbstractScriptDatabaseI
 	}
 
 	@Override
-	protected void runScripts(List<Resource> resources, boolean continueOnError, String separator, Charset encoding) {
+	protected void runScripts(Scripts scripts) {
 		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-		populator.setContinueOnError(continueOnError);
-		populator.setSeparator(separator);
-		if (encoding != null) {
-			populator.setSqlScriptEncoding(encoding.name());
+		populator.setContinueOnError(scripts.isContinueOnError());
+		populator.setSeparator(scripts.getSeparator());
+		if (scripts.getEncoding() != null) {
+			populator.setSqlScriptEncoding(scripts.getEncoding().name());
 		}
-		for (Resource resource : resources) {
+		for (Resource resource : scripts) {
 			populator.addScript(resource);
 		}
 		customize(populator);

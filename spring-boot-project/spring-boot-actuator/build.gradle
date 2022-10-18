@@ -86,6 +86,7 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("com.jayway.jsonpath:json-path")
+	testImplementation("io.micrometer:micrometer-observation-test")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("io.r2dbc:r2dbc-h2")
 	testImplementation("org.apache.logging.log4j:log4j-to-slf4j")

@@ -44,7 +44,7 @@ class MongoDataConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	MongoManagedTypes mongoManagedTypes(ApplicationContext applicationContext) throws ClassNotFoundException {
+	static MongoManagedTypes mongoManagedTypes(ApplicationContext applicationContext) throws ClassNotFoundException {
 		return MongoManagedTypes.fromIterable(new EntityScanner(applicationContext).scan(Document.class));
 	}
 

@@ -17,9 +17,11 @@
 package org.springframework.boot.devtools.tests;
 
 import java.io.File;
+import java.util.concurrent.TimeUnit;
 
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
+import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.util.TimeValue;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -37,9 +39,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class DevToolsIntegrationTests extends AbstractDevToolsIntegrationTests {
 
-	private final TestRestTemplate template = new TestRestTemplate(
-			new RestTemplateBuilder().requestFactory(() -> new HttpComponentsClientHttpRequestFactory(
-					HttpClients.custom().setRetryHandler(new StandardHttpRequestRetryHandler(10, false)).build())));
+	private final TestRestTemplate template = new TestRestTemplate(new RestTemplateBuilder()
+			.requestFactory(() -> new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
+					.setRetryStrategy(new DefaultHttpRequestRetryStrategy(10, TimeValue.of(1, TimeUnit.SECONDS)))
+					.build())));
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("parameters")

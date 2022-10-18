@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.http;
 
-import java.util.stream.Collectors;
-
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.factory.ObjectProvider;
@@ -73,7 +71,7 @@ public class HttpMessageConvertersAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public HttpMessageConverters messageConverters(ObjectProvider<HttpMessageConverter<?>> converters) {
-		return new HttpMessageConverters(converters.orderedStream().collect(Collectors.toList()));
+		return new HttpMessageConverters(converters.orderedStream().toList());
 	}
 
 	@Configuration(proxyBeanMethods = false)

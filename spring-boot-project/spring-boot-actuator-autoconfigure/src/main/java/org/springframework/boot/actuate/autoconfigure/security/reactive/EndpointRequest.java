@@ -246,8 +246,11 @@ public final class EndpointRequest {
 		}
 
 		private List<ServerWebExchangeMatcher> getDelegateMatchers(Set<String> paths) {
-			return paths.stream().map((path) -> new PathPatternParserServerWebExchangeMatcher(path + "/**"))
-					.collect(Collectors.toList());
+			return paths.stream().map(this::getDelegateMatcher).collect(Collectors.toCollection(ArrayList::new));
+		}
+
+		private PathPatternParserServerWebExchangeMatcher getDelegateMatcher(String path) {
+			return new PathPatternParserServerWebExchangeMatcher(path + "/**");
 		}
 
 		@Override

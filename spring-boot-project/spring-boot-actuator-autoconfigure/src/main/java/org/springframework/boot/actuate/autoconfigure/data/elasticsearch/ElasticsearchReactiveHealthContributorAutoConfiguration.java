@@ -48,6 +48,10 @@ import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchCl
 public class ElasticsearchReactiveHealthContributorAutoConfiguration extends
 		CompositeReactiveHealthContributorConfiguration<ElasticsearchReactiveHealthIndicator, ReactiveElasticsearchClient> {
 
+	public ElasticsearchReactiveHealthContributorAutoConfiguration() {
+		super(ElasticsearchReactiveHealthIndicator::new);
+	}
+
 	@Bean
 	@ConditionalOnMissingBean(name = { "elasticsearchHealthIndicator", "elasticsearchHealthContributor" })
 	public ReactiveHealthContributor elasticsearchHealthContributor(Map<String, ReactiveElasticsearchClient> clients) {

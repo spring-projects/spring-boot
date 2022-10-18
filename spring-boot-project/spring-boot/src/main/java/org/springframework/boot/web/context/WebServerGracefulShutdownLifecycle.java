@@ -31,7 +31,7 @@ public final class WebServerGracefulShutdownLifecycle implements SmartLifecycle 
 	 * {@link SmartLifecycle#getPhase() SmartLifecycle phase} in which graceful shutdown
 	 * of the web server is performed.
 	 */
-	public static final int SMART_LIFECYCLE_PHASE = SmartLifecycle.DEFAULT_PHASE;
+	public static final int SMART_LIFECYCLE_PHASE = SmartLifecycle.DEFAULT_PHASE - 1024;
 
 	private final WebServer webServer;
 

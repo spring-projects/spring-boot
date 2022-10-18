@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
 
@@ -68,7 +69,7 @@ abstract class HttpSender extends Sender {
 	@Override
 	public CheckResult check() {
 		try {
-			sendSpans(List.of()).execute();
+			sendSpans(Collections.emptyList()).execute();
 			return CheckResult.OK;
 		}
 		catch (IOException | RuntimeException ex) {

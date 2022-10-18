@@ -92,9 +92,9 @@ class ClassLoaderFilesResourcePatternResolverTests {
 
 	@Test
 	void getResourcesShouldReturnResources(@TempDir File directory) throws Exception {
-		createFile(directory, "name.class");
+		File file = createFile(directory, "name.class");
 		Resource[] resources = this.resolver.getResources("file:" + directory.getAbsolutePath() + "/**");
-		assertThat(resources).isNotEmpty();
+		assertThat(resources).extracting(Resource::getFile).containsExactly(file);
 	}
 
 	@Test

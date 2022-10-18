@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,18 +17,18 @@
 package org.springframework.boot.logging.logback;
 
 import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.action.NOPAction;
 import ch.qos.logback.core.joran.spi.ElementSelector;
 import ch.qos.logback.core.joran.spi.RuleStore;
+import ch.qos.logback.core.model.processor.DefaultProcessor;
 
 import org.springframework.boot.logging.LoggingInitializationContext;
-import org.springframework.core.env.Environment;
 
 /**
  * Extended version of the Logback {@link JoranConfigurator} that adds additional Spring
  * Boot rules.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class SpringBootJoranConfigurator extends JoranConfigurator {
 
@@ -39,12 +39,22 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 	}
 
 	@Override
-	public void addInstanceRules(RuleStore rs) {
-		super.addInstanceRules(rs);
-		Environment environment = this.initializationContext.getEnvironment();
-		rs.addRule(new ElementSelector("configuration/springProperty"), new SpringPropertyAction(environment));
-		rs.addRule(new ElementSelector("*/springProfile"), new SpringProfileAction(environment));
-		rs.addRule(new ElementSelector("*/springProfile/*"), new NOPAction());
+	protected void addModelHandlerAssociations(DefaultProcessor defaultProcessor) {
+		super.addModelHandlerAssociations(defaultProcessor);
+		defaultProcessor.addHandler(SpringPropertyModel.class,
+				(handlerContext, handlerMic) -> new SpringPropertyModelHandler(this.context,
+						this.initializationContext.getEnvironment()));
+		defaultProcessor.addHandler(SpringProfileModel.class,
+				(handlerContext, handlerMic) -> new SpringProfileModelHandler(this.context,
+						this.initializationContext.getEnvironment()));
+	}
+
+	@Override
+	public void addElementSelectorAndActionAssociations(RuleStore ruleStore) {
+		super.addElementSelectorAndActionAssociations(ruleStore);
+		ruleStore.addRule(new ElementSelector("configuration/springProperty"), SpringPropertyAction::new);
+		ruleStore.addRule(new ElementSelector("*/springProfile"), SpringProfileAction::new);
+		ruleStore.addTransparentPathPart("springProfile");
 	}
 
 }

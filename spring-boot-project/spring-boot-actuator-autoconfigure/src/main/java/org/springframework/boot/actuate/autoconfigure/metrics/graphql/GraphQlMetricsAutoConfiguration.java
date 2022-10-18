@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.graphql;
 
-import java.util.stream.Collectors;
-
 import graphql.GraphQL;
 import io.micrometer.core.instrument.MeterRegistry;
 
@@ -25,6 +23,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
+import org.springframework.boot.actuate.autoconfigure.metrics.PropertiesAutoTimer;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.metrics.graphql.DefaultGraphQlTagsProvider;
 import org.springframework.boot.actuate.metrics.graphql.GraphQlMetricsInstrumentation;
@@ -56,13 +55,14 @@ public class GraphQlMetricsAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(GraphQlTagsProvider.class)
 	public DefaultGraphQlTagsProvider graphQlTagsProvider(ObjectProvider<GraphQlTagsContributor> contributors) {
-		return new DefaultGraphQlTagsProvider(contributors.orderedStream().collect(Collectors.toList()));
+		return new DefaultGraphQlTagsProvider(contributors.orderedStream().toList());
 	}
 
 	@Bean
 	public GraphQlMetricsInstrumentation graphQlMetricsInstrumentation(MeterRegistry meterRegistry,
 			GraphQlTagsProvider tagsProvider, MetricsProperties properties) {
-		return new GraphQlMetricsInstrumentation(meterRegistry, tagsProvider, properties.getGraphql().getAutotime());
+		return new GraphQlMetricsInstrumentation(meterRegistry, tagsProvider,
+				new PropertiesAutoTimer(properties.getGraphql().getAutotime()));
 	}
 
 }

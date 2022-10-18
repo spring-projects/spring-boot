@@ -36,6 +36,7 @@ dependencies {
 	implementation("org.hamcrest:hamcrest-library")
 	implementation("org.springframework:spring-core")
 	implementation("org.springframework:spring-test")
+	implementation("org.springframework:spring-core-test")
 
 	testImplementation("jakarta.servlet:jakarta.servlet-api")
 	testImplementation("org.junit.jupiter:junit-jupiter")

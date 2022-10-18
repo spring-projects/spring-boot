@@ -22,6 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Conditional;
 
 /**
@@ -35,7 +36,7 @@ import org.springframework.context.annotation.Conditional;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
-@Conditional(OnTracingEnabledCondition.class)
+@ConditionalOnProperty(prefix = "management.tracing", name = "enabled", matchIfMissing = true)
 public @interface ConditionalOnEnabledTracing {
 
 }

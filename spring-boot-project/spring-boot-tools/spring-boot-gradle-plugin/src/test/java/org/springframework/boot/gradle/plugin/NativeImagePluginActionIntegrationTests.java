@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Scott Frederick
  */
-@GradleCompatibility(configurationCache = true)
+@GradleCompatibility(configurationCache = false)
 class NativeImagePluginActionIntegrationTests {
 
 	GradleBuild gradleBuild;
@@ -55,7 +55,7 @@ class NativeImagePluginActionIntegrationTests {
 
 	@TestTemplate
 	void reachabilityMetadataConfigurationFilesAreCopiedToJar() throws IOException {
-		writeDummyAotProcessorMainClass();
+		writeDummySpringApplicationAotProcessorMainClass();
 		BuildResult result = this.gradleBuild.build("bootJar");
 		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
@@ -71,7 +71,7 @@ class NativeImagePluginActionIntegrationTests {
 
 	@TestTemplate
 	void reachabilityMetadataConfigurationFilesFromFileRepositoryAreCopiedToJar() throws IOException {
-		writeDummyAotProcessorMainClass();
+		writeDummySpringApplicationAotProcessorMainClass();
 		FileSystemUtils.copyRecursively(new File("src/test/resources/reachability-metadata-repository"),
 				new File(this.gradleBuild.getProjectDir(), "reachability-metadata-repository"));
 		BuildResult result = this.gradleBuild.build("bootJar");
@@ -87,16 +87,16 @@ class NativeImagePluginActionIntegrationTests {
 				"META-INF/native-image/org.jline/jline/3.21.0/resource-config.json");
 	}
 
-	private void writeDummyAotProcessorMainClass() {
+	private void writeDummySpringApplicationAotProcessorMainClass() {
 		File examplePackage = new File(this.gradleBuild.getProjectDir(), "src/main/java/org/springframework/boot");
 		examplePackage.mkdirs();
-		File main = new File(examplePackage, "AotProcessor.java");
+		File main = new File(examplePackage, "SpringApplicationAotProcessor.java");
 		try (PrintWriter writer = new PrintWriter(new FileWriter(main))) {
 			writer.println("package org.springframework.boot;");
 			writer.println();
 			writer.println("import java.io.IOException;");
 			writer.println();
-			writer.println("public class AotProcessor {");
+			writer.println("public class SpringApplicationAotProcessor {");
 			writer.println();
 			writer.println("    public static void main(String[] args) {");
 			writer.println("    }");

@@ -19,7 +19,6 @@ package org.springframework.boot.configurationprocessor;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -69,8 +68,7 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 				if (defaultValue.size() == 1) {
 					return coerceValue(specificType, defaultValue.get(0));
 				}
-				return defaultValue.stream().map((value) -> coerceValue(specificType, value))
-						.collect(Collectors.toList());
+				return defaultValue.stream().map((value) -> coerceValue(specificType, value)).toList();
 			}
 			catch (IllegalArgumentException ex) {
 				environment.getMessager().printMessage(Kind.ERROR, ex.getMessage(), element, annotation);

@@ -21,18 +21,8 @@ import java.util.Collection;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.core.annotation.MergedAnnotation;
-import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * Spring Bean and Jackson {@link Module} to find and
@@ -40,62 +30,35 @@ import org.springframework.util.StringUtils;
  * {@link JsonMixin @JsonMixin}-annotated classes.
  *
  * @author Guirong Hu
+ * @author Stephane Nicoll
  * @since 2.7.0
  * @see JsonMixin
  */
-public class JsonMixinModule extends SimpleModule implements InitializingBean {
+public class JsonMixinModule extends SimpleModule {
 
-	private final ApplicationContext context;
-
-	private final Collection<String> basePackages;
+	public JsonMixinModule() {
+	}
 
 	/**
 	 * Create a new {@link JsonMixinModule} instance.
 	 * @param context the source application context
 	 * @param basePackages the packages to check for annotated classes
+	 * @deprecated since 3.0.0 in favor of
+	 * {@link #registerEntries(JsonMixinModuleEntries, ClassLoader)}
 	 */
+	@Deprecated(since = "3.0.0", forRemoval = true)
 	public JsonMixinModule(ApplicationContext context, Collection<String> basePackages) {
 		Assert.notNull(context, "Context must not be null");
-		this.context = context;
-		this.basePackages = basePackages;
+		registerEntries(JsonMixinModuleEntries.scan(context, basePackages), context.getClassLoader());
 	}
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		if (ObjectUtils.isEmpty(this.basePackages)) {
-			return;
-		}
-		JsonMixinComponentScanner scanner = new JsonMixinComponentScanner();
-		scanner.setEnvironment(this.context.getEnvironment());
-		scanner.setResourceLoader(this.context);
-		for (String basePackage : this.basePackages) {
-			if (StringUtils.hasText(basePackage)) {
-				for (BeanDefinition candidate : scanner.findCandidateComponents(basePackage)) {
-					addJsonMixin(ClassUtils.forName(candidate.getBeanClassName(), this.context.getClassLoader()));
-				}
-			}
-		}
-	}
-
-	private void addJsonMixin(Class<?> mixinClass) {
-		MergedAnnotation<JsonMixin> annotation = MergedAnnotations
-				.from(mixinClass, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY).get(JsonMixin.class);
-		for (Class<?> targetType : annotation.getClassArray("type")) {
-			setMixInAnnotation(targetType, mixinClass);
-		}
-	}
-
-	static class JsonMixinComponentScanner extends ClassPathScanningCandidateComponentProvider {
-
-		JsonMixinComponentScanner() {
-			addIncludeFilter(new AnnotationTypeFilter(JsonMixin.class));
-		}
-
-		@Override
-		protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
-			return true;
-		}
-
+	/**
+	 * Register the specified {@link JsonMixinModuleEntries entries}.
+	 * @param entries the entries to register to this instance
+	 * @param classLoader the classloader to use
+	 */
+	public void registerEntries(JsonMixinModuleEntries entries, ClassLoader classLoader) {
+		entries.doWithEntry(classLoader, this::setMixInAnnotation);
 	}
 
 }

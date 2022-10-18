@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,10 @@ import javax.tools.ToolProvider;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @since 1.5.0
+ * @deprecated since 3.0.0 in favor of
+ * {@link org.springframework.core.test.tools.TestCompiler}
  */
+@Deprecated(since = "3.0.0", forRemoval = true)
 public class TestCompiler {
 
 	/**

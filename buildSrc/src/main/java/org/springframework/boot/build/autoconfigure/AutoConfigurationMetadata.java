@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
@@ -124,8 +123,7 @@ public class AutoConfigurationMetadata extends DefaultTask {
 			return Collections.emptyList();
 		}
 		try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-			return reader.lines().map(this::stripComment).filter((line) -> !line.isEmpty())
-					.collect(Collectors.toList());
+			return reader.lines().map(this::stripComment).filter((line) -> !line.isEmpty()).toList();
 		}
 	}
 

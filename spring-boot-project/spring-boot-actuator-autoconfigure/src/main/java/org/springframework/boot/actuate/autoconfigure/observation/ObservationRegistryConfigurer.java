@@ -68,8 +68,8 @@ class ObservationRegistryConfigurer {
 	}
 
 	private void registerHandlers(ObservationRegistry registry) {
-		this.observationHandlerGrouping.getObject().apply(asOrderedList(this.observationHandlers),
-				registry.observationConfig());
+		this.observationHandlerGrouping.ifAvailable(
+				(grouping) -> grouping.apply(asOrderedList(this.observationHandlers), registry.observationConfig()));
 	}
 
 	private void registerObservationPredicates(ObservationRegistry registry) {

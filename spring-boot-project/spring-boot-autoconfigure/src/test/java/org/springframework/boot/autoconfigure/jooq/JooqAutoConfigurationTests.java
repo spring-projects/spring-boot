@@ -24,14 +24,8 @@ import org.jooq.ConverterProvider;
 import org.jooq.DSLContext;
 import org.jooq.ExecuteListener;
 import org.jooq.ExecuteListenerProvider;
-import org.jooq.ExecutorProvider;
-import org.jooq.RecordListenerProvider;
-import org.jooq.RecordMapperProvider;
-import org.jooq.RecordUnmapperProvider;
 import org.jooq.SQLDialect;
-import org.jooq.TransactionListenerProvider;
 import org.jooq.TransactionalRunnable;
-import org.jooq.VisitListenerProvider;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultExecuteListenerProvider;
 import org.junit.jupiter.api.Test;
@@ -150,33 +144,6 @@ class JooqAutoConfigurationTests {
 					DSLContext dsl = context.getBean(DSLContext.class);
 					assertThat(dsl.configuration().converterProvider()).isSameAs(converterProvider);
 					assertThat(dsl.configuration().charsetProvider()).isSameAs(charsetProvider);
-				});
-	}
-
-	@Test
-	@Deprecated
-	void customProvidersArePickedUp() {
-		RecordMapperProvider recordMapperProvider = mock(RecordMapperProvider.class);
-		RecordUnmapperProvider recordUnmapperProvider = mock(RecordUnmapperProvider.class);
-		RecordListenerProvider recordListenerProvider = mock(RecordListenerProvider.class);
-		VisitListenerProvider visitListenerProvider = mock(VisitListenerProvider.class);
-		TransactionListenerProvider transactionListenerProvider = mock(TransactionListenerProvider.class);
-		ExecutorProvider executorProvider = mock(ExecutorProvider.class);
-		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class, TxManagerConfiguration.class)
-				.withBean(RecordMapperProvider.class, () -> recordMapperProvider)
-				.withBean(RecordUnmapperProvider.class, () -> recordUnmapperProvider)
-				.withBean(RecordListenerProvider.class, () -> recordListenerProvider)
-				.withBean(VisitListenerProvider.class, () -> visitListenerProvider)
-				.withBean(TransactionListenerProvider.class, () -> transactionListenerProvider)
-				.withBean(ExecutorProvider.class, () -> executorProvider).run((context) -> {
-					DSLContext dsl = context.getBean(DSLContext.class);
-					assertThat(dsl.configuration().recordMapperProvider()).isSameAs(recordMapperProvider);
-					assertThat(dsl.configuration().recordUnmapperProvider()).isSameAs(recordUnmapperProvider);
-					assertThat(dsl.configuration().executorProvider()).isSameAs(executorProvider);
-					assertThat(dsl.configuration().recordListenerProviders()).containsExactly(recordListenerProvider);
-					assertThat(dsl.configuration().visitListenerProviders()).containsExactly(visitListenerProvider);
-					assertThat(dsl.configuration().transactionListenerProviders())
-							.containsExactly(transactionListenerProvider);
 				});
 	}
 

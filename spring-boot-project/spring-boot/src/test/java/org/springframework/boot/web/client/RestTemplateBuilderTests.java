@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import okhttp3.OkHttpClient;
-import org.apache.http.client.config.RequestConfig;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,6 +62,7 @@ import org.springframework.web.util.UriTemplateHandler;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
@@ -81,6 +81,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Dmytro Nosan
  * @author Kevin Strijbos
  * @author Ilya Lukyanovich
+ * @author Brian Clozel
  */
 @ExtendWith(MockitoExtension.class)
 class RestTemplateBuilderTests {
@@ -477,17 +478,14 @@ class RestTemplateBuilderTests {
 		ClientHttpRequestFactory requestFactory = this.builder
 				.requestFactory(HttpComponentsClientHttpRequestFactory.class).setConnectTimeout(Duration.ofMillis(1234))
 				.build().getRequestFactory();
-		assertThat(((RequestConfig) ReflectionTestUtils.getField(requestFactory, "requestConfig")).getConnectTimeout())
-				.isEqualTo(1234);
+		assertThat(((int) ReflectionTestUtils.getField(requestFactory, "connectTimeout"))).isEqualTo(1234);
 	}
 
 	@Test
-	void readTimeoutCanBeConfiguredOnHttpComponentsRequestFactory() {
-		ClientHttpRequestFactory requestFactory = this.builder
-				.requestFactory(HttpComponentsClientHttpRequestFactory.class).setReadTimeout(Duration.ofMillis(1234))
-				.build().getRequestFactory();
-		assertThat(((RequestConfig) ReflectionTestUtils.getField(requestFactory, "requestConfig")).getSocketTimeout())
-				.isEqualTo(1234);
+	void readTimeoutConfigurationFailsOnHttpComponentsRequestFactory() {
+		assertThatThrownBy(() -> this.builder.requestFactory(HttpComponentsClientHttpRequestFactory.class)
+				.setReadTimeout(Duration.ofMillis(1234)).build()).isInstanceOf(IllegalStateException.class)
+						.hasMessageContaining("setReadTimeout method marked as deprecated");
 	}
 
 	@Test

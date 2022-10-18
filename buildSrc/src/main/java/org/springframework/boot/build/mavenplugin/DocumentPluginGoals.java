@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
@@ -98,10 +97,8 @@ public class DocumentPluginGoals extends DefaultTask {
 			writer.printf("`%s:%s:%s`%n", plugin.getGroupId(), plugin.getArtifactId(), plugin.getVersion());
 			writer.println();
 			writer.println(mojo.getDescription());
-			List<Parameter> parameters = mojo.getParameters().stream().filter(Parameter::isEditable)
-					.collect(Collectors.toList());
-			List<Parameter> requiredParameters = parameters.stream().filter(Parameter::isRequired)
-					.collect(Collectors.toList());
+			List<Parameter> parameters = mojo.getParameters().stream().filter(Parameter::isEditable).toList();
+			List<Parameter> requiredParameters = parameters.stream().filter(Parameter::isRequired).toList();
 			String parametersSectionId = sectionId + "-parameters";
 			String detailsSectionId = parametersSectionId + "-details";
 			if (!requiredParameters.isEmpty()) {
@@ -112,7 +109,7 @@ public class DocumentPluginGoals extends DefaultTask {
 				writeParametersTable(writer, detailsSectionId, requiredParameters);
 			}
 			List<Parameter> optionalParameters = parameters.stream().filter((parameter) -> !parameter.isRequired())
-					.collect(Collectors.toList());
+					.toList();
 			if (!optionalParameters.isEmpty()) {
 				writer.println();
 				writer.println();

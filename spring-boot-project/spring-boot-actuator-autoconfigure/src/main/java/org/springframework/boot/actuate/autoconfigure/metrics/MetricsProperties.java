@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
@@ -148,20 +149,13 @@ public class MetricsProperties {
 				 */
 				private String metricName = "http.client.requests";
 
-				/**
-				 * Auto-timed request settings.
-				 */
-				@NestedConfigurationProperty
-				private final AutoTimeProperties autotime = new AutoTimeProperties();
-
-				public AutoTimeProperties getAutotime() {
-					return this.autotime;
-				}
-
+				@Deprecated(since = "3.0.0", forRemoval = true)
+				@DeprecatedConfigurationProperty(replacement = "management.observations.http.client.requests.name")
 				public String getMetricName() {
 					return this.metricName;
 				}
 
+				@Deprecated(since = "3.0.0", forRemoval = true)
 				public void setMetricName(String metricName) {
 					this.metricName = metricName;
 				}

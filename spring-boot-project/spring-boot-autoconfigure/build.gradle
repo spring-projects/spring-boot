@@ -115,6 +115,17 @@ dependencies {
 	optional("org.hibernate.orm:hibernate-core")
 	optional("org.hibernate.orm:hibernate-jcache")
 	optional("org.hibernate.validator:hibernate-validator")
+	optional("org.infinispan:infinispan-commons-jakarta")
+	optional("org.infinispan:infinispan-component-annotations")
+	optional("org.infinispan:infinispan-core-jakarta")
+	optional("org.infinispan:infinispan-jcache") {
+		exclude group: "org.infinispan", module: "infinispan-commons"
+		exclude group: "org.infinispan", module: "infinispan-core"
+	}
+	optional("org.infinispan:infinispan-spring5-embedded") {
+		exclude group: "org.infinispan", module: "infinispan-commons"
+		exclude group: "org.infinispan", module: "infinispan-core"
+	}
 	optional("org.influxdb:influxdb-java")
 	optional("org.jooq:jooq") {
 		exclude group: "javax.xml.bind", module: "jaxb-api"
@@ -193,7 +204,6 @@ dependencies {
 	}
 	optional("org.thymeleaf:thymeleaf")
 	optional("org.thymeleaf:thymeleaf-spring6")
-	optional("org.thymeleaf.extras:thymeleaf-extras-java8time")
 	optional("org.thymeleaf.extras:thymeleaf-extras-springsecurity6")
 	optional("redis.clients:jedis")
 

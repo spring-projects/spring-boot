@@ -24,7 +24,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -137,7 +136,7 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 		return Arrays.stream(beanNames)
 				.map((beanName) -> new UserConfigurationResult(getFactoryMethodMetadata(beanName),
 						this.beanFactory.getBean(beanName).equals(null)))
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	private MethodMetadata getFactoryMethodMetadata(String beanName) {

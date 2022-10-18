@@ -103,7 +103,7 @@ public class ExplodedArchive implements Archive {
 	}
 
 	@Override
-	@Deprecated
+	@Deprecated(since = "2.3.10", forRemoval = false)
 	public Iterator<Entry> iterator() {
 		return new EntryIterator(this.root, this.recursive, null, null);
 	}
@@ -322,7 +322,7 @@ public class ExplodedArchive implements Archive {
 		}
 
 		@Override
-		@Deprecated
+		@Deprecated(since = "2.3.10", forRemoval = false)
 		public Iterator<Entry> iterator() {
 			return Collections.emptyIterator();
 		}

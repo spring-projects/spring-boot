@@ -54,7 +54,9 @@ import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.jackson.JsonComponent;
+import org.springframework.boot.jackson.JsonMixin;
 import org.springframework.boot.jackson.JsonMixinModule;
+import org.springframework.boot.jackson.JsonMixinModuleEntries;
 import org.springframework.boot.jackson.JsonObjectSerializer;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -65,6 +67,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -96,10 +99,10 @@ class JacksonAutoConfigurationTests {
 	@Test
 	void jsonMixinModuleShouldBeAutoConfiguredWithBasePackages() {
 		this.contextRunner.withUserConfiguration(MixinConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(JsonMixinModule.class);
-			JsonMixinModule module = context.getBean(JsonMixinModule.class);
-			assertThat(module).extracting("basePackages", InstanceOfAssertFactories.list(String.class))
-					.containsExactly(MixinConfiguration.class.getPackage().getName());
+			assertThat(context).hasSingleBean(JsonMixinModule.class).hasSingleBean(JsonMixinModuleEntries.class);
+			JsonMixinModuleEntries moduleEntries = context.getBean(JsonMixinModuleEntries.class);
+			assertThat(moduleEntries).extracting("entries", InstanceOfAssertFactories.MAP)
+					.contains(entry(Person.class, EmptyMixin.class));
 		});
 	}
 
@@ -641,6 +644,11 @@ class JacksonAutoConfigurationTests {
 		void setBirthDate(Date birthDate) {
 			this.birthDate = birthDate;
 		}
+
+	}
+
+	@JsonMixin(type = Person.class)
+	static class EmptyMixin {
 
 	}
 

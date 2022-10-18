@@ -147,12 +147,12 @@ class NettyWebServerFactoryCustomizerTests {
 		assertThat(decoder.maxInitialLineLength()).isEqualTo(nettyProperties.getMaxInitialLineLength().toBytes());
 	}
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings("removal")
 	private void setMaxChunkSize(ServerProperties.Netty nettyProperties) {
 		nettyProperties.setMaxChunkSize(DataSize.ofKilobytes(16));
 	}
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation", "removal" })
 	private void assertMaxChunkSize(ServerProperties.Netty nettyProperties, HttpRequestDecoderSpec decoder) {
 		assertThat(decoder.maxChunkSize()).isEqualTo(nettyProperties.getMaxChunkSize().toBytes());
 	}

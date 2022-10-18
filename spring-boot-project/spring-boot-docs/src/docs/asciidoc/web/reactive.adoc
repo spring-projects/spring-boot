@@ -123,6 +123,23 @@ For machine clients, it produces a JSON response with details of the error, the 
 For browser clients, there is a "`whitelabel`" error handler that renders the same data in HTML format.
 You can also provide your own HTML templates to display errors (see the <<web#web.reactive.webflux.error-handling.error-pages,next section>>).
 
+Before customizing error handling in Spring Boot directly, you can leverage the {spring-framework-docs}/web-reactive.html#webflux-ann-rest-exceptions[RFC 7807 Problem Details] support in Spring WebFlux.
+Spring WebFlux can produce custom error messages with the `application/problem+json` media type, like:
+
+[source,json,indent=0,subs="verbatim"]
+----
+{
+  "type": "https://example.org/problems/unknown-project",
+  "title": "Unknown project",
+  "status": 404,
+  "detail": "No project found for id 'spring-unknown'",
+  "instance": "/projects/spring-unknown"
+}
+----
+
+This support can be enabled by setting configprop:spring.webflux.problemdetails.enabled[] to `true`.
+
+
 The first step to customizing this feature often involves using the existing mechanism but replacing or augmenting the error contents.
 For that, you can add a bean of type `ErrorAttributes`.
 

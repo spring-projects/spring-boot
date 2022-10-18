@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
@@ -31,8 +30,11 @@ import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFile;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.options.Option;
 import org.gradle.work.DisableCachingByDefault;
@@ -123,7 +125,8 @@ public class BootBuildImage extends DefaultTask {
 	 * Returns the property for the archive file from which the image will be built.
 	 * @return the archive file property
 	 */
-	@Input
+	@InputFile
+	@PathSensitive(PathSensitivity.RELATIVE)
 	public RegularFileProperty getArchiveFile() {
 		return this.archiveFile;
 	}
@@ -576,7 +579,7 @@ public class BootBuildImage extends DefaultTask {
 	private BuildRequest customizeBuildpacks(BuildRequest request) {
 		List<String> buildpacks = this.buildpacks.getOrNull();
 		if (buildpacks != null && !buildpacks.isEmpty()) {
-			return request.withBuildpacks(buildpacks.stream().map(BuildpackReference::of).collect(Collectors.toList()));
+			return request.withBuildpacks(buildpacks.stream().map(BuildpackReference::of).toList());
 		}
 		return request;
 	}
@@ -584,7 +587,7 @@ public class BootBuildImage extends DefaultTask {
 	private BuildRequest customizeBindings(BuildRequest request) {
 		List<String> bindings = this.bindings.getOrNull();
 		if (bindings != null && !bindings.isEmpty()) {
-			return request.withBindings(bindings.stream().map(Binding::of).collect(Collectors.toList()));
+			return request.withBindings(bindings.stream().map(Binding::of).toList());
 		}
 		return request;
 	}
@@ -592,7 +595,7 @@ public class BootBuildImage extends DefaultTask {
 	private BuildRequest customizeTags(BuildRequest request) {
 		List<String> tags = this.tags.getOrNull();
 		if (tags != null && !tags.isEmpty()) {
-			return request.withTags(tags.stream().map(ImageReference::of).collect(Collectors.toList()));
+			return request.withTags(tags.stream().map(ImageReference::of).toList());
 		}
 		return request;
 	}

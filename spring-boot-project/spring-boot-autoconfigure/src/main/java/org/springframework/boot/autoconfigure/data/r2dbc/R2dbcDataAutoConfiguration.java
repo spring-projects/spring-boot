@@ -39,6 +39,7 @@ import org.springframework.data.r2dbc.dialect.DialectResolver;
 import org.springframework.data.r2dbc.dialect.R2dbcDialect;
 import org.springframework.data.r2dbc.mapping.R2dbcMappingContext;
 import org.springframework.data.relational.RelationalManagedTypes;
+import org.springframework.data.relational.core.mapping.DefaultNamingStrategy;
 import org.springframework.data.relational.core.mapping.NamingStrategy;
 import org.springframework.data.relational.core.mapping.Table;
 import org.springframework.r2dbc.core.DatabaseClient;
@@ -72,7 +73,8 @@ public class R2dbcDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	RelationalManagedTypes r2dbcManagedTypes(ApplicationContext applicationContext) throws ClassNotFoundException {
+	static RelationalManagedTypes r2dbcManagedTypes(ApplicationContext applicationContext)
+			throws ClassNotFoundException {
 		return RelationalManagedTypes.fromIterable(new EntityScanner(applicationContext).scan(Table.class));
 	}
 
@@ -81,7 +83,7 @@ public class R2dbcDataAutoConfiguration {
 	public R2dbcMappingContext r2dbcMappingContext(ObjectProvider<NamingStrategy> namingStrategy,
 			R2dbcCustomConversions r2dbcCustomConversions, RelationalManagedTypes r2dbcManagedTypes) {
 		R2dbcMappingContext relationalMappingContext = new R2dbcMappingContext(
-				namingStrategy.getIfAvailable(() -> NamingStrategy.INSTANCE));
+				namingStrategy.getIfAvailable(() -> DefaultNamingStrategy.INSTANCE));
 		relationalMappingContext.setSimpleTypeHolder(r2dbcCustomConversions.getSimpleTypeHolder());
 		relationalMappingContext.setManagedTypes(r2dbcManagedTypes);
 		return relationalMappingContext;

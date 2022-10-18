@@ -38,7 +38,7 @@ public class ProcessAot extends AbstractAot {
 
 	public ProcessAot() {
 		this.applicationClass = getProject().getObjects().property(String.class);
-		getMainClass().set("org.springframework.boot.AotProcessor");
+		getMainClass().set("org.springframework.boot.SpringApplicationAotProcessor");
 	}
 
 	@Input

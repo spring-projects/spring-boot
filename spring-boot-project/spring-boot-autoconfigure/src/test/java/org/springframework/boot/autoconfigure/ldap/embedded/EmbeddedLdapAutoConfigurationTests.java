@@ -178,6 +178,15 @@ class EmbeddedLdapAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void ldapContextIsCreatedWithBase() {
+		this.contextRunner.withPropertyValues("spring.ldap.embedded.base-dn:dc=spring,dc=org",
+				"spring.ldap.base:dc=spring,dc=org").run((context) -> {
+					LdapContextSource ldapContextSource = context.getBean(LdapContextSource.class);
+					assertThat(ldapContextSource.getBaseLdapPathAsString()).isEqualTo("dc=spring,dc=org");
+				});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class LdapClientConfiguration {
 

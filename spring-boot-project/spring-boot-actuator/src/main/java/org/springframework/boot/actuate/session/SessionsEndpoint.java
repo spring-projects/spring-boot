@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -77,7 +76,7 @@ public class SessionsEndpoint {
 		private final List<SessionDescriptor> sessions;
 
 		public SessionsReport(Map<String, ? extends Session> sessions) {
-			this.sessions = sessions.values().stream().map(SessionDescriptor::new).collect(Collectors.toList());
+			this.sessions = sessions.values().stream().map(SessionDescriptor::new).toList();
 		}
 
 		public List<SessionDescriptor> getSessions() {

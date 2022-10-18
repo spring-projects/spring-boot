@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.flywaydb.core.Flyway;
@@ -117,7 +116,7 @@ public class FlywayEndpoint {
 		private final List<FlywayMigration> migrations;
 
 		private FlywayDescriptor(MigrationInfo[] migrations) {
-			this.migrations = Stream.of(migrations).map(FlywayMigration::new).collect(Collectors.toList());
+			this.migrations = Stream.of(migrations).map(FlywayMigration::new).toList();
 		}
 
 		public FlywayDescriptor(List<FlywayMigration> migrations) {

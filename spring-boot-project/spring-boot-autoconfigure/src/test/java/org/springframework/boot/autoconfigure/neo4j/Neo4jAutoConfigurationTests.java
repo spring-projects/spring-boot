@@ -132,26 +132,6 @@ class Neo4jAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	void determineServerUriWithDeprecatedPropertyShouldOverrideDefault() {
-		URI customUri = URI.create("bolt://localhost:4242");
-		MockEnvironment environment = new MockEnvironment().withProperty("spring.data.neo4j.uri", customUri.toString());
-		assertThat(determineServerUri(new Neo4jProperties(), environment)).isEqualTo(customUri);
-	}
-
-	@Test
-	@Deprecated
-	void determineServerUriWithCustomUriShouldTakePrecedenceOverDeprecatedProperty() {
-		URI customUri = URI.create("bolt://localhost:4242");
-		URI anotherCustomURI = URI.create("bolt://localhost:2424");
-		Neo4jProperties properties = new Neo4jProperties();
-		properties.setUri(customUri);
-		MockEnvironment environment = new MockEnvironment().withProperty("spring.data.neo4j.uri",
-				anotherCustomURI.toString());
-		assertThat(determineServerUri(properties, environment)).isEqualTo(customUri);
-	}
-
-	@Test
 	void authenticationShouldDefaultToNone() {
 		assertThat(mapAuthToken(new Authentication())).isEqualTo(AuthTokens.none());
 	}
@@ -171,25 +151,6 @@ class Neo4jAutoConfigurationTests {
 		authentication.setPassword("Urlaub");
 		authentication.setRealm("Test Realm");
 		assertThat(mapAuthToken(authentication)).isEqualTo(AuthTokens.basic("Farin", "Urlaub", "Test Realm"));
-	}
-
-	@Test
-	@Deprecated
-	void authenticationWithUsernameUsingDeprecatedPropertiesShouldEnableBasicAuth() {
-		MockEnvironment environment = new MockEnvironment().withProperty("spring.data.neo4j.username", "user")
-				.withProperty("spring.data.neo4j.password", "secret");
-		assertThat(mapAuthToken(new Authentication(), environment)).isEqualTo(AuthTokens.basic("user", "secret"));
-	}
-
-	@Test
-	@Deprecated
-	void authenticationWithUsernameShouldTakePrecedenceOverDeprecatedPropertiesAndEnableBasicAuth() {
-		MockEnvironment environment = new MockEnvironment().withProperty("spring.data.neo4j.username", "user")
-				.withProperty("spring.data.neo4j.password", "secret");
-		Authentication authentication = new Authentication();
-		authentication.setUsername("Farin");
-		authentication.setPassword("Urlaub");
-		assertThat(mapAuthToken(authentication, environment)).isEqualTo(AuthTokens.basic("Farin", "Urlaub"));
 	}
 
 	@Test

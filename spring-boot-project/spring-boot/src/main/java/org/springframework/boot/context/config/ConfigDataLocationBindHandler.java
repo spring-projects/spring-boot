@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.config;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -44,7 +45,8 @@ class ConfigDataLocationBindHandler extends AbstractBindHandler {
 			return withOrigin(context, location);
 		}
 		if (result instanceof List) {
-			List<Object> list = ((List<Object>) result).stream().filter(Objects::nonNull).collect(Collectors.toList());
+			List<Object> list = ((List<Object>) result).stream().filter(Objects::nonNull)
+					.collect(Collectors.toCollection(ArrayList::new));
 			for (int i = 0; i < list.size(); i++) {
 				Object element = list.get(i);
 				if (element instanceof ConfigDataLocation location) {

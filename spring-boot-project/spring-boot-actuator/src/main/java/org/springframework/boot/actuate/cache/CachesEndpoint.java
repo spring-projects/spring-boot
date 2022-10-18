@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -110,21 +109,19 @@ public class CachesEndpoint {
 	private List<CacheEntry> getCacheEntries(Predicate<String> cacheNamePredicate,
 			Predicate<String> cacheManagerNamePredicate) {
 		return this.cacheManagers.keySet().stream().filter(cacheManagerNamePredicate)
-				.flatMap((cacheManagerName) -> getCacheEntries(cacheManagerName, cacheNamePredicate).stream())
-				.collect(Collectors.toList());
+				.flatMap((cacheManagerName) -> getCacheEntries(cacheManagerName, cacheNamePredicate).stream()).toList();
 	}
 
 	private List<CacheEntry> getCacheEntries(String cacheManagerName, Predicate<String> cacheNamePredicate) {
 		CacheManager cacheManager = this.cacheManagers.get(cacheManagerName);
 		return cacheManager.getCacheNames().stream().filter(cacheNamePredicate).map(cacheManager::getCache)
-				.filter(Objects::nonNull).map((cache) -> new CacheEntry(cache, cacheManagerName))
-				.collect(Collectors.toList());
+				.filter(Objects::nonNull).map((cache) -> new CacheEntry(cache, cacheManagerName)).toList();
 	}
 
 	private CacheEntry extractUniqueCacheEntry(String cache, List<CacheEntry> entries) {
 		if (entries.size() > 1) {
 			throw new NonUniqueCacheException(cache,
-					entries.stream().map(CacheEntry::getCacheManager).distinct().collect(Collectors.toList()));
+					entries.stream().map(CacheEntry::getCacheManager).distinct().toList());
 		}
 		return (!entries.isEmpty() ? entries.get(0) : null);
 	}

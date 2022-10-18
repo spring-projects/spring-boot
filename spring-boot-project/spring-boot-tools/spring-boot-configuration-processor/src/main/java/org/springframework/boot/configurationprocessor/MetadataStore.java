@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.springframework.boot.configurationprocessor.metadata.JsonMarshaller;
  * A {@code MetadataStore} is responsible for the storage of metadata on the filesystem.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  * @since 1.2.2
  */
 public class MetadataStore {
@@ -76,7 +77,7 @@ public class MetadataStore {
 	}
 
 	private ConfigurationMetadata readMetadata(InputStream in) throws IOException {
-		try {
+		try (in) {
 			return new JsonMarshaller().read(in);
 		}
 		catch (IOException ex) {
@@ -86,9 +87,6 @@ public class MetadataStore {
 			throw new InvalidConfigurationMetadataException(
 					"Invalid additional meta-data in '" + METADATA_PATH + "': " + ex.getMessage(),
 					Diagnostic.Kind.ERROR);
-		}
-		finally {
-			in.close();
 		}
 	}
 
@@ -104,8 +102,26 @@ public class MetadataStore {
 		// Most build systems will have copied the file to the class output location
 		FileObject fileObject = this.environment.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "",
 				ADDITIONAL_METADATA_PATH);
-		File file = locateAdditionalMetadataFile(new File(fileObject.toUri()));
-		return (file.exists() ? new FileInputStream(file) : fileObject.toUri().toURL().openStream());
+		InputStream inputStream = getMetadataStream(fileObject);
+		if (inputStream != null) {
+			return inputStream;
+		}
+		try {
+			File file = locateAdditionalMetadataFile(new File(fileObject.toUri()));
+			return (file.exists() ? new FileInputStream(file) : fileObject.toUri().toURL().openStream());
+		}
+		catch (Exception ex) {
+			throw new FileNotFoundException();
+		}
+	}
+
+	private InputStream getMetadataStream(FileObject fileObject) {
+		try {
+			return fileObject.openInputStream();
+		}
+		catch (IOException ex) {
+			return null;
+		}
 	}
 
 	File locateAdditionalMetadataFile(File standardLocation) throws IOException {

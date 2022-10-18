@@ -70,14 +70,14 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 	public void apply(Project project) {
 		PluginContainer plugins = project.getPlugins();
 		plugins.withType(JavaPlugin.class).all((javaPlugin) -> {
+			JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
+			SourceSetContainer sourceSets = javaPluginExtension.getSourceSets();
+			SourceSet mainSourceSet = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+			SourceSet aotSourceSet = configureSourceSet(project, "aot", mainSourceSet);
+			SourceSet testSourceSet = sourceSets.getByName(SourceSet.TEST_SOURCE_SET_NAME);
+			SourceSet aotTestSourceSet = configureSourceSet(project, "aotTest", testSourceSet);
 			plugins.withType(SpringBootPlugin.class).all((bootPlugin) -> {
-				JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
-				SourceSetContainer sourceSets = javaPluginExtension.getSourceSets();
-				SourceSet mainSourceSet = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-				SourceSet aotSourceSet = configureSourceSet(project, "aot", mainSourceSet);
 				registerProcessAotTask(project, aotSourceSet, mainSourceSet);
-				SourceSet testSourceSet = sourceSets.getByName(SourceSet.TEST_SOURCE_SET_NAME);
-				SourceSet aotTestSourceSet = configureSourceSet(project, "aotTest", testSourceSet);
 				registerProcessTestAotTask(project, aotTestSourceSet, testSourceSet);
 			});
 		});

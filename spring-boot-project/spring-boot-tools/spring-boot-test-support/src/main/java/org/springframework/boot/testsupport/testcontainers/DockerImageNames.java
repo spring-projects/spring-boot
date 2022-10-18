@@ -34,7 +34,7 @@ public final class DockerImageNames {
 
 	private static final String MONGO_VERSION = "4.0.23";
 
-	private static final String NEO4J_VERSION = "4.0";
+	private static final String NEO4J_VERSION = "4.4.11";
 
 	private static final String POSTGRESQL_VERSION = "14.0";
 

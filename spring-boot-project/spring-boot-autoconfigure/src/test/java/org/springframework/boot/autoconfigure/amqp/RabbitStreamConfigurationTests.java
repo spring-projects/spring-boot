@@ -16,6 +16,10 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import java.time.Duration;
+
+import com.rabbitmq.stream.BackOffDelayPolicy;
+import com.rabbitmq.stream.Codec;
 import com.rabbitmq.stream.Environment;
 import com.rabbitmq.stream.EnvironmentBuilder;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -32,6 +36,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
 import org.springframework.rabbit.stream.config.StreamRabbitListenerContainerFactory;
 import org.springframework.rabbit.stream.listener.ConsumerCustomizer;
 import org.springframework.rabbit.stream.listener.StreamListenerContainer;
@@ -78,6 +83,11 @@ class RabbitStreamConfigurationTests {
 						"spring.rabbitmq.listener.stream.native-listener:true")
 				.run((context) -> assertThat(context.getBean(StreamRabbitListenerContainerFactory.class))
 						.extracting("nativeListener", InstanceOfAssertFactories.BOOLEAN).isTrue());
+	}
+
+	@Test
+	void environmentIsAutoConfiguredByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(Environment.class));
 	}
 
 	@Test
@@ -156,13 +166,11 @@ class RabbitStreamConfigurationTests {
 
 	@Test
 	void testDefaultRabbitStreamTemplateConfiguration() {
-		this.contextRunner
-				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
-					assertThat(context.getBean(RabbitStreamTemplate.class)).hasFieldOrPropertyWithValue("streamName",
-							"stream-test");
-				});
+		this.contextRunner.withPropertyValues("spring.rabbitmq.stream.name:stream-test").run((context) -> {
+			assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
+			assertThat(context.getBean(RabbitStreamTemplate.class)).hasFieldOrPropertyWithValue("streamName",
+					"stream-test");
+		});
 	}
 
 	@Test
@@ -174,8 +182,7 @@ class RabbitStreamConfigurationTests {
 	@Test
 	void testRabbitStreamTemplateConfigurationWithCustomMessageConverter() {
 		this.contextRunner.withUserConfiguration(MessageConvertersConfiguration.class)
-				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
-				.run((context) -> {
+				.withPropertyValues("spring.rabbitmq.stream.name:stream-test").run((context) -> {
 					assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
 					RabbitStreamTemplate streamTemplate = context.getBean(RabbitStreamTemplate.class);
 					assertThat(streamTemplate).hasFieldOrPropertyWithValue("streamName", "stream-test");
@@ -189,8 +196,7 @@ class RabbitStreamConfigurationTests {
 		this.contextRunner
 				.withBean("myStreamMessageConverter", StreamMessageConverter.class,
 						() -> mock(StreamMessageConverter.class))
-				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
-				.run((context) -> {
+				.withPropertyValues("spring.rabbitmq.stream.name:stream-test").run((context) -> {
 					assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
 					assertThat(context.getBean(RabbitStreamTemplate.class)).extracting("messageConverter")
 							.isSameAs(context.getBean("myStreamMessageConverter"));
@@ -201,12 +207,22 @@ class RabbitStreamConfigurationTests {
 	void testRabbitStreamTemplateConfigurationWithCustomProducerCustomizer() {
 		this.contextRunner
 				.withBean("myProducerCustomizer", ProducerCustomizer.class, () -> mock(ProducerCustomizer.class))
-				.withPropertyValues("spring.rabbitmq.listener.type:stream", "spring.rabbitmq.stream.name:stream-test")
-				.run((context) -> {
+				.withPropertyValues("spring.rabbitmq.stream.name:stream-test").run((context) -> {
 					assertThat(context).hasSingleBean(RabbitStreamTemplate.class);
 					assertThat(context.getBean(RabbitStreamTemplate.class)).extracting("producerCustomizer")
 							.isSameAs(context.getBean("myProducerCustomizer"));
 				});
+	}
+
+	@Test
+	void environmentCreatedByBuilderCanBeCustomized() {
+		this.contextRunner.withUserConfiguration(EnvironmentBuilderCustomizers.class).run((context) -> {
+			Environment environment = context.getBean(Environment.class);
+			assertThat(environment).extracting("codec")
+					.isEqualTo(context.getBean(EnvironmentBuilderCustomizers.class).codec);
+			assertThat(environment).extracting("recoveryBackOffDelayPolicy")
+					.isEqualTo(context.getBean(EnvironmentBuilderCustomizers.class).recoveryBackOffDelayPolicy);
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -268,6 +284,28 @@ class RabbitStreamConfigurationTests {
 		@Bean
 		MessageConverter anotherMessageConverter() {
 			return mock(MessageConverter.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class EnvironmentBuilderCustomizers {
+
+		private final Codec codec = mock(Codec.class);
+
+		private final BackOffDelayPolicy recoveryBackOffDelayPolicy = BackOffDelayPolicy.fixed(Duration.ofSeconds(5));
+
+		@Bean
+		@Order(1)
+		EnvironmentBuilderCustomizer customizerA() {
+			return (builder) -> builder.codec(this.codec);
+		}
+
+		@Bean
+		@Order(0)
+		EnvironmentBuilderCustomizer customizerB() {
+			return (builder) -> builder.codec(mock(Codec.class))
+					.recoveryBackOffDelayPolicy(this.recoveryBackOffDelayPolicy);
 		}
 
 	}

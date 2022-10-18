@@ -49,6 +49,7 @@ public class ConnectionFactoryHealthContributorAutoConfiguration
 	private final Map<String, ConnectionFactory> connectionFactory;
 
 	ConnectionFactoryHealthContributorAutoConfiguration(Map<String, ConnectionFactory> connectionFactory) {
+		super(ConnectionFactoryHealthIndicator::new);
 		this.connectionFactory = connectionFactory;
 	}
 

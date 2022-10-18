@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,10 @@ import java.security.PrivateKey;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.buildpack.platform.docker.ssl.PrivateKeyParser.DerEncoder;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -35,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * Tests for {@link PrivateKeyParser}.
  *
  * @author Scott Frederick
+ * @author Phillip Webb
  */
 class PrivateKeyParserTests {
 
@@ -60,8 +64,18 @@ class PrivateKeyParserTests {
 	}
 
 	@Test
-	void parsePkcs1KeyFile() throws IOException {
-		Path path = this.fileWriter.writeFile("key.pem", PemFileWriter.PRIVATE_KEY);
+	void parsePkcs1RsaKeyFile() throws IOException {
+		Path path = this.fileWriter.writeFile("key.pem", PemFileWriter.PRIVATE_RSA_KEY);
+		PrivateKey privateKey = PrivateKeyParser.parse(path);
+		assertThat(privateKey).isNotNull();
+		// keys in PKCS#1 format are converted to PKCS#8 for parsing
+		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
+		Files.delete(path);
+	}
+
+	@Test
+	void parsePkcs1EcKeyFile() throws IOException {
+		Path path = this.fileWriter.writeFile("key.pem", PemFileWriter.PRIVATE_EC_KEY);
 		PrivateKey privateKey = PrivateKeyParser.parse(path);
 		assertThat(privateKey).isNotNull();
 		// keys in PKCS#1 format are converted to PKCS#8 for parsing
@@ -82,6 +96,32 @@ class PrivateKeyParserTests {
 		Path path = Paths.get(new URI("file:///bad/path/key.pem"));
 		assertThatIllegalStateException().isThrownBy(() -> PrivateKeyParser.parse(path))
 				.withMessageContaining(path.toString());
+	}
+
+	@Nested
+	class DerEncoderTests {
+
+		@Test
+		void codeLengthBytesShort() throws Exception {
+			DerEncoder encoder = new DerEncoder();
+			encoder.codeLengthBytes(0, new byte[127]);
+			assertThat(encoder.toByteArray()).startsWith(0x0, 0x7F);
+		}
+
+		@Test
+		void codeLengthBytesMedium() throws Exception {
+			DerEncoder encoder = new DerEncoder();
+			encoder.codeLengthBytes(0, new byte[130]);
+			assertThat(encoder.toByteArray()).startsWith(0x0, 0x81, 0x82);
+		}
+
+		@Test
+		void codeLengthBytesLong() throws Exception {
+			DerEncoder encoder = new DerEncoder();
+			encoder.codeLengthBytes(0, new byte[258]);
+			assertThat(encoder.toByteArray()).startsWith(0x0, 0x82, 0x01, 0x02);
+		}
+
 	}
 
 }

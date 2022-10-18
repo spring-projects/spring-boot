@@ -47,6 +47,10 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 public class RedisHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<RedisHealthIndicator, RedisConnectionFactory> {
 
+	RedisHealthContributorAutoConfiguration() {
+		super(RedisHealthIndicator::new);
+	}
+
 	@Bean
 	@ConditionalOnMissingBean(name = { "redisHealthIndicator", "redisHealthContributor" })
 	public HealthContributor redisHealthContributor(Map<String, RedisConnectionFactory> redisConnectionFactories) {

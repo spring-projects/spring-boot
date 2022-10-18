@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.condition.DisabledOnOs;
@@ -85,7 +84,7 @@ class EmbeddedServletContainerWarDevelopmentIntegrationTests {
 			return Collections.emptyList();
 		}
 		try (BufferedReader reader = new BufferedReader(new StringReader(input))) {
-			return reader.lines().collect(Collectors.toList());
+			return reader.lines().toList();
 		}
 		catch (IOException ex) {
 			throw new RuntimeException("Failed to read lines from input '" + input + "'");

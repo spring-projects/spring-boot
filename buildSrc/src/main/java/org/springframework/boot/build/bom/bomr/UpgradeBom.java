@@ -30,7 +30,6 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -163,7 +162,7 @@ public class UpgradeBom extends DefaultTask {
 		}
 		Predicate<String> libraryPredicate = Pattern.compile(pattern).asPredicate();
 		List<Library> matchingLibraries = this.bom.getLibraries().stream()
-				.filter((library) -> libraryPredicate.test(library.getName())).collect(Collectors.toList());
+				.filter((library) -> libraryPredicate.test(library.getName())).toList();
 		if (matchingLibraries.isEmpty()) {
 			throw new InvalidUserDataException("No libraries matched '" + pattern + "'");
 		}

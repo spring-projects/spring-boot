@@ -269,9 +269,7 @@ public class BomPlugin implements Plugin<Project> {
 
 		@SuppressWarnings("unchecked")
 		private List<Node> findChildren(Node parent, String name) {
-			return (List<Node>) parent.children().stream().filter((child) -> isNodeWithName(child, name))
-					.collect(Collectors.toList());
-
+			return parent.children().stream().filter((child) -> isNodeWithName(child, name)).toList();
 		}
 
 		private boolean isNodeWithName(Object candidate, String name) {

@@ -446,8 +446,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 			processedConfigurations.removeAll(allExclusions);
 
 			return sortAutoConfigurations(processedConfigurations, getAutoConfigurationMetadata()).stream()
-					.map((importClassName) -> new Entry(this.entries.get(importClassName), importClassName))
-					.collect(Collectors.toList());
+					.map((importClassName) -> new Entry(this.entries.get(importClassName), importClassName)).toList();
 		}
 
 		private AutoConfigurationMetadata getAutoConfigurationMetadata() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Metadata generation tests for types defined by {@code @Bean} methods.
  *
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
@@ -65,7 +66,7 @@ class MethodBasedMetadataGenerationTests extends AbstractMetadataGenerationTests
 	@Test
 	void privateMethodConfig() {
 		ConfigurationMetadata metadata = compile(PrivateMethodConfig.class);
-		assertThat(metadata).doesNotHave(Metadata.withGroup("foo"));
+		assertThat(metadata).isNull();
 	}
 
 	@Test

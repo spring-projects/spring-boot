@@ -1905,16 +1905,28 @@
     {
       "name": "management.metrics.web.client.request.autotime.enabled",
       "description": "Whether to automatically time web client requests.",
-      "defaultValue": true
+      "defaultValue": true,
+      "deprecation": {
+        "level": "error",
+        "reason": "Should be applied at the ObservationRegistry level."
+      }
     },
     {
       "name": "management.metrics.web.client.request.autotime.percentiles",
-      "description": "Computed non-aggregable percentiles to publish."
+      "description": "Computed non-aggregable percentiles to publish.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Should be applied at the ObservationRegistry level."
+      }
     },
     {
       "name": "management.metrics.web.client.request.autotime.percentiles-histogram",
       "description": "Whether percentile histograms should be published.",
-      "defaultValue": false
+      "defaultValue": false,
+      "deprecation": {
+        "level": "error",
+        "reason": "Should be applied at the ObservationRegistry level."
+      }
     },
     {
       "name": "management.metrics.web.client.requests-metric-name",
@@ -2086,6 +2098,10 @@
         "replacement": "management.trace.http.include",
         "level": "error"
       }
+    },
+    {
+      "name": "management.tracing.propagation.type",
+      "defaultValue": "W3C"
     }
   ],
   "hints": [

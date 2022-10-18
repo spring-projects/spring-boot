@@ -35,6 +35,15 @@ class PrivateKeyParserTests {
 		PrivateKey privateKey = PrivateKeyParser.parse("classpath:test-key.pem");
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
+		assertThat(privateKey.getAlgorithm()).isEqualTo("RSA");
+	}
+
+	@Test
+	void parsePkcs8KeyFileWithEcdsa() {
+		PrivateKey privateKey = PrivateKeyParser.parse("classpath:test-ec-key.pem");
+		assertThat(privateKey).isNotNull();
+		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
+		assertThat(privateKey.getAlgorithm()).isEqualTo("EC");
 	}
 
 	@Test

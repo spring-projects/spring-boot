@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,8 +59,8 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 public abstract class AbstractEndpointDocumentationTests {
 
 	protected static String describeEnumValues(Class<? extends Enum<?>> enumType) {
-		return StringUtils.collectionToDelimitedString(Stream.of(enumType.getEnumConstants())
-				.map((constant) -> "`" + constant.name() + "`").collect(Collectors.toList()), ", ");
+		return StringUtils.collectionToDelimitedString(
+				Stream.of(enumType.getEnumConstants()).map((constant) -> "`" + constant.name() + "`").toList(), ", ");
 	}
 
 	protected OperationPreprocessor limit(String... keys) {
@@ -112,8 +111,7 @@ public abstract class AbstractEndpointDocumentationTests {
 
 	@SuppressWarnings("unchecked")
 	private <T> List<Object> select(List<Object> candidates, Predicate<T> filter) {
-		return candidates.stream().filter((candidate) -> filter.test((T) candidate)).limit(3)
-				.collect(Collectors.toList());
+		return candidates.stream().filter((candidate) -> filter.test((T) candidate)).limit(3).toList();
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -1,7 +1,7 @@
 [[features.logging]]
 == Logging
 Spring Boot uses https://commons.apache.org/logging[Commons Logging] for all internal logging but leaves the underlying log implementation open.
-Default configurations are provided for {java-api}/java/util/logging/package-summary.html[Java Util Logging], https://logging.apache.org/log4j/2.x/[Log4J2], and https://logback.qos.ch/[Logback].
+Default configurations are provided for {java-api}/java/util/logging/package-summary.html[Java Util Logging], https://logging.apache.org/log4j/2.x/[Log4j2], and https://logback.qos.ch/[Logback].
 In each case, loggers are pre-configured to use console output with optional file output also available.
 
 By default, if you use the "`Starters`", Logback is used for logging.
@@ -158,7 +158,7 @@ As a result, specific configuration keys (such as `logback.configurationFile` fo
 [[features.logging.file-rotation]]
 === File Rotation
 If you are using the Logback, it is possible to fine-tune log rotation settings using your `application.properties` or `application.yaml` file.
-For all other logging system, you will need to configure rotation settings directly yourself (for example, if you use Log4J2 then you could add a `log4j2.xml` or `log4j2-spring.xml` file).
+For all other logging system, you will need to configure rotation settings directly yourself (for example, if you use Log4j2 then you could add a `log4j2.xml` or `log4j2-spring.xml` file).
 
 The following rotation policy properties are supported:
 
@@ -433,7 +433,7 @@ Profile sections are supported anywhere within the `<configuration>` element.
 Use the `name` attribute to specify which profile accepts the configuration.
 The `<springProfile>` tag can contain a profile name (for example `staging`) or a profile expression.
 A profile expression allows for more complicated profile logic to be expressed, for example `production & (eu-central | eu-west)`.
-Check the {spring-framework-docs}/core.html#beans-definition-profiles-java[reference guide] for more details.
+Check the {spring-framework-docs}/core.html#beans-definition-profiles-java[Spring Framework reference guide] for more details.
 The following listing shows three sample profiles:
 
 [source,xml,subs="verbatim",indent=0]
@@ -475,3 +475,76 @@ The following example shows how to expose properties for use within Logback:
 
 NOTE: The `source` must be specified in kebab case (such as `my.property-name`).
 However, properties can be added to the `Environment` by using the relaxed rules.
+
+
+
+[[features.logging.log4j2-extensions]]
+=== Log4j2 Extensions
+Spring Boot includes a number of extensions to Log4j2 that can help with advanced configuration.
+You can use these extensions in any `log4j2-spring.xml` configuration file.
+
+NOTE: Because the standard `log4j2.xml` configuration file is loaded too early, you cannot use extensions in it.
+You need to either use `log4j2-spring.xml` or define a configprop:logging.config[] property.
+
+NOTE: The extensions supersede the https://logging.apache.org/log4j/2.x/log4j-spring-boot/index.html[Spring Boot support] provided by Log4J.
+You should make sure not include the `org.apache.logging.log4j:log4j-spring-boot` module in your build.
+
+
+
+[[features.logging.log4j2-extensions.profile-specific]]
+==== Profile-specific Configuration
+The `<SpringProfile>` tag lets you optionally include or exclude sections of configuration based on the active Spring profiles.
+Profile sections are supported anywhere within the `<Configuration>` element.
+Use the `name` attribute to specify which profile accepts the configuration.
+The `<SpringProfile>` tag can contain a profile name (for example `staging`) or a profile expression.
+A profile expression allows for more complicated profile logic to be expressed, for example `production & (eu-central | eu-west)`.
+Check the {spring-framework-docs}/core.html#beans-definition-profiles-java[Spring Framework reference guide] for more details.
+The following listing shows three sample profiles:
+
+[source,xml,subs="verbatim",indent=0]
+----
+	<SpringProfile name="staging">
+		<!-- configuration to be enabled when the "staging" profile is active -->
+	</SpringProfile>
+
+	<SpringProfile name="dev | staging">
+		<!-- configuration to be enabled when the "dev" or "staging" profiles are active -->
+	</SpringProfile>
+
+	<SpringProfile name="!production">
+		<!-- configuration to be enabled when the "production" profile is not active -->
+	</SpringProfile>
+----
+
+
+
+[[features.logging.log4j2-extensions.environment-properties-lookup]]
+==== Environment Properties Lookup
+If you want to refer to properties from your Spring `Environment` within your Log4j2 configuration you can use `spring:` prefixed https://logging.apache.org/log4j/2.x/manual/lookups.html[lookups].
+Doing so can be useful if you want to access values from your `application.properties` file in your Log4j2 configuration.
+
+The following example shows how to set a Log4j2 property named `applicationName` that reads `spring.application.name` from the Spring `Environment`:
+
+[source,xml,subs="verbatim",indent=0]
+----
+	<Properties>
+		<Property name="applicationName">${spring:spring.application.name}</property>
+	</Properties>
+----
+
+NOTE: The lookup key should be specified in kebab case (such as `my.property-name`).
+
+
+
+[[features.logging.log4j2-extensions.environment-peroperty-source]]
+==== Log4j2 System Properties
+Log4j2 supports a number of https://logging.apache.org/log4j/2.x/manual/configuration.html#SystemProperties[System Properties] that can be used configure various items.
+For example, the `log4j2.skipJansi` system property can be used to configure if the `ConsoleAppender` will try to use a https://github.com/fusesource/jansi[Jansi] output stream on Windows.
+
+All system properties that are loaded after the Log4J initialization can be obtained from the Spring `Environment`.
+For example, you could add `log4j2.skipJansi=false` to your `application.properties` file to have the `ConsoleAppender` use a Jansi on Windows.
+
+NOTE: The Spring `Environment` is only considered when system properties and OS environment variables do not contain the value being loaded.
+
+WARNING: System properties that are loaded during early Log4j2 initialization cannot reference the Spring `Environment`.
+For example, the property Log4j2 uses to allow the default Log4j2 implementation to be chosen is used before the Spring Environment is available.

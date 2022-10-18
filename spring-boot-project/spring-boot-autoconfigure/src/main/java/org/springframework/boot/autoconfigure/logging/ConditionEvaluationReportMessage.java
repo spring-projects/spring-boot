@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport.ConditionAndOutcome;
@@ -72,7 +71,7 @@ public class ConditionEvaluationReportMessage {
 		message.append(String.format("Positive matches:%n"));
 		message.append(String.format("-----------------%n"));
 		List<Entry<String, ConditionAndOutcomes>> matched = shortOutcomes.entrySet().stream()
-				.filter((entry) -> entry.getValue().isFullMatch()).collect(Collectors.toList());
+				.filter((entry) -> entry.getValue().isFullMatch()).toList();
 		if (matched.isEmpty()) {
 			message.append(String.format("%n    None%n"));
 		}
@@ -86,7 +85,7 @@ public class ConditionEvaluationReportMessage {
 		message.append(String.format("Negative matches:%n"));
 		message.append(String.format("-----------------%n"));
 		List<Entry<String, ConditionAndOutcomes>> nonMatched = shortOutcomes.entrySet().stream()
-				.filter((entry) -> !entry.getValue().isFullMatch()).collect(Collectors.toList());
+				.filter((entry) -> !entry.getValue().isFullMatch()).toList();
 		if (nonMatched.isEmpty()) {
 			message.append(String.format("%n    None%n"));
 		}

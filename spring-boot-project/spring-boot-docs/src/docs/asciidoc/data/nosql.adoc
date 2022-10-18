@@ -259,7 +259,7 @@ You can further tune how `Sniffer` is configured, as shown in the following exam
 
 
 [[data.nosql.elasticsearch.connecting-using-rest.javaapiclient]]
-===== Connecting to Elastixsearch using ElasticsearchClient
+===== Connecting to Elasticsearch using ElasticsearchClient
 If you have `co.elastic.clients:elasticsearch-java` on the classpath, Spring Boot will auto-configure and register an `ElasticsearchClient` bean.
 
 The `ElasticsearchClient` uses a transport that depends upon the previously described `RestClient`.

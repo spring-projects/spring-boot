@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.web.mappings.servlet;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import jakarta.servlet.Filter;
 import jakarta.servlet.ServletContext;
@@ -46,7 +45,7 @@ public class FiltersMappingDescriptionProvider implements MappingDescriptionProv
 	public List<FilterRegistrationMappingDescription> describeMappings(ApplicationContext context) {
 		if (context instanceof WebApplicationContext webApplicationContext) {
 			return webApplicationContext.getServletContext().getFilterRegistrations().values().stream()
-					.map(FilterRegistrationMappingDescription::new).collect(Collectors.toList());
+					.map(FilterRegistrationMappingDescription::new).toList();
 		}
 		return Collections.emptyList();
 	}

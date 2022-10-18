@@ -65,7 +65,7 @@ class ContainerConfigTests extends AbstractJsonTests {
 		});
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		containerConfig.writeTo(outputStream);
-		String actualJson = new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
+		String actualJson = outputStream.toString(StandardCharsets.UTF_8);
 		String expectedJson = StreamUtils.copyToString(getContent("container-config.json"), StandardCharsets.UTF_8);
 		JSONAssert.assertEquals(expectedJson, actualJson, true);
 	}

@@ -16,23 +16,30 @@
 
 package org.springframework.boot.actuate.autoconfigure.observation;
 
+import java.util.List;
+
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
 import io.micrometer.core.instrument.observation.MeterObservationHandler;
 import io.micrometer.observation.GlobalObservationConvention;
+import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.tracing.Tracer;
+import io.micrometer.tracing.handler.TracingAwareMeterObservationHandler;
 import io.micrometer.tracing.handler.TracingObservationHandler;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -40,10 +47,13 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for the Micrometer Observation API.
  *
  * @author Moritz Halbritter
+ * @author Brian Clozel
+ * @author Jonatan Ivanov
  * @since 3.0.0
  */
-@AutoConfiguration(after = CompositeMeterRegistryAutoConfiguration.class)
+@AutoConfiguration(after = { CompositeMeterRegistryAutoConfiguration.class, MicrometerTracingAutoConfiguration.class })
 @ConditionalOnClass(ObservationRegistry.class)
+@EnableConfigurationProperties(ObservationProperties.class)
 public class ObservationAutoConfiguration {
 
 	@Bean
@@ -64,35 +74,68 @@ public class ObservationAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(MeterRegistry.class)
-	static class MetricsConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean(MeterObservationHandler.class)
-		DefaultMeterObservationHandler defaultMeterObservationHandler(MeterRegistry meterRegistry) {
-			return new DefaultMeterObservationHandler(meterRegistry);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingClass("io.micrometer.tracing.handler.TracingObservationHandler")
+	@ConditionalOnClass(MeterRegistry.class)
+	@ConditionalOnMissingClass("io.micrometer.tracing.Tracer")
 	static class OnlyMetricsConfiguration {
 
 		@Bean
-		OnlyMetricsObservationHandlerGrouping onlyMetricsObservationHandlerGrouping() {
-			return new OnlyMetricsObservationHandlerGrouping();
+		ObservationHandlerGrouping metricsObservationHandlerGrouping() {
+			return new ObservationHandlerGrouping(MeterObservationHandler.class);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(TracingObservationHandler.class)
-	static class TracingConfiguration {
+	@ConditionalOnClass(Tracer.class)
+	@ConditionalOnMissingClass("io.micrometer.core.instrument.MeterRegistry")
+	static class OnlyTracingConfiguration {
 
 		@Bean
-		TracingObservationHandlerGrouping tracingObservationHandlerGrouping() {
-			return new TracingObservationHandlerGrouping();
+		ObservationHandlerGrouping tracingObservationHandlerGrouping() {
+			return new ObservationHandlerGrouping(TracingObservationHandler.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ MeterRegistry.class, Tracer.class })
+	static class MetricsWithTracingConfiguration {
+
+		@Bean
+		ObservationHandlerGrouping metricsAndTracingObservationHandlerGrouping() {
+			return new ObservationHandlerGrouping(
+					List.of(TracingObservationHandler.class, MeterObservationHandler.class));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(MeterRegistry.class)
+	@ConditionalOnMissingBean(MeterObservationHandler.class)
+	static class MeterObservationHandlerConfiguration {
+
+		@ConditionalOnMissingBean(type = "io.micrometer.tracing.Tracer")
+		@Configuration(proxyBeanMethods = false)
+		static class OnlyMetricsMeterObservationHandlerConfiguration {
+
+			@Bean
+			DefaultMeterObservationHandler defaultMeterObservationHandler(MeterRegistry meterRegistry) {
+				return new DefaultMeterObservationHandler(meterRegistry);
+			}
+
+		}
+
+		@ConditionalOnBean(Tracer.class)
+		@Configuration(proxyBeanMethods = false)
+		static class TracingAndMetricsObservationHandlerConfiguration {
+
+			@Bean
+			TracingAwareMeterObservationHandler<Observation.Context> tracingAwareMeterObservationHandler(
+					MeterRegistry meterRegistry, Tracer tracer) {
+				return new TracingAwareMeterObservationHandler<>(new DefaultMeterObservationHandler(meterRegistry),
+						tracer);
+			}
+
 		}
 
 	}

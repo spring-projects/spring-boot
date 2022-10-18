@@ -8,6 +8,7 @@
 	</module>
 	<module name="io.spring.javaformat.checkstyle.SpringChecks" />
 	<module name="com.puppycrawl.tools.checkstyle.TreeWalker">
+		<module name="io.spring.javaformat.checkstyle.check.SpringDeprecatedCheck" />
 		<module name="io.spring.javaformat.checkstyle.check.SpringJUnit5Check" />
 		<module
 			name="com.puppycrawl.tools.checkstyle.checks.imports.IllegalImportCheck">
@@ -51,6 +52,13 @@
 			<property name="format" value="org\.mockito\.(Mockito|BDDMockito)\.(when|doThrow|doAnswer|doReturn|verify|verifyNoInteractions|verifyNoMoreInteractions)" />
 			<property name="message"
 				value="Please use BDD-style (given, when, then) using BDDMockito imports." />
+			<property name="ignoreComments" value="true" />
+		</module>
+		<module name="com.puppycrawl.tools.checkstyle.checks.regexp.RegexpSinglelineJavaCheck">
+			<property name="maximum" value="0"/>
+			<property name="format" value="(List|Map|Set)\.of\(\)" />
+			<property name="message"
+					  value="Please use Collections.emptyList()/emptyMap()/emptySet() for creating empty lists/maps/sets." />
 			<property name="ignoreComments" value="true" />
 		</module>
 		<module name="io.spring.javaformat.checkstyle.check.SpringJavadocCheck">

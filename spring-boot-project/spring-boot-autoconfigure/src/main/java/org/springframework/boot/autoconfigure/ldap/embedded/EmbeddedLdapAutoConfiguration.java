@@ -205,6 +205,7 @@ public class EmbeddedLdapAutoConfiguration {
 		LdapContextSource ldapContextSource(Environment environment, LdapProperties properties,
 				EmbeddedLdapProperties embeddedProperties) {
 			LdapContextSource source = new LdapContextSource();
+			source.setBase(properties.getBase());
 			if (embeddedProperties.getCredential().isAvailable()) {
 				source.setUserDn(embeddedProperties.getCredential().getUsername());
 				source.setPassword(embeddedProperties.getCredential().getPassword());

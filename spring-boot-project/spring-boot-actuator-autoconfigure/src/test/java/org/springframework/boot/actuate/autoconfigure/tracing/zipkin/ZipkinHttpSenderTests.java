@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
@@ -53,7 +54,7 @@ abstract class ZipkinHttpSenderTests {
 	@Test
 	void sendSpansShouldThrowIfCloseWasCalled() throws IOException {
 		this.sut.close();
-		assertThatThrownBy(() -> this.sut.sendSpans(List.of())).isInstanceOf(ClosedSenderException.class);
+		assertThatThrownBy(() -> this.sut.sendSpans(Collections.emptyList())).isInstanceOf(ClosedSenderException.class);
 	}
 
 	protected void makeRequest(List<byte[]> encodedSpans, boolean async) throws IOException {

@@ -46,6 +46,10 @@ import org.springframework.context.annotation.Bean;
 public class ElasticsearchRestHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<ElasticsearchRestClientHealthIndicator, RestClient> {
 
+	public ElasticsearchRestHealthContributorAutoConfiguration() {
+		super(ElasticsearchRestClientHealthIndicator::new);
+	}
+
 	@Bean
 	@ConditionalOnMissingBean(name = { "elasticsearchHealthIndicator", "elasticsearchHealthContributor" })
 	public HealthContributor elasticsearchHealthContributor(Map<String, RestClient> clients) {

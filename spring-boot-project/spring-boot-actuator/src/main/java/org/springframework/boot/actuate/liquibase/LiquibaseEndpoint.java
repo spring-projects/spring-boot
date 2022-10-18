@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -87,8 +86,7 @@ public class LiquibaseEndpoint {
 				database.setDatabaseChangeLogLockTableName(liquibase.getDatabaseChangeLogLockTable());
 				StandardChangeLogHistoryService service = new StandardChangeLogHistoryService();
 				service.setDatabase(database);
-				return new LiquibaseBean(
-						service.getRanChangeSets().stream().map(ChangeSet::new).collect(Collectors.toList()));
+				return new LiquibaseBean(service.getRanChangeSets().stream().map(ChangeSet::new).toList());
 			}
 			finally {
 				if (database != null) {

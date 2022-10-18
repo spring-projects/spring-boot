@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Import;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -62,7 +62,7 @@ class PrometheusScrapeEndpointDocumentationTests extends MockMvcEndpointDocument
 				.perform(get("/actuator/prometheus").param("includedNames",
 						"jvm_memory_used_bytes,jvm_memory_committed_bytes"))
 				.andExpect(status().isOk())
-				.andDo(document("prometheus/names", requestParameters(parameterWithName("includedNames")
+				.andDo(document("prometheus/names", queryParameters(parameterWithName("includedNames")
 						.description("Restricts the samples to those that match the names. Optional.").optional())));
 	}
 

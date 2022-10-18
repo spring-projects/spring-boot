@@ -17,7 +17,6 @@
 package org.springframework.boot.diagnostics;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -73,8 +72,8 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 				.filter((analyzer) -> analyzer instanceof BeanFactoryAware || analyzer instanceof EnvironmentAware)
 				.toList();
 		if (!awareAnalyzers.isEmpty()) {
-			String awareAnalyzerNames = StringUtils.collectionToCommaDelimitedString(awareAnalyzers.stream()
-					.map((analyzer) -> analyzer.getClass().getName()).collect(Collectors.toList()));
+			String awareAnalyzerNames = StringUtils.collectionToCommaDelimitedString(
+					awareAnalyzers.stream().map((analyzer) -> analyzer.getClass().getName()).toList());
 			logger.warn(LogMessage.format(
 					"FailureAnalyzers [%s] implement BeanFactoryAware or EnvironmentAware. "
 							+ "Support for these interfaces on FailureAnalyzers is deprecated, "
@@ -83,8 +82,7 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 					awareAnalyzerNames));
 			if (context == null) {
 				logger.trace(LogMessage.format("Skipping [%s] due to missing context", awareAnalyzerNames));
-				return analyzers.stream().filter((analyzer) -> !awareAnalyzers.contains(analyzer))
-						.collect(Collectors.toList());
+				return analyzers.stream().filter((analyzer) -> !awareAnalyzers.contains(analyzer)).toList();
 			}
 			awareAnalyzers.forEach((analyzer) -> {
 				if (analyzer instanceof BeanFactoryAware beanFactoryAware) {

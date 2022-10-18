@@ -47,9 +47,6 @@ dependencies {
 	optional("org.apache.commons:commons-dbcp2") {
 		exclude(group: "commons-logging", module: "commons-logging")
 	}
-	optional("org.apache.httpcomponents:httpclient") {
-		exclude(group: "commons-logging", module: "commons-logging")
-	}
 	optional("org.apache.httpcomponents.client5:httpclient5")
 	optional("org.apache.logging.log4j:log4j-api")
 	optional("org.apache.logging.log4j:log4j-core")
@@ -105,6 +102,7 @@ dependencies {
 	optional("org.jetbrains.kotlin:kotlin-stdlib")
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("org.springframework:spring-core-test")
 	testImplementation("com.ibm.db2:jcc")
 	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("com.microsoft.sqlserver:mssql-jdbc")

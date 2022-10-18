@@ -46,6 +46,10 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 public class MongoHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<MongoHealthIndicator, MongoTemplate> {
 
+	public MongoHealthContributorAutoConfiguration() {
+		super(MongoHealthIndicator::new);
+	}
+
 	@Bean
 	@ConditionalOnMissingBean(name = { "mongoHealthIndicator", "mongoHealthContributor" })
 	public HealthContributor mongoHealthContributor(Map<String, MongoTemplate> mongoTemplates) {

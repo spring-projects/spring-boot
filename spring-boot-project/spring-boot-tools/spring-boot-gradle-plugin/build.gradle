@@ -11,8 +11,11 @@ description = "Spring Boot Gradle Plugins"
 
 configurations {
 	documentation
+	"testCompileClasspath" {
+		// Downgrade SLF4J is required for tests to run in Eclipse
+		resolutionStrategy.force("org.slf4j:slf4j-api:1.7.36")
+	}
 }
-
 dependencies {
 	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-section-ids")
 
@@ -92,6 +95,10 @@ task asciidoctorPdf(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
 	sources {
 		include "index.adoc"
 	}
+}
+
+tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
+	attributes "native-build-tools-version": nativeBuildToolsVersion
 }
 
 javadoc {

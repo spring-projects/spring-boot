@@ -16,17 +16,18 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import java.time.Duration;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.ReactiveMongoOperations;
 import org.springframework.session.ReactiveSessionRepository;
+import org.springframework.session.config.ReactiveSessionRepositoryCustomizer;
 import org.springframework.session.data.mongo.ReactiveMongoSessionRepository;
 import org.springframework.session.data.mongo.config.annotation.web.reactive.ReactiveMongoWebSessionConfiguration;
 
@@ -35,28 +36,26 @@ import org.springframework.session.data.mongo.config.annotation.web.reactive.Rea
  *
  * @author Andy Wilkinson
  * @author Weix Sun
+ * @author Vedran Pavic
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ ReactiveMongoOperations.class, ReactiveMongoSessionRepository.class })
 @ConditionalOnMissingBean(ReactiveSessionRepository.class)
 @ConditionalOnBean(ReactiveMongoOperations.class)
 @EnableConfigurationProperties(MongoSessionProperties.class)
+@Import(ReactiveMongoWebSessionConfiguration.class)
 class MongoReactiveSessionConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
-	static class SpringBootReactiveMongoWebSessionConfiguration extends ReactiveMongoWebSessionConfiguration {
-
-		@Autowired
-		void customize(SessionProperties sessionProperties, MongoSessionProperties mongoSessionProperties,
-				ServerProperties serverProperties) {
-			Duration timeout = sessionProperties
-					.determineTimeout(() -> serverProperties.getReactive().getSession().getTimeout());
-			if (timeout != null) {
-				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
-			}
-			setCollectionName(mongoSessionProperties.getCollectionName());
-		}
-
+	@Bean
+	ReactiveSessionRepositoryCustomizer<ReactiveMongoSessionRepository> springBootSessionRepositoryCustomizer(
+			SessionProperties sessionProperties, MongoSessionProperties mongoSessionProperties,
+			ServerProperties serverProperties) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		return (sessionRepository) -> {
+			map.from(sessionProperties.determineTimeout(() -> serverProperties.getReactive().getSession().getTimeout()))
+					.to(sessionRepository::setDefaultMaxInactiveInterval);
+			map.from(mongoSessionProperties::getCollectionName).to(sessionRepository::setCollectionName);
+		};
 	}
 
 }

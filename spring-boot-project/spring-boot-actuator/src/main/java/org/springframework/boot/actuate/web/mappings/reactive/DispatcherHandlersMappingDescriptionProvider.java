@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import reactor.core.publisher.Mono;
@@ -79,7 +78,7 @@ public class DispatcherHandlersMappingDescriptionProvider implements MappingDesc
 	}
 
 	private List<DispatcherHandlerMappingDescription> describeMappings(DispatcherHandler dispatcherHandler) {
-		return dispatcherHandler.getHandlerMappings().stream().flatMap(this::describe).collect(Collectors.toList());
+		return dispatcherHandler.getHandlerMappings().stream().flatMap(this::describe).toList();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -111,7 +110,7 @@ public class DispatcherHandlersMappingDescriptionProvider implements MappingDesc
 		@Override
 		public List<DispatcherHandlerMappingDescription> describe(RequestMappingInfoHandlerMapping handlerMapping) {
 			Map<RequestMappingInfo, HandlerMethod> handlerMethods = handlerMapping.getHandlerMethods();
-			return handlerMethods.entrySet().stream().map(this::describe).collect(Collectors.toList());
+			return handlerMethods.entrySet().stream().map(this::describe).toList();
 		}
 
 		private DispatcherHandlerMappingDescription describe(Entry<RequestMappingInfo, HandlerMethod> mapping) {
@@ -134,7 +133,7 @@ public class DispatcherHandlersMappingDescriptionProvider implements MappingDesc
 
 		@Override
 		public List<DispatcherHandlerMappingDescription> describe(AbstractUrlHandlerMapping handlerMapping) {
-			return handlerMapping.getHandlerMap().entrySet().stream().map(this::describe).collect(Collectors.toList());
+			return handlerMapping.getHandlerMap().entrySet().stream().map(this::describe).toList();
 		}
 
 		private DispatcherHandlerMappingDescription describe(Entry<PathPattern, Object> mapping) {

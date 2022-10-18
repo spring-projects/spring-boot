@@ -36,11 +36,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import jakarta.websocket.ClientEndpointConfig;
 import jakarta.websocket.ClientEndpointConfig.Configurator;
 import jakarta.websocket.Endpoint;
+import jakarta.websocket.Extension;
 import jakarta.websocket.HandshakeResponse;
 import jakarta.websocket.WebSocketContainer;
 import org.apache.tomcat.websocket.WsWebSocketContainer;
@@ -300,11 +301,10 @@ class LiveReloadServerTests {
 			InetSocketAddress remoteAddress = new InetSocketAddress(uri.getHost(), uri.getPort());
 			StandardWebSocketSession session = new StandardWebSocketSession(headers, attributes, localAddress,
 					remoteAddress);
+			Stream<Extension> adaptedExtensions = extensions.stream().map(WebSocketToStandardExtensionAdapter::new);
 			ClientEndpointConfig endpointConfig = ClientEndpointConfig.Builder.create()
 					.configurator(new UppercaseWebSocketClientConfigurator(headers)).preferredSubprotocols(protocols)
-					.extensions(extensions.stream().map(WebSocketToStandardExtensionAdapter::new)
-							.collect(Collectors.toList()))
-					.build();
+					.extensions(adaptedExtensions.toList()).build();
 			endpointConfig.getUserProperties().putAll(getUserProperties());
 			Endpoint endpoint = new StandardWebSocketHandlerAdapter(webSocketHandler, session);
 			Callable<WebSocketSession> connectTask = () -> {

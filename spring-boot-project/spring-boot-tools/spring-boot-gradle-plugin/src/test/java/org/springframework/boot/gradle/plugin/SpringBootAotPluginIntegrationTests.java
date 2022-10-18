@@ -103,7 +103,7 @@ class SpringBootAotPluginIntegrationTests {
 
 	@TestTemplate
 	void processAotRunsWhenProjectHasMainSource() throws IOException {
-		writeMainClass("org.springframework.boot", "AotProcessor");
+		writeMainClass("org.springframework.boot", "SpringApplicationAotProcessor");
 		writeMainClass("com.example", "Main");
 		assertThat(this.gradleBuild.build("processAot").task(":processAot").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);

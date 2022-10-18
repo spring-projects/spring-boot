@@ -70,9 +70,13 @@ When Gradle's {application-plugin}[`application` plugin] is applied to a project
 When the {nbt-gradle-plugin}[GraalVM Native Image plugin] is applied to a project, the Spring Boot plugin:
 
 . Applies the `org.springframework.boot.aot` plugin that:
-.. Registers a `ProcessAot` task named `processAot` that will generate AOT-optimized source code for the application.
+.. Registers `aot` and `aotTest` source sets.
+.. Registers a `ProcessAot` task named `processAot` that will generate AOT-optimized source for the application in the `aot` source set.
 .. Configures the Java compilation and process resources tasks for the `aot` source set to depend upon `processAot`.
-. Adds the output of the `aot` source set to the classpath of the `nativeCompile` task.
+.. Registers a `ProcessTestAot` task named `processTestAot` that will generated AOT-optimized source for the application's tests in the `aotTest` source set.
+.. Configures the Java compilation and process resources tasks for the `aotTest` source set to depend upon `processTestAot`.
+. Adds the output of the `aot` source set to the classpath of the `main` GraalVM native binary.
+. Adds the output of the `aotTest` source set to the classpath of the `test` GraalVM native binary.
 . Configures the GraalVM extension to disable Toolchain detection.
 
 

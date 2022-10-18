@@ -84,6 +84,24 @@ public class AotTests {
 	}
 
 	@TestTemplate
+	void whenAotRunsWithProfilesSourcesAreGenerated(MavenBuild mavenBuild) {
+		mavenBuild.project("aot-profile").goals("package").execute((project) -> {
+			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
+			assertThat(collectRelativePaths(aotDirectory.resolve("sources")))
+					.contains(Path.of("org", "test", "TestProfileConfiguration__BeanDefinitions.java"));
+		});
+	}
+
+	@TestTemplate
+	void whenAotRunsWithArgumentsSourcesAreGenerated(MavenBuild mavenBuild) {
+		mavenBuild.project("aot-arguments").goals("package").execute((project) -> {
+			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
+			assertThat(collectRelativePaths(aotDirectory.resolve("sources")))
+					.contains(Path.of("org", "test", "TestProfileConfiguration__BeanDefinitions.java"));
+		});
+	}
+
+	@TestTemplate
 	void whenAotRunsSourcesAreCompiled(MavenBuild mavenBuild) {
 		mavenBuild.project("aot").goals("package").execute((project) -> {
 			Path classesDirectory = project.toPath().resolve("target/classes");

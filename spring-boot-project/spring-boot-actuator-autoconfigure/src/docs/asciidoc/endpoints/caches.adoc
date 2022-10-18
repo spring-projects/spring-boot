@@ -46,7 +46,7 @@ Otherwise, the `cacheManager` must be specified.
 The following table shows the supported query parameters:
 
 [cols="2,4"]
-include::{snippets}/caches/named/request-parameters.adoc[]
+include::{snippets}/caches/named/query-parameters.adoc[]
 
 
 
@@ -85,4 +85,4 @@ Otherwise, the `cacheManager` must be specified.
 The following table shows the supported query parameters:
 
 [cols="2,4"]
-include::{snippets}/caches/evict-named/request-parameters.adoc[]
+include::{snippets}/caches/evict-named/query-parameters.adoc[]

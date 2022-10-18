@@ -66,7 +66,7 @@ dependencies {
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator"))
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	implementation(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
-	implementation(project(path: ":spring-boot-project:spring-boot-cli"))
+	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-cli"))
 	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation(project(path: ":spring-boot-project:spring-boot-test"))
 	implementation(project(path: ":spring-boot-project:spring-boot-test-autoconfigure"))
@@ -86,6 +86,7 @@ dependencies {
 		exclude group: "commons-logging", module: "commons-logging"
 		exclude group: "xml-apis", module: "xml-apis"
 	}
+	implementation("org.apache.httpcomponents.client5:httpclient5")
 	implementation("org.apache.commons:commons-dbcp2") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
@@ -189,11 +190,9 @@ task dependencyVersions(type: org.springframework.boot.build.constraints.Extract
 task aggregatedJavadoc(type: Javadoc) {
 	dependsOn dependencyVersions
 	project.rootProject.gradle.projectsEvaluated {
-		Set<String> excludedProjects = ['spring-boot-antlib', 'spring-boot-configuration-metadata', 'spring-boot-configuration-processor',
-				'spring-boot-gradle-plugin', 'spring-boot-jarmode-layertools', 'spring-boot-maven-plugin']
-		Set<Project> publishedProjects = rootProject.subprojects.findAll { it != project}
+		Set<Project> publishedProjects = rootProject.subprojects.findAll { it != project }
 			.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
-			.findAll { !excludedProjects.contains(it.name) }
+			.findAll { !it.path.contains(":spring-boot-tools:") }
 			.findAll { !it.name.startsWith('spring-boot-starter') }
 		dependsOn publishedProjects.javadoc
 		source publishedProjects.javadoc.source

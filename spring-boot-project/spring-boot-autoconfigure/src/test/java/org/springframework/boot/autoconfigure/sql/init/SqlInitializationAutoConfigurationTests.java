@@ -16,9 +16,6 @@
 
 package org.springframework.boot.autoconfigure.sql.init;
 
-import java.nio.charset.Charset;
-import java.util.List;
-
 import javax.sql.DataSource;
 
 import io.r2dbc.spi.ConnectionFactory;
@@ -39,7 +36,6 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -162,8 +158,7 @@ class SqlInitializationAutoConfigurationTests {
 			return new SqlDataSourceScriptDatabaseInitializer(null, new DatabaseInitializationSettings()) {
 
 				@Override
-				protected void runScripts(List<Resource> resources, boolean continueOnError, String separator,
-						Charset encoding) {
+				protected void runScripts(Scripts scripts) {
 					// No-op
 				}
 
@@ -185,8 +180,7 @@ class SqlInitializationAutoConfigurationTests {
 			return new DataSourceScriptDatabaseInitializer(null, new DatabaseInitializationSettings()) {
 
 				@Override
-				protected void runScripts(List<Resource> resources, boolean continueOnError, String separator,
-						Charset encoding) {
+				protected void runScripts(Scripts scripts) {
 					// No-op
 				}
 

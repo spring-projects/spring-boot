@@ -25,10 +25,10 @@ import zipkin2.reporter.Sender;
 import zipkin2.reporter.brave.ZipkinSpanHandler;
 import zipkin2.reporter.urlconnection.URLConnectionSender;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
@@ -46,8 +46,8 @@ import org.springframework.web.reactive.function.client.WebClient;
 class ZipkinConfigurations {
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ UrlConnectionSenderConfiguration.class, RestTemplateSenderConfiguration.class,
-			WebClientSenderConfiguration.class })
+	@Import({ UrlConnectionSenderConfiguration.class, WebClientSenderConfiguration.class,
+			RestTemplateSenderConfiguration.class })
 	static class SenderConfiguration {
 
 	}
@@ -74,27 +74,28 @@ class ZipkinConfigurations {
 
 		@Bean
 		@ConditionalOnMissingBean(Sender.class)
-		@ConditionalOnBean(RestTemplateBuilder.class)
 		ZipkinRestTemplateSender restTemplateSender(ZipkinProperties properties,
-				RestTemplateBuilder restTemplateBuilder) {
-			RestTemplate restTemplate = restTemplateBuilder.setConnectTimeout(properties.getConnectTimeout())
-					.setReadTimeout(properties.getReadTimeout()).build();
-			return new ZipkinRestTemplateSender(properties.getEndpoint(), restTemplate);
+				ObjectProvider<ZipkinRestTemplateBuilderCustomizer> customizers) {
+			RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder()
+					.setConnectTimeout(properties.getConnectTimeout()).setReadTimeout(properties.getReadTimeout());
+			customizers.orderedStream().forEach((c) -> c.customize(restTemplateBuilder));
+			return new ZipkinRestTemplateSender(properties.getEndpoint(), restTemplateBuilder.build());
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+	@ConditionalOnClass(WebClient.class)
 	@EnableConfigurationProperties(ZipkinProperties.class)
 	static class WebClientSenderConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(Sender.class)
-		@ConditionalOnBean(WebClient.Builder.class)
-		ZipkinWebClientSender webClientSender(ZipkinProperties properties, WebClient.Builder webClientBuilder) {
-			WebClient webClient = webClientBuilder.build();
-			return new ZipkinWebClientSender(properties.getEndpoint(), webClient);
+		ZipkinWebClientSender webClientSender(ZipkinProperties properties,
+				ObjectProvider<ZipkinWebClientBuilderCustomizer> customizers) {
+			WebClient.Builder builder = WebClient.builder();
+			customizers.orderedStream().forEach((c) -> c.customize(builder));
+			return new ZipkinWebClientSender(properties.getEndpoint(), builder.build());
 		}
 
 	}

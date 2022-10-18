@@ -25,10 +25,13 @@ import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
+import org.springframework.boot.actuate.logging.LoggersEndpoint.GroupLoggerLevels;
+import org.springframework.boot.actuate.logging.LoggersEndpoint.SingleLoggerLevels;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggerGroup;
@@ -46,6 +49,7 @@ import org.springframework.util.Assert;
  * @since 2.0.0
  */
 @Endpoint(id = "loggers")
+@RegisterReflectionForBinding({ GroupLoggerLevels.class, SingleLoggerLevels.class })
 public class LoggersEndpoint {
 
 	private final LoggingSystem loggingSystem;

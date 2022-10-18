@@ -23,6 +23,7 @@ import java.util.Map;
 
 import com.hazelcast.spring.cache.HazelcastCacheManager;
 import org.cache2k.extra.spring.SpringCache2kCacheManager;
+import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -115,6 +116,13 @@ abstract class AbstractCacheAutoConfigurationTests {
 
 		@Bean
 		CacheManagerCustomizer<HazelcastCacheManager> hazelcastCacheManagerCustomizer() {
+			return new CacheManagerTestCustomizer<>() {
+
+			};
+		}
+
+		@Bean
+		CacheManagerCustomizer<SpringEmbeddedCacheManager> infinispanCacheManagerCustomizer() {
 			return new CacheManagerTestCustomizer<>() {
 
 			};

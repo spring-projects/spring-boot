@@ -3,6 +3,14 @@
 		"-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
 		"https://checkstyle.org/dtds/suppressions_1_2.dtd">
 <suppressions>
+	<suppress files="ConditionEvaluationReportLoggerTests\.java" checks="IllegalImport" />
+	<suppress files="ConditionEvaluationReportLoggingListenerTests\.java" checks="IllegalImport" />
+	<suppress files="ConditionEvaluationReportLoggingProcessorTests\.java" checks="IllegalImport" />
+	<suppress files="LoggingApplicationListenerTests\.java" checks="IllegalImport" />
+	<suppress files="LogbackInitializer\.java" checks="IllegalImport" />
+	<suppress files="LogbackLoggingSystem\.java" checks="IllegalImport" />
+	<suppress files="LogbackLoggingSystemTests\.java" checks="IllegalImport" />
+	<suppress files="MeterRegistryConfigurerIntegrationTests\.java" checks="IllegalImport" />
 	<suppress files="SpringApplicationTests\.java" checks="FinalClass" />
 	<suppress files=".+Configuration\.java" checks="HideUtilityClassConstructor" />
 	<suppress files=".+Application\.java" checks="HideUtilityClassConstructor" />
@@ -17,7 +25,7 @@
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" checks="NonEmptyAtclauseDescription" />
 	<suppress files="[\\/]autoconfigure[\\/].*Properties\.java" checks="JavadocType" />
 	<suppress files="[\\/]autoconfigure[\\/].*Properties\.java" checks="JavadocVariable" />
-	<suppress files="[\\/]spring-boot-docs[\\/]" checks="JavadocPackage|JavadocType|JavadocVariable" />
+	<suppress files="[\\/]spring-boot-docs[\\/]" checks="JavadocPackage|JavadocType|JavadocVariable|SpringDeprecatedCheck" />
 	<suppress files="[\\/]spring-boot-docs[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="[\\/]spring-boot-docs[\\/].*jooq" checks="AvoidStaticImport" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="JavadocPackage|JavadocType" />
@@ -62,4 +70,5 @@
 	<suppress files="AbstractLaunchScriptIntegrationTests" checks="IllegalImport" />
 	<suppress files="FailureAnalyzers\.java" checks="RedundantModifier" />
 	<suppress files="SpringBootVersion" checks="JavadocPackage" />
+	<suppress files="spring-boot-configuration-processor/src/test/java/org/springframework/boot/configurationsample/" checks="SpringDeprecatedCheck"/>
 </suppressions>
