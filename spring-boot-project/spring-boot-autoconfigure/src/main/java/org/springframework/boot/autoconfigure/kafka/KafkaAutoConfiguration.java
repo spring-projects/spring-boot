@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,13 +74,13 @@ public class KafkaAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(LoggingProducerListener.class)
+	@ConditionalOnMissingBean(ProducerListener.class)
 	public LoggingProducerListener<Object, Object> kafkaProducerListener() {
 		return new LoggingProducerListener<>();
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(DefaultKafkaConsumerFactory.class)
+	@ConditionalOnMissingBean(ConsumerFactory.class)
 	public DefaultKafkaConsumerFactory<?, ?> kafkaConsumerFactory(
 			ObjectProvider<DefaultKafkaConsumerFactoryCustomizer> customizers) {
 		DefaultKafkaConsumerFactory<Object, Object> factory = new DefaultKafkaConsumerFactory<>(
@@ -90,7 +90,7 @@ public class KafkaAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean(DefaultKafkaProducerFactory.class)
+	@ConditionalOnMissingBean(ProducerFactory.class)
 	public DefaultKafkaProducerFactory<?, ?> kafkaProducerFactory(
 			ObjectProvider<DefaultKafkaProducerFactoryCustomizer> customizers) {
 		DefaultKafkaProducerFactory<?, ?> factory = new DefaultKafkaProducerFactory<>(
