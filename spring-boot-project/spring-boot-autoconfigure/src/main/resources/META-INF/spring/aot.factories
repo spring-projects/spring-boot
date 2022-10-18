@@ -3,3 +3,6 @@ org.springframework.boot.autoconfigure.template.TemplateRuntimeHints
 
 org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor=\
 org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingProcessor
+
+org.springframework.beans.factory.aot.BeanRegistrationAotProcessor=\
+org.springframework.boot.autoconfigure.flyway.ResourceProviderCustomizerBeanRegistrationAotProcessor
