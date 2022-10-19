@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -183,31 +183,68 @@ class OriginTrackedPropertiesLoaderTests {
 	}
 
 	@Test
-	void loadWhenMultiDocumentWithoutWhitespaceLoadsMultiDoc() throws IOException {
+	void loadWhenMultiDocumentWithPoundPrefixAndWithoutWhitespaceLoadsMultiDoc() throws IOException {
 		String content = "a=a\n#---\nb=b";
 		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
 		assertThat(loaded).hasSize(2);
 	}
 
 	@Test
-	void loadWhenMultiDocumentWithLeadingWhitespaceLoadsSingleDoc() throws IOException {
+	void loadWhenMultiDocumentWithExclamationPrefixAndWithoutWhitespaceLoadsMultiDoc() throws IOException {
+		String content = "a=a\n!---\nb=b";
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
+		assertThat(loaded).hasSize(2);
+	}
+
+	@Test
+	void loadWhenMultiDocumentWithPoundPrefixAndLeadingWhitespaceLoadsSingleDoc() throws IOException {
 		String content = "a=a\n \t#---\nb=b";
 		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
 		assertThat(loaded).hasSize(1);
 	}
 
 	@Test
-	void loadWhenMultiDocumentWithTrailingWhitespaceLoadsMultiDoc() throws IOException {
+	void loadWhenMultiDocumentWithExclamationPrefixAndLeadingWhitespaceLoadsSingleDoc() throws IOException {
+		String content = "a=a\n \t!---\nb=b";
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
+		assertThat(loaded).hasSize(1);
+	}
+
+	@Test
+	void loadWhenMultiDocumentWithPoundPrefixAndTrailingWhitespaceLoadsMultiDoc() throws IOException {
 		String content = "a=a\n#--- \t \nb=b";
 		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
 		assertThat(loaded).hasSize(2);
 	}
 
 	@Test
-	void loadWhenMultiDocumentWithTrailingCharsLoadsSingleDoc() throws IOException {
+	void loadWhenMultiDocumentWithExclamationPrefixAndTrailingWhitespaceLoadsMultiDoc() throws IOException {
+		String content = "a=a\n!--- \t \nb=b";
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
+		assertThat(loaded).hasSize(2);
+	}
+
+	@Test
+	void loadWhenMultiDocumentWithPoundPrefixAndTrailingCharsLoadsSingleDoc() throws IOException {
 		String content = "a=a\n#--- \tcomment\nb=b";
 		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
 		assertThat(loaded).hasSize(1);
+	}
+
+	@Test
+	void loadWhenMultiDocumentWithExclamationPrefixAndTrailingCharsLoadsSingleDoc() throws IOException {
+		String content = "a=a\n!--- \tcomment\nb=b";
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
+		assertThat(loaded).hasSize(1);
+	}
+
+	@Test
+	void loadWhenMultiDocumentSeparatorPrefixDifferentFromCommentPrefixLoadsMultiDoc() throws IOException {
+		String[] contents = new String[] { "a=a\n# comment\n!---\nb=b", "a=a\n! comment\n#---\nb=b" };
+		for (String content : contents) {
+			List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
+			assertThat(loaded).hasSize(2);
+		}
 	}
 
 	@Test

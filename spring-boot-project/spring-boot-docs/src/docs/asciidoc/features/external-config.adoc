@@ -495,7 +495,7 @@ For example, the following file has two logical documents:
 	      on-cloud-platform: "kubernetes"
 ----
 
-For `application.properties` files a special `#---` comment is used to mark the document splits:
+For `application.properties` files a special `#---` or `!---` comment is used to mark the document splits:
 
 [source,properties,indent=0,subs="verbatim"]
 ----
@@ -506,7 +506,7 @@ For `application.properties` files a special `#---` comment is used to mark the 
 ----
 
 NOTE: Property file separators must not have any leading whitespace and must have exactly three hyphen characters.
-The lines immediately before and after the separator must not be comments.
+The lines immediately before and after the separator must not be same comment prefix.
 
 TIP: Multi-document property files are often used in conjunction with activation properties such as `spring.config.activate.on-profile`.
 See the <<features#features.external-config.files.activation-properties, next section>> for details.
