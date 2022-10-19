@@ -63,8 +63,6 @@ public class MetricsProperties {
 
 	private final Data data = new Data();
 
-	private final Graphql graphql = new Graphql();
-
 	private final System system = new System();
 
 	private final Distribution distribution = new Distribution();
@@ -91,10 +89,6 @@ public class MetricsProperties {
 
 	public Data getData() {
 		return this.data;
-	}
-
-	public Graphql getGraphql() {
-		return this.graphql;
 	}
 
 	public System getSystem() {
@@ -245,20 +239,6 @@ public class MetricsProperties {
 				return this.autotime;
 			}
 
-		}
-
-	}
-
-	public static class Graphql {
-
-		/**
-		 * Auto-timed queries settings.
-		 */
-		@NestedConfigurationProperty
-		private final AutoTimeProperties autotime = new AutoTimeProperties();
-
-		public AutoTimeProperties getAutotime() {
-			return this.autotime;
 		}
 
 	}

@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for Spring GraphQL metrics.
+ * Auto-configuration for Spring GraphQL observations.
  */
-package org.springframework.boot.actuate.autoconfigure.metrics.graphql;
+package org.springframework.boot.actuate.autoconfigure.observation.graphql;
