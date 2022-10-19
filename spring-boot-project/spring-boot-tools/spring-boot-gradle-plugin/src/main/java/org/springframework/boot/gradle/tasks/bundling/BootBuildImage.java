@@ -175,7 +175,7 @@ public abstract class BootBuildImage extends DefaultTask {
 	@Input
 	@Optional
 	@Option(option = "pullPolicy", description = "The image pull policy")
-	public abstract Property<PullPolicy> getPullPolicy();
+	public abstract Property<String> getPullPolicy();
 
 	/**
 	 * Whether the built image should be pushed to a registry.
@@ -342,7 +342,7 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizePullPolicy(BuildRequest request) {
-		PullPolicy pullPolicy = getPullPolicy().getOrNull();
+		PullPolicy pullPolicy = getPullPolicy().map(PullPolicy::valueOf).getOrNull();
 		if (pullPolicy != null) {
 			request = request.withPullPolicy(pullPolicy);
 		}

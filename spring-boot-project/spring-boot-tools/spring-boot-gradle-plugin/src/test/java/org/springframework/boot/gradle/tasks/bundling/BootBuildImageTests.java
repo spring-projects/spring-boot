@@ -216,7 +216,7 @@ class BootBuildImageTests {
 
 	@Test
 	void whenPullPolicyIsConfiguredThenRequestHasPullPolicy() {
-		this.buildImage.getPullPolicy().set(PullPolicy.NEVER);
+		this.buildImage.getPullPolicy().set(PullPolicy.NEVER.toString());
 		assertThat(this.buildImage.createRequest().getPullPolicy()).isEqualTo(PullPolicy.NEVER);
 	}
 

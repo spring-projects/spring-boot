@@ -68,7 +68,7 @@ class BootBuildImageIntegrationTests {
 	void buildsImageWithDefaultBuilder() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
@@ -83,8 +83,7 @@ class BootBuildImageIntegrationTests {
 	void buildsImageWithWarPackaging() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		BuildResult result = this.gradleBuild.build("bootBuildImage", "-PapplyWarPlugin",
-				"--pullPolicy=IF_NOT_PRESENT");
+		BuildResult result = this.gradleBuild.build("bootBuildImage", "-PapplyWarPlugin");
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
@@ -101,7 +100,7 @@ class BootBuildImageIntegrationTests {
 	void buildsImageWithWarPackagingAndJarConfiguration() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
@@ -117,7 +116,7 @@ class BootBuildImageIntegrationTests {
 	void buildsImageWithCustomName() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("example/test-image-name");
 		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
@@ -129,7 +128,7 @@ class BootBuildImageIntegrationTests {
 	void buildsImageWithCustomBuilderAndRunImage() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("example/test-image-custom");
 		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
@@ -157,7 +156,7 @@ class BootBuildImageIntegrationTests {
 		writeMainClass();
 		writeLongNameResource();
 		String projectName = this.gradleBuild.getProjectDir().getName();
-		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=ALWAYS");
+		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("Pulled builder image").contains("Pulled run image");
 		result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
@@ -170,7 +169,7 @@ class BootBuildImageIntegrationTests {
 	void buildsImageWithBuildpackFromBuilder() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
@@ -185,7 +184,7 @@ class BootBuildImageIntegrationTests {
 		writeMainClass();
 		writeLongNameResource();
 		writeBuildpackContent();
-		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
@@ -200,7 +199,7 @@ class BootBuildImageIntegrationTests {
 		writeLongNameResource();
 		writeBuildpackContent();
 		tarGzipBuildpackContent();
-		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
@@ -212,7 +211,7 @@ class BootBuildImageIntegrationTests {
 	void buildsImageWithBuildpacksFromImages() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
@@ -226,7 +225,7 @@ class BootBuildImageIntegrationTests {
 		writeMainClass();
 		writeLongNameResource();
 		writeCertificateBindingFiles();
-		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
@@ -242,7 +241,7 @@ class BootBuildImageIntegrationTests {
 	void buildsImageWithTag() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
@@ -256,7 +255,7 @@ class BootBuildImageIntegrationTests {
 	void buildsImageWithLaunchScript() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
@@ -269,7 +268,7 @@ class BootBuildImageIntegrationTests {
 	void buildsImageWithNetworkModeNone() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
@@ -283,7 +282,7 @@ class BootBuildImageIntegrationTests {
 	void buildsImageWithVolumeCaches() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
@@ -297,7 +296,7 @@ class BootBuildImageIntegrationTests {
 	void failsWithBuilderError() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
 		assertThat(result.getOutput()).contains("Forced builder failure");
 		assertThat(result.getOutput()).containsPattern("Builder lifecycle '.*' failed with status code");
@@ -317,7 +316,7 @@ class BootBuildImageIntegrationTests {
 	void failsWithBuildpackNotInBuilder() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
 		assertThat(result.getOutput()).contains("'urn:cnb:builder:example/does-not-exist:0.0.1' not found in builder");
 	}
@@ -326,7 +325,7 @@ class BootBuildImageIntegrationTests {
 	void failsWithInvalidTag() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
-		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
 		assertThat(result.getOutput()).containsPattern("Unable to parse image reference")
 				.containsPattern("example/Invalid-Tag-Name");
