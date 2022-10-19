@@ -48,7 +48,6 @@ class NoSessionErrorPageTests extends AbstractErrorPageTests {
 					.authorizeHttpRequests((requests) -> {
 						requests.antMatchers("/public/**").permitAll();
 						requests.anyRequest().authenticated();
-						requests.shouldFilterAllDispatcherTypes(false);
 					});
 			http.httpBasic();
 			return http.build();

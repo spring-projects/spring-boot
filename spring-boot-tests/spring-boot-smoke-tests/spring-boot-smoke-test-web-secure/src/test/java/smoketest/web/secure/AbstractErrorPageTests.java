@@ -66,15 +66,6 @@ abstract class AbstractErrorPageTests {
 	}
 
 	@Test
-	void testPublicNotFoundPage() {
-		final ResponseEntity<JsonNode> response = this.testRestTemplate.exchange(this.pathPrefix + "/public/notfound",
-				HttpMethod.GET, null, JsonNode.class);
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-		JsonNode jsonResponse = response.getBody();
-		assertThat(jsonResponse.get("error").asText()).isEqualTo("Not Found");
-	}
-
-	@Test
 	void testPublicNotFoundPageWithCorrectCredentials() {
 		final ResponseEntity<JsonNode> response = this.testRestTemplate.withBasicAuth("username", "password")
 				.exchange(this.pathPrefix + "/public/notfound", HttpMethod.GET, null, JsonNode.class);
