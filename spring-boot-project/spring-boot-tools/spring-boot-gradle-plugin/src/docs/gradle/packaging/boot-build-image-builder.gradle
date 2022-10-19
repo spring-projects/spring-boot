@@ -16,7 +16,7 @@ tasks.named("bootBuildImage") {
 
 tasks.register("bootBuildImageBuilder") {
 	doFirst {
-		println("builder=${tasks.bootBuildImage.builder}")
-		println("runImage=${tasks.bootBuildImage.runImage}")
+		println("builder=${tasks.bootBuildImage.builder.get()}")
+		println("runImage=${tasks.bootBuildImage.runImage.get()}")
 	}
 }

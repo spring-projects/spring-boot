@@ -32,25 +32,20 @@ import org.gradle.api.tasks.TaskAction;
  * @since 3.0.0
  */
 @CacheableTask
-public class ProcessAot extends AbstractAot {
-
-	private final Property<String> applicationClass;
+public abstract class ProcessAot extends AbstractAot {
 
 	public ProcessAot() {
-		this.applicationClass = getProject().getObjects().property(String.class);
 		getMainClass().set("org.springframework.boot.SpringApplicationAotProcessor");
 	}
 
 	@Input
-	public Property<String> getApplicationClass() {
-		return this.applicationClass;
-	}
+	public abstract Property<String> getApplicationClass();
 
 	@Override
 	@TaskAction
 	public void exec() {
 		List<String> args = new ArrayList<>();
-		args.add(this.applicationClass.get());
+		args.add(getApplicationClass().get());
 		args.addAll(processorArgs());
 		this.setArgs(args);
 		super.exec();

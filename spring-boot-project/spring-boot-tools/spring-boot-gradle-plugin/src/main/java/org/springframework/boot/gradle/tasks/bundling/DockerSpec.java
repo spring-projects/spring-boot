@@ -16,8 +16,12 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
+import javax.inject.Inject;
+
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
+import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
@@ -31,23 +35,18 @@ import org.springframework.boot.buildpack.platform.docker.configuration.DockerCo
  * @author Scott Frederick
  * @since 2.4.0
  */
-public class DockerSpec {
-
-	private String host;
-
-	private boolean tlsVerify;
-
-	private String certPath;
-
-	private boolean bindHostToBuilder;
+public abstract class DockerSpec {
 
 	private final DockerRegistrySpec builderRegistry;
 
 	private final DockerRegistrySpec publishRegistry;
 
-	public DockerSpec() {
-		this.builderRegistry = new DockerRegistrySpec();
-		this.publishRegistry = new DockerRegistrySpec();
+	@Inject
+	public DockerSpec(ObjectFactory objects) {
+		this.builderRegistry = objects.newInstance(DockerRegistrySpec.class);
+		this.publishRegistry = objects.newInstance(DockerRegistrySpec.class);
+		getBindHostToBuilder().convention(false);
+		getTlsVerify().convention(false);
 	}
 
 	DockerSpec(DockerRegistrySpec builderRegistry, DockerRegistrySpec publishRegistry) {
@@ -57,43 +56,19 @@ public class DockerSpec {
 
 	@Input
 	@Optional
-	public String getHost() {
-		return this.host;
-	}
-
-	public void setHost(String host) {
-		this.host = host;
-	}
+	public abstract Property<String> getHost();
 
 	@Input
 	@Optional
-	public Boolean isTlsVerify() {
-		return this.tlsVerify;
-	}
-
-	public void setTlsVerify(boolean tlsVerify) {
-		this.tlsVerify = tlsVerify;
-	}
+	public abstract Property<Boolean> getTlsVerify();
 
 	@Input
 	@Optional
-	public String getCertPath() {
-		return this.certPath;
-	}
-
-	public void setCertPath(String certPath) {
-		this.certPath = certPath;
-	}
+	public abstract Property<String> getCertPath();
 
 	@Input
 	@Optional
-	public Boolean isBindHostToBuilder() {
-		return this.bindHostToBuilder;
-	}
-
-	public void setBindHostToBuilder(boolean use) {
-		this.bindHostToBuilder = use;
-	}
+	public abstract Property<Boolean> getBindHostToBuilder();
 
 	/**
 	 * Returns the {@link DockerRegistrySpec} that configures authentication to the
@@ -142,15 +117,16 @@ public class DockerSpec {
 	DockerConfiguration asDockerConfiguration() {
 		DockerConfiguration dockerConfiguration = new DockerConfiguration();
 		dockerConfiguration = customizeHost(dockerConfiguration);
-		dockerConfiguration = dockerConfiguration.withBindHostToBuilder(this.bindHostToBuilder);
+		dockerConfiguration = dockerConfiguration.withBindHostToBuilder(getBindHostToBuilder().get());
 		dockerConfiguration = customizeBuilderAuthentication(dockerConfiguration);
 		dockerConfiguration = customizePublishAuthentication(dockerConfiguration);
 		return dockerConfiguration;
 	}
 
 	private DockerConfiguration customizeHost(DockerConfiguration dockerConfiguration) {
-		if (this.host != null) {
-			return dockerConfiguration.withHost(this.host, this.tlsVerify, this.certPath);
+		String host = getHost().getOrNull();
+		if (host != null) {
+			return dockerConfiguration.withHost(host, getTlsVerify().get(), getCertPath().getOrNull());
 		}
 		return dockerConfiguration;
 	}
@@ -160,11 +136,12 @@ public class DockerSpec {
 			return dockerConfiguration;
 		}
 		if (this.builderRegistry.hasTokenAuth() && !this.builderRegistry.hasUserAuth()) {
-			return dockerConfiguration.withBuilderRegistryTokenAuthentication(this.builderRegistry.getToken());
+			return dockerConfiguration.withBuilderRegistryTokenAuthentication(this.builderRegistry.getToken().get());
 		}
 		if (this.builderRegistry.hasUserAuth() && !this.builderRegistry.hasTokenAuth()) {
-			return dockerConfiguration.withBuilderRegistryUserAuthentication(this.builderRegistry.getUsername(),
-					this.builderRegistry.getPassword(), this.builderRegistry.getUrl(), this.builderRegistry.getEmail());
+			return dockerConfiguration.withBuilderRegistryUserAuthentication(this.builderRegistry.getUsername().get(),
+					this.builderRegistry.getPassword().get(), this.builderRegistry.getUrl().getOrNull(),
+					this.builderRegistry.getEmail().getOrNull());
 		}
 		throw new GradleException(
 				"Invalid Docker builder registry configuration, either token or username/password must be provided");
@@ -175,11 +152,12 @@ public class DockerSpec {
 			return dockerConfiguration.withEmptyPublishRegistryAuthentication();
 		}
 		if (this.publishRegistry.hasTokenAuth() && !this.publishRegistry.hasUserAuth()) {
-			return dockerConfiguration.withPublishRegistryTokenAuthentication(this.publishRegistry.getToken());
+			return dockerConfiguration.withPublishRegistryTokenAuthentication(this.publishRegistry.getToken().get());
 		}
 		if (this.publishRegistry.hasUserAuth() && !this.publishRegistry.hasTokenAuth()) {
-			return dockerConfiguration.withPublishRegistryUserAuthentication(this.publishRegistry.getUsername(),
-					this.publishRegistry.getPassword(), this.publishRegistry.getUrl(), this.publishRegistry.getEmail());
+			return dockerConfiguration.withPublishRegistryUserAuthentication(this.publishRegistry.getUsername().get(),
+					this.publishRegistry.getPassword().get(), this.publishRegistry.getUrl().getOrNull(),
+					this.publishRegistry.getEmail().getOrNull());
 		}
 		throw new GradleException(
 				"Invalid Docker publish registry configuration, either token or username/password must be provided");
@@ -188,31 +166,7 @@ public class DockerSpec {
 	/**
 	 * Encapsulates Docker registry authentication configuration options.
 	 */
-	public static class DockerRegistrySpec {
-
-		private String username;
-
-		private String password;
-
-		private String url;
-
-		private String email;
-
-		private String token;
-
-		public DockerRegistrySpec() {
-		}
-
-		DockerRegistrySpec(String username, String password, String url, String email) {
-			this.username = username;
-			this.password = password;
-			this.url = url;
-			this.email = email;
-		}
-
-		DockerRegistrySpec(String token) {
-			this.token = token;
-		}
+	public abstract static class DockerRegistrySpec {
 
 		/**
 		 * Returns the username to use when authenticating to the Docker registry.
@@ -220,17 +174,7 @@ public class DockerSpec {
 		 */
 		@Input
 		@Optional
-		public String getUsername() {
-			return this.username;
-		}
-
-		/**
-		 * Sets the username to use when authenticating to the Docker registry.
-		 * @param username the registry username
-		 */
-		public void setUsername(String username) {
-			this.username = username;
-		}
+		public abstract Property<String> getUsername();
 
 		/**
 		 * Returns the password to use when authenticating to the Docker registry.
@@ -238,17 +182,7 @@ public class DockerSpec {
 		 */
 		@Input
 		@Optional
-		public String getPassword() {
-			return this.password;
-		}
-
-		/**
-		 * Sets the password to use when authenticating to the Docker registry.
-		 * @param password the registry username
-		 */
-		public void setPassword(String password) {
-			this.password = password;
-		}
+		public abstract Property<String> getPassword();
 
 		/**
 		 * Returns the Docker registry URL.
@@ -256,17 +190,7 @@ public class DockerSpec {
 		 */
 		@Input
 		@Optional
-		public String getUrl() {
-			return this.url;
-		}
-
-		/**
-		 * Sets the Docker registry URL.
-		 * @param url the registry URL
-		 */
-		public void setUrl(String url) {
-			this.url = url;
-		}
+		public abstract Property<String> getUrl();
 
 		/**
 		 * Returns the email address associated with the Docker registry username.
@@ -274,17 +198,7 @@ public class DockerSpec {
 		 */
 		@Input
 		@Optional
-		public String getEmail() {
-			return this.email;
-		}
-
-		/**
-		 * Sets the email address associated with the Docker registry username.
-		 * @param email the registry email address
-		 */
-		public void setEmail(String email) {
-			this.email = email;
-		}
+		public abstract Property<String> getEmail();
 
 		/**
 		 * Returns the identity token to use when authenticating to the Docker registry.
@@ -292,29 +206,36 @@ public class DockerSpec {
 		 */
 		@Input
 		@Optional
-		public String getToken() {
-			return this.token;
-		}
-
-		/**
-		 * Sets the identity token to use when authenticating to the Docker registry.
-		 * @param token the registry identity token
-		 */
-		public void setToken(String token) {
-			this.token = token;
-		}
+		public abstract Property<String> getToken();
 
 		boolean hasEmptyAuth() {
-			return this.username == null && this.password == null && this.url == null && this.email == null
-					&& this.token == null;
+			return nonePresent(getUsername(), getPassword(), getUrl(), getEmail(), getToken());
+		}
+
+		private boolean nonePresent(Property<?>... properties) {
+			for (Property<?> property : properties) {
+				if (property.isPresent()) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		boolean hasUserAuth() {
-			return this.getUsername() != null && this.getPassword() != null;
+			return allPresent(getUsername(), getPassword());
+		}
+
+		private boolean allPresent(Property<?>... properties) {
+			for (Property<?> property : properties) {
+				if (!property.isPresent()) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		boolean hasTokenAuth() {
-			return this.getToken() != null;
+			return this.getToken().isPresent();
 		}
 
 	}

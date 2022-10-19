@@ -7,14 +7,14 @@ plugins {
 
 // tag::env[]
 tasks.named<BootBuildImage>("bootBuildImage") {
-	environment = mapOf("HTTP_PROXY" to "http://proxy.example.com",
-						"HTTPS_PROXY" to "https://proxy.example.com")
+	environment.set(mapOf("HTTP_PROXY" to "http://proxy.example.com",
+						"HTTPS_PROXY" to "https://proxy.example.com"))
 }
 // end::env[]
 
 tasks.register("bootBuildImageEnvironment") {
 	doFirst {
-		for((name, value) in tasks.getByName<BootBuildImage>("bootBuildImage").environment) {
+		for((name, value) in tasks.getByName<BootBuildImage>("bootBuildImage").environment.get()) {
 			print(name + "=" + value)
 		}
 	}

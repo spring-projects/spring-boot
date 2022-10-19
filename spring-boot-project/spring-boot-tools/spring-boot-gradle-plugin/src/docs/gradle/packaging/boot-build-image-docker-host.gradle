@@ -19,8 +19,8 @@ tasks.named("bootBuildImage") {
 
 tasks.register("bootBuildImageDocker") {
 	doFirst {
-		println("host=${tasks.bootBuildImage.docker.host}")
-		println("tlsVerify=${tasks.bootBuildImage.docker.tlsVerify}")
-		println("certPath=${tasks.bootBuildImage.docker.certPath}")
+		println("host=${tasks.bootBuildImage.docker.host.get()}")
+		println("tlsVerify=${tasks.bootBuildImage.docker.tlsVerify.get()}")
+		println("certPath=${tasks.bootBuildImage.docker.certPath.get()}")
 	}
 }

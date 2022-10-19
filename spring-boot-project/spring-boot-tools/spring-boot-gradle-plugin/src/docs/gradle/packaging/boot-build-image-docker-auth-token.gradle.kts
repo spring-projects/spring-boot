@@ -14,7 +14,7 @@ tasks.named<BootJar>("bootJar") {
 tasks.named<BootBuildImage>("bootBuildImage") {
 	docker {
 		builderRegistry {
-			token = "9cbaf023786cd7..."
+			token.set("9cbaf023786cd7...")
 		}
 	}
 }
@@ -22,6 +22,6 @@ tasks.named<BootBuildImage>("bootBuildImage") {
 
 tasks.register("bootBuildImageDocker") {
 	doFirst {
-		println("token=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.builderRegistry.token}")
+		println("token=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.builderRegistry.token.get()}")
 	}
 }

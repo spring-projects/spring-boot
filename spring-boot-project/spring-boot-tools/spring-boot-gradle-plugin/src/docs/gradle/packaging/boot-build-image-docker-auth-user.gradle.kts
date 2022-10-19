@@ -14,10 +14,10 @@ tasks.named<BootJar>("bootJar") {
 tasks.named<BootBuildImage>("bootBuildImage") {
 	docker {
 		builderRegistry {
-			username = "user"
-			password = "secret"
-			url = "https://docker.example.com/v1/"
-			email = "user@example.com"
+			username.set("user")
+			password.set("secret")
+			url.set("https://docker.example.com/v1/")
+			email.set("user@example.com")
 		}
 	}
 }
@@ -25,9 +25,9 @@ tasks.named<BootBuildImage>("bootBuildImage") {
 
 tasks.register("bootBuildImageDocker") {
 	doFirst {
-		println("username=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.builderRegistry.username}")
-		println("password=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.builderRegistry.password}")
-		println("url=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.builderRegistry.url}")
-		println("email=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.builderRegistry.email}")
+		println("username=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.builderRegistry.username.get()}")
+		println("password=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.builderRegistry.password.get()}")
+		println("url=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.builderRegistry.url.get()}")
+		println("email=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.builderRegistry.email.get()}")
 	}
 }

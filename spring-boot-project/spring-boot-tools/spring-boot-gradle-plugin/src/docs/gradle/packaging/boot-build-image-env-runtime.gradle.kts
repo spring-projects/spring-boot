@@ -7,16 +7,16 @@ plugins {
 
 // tag::env-runtime[]
 tasks.named<BootBuildImage>("bootBuildImage") {
-	environment = mapOf(
+	environment.set(mapOf(
 		"BPE_DELIM_JAVA_TOOL_OPTIONS" to " ",
 		"BPE_APPEND_JAVA_TOOL_OPTIONS" to "-XX:+HeapDumpOnOutOfMemoryError"
-	)
+	))
 }
 // end::env-runtime[]
 
 tasks.register("bootBuildImageEnvironment") {
 	doFirst {
-		for((name, value) in tasks.getByName<BootBuildImage>("bootBuildImage").environment) {
+		for((name, value) in tasks.getByName<BootBuildImage>("bootBuildImage").environment.get()) {
 			print(name + "=" + value)
 		}
 	}

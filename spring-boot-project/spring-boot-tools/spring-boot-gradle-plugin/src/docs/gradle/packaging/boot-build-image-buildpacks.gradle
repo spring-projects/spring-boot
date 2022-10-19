@@ -11,6 +11,6 @@ tasks.named("bootBuildImage") {
 
 tasks.register("bootBuildImageBuildpacks") {
 	doFirst {
-		bootBuildImage.buildpacks.each { reference -> println "$reference" }
+		bootBuildImage.buildpacks.get().each { reference -> println "$reference" }
 	}
 }

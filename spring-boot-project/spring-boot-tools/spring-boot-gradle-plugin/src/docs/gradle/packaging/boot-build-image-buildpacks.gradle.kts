@@ -7,13 +7,13 @@ plugins {
 
 // tag::buildpacks[]
 tasks.named<BootBuildImage>("bootBuildImage") {
-	buildpacks = listOf("file:///path/to/example-buildpack.tgz", "urn:cnb:builder:paketo-buildpacks/java")
+	buildpacks.set(listOf("file:///path/to/example-buildpack.tgz", "urn:cnb:builder:paketo-buildpacks/java"))
 }
 // end::buildpacks[]
 
 tasks.register("bootBuildImageBuildpacks") {
 	doFirst {
-		for(reference in tasks.getByName<BootBuildImage>("bootBuildImage").buildpacks) {
+		for(reference in tasks.getByName<BootBuildImage>("bootBuildImage").buildpacks.get()) {
 			print(reference)
 		}
 	}

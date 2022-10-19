@@ -17,7 +17,6 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +27,7 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
@@ -64,41 +64,11 @@ import org.springframework.util.StringUtils;
  * @since 2.3.0
  */
 @DisableCachingByDefault
-public class BootBuildImage extends DefaultTask {
+public abstract class BootBuildImage extends DefaultTask {
 
 	private static final String BUILDPACK_JVM_VERSION_KEY = "BP_JVM_VERSION";
 
 	private final String projectName;
-
-	private final Property<String> projectVersion;
-
-	private RegularFileProperty archiveFile;
-
-	private Property<JavaVersion> targetJavaVersion;
-
-	private String imageName;
-
-	private String builder;
-
-	private String runImage;
-
-	private Map<String, String> environment = new HashMap<>();
-
-	private boolean cleanCache;
-
-	private boolean verboseLogging;
-
-	private PullPolicy pullPolicy;
-
-	private boolean publish;
-
-	private final ListProperty<String> buildpacks;
-
-	private final ListProperty<String> bindings;
-
-	private String network;
-
-	private final ListProperty<String> tags;
 
 	private final CacheSpec buildCache;
 
@@ -107,15 +77,20 @@ public class BootBuildImage extends DefaultTask {
 	private final DockerSpec docker;
 
 	public BootBuildImage() {
-		this.archiveFile = getProject().getObjects().fileProperty();
-		this.targetJavaVersion = getProject().getObjects().property(JavaVersion.class);
 		this.projectName = getProject().getName();
-		this.projectVersion = getProject().getObjects().property(String.class);
 		Project project = getProject();
-		this.projectVersion.set(getProject().provider(() -> project.getVersion().toString()));
-		this.buildpacks = getProject().getObjects().listProperty(String.class);
-		this.bindings = getProject().getObjects().listProperty(String.class);
-		this.tags = getProject().getObjects().listProperty(String.class);
+		Property<String> projectVersion = project.getObjects().property(String.class)
+				.convention(project.provider(() -> project.getVersion().toString()));
+		getImageName().convention(project.provider(() -> {
+			ImageName imageName = ImageName.of(this.projectName);
+			if ("unspecified".equals(projectVersion.get())) {
+				return ImageReference.of(imageName).toString();
+			}
+			return ImageReference.of(imageName, projectVersion.get()).toString();
+		}));
+		getCleanCache().convention(false);
+		getVerboseLogging().convention(false);
+		getPublish().convention(false);
 		this.buildCache = getProject().getObjects().newInstance(CacheSpec.class);
 		this.launchCache = getProject().getObjects().newInstance(CacheSpec.class);
 		this.docker = getProject().getObjects().newInstance(DockerSpec.class);
@@ -127,9 +102,7 @@ public class BootBuildImage extends DefaultTask {
 	 */
 	@InputFile
 	@PathSensitive(PathSensitivity.RELATIVE)
-	public RegularFileProperty getArchiveFile() {
-		return this.archiveFile;
-	}
+	public abstract RegularFileProperty getArchiveFile();
 
 	/**
 	 * Returns the target Java version of the project (e.g. as provided by the
@@ -138,9 +111,7 @@ public class BootBuildImage extends DefaultTask {
 	 */
 	@Input
 	@Optional
-	public Property<JavaVersion> getTargetJavaVersion() {
-		return this.targetJavaVersion;
-	}
+	public abstract Property<JavaVersion> getTargetJavaVersion();
 
 	/**
 	 * Returns the name of the image that will be built. When {@code null}, the name will
@@ -150,18 +121,8 @@ public class BootBuildImage extends DefaultTask {
 	 */
 	@Input
 	@Optional
-	public String getImageName() {
-		return determineImageReference().toString();
-	}
-
-	/**
-	 * Sets the name of the image that will be built.
-	 * @param imageName name of the image
-	 */
 	@Option(option = "imageName", description = "The name of the image to generate")
-	public void setImageName(String imageName) {
-		this.imageName = imageName;
-	}
+	public abstract Property<String> getImageName();
 
 	/**
 	 * Returns the builder that will be used to build the image. When {@code null}, the
@@ -170,18 +131,8 @@ public class BootBuildImage extends DefaultTask {
 	 */
 	@Input
 	@Optional
-	public String getBuilder() {
-		return this.builder;
-	}
-
-	/**
-	 * Sets the builder that will be used to build the image.
-	 * @param builder the builder
-	 */
 	@Option(option = "builder", description = "The name of the builder image to use")
-	public void setBuilder(String builder) {
-		this.builder = builder;
-	}
+	public abstract Property<String> getBuilder();
 
 	/**
 	 * Returns the run image that will be included in the built image. When {@code null},
@@ -190,88 +141,32 @@ public class BootBuildImage extends DefaultTask {
 	 */
 	@Input
 	@Optional
-	public String getRunImage() {
-		return this.runImage;
-	}
-
-	/**
-	 * Sets the run image that will be included in the built image.
-	 * @param runImage the run image
-	 */
 	@Option(option = "runImage", description = "The name of the run image to use")
-	public void setRunImage(String runImage) {
-		this.runImage = runImage;
-	}
+	public abstract Property<String> getRunImage();
 
 	/**
 	 * Returns the environment that will be used when building the image.
 	 * @return the environment
 	 */
 	@Input
-	public Map<String, String> getEnvironment() {
-		return this.environment;
-	}
-
-	/**
-	 * Sets the environment that will be used when building the image.
-	 * @param environment the environment
-	 */
-	public void setEnvironment(Map<String, String> environment) {
-		this.environment = environment;
-	}
-
-	/**
-	 * Add an entry to the environment that will be used when building the image.
-	 * @param name the name of the entry
-	 * @param value the value of the entry
-	 */
-	public void environment(String name, String value) {
-		this.environment.put(name, value);
-	}
-
-	/**
-	 * Adds entries to the environment that will be used when building the image.
-	 * @param entries the entries to add to the environment
-	 */
-	public void environment(Map<String, String> entries) {
-		this.environment.putAll(entries);
-	}
+	public abstract MapProperty<String, String> getEnvironment();
 
 	/**
 	 * Returns whether caches should be cleaned before packaging.
 	 * @return whether caches should be cleaned
+	 * @since 3.0.0
 	 */
 	@Input
-	public boolean isCleanCache() {
-		return this.cleanCache;
-	}
-
-	/**
-	 * Sets whether caches should be cleaned before packaging.
-	 * @param cleanCache {@code true} to clean the cache, otherwise {@code false}.
-	 */
 	@Option(option = "cleanCache", description = "Clean caches before packaging")
-	public void setCleanCache(boolean cleanCache) {
-		this.cleanCache = cleanCache;
-	}
+	public abstract Property<Boolean> getCleanCache();
 
 	/**
 	 * Whether verbose logging should be enabled while building the image.
 	 * @return whether verbose logging should be enabled
+	 * @since 3.0.0
 	 */
 	@Input
-	public boolean isVerboseLogging() {
-		return this.verboseLogging;
-	}
-
-	/**
-	 * Sets whether verbose logging should be enabled while building the image.
-	 * @param verboseLogging {@code true} to enable verbose logging, otherwise
-	 * {@code false}.
-	 */
-	public void setVerboseLogging(boolean verboseLogging) {
-		this.verboseLogging = verboseLogging;
-	}
+	public abstract Property<Boolean> getVerboseLogging();
 
 	/**
 	 * Returns image pull policy that will be used when building the image.
@@ -279,36 +174,17 @@ public class BootBuildImage extends DefaultTask {
 	 */
 	@Input
 	@Optional
-	public PullPolicy getPullPolicy() {
-		return this.pullPolicy;
-	}
-
-	/**
-	 * Sets image pull policy that will be used when building the image.
-	 * @param pullPolicy image pull policy {@link PullPolicy}
-	 */
 	@Option(option = "pullPolicy", description = "The image pull policy")
-	public void setPullPolicy(PullPolicy pullPolicy) {
-		this.pullPolicy = pullPolicy;
-	}
+	public abstract Property<PullPolicy> getPullPolicy();
 
 	/**
 	 * Whether the built image should be pushed to a registry.
 	 * @return whether the built image should be pushed
+	 * @since 3.0.0
 	 */
 	@Input
-	public boolean isPublish() {
-		return this.publish;
-	}
-
-	/**
-	 * Sets whether the built image should be pushed to a registry.
-	 * @param publish {@code true} the push the built image to a registry. {@code false}.
-	 */
 	@Option(option = "publishImage", description = "Publish the built image to a registry")
-	public void setPublish(boolean publish) {
-		this.publish = publish;
-	}
+	public abstract Property<Boolean> getPublish();
 
 	/**
 	 * Returns the buildpacks that will be used when building the image.
@@ -316,33 +192,7 @@ public class BootBuildImage extends DefaultTask {
 	 */
 	@Input
 	@Optional
-	public List<String> getBuildpacks() {
-		return this.buildpacks.getOrNull();
-	}
-
-	/**
-	 * Sets the buildpacks that will be used when building the image.
-	 * @param buildpacks the buildpack references
-	 */
-	public void setBuildpacks(List<String> buildpacks) {
-		this.buildpacks.set(buildpacks);
-	}
-
-	/**
-	 * Add an entry to the buildpacks that will be used when building the image.
-	 * @param buildpack the buildpack reference
-	 */
-	public void buildpack(String buildpack) {
-		this.buildpacks.add(buildpack);
-	}
-
-	/**
-	 * Adds entries to the buildpacks that will be used when building the image.
-	 * @param buildpacks the buildpack references
-	 */
-	public void buildpacks(List<String> buildpacks) {
-		this.buildpacks.addAll(buildpacks);
-	}
+	public abstract ListProperty<String> getBuildpacks();
 
 	/**
 	 * Returns the volume bindings that will be mounted to the container when building the
@@ -351,36 +201,7 @@ public class BootBuildImage extends DefaultTask {
 	 */
 	@Input
 	@Optional
-	public List<String> getBindings() {
-		return this.bindings.getOrNull();
-	}
-
-	/**
-	 * Sets the volume bindings that will be mounted to the container when building the
-	 * image.
-	 * @param bindings the bindings
-	 */
-	public void setBindings(List<String> bindings) {
-		this.bindings.set(bindings);
-	}
-
-	/**
-	 * Add an entry to the volume bindings that will be mounted to the container when
-	 * building the image.
-	 * @param binding the binding
-	 */
-	public void binding(String binding) {
-		this.bindings.add(binding);
-	}
-
-	/**
-	 * Add entries to the volume bindings that will be mounted to the container when
-	 * building the image.
-	 * @param bindings the bindings
-	 */
-	public void bindings(List<String> bindings) {
-		this.bindings.addAll(bindings);
-	}
+	public abstract ListProperty<String> getBindings();
 
 	/**
 	 * Returns the tags that will be created for the built image.
@@ -388,33 +209,7 @@ public class BootBuildImage extends DefaultTask {
 	 */
 	@Input
 	@Optional
-	public List<String> getTags() {
-		return this.tags.getOrNull();
-	}
-
-	/**
-	 * Sets the tags that will be created for the built image.
-	 * @param tags the tags
-	 */
-	public void setTags(List<String> tags) {
-		this.tags.set(tags);
-	}
-
-	/**
-	 * Add an entry to the tags that will be created for the built image.
-	 * @param tag the tag
-	 */
-	public void tag(String tag) {
-		this.tags.add(tag);
-	}
-
-	/**
-	 * Add entries to the tags that will be created for the built image.
-	 * @param tags the tags
-	 */
-	public void tags(List<String> tags) {
-		this.tags.addAll(tags);
-	}
+	public abstract ListProperty<String> getTags();
 
 	/**
 	 * Returns the network the build container will connect to.
@@ -422,18 +217,8 @@ public class BootBuildImage extends DefaultTask {
 	 */
 	@Input
 	@Optional
-	public String getNetwork() {
-		return this.network;
-	}
-
-	/**
-	 * Sets the network the build container will connect to.
-	 * @param network the network
-	 */
 	@Option(option = "network", description = "Connect detect and build containers to network")
-	public void setNetwork(String network) {
-		this.network = network;
-	}
+	public abstract Property<String> getNetwork();
 
 	/**
 	 * Returns the build cache that will be used when building the image.
@@ -500,19 +285,8 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	BuildRequest createRequest() {
-		return customize(BuildRequest.of(determineImageReference(),
-				(owner) -> new ZipFileTarArchive(this.archiveFile.get().getAsFile(), owner)));
-	}
-
-	private ImageReference determineImageReference() {
-		if (StringUtils.hasText(this.imageName)) {
-			return ImageReference.of(this.imageName);
-		}
-		ImageName imageName = ImageName.of(this.projectName);
-		if ("unspecified".equals(this.projectVersion.get())) {
-			return ImageReference.of(imageName);
-		}
-		return ImageReference.of(imageName, this.projectVersion.get());
+		return customize(BuildRequest.of(getImageName().map(ImageReference::of).get(),
+				(owner) -> new ZipFileTarArchive(getArchiveFile().get().getAsFile(), owner)));
 	}
 
 	private BuildRequest customize(BuildRequest request) {
@@ -520,37 +294,40 @@ public class BootBuildImage extends DefaultTask {
 		request = customizeRunImage(request);
 		request = customizeEnvironment(request);
 		request = customizeCreator(request);
-		request = request.withCleanCache(this.cleanCache);
-		request = request.withVerboseLogging(this.verboseLogging);
+		request = request.withCleanCache(getCleanCache().get());
+		request = request.withVerboseLogging(getVerboseLogging().get());
 		request = customizePullPolicy(request);
 		request = customizePublish(request);
 		request = customizeBuildpacks(request);
 		request = customizeBindings(request);
 		request = customizeTags(request);
 		request = customizeCaches(request);
-		request = request.withNetwork(this.network);
+		request = request.withNetwork(getNetwork().getOrNull());
 		return request;
 	}
 
 	private BuildRequest customizeBuilder(BuildRequest request) {
-		if (StringUtils.hasText(this.builder)) {
-			return request.withBuilder(ImageReference.of(this.builder));
+		String builder = this.getBuilder().getOrNull();
+		if (StringUtils.hasText(builder)) {
+			return request.withBuilder(ImageReference.of(builder));
 		}
 		return request;
 	}
 
 	private BuildRequest customizeRunImage(BuildRequest request) {
-		if (StringUtils.hasText(this.runImage)) {
-			return request.withRunImage(ImageReference.of(this.runImage));
+		String runImage = this.getRunImage().getOrNull();
+		if (StringUtils.hasText(runImage)) {
+			return request.withRunImage(ImageReference.of(runImage));
 		}
 		return request;
 	}
 
 	private BuildRequest customizeEnvironment(BuildRequest request) {
-		if (this.environment != null && !this.environment.isEmpty()) {
-			request = request.withEnv(this.environment);
+		Map<String, String> environment = this.getEnvironment().getOrNull();
+		if (environment != null && !environment.isEmpty()) {
+			request = request.withEnv(environment);
 		}
-		if (this.targetJavaVersion.isPresent() && !request.getEnv().containsKey(BUILDPACK_JVM_VERSION_KEY)) {
+		if (this.getTargetJavaVersion().isPresent() && !request.getEnv().containsKey(BUILDPACK_JVM_VERSION_KEY)) {
 			request = request.withEnv(BUILDPACK_JVM_VERSION_KEY, translateTargetJavaVersion());
 		}
 		return request;
@@ -565,19 +342,20 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizePullPolicy(BuildRequest request) {
-		if (this.pullPolicy != null) {
-			request = request.withPullPolicy(this.pullPolicy);
+		PullPolicy pullPolicy = getPullPolicy().getOrNull();
+		if (pullPolicy != null) {
+			request = request.withPullPolicy(pullPolicy);
 		}
 		return request;
 	}
 
 	private BuildRequest customizePublish(BuildRequest request) {
-		request = request.withPublish(this.publish);
+		request = request.withPublish(getPublish().get());
 		return request;
 	}
 
 	private BuildRequest customizeBuildpacks(BuildRequest request) {
-		List<String> buildpacks = this.buildpacks.getOrNull();
+		List<String> buildpacks = getBuildpacks().getOrNull();
 		if (buildpacks != null && !buildpacks.isEmpty()) {
 			return request.withBuildpacks(buildpacks.stream().map(BuildpackReference::of).toList());
 		}
@@ -585,7 +363,7 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizeBindings(BuildRequest request) {
-		List<String> bindings = this.bindings.getOrNull();
+		List<String> bindings = getBindings().getOrNull();
 		if (bindings != null && !bindings.isEmpty()) {
 			return request.withBindings(bindings.stream().map(Binding::of).toList());
 		}
@@ -593,7 +371,7 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizeTags(BuildRequest request) {
-		List<String> tags = this.tags.getOrNull();
+		List<String> tags = getTags().getOrNull();
 		if (tags != null && !tags.isEmpty()) {
 			return request.withTags(tags.stream().map(ImageReference::of).toList());
 		}
@@ -611,7 +389,7 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	private String translateTargetJavaVersion() {
-		return this.targetJavaVersion.get().getMajorVersion() + ".*";
+		return this.getTargetJavaVersion().get().getMajorVersion() + ".*";
 	}
 
 }

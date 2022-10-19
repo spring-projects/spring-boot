@@ -3,7 +3,5 @@ plugins {
 }
 
 task buildInfo(type: org.springframework.boot.gradle.tasks.buildinfo.BuildInfo) {
-	properties {
-		time = null
-	}
+	excludes = ["time"]
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.gradle.api.tasks.TaskProvider;
 import org.gradle.jvm.tasks.Jar;
 
 import org.springframework.boot.gradle.tasks.buildinfo.BuildInfo;
-import org.springframework.boot.gradle.tasks.buildinfo.BuildInfoProperties;
 
 /**
  * Entry point to Spring Boot's Gradle DSL.
@@ -92,12 +91,8 @@ public class SpringBootExtension {
 				this::configureBuildInfoTask);
 		this.project.getPlugins().withType(JavaPlugin.class, (plugin) -> {
 			tasks.named(JavaPlugin.CLASSES_TASK_NAME).configure((task) -> task.dependsOn(bootBuildInfo));
-			this.project.afterEvaluate((evaluated) -> bootBuildInfo.configure((buildInfo) -> {
-				BuildInfoProperties properties = buildInfo.getProperties();
-				if (properties.getArtifact() == null) {
-					properties.setArtifact(determineArtifactBaseName());
-				}
-			}));
+			bootBuildInfo.configure((buildInfo) -> buildInfo.getProperties().getArtifact()
+					.convention(this.project.provider(() -> determineArtifactBaseName())));
 		});
 		if (configurer != null) {
 			bootBuildInfo.configure(configurer);
@@ -107,8 +102,8 @@ public class SpringBootExtension {
 	private void configureBuildInfoTask(BuildInfo task) {
 		task.setGroup(BasePlugin.BUILD_GROUP);
 		task.setDescription("Generates a META-INF/build-info.properties file.");
-		task.getConventionMapping().map("destinationDir",
-				() -> new File(determineMainSourceSetResourcesOutputDir(), "META-INF"));
+		task.getDestinationDir().convention(this.project.getLayout()
+				.dir(this.project.provider(() -> new File(determineMainSourceSetResourcesOutputDir(), "META-INF"))));
 	}
 
 	private File determineMainSourceSetResourcesOutputDir() {

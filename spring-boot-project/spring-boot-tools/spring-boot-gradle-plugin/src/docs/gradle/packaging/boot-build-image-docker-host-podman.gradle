@@ -18,7 +18,7 @@ tasks.named("bootBuildImage") {
 
 tasks.register("bootBuildImageDocker") {
 	doFirst {
-		println("host=${tasks.bootBuildImage.docker.host}")
-		println("bindHostToBuilder=${tasks.bootBuildImage.docker.bindHostToBuilder}")
+		println("host=${tasks.bootBuildImage.docker.host.get()}")
+		println("bindHostToBuilder=${tasks.bootBuildImage.docker.bindHostToBuilder.get()}")
 	}
 }

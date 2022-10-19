@@ -13,15 +13,15 @@ tasks.named<BootJar>("bootJar") {
 // tag::docker-host[]
 tasks.named<BootBuildImage>("bootBuildImage") {
 	docker {
-		host = "unix:///run/user/1000/podman/podman.sock"
-		isBindHostToBuilder = true
+		host.set("unix:///run/user/1000/podman/podman.sock")
+		bindHostToBuilder.set(true)
 	}
 }
 // end::docker-host[]
 
 tasks.register("bootBuildImageDocker") {
 	doFirst {
-		println("host=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.host}")
-		println("bindHostToBuilder=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.isBindHostToBuilder}")
+		println("host=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.host.get()}")
+		println("bindHostToBuilder=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.bindHostToBuilder.get()}")
 	}
 }

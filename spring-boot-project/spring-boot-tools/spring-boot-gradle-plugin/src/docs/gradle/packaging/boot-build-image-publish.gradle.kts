@@ -12,12 +12,12 @@ tasks.named<BootJar>("bootJar") {
 
 // tag::publish[]
 tasks.named<BootBuildImage>("bootBuildImage") {
-	imageName = "docker.example.com/library/${project.name}"
-	isPublish = true
+	imageName.set("docker.example.com/library/${project.name}")
+	publish.set(true)
 	docker {
 		publishRegistry {
-			username = "user"
-			password = "secret"
+			username.set("user")
+			password.set("secret")
 		}
 	}
 }
@@ -25,6 +25,6 @@ tasks.named<BootBuildImage>("bootBuildImage") {
 
 tasks.register("bootBuildImagePublish") {
 	doFirst {
-		println(tasks.getByName<BootBuildImage>("bootBuildImage").isPublish)
+		println(tasks.getByName<BootBuildImage>("bootBuildImage").publish.get())
 	}
 }

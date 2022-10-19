@@ -18,6 +18,6 @@ tasks.named("bootBuildImage") {
 
 tasks.register("bootBuildImageEnvironment") {
 	doFirst {
-		bootBuildImage.environment.each { name, value -> println "$name=$value" }
+		bootBuildImage.environment.get().each { name, value -> println "$name=$value" }
 	}
 }

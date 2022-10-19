@@ -451,7 +451,8 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 
 	@Test
 	void jarWhenLayersDisabledShouldNotContainLayersIndex() throws IOException {
-		List<String> entryNames = getEntryNames(createLayeredJar((configuration) -> configuration.setEnabled(false)));
+		List<String> entryNames = getEntryNames(
+				createLayeredJar((configuration) -> configuration.getEnabled().set(false)));
 		assertThat(entryNames).doesNotContain(this.indexPath + "layers.idx");
 	}
 
@@ -519,7 +520,8 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 				dependencies.intoLayer("my-internal-deps", (spec) -> spec.include("com.example:*:*"));
 				dependencies.intoLayer("my-deps");
 			});
-			layered.setLayerOrder("my-deps", "my-internal-deps", "my-snapshot-deps", "resources", "application");
+			layered.getLayerOrder()
+					.set(List.of("my-deps", "my-internal-deps", "my-snapshot-deps", "resources", "application"));
 		});
 		try (JarFile jarFile = new JarFile(jar)) {
 			List<String> entryNames = getEntryNames(jar);
@@ -567,7 +569,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	@Test
 	void whenArchiveIsLayeredAndIncludeLayerToolsIsFalseThenLayerToolsAreNotAddedToTheJar() throws IOException {
 		List<String> entryNames = getEntryNames(
-				createLayeredJar((configuration) -> configuration.setIncludeLayerTools(false)));
+				createLayeredJar((configuration) -> configuration.getIncludeLayerTools().set(false)));
 		assertThat(entryNames)
 				.doesNotContain(this.indexPath + "layers/dependencies/lib/spring-boot-jarmode-layertools.jar");
 	}

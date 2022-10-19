@@ -112,7 +112,7 @@ class BuildInfoIntegrationTests {
 	void reproducibleOutputWithFixedTime() throws IOException, InterruptedException {
 		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo").getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
-		File buildInfoProperties = new File(this.gradleBuild.getProjectDir(), "build/build-info.properties");
+		File buildInfoProperties = new File(this.gradleBuild.getProjectDir(), "build/buildInfo/build-info.properties");
 		String firstHash = FileUtils.sha1Hash(buildInfoProperties);
 		assertThat(buildInfoProperties.delete()).isTrue();
 		Thread.sleep(1500);
@@ -123,17 +123,7 @@ class BuildInfoIntegrationTests {
 	}
 
 	@TestTemplate
-	void removePropertiesUsingNulls() {
-		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		Properties buildInfoProperties = buildInfoProperties();
-		assertThat(buildInfoProperties).doesNotContainKey("build.group");
-		assertThat(buildInfoProperties).doesNotContainKey("build.artifact");
-		assertThat(buildInfoProperties).doesNotContainKey("build.version");
-		assertThat(buildInfoProperties).doesNotContainKey("build.name");
-	}
-
-	@TestTemplate
-	void removePropertiesUsingEmptyStrings() {
+	void excludeProperties() {
 		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		Properties buildInfoProperties = buildInfoProperties();
 		assertThat(buildInfoProperties).doesNotContainKey("build.group");
@@ -143,7 +133,7 @@ class BuildInfoIntegrationTests {
 	}
 
 	private Properties buildInfoProperties() {
-		File file = new File(this.gradleBuild.getProjectDir(), "build/build-info.properties");
+		File file = new File(this.gradleBuild.getProjectDir(), "build/buildInfo/build-info.properties");
 		assertThat(file).isFile();
 		Properties properties = new Properties();
 		try (FileReader reader = new FileReader(file)) {

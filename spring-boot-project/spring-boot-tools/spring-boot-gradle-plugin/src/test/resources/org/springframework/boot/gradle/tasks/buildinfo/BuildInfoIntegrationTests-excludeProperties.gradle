@@ -6,11 +6,5 @@ group = 'foo'
 version = '0.1.0'
 
 task buildInfo(type: org.springframework.boot.gradle.tasks.buildinfo.BuildInfo) {
-	destinationDir project.buildDir
-	properties {
-		group = null
-		artifact = null
-		version = null
-		name = null
-	}
+	excludes = ['group', 'artifact', 'version', 'name']
 }

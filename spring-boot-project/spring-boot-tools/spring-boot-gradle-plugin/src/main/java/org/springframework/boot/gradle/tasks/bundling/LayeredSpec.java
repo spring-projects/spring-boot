@@ -27,6 +27,8 @@ import javax.inject.Inject;
 
 import org.gradle.api.Action;
 import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 
@@ -49,18 +51,11 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 2.3.0
  */
-public class LayeredSpec {
-
-	private boolean includeLayerTools = true;
-
-	private boolean enabled = true;
+public abstract class LayeredSpec {
 
 	private ApplicationSpec application;
 
 	private DependenciesSpec dependencies;
-
-	@Optional
-	private List<String> layerOrder;
 
 	private Layers layers;
 
@@ -68,45 +63,26 @@ public class LayeredSpec {
 	public LayeredSpec(ObjectFactory objects) {
 		this.application = objects.newInstance(ApplicationSpec.class);
 		this.dependencies = objects.newInstance(DependenciesSpec.class);
+		getEnabled().convention(true);
+		getIncludeLayerTools().convention(true);
 	}
 
 	/**
 	 * Returns whether the layer tools should be included as a dependency in the layered
 	 * archive.
 	 * @return whether the layer tools should be included
+	 * @since 3.0.0
 	 */
 	@Input
-	public boolean isIncludeLayerTools() {
-		return this.includeLayerTools;
-	}
-
-	/**
-	 * Sets whether the layer tools should be included as a dependency in the layered
-	 * archive.
-	 * @param includeLayerTools {@code true} if the layer tools should be included,
-	 * otherwise {@code false}
-	 */
-	public void setIncludeLayerTools(boolean includeLayerTools) {
-		this.includeLayerTools = includeLayerTools;
-	}
+	public abstract Property<Boolean> getIncludeLayerTools();
 
 	/**
 	 * Returns whether the layers.idx should be included in the archive.
 	 * @return whether the layers.idx should be included
+	 * @since 3.0.0
 	 */
 	@Input
-	public boolean isEnabled() {
-		return this.enabled;
-	}
-
-	/**
-	 * Sets whether the layers.idx should be included in the archive.
-	 * @param enabled {@code true} layers.idx should be included in the archive, otherwise
-	 * {@code false}
-	 */
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
-	}
+	public abstract Property<Boolean> getEnabled();
 
 	/**
 	 * Returns the {@link ApplicationSpec} that controls the layers to which application
@@ -168,25 +144,8 @@ public class LayeredSpec {
 	 * @return the layer order
 	 */
 	@Input
-	public List<String> getLayerOrder() {
-		return this.layerOrder;
-	}
-
-	/**
-	 * Sets the order of the layers in the archive from least to most frequently changing.
-	 * @param layerOrder the layer order
-	 */
-	public void setLayerOrder(String... layerOrder) {
-		this.layerOrder = Arrays.asList(layerOrder);
-	}
-
-	/**
-	 * Sets the order of the layers in the archive from least to most frequently changing.
-	 * @param layerOrder the layer order
-	 */
-	public void setLayerOrder(List<String> layerOrder) {
-		this.layerOrder = layerOrder;
-	}
+	@Optional
+	public abstract ListProperty<String> getLayerOrder();
 
 	/**
 	 * Return this configuration as a {@link Layers} instance. This method should only be
@@ -203,12 +162,13 @@ public class LayeredSpec {
 	}
 
 	private Layers createLayers() {
-		if (this.layerOrder == null || this.layerOrder.isEmpty()) {
+		List<String> layerOrder = getLayerOrder().getOrNull();
+		if (layerOrder == null || layerOrder.isEmpty()) {
 			Assert.state(this.application.isEmpty() && this.dependencies.isEmpty(),
 					"The 'layerOrder' must be defined when using custom layering");
 			return Layers.IMPLICIT;
 		}
-		List<Layer> layers = this.layerOrder.stream().map(Layer::new).toList();
+		List<Layer> layers = layerOrder.stream().map(Layer::new).toList();
 		return new CustomLayers(layers, this.application.asSelectors(), this.dependencies.asSelectors());
 	}
 

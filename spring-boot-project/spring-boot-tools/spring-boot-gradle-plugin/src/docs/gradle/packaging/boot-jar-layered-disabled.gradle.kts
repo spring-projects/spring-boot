@@ -12,7 +12,7 @@ tasks.named<BootJar>("bootJar") {
 // tag::layered[]
 tasks.named<BootJar>("bootJar") {
 	layered {
-		isEnabled = false
+		enabled.set(false)
 	}
 }
 // end::layered[]

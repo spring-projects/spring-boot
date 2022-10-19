@@ -60,13 +60,27 @@ include::../gradle/integrating-with-actuator/build-info-custom-values.gradle[tag
 include::../gradle/integrating-with-actuator/build-info-custom-values.gradle.kts[tags=custom-values]
 ----
 
-NOTE: To omit any of the default properties from the generated build information, set its value to `null`.
+To exclude any of the default properties from the generated build information, add its name to the excludes.
+For example, the `time` property can be excluded as follows:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/integrating-with-actuator/build-info-exclude-time.gradle[tags=exclude-time]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/integrating-with-actuator/build-info-exclude-time.gradle.kts[tags=exclude-time]
+----
+
 
 The default value for `build.time` is the instant at which the project is being built.
 A side-effect of this is that the task will never be up-to-date.
 As a result, builds will take longer as more tasks, including the project's tests, will have to be executed.
 Another side-effect is that the task's output will always change and, therefore, the build will not be truly repeatable.
-If you value build performance or repeatability more highly than the accuracy of the `build.time` property, set `time` to `null` or a fixed value.
+If you value build performance or repeatability more highly than the accuracy of the `build.time` property, exclude the `time` property as shown in the preceding example.
 
 Additional properties can also be added to the build information:
 
