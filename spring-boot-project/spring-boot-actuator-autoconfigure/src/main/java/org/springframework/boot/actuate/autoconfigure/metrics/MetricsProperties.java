@@ -194,35 +194,16 @@ public class MetricsProperties {
 				 */
 				private String metricName = "http.server.requests";
 
-				/**
-				 * Whether the trailing slash should be ignored when recording metrics.
-				 */
-				private boolean ignoreTrailingSlash = true;
-
-				/**
-				 * Auto-timed request settings.
-				 */
-				@NestedConfigurationProperty
-				private final AutoTimeProperties autotime = new AutoTimeProperties();
-
-				public AutoTimeProperties getAutotime() {
-					return this.autotime;
-				}
-
+				@Deprecated(since = "3.0.0", forRemoval = true)
+				@DeprecatedConfigurationProperty(replacement = "management.observations.http.server.requests.name")
 				public String getMetricName() {
 					return this.metricName;
 				}
 
+				@Deprecated(since = "3.0.0", forRemoval = true)
+				@DeprecatedConfigurationProperty(replacement = "management.observations.http.server.requests.name")
 				public void setMetricName(String metricName) {
 					this.metricName = metricName;
-				}
-
-				public boolean isIgnoreTrailingSlash() {
-					return this.ignoreTrailingSlash;
-				}
-
-				public void setIgnoreTrailingSlash(boolean ignoreTrailingSlash) {
-					this.ignoreTrailingSlash = ignoreTrailingSlash;
 				}
 
 			}

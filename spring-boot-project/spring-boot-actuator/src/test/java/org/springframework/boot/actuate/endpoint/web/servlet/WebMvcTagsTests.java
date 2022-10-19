@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Brian Clozel
  * @author Michael McFadyen
  */
+@SuppressWarnings("removal")
 class WebMvcTagsTests {
 
 	private final MockHttpServletRequest request = new MockHttpServletRequest();

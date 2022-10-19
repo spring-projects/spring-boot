@@ -38,8 +38,14 @@ public class ObservationProperties {
 
 		private final Client client = new Client();
 
+		private final Server server = new Server();
+
 		public Client getClient() {
 			return this.client;
+		}
+
+		public Server getServer() {
+			return this.server;
 		}
 
 		public static class Client {
@@ -55,6 +61,34 @@ public class ObservationProperties {
 				/**
 				 * Name of the observation for client requests. If empty, will use the
 				 * default "http.client.requests".
+				 */
+				private String name;
+
+				public String getName() {
+					return this.name;
+				}
+
+				public void setName(String name) {
+					this.name = name;
+				}
+
+			}
+
+		}
+
+		public static class Server {
+
+			private final ServerRequests requests = new ServerRequests();
+
+			public ServerRequests getRequests() {
+				return this.requests;
+			}
+
+			public static class ServerRequests {
+
+				/**
+				 * Name of the observation for server requests. If empty, will use the
+				 * default "http.server.requests".
 				 */
 				private String name;
 

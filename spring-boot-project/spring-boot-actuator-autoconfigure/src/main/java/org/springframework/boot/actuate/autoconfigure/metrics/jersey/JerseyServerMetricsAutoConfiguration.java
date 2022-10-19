@@ -57,6 +57,7 @@ import org.springframework.core.annotation.Order;
 @ConditionalOnClass({ ResourceConfig.class, MetricsApplicationEventListener.class })
 @ConditionalOnBean({ MeterRegistry.class, ResourceConfig.class })
 @EnableConfigurationProperties(MetricsProperties.class)
+@SuppressWarnings("removal")
 public class JerseyServerMetricsAutoConfiguration {
 
 	private final MetricsProperties properties;
@@ -75,9 +76,8 @@ public class JerseyServerMetricsAutoConfiguration {
 	public ResourceConfigCustomizer jerseyServerMetricsResourceConfigCustomizer(MeterRegistry meterRegistry,
 			JerseyTagsProvider tagsProvider) {
 		Server server = this.properties.getWeb().getServer();
-		return (config) -> config.register(
-				new MetricsApplicationEventListener(meterRegistry, tagsProvider, server.getRequest().getMetricName(),
-						server.getRequest().getAutotime().isEnabled(), new AnnotationUtilsAnnotationFinder()));
+		return (config) -> config.register(new MetricsApplicationEventListener(meterRegistry, tagsProvider,
+				server.getRequest().getMetricName(), true, new AnnotationUtilsAnnotationFinder()));
 	}
 
 	@Bean

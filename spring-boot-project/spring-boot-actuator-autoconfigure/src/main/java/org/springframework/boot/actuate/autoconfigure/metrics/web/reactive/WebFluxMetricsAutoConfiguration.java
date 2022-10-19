@@ -51,6 +51,7 @@ import org.springframework.core.annotation.Order;
 		SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnBean(MeterRegistry.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
+@SuppressWarnings("removal")
 public class WebFluxMetricsAutoConfiguration {
 
 	private final MetricsProperties properties;
@@ -62,15 +63,13 @@ public class WebFluxMetricsAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(WebFluxTagsProvider.class)
 	public DefaultWebFluxTagsProvider webFluxTagsProvider(ObjectProvider<WebFluxTagsContributor> contributors) {
-		return new DefaultWebFluxTagsProvider(this.properties.getWeb().getServer().getRequest().isIgnoreTrailingSlash(),
-				contributors.orderedStream().toList());
+		return new DefaultWebFluxTagsProvider(true, contributors.orderedStream().toList());
 	}
 
 	@Bean
 	public MetricsWebFilter webfluxMetrics(MeterRegistry registry, WebFluxTagsProvider tagConfigurer) {
 		ServerRequest request = this.properties.getWeb().getServer().getRequest();
-		return new MetricsWebFilter(registry, tagConfigurer, request.getMetricName(),
-				new PropertiesAutoTimer(request.getAutotime()));
+		return new MetricsWebFilter(registry, tagConfigurer, request.getMetricName(), new PropertiesAutoTimer(null));
 	}
 
 	@Bean

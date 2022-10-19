@@ -742,10 +742,7 @@ Metrics are tagged by the name of the executor, which is derived from the bean n
 ==== Spring MVC Metrics
 Auto-configuration enables the instrumentation of all requests handled by Spring MVC controllers and functional handlers.
 By default, metrics are generated with the name, `http.server.requests`.
-You can customize the name by setting the configprop:management.metrics.web.server.request.metric-name[] property.
-
-`@Timed` annotations are supported on `@Controller` classes and `@RequestMapping` methods (see <<actuator#actuator.metrics.supported.timed-annotation>> for details).
-If you do not want to record metrics for all Spring MVC requests, you can set configprop:management.metrics.web.server.request.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
+You can customize the name by setting the configprop:management.observations.http.server.requests.name[] property.
 
 By default, Spring MVC related metrics are tagged with the following information:
 
@@ -784,10 +781,7 @@ To customize the filter, provide a `@Bean` that implements `FilterRegistrationBe
 ==== Spring WebFlux Metrics
 Auto-configuration enables the instrumentation of all requests handled by Spring WebFlux controllers and functional handlers.
 By default, metrics are generated with the name, `http.server.requests`.
-You can customize the name by setting the configprop:management.metrics.web.server.request.metric-name[] property.
-
-`@Timed` annotations are supported on `@Controller` classes and `@RequestMapping` methods (see <<actuator#actuator.metrics.supported.timed-annotation>> for details).
-If you do not want to record metrics for all Spring WebFlux requests, you can set configprop:management.metrics.web.server.request.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
+You can customize the name by setting the configprop:management.observations.http.server.requests.name[] property.
 
 By default, WebFlux related metrics are tagged with the following information:
 
@@ -823,10 +817,7 @@ Applications can opt in and record exceptions by <<web#web.reactive.webflux.erro
 ==== Jersey Server Metrics
 Auto-configuration enables the instrumentation of all requests handled by the Jersey JAX-RS implementation.
 By default, metrics are generated with the name, `http.server.requests`.
-You can customize the name by setting the configprop:management.metrics.web.server.request.metric-name[] property.
-
-`@Timed` annotations are supported on request-handling classes and methods (see <<actuator#actuator.metrics.supported.timed-annotation>> for details).
-If you do not want to record metrics for all Jersey requests, you can set configprop:management.metrics.web.server.request.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
+You can customize the name by setting the configprop:management.observations.http.server.requests.name[] property.
 
 By default, Jersey server metrics are tagged with the following information:
 

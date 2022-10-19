@@ -1947,16 +1947,36 @@
     {
       "name": "management.metrics.web.server.request.autotime.enabled",
       "description": "Whether to automatically time web server requests.",
-      "defaultValue": true
+      "defaultValue": true,
+      "deprecation": {
+        "level": "error",
+        "reason": "Should be applied at the ObservationRegistry level."
+      }
     },
     {
       "name": "management.metrics.web.server.request.autotime.percentiles",
-      "description": "Computed non-aggregable percentiles to publish."
+      "description": "Computed non-aggregable percentiles to publish.",
+      "deprecation": {
+        "level": "error",
+        "reason": "Should be applied at the ObservationRegistry level."
+      }
     },
     {
       "name": "management.metrics.web.server.request.autotime.percentiles-histogram",
       "description": "Whether percentile histograms should be published.",
-      "defaultValue": false
+      "defaultValue": false,
+      "deprecation": {
+        "level": "error",
+        "reason": "Should be applied at the ObservationRegistry level."
+      }
+    },
+    {
+      "name": "management.metrics.web.server.request.ignore-trailing-slash",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error",
+        "reason": "Not needed anymore, direct instrumentation in Spring MVC."
+      }
     },
     {
       "name": "management.metrics.web.server.requests-metric-name",

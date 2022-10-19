@@ -15,6 +15,6 @@
  */
 
 /**
- * Auto-configuration for Spring MVC actuator metrics.
+ * Auto-configuration for Spring MVC observation support.
  */
-package org.springframework.boot.actuate.autoconfigure.metrics.web.servlet;
+package org.springframework.boot.actuate.autoconfigure.observation.web.servlet;

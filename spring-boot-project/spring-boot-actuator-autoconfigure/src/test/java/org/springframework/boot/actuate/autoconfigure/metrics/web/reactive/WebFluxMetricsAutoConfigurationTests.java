@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.web.reactive;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -47,6 +48,7 @@ import static org.mockito.Mockito.mock;
  * @author Madhura Bhave
  */
 @ExtendWith(OutputCaptureExtension.class)
+@Disabled("until gh-32539 is fixed")
 class WebFluxMetricsAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
