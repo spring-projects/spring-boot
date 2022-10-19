@@ -62,7 +62,7 @@ Open your favorite text editor and add the following:
 		<!-- Additional lines to be added here... -->
 
 ifeval::["{spring-boot-artifactory-repo}" != "release"]
-		<!-- (you do not need this if you are using a .RELEASE version) -->
+		<!-- (you only need this if you are using a milestone or snapshot version) -->
 		<repositories>
 			<repository>
 				<id>spring-snapshots</id>
@@ -160,10 +160,13 @@ See the {spring-framework-docs}/web.html#mvc[MVC section] in the Spring Referenc
 
 
 
-[[getting-started.first-application.code.enable-auto-configuration]]
-==== The @EnableAutoConfiguration Annotation
-The second class-level annotation is `@EnableAutoConfiguration`.
-This annotation tells Spring Boot to "`guess`" how you want to configure Spring, based on the jar dependencies that you have added.
+[[getting-started.first-application.code.spring-boot-application]]
+==== The @SpringBootApplication Annotation
+The second class-level annotation is `@SpringBootApplication`.
+This annotation is known as a _meta-annotation_, it combines `@SpringBootConfiguration`, `@EnableAutoConfiguration` and `@ComponentScan`.
+
+Of those, the annotation we're most interested in here is `@EnableAutoConfiguration`.
+`@EnableAutoConfiguration` tells Spring Boot to "`guess`" how you want to configure Spring, based on the jar dependencies that you have added.
 Since `spring-boot-starter-web` added Tomcat and Spring MVC, the auto-configuration assumes that you are developing a web application and sets up Spring accordingly.
 
 .Starters and Auto-configuration
