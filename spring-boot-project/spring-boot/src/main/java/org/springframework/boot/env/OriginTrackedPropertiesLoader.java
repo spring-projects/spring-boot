@@ -42,6 +42,7 @@ import org.springframework.util.Assert;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Thiago Hirata
+ * @author Guirong Hu
  */
 class OriginTrackedPropertiesLoader {
 
@@ -90,12 +91,12 @@ class OriginTrackedPropertiesLoader {
 						if (document.isEmpty() && !documents.isEmpty()) {
 							document = documents.remove(documents.size() - 1);
 						}
-						reader.setLastLineCommentPrefix(commentPrefixCharacter);
+						reader.setLastLineCommentPrefixCharacter(commentPrefixCharacter);
 						reader.skipComment();
 					}
 				}
 				else {
-					reader.setLastLineCommentPrefix(-1);
+					reader.setLastLineCommentPrefixCharacter(-1);
 					loadKeyAndValue(expandLists, document, reader, buffer);
 				}
 			}
@@ -197,7 +198,7 @@ class OriginTrackedPropertiesLoader {
 
 		private int character;
 
-		private int lastLineCommentPrefix;
+		private int lastLineCommentPrefixCharacter;
 
 		CharacterReader(Resource resource) throws IOException {
 			this.reader = new LineNumberReader(
@@ -233,8 +234,8 @@ class OriginTrackedPropertiesLoader {
 			}
 		}
 
-		private void setLastLineCommentPrefix(int lastLineCommentPrefix) {
-			this.lastLineCommentPrefix = lastLineCommentPrefix;
+		private void setLastLineCommentPrefixCharacter(int lastLineCommentPrefixCharacter) {
+			this.lastLineCommentPrefixCharacter = lastLineCommentPrefixCharacter;
 		}
 
 		private void skipComment() throws IOException {
@@ -307,7 +308,7 @@ class OriginTrackedPropertiesLoader {
 		}
 
 		boolean isSameLastLineCommentPrefix() {
-			return this.lastLineCommentPrefix == this.character;
+			return this.lastLineCommentPrefixCharacter == this.character;
 		}
 
 		boolean isCommentPrefixCharacter() {
