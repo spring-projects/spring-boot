@@ -189,6 +189,7 @@ class ConfigurationPropertiesReportEndpointTests {
 						}));
 	}
 
+	@Test
 	void sanitizeLists() {
 		new ApplicationContextRunner()
 				.withUserConfiguration(EndpointConfigWithShowNever.class, SensiblePropertiesConfiguration.class)
