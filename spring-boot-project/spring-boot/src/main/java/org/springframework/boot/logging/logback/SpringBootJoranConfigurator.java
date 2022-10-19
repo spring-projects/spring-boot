@@ -55,6 +55,7 @@ import org.springframework.aot.hint.TypeReference;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.boot.logging.LoggingInitializationContext;
+import org.springframework.core.CollectionFactory;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -320,7 +321,7 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		}
 
 		private InputStream asInputStream(Map<String, String> patternRuleRegistry) {
-			Properties properties = new Properties();
+			Properties properties = CollectionFactory.createSortedProperties(true);
 			patternRuleRegistry.forEach(properties::setProperty);
 			ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 			try {
