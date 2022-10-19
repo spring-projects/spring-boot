@@ -14,30 +14,34 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
+package org.springframework.boot.actuate.autoconfigure.observation.web.client;
 
 import io.micrometer.common.KeyValues;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.observation.Observation;
 
-import org.springframework.boot.actuate.metrics.web.client.RestTemplateExchangeTagsProvider;
-import org.springframework.http.client.observation.ClientRequestObservationContext;
-import org.springframework.http.client.observation.ClientRequestObservationConvention;
+import org.springframework.boot.actuate.metrics.web.reactive.client.WebClientExchangeTagsProvider;
+import org.springframework.web.reactive.function.client.ClientRequest;
+import org.springframework.web.reactive.function.client.ClientRequestObservationContext;
+import org.springframework.web.reactive.function.client.ClientRequestObservationConvention;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * Adapter class that applies {@link RestTemplateExchangeTagsProvider} tags as a
+ * Adapter class that applies {@link WebClientExchangeTagsProvider} tags as a
  * {@link ClientRequestObservationConvention}.
  *
  * @author Brian Clozel
  */
-@SuppressWarnings({ "removal" })
-class ClientHttpObservationConventionAdapter implements ClientRequestObservationConvention {
+@SuppressWarnings({ "deprecation", "removal" })
+class ClientObservationConventionAdapter implements ClientRequestObservationConvention {
+
+	private static final String URI_TEMPLATE_ATTRIBUTE = WebClient.class.getName() + ".uriTemplate";
 
 	private final String metricName;
 
-	private final RestTemplateExchangeTagsProvider tagsProvider;
+	private final WebClientExchangeTagsProvider tagsProvider;
 
-	ClientHttpObservationConventionAdapter(String metricName, RestTemplateExchangeTagsProvider tagsProvider) {
+	ClientObservationConventionAdapter(String metricName, WebClientExchangeTagsProvider tagsProvider) {
 		this.metricName = metricName;
 		this.tagsProvider = tagsProvider;
 	}
@@ -48,15 +52,24 @@ class ClientHttpObservationConventionAdapter implements ClientRequestObservation
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public KeyValues getLowCardinalityKeyValues(ClientRequestObservationContext context) {
 		KeyValues keyValues = KeyValues.empty();
-		Iterable<Tag> tags = this.tagsProvider.getTags(context.getUriTemplate(), context.getCarrier(),
-				context.getResponse());
+		mutateClientRequest(context);
+		Iterable<Tag> tags = this.tagsProvider.tags(context.getCarrier(), context.getResponse(), context.getError());
 		for (Tag tag : tags) {
 			keyValues = keyValues.and(tag.getKey(), tag.getValue());
 		}
 		return keyValues;
+	}
+
+	/*
+	 * {@link WebClientExchangeTagsProvider} relies on a request attribute to get the URI
+	 * template, we need to adapt to that.
+	 */
+	private static void mutateClientRequest(ClientRequestObservationContext context) {
+		ClientRequest clientRequest = ClientRequest.from(context.getCarrier())
+				.attribute(URI_TEMPLATE_ATTRIBUTE, context.getUriTemplate()).build();
+		context.setCarrier(clientRequest);
 	}
 
 	@Override

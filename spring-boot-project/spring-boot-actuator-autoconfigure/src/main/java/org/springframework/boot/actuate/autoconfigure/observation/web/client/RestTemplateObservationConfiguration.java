@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
+package org.springframework.boot.actuate.autoconfigure.observation.web.client;
 
 import io.micrometer.observation.ObservationRegistry;
 
