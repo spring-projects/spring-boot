@@ -56,6 +56,7 @@ import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContrib
 import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.core.CollectionFactory;
+import org.springframework.core.NativeDetector;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -110,7 +111,7 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 	@Override
 	public void processModel(Model model) {
 		super.processModel(model);
-		if (isAotProcessingInProgress()) {
+		if (!NativeDetector.inNativeImage() && isAotProcessingInProgress()) {
 			getContext().putObject(BeanFactoryInitializationAotContribution.class.getName(),
 					new LogbackConfigurationAotContribution(model,
 							getModelInterpretationContext().getBeanDescriptionCache(),
