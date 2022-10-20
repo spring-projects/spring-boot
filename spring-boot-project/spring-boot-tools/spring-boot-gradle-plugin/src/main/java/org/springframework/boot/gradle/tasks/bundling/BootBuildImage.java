@@ -68,6 +68,8 @@ public abstract class BootBuildImage extends DefaultTask {
 
 	private static final String BUILDPACK_JVM_VERSION_KEY = "BP_JVM_VERSION";
 
+	private final Property<PullPolicy> pullPolicy;
+
 	private final String projectName;
 
 	private final CacheSpec buildCache;
@@ -94,6 +96,7 @@ public abstract class BootBuildImage extends DefaultTask {
 		this.buildCache = getProject().getObjects().newInstance(CacheSpec.class);
 		this.launchCache = getProject().getObjects().newInstance(CacheSpec.class);
 		this.docker = getProject().getObjects().newInstance(DockerSpec.class);
+		this.pullPolicy = getProject().getObjects().property(PullPolicy.class);
 	}
 
 	/**
@@ -175,7 +178,17 @@ public abstract class BootBuildImage extends DefaultTask {
 	@Input
 	@Optional
 	@Option(option = "pullPolicy", description = "The image pull policy")
-	public abstract Property<String> getPullPolicy();
+	public Property<PullPolicy> getPullPolicy() {
+		return this.pullPolicy;
+	}
+
+	/**
+	 * Sets image pull policy that will be used when building the image.
+	 * @param pullPolicy the pull policy to use
+	 */
+	public void setPullPolicy(String pullPolicy) {
+		getPullPolicy().set(PullPolicy.valueOf(pullPolicy));
+	}
 
 	/**
 	 * Whether the built image should be pushed to a registry.
@@ -342,7 +355,7 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizePullPolicy(BuildRequest request) {
-		PullPolicy pullPolicy = getPullPolicy().map(PullPolicy::valueOf).getOrNull();
+		PullPolicy pullPolicy = getPullPolicy().getOrNull();
 		if (pullPolicy != null) {
 			request = request.withPullPolicy(pullPolicy);
 		}
