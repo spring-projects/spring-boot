@@ -31,8 +31,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -95,7 +93,6 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 			http.securityMatcher(EndpointRequest.toAnyEndpoint());
 			http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
 			http.httpBasic();
-			http.setSharedObject(SecurityContextRepository.class, new RequestAttributeSecurityContextRepository());
 			return http.build();
 		}
 
