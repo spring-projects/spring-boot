@@ -1,16 +1,118 @@
-[[actuator.tracing]]
-== HTTP Tracing
-You can enable HTTP Tracing by providing a bean of type `HttpTraceRepository` in your application's configuration.
-For convenience, Spring Boot offers `InMemoryHttpTraceRepository`, which stores traces for the last 100 (the default) request-response exchanges.
-`InMemoryHttpTraceRepository` is limited compared to other tracing solutions, and we recommend using it only for development environments.
-For production environments, we recommend using a production-ready tracing or observability solution, such as Zipkin or Spring Cloud Sleuth.
-Alternatively, you can create your own `HttpTraceRepository`.
+[[actuator.micrometer-tracing]]
+== Tracing
 
-You can use the `httptrace` endpoint to obtain information about the request-response exchanges that are stored in the `HttpTraceRepository`.
+Spring Boot Actuator provides dependency management and auto-configuration for https://micrometer.io/docs/tracing[Micrometer Tracing], a facade for popular tracer libraries.
+Micrometer Tracing hooks into Micrometer's `ObservationHandler`, which means a span is created for every completed observation.
 
+TIP: To learn more about Micrometer Tracing capabilities, see its https://micrometer.io/docs/tracing[reference documentation].
 
+[[actuator.micrometer-tracing.tracers]]
+=== Supported tracers
 
-[[actuator.tracing.custom]]
-=== Custom HTTP tracing
-To customize the items that are included in each trace, use the configprop:management.trace.http.include[] configuration property.
-For advanced customization, consider registering your own `HttpExchangeTracer` implementation.
+Spring Boot ships auto-configuration for the following tracers:
+
+* https://github.com/openzipkin/brave[OpenZipkin Brave] with https://zipkin.io/[Zipkin] or https://docs.wavefront.com/[Wavefront]
+* https://opentelemetry.io/[OpenTelemetry] with https://zipkin.io/[Zipkin] or https://docs.wavefront.com/[Wavefront]
+
+[[actuator.micrometer-tracing.getting-started]]
+=== Getting Started
+
+We need an example application that we can use to getting started with tracing.
+For our purposes, the simple "`Hello World!`" web application that's covered in the "`<<getting-started#getting-started.first-application>>`" section will suffice.
+We're going to use the OpenZipkin Brave tracer with Zipkin as trace backend.
+
+To recap, our main application code looks like this:
+
+include::code:MyApplication[]
+
+Now we have to add the following dependencies:
+
+* `org.springframework.boot:spring-boot-starter-actuator`
+* `io.micrometer:micrometer-tracing-bridge-brave` - which is needed to bridge the Micrometer Observation API to Brave.
+* `io.zipkin.reporter2:zipkin-reporter-brave` - which is needed to report traces to Zipkin.
+
+Add the following application properties:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management.tracing.sampling.probability: 1.0
+----
+
+By default, Spring Boot samples only 10% of requests to prevent overwhelming the trace backend.
+This property switches it to 100% so that every request is sent to the trace backend.
+
+To collect and visualize the traces, we need a running trace backend.
+We use Zipkin as our trace backend here.
+The https://zipkin.io/pages/quickstart[Zipkin Quickstart guide] provides instructions how to start Zipkin locally.
+
+After Zipkin is running, you can start your application.
+
+If you open a web browser to `http://localhost:8080`, you should see the following output:
+
+[indent=0]
+----
+	Hello World!
+----
+
+Behind the scenes, an observation has been created for the HTTP request, which in turn gets bridged to Brave, which reports a new trace to Zipkin.
+
+Now open the Zipkin UI at `http://localhost:9411` and press the "Run Query" button to list all collected traces.
+You should see one trace.
+Press the "Show" button to see the details of that trace.
+
+TIP: You can include the current trace and span id in the logs by setting the `logging.pattern.level` property to `%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]`
+
+[[actuator.micrometer-tracing.tracer-implementations]]
+=== Tracer implementations
+
+As Micrometer Tracer supports multiple tracer implementations, there are multiple dependency combinations possible with Spring Boot.
+
+All tracer implementations need the `org.springframework.boot:spring-boot-starter-actuator` dependency.
+
+[[actuator.micrometer-tracing.tracer-implementations.brave-zipkin]]
+==== OpenZipkin Brave with Zipkin
+
+* `io.micrometer:micrometer-tracing-bridge-brave` - which is needed to bridge the Micrometer Observation API to Brave.
+* `io.zipkin.reporter2:zipkin-reporter-brave` - which is needed to report traces to Zipkin.
+
+NOTE: If your project doesn't use Spring MVC or Spring WebFlux, the `io.zipkin.reporter2:zipkin-sender-urlconnection` dependency is needed, too.
+
+[[actuator.micrometer-tracing.tracer-implementations.brave-wavefront]]
+==== OpenZipkin Brave with Wavefront
+
+* `io.micrometer:micrometer-tracing-bridge-brave` - which is needed to bridge the Micrometer Observation API to Brave.
+* `io.micrometer:micrometer-tracing-reporter-wavefront` - which is needed to report traces to Wavefront.
+
+[[actuator.micrometer-tracing.tracer-implementations.otel-zipkin]]
+==== OpenTelemetry with Zipkin
+
+* `io.micrometer:micrometer-tracing-bridge-otel` - which is needed to bride the Micrometer Observation API to OpenTelemetry.
+* `io.opentelemetry:opentelemetry-exporter-zipkin` - which is needed to report traces to Zipkin.
+
+[[actuator.micrometer-tracing.tracer-implementations.otel-wavefront]]
+==== OpenTelemetry with Wavefront
+
+* `io.micrometer:micrometer-tracing-bridge-otel` - which is needed to bride the Micrometer Observation API to OpenTelemetry.
+* `io.micrometer:micrometer-tracing-reporter-wavefront` - which is needed to report traces to Wavefront.
+
+[[actuator.micrometer-tracing.instrumentations]]
+=== Instrumentations
+
+Spring Boot auto-configures instrumentation for the following technologies out of the box:
+
+* Incoming HTTP calls via Spring MVC.
+* Incoming HTTP calls via Spring WebFlux.
+* Outgoing HTTP calls via `RestTemplate` constructed via `RestTemplateBuilder`.
+* Outgoing HTTP calls via `WebClient` constructed via `WebClient.Builder`.
+* Incoming GraphQL calls
+
+NOTE: Other Spring portfolio projects are using the Micrometer Observation, too.
+Every use of an observation gets translated into a span, so you may see even more spans reported in your project.
+
+[[actuator.micrometer-tracing.creating-spans]]
+=== Creating custom spans
+
+You can create your own spans by starting an observation.
+For this, inject `ObservationRegistry` into your component:
+
+include::code:CustomObservation[]

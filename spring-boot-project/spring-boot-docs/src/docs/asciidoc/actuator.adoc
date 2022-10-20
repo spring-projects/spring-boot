@@ -23,9 +23,11 @@ include::actuator/loggers.adoc[]
 
 include::actuator/metrics.adoc[]
 
+include::actuator/tracing.adoc[]
+
 include::actuator/auditing.adoc[]
 
-include::actuator/tracing.adoc[]
+include::actuator/http-tracing.adoc[]
 
 include::actuator/process-monitoring.adoc[]
 
