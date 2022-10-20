@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.env.AbstractEnvironment;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.mock.env.MockEnvironment;
@@ -46,7 +47,7 @@ class EnvironmentConverterTests {
 	void convertedEnvironmentHasSameActiveProfiles() {
 		AbstractEnvironment originalEnvironment = new MockEnvironment();
 		originalEnvironment.setActiveProfiles("activeProfile1", "activeProfile2");
-		StandardEnvironment convertedEnvironment = this.environmentConverter
+		ConfigurableEnvironment convertedEnvironment = this.environmentConverter
 				.convertEnvironmentIfNecessary(originalEnvironment, StandardEnvironment.class);
 		assertThat(convertedEnvironment.getActiveProfiles()).containsExactly("activeProfile1", "activeProfile2");
 	}
@@ -56,7 +57,7 @@ class EnvironmentConverterTests {
 		AbstractEnvironment originalEnvironment = new MockEnvironment();
 		ConfigurableConversionService conversionService = mock(ConfigurableConversionService.class);
 		originalEnvironment.setConversionService(conversionService);
-		StandardEnvironment convertedEnvironment = this.environmentConverter
+		ConfigurableEnvironment convertedEnvironment = this.environmentConverter
 				.convertEnvironmentIfNecessary(originalEnvironment, StandardEnvironment.class);
 		assertThat(convertedEnvironment.getConversionService()).isEqualTo(conversionService);
 	}
@@ -64,7 +65,7 @@ class EnvironmentConverterTests {
 	@Test
 	void envClassSameShouldReturnEnvironmentUnconverted() {
 		StandardEnvironment standardEnvironment = new StandardEnvironment();
-		StandardEnvironment convertedEnvironment = this.environmentConverter
+		ConfigurableEnvironment convertedEnvironment = this.environmentConverter
 				.convertEnvironmentIfNecessary(standardEnvironment, StandardEnvironment.class);
 		assertThat(convertedEnvironment).isSameAs(standardEnvironment);
 	}
@@ -72,7 +73,7 @@ class EnvironmentConverterTests {
 	@Test
 	void standardServletEnvironmentIsConverted() {
 		StandardServletEnvironment standardServletEnvironment = new StandardServletEnvironment();
-		StandardEnvironment convertedEnvironment = this.environmentConverter
+		ConfigurableEnvironment convertedEnvironment = this.environmentConverter
 				.convertEnvironmentIfNecessary(standardServletEnvironment, StandardEnvironment.class);
 		assertThat(convertedEnvironment).isNotSameAs(standardServletEnvironment);
 	}
@@ -80,7 +81,7 @@ class EnvironmentConverterTests {
 	@Test
 	void servletPropertySourcesAreNotCopiedOverIfNotWebEnvironment() {
 		StandardServletEnvironment standardServletEnvironment = new StandardServletEnvironment();
-		StandardEnvironment convertedEnvironment = this.environmentConverter
+		ConfigurableEnvironment convertedEnvironment = this.environmentConverter
 				.convertEnvironmentIfNecessary(standardServletEnvironment, StandardEnvironment.class);
 		assertThat(convertedEnvironment).isNotSameAs(standardServletEnvironment);
 		Set<String> names = new HashSet<>();
@@ -95,7 +96,7 @@ class EnvironmentConverterTests {
 	@Test
 	void envClassSameShouldReturnEnvironmentUnconvertedEvenForWeb() {
 		StandardServletEnvironment standardServletEnvironment = new StandardServletEnvironment();
-		StandardEnvironment convertedEnvironment = this.environmentConverter
+		ConfigurableEnvironment convertedEnvironment = this.environmentConverter
 				.convertEnvironmentIfNecessary(standardServletEnvironment, StandardServletEnvironment.class);
 		assertThat(convertedEnvironment).isSameAs(standardServletEnvironment);
 	}
@@ -103,7 +104,7 @@ class EnvironmentConverterTests {
 	@Test
 	void servletPropertySourcesArePresentWhenTypeToConvertIsWeb() {
 		StandardEnvironment standardEnvironment = new StandardEnvironment();
-		StandardEnvironment convertedEnvironment = this.environmentConverter
+		ConfigurableEnvironment convertedEnvironment = this.environmentConverter
 				.convertEnvironmentIfNecessary(standardEnvironment, StandardServletEnvironment.class);
 		assertThat(convertedEnvironment).isNotSameAs(standardEnvironment);
 		Set<String> names = new HashSet<>();

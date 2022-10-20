@@ -20,6 +20,7 @@ import org.springframework.aot.AotDetector;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
  * {@link ApplicationContextFactory} registered in {@code spring.factories} to support
@@ -30,6 +31,16 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Andy Wilkinson
  */
 class ReactiveWebServerApplicationContextFactory implements ApplicationContextFactory {
+
+	@Override
+	public Class<? extends ConfigurableEnvironment> getEnvironmentType(WebApplicationType webApplicationType) {
+		return (webApplicationType != WebApplicationType.REACTIVE) ? null : ApplicationReactiveWebEnvironment.class;
+	}
+
+	@Override
+	public ConfigurableEnvironment createEnvironment(WebApplicationType webApplicationType) {
+		return (webApplicationType != WebApplicationType.REACTIVE) ? null : new ApplicationReactiveWebEnvironment();
+	}
 
 	@Override
 	public ConfigurableApplicationContext create(WebApplicationType webApplicationType) {

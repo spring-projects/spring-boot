@@ -79,7 +79,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
-import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
@@ -365,12 +364,16 @@ public class SpringApplication {
 		return environment;
 	}
 
-	private Class<? extends StandardEnvironment> deduceEnvironmentClass() {
-		return switch (this.webApplicationType) {
-			case SERVLET -> ApplicationServletEnvironment.class;
-			case REACTIVE -> ApplicationReactiveWebEnvironment.class;
-			default -> ApplicationEnvironment.class;
-		};
+	private Class<? extends ConfigurableEnvironment> deduceEnvironmentClass() {
+		Class<? extends ConfigurableEnvironment> environmentType = this.applicationContextFactory
+				.getEnvironmentType(this.webApplicationType);
+		if (environmentType == null && this.applicationContextFactory != ApplicationContextFactory.DEFAULT) {
+			environmentType = ApplicationContextFactory.DEFAULT.getEnvironmentType(this.webApplicationType);
+		}
+		if (environmentType == null) {
+			return ApplicationEnvironment.class;
+		}
+		return environmentType;
 	}
 
 	private void prepareContext(DefaultBootstrapContext bootstrapContext, ConfigurableApplicationContext context,
@@ -462,14 +465,11 @@ public class SpringApplication {
 		if (this.environment != null) {
 			return this.environment;
 		}
-		switch (this.webApplicationType) {
-			case SERVLET:
-				return new ApplicationServletEnvironment();
-			case REACTIVE:
-				return new ApplicationReactiveWebEnvironment();
-			default:
-				return new ApplicationEnvironment();
+		ConfigurableEnvironment environment = this.applicationContextFactory.createEnvironment(this.webApplicationType);
+		if (environment == null && this.applicationContextFactory != ApplicationContextFactory.DEFAULT) {
+			environment = ApplicationContextFactory.DEFAULT.createEnvironment(this.webApplicationType);
 		}
+		return (environment != null) ? environment : new ApplicationEnvironment();
 	}
 
 	/**

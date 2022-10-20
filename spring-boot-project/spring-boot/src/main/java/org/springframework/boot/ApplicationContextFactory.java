@@ -18,12 +18,10 @@ package org.springframework.boot;
 
 import java.util.function.Supplier;
 
-import org.springframework.aot.AotDetector;
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 
 /**
  * Strategy interface for creating the {@link ConfigurableApplicationContext} used by a
@@ -42,23 +40,32 @@ public interface ApplicationContextFactory {
 	 * A default {@link ApplicationContextFactory} implementation that will create an
 	 * appropriate context for the {@link WebApplicationType}.
 	 */
-	ApplicationContextFactory DEFAULT = (webApplicationType) -> {
-		try {
-			for (ApplicationContextFactory candidate : SpringFactoriesLoader
-					.loadFactories(ApplicationContextFactory.class, ApplicationContextFactory.class.getClassLoader())) {
-				ConfigurableApplicationContext context = candidate.create(webApplicationType);
-				if (context != null) {
-					return context;
-				}
-			}
-			return AotDetector.useGeneratedArtifacts() ? new GenericApplicationContext()
-					: new AnnotationConfigApplicationContext();
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException("Unable create a default ApplicationContext instance, "
-					+ "you may need a custom ApplicationContextFactory", ex);
-		}
-	};
+	ApplicationContextFactory DEFAULT = new DefaultApplicationContextFactory();
+
+	/**
+	 * Return the {@link Environment} type expected to be set on the
+	 * {@link #create(WebApplicationType) created} application context. The result of this
+	 * method can be used to convert an existing environment instance to the correct type.
+	 * @param webApplicationType the web application type
+	 * @return the expected application context type or {@code null} to use the default
+	 * @since 2.6.14
+	 */
+	default Class<? extends ConfigurableEnvironment> getEnvironmentType(WebApplicationType webApplicationType) {
+		return null;
+	}
+
+	/**
+	 * Create a new {@link Environment} to be set on the
+	 * {@link #create(WebApplicationType) created} application context. The result of this
+	 * method must match the type returned by
+	 * {@link #getEnvironmentType(WebApplicationType)}.
+	 * @param webApplicationType the web application type
+	 * @return an environment instance or {@code null} to use the default
+	 * @since 2.6.14
+	 */
+	default ConfigurableEnvironment createEnvironment(WebApplicationType webApplicationType) {
+		return null;
+	}
 
 	/**
 	 * Creates the {@link ConfigurableApplicationContext application context} for a
