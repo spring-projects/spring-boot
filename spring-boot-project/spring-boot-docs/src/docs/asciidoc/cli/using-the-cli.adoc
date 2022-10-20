@@ -50,7 +50,7 @@ The `version` command provides a quick way to check which version of Spring Boot
 
 
 [[cli.using-the-cli.run]]
-=== Running Applications with the CLI
+=== Running Applications With the CLI
 You can compile and run Groovy source code by using the `run` command.
 The Spring Boot CLI is completely self-contained, so you do not need any external Groovy installation.
 
@@ -197,7 +197,7 @@ However, to ensure consistent ordering of the dependency management, you can use
 
 
 [[cli.using-the-cli.multiple-source-files]]
-=== Applications with Multiple Source Files
+=== Applications With Multiple Source Files
 You can use "`shell globbing`" with all commands that accept file input.
 Doing so lets you use multiple files from a single directory, as shown in the following example:
 

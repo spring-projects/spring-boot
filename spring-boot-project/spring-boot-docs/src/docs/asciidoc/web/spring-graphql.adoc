@@ -65,7 +65,7 @@ include::code:GreetingController[]
 
 
 [[web.graphql.data-query]]
-=== Querydsl and QueryByExample Repositories support
+=== Querydsl and QueryByExample Repositories Support
 Spring Data offers support for both Querydsl and QueryByExample repositories.
 Spring GraphQL can {spring-graphql-docs}#data[configure Querydsl and QueryByExample repositories as `DataFetcher`].
 

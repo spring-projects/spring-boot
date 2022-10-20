@@ -1016,7 +1016,7 @@ This would make `liveness` available at `/livez` and `readiness` at `readyz` on 
 
 
 [[actuator.endpoints.kubernetes-probes.external-state]]
-==== Checking External State with Kubernetes Probes
+==== Checking External State With Kubernetes Probes
 Actuator configures the "`liveness`" and "`readiness`" probes as Health Groups.
 This means that all the <<actuator#actuator.endpoints.health.groups, health groups features>> are available for them.
 You can, for example, configure additional Health Indicators:
