@@ -1,5 +1,5 @@
 [[io.jta]]
-== Distributed Transactions with JTA
+== Distributed Transactions With JTA
 Spring Boot supports distributed JTA transactions across multiple XA resources by using an https://www.atomikos.com/[Atomikos] embedded transaction manager.
 JTA transactions are also supported when deploying to a suitable Java EE Application Server.
 

@@ -1,5 +1,5 @@
 [[cli.groovy-beans-dsl]]
-== Developing Applications with the Groovy Beans DSL
+== Developing Applications With the Groovy Beans DSL
 Spring Framework 4.0 has native support for a `beans{}` "`DSL`" (borrowed from https://grails.org/[Grails]), and you can embed bean definitions in your Groovy application scripts by using the same format.
 This is sometimes a good way to include external features like middleware declarations, as shown in the following example:
 

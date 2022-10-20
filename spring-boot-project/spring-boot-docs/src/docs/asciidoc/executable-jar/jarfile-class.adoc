@@ -26,7 +26,7 @@ We do not need to unpack the archive, and we do not need to read all entry data 
 
 
 [[appendix.executable-jar.jarfile-class.compatibility]]
-=== Compatibility with the Standard Java "`JarFile`"
+=== Compatibility With the Standard Java "`JarFile`"
 Spring Boot Loader strives to remain compatible with existing code and libraries.
 `org.springframework.boot.loader.jar.JarFile` extends from `java.util.jar.JarFile` and should work as a drop-in replacement.
 The `getURL()` method returns a `URL` that opens a connection compatible with `java.net.JarURLConnection` and can be used with Java's `URLClassLoader`.

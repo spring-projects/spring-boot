@@ -275,7 +275,7 @@ Spring Boot provides a dedicated "`Starter`", `spring-boot-starter-data-elastics
 
 
 [[data.nosql.elasticsearch.connecting-using-rest]]
-==== Connecting to Elasticsearch using REST clients
+==== Connecting to Elasticsearch Using REST clients
 Elasticsearch ships https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/index.html[two different REST clients] that you can use to query a cluster: the "Low Level" client and the "High Level" client.
 Spring Boot provides support for the "High Level" client, which ships with `org.elasticsearch.client:elasticsearch-rest-high-level-client`.
 Additionally, Spring Boot provides support for a reactive client, based on Spring Framework's `WebClient`, that ships with `org.springframework.data:spring-data-elasticsearch`.
@@ -293,7 +293,7 @@ You can use `spring.elasticsearch.*` properties to further tune how the clients 
 ----
 
 [[data.nosql.elasticsearch.connecting-using-rest.restclient]]
-===== Connecting to Elasticsearch using RestHighLevelClient
+===== Connecting to Elasticsearch Using RestHighLevelClient
 If you have `elasticsearch-rest-high-level-client` on the classpath, Spring Boot will auto-configure and register a `RestHighLevelClient` bean.
 In addition to the properties described previously, to fine-tune the `RestHighLevelClient`, you can register an arbitrary number of beans that implement `RestClientBuilderCustomizer` for more advanced customizations.
 To take full control over its registration, define a `RestClientBuilder` bean.
@@ -316,7 +316,7 @@ You can further tune how `Sniffer` is configured, as shown in the following exam
 
 
 [[data.nosql.elasticsearch.connecting-using-rest.webclient]]
-===== Connecting to Elasticsearch using ReactiveElasticsearchClient
+===== Connecting to Elasticsearch Using ReactiveElasticsearchClient
 {spring-data-elasticsearch}[Spring Data Elasticsearch] ships `ReactiveElasticsearchClient` for querying Elasticsearch instances in a reactive fashion.
 It is built on top of WebFlux's `WebClient`, so both `spring-boot-starter-elasticsearch` and `spring-boot-starter-webflux` dependencies are useful to enable this support.
 

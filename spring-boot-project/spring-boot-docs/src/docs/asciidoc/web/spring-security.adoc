@@ -153,7 +153,7 @@ For production environments, consider using a `JdbcOAuth2AuthorizedClientService
 
 
 [[web.security.oauth2.client.common-providers]]
-===== OAuth2 client registration for common providers
+===== OAuth2 Client Registration for Common Providers
 For common OAuth2 and OpenID providers, including Google, Github, Facebook, and Okta, we provide a set of provider defaults (`google`, `github`, `facebook`, and `okta`, respectively).
 
 If you do not need to customize these providers, you can set the `provider` attribute to the one for which you need to infer defaults.

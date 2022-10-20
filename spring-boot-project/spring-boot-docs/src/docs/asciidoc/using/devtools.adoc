@@ -130,7 +130,7 @@ These work by rewriting classes as they are loaded to make them more amenable to
 
 
 [[using.devtools.restart.logging-condition-delta]]
-==== Logging changes in condition evaluation
+==== Logging Changes in Condition Evaluation
 By default, each time your application restarts, a report showing the condition evaluation delta is logged.
 The report shows the changes to your application's auto-configuration as you make changes such as adding or removing beans and setting configuration properties.
 

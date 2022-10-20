@@ -7,7 +7,7 @@ Spring Boot offers several conveniences for working with AMQP through RabbitMQ, 
 
 
 [[messaging.amqp.rabbitmq]]
-=== RabbitMQ support
+=== RabbitMQ Support
 https://www.rabbitmq.com/[RabbitMQ] is a lightweight, reliable, scalable, and portable message broker based on the AMQP protocol.
 Spring uses `RabbitMQ` to communicate through the AMQP protocol.
 
