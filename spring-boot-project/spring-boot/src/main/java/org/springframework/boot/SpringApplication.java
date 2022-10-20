@@ -366,15 +366,18 @@ public class SpringApplication {
 				deduceEnvironmentClass());
 	}
 
+	@SuppressWarnings("unchecked")
 	private Class<? extends StandardEnvironment> deduceEnvironmentClass() {
-		switch (this.webApplicationType) {
-			case SERVLET:
-				return ApplicationServletEnvironment.class;
-			case REACTIVE:
-				return ApplicationReactiveWebEnvironment.class;
-			default:
-				return ApplicationEnvironment.class;
+		Class<? extends ConfigurableEnvironment> environmentType = this.applicationContextFactory
+				.getEnvironmentType(this.webApplicationType);
+		if (environmentType == null && this.applicationContextFactory != ApplicationContextFactory.DEFAULT) {
+			environmentType = ApplicationContextFactory.DEFAULT.getEnvironmentType(this.webApplicationType);
 		}
+		if (environmentType == null) {
+			return ApplicationEnvironment.class;
+		}
+		Assert.isAssignable(StandardEnvironment.class, environmentType);
+		return (Class<? extends StandardEnvironment>) environmentType;
 	}
 
 	private void prepareContext(DefaultBootstrapContext bootstrapContext, ConfigurableApplicationContext context,
@@ -468,14 +471,11 @@ public class SpringApplication {
 		if (this.environment != null) {
 			return this.environment;
 		}
-		switch (this.webApplicationType) {
-			case SERVLET:
-				return new ApplicationServletEnvironment();
-			case REACTIVE:
-				return new ApplicationReactiveWebEnvironment();
-			default:
-				return new ApplicationEnvironment();
+		ConfigurableEnvironment environment = this.applicationContextFactory.createEnvironment(this.webApplicationType);
+		if (environment == null && this.applicationContextFactory != ApplicationContextFactory.DEFAULT) {
+			environment = ApplicationContextFactory.DEFAULT.createEnvironment(this.webApplicationType);
 		}
+		return (environment != null) ? environment : new ApplicationEnvironment();
 	}
 
 	/**
