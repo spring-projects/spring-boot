@@ -16,22 +16,19 @@
 
 package org.springframework.boot.autoconfigure.freemarker;
 
-import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerTemplateAvailabilityProvider.FreeMarkerTemplateAvailabilityProperties;
-import org.springframework.boot.context.properties.ConfigurationPropertiesReflectionHintsProcessor;
+import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 
 /**
  * {@link RuntimeHintsRegistrar} for FreeMarker support.
  *
  * @author Moritz Halbritter
  */
-class FreeMarkerRuntimeHints implements RuntimeHintsRegistrar {
+class FreeMarkerRuntimeHints extends BindableRuntimeHintsRegistrar {
 
-	@Override
-	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-		ConfigurationPropertiesReflectionHintsProcessor
-				.processConfigurationProperties(FreeMarkerTemplateAvailabilityProperties.class, hints.reflection());
+	FreeMarkerRuntimeHints() {
+		super(FreeMarkerTemplateAvailabilityProperties.class);
 	}
 
 }

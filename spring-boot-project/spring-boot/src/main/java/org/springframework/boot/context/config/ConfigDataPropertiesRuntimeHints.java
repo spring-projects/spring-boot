@@ -19,7 +19,7 @@ package org.springframework.boot.context.config;
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
-import org.springframework.boot.context.properties.ConfigurationPropertiesReflectionHintsProcessor;
+import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -31,8 +31,7 @@ class ConfigDataPropertiesRuntimeHints implements RuntimeHintsRegistrar {
 
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-		ConfigurationPropertiesReflectionHintsProcessor.processConfigurationProperties(ConfigDataProperties.class,
-				hints.reflection());
+		BindableRuntimeHintsRegistrar.forTypes(ConfigDataProperties.class).registerHints(hints);
 		hints.reflection().registerMethod(ReflectionUtils.findMethod(ConfigDataLocation.class, "of", String.class),
 				ExecutableMode.INVOKE);
 	}

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.properties;
+package org.springframework.boot.context.properties.bind;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -22,26 +22,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.context.properties.bind.Nested;
-
 /**
- * Indicates that a field in a {@link ConfigurationProperties @ConfigurationProperties}
- * object should be treated as if it were a nested type. This annotation has no bearing on
- * the actual binding processes, but it is used by the
- * {@code spring-boot-configuration-processor} as a hint that a field is not bound as a
- * single value. When this is specified, a nested group is created for the field and its
- * type is harvested.
- * <p>
- * This has no effect on collections and maps as these types are automatically identified.
+ * Meta-annotation that should be added to annotations that indicate a field is a nested
+ * type. Used to ensure that correct reflection hints are registered.
  *
- * @author Stephane Nicoll
  * @author Phillip Webb
- * @since 1.2.0
+ * @since 3.0.0
+ * @see BindableRuntimeHintsRegistrar
  */
-@Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.ANNOTATION_TYPE)
 @Documented
-@Nested
-public @interface NestedConfigurationProperty {
+public @interface Nested {
 
 }

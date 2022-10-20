@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.http;
 
-import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -31,7 +29,7 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConf
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration.NotReactiveWebApplicationCondition;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
-import org.springframework.boot.context.properties.ConfigurationPropertiesReflectionHintsProcessor;
+import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.context.annotation.Bean;
@@ -102,12 +100,10 @@ public class HttpMessageConvertersAutoConfiguration {
 
 	}
 
-	static class HttpMessageConvertersAutoConfigurationRuntimeHints implements RuntimeHintsRegistrar {
+	static class HttpMessageConvertersAutoConfigurationRuntimeHints extends BindableRuntimeHintsRegistrar {
 
-		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			ConfigurationPropertiesReflectionHintsProcessor.processConfigurationProperties(Encoding.class,
-					hints.reflection());
+		HttpMessageConvertersAutoConfigurationRuntimeHints() {
+			super(Encoding.class);
 		}
 
 	}
