@@ -150,7 +150,7 @@ You can use them to perform a variety of GraalVM tasks, including generating a n
 To build a native image using the Native Build Tools, you'll need a GraalVM distribution on your machine.
 You can either download it manually on the {liberica-nik-download}[Liberica Native Image Kit page], or you can use a download manager like SDKMAN!.
 
-
+NOTE: If you download it manually, make sure to download the NIK 22-EA version, which is based on GraalVM 22.3.
 
 [[native-image.developing-your-first-application.native-build-tools.prerequisites.linux-macos]]
 ===== Linux and MacOS
@@ -160,8 +160,8 @@ Get SDKMAN! from https://sdkman.io and install the Liberica GraalVM distribution
 
 [source,shell,indent=0,subs="verbatim,attributes"]
 ----
-	$ sdk install java 22.2.r17-nik
-	$ sdk use java 22.2.r17-nik
+	$ sdk install java {graal-version}.r17-nik
+	$ sdk use java {graal-version}.r17-nik
 ----
 
 Verify that the correct version has been configured by checking the output of `java -version`:
@@ -169,16 +169,17 @@ Verify that the correct version has been configured by checking the output of `j
 [source,shell,indent=0,subs="verbatim,attributes"]
 ----
 	$ java -version
-	openjdk version "17.0.4" 2022-07-19 LTS
-	OpenJDK Runtime Environment GraalVM 22.2.0 (build 17.0.4+8-LTS)
-	OpenJDK 64-Bit Server VM GraalVM 22.2.0 (build 17.0.4+8-LTS, mixed mode)
+	openjdk version "17.0.5" 2022-10-18 LTS
+	OpenJDK Runtime Environment GraalVM 22.3.0 (build 17.0.5+8-LTS)
+	OpenJDK 64-Bit Server VM GraalVM 22.3.0 (build 17.0.5+8-LTS, mixed mode)
 ----
 
 
 
 [[native-image.developing-your-first-application.native-build-tools.prerequisites.windows]]
 ===== Windows
-On Windows, follow https://medium.com/graalvm/using-graalvm-and-native-image-on-windows-10-9954dc071311[these instructions] to install either https://www.graalvm.org/downloads/[GraalVM] or https://bell-sw.com/pages/downloads/native-image-kit/[Liberica Native Image Kit], Visual Studio Build Tools and Windows SDK.
+
+On Windows, follow https://medium.com/graalvm/using-graalvm-and-native-image-on-windows-10-9954dc071311[these instructions] to install either https://www.graalvm.org/downloads/[GraalVM] or {liberica-nik-download}[Liberica Native Image Kit] in version {graal-version}, the Visual Studio Build Tools and the Windows SDK.
 Due to the https://docs.microsoft.com/en-US/troubleshoot/windows-client/shell-experience/command-line-string-limitation[Windows related command-line maximum length], make sure to use x64 Native Tools Command Prompt instead of the regular Windows command line to run Maven or Gradle plugins.
 
 
