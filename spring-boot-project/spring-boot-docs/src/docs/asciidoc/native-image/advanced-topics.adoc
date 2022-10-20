@@ -5,7 +5,7 @@
 
 [[native-image.advanced.nested-configuration-properties]]
 === Nested Configuration Properties
-Reflection hints are automatically created for configuration properties by Spring's ahead-of-time engine.
+Reflection hints are automatically created for configuration properties by the Spring ahead-of-time engine.
 Nested configuration properties, however, *must* be annotated with `@NestedConfigurationProperty`, otherwise they won't be detected and will not be bindable.
 
 include::code:MyProperties[]
@@ -13,28 +13,28 @@ include::code:MyProperties[]
 The example above produces configuration properties for `my.properties.name` and `my.properties.nested.number`.
 Without the `@NestedConfigurationProperty` annotation on the `nested` field, the `my.properties.nested.number` property would not be bindable in a native image.
 
-NOTE: Please use public getters / setters, otherwise the properties won't be bindable.
+NOTE: Please use public getters and setters, otherwise the properties will not be bindable.
 
 
 
 [[native-image.advanced.converting-executable-jars]]
-=== Converting a Spring Boot Executable JAR
-It is possible to convert a Spring Boot <<executable-jar#appendix.executable-jar, executable JAR>> into a native image as long at the jar contains the AOT generated assets.
+=== Converting a Spring Boot Executable Jar
+It is possible to convert a Spring Boot <<executable-jar#appendix.executable-jar, executable jar>> into a native image as long at the jar contains the AOT generated assets.
 This can be useful for a number of reasons, including:
 
-* You can keeping your regular JVM pipeline and turn the JVM application into a native image on your CI/CD platform.
+* You can keep your regular JVM pipeline and turn the JVM application into a native image on your CI/CD platform.
 * As `native-image` https://github.com/oracle/graal/issues/407[does not support cross-compilation], you can keep an OS neutral deployment artifact which you convert later to different OS architectures.
 
-You can convert a Spring Boot executable jar into a native image using buildpacks, or the `native-image` tool that is shipped with GraalVM.
+You can convert a Spring Boot executable jar into a native image using Cloud Native Buildpacks, or using the `native-image` tool that is shipped with GraalVM.
 
-NOTE: Your executable JAR must include AOT generated assets such as generated classes and JSON hint files.
+NOTE: Your executable jar must include AOT generated assets such as generated classes and JSON hint files.
 
 
 
 [[native-image.advanced.converting-executable-jars.buildpacks]]
 ==== Using Buildpacks
-Spring Boot applications usually use Buildpacks via the Maven (`mvn spring-boot:build-image`), or Gradle (`gradle bootBuildImage`) integrations.
-You can, however, also use https://buildpacks.io//docs/tools/pack/[`pack`] to turn an AOT processed Spring Boot executable JAR into a native container image.
+Spring Boot applications usually use Cloud Native Buildpacks via the Maven (`mvn spring-boot:build-image`), or Gradle (`gradle bootBuildImage`) integrations.
+You can, however, also use https://buildpacks.io//docs/tools/pack/[`pack`] to turn an AOT processed Spring Boot executable jar into a native container image.
 
 
 First, make sure that a Docker daemon is available (see https://docs.docker.com/installation/#installation[Get Docker] for more details).
@@ -42,7 +42,7 @@ https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non
 
 You also need to install `pack` by following https://buildpacks.io//docs/tools/pack/#install[the installation guide on buildpacks.io].
 
-Assuming an AOT processed Spring Boot executable JAR built as `myproject-0.0.1-SNAPSHOT.jar` is in the `target` directory, run:
+Assuming an AOT processed Spring Boot executable jar built as `myproject-0.0.1-SNAPSHOT.jar` is in the `target` directory, run:
 
 [source,shell,indent=0,subs="verbatim"]
 ----
@@ -65,11 +65,11 @@ Once `pack` has finished, you can launch the application using `docker run`:
 
 [[native-image.advanced.converting-executable-jars.native-image]]
 ==== Using GraalVM native-image
-Another option to turn an AOT processed Spring Boot executable JAR into a native executable is to use the GraalVM `native-image` tool.
+Another option to turn an AOT processed Spring Boot executable jar into a native executable is to use the GraalVM `native-image` tool.
 For this to work, you'll need a GraalVM distribution on your machine.
 You can either download it manually on the {liberica-nik-download}[Liberica Native Image Kit page] or you can use a download manager like SDKMAN!.
 
-Assuming an AOT processed Spring Boot executable JAR built as `myproject-0.0.1-SNAPSHOT.jar` is in the `target` directory, run:
+Assuming an AOT processed Spring Boot executable jar built as `myproject-0.0.1-SNAPSHOT.jar` is in the `target` directory, run:
 
 [source,shell,indent=0,subs="verbatim"]
 ----
@@ -86,7 +86,7 @@ NOTE: These commands work on Linux or MacOS machines, you will need to adapt the
 TIP: The `@META-INF/native-image/argfile` might not be packaged in your jar.
 It is only included when reachability metadata overrides are needed.
 
-WARNING: The `native-image` `-cp` flag does not not accept wildcards.
+WARNING: The `native-image` `-cp` flag does not accept wildcards.
 You need to ensure that all jars are listed (the command above uses `find` and `tr` to do this).
 
 

@@ -1,10 +1,10 @@
 [[native-image.developing-your-first-application]]
 == Developing Your First GraalVM Native Application
-Now that we have a good overview of GraalVM Native Images and how Spring's ahead-of-time engine works, we can look at how to actually create them.
+Now that we have a good overview of GraalVM Native Images and how the Spring ahead-of-time engine works, we can look at how to create an application.
 
 There are two main ways to build a Spring Boot native image application:
 
-* Using Spring Boot Buildpacks support to generate a lightweight container containing a native executable.
+* Using Spring Boot support for Cloud Native Buildpacks to generate a lightweight container containing a native executable.
 * Using GraalVM Native Build Tools to generate a native executable.
 
 TIP: The easiest way to start a new native Spring Boot project is to go to https://start.spring.io[start.spring.io], add the "`GraalVM Native Support`" dependency and generate the project.
@@ -32,8 +32,8 @@ This means you can just type a single command and quickly get a sensible image i
 The resulting image doesn't contain a JVM, instead the native image is compiled statically.
 This leads to smaller images.
 
-NOTE: The builder used for the images is `builder:tiny`.
-It has small footprint and reduced surface attack, but you can also use `builder:base` or `builder:full` to have more tools available in the image for an improved developer experience.
+NOTE: The builder used for the images is `paketobuildpacks/builder:tiny`.
+It has small footprint and reduced surface attack, but you can also use `paketobuildpacks/builder:base` or `paketobuildpacks/builder:full` to have more tools available in the image if required.
 
 
 
@@ -99,7 +99,7 @@ You can run the task using:
 
 [[native-image.developing-your-first-application.buildpacks.running]]
 ==== Running the example
-One you have run the appropriate build command, your a Docker image should be available.
+Once you have run the appropriate build command, a Docker image should be available.
 You can start your application using `docker run`:
 
 [source,shell,indent=0,subs="verbatim"]
@@ -201,7 +201,7 @@ The native image executable can be found in the `target` directory.
 
 [[native-image.developing-your-first-application.native-build-tools.gradle]]
 ==== Using Gradle
-When the Native Build Tools Gradle plugin is applied to your project, the Spring Boot Gradle plugin will automatically trigger Spring's AOT engine.
+When the Native Build Tools Gradle plugin is applied to your project, the Spring Boot Gradle plugin will automatically trigger the Spring AOT engine.
 Task dependencies are automatically configured, so you can just run the standard `nativeCompile` task to generate a native image:
 
 [source,shell,indent=0,subs="verbatim"]
