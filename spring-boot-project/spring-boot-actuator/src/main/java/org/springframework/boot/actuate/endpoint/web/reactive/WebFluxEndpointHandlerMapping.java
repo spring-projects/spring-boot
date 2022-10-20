@@ -39,6 +39,8 @@ import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import static org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping.*;
+
 /**
  * A custom {@link HandlerMapping} that makes web endpoints available over HTTP using
  * Spring WebFlux.
@@ -48,7 +50,8 @@ import org.springframework.web.util.UriComponentsBuilder;
  * @author Brian Clozel
  * @since 2.0.0
  */
-@ImportRuntimeHints(WebFluxEndpointHandlerMappingRuntimeHints.class)
+@ImportRuntimeHints({ WebFluxEndpointHandlerMappingRuntimeHints.class,
+		AbstractWebFluxEndpointHandlerMappingRuntimeHints.class })
 public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandlerMapping implements InitializingBean {
 
 	private final EndpointLinksResolver linksResolver;

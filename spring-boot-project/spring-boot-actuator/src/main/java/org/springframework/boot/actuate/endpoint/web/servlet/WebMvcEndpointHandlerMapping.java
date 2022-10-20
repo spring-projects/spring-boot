@@ -39,6 +39,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
 
+import static org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping.*;
+
 /**
  * A custom {@link HandlerMapping} that makes web endpoints available over HTTP using
  * Spring MVC.
@@ -47,7 +49,8 @@ import org.springframework.web.servlet.HandlerMapping;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@ImportRuntimeHints(WebMvcEndpointHandlerMappingRuntimeHints.class)
+@ImportRuntimeHints({ WebMvcEndpointHandlerMappingRuntimeHints.class,
+		AbstractWebMvcEndpointHandlerMappingRuntimeHints.class })
 public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerMapping {
 
 	private final EndpointLinksResolver linksResolver;
