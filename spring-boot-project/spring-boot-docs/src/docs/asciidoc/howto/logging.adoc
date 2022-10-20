@@ -42,7 +42,7 @@ You can also use `logback-spring.xml` if you want to use the <<features#features
 
 TIP: The Logback documentation has a https://logback.qos.ch/manual/configuration.html[dedicated section that covers configuration] in some detail.
 
-Spring Boot provides a number of logback configurations that be `included` from your own configuration.
+Spring Boot provides a number of logback configurations that can be `included` in your own configuration.
 These includes are designed to allow certain common Spring Boot conventions to be re-applied.
 
 The following files are provided under `org/springframework/boot/logging/logback/`:
