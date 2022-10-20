@@ -40,7 +40,10 @@ import org.springframework.web.util.pattern.PathPattern;
  * @author Michael McFadyen
  * @author Brian Clozel
  * @since 2.0.0
+ * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
+ * {@link org.springframework.http.observation.reactive.ServerRequestObservationConvention}
  */
+@Deprecated(since = "3.0.0", forRemoval = true)
 public final class WebFluxTags {
 
 	private static final Tag URI_NOT_FOUND = Tag.of("uri", "NOT_FOUND");
@@ -176,8 +179,7 @@ public final class WebFluxTags {
 	 */
 	public static Tag outcome(ServerWebExchange exchange, Throwable exception) {
 		if (exception != null) {
-			if (exception instanceof CancelledServerWebExchangeException
-					|| DISCONNECTED_CLIENT_EXCEPTIONS.contains(exception.getClass().getSimpleName())) {
+			if (DISCONNECTED_CLIENT_EXCEPTIONS.contains(exception.getClass().getSimpleName())) {
 				return Outcome.UNKNOWN.asTag();
 			}
 		}

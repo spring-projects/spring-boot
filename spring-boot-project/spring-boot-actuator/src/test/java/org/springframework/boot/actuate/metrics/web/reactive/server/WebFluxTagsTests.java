@@ -44,6 +44,7 @@ import static org.mockito.Mockito.mock;
  * @author Madhura Bhave
  * @author Stephane Nicoll
  */
+@SuppressWarnings("removal")
 class WebFluxTagsTests {
 
 	private MockServerWebExchange exchange;
@@ -212,12 +213,6 @@ class WebFluxTagsTests {
 	@Test
 	void outcomeTagIsUnknownWhenExceptionIsDisconnectedClient() {
 		Tag tag = WebFluxTags.outcome(this.exchange, new EOFException("broken pipe"));
-		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
-	}
-
-	@Test
-	void outcomeTagIsUnknownWhenExceptionIsCancelledExchange() {
-		Tag tag = WebFluxTags.outcome(this.exchange, new CancelledServerWebExchangeException());
 		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
 	}
 

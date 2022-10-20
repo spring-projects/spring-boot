@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.observation.web.client;
 
 import io.micrometer.common.KeyValues;
 import io.micrometer.core.instrument.Tag;
-import io.micrometer.observation.Observation;
 
 import org.springframework.boot.actuate.metrics.web.client.RestTemplateExchangeTagsProvider;
 import org.springframework.http.client.observation.ClientRequestObservationContext;
@@ -40,11 +39,6 @@ class ClientHttpObservationConventionAdapter implements ClientRequestObservation
 	ClientHttpObservationConventionAdapter(String metricName, RestTemplateExchangeTagsProvider tagsProvider) {
 		this.metricName = metricName;
 		this.tagsProvider = tagsProvider;
-	}
-
-	@Override
-	public boolean supportsContext(Observation.Context context) {
-		return context instanceof ClientRequestObservationContext;
 	}
 
 	@Override

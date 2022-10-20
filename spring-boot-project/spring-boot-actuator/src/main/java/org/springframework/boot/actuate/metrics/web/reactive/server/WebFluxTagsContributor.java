@@ -26,8 +26,11 @@ import org.springframework.web.server.ServerWebExchange;
  *
  * @author Andy Wilkinson
  * @since 2.3.0
+ * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
+ * {@link org.springframework.http.observation.reactive.ServerRequestObservationConvention}
  */
 @FunctionalInterface
+@Deprecated(since = "3.0.0", forRemoval = true)
 public interface WebFluxTagsContributor {
 
 	/**
