@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Predicate;
@@ -32,6 +33,7 @@ import ch.qos.logback.core.FileAppender;
 import ch.qos.logback.core.Layout;
 import ch.qos.logback.core.model.ComponentModel;
 import ch.qos.logback.core.model.ImplicitModel;
+import ch.qos.logback.core.model.ImportModel;
 import ch.qos.logback.core.model.Model;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import ch.qos.logback.core.rolling.TimeBasedFileNamingAndTriggeringPolicy;
@@ -131,6 +133,19 @@ class LogbackConfigurationAotContributionTests {
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Layout.class))
 				.accepts(generationContext.getRuntimeHints());
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Charset.class))
+				.accepts(generationContext.getRuntimeHints());
+	}
+
+	@Test
+	void componentModelReferencingImportedClassNameIsRegisteredForReflection() {
+		ImportModel importModel = new ImportModel();
+		importModel.setClassName(SizeAndTimeBasedRollingPolicy.class.getName());
+		ComponentModel component = new ComponentModel();
+		component.setClassName(SizeAndTimeBasedRollingPolicy.class.getSimpleName());
+		Model model = new Model();
+		model.getSubModels().addAll(List.of(importModel, component));
+		TestGenerationContext generationContext = applyContribution(model);
+		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(SizeAndTimeBasedRollingPolicy.class))
 				.accepts(generationContext.getRuntimeHints());
 	}
 

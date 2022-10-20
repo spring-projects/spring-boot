@@ -36,15 +36,14 @@ import java.util.stream.Stream;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.Context;
 import ch.qos.logback.core.CoreConstants;
-import ch.qos.logback.core.joran.spi.DefaultNestedComponentRegistry;
 import ch.qos.logback.core.joran.spi.ElementSelector;
 import ch.qos.logback.core.joran.spi.RuleStore;
 import ch.qos.logback.core.joran.util.beans.BeanDescription;
-import ch.qos.logback.core.joran.util.beans.BeanDescriptionCache;
 import ch.qos.logback.core.model.ComponentModel;
 import ch.qos.logback.core.model.Model;
 import ch.qos.logback.core.model.ModelUtil;
 import ch.qos.logback.core.model.processor.DefaultProcessor;
+import ch.qos.logback.core.model.processor.ModelInterpretationContext;
 import ch.qos.logback.core.spi.ContextAware;
 import ch.qos.logback.core.spi.ContextAwareBase;
 
@@ -113,9 +112,7 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		super.processModel(model);
 		if (!NativeDetector.inNativeImage() && isAotProcessingInProgress()) {
 			getContext().putObject(BeanFactoryInitializationAotContribution.class.getName(),
-					new LogbackConfigurationAotContribution(model,
-							getModelInterpretationContext().getBeanDescriptionCache(),
-							getModelInterpretationContext().getDefaultNestedComponentRegistry(), getContext()));
+					new LogbackConfigurationAotContribution(model, getModelInterpretationContext(), getContext()));
 		}
 	}
 
@@ -129,9 +126,9 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 
 		private final PatternRules patternRules;
 
-		private LogbackConfigurationAotContribution(Model model, BeanDescriptionCache beanDescriptionCache,
-				DefaultNestedComponentRegistry nestedComponentRegistry, Context context) {
-			this.modelWriter = new ModelWriter(model, beanDescriptionCache, nestedComponentRegistry);
+		private LogbackConfigurationAotContribution(Model model, ModelInterpretationContext interpretationContext,
+				Context context) {
+			this.modelWriter = new ModelWriter(model, interpretationContext);
 			this.patternRules = new PatternRules(context);
 		}
 
@@ -150,15 +147,11 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 
 		private final Model model;
 
-		private final BeanDescriptionCache beanDescriptionCache;
+		private final ModelInterpretationContext modelInterpretationContext;
 
-		private final DefaultNestedComponentRegistry nestedComponentRegistry;
-
-		private ModelWriter(Model model, BeanDescriptionCache beanDescriptionCache,
-				DefaultNestedComponentRegistry nestedComponentRegistry) {
+		private ModelWriter(Model model, ModelInterpretationContext modelInterpretationContext) {
 			this.model = model;
-			this.beanDescriptionCache = beanDescriptionCache;
-			this.nestedComponentRegistry = nestedComponentRegistry;
+			this.modelInterpretationContext = modelInterpretationContext;
 		}
 
 		private void writeTo(GenerationContext generationContext) {
@@ -215,7 +208,8 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 			}
 			String tag = model.getTag();
 			if (tag != null) {
-				String componentType = this.nestedComponentRegistry.findDefaultComponentTypeByTag(tag);
+				String componentType = this.modelInterpretationContext.getDefaultNestedComponentRegistry()
+						.findDefaultComponentTypeByTag(tag);
 				processComponent(componentType, reflectionTypes);
 			}
 			for (Model submodel : model.getSubModels()) {
@@ -226,7 +220,8 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 
 		private void processComponent(String componentTypeName, Set<String> reflectionTypes) {
 			if (componentTypeName != null) {
-				BeanDescription beanDescription = this.beanDescriptionCache
+				componentTypeName = this.modelInterpretationContext.getImport(componentTypeName);
+				BeanDescription beanDescription = this.modelInterpretationContext.getBeanDescriptionCache()
 						.getBeanDescription(loadComponentType(componentTypeName));
 				reflectionTypes.addAll(parameterTypesNames(beanDescription.getPropertyNameToAdder().values()));
 				reflectionTypes.addAll(parameterTypesNames(beanDescription.getPropertyNameToSetter().values()));
