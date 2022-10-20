@@ -18,7 +18,7 @@ package org.springframework.boot.docs.nativeimage.advanced.customhints;
 
 class MyClass {
 
-	public void sayHello(String name) {
+	void sayHello(String name) {
 		System.out.println("Hello " + name);
 	}
 

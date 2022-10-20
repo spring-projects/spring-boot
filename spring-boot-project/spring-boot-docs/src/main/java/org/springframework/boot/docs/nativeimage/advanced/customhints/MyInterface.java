@@ -16,9 +16,6 @@
 
 package org.springframework.boot.docs.nativeimage.advanced.customhints;
 
-/**
- * @author Moritz Halbritter
- */
-public interface MyInterface {
+interface MyInterface {
 
 }
