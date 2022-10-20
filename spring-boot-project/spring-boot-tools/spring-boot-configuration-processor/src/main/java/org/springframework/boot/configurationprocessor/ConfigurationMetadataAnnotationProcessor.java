@@ -78,7 +78,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	static final String DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION = "org.springframework.boot.context.properties.DeprecatedConfigurationProperty";
 
-	static final String CONSTRUCTOR_BINDING_ANNOTATION = "org.springframework.boot.context.properties.ConstructorBinding";
+	static final String CONSTRUCTOR_BINDING_ANNOTATION = "org.springframework.boot.context.properties.bind.ConstructorBinding";
 
 	static final String AUTOWIRED_ANNOTATION = "org.springframework.beans.factory.annotation.Autowired";
 

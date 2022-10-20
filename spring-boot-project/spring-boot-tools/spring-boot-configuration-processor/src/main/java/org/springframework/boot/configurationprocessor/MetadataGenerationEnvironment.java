@@ -36,6 +36,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
@@ -184,7 +185,7 @@ class MetadataGenerationEnvironment {
 	}
 
 	boolean hasConstructorBindingAnnotation(ExecutableElement element) {
-		return hasAnnotation(element, this.constructorBindingAnnotation);
+		return hasAnnotation(element, this.constructorBindingAnnotation, true);
 	}
 
 	boolean hasAutowiredAnnotation(ExecutableElement element) {
@@ -192,7 +193,40 @@ class MetadataGenerationEnvironment {
 	}
 
 	boolean hasAnnotation(Element element, String type) {
-		return getAnnotation(element, type) != null;
+		return hasAnnotation(element, type, false);
+	}
+
+	boolean hasAnnotation(Element element, String type, boolean considerMetaAnnotations) {
+		if (element != null) {
+			for (AnnotationMirror annotation : element.getAnnotationMirrors()) {
+				if (type.equals(annotation.getAnnotationType().toString())) {
+					return true;
+				}
+			}
+			if (considerMetaAnnotations) {
+				Set<Element> seen = new HashSet<>();
+				for (AnnotationMirror annotation : element.getAnnotationMirrors()) {
+					if (hasMetaAnnotation(annotation.getAnnotationType().asElement(), type, seen)) {
+						return true;
+					}
+				}
+
+			}
+		}
+		return false;
+	}
+
+	private boolean hasMetaAnnotation(Element annotationElement, String type, Set<Element> seen) {
+		if (seen.add(annotationElement)) {
+			for (AnnotationMirror annotation : annotationElement.getAnnotationMirrors()) {
+				DeclaredType annotationType = annotation.getAnnotationType();
+				if (type.equals(annotationType.toString())
+						|| hasMetaAnnotation(annotationType.asElement(), type, seen)) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	AnnotationMirror getAnnotation(Element element, String type) {

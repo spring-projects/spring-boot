@@ -32,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTester;
 import org.springframework.boot.configurationprocessor.test.TestableAnnotationProcessor;
+import org.springframework.boot.configurationsample.immutable.DeprecatedImmutableMultiConstructorProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableClassConstructorBindingProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableDeducedConstructorBindingProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableMultiConstructorProperties;
@@ -144,6 +145,16 @@ class PropertyDescriptorResolverTests {
 		process(ImmutableMultiConstructorProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("name", "description")));
 		process(ImmutableMultiConstructorProperties.class, properties((stream) -> assertThat(stream)
+				.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
+	}
+
+	@Test
+	@Deprecated(since = "3.0.0", forRemoval = true)
+	@SuppressWarnings("removal")
+	void propertiesWithMultiConstructorAndDeprecatedAnnotation() throws IOException {
+		process(DeprecatedImmutableMultiConstructorProperties.class,
+				propertyNames((stream) -> assertThat(stream).containsExactly("name", "description")));
+		process(DeprecatedImmutableMultiConstructorProperties.class, properties((stream) -> assertThat(stream)
 				.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 

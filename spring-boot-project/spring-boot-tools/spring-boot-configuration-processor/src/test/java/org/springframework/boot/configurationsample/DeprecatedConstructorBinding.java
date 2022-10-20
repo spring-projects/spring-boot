@@ -23,14 +23,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Alternative to Spring Boot's {@code @ConstructorBinding} for testing (removes the need
- * for a dependency on the real annotation).
+ * Alternative to Spring Boot's deprecated
+ * {@code @org.springframework.boot.context.properties.ConstructorBinding} for testing
+ * (removes the need for a dependency on the real annotation).
  *
  * @author Stephane Nicoll
  */
-@Target({ ElementType.CONSTRUCTOR, ElementType.ANNOTATION_TYPE })
+@Target(ElementType.CONSTRUCTOR)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ConstructorBinding {
+@ConstructorBinding
+@Deprecated(since = "3.0.0", forRemoval = true)
+public @interface DeprecatedConstructorBinding {
 
 }
