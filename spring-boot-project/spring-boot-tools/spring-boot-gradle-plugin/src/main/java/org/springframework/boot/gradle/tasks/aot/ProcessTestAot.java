@@ -31,7 +31,7 @@ import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.TaskAction;
 
-import org.springframework.boot.gradle.plugin.SpringBootPlugin;
+import org.springframework.boot.gradle.util.VersionExtractor;
 
 /**
  * Custom {@link JavaExec} task for processing test code ahead-of-time.
@@ -53,7 +53,8 @@ public class ProcessTestAot extends AbstractAot {
 		Configuration configuration = getProject().getConfigurations().create(getName() + "JUnitPlatformLauncher");
 		DependencyHandler dependencyHandler = getProject().getDependencies();
 		Dependency springBootDependencies = dependencyHandler
-				.create(dependencyHandler.platform(SpringBootPlugin.BOM_COORDINATES));
+				.create(dependencyHandler.platform("org.springframework.boot:spring-boot-dependencies:"
+						+ VersionExtractor.forClass(ProcessTestAot.class)));
 		DependencySet dependencies = configuration.getDependencies();
 		dependencies.add(springBootDependencies);
 		dependencies.add(dependencyHandler.create("org.junit.platform:junit-platform-launcher"));
