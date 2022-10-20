@@ -297,9 +297,11 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 		if (securityVersion.endsWith("-SNAPSHOT")) {
 			securityVersion = securityVersion.substring(0, securityVersion.length() - "-SNAPSHOT".length())
 		}
-		attributes  "jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
+		attributes  "hibernate-version": versionConstraints["org.hibernate.orm:hibernate-core"].split("\\.").take(2).join('.'),
+					"jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
 					"jooq-version": versionConstraints["org.jooq:jooq"],
 					"lettuce-version": versionConstraints["io.lettuce:lettuce-core"],
+					"native-build-tools-version": nativeBuildToolsVersion,
 					"spring-amqp-version": versionConstraints["org.springframework.amqp:spring-amqp"],
 					"spring-batch-version": versionConstraints["org.springframework.batch:spring-batch-core"],
 					"spring-boot-version": project.version,
@@ -317,8 +319,8 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
 					"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
 					"spring-security-version": securityVersion,
-					"native-build-tools-version": nativeBuildToolsVersion,
 					"spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"],
+					"tomcat-version": tomcatVersion.split("\\.").take(2).join('.'),
 					"remote-spring-application-output": runRemoteSpringApplicationExample.outputs.files.singleFile,
 					"spring-application-output": runSpringApplicationExample.outputs.files.singleFile,
 					"logging-format-output": runLoggingFormatExample.outputs.files.singleFile

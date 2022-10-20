@@ -100,8 +100,8 @@
 :dependency-management-plugin-code: https://github.com/spring-gradle-plugins/dependency-management-plugin
 :dynatrace-help: https://www.dynatrace.com/support/help
 :gradle-docs: https://docs.gradle.org/current/userguide
-:hibernate-docs: https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html
-:java-api: https://docs.oracle.com/javase/8/docs/api
+:hibernate-docs: https://docs.jboss.org/hibernate/orm/{hibernate-version}/userguide/html_single/Hibernate_User_Guide.html
+:java-api: https://docs.oracle.com/javase/17/docs/api
 :jooq-docs: https://www.jooq.org/doc/{jooq-version}/manual-single-page
 :junit5-docs: https://junit.org/junit5/docs/current/user-guide
 :kotlin-docs: https://kotlinlang.org/docs/reference/
@@ -109,7 +109,7 @@
 :micrometer-docs: https://micrometer.io/docs
 :micrometer-concepts-docs: {micrometer-docs}/concepts
 :micrometer-registry-docs: {micrometer-docs}/registry
-:tomcat-docs: https://tomcat.apache.org/tomcat-9.0-doc
+:tomcat-docs: https://tomcat.apache.org/tomcat-{tomcat-version}-doc
 :graal-version: 22.3
 :graal-native-image-docs: https://www.graalvm.org/{graal-version}/reference-manual/native-image
 :liberica-nik-download: https://bell-sw.com/pages/downloads/native-image-kit/#/nik-22-17-ea
