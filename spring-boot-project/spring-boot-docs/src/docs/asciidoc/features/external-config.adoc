@@ -98,7 +98,7 @@ This means that the JSON cannot override properties from lower order property so
 
 
 [[features.external-config.files]]
-=== External Application Properties [[features.external-config.files]]
+=== External Application Properties
 Spring Boot will automatically find and load `application.properties` and `application.yaml` files from the following locations when your application starts:
 
 . From the classpath
@@ -471,7 +471,7 @@ See the _<<howto#howto.properties-and-configuration.short-command-line-arguments
 
 
 [[features.external-config.files.multi-document]]
-==== Working with Multi-Document Files
+==== Working With Multi-Document Files
 Spring Boot allows you to split a single physical file into multiple logical documents which are each added independently.
 Documents are processed in order, from top to bottom.
 Later documents can override the properties defined in earlier ones.
@@ -564,7 +564,7 @@ If you need a secure way to store credentials and passwords, the https://cloud.s
 
 
 [[features.external-config.yaml]]
-=== Working with YAML
+=== Working With YAML
 https://yaml.org[YAML] is a superset of JSON and, as such, is a convenient format for specifying hierarchical configuration data.
 The `SpringApplication` class automatically supports YAML as an alternative to properties whenever you have the https://github.com/snakeyaml/snakeyaml[SnakeYAML] library on your classpath.
 
@@ -677,7 +677,7 @@ TIP: See also the <<features#features.external-config.typesafe-configuration-pro
 
 
 [[features.external-config.typesafe-configuration-properties.java-bean-binding]]
-==== JavaBean properties binding
+==== JavaBean Properties Binding
 It is possible to bind a bean declaring standard JavaBean properties as shown in the following example:
 
 include::code:MyProperties[]
@@ -715,7 +715,7 @@ Finally, only standard Java Bean properties are considered and binding on static
 
 
 [[features.external-config.typesafe-configuration-properties.constructor-binding]]
-==== Constructor binding
+==== Constructor Binding
 The example in the previous section can be rewritten in an immutable fashion as shown in the following example:
 
 include::code:MyProperties[]
@@ -747,7 +747,7 @@ For consistency with properties of other types, if you do declare an `Optional` 
 
 
 [[features.external-config.typesafe-configuration-properties.enabling-annotated-types]]
-==== Enabling @ConfigurationProperties-annotated types
+==== Enabling @ConfigurationProperties-annotated Types
 Spring Boot provides infrastructure to bind `@ConfigurationProperties` types and register them as beans.
 You can either enable configuration properties on a class-by-class basis or enable configuration property scanning that works in a similar manner to component scanning.
 
@@ -779,7 +779,7 @@ If you still want to inject other beans using the constructor, the configuration
 
 
 [[features.external-config.typesafe-configuration-properties.using-annotated-types]]
-==== Using @ConfigurationProperties-annotated types
+==== Using @ConfigurationProperties-annotated Types
 This style of configuration works particularly well with the `SpringApplication` external YAML configuration, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim"]
@@ -913,7 +913,7 @@ For example, binding `a.b=c` to `Map<String, Object>` will return a Map with the
 
 
 [[features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables]]
-===== Binding from Environment Variables
+===== Binding From Environment Variables
 Most operating systems impose strict rules around the names that can be used for environment variables.
 For example, Linux shell variables can contain only letters (`a` to `z` or `A` to `Z`), numbers (`0` to `9`) or the underscore character (`_`).
 By convention, Unix shell variables will also have their names in UPPERCASE.
@@ -1077,7 +1077,7 @@ Doing so gives a transparent upgrade path while supporting a much richer format.
 
 
 [[features.external-config.typesafe-configuration-properties.conversion.periods]]
-===== Converting periods
+===== Converting Periods
 In addition to durations, Spring Boot can also work with `java.time.Period` type.
 The following formats can be used in application properties:
 

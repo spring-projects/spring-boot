@@ -1,5 +1,5 @@
 [[container-images.efficient-images]]
-== Efficient container images
+== Efficient Container Images
 It is easily possible to package a Spring Boot fat jar as a docker image.
 However, there are various downsides to copying and running the fat jar as is in the docker image.
 There’s always a certain amount of overhead when running a fat jar without unpacking it, and in a containerized environment this can be noticeable.
@@ -9,7 +9,7 @@ If you put jar files in the layer before your application classes, Docker often 
 
 
 [[container-images.efficient-images.unpacking]]
-=== Unpacking the fat jar
+=== Unpacking the Executable JAR
 If you are running your application from a container, you can use an executable jar, but it is also often an advantage to explode it and run it in a different way.
 Certain PaaS implementations may also choose to unpack archives before they run.
 For example, Cloud Foundry operates this way.

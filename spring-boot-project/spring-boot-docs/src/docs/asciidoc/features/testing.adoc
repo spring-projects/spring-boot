@@ -192,7 +192,7 @@ include::code:MyApplicationArgumentTests[]
 
 
 [[features.testing.spring-boot-applications.with-mock-environment]]
-==== Testing with a mock environment
+==== Testing With a Mock Environment
 By default, `@SpringBootTest` does not start the server but instead sets up a mock environment for testing web endpoints.
 
 With Spring MVC, we can query our web endpoints using {spring-framework-docs}/testing.html#spring-mvc-test-framework[`MockMvc`] or `WebTestClient`, as shown in the following example:
@@ -218,7 +218,7 @@ If you need to test these lower-level concerns, you can start a fully running se
 
 
 [[features.testing.spring-boot-applications.with-running-server]]
-==== Testing with a running server
+==== Testing With a Running Server
 If you need to start a full running server, we recommend that you use random ports.
 If you use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)`, an available port is picked at random each time your test runs.
 
@@ -718,7 +718,7 @@ It can also be used to configure the host, scheme, and port that appears in any 
 
 
 [[features.testing.spring-boot-applications.autoconfigured-spring-restdocs.with-mock-mvc]]
-===== Auto-configured Spring REST Docs Tests with Mock MVC
+===== Auto-configured Spring REST Docs Tests With Mock MVC
 `@AutoConfigureRestDocs` customizes the `MockMvc` bean to use Spring REST Docs when testing servlet-based web applications.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using Mock MVC and Spring REST Docs, as shown in the following example:
 
@@ -737,7 +737,7 @@ include::code:MyResultHandlerConfiguration[]
 
 
 [[features.testing.spring-boot-applications.autoconfigured-spring-restdocs.with-web-test-client]]
-===== Auto-configured Spring REST Docs Tests with WebTestClient
+===== Auto-configured Spring REST Docs Tests With WebTestClient
 `@AutoConfigureRestDocs` can also be used with `WebTestClient` when testing reactive web applications.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using `@WebFluxTest` and Spring REST Docs, as shown in the following example:
 
@@ -755,7 +755,7 @@ include::code:MyWebTestClientBuilderCustomizerConfiguration[]
 
 
 [[features.testing.spring-boot-applications.autoconfigured-spring-restdocs.with-rest-assured]]
-===== Auto-configured Spring REST Docs Tests with REST Assured
+===== Auto-configured Spring REST Docs Tests With REST Assured
 `@AutoConfigureRestDocs` makes a `RequestSpecification` bean, preconfigured to use Spring REST Docs, available to your tests.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using REST Assured and Spring REST Docs, as shown in the following example:
 

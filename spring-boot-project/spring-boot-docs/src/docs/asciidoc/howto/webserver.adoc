@@ -228,7 +228,7 @@ The details of the `h2` support depend on the chosen web server and the applicat
 
 
 [[howto.webserver.configure-http2.tomcat]]
-==== HTTP/2 with Tomcat
+==== HTTP/2 With Tomcat
 Spring Boot ships by default with Tomcat 9.0.x which supports `h2c` out of the box and `h2` out of the box when using JDK 9 or later.
 Alternatively, `h2` can be used on JDK 8 if the `libtcnative` library and its dependencies are installed on the host operating system.
 
@@ -248,7 +248,7 @@ This error is not fatal, and the application still starts with HTTP/1.1 SSL supp
 
 
 [[howto.webserver.configure-http2.jetty]]
-==== HTTP/2 with Jetty
+==== HTTP/2 With Jetty
 For HTTP/2 support, Jetty requires the additional `org.eclipse.jetty.http2:http2-server` dependency.
 To use `h2c` no other dependencies are required.
 To use `h2`, you also need to choose one of the following dependencies, depending on your deployment:
@@ -260,7 +260,7 @@ To use `h2`, you also need to choose one of the following dependencies, dependin
 
 
 [[howto.webserver.configure-http2.netty]]
-==== HTTP/2 with Reactor Netty
+==== HTTP/2 With Reactor Netty
 The `spring-boot-webflux-starter` is using by default Reactor Netty as a server.
 Reactor Netty supports `h2c` using JDK 8 or later with no additional dependencies.
 Reactor Netty supports `h2` using the JDK support with JDK 9 or later.
@@ -273,7 +273,7 @@ Developers can choose to import only the required dependencies using a classifie
 
 
 [[howto.webserver.configure-http2.undertow]]
-==== HTTP/2 with Undertow
+==== HTTP/2 With Undertow
 As of Undertow 1.4.0+, both `h2` and `h2c` are supported on JDK 8 without any additional dependencies.
 
 

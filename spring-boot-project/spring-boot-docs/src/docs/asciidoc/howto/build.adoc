@@ -257,7 +257,7 @@ See {spring-boot-maven-plugin-docs}#run-example-debug[this example] for more det
 
 
 [[howto.build.build-an-executable-archive-with-ant-without-using-spring-boot-antlib]]
-=== Build an Executable Archive from Ant without Using spring-boot-antlib
+=== Build an Executable Archive From Ant without Using spring-boot-antlib
 To build with Ant, you need to grab dependencies, compile, and then create a jar or war archive.
 To make it executable, you can either use the `spring-boot-antlib` module or you can follow these instructions:
 

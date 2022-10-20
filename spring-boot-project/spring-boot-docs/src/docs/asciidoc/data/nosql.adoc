@@ -220,7 +220,7 @@ Spring Boot provides a dedicated "`Starter`", `spring-boot-starter-data-elastics
 
 
 [[data.nosql.elasticsearch.connecting-using-rest]]
-==== Connecting to Elasticsearch using REST clients
+==== Connecting to Elasticsearch Using REST clients
 Elasticsearch ships two different REST clients] that you can use to query a cluster: the https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/java-rest-low.html[low-level client] from the `org.elasticsearch.client:elasticsearch-rest-client` module and the https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/index.html[Java API client] from the `co.elastic.clients:elasticsearch-java` module.
 Additionally, Spring Boot provides support for a reactive client from the `org.springframework.data:spring-data-elasticsearch` module.
 By default, the clients will target `http://localhost:9200`.
@@ -237,7 +237,7 @@ You can use `spring.elasticsearch.*` properties to further tune how the clients 
 ----
 
 [[data.nosql.elasticsearch.connecting-using-rest.restclient]]
-===== Connecting to Elasticsearch using RestClient
+===== Connecting to Elasticsearch Using RestClient
 If you have `elasticsearch-rest-client` on the classpath, Spring Boot will auto-configure and register a `RestClient` bean.
 In addition to the properties described previously, to fine-tune the `RestClient` you can register an arbitrary number of beans that implement `RestClientBuilderCustomizer` for more advanced customizations.
 To take full control over the clients' configuration, define a `RestClientBuilder` bean.
@@ -259,7 +259,7 @@ You can further tune how `Sniffer` is configured, as shown in the following exam
 
 
 [[data.nosql.elasticsearch.connecting-using-rest.javaapiclient]]
-===== Connecting to Elasticsearch using ElasticsearchClient
+===== Connecting to Elasticsearch Using ElasticsearchClient
 If you have `co.elastic.clients:elasticsearch-java` on the classpath, Spring Boot will auto-configure and register an `ElasticsearchClient` bean.
 
 The `ElasticsearchClient` uses a transport that depends upon the previously described `RestClient`.

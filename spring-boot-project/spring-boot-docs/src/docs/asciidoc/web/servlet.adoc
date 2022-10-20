@@ -373,7 +373,7 @@ The `ErrorController` then picks up any unhandled exceptions.
 
 
 [[web.servlet.spring-mvc.error-handling.error-pages-without-spring-mvc]]
-===== Mapping Error Pages outside of Spring MVC
+===== Mapping Error Pages Outside of Spring MVC
 For applications that do not use Spring MVC, you can use the `ErrorPageRegistrar` interface to directly register `ErrorPages`.
 This abstraction works directly with the underlying embedded servlet container and works even if you do not have a Spring MVC `DispatcherServlet`.
 
@@ -388,7 +388,7 @@ Note that the default `FilterRegistrationBean` does not include the `ERROR` disp
 
 
 [[web.servlet.spring-mvc.error-handling.in-a-war-deployment]]
-===== Error handling in a war deployment
+===== Error Handling in a WAR Deployment
 When deployed to a servlet container, Spring Boot uses its error page filter to forward a request with an error status to the appropriate error page.
 This is necessary as the servlet specification does not provide an API for registering error pages.
 Depending on the container that you are deploying your war file to and the technologies that your application uses, some additional configuration may be required.
@@ -465,7 +465,7 @@ By default, the embedded server listens for HTTP requests on port `8080`.
 
 
 [[web.servlet.embedded-container.servlets-filters-listeners]]
-==== Servlets, Filters, and listeners
+==== Servlets, Filters, and Listeners
 When using an embedded servlet container, you can register servlets, filters, and all the listeners (such as `HttpSessionListener`) from the servlet spec, either by using Spring beans or by scanning for servlet components.
 
 
