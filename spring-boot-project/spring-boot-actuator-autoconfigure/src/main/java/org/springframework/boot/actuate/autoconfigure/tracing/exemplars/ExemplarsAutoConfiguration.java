@@ -67,12 +67,14 @@ public class ExemplarsAutoConfiguration {
 
 		@Override
 		public String getTraceId() {
-			return currentSpan().context().traceId();
+			Span currentSpan = currentSpan();
+			return (currentSpan != null) ? currentSpan.context().traceId() : null;
 		}
 
 		@Override
 		public String getSpanId() {
-			return currentSpan().context().spanId();
+			Span currentSpan = currentSpan();
+			return (currentSpan != null) ? currentSpan.context().spanId() : null;
 		}
 
 		@Override
