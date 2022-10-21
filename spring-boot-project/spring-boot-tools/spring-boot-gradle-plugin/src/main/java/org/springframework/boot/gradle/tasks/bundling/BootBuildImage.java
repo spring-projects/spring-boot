@@ -308,7 +308,7 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizeBuilder(BuildRequest request) {
-		String builder = this.getBuilder().getOrNull();
+		String builder = getBuilder().getOrNull();
 		if (StringUtils.hasText(builder)) {
 			return request.withBuilder(ImageReference.of(builder));
 		}
@@ -316,7 +316,7 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizeRunImage(BuildRequest request) {
-		String runImage = this.getRunImage().getOrNull();
+		String runImage = getRunImage().getOrNull();
 		if (StringUtils.hasText(runImage)) {
 			return request.withRunImage(ImageReference.of(runImage));
 		}
@@ -324,7 +324,7 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizeEnvironment(BuildRequest request) {
-		Map<String, String> environment = this.getEnvironment().getOrNull();
+		Map<String, String> environment = getEnvironment().getOrNull();
 		if (environment != null && !environment.isEmpty()) {
 			request = request.withEnv(environment);
 		}

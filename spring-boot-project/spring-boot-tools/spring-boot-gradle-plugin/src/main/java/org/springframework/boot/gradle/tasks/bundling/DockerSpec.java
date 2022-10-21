@@ -235,7 +235,7 @@ public abstract class DockerSpec {
 		}
 
 		boolean hasTokenAuth() {
-			return this.getToken().isPresent();
+			return getToken().isPresent();
 		}
 
 	}

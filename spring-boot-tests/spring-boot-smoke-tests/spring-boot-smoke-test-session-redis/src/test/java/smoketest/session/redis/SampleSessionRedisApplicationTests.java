@@ -69,7 +69,7 @@ public class SampleSessionRedisApplicationTests {
 	@SuppressWarnings("unchecked")
 	void sessionsEndpointShouldReturnUserSessions() {
 		performLogin();
-		ResponseEntity<Map<String, Object>> response = this.getSessions();
+		ResponseEntity<Map<String, Object>> response = getSessions();
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		List<Map<String, Object>> sessions = (List<Map<String, Object>>) response.getBody().get("sessions");

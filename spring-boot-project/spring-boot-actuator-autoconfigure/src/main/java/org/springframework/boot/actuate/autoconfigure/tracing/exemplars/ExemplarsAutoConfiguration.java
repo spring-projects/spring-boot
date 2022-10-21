@@ -55,7 +55,7 @@ public class ExemplarsAutoConfiguration {
 	/**
 	 * Since the MeterRegistry can depend on the {@link Tracer} (Exemplars) and the
 	 * {@link Tracer} can depend on the MeterRegistry (recording metrics), this
-	 * {@link SpanContextSupplier} breaks the circle by lazily loading the {@link Tracer}.
+	 * {@link SpanContextSupplier} breaks the cycle by lazily loading the {@link Tracer}.
 	 */
 	static class LazyTracingSpanContextSupplier implements SpanContextSupplier {
 
