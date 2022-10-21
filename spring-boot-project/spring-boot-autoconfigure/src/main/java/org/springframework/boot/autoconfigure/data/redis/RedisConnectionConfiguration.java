@@ -28,7 +28,6 @@ import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -145,9 +144,7 @@ abstract class RedisConnectionConfiguration {
 		List<RedisNode> nodes = new ArrayList<>();
 		for (String node : sentinel.getNodes()) {
 			try {
-				String[] parts = StringUtils.split(node, ":");
-				Assert.state(parts.length == 2, "Must be defined as 'host:port'");
-				nodes.add(new RedisNode(parts[0], Integer.parseInt(parts[1])));
+				nodes.add(RedisNode.fromString(node));
 			}
 			catch (RuntimeException ex) {
 				throw new IllegalStateException("Invalid redis sentinel property '" + node + "'", ex);

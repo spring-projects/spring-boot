@@ -282,6 +282,16 @@ class RedisAutoConfigurationTests {
 	}
 
 	@Test
+	void testRedisConfigurationWithIpv6Sentinel() {
+		List<String> sentinels = Arrays.asList("[0:0:0:0:0:0:0:1]:26379", "[0:0:0:0:0:0:0:1]:26380");
+		this.contextRunner
+				.withPropertyValues("spring.redis.sentinel.master:mymaster",
+						"spring.redis.sentinel.nodes:" + StringUtils.collectionToCommaDelimitedString(sentinels))
+				.run((context) -> assertThat(context.getBean(LettuceConnectionFactory.class).isRedisSentinelAware())
+						.isTrue());
+	}
+
+	@Test
 	void testRedisConfigurationWithSentinelAndDatabase() {
 		this.contextRunner
 				.withPropertyValues("spring.data.redis.database:1", "spring.data.redis.sentinel.master:mymaster",
