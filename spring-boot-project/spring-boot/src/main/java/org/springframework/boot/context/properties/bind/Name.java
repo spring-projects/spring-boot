@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
  * @since 2.4.0
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PARAMETER })
+@Target(ElementType.PARAMETER)
 @Documented
 public @interface Name {
 
