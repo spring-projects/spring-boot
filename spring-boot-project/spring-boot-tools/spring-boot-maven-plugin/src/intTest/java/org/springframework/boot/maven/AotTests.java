@@ -45,16 +45,17 @@ public class AotTests {
 	}
 
 	@TestTemplate
-	void whenAotRunsResourcesAreGenerated(MavenBuild mavenBuild) {
-		mavenBuild.project("aot").goals("package").execute((project) -> {
-			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
-			assertThat(collectRelativePaths(aotDirectory.resolve("resources"))).contains(
-					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot",
+	void whenAotRunsResourcesAreGeneratedAndCopiedToTargetClasses(MavenBuild mavenBuild) {
+		mavenBuild.project("aot-resource-generation").goals("package").execute((project) -> {
+			Path targetClasses = project.toPath().resolve("target/classes");
+			assertThat(collectRelativePaths(targetClasses)).contains(
+					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot-resource-generation",
 							"reflect-config.json"),
-					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot",
+					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot-resource-generation",
 							"resource-config.json"),
-					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot",
-							"native-image.properties"));
+					Path.of("META-INF", "native-image", "org.springframework.boot.maven.it", "aot-resource-generation",
+							"native-image.properties"),
+					Path.of("generated-resource"), Path.of("nested/generated-resource"));
 		});
 	}
 

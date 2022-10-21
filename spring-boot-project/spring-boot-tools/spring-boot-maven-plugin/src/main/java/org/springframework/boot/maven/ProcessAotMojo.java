@@ -93,8 +93,7 @@ public class ProcessAotMojo extends AbstractAotMojo {
 		URL[] classPath = getClassPath();
 		generateAotAssets(classPath, AOT_PROCESSOR_CLASS_NAME, getAotArguments(applicationClass));
 		compileSourceFiles(classPath, this.generatedSources, this.classesDirectory);
-		copyAll(this.generatedResources.toPath().resolve("META-INF/native-image"),
-				this.classesDirectory.toPath().resolve("META-INF/native-image"));
+		copyAll(this.generatedResources.toPath(), this.classesDirectory.toPath());
 		copyAll(this.generatedClasses.toPath(), this.classesDirectory.toPath());
 	}
 
