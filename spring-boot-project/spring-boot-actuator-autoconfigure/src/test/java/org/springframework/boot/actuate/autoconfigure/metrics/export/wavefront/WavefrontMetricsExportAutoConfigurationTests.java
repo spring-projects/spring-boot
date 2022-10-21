@@ -20,7 +20,6 @@ import java.util.Map;
 
 import com.wavefront.sdk.common.WavefrontSender;
 import com.wavefront.sdk.common.application.ApplicationTags;
-
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.wavefront.WavefrontConfig;
 import io.micrometer.wavefront.WavefrontMeterRegistry;
