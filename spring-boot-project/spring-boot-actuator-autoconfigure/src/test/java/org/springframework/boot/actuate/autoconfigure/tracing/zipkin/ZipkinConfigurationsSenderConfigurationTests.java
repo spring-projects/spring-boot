@@ -93,7 +93,7 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	}
 
 	@Test
-	void willUseRestTemplateInNonWebApplicationIfUrlConnectionSenderAndWebclientAreNotAvailable() {
+	void willUseRestTemplateInNonWebApplicationIfUrlConnectionSenderAndWebClientAreNotAvailable() {
 		this.contextRunner.withUserConfiguration(RestTemplateConfiguration.class)
 				.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class)).run((context) -> {
 					assertThat(context).doesNotHaveBean(URLConnectionSender.class);

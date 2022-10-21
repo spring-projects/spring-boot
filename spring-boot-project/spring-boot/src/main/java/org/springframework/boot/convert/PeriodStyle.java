@@ -264,7 +264,7 @@ public enum PeriodStyle {
 		}
 
 		private int intValue(Period value) {
-			Assert.notNull(this.intValue, () -> "intValue cannot be extracted from " + this.name());
+			Assert.notNull(this.intValue, () -> "intValue cannot be extracted from " + name());
 			return this.intValue.apply(value);
 		}
 

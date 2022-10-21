@@ -47,7 +47,7 @@ public abstract class ProcessAot extends AbstractAot {
 		List<String> args = new ArrayList<>();
 		args.add(getApplicationClass().get());
 		args.addAll(processorArgs());
-		this.setArgs(args);
+		setArgs(args);
 		super.exec();
 	}
 

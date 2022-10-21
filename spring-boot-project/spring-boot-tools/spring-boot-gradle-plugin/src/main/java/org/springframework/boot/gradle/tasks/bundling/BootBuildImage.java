@@ -320,7 +320,7 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizeBuilder(BuildRequest request) {
-		String builder = this.getBuilder().getOrNull();
+		String builder = getBuilder().getOrNull();
 		if (StringUtils.hasText(builder)) {
 			return request.withBuilder(ImageReference.of(builder));
 		}
@@ -328,7 +328,7 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizeRunImage(BuildRequest request) {
-		String runImage = this.getRunImage().getOrNull();
+		String runImage = getRunImage().getOrNull();
 		if (StringUtils.hasText(runImage)) {
 			return request.withRunImage(ImageReference.of(runImage));
 		}
@@ -336,11 +336,11 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	private BuildRequest customizeEnvironment(BuildRequest request) {
-		Map<String, String> environment = this.getEnvironment().getOrNull();
+		Map<String, String> environment = getEnvironment().getOrNull();
 		if (environment != null && !environment.isEmpty()) {
 			request = request.withEnv(environment);
 		}
-		if (this.getTargetJavaVersion().isPresent() && !request.getEnv().containsKey(BUILDPACK_JVM_VERSION_KEY)) {
+		if (getTargetJavaVersion().isPresent() && !request.getEnv().containsKey(BUILDPACK_JVM_VERSION_KEY)) {
 			request = request.withEnv(BUILDPACK_JVM_VERSION_KEY, translateTargetJavaVersion());
 		}
 		return request;
@@ -402,7 +402,7 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	private String translateTargetJavaVersion() {
-		return this.getTargetJavaVersion().get().getMajorVersion() + ".*";
+		return getTargetJavaVersion().get().getMajorVersion() + ".*";
 	}
 
 }

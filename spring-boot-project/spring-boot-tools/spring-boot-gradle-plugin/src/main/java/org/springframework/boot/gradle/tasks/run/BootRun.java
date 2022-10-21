@@ -64,7 +64,7 @@ public abstract class BootRun extends JavaExec {
 
 	@Override
 	public void exec() {
-		if (this.getOptimizedLaunch().get()) {
+		if (getOptimizedLaunch().get()) {
 			setJvmArgs(getJvmArgs());
 			jvmArgs("-XX:TieredStopAtLevel=1");
 		}

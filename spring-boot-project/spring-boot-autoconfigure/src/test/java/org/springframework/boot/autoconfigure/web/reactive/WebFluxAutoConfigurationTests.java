@@ -638,9 +638,9 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void problemDetailsBacksOffWhenExceptionHandler() {
 		this.contextRunner.withPropertyValues("spring.webflux.problemdetails.enabled:true")
-				.withUserConfiguration(CustomExceptionResolverConfiguration.class)
+				.withUserConfiguration(CustomExceptionHandlerConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(ProblemDetailsExceptionHandler.class)
-						.hasSingleBean(CustomExceptionResolver.class));
+						.hasSingleBean(CustomExceptionHandler.class));
 	}
 
 	private ContextConsumer<ReactiveWebApplicationContext> assertExchangeWithSession(
@@ -933,17 +933,17 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class CustomExceptionResolverConfiguration {
+	static class CustomExceptionHandlerConfiguration {
 
 		@Bean
-		CustomExceptionResolver customExceptionResolver() {
-			return new CustomExceptionResolver();
+		CustomExceptionHandler customExceptionHandler() {
+			return new CustomExceptionHandler();
 		}
 
 	}
 
 	@ControllerAdvice
-	static class CustomExceptionResolver extends ResponseEntityExceptionHandler {
+	static class CustomExceptionHandler extends ResponseEntityExceptionHandler {
 
 	}
 

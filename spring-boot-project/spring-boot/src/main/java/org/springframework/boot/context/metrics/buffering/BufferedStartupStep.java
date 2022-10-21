@@ -90,7 +90,7 @@ class BufferedStartupStep implements StartupStep {
 
 	@Override
 	public StartupStep tag(String key, Supplier<String> value) {
-		return this.tag(key, value.get());
+		return tag(key, value.get());
 	}
 
 	@Override
