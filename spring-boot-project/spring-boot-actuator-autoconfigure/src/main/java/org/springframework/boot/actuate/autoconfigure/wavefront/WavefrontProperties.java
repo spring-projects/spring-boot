@@ -21,6 +21,8 @@ import java.net.URI;
 import java.net.UnknownHostException;
 import java.time.Duration;
 
+import com.wavefront.sdk.common.application.ApplicationTags;
+
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PushRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
@@ -30,6 +32,7 @@ import org.springframework.util.unit.DataSize;
  * Configuration properties to configure Wavefront.
  *
  * @author Moritz Halbritter
+ * @author Glenn Oppegard
  * @since 3.0.0
  */
 @ConfigurationProperties(prefix = "management.wavefront")
@@ -261,14 +264,27 @@ public class WavefrontProperties {
 	public static class Tracing {
 
 		/**
-		 * Application name. Defaults to 'spring.application.name'.
+		 * Application name used in {@link ApplicationTags}. Defaults to
+		 * 'unnamed_application'.
 		 */
 		private String applicationName;
 
 		/**
-		 * Service name. Defaults to 'spring.application.name'.
+		 * Service name used in {@link ApplicationTags}, falling back to
+		 * {@code spring.application.name}. If both are unset it defaults to
+		 * 'unnamed_service'.
 		 */
 		private String serviceName;
+
+		/**
+		 * Optional cluster name used in {@link ApplicationTags}.
+		 */
+		private String clusterName;
+
+		/**
+		 * Optional shard name used in {@link ApplicationTags}.
+		 */
+		private String shardName;
 
 		public String getServiceName() {
 			return this.serviceName;
@@ -284,6 +300,22 @@ public class WavefrontProperties {
 
 		public void setApplicationName(String applicationName) {
 			this.applicationName = applicationName;
+		}
+
+		public String getClusterName() {
+			return this.clusterName;
+		}
+
+		public void setClusterName(String clusterName) {
+			this.clusterName = clusterName;
+		}
+
+		public String getShardName() {
+			return this.shardName;
+		}
+
+		public void setShardName(String shardName) {
+			this.shardName = shardName;
 		}
 
 	}
