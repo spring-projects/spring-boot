@@ -39,6 +39,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link WavefrontTracingAutoConfiguration}.
  *
  * @author Moritz Halbritter
+ * @author Glenn Oppegard
  */
 class WavefrontTracingAutoConfigurationTests {
 
@@ -114,22 +115,40 @@ class WavefrontTracingAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldHaveADefaultApplicationName() {
+	void shouldHaveADefaultApplicationNameAndServiceName() {
 		this.contextRunner.withUserConfiguration(WavefrontSenderConfiguration.class).run((context) -> {
 			ApplicationTags applicationTags = context.getBean(ApplicationTags.class);
-			assertThat(applicationTags.getApplication()).isEqualTo("application");
+			assertThat(applicationTags.getApplication()).isEqualTo("unnamed_application");
+			assertThat(applicationTags.getService()).isEqualTo("unnamed_service");
+			assertThat(applicationTags.getCluster()).isNull();
+			assertThat(applicationTags.getShard()).isNull();
 		});
+	}
+
+	@Test
+	void shouldUseSpringApplicationNameForServiceName() {
+		this.contextRunner.withUserConfiguration(WavefrontSenderConfiguration.class)
+				.withPropertyValues("spring.application.name=super-service").run((context) -> {
+					ApplicationTags applicationTags = context.getBean(ApplicationTags.class);
+					assertThat(applicationTags.getApplication()).isEqualTo("unnamed_application");
+					assertThat(applicationTags.getService()).isEqualTo("super-service");
+				});
 	}
 
 	@Test
 	void shouldHonorConfigProperties() {
 		this.contextRunner.withUserConfiguration(WavefrontSenderConfiguration.class)
-				.withPropertyValues("spring.application.name=super-application",
-						"management.wavefront.tracing.service-name=super-service")
+				.withPropertyValues("spring.application.name=ignored",
+						"management.wavefront.tracing.application-name=super-application",
+						"management.wavefront.tracing.service-name=super-service",
+						"management.wavefront.tracing.cluster-name=super-cluster",
+						"management.wavefront.tracing.shard-name=super-shard")
 				.run((context) -> {
 					ApplicationTags applicationTags = context.getBean(ApplicationTags.class);
 					assertThat(applicationTags.getApplication()).isEqualTo("super-application");
 					assertThat(applicationTags.getService()).isEqualTo("super-service");
+					assertThat(applicationTags.getCluster()).isEqualTo("super-cluster");
+					assertThat(applicationTags.getShard()).isEqualTo("super-shard");
 				});
 	}
 

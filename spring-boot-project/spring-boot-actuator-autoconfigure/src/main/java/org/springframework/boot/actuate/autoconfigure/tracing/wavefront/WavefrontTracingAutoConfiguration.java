@@ -49,6 +49,7 @@ import org.springframework.core.env.Environment;
  * {@link EnableAutoConfiguration Auto-configuration} for Wavefront tracing.
  *
  * @author Moritz Halbritter
+ * @author Glenn Oppegard
  * @since 3.0.0
  */
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
@@ -59,19 +60,40 @@ import org.springframework.core.env.Environment;
 public class WavefrontTracingAutoConfiguration {
 
 	/**
-	 * Default value for application name if {@code spring.application.name} is not set.
+	 * Default value for the Wavefront Application name.
+	 * @see <a href=
+	 * "https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront
+	 * Application Tags</a>
 	 */
-	private static final String DEFAULT_APPLICATION_NAME = "application";
+	private static final String DEFAULT_WAVEFRONT_APPLICATION_NAME = "unnamed_application";
+
+	/**
+	 * Default value for the Wavefront Service name if {@code spring.application.name} is
+	 * not set.
+	 * @see <a href=
+	 * "https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront
+	 * Application Tags</a>
+	 */
+	private static final String DEFAULT_WAVEFRONT_SERVICE_NAME = "unnamed_service";
 
 	@Bean
 	@ConditionalOnMissingBean
 	public ApplicationTags applicationTags(Environment environment, WavefrontProperties properties) {
-		String springApplicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
+		String fallbackWavefrontServiceName = environment.getProperty("spring.application.name",
+				DEFAULT_WAVEFRONT_SERVICE_NAME);
 		Tracing tracing = properties.getTracing();
-		String applicationName = (tracing.getApplicationName() != null) ? tracing.getApplicationName()
-				: springApplicationName;
-		String serviceName = (tracing.getServiceName() != null) ? tracing.getServiceName() : springApplicationName;
-		return new ApplicationTags.Builder(applicationName, serviceName).build();
+		String wavefrontServiceName = (tracing.getServiceName() != null) ? tracing.getServiceName()
+				: fallbackWavefrontServiceName;
+		String wavefrontApplicationName = (tracing.getApplicationName() != null) ? tracing.getApplicationName()
+				: DEFAULT_WAVEFRONT_APPLICATION_NAME;
+		ApplicationTags.Builder builder = new ApplicationTags.Builder(wavefrontApplicationName, wavefrontServiceName);
+		if (tracing.getClusterName() != null) {
+			builder.cluster(tracing.getClusterName());
+		}
+		if (tracing.getShardName() != null) {
+			builder.shard(tracing.getShardName());
+		}
+		return builder.build();
 	}
 
 	@Configuration(proxyBeanMethods = false)
