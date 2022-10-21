@@ -31,6 +31,7 @@ import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.core.CoreConstants;
 import ch.qos.logback.core.FileAppender;
 import ch.qos.logback.core.Layout;
+import ch.qos.logback.core.joran.spi.DefaultClass;
 import ch.qos.logback.core.model.ComponentModel;
 import ch.qos.logback.core.model.ImplicitModel;
 import ch.qos.logback.core.model.ImportModel;
@@ -149,6 +150,34 @@ class LogbackConfigurationAotContributionTests {
 				.accepts(generationContext.getRuntimeHints());
 	}
 
+	@Test
+	void typeFromParentsSetterIsRegisteredForReflection() {
+		ImplicitModel implementation = new ImplicitModel();
+		implementation.setTag("implementation");
+		ComponentModel component = new ComponentModel();
+		component.setClassName(Outer.class.getName());
+		component.getSubModels().add(implementation);
+		TestGenerationContext generationContext = applyContribution(component);
+		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Outer.class))
+				.accepts(generationContext.getRuntimeHints());
+		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Implementation.class))
+				.accepts(generationContext.getRuntimeHints());
+	}
+
+	@Test
+	void typeFromParentsDefaultClassAnnotatedSetterIsRegisteredForReflection() {
+		ImplicitModel contract = new ImplicitModel();
+		contract.setTag("contract");
+		ComponentModel component = new ComponentModel();
+		component.setClassName(OuterWithDefaultClass.class.getName());
+		component.getSubModels().add(contract);
+		TestGenerationContext generationContext = applyContribution(component);
+		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(OuterWithDefaultClass.class))
+				.accepts(generationContext.getRuntimeHints());
+		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Implementation.class))
+				.accepts(generationContext.getRuntimeHints());
+	}
+
 	private Predicate<RuntimeHints> invokePublicConstructorsOf(String name) {
 		return RuntimeHintsPredicates.reflection().onType(TypeReference.of(name))
 				.withMemberCategory(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
@@ -200,6 +229,31 @@ class LogbackConfigurationAotContributionTests {
 		finally {
 			System.clearProperty(name);
 		}
+	}
+
+	public static class Outer {
+
+		public void setImplementation(Implementation implementation) {
+
+		}
+
+	}
+
+	public static class OuterWithDefaultClass {
+
+		@DefaultClass(Implementation.class)
+		public void setContract(Contract contract) {
+
+		}
+
+	}
+
+	public static class Implementation implements Contract {
+
+	}
+
+	public interface Contract {
+
 	}
 
 }
