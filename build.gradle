@@ -1,3 +1,10 @@
+buildscript{
+	repositories {
+		maven { url "https://maven.aliyun.com/nexus/content/groups/public"}
+		maven { url "https://maven.aliyun.com/nexus/content/repositories/jcenter"}
+		maven { url "https://repo.spring.io/plugins-relesas"}
+	}
+}
 plugins {
 	id "base"
 	id "org.jetbrains.kotlin.jvm" apply false // https://youtrack.jetbrains.com/issue/KT-30276
@@ -25,6 +32,8 @@ allprojects {
 	group "org.springframework.boot"
 
 	repositories {
+		maven { url "https://maven.aliyun.com/nexus/content/groups/public"}
+		maven { url "https://maven.aliyun.com/nexus/content/repositories/jcenter"}
 		mavenCentral()
 		if (version.contains('-')) {
 			maven { url "https://repo.spring.io/milestone" }
