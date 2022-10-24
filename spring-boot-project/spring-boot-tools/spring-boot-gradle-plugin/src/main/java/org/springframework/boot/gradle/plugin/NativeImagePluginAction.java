@@ -16,12 +16,17 @@
 
 package org.springframework.boot.gradle.plugin;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.graalvm.buildtools.gradle.NativeImagePlugin;
 import org.graalvm.buildtools.gradle.dsl.GraalVMExtension;
 import org.graalvm.buildtools.gradle.dsl.GraalVMReachabilityMetadataRepositoryExtension;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -53,9 +58,8 @@ class NativeImagePluginAction implements PluginApplicationAction {
 			JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
 			SourceSetContainer sourceSets = javaPluginExtension.getSourceSets();
 			GraalVMExtension graalVmExtension = configureGraalVmExtension(project);
-			configureNativeBinaryClasspath(sourceSets, graalVmExtension, NativeImagePlugin.NATIVE_MAIN_EXTENSION,
-					SpringBootAotPlugin.AOT_SOURCE_SET_NAME);
-			configureNativeBinaryClasspath(sourceSets, graalVmExtension, NativeImagePlugin.NATIVE_TEST_EXTENSION,
+			configureMainNativeBinaryClasspath(project, sourceSets, graalVmExtension);
+			configureTestNativeBinaryClasspath(sourceSets, graalVmExtension,
 					SpringBootAotPlugin.AOT_TEST_SOURCE_SET_NAME);
 			configureGraalVmReachabilityExtension(graalVmExtension);
 			copyReachabilityMetadataToBootJar(project);
@@ -63,10 +67,24 @@ class NativeImagePluginAction implements PluginApplicationAction {
 		});
 	}
 
-	private void configureNativeBinaryClasspath(SourceSetContainer sourceSets, GraalVMExtension graalVmExtension,
-			String binaryName, String sourceSetName) {
-		SourceSetOutput output = sourceSets.getByName(sourceSetName).getOutput();
-		graalVmExtension.getBinaries().getByName(binaryName).classpath(output);
+	private void configureMainNativeBinaryClasspath(Project project, SourceSetContainer sourceSets,
+			GraalVMExtension graalVmExtension) {
+		SourceSetOutput output = sourceSets.getByName(SpringBootAotPlugin.AOT_SOURCE_SET_NAME).getOutput();
+		graalVmExtension.getBinaries().getByName(NativeImagePlugin.NATIVE_MAIN_EXTENSION).classpath(output);
+		Configuration nativeImageClasspath = project.getConfigurations().getByName("nativeImageClasspath");
+		nativeImageClasspath.setExtendsFrom(removeDevelopmentOnly(nativeImageClasspath.getExtendsFrom()));
+	}
+
+	private Iterable<Configuration> removeDevelopmentOnly(Set<Configuration> configurations) {
+		return configurations.stream().filter((
+				configuration) -> !SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME.equals(configuration.getName()))
+				.collect(Collectors.toCollection(LinkedHashSet::new));
+	}
+
+	private void configureTestNativeBinaryClasspath(SourceSetContainer sourceSets, GraalVMExtension graalVmExtension,
+			String sourceSetName) {
+		SourceSetOutput output = sourceSets.getByName(SpringBootAotPlugin.AOT_TEST_SOURCE_SET_NAME).getOutput();
+		graalVmExtension.getBinaries().getByName(NativeImagePlugin.NATIVE_TEST_EXTENSION).classpath(output);
 	}
 
 	private GraalVMExtension configureGraalVmExtension(Project project) {

@@ -94,6 +94,13 @@ class NativeImagePluginActionIntegrationTests {
 		assertThat(result.getOutput()).contains("paketobuildpacks/builder:tiny").contains("BP_NATIVE_IMAGE = true");
 	}
 
+	@TestTemplate
+	void developmentOnlyDependenciesDoNotAppearInNativeImageClasspath() {
+		writeDummySpringApplicationAotProcessorMainClass();
+		BuildResult result = this.gradleBuild.build("checkNativeImageClasspath");
+		assertThat(result.getOutput()).doesNotContain("commons-lang");
+	}
+
 	private void writeDummySpringApplicationAotProcessorMainClass() {
 		File examplePackage = new File(this.gradleBuild.getProjectDir(), "src/main/java/org/springframework/boot");
 		examplePackage.mkdirs();
