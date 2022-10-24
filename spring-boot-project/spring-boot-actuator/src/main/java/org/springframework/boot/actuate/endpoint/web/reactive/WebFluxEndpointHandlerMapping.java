@@ -31,7 +31,6 @@ import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.Link;
-import org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping.AbstractWebFluxEndpointHandlerMappingRuntimeHints;
 import org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping.WebFluxEndpointHandlerMappingRuntimeHints;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -49,8 +48,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  * @author Brian Clozel
  * @since 2.0.0
  */
-@ImportRuntimeHints({ WebFluxEndpointHandlerMappingRuntimeHints.class,
-		AbstractWebFluxEndpointHandlerMappingRuntimeHints.class })
+@ImportRuntimeHints(WebFluxEndpointHandlerMappingRuntimeHints.class)
 public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandlerMapping implements InitializingBean {
 
 	private final EndpointLinksResolver linksResolver;

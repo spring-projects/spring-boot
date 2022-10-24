@@ -33,7 +33,6 @@ import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.Link;
-import org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping.AbstractWebMvcEndpointHandlerMappingRuntimeHints;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping.WebMvcEndpointHandlerMappingRuntimeHints;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -48,8 +47,7 @@ import org.springframework.web.servlet.HandlerMapping;
  * @author Phillip Webb
  * @since 2.0.0
  */
-@ImportRuntimeHints({ WebMvcEndpointHandlerMappingRuntimeHints.class,
-		AbstractWebMvcEndpointHandlerMappingRuntimeHints.class })
+@ImportRuntimeHints(WebMvcEndpointHandlerMappingRuntimeHints.class)
 public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerMapping {
 
 	private final EndpointLinksResolver linksResolver;
