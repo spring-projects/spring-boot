@@ -68,8 +68,6 @@ import org.springframework.util.StringUtils;
 @Execute(phase = LifecyclePhase.PACKAGE)
 public class BuildImageMojo extends AbstractPackagerMojo {
 
-	private static final String BUILDPACK_JVM_VERSION_KEY = "BP_JVM_VERSION";
-
 	static {
 		System.setProperty("org.slf4j.simpleLogger.log.org.apache.http.wire", "ERROR");
 	}
@@ -293,19 +291,7 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	}
 
 	private BuildRequest customize(BuildRequest request) {
-		request = customizeEnvironment(request);
 		request = customizeCreator(request);
-		return request;
-	}
-
-	private BuildRequest customizeEnvironment(BuildRequest request) {
-		if (!request.getEnv().containsKey(BUILDPACK_JVM_VERSION_KEY)) {
-			JavaCompilerPluginConfiguration compilerConfiguration = new JavaCompilerPluginConfiguration(this.project);
-			String targetJavaVersion = compilerConfiguration.getTargetMajorVersion();
-			if (StringUtils.hasText(targetJavaVersion)) {
-				return request.withEnv(BUILDPACK_JVM_VERSION_KEY, targetJavaVersion + ".*");
-			}
-		}
 		return request;
 	}
 

@@ -72,6 +72,7 @@ def boolean isWindows() {
 		task.mainClass = "com.example.ResourceHandlingApplication"
 		task.classpath = sourceSets.main.runtimeClasspath.plus(configurations.getByName(container))
 		task.classifier = container
+		task.targetJavaVersion = project.getTargetCompatibility()
 	}
 	tasks.register("${container}BootJar", BootJar, configurer)
 	tasks.register("${container}BootWar", BootWar, configurer)

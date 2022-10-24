@@ -58,8 +58,8 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 					assertThat(original).doesNotExist();
 					assertThat(buildLog(project)).contains("Building image")
 							.contains("docker.io/library/build-image:0.0.1.BUILD-SNAPSHOT")
-							.contains("---> Test Info buildpack building").contains("env: BP_JVM_VERSION=8.*")
-							.contains("---> Test Info buildpack done").contains("Successfully built image");
+							.contains("---> Test Info buildpack building").contains("---> Test Info buildpack done")
+							.contains("Successfully built image");
 					removeImage("build-image", "0.0.1.BUILD-SNAPSHOT");
 				});
 	}
@@ -75,8 +75,8 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 					assertThat(classifier).doesNotExist();
 					assertThat(buildLog(project)).contains("Building image")
 							.contains("docker.io/library/build-image-classifier:0.0.1.BUILD-SNAPSHOT")
-							.contains("---> Test Info buildpack building").contains("env: BP_JVM_VERSION=8.*")
-							.contains("---> Test Info buildpack done").contains("Successfully built image");
+							.contains("---> Test Info buildpack building").contains("---> Test Info buildpack done")
+							.contains("Successfully built image");
 					removeImage("build-image-classifier", "0.0.1.BUILD-SNAPSHOT");
 				});
 	}

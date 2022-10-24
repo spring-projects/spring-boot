@@ -94,7 +94,8 @@ public abstract class BootWar extends War implements BootArchive {
 	@Override
 	public void copy() {
 		this.support.configureManifest(getManifest(), getMainClass().get(), CLASSES_DIRECTORY, LIB_DIRECTORY,
-				CLASSPATH_INDEX, (isLayeredDisabled()) ? null : LAYERS_INDEX);
+				CLASSPATH_INDEX, (isLayeredDisabled()) ? null : LAYERS_INDEX,
+				this.getTargetJavaVersion().get().getMajorVersion());
 		super.copy();
 	}
 

@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -137,27 +136,6 @@ class BootBuildImageTests {
 		this.buildImage.getEnvironment().set(environment);
 		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a").containsEntry("BRAVO", "b")
 				.hasSize(2);
-	}
-
-	@Test
-	void whenJavaVersionIsSetInEnvironmentItIsIncludedInTheRequest() {
-		this.buildImage.getEnvironment().put("BP_JVM_VERSION", "from-env");
-		this.buildImage.getTargetJavaVersion().set(JavaVersion.VERSION_1_8);
-		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("BP_JVM_VERSION", "from-env").hasSize(1);
-	}
-
-	@Test
-	void whenTargetCompatibilityIsSetThenJavaVersionIsIncludedInTheRequest() {
-		this.buildImage.getTargetJavaVersion().set(JavaVersion.VERSION_1_8);
-		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("BP_JVM_VERSION", "8.*").hasSize(1);
-	}
-
-	@Test
-	void whenTargetCompatibilityIsSetThenJavaVersionIsAddedToEnvironment() {
-		this.buildImage.getEnvironment().put("ALPHA", "a");
-		this.buildImage.getTargetJavaVersion().set(JavaVersion.VERSION_11);
-		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a")
-				.containsEntry("BP_JVM_VERSION", "11.*").hasSize(2);
 	}
 
 	@Test

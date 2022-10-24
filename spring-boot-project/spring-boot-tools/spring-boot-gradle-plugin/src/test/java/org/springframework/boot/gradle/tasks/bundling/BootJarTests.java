@@ -22,7 +22,9 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
 import org.gradle.api.Action;
+import org.gradle.api.JavaVersion;
 import org.gradle.api.artifacts.Configuration;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
@@ -43,6 +45,11 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	BootJarTests() {
 		super(BootJar.class, "org.springframework.boot.loader.JarLauncher", "BOOT-INF/lib/", "BOOT-INF/classes/",
 				"BOOT-INF/");
+	}
+
+	@BeforeEach
+	void setUp() {
+		this.getTask().getTargetJavaVersion().set(JavaVersion.VERSION_17);
 	}
 
 	@Test
@@ -191,6 +198,14 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 			assertThat(entryLines(jarFile, "META-INF/native-image/argfile")).containsExactly("--exclude-config",
 					"\\Qfirst-library.jar\\E", "^/META-INF/native-image/.*", "--exclude-config",
 					"\\Qsecond-library.jar\\E", "^/META-INF/native-image/.*");
+		}
+	}
+
+	@Test
+	void javaVersionIsWrittenToManifest() throws IOException {
+		try (JarFile jarFile = new JarFile(createPopulatedJar())) {
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Build-Jdk-Spec"))
+					.isEqualTo(JavaVersion.VERSION_17.getMajorVersion());
 		}
 	}
 
