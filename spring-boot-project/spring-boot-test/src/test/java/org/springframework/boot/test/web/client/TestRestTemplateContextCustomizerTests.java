@@ -23,6 +23,7 @@ import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.web.client.TestRestTemplateContextCustomizer.TestRestTemplateRegistrar;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.test.context.MergedContextConfiguration;
@@ -48,8 +49,10 @@ class TestRestTemplateContextCustomizerTests {
 	@Test
 	void whenUsingAotGeneratedArtifactsTestRestTemplateIsNotRegistered() {
 		new ApplicationContextRunner().withSystemProperties("spring.aot.enabled:true")
-				.withInitializer(this::applyTestRestTemplateContextCustomizer)
-				.run((context) -> assertThat(context).doesNotHaveBean(TestRestTemplate.class));
+				.withInitializer(this::applyTestRestTemplateContextCustomizer).run((context) -> {
+					assertThat(context).doesNotHaveBean(TestRestTemplateRegistrar.class);
+					assertThat(context).doesNotHaveBean(TestRestTemplate.class);
+				});
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

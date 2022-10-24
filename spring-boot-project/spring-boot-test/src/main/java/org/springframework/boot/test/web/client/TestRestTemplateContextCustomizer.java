@@ -53,6 +53,9 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context,
 			MergedContextConfiguration mergedContextConfiguration) {
+		if (AotDetector.useGeneratedArtifacts()) {
+			return;
+		}
 		SpringBootTest springBootTest = TestContextAnnotationUtils
 				.findMergedAnnotation(mergedContextConfiguration.getTestClass(), SpringBootTest.class);
 		if (springBootTest.webEnvironment().isEmbedded()) {
