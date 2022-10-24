@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 
 package org.springframework.boot.webservices.client;
 
-import java.lang.reflect.Method;
 import java.time.Duration;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.springframework.boot.web.client.ClientHttpRequestFactorySupplier;
+import org.springframework.boot.web.client.ClientHttpRequestFactories;
+import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.ws.transport.WebServiceMessageSender;
 import org.springframework.ws.transport.http.ClientHttpRequestMessageSender;
 
@@ -40,7 +40,7 @@ public class HttpWebServiceMessageSenderBuilder {
 
 	private Duration readTimeout;
 
-	private Supplier<ClientHttpRequestFactory> requestFactorySupplier;
+	private Function<ClientHttpRequestFactorySettings, ClientHttpRequestFactory> requestFactory;
 
 	/**
 	 * Set the connection timeout.
@@ -70,50 +70,39 @@ public class HttpWebServiceMessageSenderBuilder {
 	 */
 	public HttpWebServiceMessageSenderBuilder requestFactory(
 			Supplier<ClientHttpRequestFactory> requestFactorySupplier) {
-		Assert.notNull(requestFactorySupplier, "RequestFactory Supplier must not be null");
-		this.requestFactorySupplier = requestFactorySupplier;
+		Assert.notNull(requestFactorySupplier, "RequestFactorySupplier must not be null");
+		this.requestFactory = (settings) -> ClientHttpRequestFactories.get(requestFactorySupplier, settings);
 		return this;
 	}
 
-	public WebServiceMessageSender build() {
-		ClientHttpRequestFactory requestFactory = (this.requestFactorySupplier != null)
-				? this.requestFactorySupplier.get() : new ClientHttpRequestFactorySupplier().get();
-		if (this.connectTimeout != null) {
-			new TimeoutRequestFactoryCustomizer(this.connectTimeout, "setConnectTimeout").customize(requestFactory);
-		}
-		if (this.readTimeout != null) {
-			new TimeoutRequestFactoryCustomizer(this.readTimeout, "setReadTimeout").customize(requestFactory);
-		}
-		return new ClientHttpRequestMessageSender(requestFactory);
+	/**
+	 * Set the {@code Function} of {@link ClientHttpRequestFactorySettings} to
+	 * {@link ClientHttpRequestFactory} that should be called to create the HTTP-based
+	 * {@link WebServiceMessageSender}.
+	 * @param requestFactoryFunction the function for the request factory
+	 * @return a new builder instance
+	 * @since 3.0.0
+	 */
+	public HttpWebServiceMessageSenderBuilder requestFactory(
+			Function<ClientHttpRequestFactorySettings, ClientHttpRequestFactory> requestFactoryFunction) {
+		Assert.notNull(requestFactoryFunction, "RequestFactoryFunction must not be null");
+		this.requestFactory = requestFactoryFunction;
+		return this;
 	}
 
 	/**
-	 * {@link ClientHttpRequestFactory} customizer to call a "set timeout" method.
+	 * Build the {@link WebServiceMessageSender} instance.
+	 * @return the {@link WebServiceMessageSender} instance
 	 */
-	private static class TimeoutRequestFactoryCustomizer {
+	public WebServiceMessageSender build() {
+		return new ClientHttpRequestMessageSender(getRequestFactory());
+	}
 
-		private final Duration timeout;
-
-		private final String methodName;
-
-		TimeoutRequestFactoryCustomizer(Duration timeout, String methodName) {
-			this.timeout = timeout;
-			this.methodName = methodName;
-		}
-
-		void customize(ClientHttpRequestFactory factory) {
-			ReflectionUtils.invokeMethod(findMethod(factory), factory, Math.toIntExact(this.timeout.toMillis()));
-		}
-
-		private Method findMethod(ClientHttpRequestFactory factory) {
-			Method method = ReflectionUtils.findMethod(factory.getClass(), this.methodName, int.class);
-			if (method != null) {
-				return method;
-			}
-			throw new IllegalStateException(
-					"Request factory " + factory.getClass() + " does not have a " + this.methodName + "(int) method");
-		}
-
+	private ClientHttpRequestFactory getRequestFactory() {
+		ClientHttpRequestFactorySettings settings = new ClientHttpRequestFactorySettings(this.connectTimeout,
+				this.readTimeout, null);
+		return (this.requestFactory != null) ? this.requestFactory.apply(settings)
+				: ClientHttpRequestFactories.get(settings);
 	}
 
 }

@@ -134,7 +134,7 @@ class TestRestTemplateTests {
 		TestRestTemplate template = new TestRestTemplate(HttpClientOption.ENABLE_REDIRECTS);
 		CustomHttpComponentsClientHttpRequestFactory factory = (CustomHttpComponentsClientHttpRequestFactory) template
 				.getRestTemplate().getRequestFactory();
-		RequestConfig config = factory.getRequestConfig();
+		RequestConfig config = factory.createRequestConfig();
 		assertThat(config.isRedirectsEnabled()).isTrue();
 	}
 

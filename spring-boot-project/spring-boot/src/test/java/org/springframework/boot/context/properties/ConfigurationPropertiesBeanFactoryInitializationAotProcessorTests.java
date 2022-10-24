@@ -40,6 +40,7 @@ import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -50,7 +51,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ConfigurationPropertiesBeanFactoryInitializationAotProcessor}.
+ * Tests for {@link ConfigurationPropertiesBeanFactoryInitializationAotProcessor} and
+ * {@link BindableRuntimeHintsRegistrar}.
  *
  * @author Stephane Nicoll
  * @author Moritz Halbritter
