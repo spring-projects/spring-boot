@@ -19,6 +19,7 @@ package org.springframework.boot.test.web.client;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -47,27 +48,33 @@ import org.springframework.web.client.RestTemplate;
  * the related server.
  *
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 1.4.0
  * @see #getServer()
  * @see #getServer(RestTemplate)
  */
 public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer {
 
-	private Map<RestTemplate, RequestExpectationManager> expectationManagers = new ConcurrentHashMap<>();
+	private final Map<RestTemplate, RequestExpectationManager> expectationManagers = new ConcurrentHashMap<>();
 
-	private Map<RestTemplate, MockRestServiceServer> servers = new ConcurrentHashMap<>();
+	private final Map<RestTemplate, MockRestServiceServer> servers = new ConcurrentHashMap<>();
 
-	private final Class<? extends RequestExpectationManager> expectationManager;
+	private final Supplier<? extends RequestExpectationManager> expectationManagerSupplier;
 
 	private boolean detectRootUri = true;
 
 	public MockServerRestTemplateCustomizer() {
-		this.expectationManager = SimpleRequestExpectationManager.class;
+		this(SimpleRequestExpectationManager::new);
 	}
 
 	public MockServerRestTemplateCustomizer(Class<? extends RequestExpectationManager> expectationManager) {
+		this(() -> BeanUtils.instantiateClass(expectationManager));
 		Assert.notNull(expectationManager, "ExpectationManager must not be null");
-		this.expectationManager = expectationManager;
+	}
+
+	public MockServerRestTemplateCustomizer(Supplier<? extends RequestExpectationManager> expectationManagerSupplier) {
+		Assert.notNull(expectationManagerSupplier, "ExpectationManagerSupplier must not be null");
+		this.expectationManagerSupplier = expectationManagerSupplier;
 	}
 
 	/**
@@ -91,7 +98,7 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	}
 
 	protected RequestExpectationManager createExpectationManager() {
-		return BeanUtils.instantiateClass(this.expectationManager);
+		return this.expectationManagerSupplier.get();
 	}
 
 	public MockRestServiceServer getServer() {
