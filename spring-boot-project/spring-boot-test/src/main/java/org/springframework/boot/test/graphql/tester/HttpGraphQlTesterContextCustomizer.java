@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.graphql.tester;
 
+import org.springframework.aot.AotDetector;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -53,6 +54,9 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
+		if (AotDetector.useGeneratedArtifacts()) {
+			return;
+		}
 		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(mergedConfig.getTestClass(),
 				SpringBootTest.class);
 		if (springBootTest.webEnvironment().isEmbedded()) {
@@ -83,8 +87,7 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 		return getClass().hashCode();
 	}
 
-	private static class HttpGraphQlTesterRegistrar
-			implements BeanDefinitionRegistryPostProcessor, Ordered, BeanFactoryAware {
+	static class HttpGraphQlTesterRegistrar implements BeanDefinitionRegistryPostProcessor, Ordered, BeanFactoryAware {
 
 		private BeanFactory beanFactory;
 
@@ -95,6 +98,9 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 
 		@Override
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+			if (AotDetector.useGeneratedArtifacts()) {
+				return;
+			}
 			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors((ListableBeanFactory) this.beanFactory,
 					HttpGraphQlTester.class, false, false).length == 0) {
 				registry.registerBeanDefinition(HttpGraphQlTester.class.getName(),
