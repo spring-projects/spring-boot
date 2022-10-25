@@ -21,19 +21,14 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import org.springframework.aot.hint.ExecutableMode;
-import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.TypeReference;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
-import org.springframework.test.context.aot.TestRuntimeHintsRegistrar;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
@@ -340,17 +335,6 @@ class OutputCapture implements CapturedOutput {
 				return null;
 			}
 			return new AnsiOutputState();
-		}
-
-	}
-
-	static class OutputCaptureRuntimeHints implements TestRuntimeHintsRegistrar {
-
-		@Override
-		public void registerHints(RuntimeHints runtimeHints, Class<?> testClass, ClassLoader classLoader) {
-			runtimeHints.reflection().registerType(TypeReference.of(OutputCapture.class),
-					(hint) -> hint.onReachableType(OutputCaptureExtension.class)
-							.withConstructor(Collections.emptyList(), ExecutableMode.INVOKE));
 		}
 
 	}
