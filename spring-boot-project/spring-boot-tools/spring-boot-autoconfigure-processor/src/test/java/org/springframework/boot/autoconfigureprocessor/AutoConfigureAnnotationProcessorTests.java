@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 class AutoConfigureAnnotationProcessorTests {
 
 	@Test
-	void annotatedClass() throws Exception {
+	void annotatedClass() {
 		compile(TestClassConfiguration.class, (properties) -> {
 			assertThat(properties).hasSize(7);
 			assertThat(properties).containsEntry(
@@ -108,7 +108,7 @@ class AutoConfigureAnnotationProcessorTests {
 	}
 
 	@Test
-	void annotatedClassWithAutoConfiguration() throws Exception {
+	void annotatedClassWithAutoConfiguration() {
 		compile(TestAutoConfigurationConfiguration.class, (properties) -> {
 			assertThat(properties).containsEntry(
 					"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationConfiguration", "");
@@ -122,7 +122,7 @@ class AutoConfigureAnnotationProcessorTests {
 	}
 
 	@Test
-	void annotatedClassWithAutoConfigurationMerged() throws Exception {
+	void annotatedClassWithAutoConfigurationMerged() {
 		compile(TestMergedAutoConfigurationConfiguration.class, (properties) -> {
 			assertThat(properties).containsEntry(
 					"org.springframework.boot.autoconfigureprocessor.TestMergedAutoConfigurationConfiguration", "");
@@ -136,7 +136,7 @@ class AutoConfigureAnnotationProcessorTests {
 	}
 
 	@Test // gh-19370
-	void propertiesAreFullRepeatable() throws Exception {
+	void propertiesAreFullRepeatable() {
 		process(TestOrderedClassConfiguration.class, (firstFile) -> {
 			String first = getFileContents(firstFile);
 			process(TestOrderedClassConfiguration.class, (secondFile) -> {

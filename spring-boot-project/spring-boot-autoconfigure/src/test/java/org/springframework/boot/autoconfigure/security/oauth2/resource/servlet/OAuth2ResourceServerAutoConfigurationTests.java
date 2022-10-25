@@ -423,7 +423,6 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				.run((context) -> assertThat(context).doesNotHaveBean(OpaqueTokenIntrospector.class));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void autoConfigurationShouldConfigureResourceServerUsingJwkSetUriAndIssuerUri() throws Exception {
 		this.server = new MockWebServer();
@@ -445,7 +444,6 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				});
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void autoConfigurationShouldNotConfigureIssuerUriAndAudienceJwtValidatorIfPropertyNotConfigured() throws Exception {
 		this.server = new MockWebServer();
@@ -523,7 +521,6 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		validateDelegates(issuerUri, delegates);
 	}
 
-	@SuppressWarnings("unchecked")
 	private void validateDelegates(String issuerUri, Collection<OAuth2TokenValidator<Jwt>> delegates) {
 		assertThat(delegates).hasAtLeastOneElementOfType(JwtClaimValidator.class);
 		OAuth2TokenValidator<Jwt> delegatingValidator = delegates.stream()

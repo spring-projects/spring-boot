@@ -62,7 +62,7 @@ class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGeneration
 	}
 
 	@Test
-	void incrementalBuildAnnotationRemoved() throws Exception {
+	void incrementalBuildAnnotationRemoved() {
 		TestProject project = new TestProject(FooProperties.class, BarProperties.class);
 		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata).has(Metadata.withProperty("foo.counter").withDefaultValue(0));
@@ -75,7 +75,7 @@ class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGeneration
 
 	@Test
 	@Disabled("gh-26271")
-	void incrementalBuildTypeRenamed() throws Exception {
+	void incrementalBuildTypeRenamed() {
 		TestProject project = new TestProject(FooProperties.class, BarProperties.class);
 		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata)
@@ -95,7 +95,7 @@ class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGeneration
 	}
 
 	@Test
-	void incrementalBuildDoesNotDeleteItems() throws Exception {
+	void incrementalBuildDoesNotDeleteItems() {
 		TestProject project = new TestProject(ClassWithNestedProperties.class, FooProperties.class);
 		ConfigurationMetadata initialMetadata = project.compile();
 		ConfigurationMetadata updatedMetadata = project.compile();

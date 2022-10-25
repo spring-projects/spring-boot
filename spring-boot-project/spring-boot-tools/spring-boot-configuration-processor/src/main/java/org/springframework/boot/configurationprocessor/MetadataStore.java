@@ -76,7 +76,7 @@ public class MetadataStore {
 		return readMetadata(getAdditionalMetadataStream());
 	}
 
-	private ConfigurationMetadata readMetadata(InputStream in) throws IOException {
+	private ConfigurationMetadata readMetadata(InputStream in) {
 		try (in) {
 			return new JsonMarshaller().read(in);
 		}

@@ -30,7 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Brian Clozel
  */
-@SuppressWarnings("deprecation")
 class ObservationWebClientCustomizerTests {
 
 	private static final String TEST_METRIC_NAME = "http.test.metric.name";

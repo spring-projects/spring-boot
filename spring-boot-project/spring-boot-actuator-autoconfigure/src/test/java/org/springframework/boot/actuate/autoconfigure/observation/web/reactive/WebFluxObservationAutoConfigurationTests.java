@@ -76,6 +76,7 @@ class WebFluxObservationAutoConfigurationTests {
 		});
 	}
 
+	@Deprecated(since = "3.0.0", forRemoval = true)
 	@Configuration(proxyBeanMethods = false)
 	static class CustomTagsProviderConfiguration {
 
@@ -96,6 +97,7 @@ class WebFluxObservationAutoConfigurationTests {
 
 	}
 
+	@Deprecated(since = "3.0.0", forRemoval = true)
 	static class CustomTagsContributor implements WebFluxTagsContributor {
 
 		@Override

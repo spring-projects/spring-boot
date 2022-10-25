@@ -34,6 +34,7 @@ import org.springframework.http.observation.reactive.ServerRequestObservationCon
  * @author Brian Clozel
  */
 @SuppressWarnings("removal")
+@Deprecated(since = "3.0.0", forRemoval = true)
 class ServerRequestObservationConventionAdapter implements ServerRequestObservationConvention {
 
 	private final String name;

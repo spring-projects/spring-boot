@@ -16,7 +16,6 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,7 +31,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTester;
 import org.springframework.boot.configurationprocessor.test.TestableAnnotationProcessor;
-import org.springframework.boot.configurationsample.immutable.DeprecatedImmutableMultiConstructorProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableClassConstructorBindingProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableDeducedConstructorBindingProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableMultiConstructorProperties;
@@ -62,13 +60,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PropertyDescriptorResolverTests {
 
 	@Test
-	void propertiesWithJavaBeanProperties() throws IOException {
+	void propertiesWithJavaBeanProperties() {
 		process(SimpleProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("theName", "flag", "comparator")));
 	}
 
 	@Test
-	void propertiesWithJavaBeanHierarchicalProperties() throws IOException {
+	void propertiesWithJavaBeanHierarchicalProperties() {
 		process(HierarchicalProperties.class,
 				Arrays.asList(HierarchicalPropertiesParent.class, HierarchicalPropertiesGrandparent.class),
 				(type, metadataEnv) -> {
@@ -86,31 +84,31 @@ class PropertyDescriptorResolverTests {
 	}
 
 	@Test
-	void propertiesWithLombokGetterSetterAtClassLevel() throws IOException {
+	void propertiesWithLombokGetterSetterAtClassLevel() {
 		process(LombokSimpleProperties.class, propertyNames(
 				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "items")));
 	}
 
 	@Test
-	void propertiesWithLombokGetterSetterAtFieldLevel() throws IOException {
+	void propertiesWithLombokGetterSetterAtFieldLevel() {
 		process(LombokExplicitProperties.class, propertyNames(
 				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "items")));
 	}
 
 	@Test
-	void propertiesWithLombokDataClass() throws IOException {
+	void propertiesWithLombokDataClass() {
 		process(LombokSimpleDataProperties.class, propertyNames(
 				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "items")));
 	}
 
 	@Test
-	void propertiesWithLombokValueClass() throws IOException {
+	void propertiesWithLombokValueClass() {
 		process(LombokSimpleValueProperties.class, propertyNames(
 				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "items")));
 	}
 
 	@Test
-	void propertiesWithDeducedConstructorBinding() throws IOException {
+	void propertiesWithDeducedConstructorBinding() {
 		process(ImmutableDeducedConstructorBindingProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("theName", "flag")));
 		process(ImmutableDeducedConstructorBindingProperties.class, properties((stream) -> assertThat(stream)
@@ -118,7 +116,7 @@ class PropertyDescriptorResolverTests {
 	}
 
 	@Test
-	void propertiesWithConstructorWithConstructorBinding() throws IOException {
+	void propertiesWithConstructorWithConstructorBinding() {
 		process(ImmutableSimpleProperties.class, propertyNames(
 				(stream) -> assertThat(stream).containsExactly("theName", "flag", "comparator", "counter")));
 		process(ImmutableSimpleProperties.class, properties((stream) -> assertThat(stream)
@@ -126,7 +124,7 @@ class PropertyDescriptorResolverTests {
 	}
 
 	@Test
-	void propertiesWithConstructorAndClassConstructorBinding() throws IOException {
+	void propertiesWithConstructorAndClassConstructorBinding() {
 		process(ImmutableClassConstructorBindingProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("name", "description")));
 		process(ImmutableClassConstructorBindingProperties.class, properties((stream) -> assertThat(stream)
@@ -134,14 +132,14 @@ class PropertyDescriptorResolverTests {
 	}
 
 	@Test
-	void propertiesWithAutowiredConstructor() throws IOException {
+	void propertiesWithAutowiredConstructor() {
 		process(AutowiredProperties.class, propertyNames((stream) -> assertThat(stream).containsExactly("theName")));
 		process(AutowiredProperties.class, properties((stream) -> assertThat(stream)
 				.allMatch((predicate) -> predicate instanceof JavaBeanPropertyDescriptor)));
 	}
 
 	@Test
-	void propertiesWithMultiConstructor() throws IOException {
+	void propertiesWithMultiConstructor() {
 		process(ImmutableMultiConstructorProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("name", "description")));
 		process(ImmutableMultiConstructorProperties.class, properties((stream) -> assertThat(stream)
@@ -151,22 +149,23 @@ class PropertyDescriptorResolverTests {
 	@Test
 	@Deprecated(since = "3.0.0", forRemoval = true)
 	@SuppressWarnings("removal")
-	void propertiesWithMultiConstructorAndDeprecatedAnnotation() throws IOException {
-		process(DeprecatedImmutableMultiConstructorProperties.class,
+	void propertiesWithMultiConstructorAndDeprecatedAnnotation() {
+		process(org.springframework.boot.configurationsample.immutable.DeprecatedImmutableMultiConstructorProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("name", "description")));
-		process(DeprecatedImmutableMultiConstructorProperties.class, properties((stream) -> assertThat(stream)
-				.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
+		process(org.springframework.boot.configurationsample.immutable.DeprecatedImmutableMultiConstructorProperties.class,
+				properties((stream) -> assertThat(stream)
+						.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
 	@Test
-	void propertiesWithMultiConstructorNoDirective() throws IOException {
+	void propertiesWithMultiConstructorNoDirective() {
 		process(TwoConstructorsExample.class, propertyNames((stream) -> assertThat(stream).containsExactly("name")));
 		process(TwoConstructorsExample.class,
 				properties((stream) -> assertThat(stream).element(0).isInstanceOf(JavaBeanPropertyDescriptor.class)));
 	}
 
 	@Test
-	void propertiesWithNameAnnotationParameter() throws IOException {
+	void propertiesWithNameAnnotationParameter() {
 		process(ImmutableNameAnnotationProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("import")));
 	}
@@ -183,8 +182,7 @@ class PropertyDescriptorResolverTests {
 		return properties((result) -> stream.accept(result.map(PropertyDescriptor::getName)));
 	}
 
-	private void process(Class<?> target, BiConsumer<TypeElement, MetadataGenerationEnvironment> consumer)
-			throws IOException {
+	private void process(Class<?> target, BiConsumer<TypeElement, MetadataGenerationEnvironment> consumer) {
 		process(target, Collections.emptyList(), consumer);
 	}
 

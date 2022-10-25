@@ -16,7 +16,6 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.util.function.BiConsumer;
 
@@ -42,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TypeUtilsTests {
 
 	@Test
-	void resolveTypeDescriptorOnConcreteClass() throws IOException {
+	void resolveTypeDescriptorOnConcreteClass() {
 		process(SimpleGenericProperties.class, (roundEnv, typeUtils) -> {
 			TypeDescriptor typeDescriptor = typeUtils
 					.resolveTypeDescriptor(roundEnv.getRootElement(SimpleGenericProperties.class));
@@ -56,7 +55,7 @@ class TypeUtilsTests {
 	}
 
 	@Test
-	void resolveTypeDescriptorOnIntermediateClass() throws IOException {
+	void resolveTypeDescriptorOnIntermediateClass() {
 		process(AbstractIntermediateGenericProperties.class, (roundEnv, typeUtils) -> {
 			TypeDescriptor typeDescriptor = typeUtils
 					.resolveTypeDescriptor(roundEnv.getRootElement(AbstractIntermediateGenericProperties.class));
@@ -69,7 +68,7 @@ class TypeUtilsTests {
 	}
 
 	@Test
-	void resolveTypeDescriptorWithOnlyGenerics() throws IOException {
+	void resolveTypeDescriptorWithOnlyGenerics() {
 		process(AbstractGenericProperties.class, (roundEnv, typeUtils) -> {
 			TypeDescriptor typeDescriptor = typeUtils
 					.resolveTypeDescriptor(roundEnv.getRootElement(AbstractGenericProperties.class));

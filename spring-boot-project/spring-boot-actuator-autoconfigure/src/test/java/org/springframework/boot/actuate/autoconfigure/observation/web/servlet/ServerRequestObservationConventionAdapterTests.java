@@ -41,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Brian Clozel
  */
 @SuppressWarnings("removal")
+@Deprecated(since = "3.0.0", forRemoval = true)
 class ServerRequestObservationConventionAdapterTests {
 
 	private static final String TEST_METRIC_NAME = "test.metric.name";

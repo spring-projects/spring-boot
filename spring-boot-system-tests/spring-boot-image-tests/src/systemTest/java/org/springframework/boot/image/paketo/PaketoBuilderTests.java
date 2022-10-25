@@ -68,7 +68,7 @@ class PaketoBuilderTests {
 	GradleBuild gradleBuild;
 
 	@BeforeEach
-	void configureGradleBuild() throws IOException {
+	void configureGradleBuild() {
 		this.gradleBuild.scriptProperty("systemTestMavenRepository",
 				new File("build/system-test-maven-repository").getAbsoluteFile().toURI().toASCIIString());
 		this.gradleBuild.scriptPropertyFrom(new File("../../gradle.properties"), "nativeBuildToolsVersion");

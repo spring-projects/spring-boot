@@ -21,7 +21,6 @@ import java.util.List;
 
 import ch.qos.logback.core.Context;
 import ch.qos.logback.core.ContextBase;
-import ch.qos.logback.core.joran.spi.ActionException;
 import ch.qos.logback.core.model.processor.ModelHandlerException;
 import ch.qos.logback.core.model.processor.ModelInterpretationContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,7 +55,7 @@ class SpringProfileModelHandlerTests {
 	}
 
 	@Test
-	void environmentIsQueriedWithProfileFromModelName() throws ActionException, ModelHandlerException {
+	void environmentIsQueriedWithProfileFromModelName() throws ModelHandlerException {
 		SpringProfileModel model = new SpringProfileModel();
 		model.setName("dev");
 		this.action.handle(this.interpretationContext, model);

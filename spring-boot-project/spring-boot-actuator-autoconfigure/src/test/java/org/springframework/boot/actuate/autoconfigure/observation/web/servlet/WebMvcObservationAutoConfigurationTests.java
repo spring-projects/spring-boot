@@ -210,6 +210,7 @@ class WebMvcObservationAutoConfigurationTests {
 
 	}
 
+	@Deprecated(since = "3.0.0", forRemoval = true)
 	private static final class TestWebMvcTagsProvider implements WebMvcTagsProvider {
 
 		@Override

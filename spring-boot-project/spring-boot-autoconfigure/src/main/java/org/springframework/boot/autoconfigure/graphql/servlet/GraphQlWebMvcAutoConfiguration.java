@@ -180,7 +180,6 @@ public class GraphQlWebMvcAutoConfiguration {
 		}
 
 		@Bean
-		@SuppressWarnings("deprecation")
 		public HandlerMapping graphQlWebSocketMapping(GraphQlWebSocketHandler handler, GraphQlProperties properties) {
 			String path = properties.getWebsocket().getPath();
 			logger.info(LogMessage.format("GraphQL endpoint WebSocket %s", path));

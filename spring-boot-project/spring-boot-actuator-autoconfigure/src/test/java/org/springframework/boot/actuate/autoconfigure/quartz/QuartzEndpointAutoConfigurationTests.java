@@ -101,16 +101,14 @@ class QuartzEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void showValuesCanBeConfiguredViaTheEnvironment() {
 		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
 				.withPropertyValues("management.endpoint.quartz.show-values: WHEN_AUTHORIZED")
 				.withPropertyValues("management.endpoints.web.exposure.include=quartz")
 				.withSystemProperties("dbPassword=123456", "apiKey=123456").run((context) -> {
 					assertThat(context).hasSingleBean(QuartzEndpointWebExtension.class);
-					QuartzEndpointWebExtension webExtension = context.getBean(QuartzEndpointWebExtension.class);
-					Show showValuesWebExtension = (Show) ReflectionTestUtils.getField(webExtension, "showValues");
-					assertThat(showValuesWebExtension).isEqualTo(Show.WHEN_AUTHORIZED);
+					assertThat(context.getBean(QuartzEndpointWebExtension.class)).extracting("showValues")
+							.isEqualTo(Show.WHEN_AUTHORIZED);
 				});
 	}
 

@@ -96,7 +96,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	}
 
 	@Test
-	void incrementalEndpointBuildChangeGeneralEnabledFlag() throws Exception {
+	void incrementalEndpointBuildChangeGeneralEnabledFlag() {
 		TestProject project = new TestProject(IncrementalEndpoint.class);
 		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata)
@@ -115,7 +115,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	}
 
 	@Test
-	void incrementalEndpointBuildChangeCacheFlag() throws Exception {
+	void incrementalEndpointBuildChangeCacheFlag() {
 		TestProject project = new TestProject(IncrementalEndpoint.class);
 		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata)
@@ -132,7 +132,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	}
 
 	@Test
-	void incrementalEndpointBuildEnableSpecificEndpoint() throws Exception {
+	void incrementalEndpointBuildEnableSpecificEndpoint() {
 		TestProject project = new TestProject(SpecificEndpoint.class);
 		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata).has(Metadata.withGroup("management.endpoint.specific").fromSource(SpecificEndpoint.class));

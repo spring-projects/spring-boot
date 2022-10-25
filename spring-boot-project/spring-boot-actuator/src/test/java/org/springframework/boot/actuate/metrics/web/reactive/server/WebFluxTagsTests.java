@@ -45,6 +45,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  */
 @SuppressWarnings("removal")
+@Deprecated(since = "3.0.0", forRemoval = true)
 class WebFluxTagsTests {
 
 	private MockServerWebExchange exchange;

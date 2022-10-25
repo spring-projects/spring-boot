@@ -99,8 +99,6 @@ public class LocalDevToolsAutoConfiguration {
 	@ConditionalOnProperty(prefix = "spring.devtools.restart", name = "enabled", matchIfMissing = true)
 	static class RestartConfiguration {
 
-		private static final Log restarterLogger = LogFactory.getLog(Restarter.class);
-
 		private final DevToolsProperties properties;
 
 		RestartConfiguration(DevToolsProperties properties) {

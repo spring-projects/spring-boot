@@ -140,7 +140,6 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public void afterPropertiesSet() {
 		this.builderConfig = new RequestMappingInfo.BuilderConfiguration();
 		this.builderConfig.setPatternParser(getPatternParser());

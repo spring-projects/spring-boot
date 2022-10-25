@@ -36,7 +36,8 @@ import org.springframework.web.servlet.HandlerMapping;
  *
  * @author Brian Clozel
  */
-@SuppressWarnings({ "deprecation", "removal" })
+@SuppressWarnings("removal")
+@Deprecated(since = "3.0.0", forRemoval = true)
 class ServerRequestObservationConventionAdapter implements ServerRequestObservationConvention {
 
 	private final String observationName;

@@ -54,7 +54,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Brian Clozel
  */
 @ExtendWith(OutputCaptureExtension.class)
-@SuppressWarnings({ "deprecation", "removal" })
+@SuppressWarnings("removal")
 class RestTemplateObservationConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()

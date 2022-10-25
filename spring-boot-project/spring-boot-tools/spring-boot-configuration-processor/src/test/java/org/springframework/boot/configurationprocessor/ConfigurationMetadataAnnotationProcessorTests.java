@@ -16,8 +16,6 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
@@ -414,7 +412,7 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	}
 
 	@Test
-	void recordProperties() throws IOException {
+	void recordProperties() {
 		String source = """
 				@org.springframework.boot.configurationsample.ConfigurationProperties("implicit")
 				public record ExampleRecord(String someString, Integer someInteger) {
@@ -426,7 +424,7 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	}
 
 	@Test
-	void recordPropertiesWithDefaultValues() throws IOException {
+	void recordPropertiesWithDefaultValues() {
 		String source = """
 				@org.springframework.boot.configurationsample.ConfigurationProperties("record.defaults")
 				public record ExampleRecord(
@@ -442,7 +440,7 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	}
 
 	@Test
-	void multiConstructorRecordProperties() throws IOException {
+	void multiConstructorRecordProperties() {
 		String source = """
 				@org.springframework.boot.configurationsample.ConfigurationProperties("multi")
 				public record ExampleRecord(String someString, Integer someInteger) {

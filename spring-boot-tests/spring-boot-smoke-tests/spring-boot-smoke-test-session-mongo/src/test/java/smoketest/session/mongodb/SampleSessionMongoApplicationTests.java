@@ -83,7 +83,6 @@ public class SampleSessionMongoApplicationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void health() {
 		ResponseEntity<String> entity = this.restTemplate
 				.getForEntity("http://localhost:" + this.port + "/actuator/health", String.class);
@@ -111,7 +110,7 @@ public class SampleSessionMongoApplicationTests {
 
 	private ResponseEntity<Map<String, Object>> getSessions() {
 		RequestEntity<Object> request = getRequestEntity(URI.create("/actuator/sessions?username=user"));
-		ParameterizedTypeReference<Map<String, Object>> stringObjectMap = new ParameterizedTypeReference<Map<String, Object>>() {
+		ParameterizedTypeReference<Map<String, Object>> stringObjectMap = new ParameterizedTypeReference<>() {
 		};
 		return this.restTemplate.exchange(request, stringObjectMap);
 	}

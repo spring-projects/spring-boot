@@ -97,7 +97,6 @@ class EnvironmentEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void showValuesCanBeConfiguredViaTheEnvironment() {
 		this.contextRunner.withPropertyValues("management.endpoint.env.show-values: WHEN_AUTHORIZED")
 				.withPropertyValues("management.endpoints.web.exposure.include=env")
@@ -107,10 +106,8 @@ class EnvironmentEndpointAutoConfigurationTests {
 					EnvironmentEndpointWebExtension webExtension = context
 							.getBean(EnvironmentEndpointWebExtension.class);
 					EnvironmentEndpoint endpoint = context.getBean(EnvironmentEndpoint.class);
-					Show showValuesWebExtension = (Show) ReflectionTestUtils.getField(webExtension, "showValues");
-					assertThat(showValuesWebExtension).isEqualTo(Show.WHEN_AUTHORIZED);
-					Show showValues = (Show) ReflectionTestUtils.getField(endpoint, "showValues");
-					assertThat(showValues).isEqualTo(Show.WHEN_AUTHORIZED);
+					assertThat(webExtension).extracting("showValues").isEqualTo(Show.WHEN_AUTHORIZED);
+					assertThat(endpoint).extracting("showValues").isEqualTo(Show.WHEN_AUTHORIZED);
 				});
 	}
 

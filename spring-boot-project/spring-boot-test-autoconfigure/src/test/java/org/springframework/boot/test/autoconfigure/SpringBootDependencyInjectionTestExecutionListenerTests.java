@@ -53,7 +53,7 @@ class SpringBootDependencyInjectionTestExecutionListenerTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void prepareFailingTestInstanceShouldPrintReport(CapturedOutput output) throws Exception {
 		TestContext testContext = mock(TestContext.class);
 		given(testContext.getTestClass()).willReturn((Class) Config.class);
@@ -73,7 +73,7 @@ class SpringBootDependencyInjectionTestExecutionListenerTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void originalFailureIsThrownWhenReportGenerationFails() {
 		TestContext testContext = mock(TestContext.class);
 		given(testContext.getTestClass()).willReturn((Class) Config.class);

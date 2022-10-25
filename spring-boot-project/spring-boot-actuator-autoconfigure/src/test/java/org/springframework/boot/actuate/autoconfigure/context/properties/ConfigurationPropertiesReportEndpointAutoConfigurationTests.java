@@ -77,7 +77,6 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void showValuesCanBeConfiguredViaTheEnvironment() {
 		this.contextRunner.withUserConfiguration(Config.class)
 				.withPropertyValues("management.endpoint.configprops.show-values: WHEN_AUTHORIZED")

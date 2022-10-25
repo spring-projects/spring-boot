@@ -55,7 +55,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  */
 @ExtendWith(OutputCaptureExtension.class)
-@SuppressWarnings({ "deprecation", "removal" })
+@SuppressWarnings("removal")
 class WebClientObservationConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())

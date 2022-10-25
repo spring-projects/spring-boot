@@ -16,7 +16,6 @@
 
 package org.springframework.boot.logging.logback;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -49,7 +48,7 @@ class LogbackRuntimeHintsTests {
 	}
 
 	@Test
-	void registersHintsForBuiltInLogbackConverters() throws Exception {
+	void registersHintsForBuiltInLogbackConverters() {
 		ReflectionHints reflection = registerHints();
 		assertThat(logbackConverters()).allSatisfy(registeredForPublicConstructorInvocation(reflection));
 	}
@@ -84,7 +83,7 @@ class LogbackRuntimeHintsTests {
 		};
 	}
 
-	private List<Class<?>> logbackConverters() throws IOException {
+	private List<Class<?>> logbackConverters() {
 		return List.of(DateTokenConverter.class, IntegerTokenConverter.class, SyslogStartConverter.class);
 	}
 

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.configurationprocessor;
 
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -149,7 +148,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	}
 
 	@Test
-	void mergeOfInvalidAdditionalMetadata() throws IOException {
+	void mergeOfInvalidAdditionalMetadata() {
 		String metadata = "Hello World";
 		assertThatExceptionOfType(CompilationException.class)
 				.isThrownBy(() -> compile(metadata, SimpleProperties.class))
