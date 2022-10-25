@@ -1,0 +1,3 @@
+# Runtime hints for tests
+org.springframework.test.context.aot.TestRuntimeHintsRegistrar=\
+org.springframework.boot.test.system.OutputCapture.OutputCaptureRuntimeHints
