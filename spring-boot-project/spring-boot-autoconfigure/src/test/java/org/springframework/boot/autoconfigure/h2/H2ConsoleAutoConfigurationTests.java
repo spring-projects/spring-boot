@@ -26,8 +26,6 @@ import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -188,18 +186,13 @@ class H2ConsoleAutoConfigurationTests {
 
 		private DataSource mockDataSource(String url) throws SQLException {
 			DataSource dataSource = mock(DataSource.class);
-			given(dataSource.getConnection()).will(new Answer<Connection>() {
-
-				@Override
-				public Connection answer(InvocationOnMock invocation) throws Throwable {
-					assertThat(Thread.currentThread().getContextClassLoader()).isEqualTo(getClass().getClassLoader());
-					Connection connection = mock(Connection.class);
-					DatabaseMetaData metadata = mock(DatabaseMetaData.class);
-					given(connection.getMetaData()).willReturn(metadata);
-					given(metadata.getURL()).willReturn(url);
-					return connection;
-				}
-
+			given(dataSource.getConnection()).will((invocation) -> {
+				assertThat(Thread.currentThread().getContextClassLoader()).isEqualTo(getClass().getClassLoader());
+				Connection connection = mock(Connection.class);
+				DatabaseMetaData metadata = mock(DatabaseMetaData.class);
+				given(connection.getMetaData()).willReturn(metadata);
+				given(metadata.getURL()).willReturn(url);
+				return connection;
 			});
 
 			return dataSource;
