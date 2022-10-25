@@ -30,7 +30,7 @@ public class Hibernate52Application {
 
 
 	@Test
-	void ddd(){
+	public void ddd(){
 		System.out.println("helloooooooooooooooooo");
 	}
 
