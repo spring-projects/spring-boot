@@ -63,7 +63,6 @@ class EventPublishingRunListener implements SpringApplicationRunListener, Ordere
 		this.application = application;
 		this.args = args;
 		this.initialMulticaster = new SimpleApplicationEventMulticaster();
-		refreshApplicationListeners();
 	}
 
 	@Override
@@ -133,8 +132,8 @@ class EventPublishingRunListener implements SpringApplicationRunListener, Ordere
 	}
 
 	private void multicastInitialEvent(ApplicationEvent event) {
-		this.initialMulticaster.multicastEvent(event);
 		refreshApplicationListeners();
+		this.initialMulticaster.multicastEvent(event);
 	}
 
 	private void refreshApplicationListeners() {
