@@ -87,6 +87,14 @@ class CloudPlatformTests {
 	}
 
 	@Test
+	void getActiveWhenHasNomadAllocIdShouldReturnNomad() {
+		Environment environment = new MockEnvironment().withProperty("NOMAD_ALLOC_ID", "---");
+		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isEqualTo(CloudPlatform.NOMAD);
+		assertThat(platform.isActive(environment)).isTrue();
+	}
+
+	@Test
 	void getActiveWhenHasKubernetesServiceHostAndPortShouldReturnKubernetes() {
 		Map<String, Object> envVars = new HashMap<>();
 		envVars.put("KUBERNETES_SERVICE_HOST", "---");
