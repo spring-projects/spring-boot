@@ -72,7 +72,7 @@ include::endpoints/health.adoc[leveloffset=+1]
 
 include::endpoints/heapdump.adoc[leveloffset=+1]
 
-include::endpoints/httptrace.adoc[leveloffset=+1]
+include::endpoints/httpexchanges.adoc[leveloffset=+1]
 
 include::endpoints/info.adoc[leveloffset=+1]
 

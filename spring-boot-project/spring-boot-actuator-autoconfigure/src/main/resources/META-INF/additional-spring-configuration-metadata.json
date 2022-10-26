@@ -240,6 +240,20 @@
       "defaultValue": true
     },
     {
+      "name": "management.httpexchanges.include",
+      "defaultValue": [
+        "request-headers",
+        "response-headers",
+        "errors"
+      ]
+    },
+    {
+      "name": "management.httpexchanges.record",
+      "type": "java.lang.Boolean",
+      "description": "Whether to record HTTP request-response exchanges.",
+      "defaultValue": true
+    },
+    {
       "name": "management.influx.metrics.export.consistency",
       "defaultValue": "one"
     },
@@ -2126,22 +2140,22 @@
     },
     {
       "name": "management.trace.http.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable HTTP request-response tracing.",
-      "defaultValue": true
+      "deprecation": {
+        "replacement": "management.httpexchanges.record",
+        "level": "error"
+      }
     },
     {
       "name": "management.trace.http.include",
-      "defaultValue": [
-        "request-headers",
-        "response-headers",
-        "errors"
-      ]
+      "deprecation": {
+        "replacement": "management.httpexchanges.include",
+        "level": "error"
+      }
     },
     {
       "name": "management.trace.include",
       "deprecation": {
-        "replacement": "management.trace.http.include",
+        "replacement": "management.httpexchanges.include",
         "level": "error"
       }
     },

@@ -27,7 +27,7 @@ include::actuator/tracing.adoc[]
 
 include::actuator/auditing.adoc[]
 
-include::actuator/http-tracing.adoc[]
+include::actuator/http-exchanges.adoc[]
 
 include::actuator/process-monitoring.adoc[]
 

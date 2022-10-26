@@ -210,7 +210,7 @@ When it does so, the orders shown in the following table will be used:
 | `WebFilterChainProxy` (Spring Security)
 | `-100`
 
-| `HttpTraceWebFilter`
+| `HttpExchangesWebFilter`
 | `Ordered.LOWEST_PRECEDENCE - 10`
 |===
 
