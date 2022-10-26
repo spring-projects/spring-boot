@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
+import java.util.Collection;
 import java.util.List;
 
 import io.micrometer.tracing.otel.bridge.OtelCurrentTraceContext;
@@ -182,7 +183,17 @@ class OpenTelemetryAutoConfigurationTests {
 
 	@Test
 	void shouldSupplyW3CPropagationWithBaggageByDefault() {
-		this.contextRunner.run((context) -> assertThat(context).hasBean("w3cTextMapPropagatorWithBaggage"));
+		this.contextRunner.withPropertyValues("management.tracing.baggage.remote-fields=foo").run((context) -> {
+			assertThat(context).hasBean("w3cTextMapPropagatorWithBaggage");
+			Collection<String> allFields = context.getBean("w3cTextMapPropagatorWithBaggage", TextMapPropagator.class)
+					.fields();
+			assertThat(allFields).containsExactly("traceparent", "tracestate", "baggage", "foo"); // order
+																									// matters,
+																									// foo
+																									// must
+																									// be
+																									// last!
+		});
 	}
 
 	@Test
