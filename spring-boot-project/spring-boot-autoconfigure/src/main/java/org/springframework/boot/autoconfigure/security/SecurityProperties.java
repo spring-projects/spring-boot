@@ -41,23 +41,23 @@ import org.springframework.util.StringUtils;
 public class SecurityProperties {
 
 	/**
-	 * Order applied to the SecurityFilterChain that is used to configure basic
-	 * authentication for application endpoints. If you want to add your own
-	 * authentication for all or some of those endpoints the best thing to do is to add
-	 * your own WebSecurityConfigurerAdapter with lower order.
+	 * Order applied to the {@code SecurityFilterChain} that is used to configure basic
+	 * authentication for application endpoints. Create your own
+	 * {@code SecurityFilterChain} if you want to add your own authentication for all or
+	 * some of those endpoints.
 	 */
 	public static final int BASIC_AUTH_ORDER = Ordered.LOWEST_PRECEDENCE - 5;
 
 	/**
-	 * Order applied to the WebSecurityCustomizer that ignores standard static resource
-	 * paths.
+	 * Order applied to the {@code WebSecurityCustomizer} that ignores standard static
+	 * resource paths.
 	 */
 	public static final int IGNORED_ORDER = Ordered.HIGHEST_PRECEDENCE;
 
 	/**
 	 * Default order of Spring Security's Filter in the servlet container (i.e. amongst
 	 * other filters registered with the container). There is no connection between this
-	 * and the {@code @Order} on a WebSecurityConfigurer.
+	 * and the {@code @Order} on a {@code SecurityFilterChain}.
 	 */
 	public static final int DEFAULT_FILTER_ORDER = OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100;
 
