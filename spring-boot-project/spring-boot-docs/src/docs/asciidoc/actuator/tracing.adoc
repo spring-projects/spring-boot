@@ -1,22 +1,23 @@
 [[actuator.micrometer-tracing]]
 == Tracing
-
 Spring Boot Actuator provides dependency management and auto-configuration for https://micrometer.io/docs/tracing[Micrometer Tracing], a facade for popular tracer libraries.
 Micrometer Tracing hooks into Micrometer's `ObservationHandler`, which means a https://micrometer.io/docs/tracing#_glossary[span] is reported for every completed observation.
 
 TIP: To learn more about Micrometer Tracing capabilities, see its https://micrometer.io/docs/tracing[reference documentation].
 
-[[actuator.micrometer-tracing.tracers]]
-=== Supported tracers
 
+
+[[actuator.micrometer-tracing.tracers]]
+=== Supported Tracers
 Spring Boot ships auto-configuration for the following tracers:
 
 * https://opentelemetry.io/[OpenTelemetry] with https://zipkin.io/[Zipkin] or https://docs.wavefront.com/[Wavefront]
 * https://github.com/openzipkin/brave[OpenZipkin Brave] with https://zipkin.io/[Zipkin] or https://docs.wavefront.com/[Wavefront]
 
+
+
 [[actuator.micrometer-tracing.getting-started]]
 === Getting Started
-
 We need an example application that we can use to getting started with tracing.
 For our purposes, the simple "`Hello World!`" web application that's covered in the "`<<getting-started#getting-started.first-application>>`" section will suffice.
 We're going to use the OpenTelemetry tracer with Zipkin as trace backend.
@@ -64,42 +65,52 @@ Press the "Show" button to see the details of that trace.
 
 TIP: You can include the current trace and span id in the logs by setting the `logging.pattern.level` property to `%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]`
 
-[[actuator.micrometer-tracing.tracer-implementations]]
-=== Tracer implementations
 
+
+[[actuator.micrometer-tracing.tracer-implementations]]
+=== Tracer Implementations
 As Micrometer Tracer supports multiple tracer implementations, there are multiple dependency combinations possible with Spring Boot.
 
 All tracer implementations need the `org.springframework.boot:spring-boot-starter-actuator` dependency.
 
+
+
 [[actuator.micrometer-tracing.tracer-implementations.otel-zipkin]]
-==== OpenTelemetry with Zipkin
+==== OpenTelemetry With Zipkin
 
 * `io.micrometer:micrometer-tracing-bridge-otel` - which is needed to bride the Micrometer Observation API to OpenTelemetry.
 * `io.opentelemetry:opentelemetry-exporter-zipkin` - which is needed to report traces to Zipkin.
 
+
+
 [[actuator.micrometer-tracing.tracer-implementations.otel-wavefront]]
-==== OpenTelemetry with Wavefront
+==== OpenTelemetry With Wavefront
 
 * `io.micrometer:micrometer-tracing-bridge-otel` - which is needed to bride the Micrometer Observation API to OpenTelemetry.
 * `io.micrometer:micrometer-tracing-reporter-wavefront` - which is needed to report traces to Wavefront.
 
+
+
 [[actuator.micrometer-tracing.tracer-implementations.brave-zipkin]]
-==== OpenZipkin Brave with Zipkin
+==== OpenZipkin Brave With Zipkin
 
 * `io.micrometer:micrometer-tracing-bridge-brave` - which is needed to bridge the Micrometer Observation API to Brave.
 * `io.zipkin.reporter2:zipkin-reporter-brave` - which is needed to report traces to Zipkin.
 
 NOTE: If your project doesn't use Spring MVC or Spring WebFlux, the `io.zipkin.reporter2:zipkin-sender-urlconnection` dependency is needed, too.
 
+
+
 [[actuator.micrometer-tracing.tracer-implementations.brave-wavefront]]
-==== OpenZipkin Brave with Wavefront
+==== OpenZipkin Brave With Wavefront
 
 * `io.micrometer:micrometer-tracing-bridge-brave` - which is needed to bridge the Micrometer Observation API to Brave.
 * `io.micrometer:micrometer-tracing-reporter-wavefront` - which is needed to report traces to Wavefront.
 
-[[actuator.micrometer-tracing.creating-spans]]
-=== Creating custom spans
 
+
+[[actuator.micrometer-tracing.creating-spans]]
+=== Creating Custom Spans
 You can create your own spans by starting an observation.
 For this, inject `ObservationRegistry` into your component:
 

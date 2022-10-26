@@ -67,8 +67,8 @@ class JdbcSessionConfiguration {
 	SessionRepositoryCustomizer<JdbcIndexedSessionRepository> springBootSessionRepositoryCustomizer(
 			SessionProperties sessionProperties, JdbcSessionProperties jdbcSessionProperties,
 			ServerProperties serverProperties) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		return (sessionRepository) -> {
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(sessionProperties.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
 					.to(sessionRepository::setDefaultMaxInactiveInterval);
 			map.from(jdbcSessionProperties::getTableName).to(sessionRepository::setTableName);

@@ -66,8 +66,11 @@ class MeterRegistrySpanMetrics implements SpanMetrics {
 
 	@Override
 	public void registerQueueRemainingCapacity(BlockingQueue<?> queue) {
-		this.meterRegistry.gauge("wavefront.reporter.queue.remaining_capacity", queue,
-				(q) -> (double) q.remainingCapacity());
+		this.meterRegistry.gauge("wavefront.reporter.queue.remaining_capacity", queue, this::remainingCapacity);
+	}
+
+	private double remainingCapacity(BlockingQueue<?> queue) {
+		return queue.remainingCapacity();
 	}
 
 }

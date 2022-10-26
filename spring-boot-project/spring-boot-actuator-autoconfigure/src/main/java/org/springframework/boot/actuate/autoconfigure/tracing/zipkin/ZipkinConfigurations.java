@@ -60,9 +60,11 @@ class ZipkinConfigurations {
 		@Bean
 		@ConditionalOnMissingBean(Sender.class)
 		URLConnectionSender urlConnectionSender(ZipkinProperties properties) {
-			return URLConnectionSender.newBuilder().connectTimeout((int) properties.getConnectTimeout().toMillis())
-					.readTimeout((int) properties.getReadTimeout().toMillis()).endpoint(properties.getEndpoint())
-					.build();
+			URLConnectionSender.Builder builder = URLConnectionSender.newBuilder();
+			builder.connectTimeout((int) properties.getConnectTimeout().toMillis());
+			builder.readTimeout((int) properties.getReadTimeout().toMillis());
+			builder.endpoint(properties.getEndpoint());
+			return builder.build();
 		}
 
 	}
@@ -78,7 +80,7 @@ class ZipkinConfigurations {
 				ObjectProvider<ZipkinRestTemplateBuilderCustomizer> customizers) {
 			RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder()
 					.setConnectTimeout(properties.getConnectTimeout()).setReadTimeout(properties.getReadTimeout());
-			customizers.orderedStream().forEach((c) -> c.customize(restTemplateBuilder));
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(restTemplateBuilder));
 			return new ZipkinRestTemplateSender(properties.getEndpoint(), restTemplateBuilder.build());
 		}
 
@@ -94,7 +96,7 @@ class ZipkinConfigurations {
 		ZipkinWebClientSender webClientSender(ZipkinProperties properties,
 				ObjectProvider<ZipkinWebClientBuilderCustomizer> customizers) {
 			WebClient.Builder builder = WebClient.builder();
-			customizers.orderedStream().forEach((c) -> c.customize(builder));
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return new ZipkinWebClientSender(properties.getEndpoint(), builder.build());
 		}
 

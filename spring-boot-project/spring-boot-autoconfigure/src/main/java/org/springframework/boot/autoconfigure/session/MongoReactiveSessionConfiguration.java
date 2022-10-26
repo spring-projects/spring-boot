@@ -50,8 +50,8 @@ class MongoReactiveSessionConfiguration {
 	ReactiveSessionRepositoryCustomizer<ReactiveMongoSessionRepository> springBootSessionRepositoryCustomizer(
 			SessionProperties sessionProperties, MongoSessionProperties mongoSessionProperties,
 			ServerProperties serverProperties) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		return (sessionRepository) -> {
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(sessionProperties.determineTimeout(() -> serverProperties.getReactive().getSession().getTimeout()))
 					.to(sessionRepository::setDefaultMaxInactiveInterval);
 			map.from(mongoSessionProperties::getCollectionName).to(sessionRepository::setCollectionName);

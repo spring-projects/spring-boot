@@ -52,8 +52,8 @@ class HazelcastSessionConfiguration {
 	SessionRepositoryCustomizer<HazelcastIndexedSessionRepository> springBootSessionRepositoryCustomizer(
 			SessionProperties sessionProperties, HazelcastSessionProperties hazelcastSessionProperties,
 			ServerProperties serverProperties) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		return (sessionRepository) -> {
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(sessionProperties.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
 					.to(sessionRepository::setDefaultMaxInactiveInterval);
 			map.from(hazelcastSessionProperties::getMapName).to(sessionRepository::setSessionMapName);

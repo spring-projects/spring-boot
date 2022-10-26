@@ -43,6 +43,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 
@@ -208,10 +209,7 @@ public class HeapDumpWebEndpoint {
 
 		@Override
 		public File dumpHeap(Boolean live) throws IOException, InterruptedException {
-			if (live != null) {
-				throw new IllegalArgumentException(
-						"OpenJ9DiagnosticsMXBean does not support live parameter when dumping the heap");
-			}
+			Assert.isNull(live, "OpenJ9DiagnosticsMXBean does not support live parameter when dumping the heap");
 			return new File(
 					(String) ReflectionUtils.invokeMethod(this.dumpHeapMethod, this.diagnosticMXBean, "heap", null));
 		}

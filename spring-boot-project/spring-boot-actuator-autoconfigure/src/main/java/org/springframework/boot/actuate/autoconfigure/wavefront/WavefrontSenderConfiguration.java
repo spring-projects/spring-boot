@@ -48,12 +48,12 @@ public class WavefrontSenderConfiguration {
 	@ConditionalOnMissingBean
 	public WavefrontSender wavefrontSender(WavefrontProperties properties) {
 		Builder builder = new Builder(properties.getEffectiveUri().toString(), properties.getApiTokenOrThrow());
-		PropertyMapper mapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		WavefrontProperties.Sender sender = properties.getSender();
-		mapper.from(sender.getMaxQueueSize()).to(builder::maxQueueSize);
-		mapper.from(sender.getFlushInterval()).asInt(Duration::getSeconds).to(builder::flushIntervalSeconds);
-		mapper.from(sender.getMessageSize()).asInt(DataSize::toBytes).to(builder::messageSizeBytes);
-		mapper.from(sender.getBatchSize()).to(builder::batchSize);
+		map.from(sender.getMaxQueueSize()).to(builder::maxQueueSize);
+		map.from(sender.getFlushInterval()).asInt(Duration::getSeconds).to(builder::flushIntervalSeconds);
+		map.from(sender.getMessageSize()).asInt(DataSize::toBytes).to(builder::messageSizeBytes);
+		map.from(sender.getBatchSize()).to(builder::batchSize);
 		return builder.build();
 	}
 

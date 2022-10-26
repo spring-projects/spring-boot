@@ -50,8 +50,8 @@ class RedisReactiveSessionConfiguration {
 	ReactiveSessionRepositoryCustomizer<ReactiveRedisSessionRepository> springBootSessionRepositoryCustomizer(
 			SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
 			ServerProperties serverProperties) {
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		return (sessionRepository) -> {
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(sessionProperties.determineTimeout(() -> serverProperties.getReactive().getSession().getTimeout()))
 					.to(sessionRepository::setDefaultMaxInactiveInterval);
 			map.from(redisSessionProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);

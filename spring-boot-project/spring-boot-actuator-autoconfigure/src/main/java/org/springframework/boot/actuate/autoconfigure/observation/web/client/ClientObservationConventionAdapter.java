@@ -21,6 +21,7 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.observation.Observation;
 
 import org.springframework.boot.actuate.metrics.web.reactive.client.WebClientExchangeTagsProvider;
+import org.springframework.core.Conventions;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientRequestObservationContext;
 import org.springframework.web.reactive.function.client.ClientRequestObservationConvention;
@@ -32,10 +33,11 @@ import org.springframework.web.reactive.function.client.WebClient;
  *
  * @author Brian Clozel
  */
-@SuppressWarnings({ "deprecation", "removal" })
+@SuppressWarnings("removal")
 class ClientObservationConventionAdapter implements ClientRequestObservationConvention {
 
-	private static final String URI_TEMPLATE_ATTRIBUTE = WebClient.class.getName() + ".uriTemplate";
+	private static final String URI_TEMPLATE_ATTRIBUTE = Conventions.getQualifiedAttributeName(WebClient.class,
+			"uriTemplate");
 
 	private final String metricName;
 
@@ -53,20 +55,18 @@ class ClientObservationConventionAdapter implements ClientRequestObservationConv
 
 	@Override
 	public KeyValues getLowCardinalityKeyValues(ClientRequestObservationContext context) {
-		KeyValues keyValues = KeyValues.empty();
 		mutateClientRequest(context);
 		Iterable<Tag> tags = this.tagsProvider.tags(context.getCarrier(), context.getResponse(), context.getError());
+		KeyValues keyValues = KeyValues.empty();
 		for (Tag tag : tags) {
 			keyValues = keyValues.and(tag.getKey(), tag.getValue());
 		}
 		return keyValues;
 	}
 
-	/*
-	 * {@link WebClientExchangeTagsProvider} relies on a request attribute to get the URI
-	 * template, we need to adapt to that.
-	 */
-	private static void mutateClientRequest(ClientRequestObservationContext context) {
+	private void mutateClientRequest(ClientRequestObservationContext context) {
+		// WebClientExchangeTagsProvider relies on a request attribute to get the URI
+		// template, we need to adapt to that.
 		ClientRequest clientRequest = ClientRequest.from(context.getCarrier())
 				.attribute(URI_TEMPLATE_ATTRIBUTE, context.getUriTemplate()).build();
 		context.setCarrier(clientRequest);

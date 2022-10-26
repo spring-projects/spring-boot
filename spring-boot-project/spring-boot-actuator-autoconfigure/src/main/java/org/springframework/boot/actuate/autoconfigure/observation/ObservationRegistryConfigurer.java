@@ -73,13 +73,11 @@ class ObservationRegistryConfigurer {
 	}
 
 	private void registerObservationPredicates(ObservationRegistry registry) {
-		this.observationPredicates.orderedStream().forEach(
-				(observationPredicate) -> registry.observationConfig().observationPredicate(observationPredicate));
+		this.observationPredicates.orderedStream().forEach(registry.observationConfig()::observationPredicate);
 	}
 
 	private void registerGlobalObservationConventions(ObservationRegistry registry) {
-		this.observationConventions.orderedStream()
-				.forEach((convention) -> registry.observationConfig().observationConvention(convention));
+		this.observationConventions.orderedStream().forEach(registry.observationConfig()::observationConvention);
 	}
 
 	@SuppressWarnings("unchecked")

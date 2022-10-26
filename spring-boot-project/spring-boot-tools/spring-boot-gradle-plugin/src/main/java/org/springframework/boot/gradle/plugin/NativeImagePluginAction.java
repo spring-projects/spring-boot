@@ -76,9 +76,12 @@ class NativeImagePluginAction implements PluginApplicationAction {
 	}
 
 	private Iterable<Configuration> removeDevelopmentOnly(Set<Configuration> configurations) {
-		return configurations.stream().filter((
-				configuration) -> !SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME.equals(configuration.getName()))
+		return configurations.stream().filter(this::isNotDevelopmentOnly)
 				.collect(Collectors.toCollection(LinkedHashSet::new));
+	}
+
+	private boolean isNotDevelopmentOnly(Configuration configuration) {
+		return !SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME.equals(configuration.getName());
 	}
 
 	private void configureTestNativeBinaryClasspath(SourceSetContainer sourceSets, GraalVMExtension graalVmExtension,

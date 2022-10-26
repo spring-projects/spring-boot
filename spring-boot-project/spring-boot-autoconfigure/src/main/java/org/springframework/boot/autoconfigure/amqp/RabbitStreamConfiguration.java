@@ -99,11 +99,11 @@ class RabbitStreamConfiguration {
 	static EnvironmentBuilder configure(EnvironmentBuilder builder, RabbitProperties properties) {
 		builder.lazyInitialization(true);
 		RabbitProperties.Stream stream = properties.getStream();
-		PropertyMapper mapper = PropertyMapper.get();
-		mapper.from(stream.getHost()).to(builder::host);
-		mapper.from(stream.getPort()).to(builder::port);
-		mapper.from(stream.getUsername()).as(withFallback(properties::getUsername)).whenNonNull().to(builder::username);
-		mapper.from(stream.getPassword()).as(withFallback(properties::getPassword)).whenNonNull().to(builder::password);
+		PropertyMapper map = PropertyMapper.get();
+		map.from(stream.getHost()).to(builder::host);
+		map.from(stream.getPort()).to(builder::port);
+		map.from(stream.getUsername()).as(withFallback(properties::getUsername)).whenNonNull().to(builder::username);
+		map.from(stream.getPassword()).as(withFallback(properties::getPassword)).whenNonNull().to(builder::password);
 		return builder;
 	}
 

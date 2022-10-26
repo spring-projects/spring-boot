@@ -222,44 +222,39 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		}
 
 		private Class<?> determineType(Model model, Supplier<Object> parentSupplier) {
-			String className = null;
-			if (model instanceof ComponentModel) {
-				className = ((ComponentModel) model).getClassName();
-			}
-			if (className == null) {
-				String tag = model.getTag();
-				if (tag != null) {
-					className = this.modelInterpretationContext.getDefaultNestedComponentRegistry()
-							.findDefaultComponentTypeByTag(tag);
-					if (className == null) {
-						Class<?> type = inferTypeFromParent(parentSupplier, tag);
-						if (type != null) {
-							return type;
-						}
-					}
-				}
-			}
+			String className = (model instanceof ComponentModel componentModel) ? componentModel.getClassName() : null;
 			if (className != null) {
-				className = this.modelInterpretationContext.getImport(className);
-				return loadComponentType(className);
+				return loadImportType(className);
+			}
+			String tag = model.getTag();
+			if (tag != null) {
+				className = this.modelInterpretationContext.getDefaultNestedComponentRegistry()
+						.findDefaultComponentTypeByTag(tag);
+				if (className != null) {
+					return loadImportType(className);
+				}
+				return inferTypeFromParent(parentSupplier, tag);
 			}
 			return null;
+		}
+
+		private Class<?> loadImportType(String className) {
+			return loadComponentType(this.modelInterpretationContext.getImport(className));
 		}
 
 		private Class<?> inferTypeFromParent(Supplier<Object> parentSupplier, String tag) {
 			Object parent = parentSupplier.get();
 			if (parent != null) {
 				try {
-					Class<?> typeFromSetter = new PropertySetter(
-							this.modelInterpretationContext.getBeanDescriptionCache(), parent)
-									.getClassNameViaImplicitRules(tag, AggregationType.AS_COMPLEX_PROPERTY,
-											this.modelInterpretationContext.getDefaultNestedComponentRegistry());
-					if (typeFromSetter != null) {
-						return typeFromSetter;
-					}
+					PropertySetter propertySetter = new PropertySetter(
+							this.modelInterpretationContext.getBeanDescriptionCache(), parent);
+					Class<?> typeFromPropertySetter = propertySetter.getClassNameViaImplicitRules(tag,
+							AggregationType.AS_COMPLEX_PROPERTY,
+							this.modelInterpretationContext.getDefaultNestedComponentRegistry());
+					return typeFromPropertySetter;
 				}
 				catch (Exception ex) {
-					// Continue
+					return null;
 				}
 			}
 			return null;

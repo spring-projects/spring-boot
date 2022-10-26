@@ -47,21 +47,8 @@ public abstract class AbstractCompositeHealthContributorConfiguration<C, I exten
 	 */
 	@Deprecated(since = "3.0.0", forRemoval = true)
 	protected AbstractCompositeHealthContributorConfiguration() {
-		ResolvableType type = ResolvableType.forClass(AbstractCompositeHealthContributorConfiguration.class,
-				getClass());
-		Class<?> indicatorType = type.resolveGeneric(1);
-		Class<?> beanType = type.resolveGeneric(2);
-		this.indicatorFactory = (bean) -> {
-			try {
-				@SuppressWarnings("unchecked")
-				Constructor<I> constructor = (Constructor<I>) indicatorType.getDeclaredConstructor(beanType);
-				return BeanUtils.instantiateClass(constructor, bean);
-			}
-			catch (Exception ex) {
-				throw new IllegalStateException(
-						"Unable to create health indicator " + indicatorType + " for bean type " + beanType, ex);
-			}
-		};
+		this.indicatorFactory = new ReflectionIndicatorFactory(
+				ResolvableType.forClass(AbstractCompositeHealthContributorConfiguration.class, getClass()));
 	}
 
 	/**
@@ -86,6 +73,36 @@ public abstract class AbstractCompositeHealthContributorConfiguration<C, I exten
 
 	protected I createIndicator(B bean) {
 		return this.indicatorFactory.apply(bean);
+	}
+
+	private class ReflectionIndicatorFactory implements Function<B, I> {
+
+		private final Class<?> indicatorType;
+
+		private final Class<?> beanType;
+
+		ReflectionIndicatorFactory(ResolvableType type) {
+			this.indicatorType = type.resolveGeneric(1);
+			this.beanType = type.resolveGeneric(2);
+		}
+
+		@Override
+		public I apply(B bean) {
+			try {
+				return BeanUtils.instantiateClass(getConstructor(), bean);
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException("Unable to create health indicator %s for bean type %s"
+						.formatted(this.indicatorType, this.beanType), ex);
+			}
+
+		}
+
+		@SuppressWarnings("unchecked")
+		private Constructor<I> getConstructor() throws NoSuchMethodException {
+			return (Constructor<I>) this.indicatorType.getDeclaredConstructor(this.beanType);
+		}
+
 	}
 
 }

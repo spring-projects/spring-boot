@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Predicate;
 
 import org.flywaydb.core.api.FlywayException;
 import org.flywaydb.core.api.Location;
@@ -57,7 +58,7 @@ class NativeImageResourceProvider implements ResourceProvider {
 
 	private final boolean failOnMissingLocations;
 
-	private final List<ResourceWithLocation> resources = new ArrayList<>();
+	private final List<LocatedResource> locatedResources = new ArrayList<>();
 
 	private final Lock lock = new ReentrantLock();
 
@@ -93,12 +94,19 @@ class NativeImageResourceProvider implements ResourceProvider {
 			return this.scanner.getResources(prefix, suffixes);
 		}
 		ensureInitialized();
-		List<LoadableResource> result = new ArrayList<>(this.scanner.getResources(prefix, suffixes));
-		this.resources.stream().filter((r) -> StringUtils.startsAndEndsWith(r.resource.getFilename(), prefix, suffixes))
-				.map((r) -> (LoadableResource) new ClassPathResource(r.location(),
-						r.location().getPath() + "/" + r.resource().getFilename(), this.classLoader, this.encoding))
+		Predicate<LocatedResource> matchesPrefixAndSuffixes = (locatedResource) -> StringUtils
+				.startsAndEndsWith(locatedResource.resource.getFilename(), prefix, suffixes);
+		List<LoadableResource> result = new ArrayList<>();
+		result.addAll(this.scanner.getResources(prefix, suffixes));
+		this.locatedResources.stream().filter(matchesPrefixAndSuffixes).map(this::asClassPathResource)
 				.forEach(result::add);
 		return result;
+	}
+
+	private ClassPathResource asClassPathResource(LocatedResource locatedResource) {
+		Location location = locatedResource.location();
+		String fileNameWithAbsolutePath = location.getPath() + "/" + locatedResource.resource().getFilename();
+		return new ClassPathResource(location, fileNameWithAbsolutePath, this.classLoader, this.encoding);
 	}
 
 	private void ensureInitialized() {
@@ -127,20 +135,24 @@ class NativeImageResourceProvider implements ResourceProvider {
 				}
 				continue;
 			}
-			Resource[] resources;
-			try {
-				resources = resolver.getResources(root.getURI() + "/*");
-			}
-			catch (IOException ex) {
-				throw new UncheckedIOException("Failed to list resources for " + location.getDescriptor(), ex);
-			}
+			Resource[] resources = getResources(resolver, location, root);
 			for (Resource resource : resources) {
-				this.resources.add(new ResourceWithLocation(resource, location));
+				this.locatedResources.add(new LocatedResource(resource, location));
 			}
 		}
 	}
 
-	private record ResourceWithLocation(Resource resource, Location location) {
+	private Resource[] getResources(PathMatchingResourcePatternResolver resolver, Location location, Resource root) {
+		try {
+			return resolver.getResources(root.getURI() + "/*");
+		}
+		catch (IOException ex) {
+			throw new UncheckedIOException("Failed to list resources for " + location.getDescriptor(), ex);
+		}
+	}
+
+	private record LocatedResource(Resource resource, Location location) {
+
 	}
 
 }

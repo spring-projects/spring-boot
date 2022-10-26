@@ -110,9 +110,7 @@ public class BraveAutoConfiguration {
 		Builder builder = Tracing.newBuilder().currentTraceContext(currentTraceContext).traceId128Bit(true)
 				.supportsJoin(false).propagationFactory(propagationFactory).sampler(sampler)
 				.localServiceName(applicationName);
-		for (SpanHandler spanHandler : spanHandlers) {
-			builder.addSpanHandler(spanHandler);
-		}
+		spanHandlers.forEach(builder::addSpanHandler);
 		for (TracingCustomizer tracingCustomizer : tracingCustomizers) {
 			tracingCustomizer.customize(builder);
 		}
@@ -130,9 +128,7 @@ public class BraveAutoConfiguration {
 	public CurrentTraceContext braveCurrentTraceContext(List<CurrentTraceContext.ScopeDecorator> scopeDecorators,
 			List<CurrentTraceContextCustomizer> currentTraceContextCustomizers) {
 		ThreadLocalCurrentTraceContext.Builder builder = ThreadLocalCurrentTraceContext.newBuilder();
-		for (ScopeDecorator scopeDecorator : scopeDecorators) {
-			builder.addScopeDecorator(scopeDecorator);
-		}
+		scopeDecorators.forEach(builder::addScopeDecorator);
 		for (CurrentTraceContextCustomizer currentTraceContextCustomizer : currentTraceContextCustomizers) {
 			currentTraceContextCustomizer.customize(builder);
 		}

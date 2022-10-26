@@ -16,16 +16,15 @@
 
 package org.springframework.boot.actuate.autoconfigure.observation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationHandler.FirstMatchingCompositeObservationHandler;
 import io.micrometer.observation.ObservationRegistry.ObservationConfig;
 
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 /**
  * Groups {@link ObservationHandler ObservationHandlers} by type.
@@ -46,11 +45,11 @@ class ObservationHandlerGrouping {
 	}
 
 	void apply(List<ObservationHandler<?>> handlers, ObservationConfig config) {
-		Map<Class<? extends ObservationHandler>, List<ObservationHandler<?>>> groupings = new HashMap<>();
+		MultiValueMap<Class<? extends ObservationHandler>, ObservationHandler<?>> groupings = new LinkedMultiValueMap<>();
 		for (ObservationHandler<?> handler : handlers) {
 			Class<? extends ObservationHandler> category = findCategory(handler);
 			if (category != null) {
-				groupings.computeIfAbsent(category, (c) -> new ArrayList<>()).add(handler);
+				groupings.add(category, handler);
 			}
 			else {
 				config.observationHandler(handler);

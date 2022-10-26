@@ -234,7 +234,6 @@ class LogbackConfigurationAotContributionTests {
 	public static class Outer {
 
 		public void setImplementation(Implementation implementation) {
-
 		}
 
 	}
@@ -243,7 +242,6 @@ class LogbackConfigurationAotContributionTests {
 
 		@DefaultClass(Implementation.class)
 		public void setContract(Contract contract) {
-
 		}
 
 	}

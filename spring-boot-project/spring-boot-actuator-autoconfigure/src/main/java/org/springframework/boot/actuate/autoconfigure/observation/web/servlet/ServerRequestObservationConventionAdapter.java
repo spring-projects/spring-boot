@@ -64,9 +64,9 @@ class ServerRequestObservationConventionAdapter implements ServerRequestObservat
 
 	@Override
 	public KeyValues getLowCardinalityKeyValues(ServerRequestObservationContext context) {
-		KeyValues keyValues = KeyValues.empty();
 		Iterable<Tag> tags = this.tagsProvider.getTags(context.getCarrier(), context.getResponse(), getHandler(context),
 				context.getError());
+		KeyValues keyValues = KeyValues.empty();
 		for (Tag tag : tags) {
 			keyValues = keyValues.and(tag.getKey(), tag.getValue());
 		}

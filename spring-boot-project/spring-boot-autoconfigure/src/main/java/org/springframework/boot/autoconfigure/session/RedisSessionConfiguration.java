@@ -67,11 +67,11 @@ class RedisSessionConfiguration {
 			String cleanupCron = redisSessionProperties.getCleanupCron();
 			if (cleanupCron != null) {
 				throw new InvalidConfigurationPropertyValueException("spring.session.redis.cleanup-cron", cleanupCron,
-						"Cron-based cleanup is only supported when spring.session.redis.repository-type is set to "
-								+ "indexed.");
+						"Cron-based cleanup is only supported when "
+								+ "spring.session.redis.repository-type is set to indexed.");
 			}
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			return (sessionRepository) -> {
+				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 				map.from(sessionProperties
 						.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
 						.to(sessionRepository::setDefaultMaxInactiveInterval);
@@ -101,8 +101,8 @@ class RedisSessionConfiguration {
 		SessionRepositoryCustomizer<RedisIndexedSessionRepository> springBootSessionRepositoryCustomizer(
 				SessionProperties sessionProperties, RedisSessionProperties redisSessionProperties,
 				ServerProperties serverProperties) {
-			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			return (sessionRepository) -> {
+				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 				map.from(sessionProperties
 						.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
 						.to(sessionRepository::setDefaultMaxInactiveInterval);

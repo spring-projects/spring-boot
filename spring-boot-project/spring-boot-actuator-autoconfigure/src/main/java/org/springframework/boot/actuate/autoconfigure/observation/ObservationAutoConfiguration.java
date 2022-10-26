@@ -132,8 +132,8 @@ public class ObservationAutoConfiguration {
 			@Bean
 			TracingAwareMeterObservationHandler<Observation.Context> tracingAwareMeterObservationHandler(
 					MeterRegistry meterRegistry, Tracer tracer) {
-				return new TracingAwareMeterObservationHandler<>(new DefaultMeterObservationHandler(meterRegistry),
-						tracer);
+				DefaultMeterObservationHandler delegate = new DefaultMeterObservationHandler(meterRegistry);
+				return new TracingAwareMeterObservationHandler<>(delegate, tracer);
 			}
 
 		}

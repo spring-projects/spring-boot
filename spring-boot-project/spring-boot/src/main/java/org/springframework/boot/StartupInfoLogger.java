@@ -38,6 +38,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Moritz Halbritter
  */
 class StartupInfoLogger {
 

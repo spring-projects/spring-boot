@@ -67,11 +67,21 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 		this(SimpleRequestExpectationManager::new);
 	}
 
+	/**
+	 * Crate a new {@link MockServerRestTemplateCustomizer} instance.
+	 * @param expectationManager the expectation manager class to use
+	 */
 	public MockServerRestTemplateCustomizer(Class<? extends RequestExpectationManager> expectationManager) {
 		this(() -> BeanUtils.instantiateClass(expectationManager));
 		Assert.notNull(expectationManager, "ExpectationManager must not be null");
 	}
 
+	/**
+	 * Crate a new {@link MockServerRestTemplateCustomizer} instance.
+	 * @param expectationManagerSupplier a supplier that provides the
+	 * {@link RequestExpectationManager} to use
+	 * @since 3.0.0
+	 */
 	public MockServerRestTemplateCustomizer(Supplier<? extends RequestExpectationManager> expectationManagerSupplier) {
 		Assert.notNull(expectationManagerSupplier, "ExpectationManagerSupplier must not be null");
 		this.expectationManagerSupplier = expectationManagerSupplier;
