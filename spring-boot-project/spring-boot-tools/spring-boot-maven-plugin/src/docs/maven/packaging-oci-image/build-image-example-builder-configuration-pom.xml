@@ -9,7 +9,7 @@
 				<configuration>
 					<image>
 						<env>
-							<BP_JVM_VERSION>8.*</BP_JVM_VERSION>
+							<BP_JVM_VERSION>17</BP_JVM_VERSION>
 						</env>
 					</image>
 				</configuration>

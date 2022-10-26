@@ -5,7 +5,7 @@ plugins {
 
 // tag::env[]
 tasks.named("bootBuildImage") {
-	environment = ["BP_JVM_VERSION" : "8.*"]
+	environment = ["BP_JVM_VERSION" : "17"]
 }
 // end::env[]
 

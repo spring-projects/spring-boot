@@ -252,7 +252,7 @@ class PackagingDocumentationTests {
 	void bootBuildImageWithCustomBuildpackJvmVersion() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-env")
 				.build("bootBuildImageEnvironment");
-		assertThat(result.getOutput()).contains("BP_JVM_VERSION=8.*");
+		assertThat(result.getOutput()).contains("BP_JVM_VERSION=17");
 	}
 
 	@TestTemplate
