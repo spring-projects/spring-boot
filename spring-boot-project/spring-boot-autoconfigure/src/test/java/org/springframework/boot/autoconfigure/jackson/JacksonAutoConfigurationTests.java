@@ -50,6 +50,7 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -447,6 +448,14 @@ class JacksonAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void jsonComponentThatInjectsObjectMapperCausesBeanCurrentlyInCreationException() {
+		this.contextRunner.withUserConfiguration(CircularDependencySerializerConfiguration.class).run((context) -> {
+			assertThat(context).hasFailed();
+			assertThat(context).getFailure().hasRootCauseInstanceOf(BeanCurrentlyInCreationException.class);
+		});
+	}
+
 	private void assertParameterNamesModuleCreatorBinding(Mode expectedMode, Class<?>... configClasses) {
 		this.contextRunner.withUserConfiguration(configClasses).run((context) -> {
 			DeserializationConfig deserializationConfig = context.getBean(ObjectMapper.class)
@@ -654,6 +663,26 @@ class JacksonAutoConfigurationTests {
 
 	@AutoConfigurationPackage
 	static class MixinConfiguration {
+
+	}
+
+	@JsonComponent
+	static class CircularDependencySerializer extends JsonSerializer<String> {
+
+		CircularDependencySerializer(ObjectMapper objectMapper) {
+
+		}
+
+		@Override
+		public void serialize(String value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+
+		}
+
+	}
+
+	@Import(CircularDependencySerializer.class)
+	@Configuration(proxyBeanMethods = false)
+	static class CircularDependencySerializerConfiguration {
 
 	}
 

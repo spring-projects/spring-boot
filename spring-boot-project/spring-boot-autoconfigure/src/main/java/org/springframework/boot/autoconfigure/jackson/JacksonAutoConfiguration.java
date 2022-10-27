@@ -38,8 +38,7 @@ import com.fasterxml.jackson.databind.cfg.ConstructorDetector;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -171,21 +170,21 @@ public class JacksonAutoConfiguration {
 
 		@Bean
 		StandardJackson2ObjectMapperBuilderCustomizer standardJacksonObjectMapperBuilderCustomizer(
-				ApplicationContext applicationContext, JacksonProperties jacksonProperties) {
-			return new StandardJackson2ObjectMapperBuilderCustomizer(applicationContext, jacksonProperties);
+				JacksonProperties jacksonProperties, ObjectProvider<Module> modules) {
+			return new StandardJackson2ObjectMapperBuilderCustomizer(jacksonProperties, modules.stream().toList());
 		}
 
 		static final class StandardJackson2ObjectMapperBuilderCustomizer
 				implements Jackson2ObjectMapperBuilderCustomizer, Ordered {
 
-			private final ApplicationContext applicationContext;
-
 			private final JacksonProperties jacksonProperties;
 
-			StandardJackson2ObjectMapperBuilderCustomizer(ApplicationContext applicationContext,
-					JacksonProperties jacksonProperties) {
-				this.applicationContext = applicationContext;
+			private final Collection<Module> modules;
+
+			StandardJackson2ObjectMapperBuilderCustomizer(JacksonProperties jacksonProperties,
+					Collection<Module> modules) {
 				this.jacksonProperties = jacksonProperties;
+				this.modules = modules;
 			}
 
 			@Override
@@ -305,8 +304,7 @@ public class JacksonAutoConfiguration {
 			}
 
 			private void configureModules(Jackson2ObjectMapperBuilder builder) {
-				Collection<Module> moduleBeans = getBeans(this.applicationContext, Module.class);
-				builder.modulesToInstall(moduleBeans.toArray(new Module[0]));
+				builder.modulesToInstall(this.modules.toArray(new Module[0]));
 			}
 
 			private void configureLocale(Jackson2ObjectMapperBuilder builder) {
@@ -338,10 +336,6 @@ public class JacksonAutoConfiguration {
 						}
 					});
 				}
-			}
-
-			private static <T> Collection<T> getBeans(ListableBeanFactory beanFactory, Class<T> type) {
-				return BeanFactoryUtils.beansOfTypeIncludingAncestors(beanFactory, type).values();
 			}
 
 		}
