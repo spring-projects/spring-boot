@@ -119,9 +119,18 @@ public class FlywayAutoConfiguration {
 			return new ResourceProviderCustomizer();
 		}
 
-		@Bean
+		@Deprecated(since = "3.0.0", forRemoval = true)
 		public Flyway flyway(FlywayProperties properties, ResourceLoader resourceLoader,
-				ObjectProvider<DataSource> dataSource, @FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
+				ObjectProvider<DataSource> dataSource, ObjectProvider<DataSource> flywayDataSource,
+				ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers,
+				ObjectProvider<JavaMigration> javaMigrations, ObjectProvider<Callback> callbacks) {
+			return flyway(properties, resourceLoader, dataSource, flywayDataSource, fluentConfigurationCustomizers,
+					javaMigrations, callbacks, new ResourceProviderCustomizer());
+		}
+
+		@Bean
+		Flyway flyway(FlywayProperties properties, ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
+				@FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
 				ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers,
 				ObjectProvider<JavaMigration> javaMigrations, ObjectProvider<Callback> callbacks,
 				ResourceProviderCustomizer resourceProviderCustomizer) {
