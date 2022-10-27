@@ -98,9 +98,7 @@ class BeanDefinitionLoader {
 	void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
 		this.annotatedReader.setBeanNameGenerator(beanNameGenerator);
 		this.scanner.setBeanNameGenerator(beanNameGenerator);
-		if (this.xmlReader != null) {
-			this.xmlReader.setBeanNameGenerator(beanNameGenerator);
-		}
+		this.xmlReader.setBeanNameGenerator(beanNameGenerator);
 	}
 
 	/**
@@ -110,9 +108,7 @@ class BeanDefinitionLoader {
 	void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 		this.scanner.setResourceLoader(resourceLoader);
-		if (this.xmlReader != null) {
-			this.xmlReader.setResourceLoader(resourceLoader);
-		}
+		this.xmlReader.setResourceLoader(resourceLoader);
 	}
 
 	/**
@@ -122,9 +118,7 @@ class BeanDefinitionLoader {
 	void setEnvironment(ConfigurableEnvironment environment) {
 		this.annotatedReader.setEnvironment(environment);
 		this.scanner.setEnvironment(environment);
-		if (this.xmlReader != null) {
-			this.xmlReader.setEnvironment(environment);
-		}
+		this.xmlReader.setEnvironment(environment);
 	}
 
 	/**
@@ -176,9 +170,6 @@ class BeanDefinitionLoader {
 			this.groovyReader.loadBeanDefinitions(source);
 		}
 		else {
-			if (this.xmlReader == null) {
-				throw new BeanDefinitionStoreException("Cannot load XML bean definitions when XML support is disabled");
-			}
 			this.xmlReader.loadBeanDefinitions(source);
 		}
 	}
