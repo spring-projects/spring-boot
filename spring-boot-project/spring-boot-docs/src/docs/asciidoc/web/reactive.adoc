@@ -207,9 +207,6 @@ When it does so, the orders shown in the following table will be used:
 |===
 | Web Filter | Order
 
-| `MetricsWebFilter`
-| `Ordered.HIGHEST_PRECEDENCE + 1`
-
 | `WebFilterChainProxy` (Spring Security)
 | `-100`
 
