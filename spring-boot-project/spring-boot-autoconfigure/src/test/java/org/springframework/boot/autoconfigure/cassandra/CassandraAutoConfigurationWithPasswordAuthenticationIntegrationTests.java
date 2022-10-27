@@ -84,11 +84,11 @@ class CassandraAutoConfigurationWithPasswordAuthenticationIntegrationTests {
 
 		@Override
 		protected void containerIsCreated(String containerId) {
-			String config = this.copyFileFromContainer("/etc/cassandra/cassandra.yaml",
+			String config = copyFileFromContainer("/etc/cassandra/cassandra.yaml",
 					(stream) -> StreamUtils.copyToString(stream, StandardCharsets.UTF_8));
 			String updatedConfig = config.replace("authenticator: AllowAllAuthenticator",
 					"authenticator: PasswordAuthenticator");
-			this.copyFileToContainer(Transferable.of(updatedConfig.getBytes(StandardCharsets.UTF_8)),
+			copyFileToContainer(Transferable.of(updatedConfig.getBytes(StandardCharsets.UTF_8)),
 					"/etc/cassandra/cassandra.yaml");
 		}
 

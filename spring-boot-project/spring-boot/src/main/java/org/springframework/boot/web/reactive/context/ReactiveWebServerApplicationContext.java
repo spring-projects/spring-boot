@@ -88,7 +88,7 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 	private void createWebServer() {
 		WebServerManager serverManager = this.serverManager;
 		if (serverManager == null) {
-			StartupStep createWebServer = this.getApplicationStartup().start("spring.boot.webserver.create");
+			StartupStep createWebServer = getApplicationStartup().start("spring.boot.webserver.create");
 			String webServerFactoryBeanName = getWebServerFactoryBeanName();
 			ReactiveWebServerFactory webServerFactory = getWebServerFactory(webServerFactoryBeanName);
 			createWebServer.tag("factory", webServerFactory.getClass().toString());

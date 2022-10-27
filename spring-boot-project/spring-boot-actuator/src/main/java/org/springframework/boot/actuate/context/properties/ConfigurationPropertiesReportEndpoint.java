@@ -467,7 +467,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	/**
-	 * {@link SimpleModule} for configure the serializer.
+	 * {@link SimpleModule} for configuring the serializer.
 	 */
 	private static final class ConfigurationPropertiesModule extends SimpleModule {
 

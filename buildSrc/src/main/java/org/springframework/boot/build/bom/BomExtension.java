@@ -108,7 +108,7 @@ public class BomExtension {
 	}
 
 	public void library(String name, Action<LibraryHandler> action) {
-		this.library(name, null, action);
+		library(name, null, action);
 	}
 
 	public void library(String name, String version, Action<LibraryHandler> action) {
