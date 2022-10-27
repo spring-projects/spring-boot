@@ -1168,6 +1168,15 @@ Long task timers require a separate metric name and can be stacked with a short 
 ==== Redis Metrics
 Auto-configuration registers a `MicrometerCommandLatencyRecorder` for the auto-configured `LettuceConnectionFactory`.
 For more detail, see the {lettuce-docs}#command.latency.metrics.micrometer[Micrometer Metrics section] of the Lettuce documentation.
+By default, the `MicrometerCommandLatencyRecorder` records no histogram data, but you can enable this via:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  metrics:
+	    lettuce:
+	      histogram: true
+----
 
 
 

@@ -23,11 +23,13 @@ import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.data.redis.ClientResourcesBuilderCustomizer;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -41,11 +43,19 @@ import org.springframework.context.annotation.Bean;
 		after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass({ RedisClient.class, MicrometerCommandLatencyRecorder.class })
 @ConditionalOnBean(MeterRegistry.class)
+@EnableConfigurationProperties(MetricsProperties.class)
 public class LettuceMetricsAutoConfiguration {
+
+	private final MetricsProperties properties;
+
+	public LettuceMetricsAutoConfiguration(MetricsProperties properties) {
+		this.properties = properties;
+	}
 
 	@Bean
 	public ClientResourcesBuilderCustomizer lettuceMetrics(MeterRegistry meterRegistry) {
-		MicrometerOptions options = MicrometerOptions.builder().histogram(true).build();
+		MicrometerOptions options = MicrometerOptions.builder().histogram(this.properties.getLettuce().isHistogram())
+				.build();
 		return (client) -> client.commandLatencyRecorder(new MicrometerCommandLatencyRecorder(meterRegistry, options));
 	}
 

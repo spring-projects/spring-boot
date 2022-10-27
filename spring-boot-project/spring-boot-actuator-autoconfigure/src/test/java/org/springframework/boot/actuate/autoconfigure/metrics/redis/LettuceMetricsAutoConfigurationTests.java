@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.redis;
 
+import io.lettuce.core.metrics.CommandLatencyRecorder;
 import io.lettuce.core.metrics.MicrometerCommandLatencyRecorder;
 import io.lettuce.core.resource.ClientResources;
 import org.junit.jupiter.api.Test;
@@ -56,6 +57,30 @@ class LettuceMetricsAutoConfigurationTests {
 			assertThat(clientResources.commandLatencyRecorder())
 					.isNotInstanceOf(MicrometerCommandLatencyRecorder.class);
 		});
+	}
+
+	@Test
+	void histogramDisabledByDefault() {
+		this.contextRunner.with(MetricsRun.simple())
+				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class)).run((context) -> {
+					ClientResources clientResources = context.getBean(LettuceConnectionFactory.class)
+							.getClientResources();
+					CommandLatencyRecorder recorder = clientResources.commandLatencyRecorder();
+					assertThat(recorder).isInstanceOf(MicrometerCommandLatencyRecorder.class);
+					assertThat(recorder).hasFieldOrPropertyWithValue("options.histogram", false);
+				});
+	}
+
+	@Test
+	void histogramEnabled() {
+		this.contextRunner.with(MetricsRun.simple()).withPropertyValues("management.metrics.lettuce.histogram=true")
+				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class)).run((context) -> {
+					ClientResources clientResources = context.getBean(LettuceConnectionFactory.class)
+							.getClientResources();
+					CommandLatencyRecorder recorder = clientResources.commandLatencyRecorder();
+					assertThat(recorder).isInstanceOf(MicrometerCommandLatencyRecorder.class);
+					assertThat(recorder).hasFieldOrPropertyWithValue("options.histogram", true);
+				});
 	}
 
 }

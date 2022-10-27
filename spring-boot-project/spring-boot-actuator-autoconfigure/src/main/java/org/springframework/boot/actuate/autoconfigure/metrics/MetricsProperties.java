@@ -67,6 +67,8 @@ public class MetricsProperties {
 
 	private final Distribution distribution = new Distribution();
 
+	private final Lettuce lettuce = new Lettuce();
+
 	public boolean isUseGlobalRegistry() {
 		return this.useGlobalRegistry;
 	}
@@ -97,6 +99,10 @@ public class MetricsProperties {
 
 	public Distribution getDistribution() {
 		return this.distribution;
+	}
+
+	public Lettuce getLettuce() {
+		return this.lettuce;
 	}
 
 	public static class Web {
@@ -351,6 +357,23 @@ public class MetricsProperties {
 
 		public Map<String, Integer> getBufferLength() {
 			return this.bufferLength;
+		}
+
+	}
+
+	public static class Lettuce {
+
+		/**
+		 * Whether histogram buckets should be recorded.
+		 */
+		private boolean histogram;
+
+		public boolean isHistogram() {
+			return this.histogram;
+		}
+
+		public void setHistogram(boolean histogram) {
+			this.histogram = histogram;
 		}
 
 	}
