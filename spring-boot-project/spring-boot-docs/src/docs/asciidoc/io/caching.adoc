@@ -135,10 +135,6 @@ To be compatible with Spring Boot's Jakarta EE 9 baseline, Infinispan's `-jakart
 For every module with a `-jakarta` variant, the variant must be used in place of the standard module.
 For example, `infinispan-core-jakarta` and `infinispan-commons-jakarta` must be used in place of `infinispan-core` and `infinispan-commons` respectively.
 
-NOTE: The support of Infinispan in Spring Boot is restricted to the embedded mode and is quite basic.
-If you want more options, you should use the official Infinispan Spring Boot starter instead.
-See https://github.com/infinispan/infinispan-spring-boot[Infinispan's documentation] for more details.
-
 
 
 [[io.caching.provider.couchbase]]
