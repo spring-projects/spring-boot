@@ -56,13 +56,13 @@ class HttpExchangesFilterTests {
 	private final HttpExchangesFilter filter = new HttpExchangesFilter(this.repository, EnumSet.allOf(Include.class));
 
 	@Test
-	void filterTracesExchange() throws ServletException, IOException {
+	void filterRecordsExchange() throws ServletException, IOException {
 		this.filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterChain());
 		assertThat(this.repository.findAll()).hasSize(1);
 	}
 
 	@Test
-	void filterCapturesSessionId() throws ServletException, IOException {
+	void filterRecordsSessionId() throws ServletException, IOException {
 		this.filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(),
 				new MockFilterChain(new HttpServlet() {
 
@@ -80,17 +80,17 @@ class HttpExchangesFilterTests {
 	}
 
 	@Test
-	void filterCapturesPrincipal() throws ServletException, IOException {
+	void filterRecordsPrincipal() throws ServletException, IOException {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		Principal principal = mock(Principal.class);
 		given(principal.getName()).willReturn("alice");
 		request.setUserPrincipal(principal);
 		this.filter.doFilter(request, new MockHttpServletResponse(), new MockFilterChain());
 		assertThat(this.repository.findAll()).hasSize(1);
-		org.springframework.boot.actuate.web.exchanges.HttpExchange.Principal tracedPrincipal = this.repository
+		org.springframework.boot.actuate.web.exchanges.HttpExchange.Principal recordedPrincipal = this.repository
 				.findAll().get(0).getPrincipal();
-		assertThat(tracedPrincipal).isNotNull();
-		assertThat(tracedPrincipal.getName()).isEqualTo("alice");
+		assertThat(recordedPrincipal).isNotNull();
+		assertThat(recordedPrincipal.getName()).isEqualTo("alice");
 	}
 
 	@Test

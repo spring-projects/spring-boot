@@ -61,8 +61,8 @@ class ServletSourceHttpRequestTests {
 	}
 
 	private void validate(String expectedUri) {
-		ServletSourceHttpRequest trace = new ServletSourceHttpRequest(this.request);
-		assertThat(trace.getUri().toString()).isEqualTo(expectedUri);
+		ServletSourceHttpRequest sourceRequest = new ServletSourceHttpRequest(this.request);
+		assertThat(sourceRequest.getUri().toString()).isEqualTo(expectedUri);
 	}
 
 }

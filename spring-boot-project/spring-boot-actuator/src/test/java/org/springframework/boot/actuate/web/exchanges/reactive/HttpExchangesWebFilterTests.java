@@ -49,14 +49,14 @@ class HttpExchangesWebFilterTests {
 			EnumSet.allOf(Include.class));
 
 	@Test
-	void filterTracesExchange() {
+	void filterRecordsExchange() {
 		executeFilter(MockServerWebExchange.from(MockServerHttpRequest.get("https://api.example.com")),
 				(exchange) -> Mono.empty());
 		assertThat(this.repository.findAll()).hasSize(1);
 	}
 
 	@Test
-	void filterCapturesSessionIdWhenSessionIsUsed() {
+	void filterRecordsSessionIdWhenSessionIsUsed() {
 		executeFilter(MockServerWebExchange.from(MockServerHttpRequest.get("https://api.example.com")),
 				(exchange) -> exchange.getSession().doOnNext((session) -> session.getAttributes().put("a", "alpha"))
 						.then());
@@ -67,7 +67,7 @@ class HttpExchangesWebFilterTests {
 	}
 
 	@Test
-	void filterDoesNotCaptureIdOfUnusedSession() {
+	void filterDoesNotRecordIdOfUnusedSession() {
 		executeFilter(MockServerWebExchange.from(MockServerHttpRequest.get("https://api.example.com")),
 				(exchange) -> exchange.getSession().then());
 		assertThat(this.repository.findAll()).hasSize(1);
@@ -76,7 +76,7 @@ class HttpExchangesWebFilterTests {
 	}
 
 	@Test
-	void filterCapturesPrincipal() {
+	void filterRecordsPrincipal() {
 		Principal principal = mock(Principal.class);
 		given(principal.getName()).willReturn("alice");
 		executeFilter(new ServerWebExchangeDecorator(
@@ -90,10 +90,10 @@ class HttpExchangesWebFilterTests {
 
 		}, (exchange) -> exchange.getSession().doOnNext((session) -> session.getAttributes().put("a", "alpha")).then());
 		assertThat(this.repository.findAll()).hasSize(1);
-		org.springframework.boot.actuate.web.exchanges.HttpExchange.Principal tracedPrincipal = this.repository
+		org.springframework.boot.actuate.web.exchanges.HttpExchange.Principal recordedPrincipal = this.repository
 				.findAll().get(0).getPrincipal();
-		assertThat(tracedPrincipal).isNotNull();
-		assertThat(tracedPrincipal.getName()).isEqualTo("alice");
+		assertThat(recordedPrincipal).isNotNull();
+		assertThat(recordedPrincipal.getName()).isEqualTo("alice");
 	}
 
 	private void executeFilter(ServerWebExchange exchange, WebFilterChain chain) {

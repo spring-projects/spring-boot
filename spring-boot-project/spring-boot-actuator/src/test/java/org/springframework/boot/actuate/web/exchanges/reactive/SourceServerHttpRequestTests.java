@@ -54,16 +54,16 @@ class SourceServerHttpRequestTests {
 
 	@Test
 	void getMethod() {
-		SourceServerHttpRequest traceableRequest = new SourceServerHttpRequest(this.request);
-		assertThat(traceableRequest.getMethod()).isEqualTo("GET");
+		SourceServerHttpRequest sourceRequest = new SourceServerHttpRequest(this.request);
+		assertThat(sourceRequest.getMethod()).isEqualTo("GET");
 	}
 
 	@Test
 	void getUri() {
 		URI uri = URI.create("http://localhost:8080/");
 		given(this.request.getURI()).willReturn(uri);
-		SourceServerHttpRequest traceableRequest = new SourceServerHttpRequest(this.request);
-		assertThat(traceableRequest.getUri()).isSameAs(uri);
+		SourceServerHttpRequest sourceRequest = new SourceServerHttpRequest(this.request);
+		assertThat(sourceRequest.getUri()).isSameAs(uri);
 	}
 
 	@Test
@@ -71,24 +71,24 @@ class SourceServerHttpRequestTests {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.add("name", "value");
 		given(this.request.getHeaders()).willReturn(httpHeaders);
-		SourceServerHttpRequest traceableRequest = new SourceServerHttpRequest(this.request);
-		assertThat(traceableRequest.getHeaders()).containsOnly(entry("name", Collections.singletonList("value")));
+		SourceServerHttpRequest sourceRequest = new SourceServerHttpRequest(this.request);
+		assertThat(sourceRequest.getHeaders()).containsOnly(entry("name", Collections.singletonList("value")));
 	}
 
 	@Test
 	void getUnresolvedRemoteAddress() {
 		InetSocketAddress socketAddress = InetSocketAddress.createUnresolved("unresolved.example.com", 8080);
 		given(this.request.getRemoteAddress()).willReturn(socketAddress);
-		SourceServerHttpRequest traceableRequest = new SourceServerHttpRequest(this.request);
-		assertThat(traceableRequest.getRemoteAddress()).isNull();
+		SourceServerHttpRequest sourceRequest = new SourceServerHttpRequest(this.request);
+		assertThat(sourceRequest.getRemoteAddress()).isNull();
 	}
 
 	@Test
 	void getRemoteAddress() {
 		InetSocketAddress socketAddress = new InetSocketAddress(0);
 		given(this.request.getRemoteAddress()).willReturn(socketAddress);
-		SourceServerHttpRequest traceableRequest = new SourceServerHttpRequest(this.request);
-		assertThat(traceableRequest.getRemoteAddress()).isEqualTo(socketAddress.getAddress().toString());
+		SourceServerHttpRequest sourceRequest = new SourceServerHttpRequest(this.request);
+		assertThat(sourceRequest.getRemoteAddress()).isEqualTo(socketAddress.getAddress().toString());
 	}
 
 }

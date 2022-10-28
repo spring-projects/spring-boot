@@ -52,7 +52,7 @@ class HttpExchangesWebFilterIntegrationTests {
 			.withUserConfiguration(Config.class);
 
 	@Test
-	void traceForNotFoundResponseHas404Status() {
+	void exchangeForNotFoundResponseHas404Status() {
 		this.contextRunner.run((context) -> {
 			WebTestClient.bindToApplicationContext(context).build().get().uri("/").exchange().expectStatus()
 					.isNotFound();
@@ -63,7 +63,7 @@ class HttpExchangesWebFilterIntegrationTests {
 	}
 
 	@Test
-	void traceForMonoErrorWithRuntimeExceptionHas500Status() {
+	void exchangeForMonoErrorWithRuntimeExceptionHas500Status() {
 		this.contextRunner.run((context) -> {
 			WebTestClient.bindToApplicationContext(context).build().get().uri("/mono-error").exchange().expectStatus()
 					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -74,7 +74,7 @@ class HttpExchangesWebFilterIntegrationTests {
 	}
 
 	@Test
-	void traceForThrownRuntimeExceptionHas500Status() {
+	void exchangeForThrownRuntimeExceptionHas500Status() {
 		this.contextRunner.run((context) -> {
 			WebTestClient.bindToApplicationContext(context).build().get().uri("/thrown").exchange().expectStatus()
 					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);

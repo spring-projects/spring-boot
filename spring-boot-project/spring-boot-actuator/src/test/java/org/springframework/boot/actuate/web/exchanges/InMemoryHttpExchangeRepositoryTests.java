@@ -46,10 +46,10 @@ class InMemoryHttpExchangeRepositoryTests {
 		this.repository.add(createHttpExchange("GET"));
 		this.repository.add(createHttpExchange("POST"));
 		this.repository.add(createHttpExchange("DELETE"));
-		List<HttpExchange> traces = this.repository.findAll();
-		assertThat(traces).hasSize(2);
-		assertThat(traces.get(0).getRequest().getMethod()).isEqualTo("DELETE");
-		assertThat(traces.get(1).getRequest().getMethod()).isEqualTo("POST");
+		List<HttpExchange> exchanges = this.repository.findAll();
+		assertThat(exchanges).hasSize(2);
+		assertThat(exchanges.get(0).getRequest().getMethod()).isEqualTo("DELETE");
+		assertThat(exchanges.get(1).getRequest().getMethod()).isEqualTo("POST");
 	}
 
 	@Test
@@ -59,10 +59,10 @@ class InMemoryHttpExchangeRepositoryTests {
 		this.repository.add(createHttpExchange("GET"));
 		this.repository.add(createHttpExchange("POST"));
 		this.repository.add(createHttpExchange("DELETE"));
-		List<HttpExchange> traces = this.repository.findAll();
-		assertThat(traces).hasSize(2);
-		assertThat(traces.get(0).getRequest().getMethod()).isEqualTo("POST");
-		assertThat(traces.get(1).getRequest().getMethod()).isEqualTo("DELETE");
+		List<HttpExchange> exchanges = this.repository.findAll();
+		assertThat(exchanges).hasSize(2);
+		assertThat(exchanges.get(0).getRequest().getMethod()).isEqualTo("POST");
+		assertThat(exchanges.get(1).getRequest().getMethod()).isEqualTo("DELETE");
 	}
 
 	private HttpExchange createHttpExchange(String method) {

@@ -104,7 +104,7 @@ class HttpExchangesAutoConfigurationTests {
 		}
 
 		@Override
-		public void add(HttpExchange trace) {
+		public void add(HttpExchange exchange) {
 
 		}
 

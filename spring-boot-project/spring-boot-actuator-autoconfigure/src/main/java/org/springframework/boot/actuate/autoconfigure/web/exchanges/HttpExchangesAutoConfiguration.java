@@ -51,9 +51,8 @@ public class HttpExchangesAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		HttpExchangesFilter httpExchangesFilter(HttpExchangeRepository repository,
-				HttpExchangesProperties traceProperties) {
-			return new HttpExchangesFilter(repository, traceProperties.getInclude());
+		HttpExchangesFilter httpExchangesFilter(HttpExchangeRepository repository, HttpExchangesProperties properties) {
+			return new HttpExchangesFilter(repository, properties.getInclude());
 		}
 
 	}
@@ -65,8 +64,8 @@ public class HttpExchangesAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		HttpExchangesWebFilter httpExchangesWebFilter(HttpExchangeRepository repository,
-				HttpExchangesProperties traceProperties) {
-			return new HttpExchangesWebFilter(repository, traceProperties.getInclude());
+				HttpExchangesProperties properties) {
+			return new HttpExchangesWebFilter(repository, properties.getInclude());
 		}
 
 	}

@@ -23,7 +23,7 @@ import org.springframework.boot.actuate.web.exchanges.Include;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties for HTTP tracing.
+ * Configuration properties for recording HTTP exchanges.
  *
  * @author Wallace Wadge
  * @author Phillip Webb
@@ -36,8 +36,9 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class HttpExchangesProperties {
 
 	/**
-	 * Items to be included in the trace. Defaults to request headers (excluding
-	 * Authorization and Cookie), response headers (excluding Set-Cookie), and time taken.
+	 * Items to be included in the exchange recording. Defaults to request headers
+	 * (excluding Authorization and Cookie), response headers (excluding Set-Cookie), and
+	 * time taken.
 	 */
 	private Set<Include> include = new HashSet<>(Include.defaultIncludes());
 

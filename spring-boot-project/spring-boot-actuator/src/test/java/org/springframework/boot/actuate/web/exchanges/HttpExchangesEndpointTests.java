@@ -44,8 +44,8 @@ class HttpExchangesEndpointTests {
 		repository.add(HttpExchange.start(createRequest("GET")).finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID));
 		List<HttpExchange> httpExchanges = new HttpExchangesEndpoint(repository).httpExchanges().getExchanges();
 		assertThat(httpExchanges).hasSize(1);
-		HttpExchange trace = httpExchanges.get(0);
-		assertThat(trace.getRequest().getMethod()).isEqualTo("GET");
+		HttpExchange exchange = httpExchanges.get(0);
+		assertThat(exchange.getRequest().getMethod()).isEqualTo("GET");
 	}
 
 	private SourceHttpRequest createRequest(String method) {

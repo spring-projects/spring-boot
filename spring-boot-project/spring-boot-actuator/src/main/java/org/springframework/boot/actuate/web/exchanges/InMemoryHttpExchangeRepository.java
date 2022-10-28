@@ -37,7 +37,7 @@ public class InMemoryHttpExchangeRepository implements HttpExchangeRepository {
 	private final List<HttpExchange> httpExchanges = new LinkedList<>();
 
 	/**
-	 * Flag to say that the repository lists traces in reverse order.
+	 * Flag to say that the repository lists exchanges in reverse order.
 	 * @param reverse flag value (default true)
 	 */
 	public void setReverse(boolean reverse) {
@@ -64,16 +64,16 @@ public class InMemoryHttpExchangeRepository implements HttpExchangeRepository {
 	}
 
 	@Override
-	public void add(HttpExchange trace) {
+	public void add(HttpExchange exchange) {
 		synchronized (this.httpExchanges) {
 			while (this.httpExchanges.size() >= this.capacity) {
 				this.httpExchanges.remove(this.reverse ? this.capacity - 1 : 0);
 			}
 			if (this.reverse) {
-				this.httpExchanges.add(0, trace);
+				this.httpExchanges.add(0, exchange);
 			}
 			else {
-				this.httpExchanges.add(trace);
+				this.httpExchanges.add(exchange);
 			}
 		}
 	}

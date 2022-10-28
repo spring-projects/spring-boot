@@ -36,7 +36,7 @@ public class HttpExchangesEndpoint {
 
 	/**
 	 * Create a new {@link HttpExchangesEndpoint} instance.
-	 * @param repository the trace repository
+	 * @param repository the exchange repository
 	 */
 	public HttpExchangesEndpoint(HttpExchangeRepository repository) {
 		Assert.notNull(repository, "Repository must not be null");
