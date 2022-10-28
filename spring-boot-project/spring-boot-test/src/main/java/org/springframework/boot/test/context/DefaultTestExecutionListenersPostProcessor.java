@@ -18,19 +18,19 @@ package org.springframework.boot.test.context;
 
 import java.util.List;
 
+import org.springframework.test.context.ApplicationContextFailureProcessor;
 import org.springframework.test.context.TestExecutionListener;
 
 /**
- * Callback interface trigger from {@link SpringBootTestContextBootstrapper} that can be
- * used to post-process the list of default {@link TestExecutionListener
- * TestExecutionListeners} to be used by a test. Can be used to add or remove existing
- * listeners.
+ * Since 3.0.0 this class is not used internally.
  *
  * @author Phillip Webb
  * @since 1.4.1
- * @see SpringBootTest
+ * @deprecated since 3.0.0 removal in 3.2.0 in favor of
+ * {@link ApplicationContextFailureProcessor}
  */
 @FunctionalInterface
+@Deprecated(since = "3.0.0", forRemoval = true)
 public interface DefaultTestExecutionListenersPostProcessor {
 
 	/**
