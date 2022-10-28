@@ -1272,7 +1272,8 @@ For more details on the concepts behind `percentiles-histogram`, `percentiles`, 
 [[actuator.metrics.endpoint]]
 === Metrics Endpoint
 Spring Boot provides a `metrics` endpoint that you can use diagnostically to examine the metrics collected by an application.
-The endpoint is not available by default and must be exposed. See <<actuator#actuator.endpoints.exposing,exposing endpoints>> for more details.
+The endpoint is not available by default and must be exposed.
+See <<actuator#actuator.endpoints.exposing,exposing endpoints>> for more details.
 
 Navigating to `/actuator/metrics` displays a list of available meter names.
 You can drill down to view information about a particular meter by providing its name as a selector -- for example, `/actuator/metrics/jvm.memory.max`.
@@ -1291,3 +1292,7 @@ The reported measurements are the _sum_ of the statistics of all meters that mat
 In the preceding example, the returned `Value` statistic is the sum of the maximum memory footprints of the "`Code Cache`", "`Compressed Class Space`", and "`Metaspace`" areas of the heap.
 If you wanted to see only the maximum size for the "`Metaspace`", you could add an additional `tag=id:Metaspace` -- that is, `/actuator/metrics/jvm.memory.max?tag=area:nonheap&tag=id:Metaspace`.
 ====
+
+[[actuator.metrics.micrometer-observation]]
+=== Integration with Micrometer Observation
+A `DefaultMeterObservationHandler` is automatically registered on the `ObservationRegistry`, which creates metrics for every completed observation.

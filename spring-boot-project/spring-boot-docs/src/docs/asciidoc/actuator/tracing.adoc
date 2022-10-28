@@ -1,7 +1,6 @@
 [[actuator.micrometer-tracing]]
 == Tracing
 Spring Boot Actuator provides dependency management and auto-configuration for https://micrometer.io/docs/tracing[Micrometer Tracing], a facade for popular tracer libraries.
-Micrometer Tracing hooks into Micrometer's `ObservationHandler`, which means a https://micrometer.io/docs/tracing#_glossary[span] is reported for every completed observation.
 
 TIP: To learn more about Micrometer Tracing capabilities, see its https://micrometer.io/docs/tracing[reference documentation].
 
@@ -99,15 +98,16 @@ All tracer implementations need the `org.springframework.boot:spring-boot-starte
 
 NOTE: If your project doesn't use Spring MVC or Spring WebFlux, the `io.zipkin.reporter2:zipkin-sender-urlconnection` dependency is needed, too.
 
-
-
 [[actuator.micrometer-tracing.tracer-implementations.brave-wavefront]]
 ==== OpenZipkin Brave With Wavefront
 
 * `io.micrometer:micrometer-tracing-bridge-brave` - which is needed to bridge the Micrometer Observation API to Brave.
 * `io.micrometer:micrometer-tracing-reporter-wavefront` - which is needed to report traces to Wavefront.
 
+[[actuator.micrometer-tracing.micrometer-observation]]
+=== Integration with Micrometer Observation
 
+A `TracingAwareMeterObservationHandler` is automatically registered on the `ObservationRegistry`, which creates spans for every completed observation.
 
 [[actuator.micrometer-tracing.creating-spans]]
 === Creating Custom Spans
@@ -117,8 +117,5 @@ For this, inject `ObservationRegistry` into your component:
 include::code:CustomObservation[]
 
 This will create an observation named "some-operation" with the tag "some-tag=some-value".
-Completing an observation will create a metric and a span.
-
-NOTE: Low cardinality tags will be added to metrics and traces, while high cardinality tags will only be added to traces.
 
 TIP: If you want to create a span without creating a metric, you need to use the https://micrometer.io/docs/tracing#_using_micrometer_tracing_directly[lower-level `Tracer` API] from Micrometer.

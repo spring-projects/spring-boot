@@ -1,0 +1,23 @@
+[[actuator.observability]]
+== Observability
+
+Observability is the ability to observe the internal state of a running system from the outside.
+It consists of the three pillars logging, metrics and traces.
+
+For metrics and traces, Spring Boot uses https://micrometer.io/docs/observation[Micrometer Observation].
+To create your own observations (which will lead to metrics and traces), you can inject an `ObservationRegistry`.
+
+include::code:MyCustomObservation[]
+
+NOTE: Low cardinality tags will be added to metrics and traces, while high cardinality tags will only be added to traces.
+
+Beans of type `ObservationPredicate`, `GlobalObservationConvention` and `ObservationHandler` will be automatically registered on the `ObservationRegistry`.
+You can additionally register any number of `ObservationRegistryCustomizer` beans to further configure the registry.
+
+For more details please see the https://micrometer.io/docs/observation[Micrometer Observation documentation].
+
+TIP: Observability for JDBC can be configured using the https://github.com/jdbc-observations/datasource-micrometer[Datasource Micrometer project].
+It provides a Spring Boot starter which automatically creates observations when JDBC operations are invoked.
+Read more about it https://jdbc-observations.github.io/datasource-micrometer/docs/current/docs/html/[in the reference documentation].
+
+The next sections will provide more details about logging, metrics and traces.

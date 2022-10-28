@@ -9,8 +9,6 @@ Spring Boot includes a number of additional features to help you monitor and man
 You can choose to manage and monitor your application by using HTTP endpoints or with JMX.
 Auditing, health, and metrics gathering can also be automatically applied to your application.
 
-
-
 include::actuator/enabling.adoc[]
 
 include::actuator/endpoints.adoc[]
@@ -18,6 +16,8 @@ include::actuator/endpoints.adoc[]
 include::actuator/monitoring.adoc[]
 
 include::actuator/jmx.adoc[]
+
+include::actuator/observability.adoc[]
 
 include::actuator/loggers.adoc[]
 
