@@ -66,9 +66,9 @@ class InMemoryHttpExchangeRepositoryTests {
 	}
 
 	private HttpExchange createHttpExchange(String method) {
-		SourceHttpRequest request = mock(SourceHttpRequest.class);
+		RecordableHttpRequest request = mock(RecordableHttpRequest.class);
 		given(request.getMethod()).willReturn(method);
-		SourceHttpResponse response = mock(SourceHttpResponse.class);
+		RecordableHttpResponse response = mock(RecordableHttpResponse.class);
 		return HttpExchange.start(request).finish(response, NO_PRINCIPAL, NO_SESSION_ID);
 	}
 

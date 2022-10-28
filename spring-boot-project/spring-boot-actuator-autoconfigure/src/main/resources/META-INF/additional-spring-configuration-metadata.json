@@ -240,18 +240,18 @@
       "defaultValue": true
     },
     {
-      "name": "management.httpexchanges.include",
+      "name": "management.httpexchanges.recording.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable HTTP request-response exchange recording.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.httpexchanges.recording.include",
       "defaultValue": [
         "request-headers",
         "response-headers",
         "errors"
       ]
-    },
-    {
-      "name": "management.httpexchanges.record",
-      "type": "java.lang.Boolean",
-      "description": "Whether to record HTTP request-response exchanges.",
-      "defaultValue": true
     },
     {
       "name": "management.influx.metrics.export.consistency",
@@ -2141,21 +2141,21 @@
     {
       "name": "management.trace.http.enabled",
       "deprecation": {
-        "replacement": "management.httpexchanges.record",
+        "replacement": "management.httpexchanges.recording.enabled",
         "level": "error"
       }
     },
     {
       "name": "management.trace.http.include",
       "deprecation": {
-        "replacement": "management.httpexchanges.include",
+        "replacement": "management.httpexchanges.recording.include",
         "level": "error"
       }
     },
     {
       "name": "management.trace.include",
       "deprecation": {
-        "replacement": "management.httpexchanges.include",
+        "replacement": "management.httpexchanges.recording.include",
         "level": "error"
       }
     },

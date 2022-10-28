@@ -23,16 +23,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.boot.actuate.web.exchanges.SourceHttpRequest;
+import org.springframework.boot.actuate.web.exchanges.RecordableHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.web.server.ServerWebExchange;
 
 /**
- * A {@link SourceHttpRequest} backed by a {@link ServerWebExchange}.
+ * A {@link RecordableHttpRequest} backed by a {@link ServerHttpRequest}.
  *
  * @author Andy Wilkinson
  */
-class SourceServerHttpRequest implements SourceHttpRequest {
+class RecordableServerHttpRequest implements RecordableHttpRequest {
 
 	private final String method;
 
@@ -42,7 +41,7 @@ class SourceServerHttpRequest implements SourceHttpRequest {
 
 	private final String remoteAddress;
 
-	SourceServerHttpRequest(ServerHttpRequest request) {
+	RecordableServerHttpRequest(ServerHttpRequest request) {
 		this.method = request.getMethod().name();
 		this.headers = request.getHeaders();
 		this.uri = request.getURI();

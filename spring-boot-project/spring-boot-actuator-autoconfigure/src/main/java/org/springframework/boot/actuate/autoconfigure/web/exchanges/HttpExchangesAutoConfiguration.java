@@ -40,7 +40,7 @@ import org.springframework.context.annotation.Configuration;
  */
 @AutoConfiguration
 @ConditionalOnWebApplication
-@ConditionalOnProperty(prefix = "management.httpexchanges", name = "record", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "management.httpexchanges.recording", name = "enabled", matchIfMissing = true)
 @ConditionalOnBean(HttpExchangeRepository.class)
 @EnableConfigurationProperties(HttpExchangesProperties.class)
 public class HttpExchangesAutoConfiguration {
@@ -52,7 +52,7 @@ public class HttpExchangesAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		HttpExchangesFilter httpExchangesFilter(HttpExchangeRepository repository, HttpExchangesProperties properties) {
-			return new HttpExchangesFilter(repository, properties.getInclude());
+			return new HttpExchangesFilter(repository, properties.getRecording().getInclude());
 		}
 
 	}
@@ -65,7 +65,7 @@ public class HttpExchangesAutoConfiguration {
 		@ConditionalOnMissingBean
 		HttpExchangesWebFilter httpExchangesWebFilter(HttpExchangeRepository repository,
 				HttpExchangesProperties properties) {
-			return new HttpExchangesWebFilter(repository, properties.getInclude());
+			return new HttpExchangesWebFilter(repository, properties.getRecording().getInclude());
 		}
 
 	}

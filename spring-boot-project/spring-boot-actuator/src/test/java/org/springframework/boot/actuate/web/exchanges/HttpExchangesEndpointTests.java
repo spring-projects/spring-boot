@@ -48,14 +48,14 @@ class HttpExchangesEndpointTests {
 		assertThat(exchange.getRequest().getMethod()).isEqualTo("GET");
 	}
 
-	private SourceHttpRequest createRequest(String method) {
-		SourceHttpRequest request = mock(SourceHttpRequest.class);
+	private RecordableHttpRequest createRequest(String method) {
+		RecordableHttpRequest request = mock(RecordableHttpRequest.class);
 		given(request.getMethod()).willReturn(method);
 		return request;
 	}
 
-	private SourceHttpResponse createResponse() {
-		return mock(SourceHttpResponse.class);
+	private RecordableHttpResponse createResponse() {
+		return mock(RecordableHttpResponse.class);
 	}
 
 }

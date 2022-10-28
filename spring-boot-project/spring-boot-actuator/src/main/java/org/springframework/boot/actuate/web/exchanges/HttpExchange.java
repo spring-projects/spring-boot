@@ -125,21 +125,21 @@ public final class HttpExchange {
 
 	/**
 	 * Start a new {@link Started} from the given source request.
-	 * @param sourceHttpRequest the source HTTP request
+	 * @param request the recordable HTTP request
 	 * @return an in-progress request
 	 */
-	public static Started start(SourceHttpRequest sourceHttpRequest) {
-		return start(Clock.systemUTC(), sourceHttpRequest);
+	public static Started start(RecordableHttpRequest request) {
+		return start(Clock.systemUTC(), request);
 	}
 
 	/**
 	 * Start a new {@link Started} from the given source request.
 	 * @param clock the clock to use
-	 * @param sourceHttpRequest the source HTTP request
+	 * @param request the recordable HTTP request
 	 * @return an in-progress request
 	 */
-	public static Started start(Clock clock, SourceHttpRequest sourceHttpRequest) {
-		return new Started(clock, sourceHttpRequest);
+	public static Started start(Clock clock, RecordableHttpRequest request) {
+		return new Started(clock, request);
 	}
 
 	/**
@@ -150,76 +150,74 @@ public final class HttpExchange {
 
 		private final Instant timestamp;
 
-		private final SourceHttpRequest sourceRequest;
+		private final RecordableHttpRequest request;
 
-		private Started(Clock clock, SourceHttpRequest sourceRequest) {
+		private Started(Clock clock, RecordableHttpRequest request) {
 			this.timestamp = Instant.now(clock);
-			this.sourceRequest = sourceRequest;
+			this.request = request;
 		}
 
 		/**
 		 * Finish the request and return a new {@link HttpExchange} instance.
-		 * @param sourceHttpResponse the source HTTP response
+		 * @param response the recordable HTTP response
 		 * @param principalSupplier a supplier to provide the principal
 		 * @param sessionIdSupplier a supplier to provide the session ID
 		 * @param includes the options to include
 		 * @return a new {@link HttpExchange} instance
 		 */
-		public HttpExchange finish(SourceHttpResponse sourceHttpResponse,
-				Supplier<java.security.Principal> principalSupplier, Supplier<String> sessionIdSupplier,
-				Include... includes) {
-			return finish(Clock.systemUTC(), sourceHttpResponse, principalSupplier, sessionIdSupplier, includes);
+		public HttpExchange finish(RecordableHttpResponse response, Supplier<java.security.Principal> principalSupplier,
+				Supplier<String> sessionIdSupplier, Include... includes) {
+			return finish(Clock.systemUTC(), response, principalSupplier, sessionIdSupplier, includes);
 		}
 
 		/**
 		 * Finish the request and return a new {@link HttpExchange} instance.
 		 * @param clock the clock to use
-		 * @param sourceHttpResponse the source HTTP response
+		 * @param response the recordable HTTP response
 		 * @param principalSupplier a supplier to provide the principal
 		 * @param sessionIdSupplier a supplier to provide the session ID
 		 * @param includes the options to include
 		 * @return a new {@link HttpExchange} instance
 		 */
-		public HttpExchange finish(Clock clock, SourceHttpResponse sourceHttpResponse,
+		public HttpExchange finish(Clock clock, RecordableHttpResponse response,
 				Supplier<java.security.Principal> principalSupplier, Supplier<String> sessionIdSupplier,
 				Include... includes) {
-			return finish(clock, sourceHttpResponse, principalSupplier, sessionIdSupplier,
+			return finish(clock, response, principalSupplier, sessionIdSupplier,
 					new HashSet<>(Arrays.asList(includes)));
 		}
 
 		/**
 		 * Finish the request and return a new {@link HttpExchange} instance.
-		 * @param sourceHttpResponse the source HTTP response
+		 * @param response the recordable HTTP response
 		 * @param principalSupplier a supplier to provide the principal
 		 * @param sessionIdSupplier a supplier to provide the session ID
 		 * @param includes the options to include
 		 * @return a new {@link HttpExchange} instance
 		 */
-		public HttpExchange finish(SourceHttpResponse sourceHttpResponse,
-				Supplier<java.security.Principal> principalSupplier, Supplier<String> sessionIdSupplier,
-				Set<Include> includes) {
-			return finish(Clock.systemUTC(), sourceHttpResponse, principalSupplier, sessionIdSupplier, includes);
+		public HttpExchange finish(RecordableHttpResponse response, Supplier<java.security.Principal> principalSupplier,
+				Supplier<String> sessionIdSupplier, Set<Include> includes) {
+			return finish(Clock.systemUTC(), response, principalSupplier, sessionIdSupplier, includes);
 		}
 
 		/**
 		 * Finish the request and return a new {@link HttpExchange} instance.
 		 * @param clock the clock to use
-		 * @param sourceHttpResponse the source HTTP response
+		 * @param response the recordable HTTP response
 		 * @param principalSupplier a supplier to provide the principal
 		 * @param sessionIdSupplier a supplier to provide the session ID
 		 * @param includes the options to include
 		 * @return a new {@link HttpExchange} instance
 		 */
-		public HttpExchange finish(Clock clock, SourceHttpResponse sourceHttpResponse,
+		public HttpExchange finish(Clock clock, RecordableHttpResponse response,
 				Supplier<java.security.Principal> principalSupplier, Supplier<String> sessionIdSupplier,
 				Set<Include> includes) {
-			Request request = new Request(this.sourceRequest, includes);
-			Response response = new Response(sourceHttpResponse, includes);
+			Request exchangeRequest = new Request(this.request, includes);
+			Response exchangeResponse = new Response(response, includes);
 			Principal principal = getIfIncluded(includes, Include.PRINCIPAL, () -> Principal.from(principalSupplier));
 			Session session = getIfIncluded(includes, Include.SESSION_ID, () -> Session.from(sessionIdSupplier));
 			Duration duration = getIfIncluded(includes, Include.TIME_TAKEN,
 					() -> Duration.between(this.timestamp, Instant.now(clock)));
-			return new HttpExchange(this.timestamp, request, response, principal, session, duration);
+			return new HttpExchange(this.timestamp, exchangeRequest, exchangeResponse, principal, session, duration);
 		}
 
 		private <T> T getIfIncluded(Set<Include> includes, Include include, Supplier<T> supplier) {
@@ -241,11 +239,11 @@ public final class HttpExchange {
 
 		private final Map<String, List<String>> headers;
 
-		private Request(SourceHttpRequest source, Set<Include> includes) {
-			this.uri = source.getUri();
-			this.remoteAddress = (includes.contains(Include.REMOTE_ADDRESS)) ? source.getRemoteAddress() : null;
-			this.method = source.getMethod();
-			this.headers = Collections.unmodifiableMap(filterHeaders(source.getHeaders(), includes));
+		private Request(RecordableHttpRequest request, Set<Include> includes) {
+			this.uri = request.getUri();
+			this.remoteAddress = (includes.contains(Include.REMOTE_ADDRESS)) ? request.getRemoteAddress() : null;
+			this.method = request.getMethod();
+			this.headers = Collections.unmodifiableMap(filterHeaders(request.getHeaders(), includes));
 		}
 
 		/**
@@ -314,9 +312,9 @@ public final class HttpExchange {
 
 		private final Map<String, List<String>> headers;
 
-		private Response(SourceHttpResponse source, Set<Include> includes) {
-			this.status = source.getStatus();
-			this.headers = Collections.unmodifiableMap(filterHeaders(source.getHeaders(), includes));
+		private Response(RecordableHttpResponse request, Set<Include> includes) {
+			this.status = request.getStatus();
+			this.headers = Collections.unmodifiableMap(filterHeaders(request.getHeaders(), includes));
 		}
 
 		/**

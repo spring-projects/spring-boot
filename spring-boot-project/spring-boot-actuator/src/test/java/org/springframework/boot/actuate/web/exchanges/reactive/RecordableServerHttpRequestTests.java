@@ -34,11 +34,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link SourceServerHttpRequest}.
+ * Tests for {@link RecordableServerHttpRequest}.
  *
  * @author Dmytro Nosan
  */
-class SourceServerHttpRequestTests {
+class RecordableServerHttpRequestTests {
 
 	private ServerWebExchange exchange;
 
@@ -54,7 +54,7 @@ class SourceServerHttpRequestTests {
 
 	@Test
 	void getMethod() {
-		SourceServerHttpRequest sourceRequest = new SourceServerHttpRequest(this.request);
+		RecordableServerHttpRequest sourceRequest = new RecordableServerHttpRequest(this.request);
 		assertThat(sourceRequest.getMethod()).isEqualTo("GET");
 	}
 
@@ -62,7 +62,7 @@ class SourceServerHttpRequestTests {
 	void getUri() {
 		URI uri = URI.create("http://localhost:8080/");
 		given(this.request.getURI()).willReturn(uri);
-		SourceServerHttpRequest sourceRequest = new SourceServerHttpRequest(this.request);
+		RecordableServerHttpRequest sourceRequest = new RecordableServerHttpRequest(this.request);
 		assertThat(sourceRequest.getUri()).isSameAs(uri);
 	}
 
@@ -71,7 +71,7 @@ class SourceServerHttpRequestTests {
 		HttpHeaders httpHeaders = new HttpHeaders();
 		httpHeaders.add("name", "value");
 		given(this.request.getHeaders()).willReturn(httpHeaders);
-		SourceServerHttpRequest sourceRequest = new SourceServerHttpRequest(this.request);
+		RecordableServerHttpRequest sourceRequest = new RecordableServerHttpRequest(this.request);
 		assertThat(sourceRequest.getHeaders()).containsOnly(entry("name", Collections.singletonList("value")));
 	}
 
@@ -79,7 +79,7 @@ class SourceServerHttpRequestTests {
 	void getUnresolvedRemoteAddress() {
 		InetSocketAddress socketAddress = InetSocketAddress.createUnresolved("unresolved.example.com", 8080);
 		given(this.request.getRemoteAddress()).willReturn(socketAddress);
-		SourceServerHttpRequest sourceRequest = new SourceServerHttpRequest(this.request);
+		RecordableServerHttpRequest sourceRequest = new RecordableServerHttpRequest(this.request);
 		assertThat(sourceRequest.getRemoteAddress()).isNull();
 	}
 
@@ -87,7 +87,7 @@ class SourceServerHttpRequestTests {
 	void getRemoteAddress() {
 		InetSocketAddress socketAddress = new InetSocketAddress(0);
 		given(this.request.getRemoteAddress()).willReturn(socketAddress);
-		SourceServerHttpRequest sourceRequest = new SourceServerHttpRequest(this.request);
+		RecordableServerHttpRequest sourceRequest = new RecordableServerHttpRequest(this.request);
 		assertThat(sourceRequest.getRemoteAddress()).isEqualTo(socketAddress.getAddress().toString());
 	}
 

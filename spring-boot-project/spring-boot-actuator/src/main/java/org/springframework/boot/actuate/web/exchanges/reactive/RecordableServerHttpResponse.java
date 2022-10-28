@@ -14,31 +14,31 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.web.exchanges.servlet;
+package org.springframework.boot.actuate.web.exchanges.reactive;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.servlet.http.HttpServletResponse;
-
-import org.springframework.boot.actuate.web.exchanges.SourceHttpResponse;
+import org.springframework.boot.actuate.web.exchanges.RecordableHttpResponse;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 
 /**
- * An adapter that exposes an {@link HttpServletResponse} as a {@link SourceHttpResponse}.
+ * An adapter that exposes a {@link ServerHttpResponse} as a
+ * {@link RecordableHttpResponse}.
  *
  * @author Andy Wilkinson
  */
-final class SourceServletHttpResponse implements SourceHttpResponse {
-
-	private final HttpServletResponse delegate;
+class RecordableServerHttpResponse implements RecordableHttpResponse {
 
 	private final int status;
 
-	SourceServletHttpResponse(HttpServletResponse response, int status) {
-		this.delegate = response;
-		this.status = status;
+	private final Map<String, List<String>> headers;
+
+	RecordableServerHttpResponse(ServerHttpResponse response) {
+		this.status = (response.getStatusCode() != null) ? response.getStatusCode().value() : HttpStatus.OK.value();
+		this.headers = new LinkedHashMap<>(response.getHeaders());
 	}
 
 	@Override
@@ -48,11 +48,7 @@ final class SourceServletHttpResponse implements SourceHttpResponse {
 
 	@Override
 	public Map<String, List<String>> getHeaders() {
-		Map<String, List<String>> headers = new LinkedHashMap<>();
-		for (String name : this.delegate.getHeaderNames()) {
-			headers.put(name, new ArrayList<>(this.delegate.getHeaders(name)));
-		}
-		return headers;
+		return this.headers;
 	}
 
 }

@@ -91,7 +91,7 @@ class HttpExchangesAutoConfigurationTests {
 	@Test
 	void backsOffWhenNotRecording() {
 		this.contextRunner.withUserConfiguration(CustomHttpExchangesRepositoryConfiguration.class)
-				.withPropertyValues("management.httpexchanges.record=false")
+				.withPropertyValues("management.httpexchanges.recording.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(InMemoryHttpExchangeRepository.class)
 						.doesNotHaveBean(HttpExchangesFilter.class));
 	}
@@ -134,7 +134,7 @@ class HttpExchangesAutoConfigurationTests {
 		@Bean
 		CustomHttpExchangesWebFilter customWebFilter(HttpExchangeRepository repository,
 				HttpExchangesProperties properties) {
-			return new CustomHttpExchangesWebFilter(repository, properties.getInclude());
+			return new CustomHttpExchangesWebFilter(repository, properties.getRecording().getInclude());
 		}
 
 	}

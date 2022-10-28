@@ -293,12 +293,12 @@ class HttpExchangeTests {
 		assertThat(exchange.getResponse().getHeaders()).containsOnlyKeys(HttpHeaders.CONTENT_LENGTH);
 	}
 
-	private SourceHttpRequest createRequest() {
+	private RecordableHttpRequest createRequest() {
 		return createRequest(Collections.singletonMap(HttpHeaders.ACCEPT, Arrays.asList("application/json")));
 	}
 
-	private SourceHttpRequest createRequest(Map<String, List<String>> headers) {
-		SourceHttpRequest request = mock(SourceHttpRequest.class);
+	private RecordableHttpRequest createRequest(Map<String, List<String>> headers) {
+		RecordableHttpRequest request = mock(RecordableHttpRequest.class);
 		given(request.getMethod()).willReturn("GET");
 		given(request.getUri()).willReturn(URI.create("https://api.example.com"));
 		given(request.getHeaders()).willReturn(new HashMap<>(headers));
@@ -306,12 +306,12 @@ class HttpExchangeTests {
 		return request;
 	}
 
-	private SourceHttpResponse createResponse() {
+	private RecordableHttpResponse createResponse() {
 		return createResponse(Collections.singletonMap(HttpHeaders.CONTENT_TYPE, Arrays.asList("application/json")));
 	}
 
-	private SourceHttpResponse createResponse(Map<String, List<String>> headers) {
-		SourceHttpResponse response = mock(SourceHttpResponse.class);
+	private RecordableHttpResponse createResponse(Map<String, List<String>> headers) {
+		RecordableHttpResponse response = mock(RecordableHttpResponse.class);
 		given(response.getStatus()).willReturn(204);
 		given(response.getHeaders()).willReturn(new HashMap<>(headers));
 		return response;

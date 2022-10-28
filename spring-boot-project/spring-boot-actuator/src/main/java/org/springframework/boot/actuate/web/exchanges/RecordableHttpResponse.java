@@ -20,13 +20,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The source of an HTTP response that will result in an {@link HttpExchange}.
+ * The recordable parts of an HTTP response used when creating an {@link HttpExchange}.
  *
  * @author Andy Wilkinson
  * @since 3.0.0
- * @see SourceHttpRequest
+ * @see RecordableHttpRequest
  */
-public interface SourceHttpResponse {
+public interface RecordableHttpResponse {
 
 	/**
 	 * The status of the response.

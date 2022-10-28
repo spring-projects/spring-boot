@@ -27,20 +27,21 @@ import java.util.Map;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-import org.springframework.boot.actuate.web.exchanges.SourceHttpRequest;
+import org.springframework.boot.actuate.web.exchanges.RecordableHttpRequest;
 import org.springframework.util.StringUtils;
 import org.springframework.web.util.UriUtils;
 
 /**
- * An adapter that exposes an {@link HttpServletRequest} as a {@link SourceHttpRequest}.
+ * An adapter that exposes an {@link HttpServletRequest} as a
+ * {@link RecordableHttpRequest}.
  *
  * @author Andy Wilkinson
  */
-final class ServletSourceHttpRequest implements SourceHttpRequest {
+final class RecordableServletHttpRequest implements RecordableHttpRequest {
 
 	private final HttpServletRequest request;
 
-	ServletSourceHttpRequest(HttpServletRequest request) {
+	RecordableServletHttpRequest(HttpServletRequest request) {
 		this.request = request;
 	}
 

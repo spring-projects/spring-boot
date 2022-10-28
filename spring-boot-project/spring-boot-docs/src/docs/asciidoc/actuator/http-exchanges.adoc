@@ -12,6 +12,6 @@ You can use the `httpexchanges` endpoint to obtain information about the request
 
 [[actuator.http-exchanges.custom]]
 === Custom HTTP Exchange Recording
-To customize the items that are included in each recorded exchange, use the configprop:management.httpexchanges.include[] configuration property.
+To customize the items that are included in each recorded exchange, use the configprop:management.httpexchanges.recording.include[] configuration property.
 
-To disable recoding entirely, set configprop:management.httpexchanges.record[] to `false`.
+To disable recoding entirely, set configprop:management.httpexchanges.recording.enabled[] to `false`.

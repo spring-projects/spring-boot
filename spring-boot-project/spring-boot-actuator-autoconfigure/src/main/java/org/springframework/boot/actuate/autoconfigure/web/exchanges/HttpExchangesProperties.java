@@ -35,19 +35,34 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "management.httpexchanges")
 public class HttpExchangesProperties {
 
-	/**
-	 * Items to be included in the exchange recording. Defaults to request headers
-	 * (excluding Authorization and Cookie), response headers (excluding Set-Cookie), and
-	 * time taken.
-	 */
-	private Set<Include> include = new HashSet<>(Include.defaultIncludes());
+	private final Recording recording = new Recording();
 
-	public Set<Include> getInclude() {
-		return this.include;
+	public Recording getRecording() {
+		return this.recording;
 	}
 
-	public void setInclude(Set<Include> include) {
-		this.include = include;
+	/**
+	 * Recording properties.
+	 *
+	 * @since 3.0.0
+	 */
+	public static class Recording {
+
+		/**
+		 * Items to be included in the exchange recording. Defaults to request headers
+		 * (excluding Authorization and Cookie), response headers (excluding Set-Cookie),
+		 * and time taken.
+		 */
+		private Set<Include> include = new HashSet<>(Include.defaultIncludes());
+
+		public Set<Include> getInclude() {
+			return this.include;
+		}
+
+		public void setInclude(Set<Include> include) {
+			this.include = include;
+		}
+
 	}
 
 }

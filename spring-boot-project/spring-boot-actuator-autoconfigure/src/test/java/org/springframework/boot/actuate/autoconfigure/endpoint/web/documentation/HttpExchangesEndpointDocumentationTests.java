@@ -33,8 +33,8 @@ import org.springframework.boot.actuate.web.exchanges.HttpExchange;
 import org.springframework.boot.actuate.web.exchanges.HttpExchangeRepository;
 import org.springframework.boot.actuate.web.exchanges.HttpExchangesEndpoint;
 import org.springframework.boot.actuate.web.exchanges.Include;
-import org.springframework.boot.actuate.web.exchanges.SourceHttpRequest;
-import org.springframework.boot.actuate.web.exchanges.SourceHttpResponse;
+import org.springframework.boot.actuate.web.exchanges.RecordableHttpRequest;
+import org.springframework.boot.actuate.web.exchanges.RecordableHttpResponse;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,12 +62,12 @@ class HttpExchangesEndpointDocumentationTests extends MockMvcEndpointDocumentati
 
 	@Test
 	void httpExchanges() throws Exception {
-		SourceHttpRequest request = mock(SourceHttpRequest.class);
+		RecordableHttpRequest request = mock(RecordableHttpRequest.class);
 		given(request.getUri()).willReturn(URI.create("https://api.example.com"));
 		given(request.getMethod()).willReturn("GET");
 		given(request.getHeaders())
 				.willReturn(Collections.singletonMap(HttpHeaders.ACCEPT, Arrays.asList("application/json")));
-		SourceHttpResponse response = mock(SourceHttpResponse.class);
+		RecordableHttpResponse response = mock(RecordableHttpResponse.class);
 		given(response.getStatus()).willReturn(200);
 		given(response.getHeaders())
 				.willReturn(Collections.singletonMap(HttpHeaders.CONTENT_TYPE, Arrays.asList("application/json")));

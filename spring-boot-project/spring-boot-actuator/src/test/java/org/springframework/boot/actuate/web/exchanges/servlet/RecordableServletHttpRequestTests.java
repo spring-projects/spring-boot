@@ -24,11 +24,11 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ServletSourceHttpRequest}.
+ * Tests for {@link RecordableServletHttpRequest}.
  *
  * @author Madhura Bhave
  */
-class ServletSourceHttpRequestTests {
+class RecordableServletHttpRequestTests {
 
 	private MockHttpServletRequest request;
 
@@ -61,7 +61,7 @@ class ServletSourceHttpRequestTests {
 	}
 
 	private void validate(String expectedUri) {
-		ServletSourceHttpRequest sourceRequest = new ServletSourceHttpRequest(this.request);
+		RecordableServletHttpRequest sourceRequest = new RecordableServletHttpRequest(this.request);
 		assertThat(sourceRequest.getUri().toString()).isEqualTo(expectedUri);
 	}
 
