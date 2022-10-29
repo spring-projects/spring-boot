@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import java.util.TreeMap;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -65,7 +64,7 @@ public final class ConditionEvaluationReport {
 
 	/**
 	 * Private constructor.
-	 * @see #get(ConfigurableListableBeanFactory)
+	 * @see #get(ConfigurableBeanFactory)
 	 */
 	private ConditionEvaluationReport() {
 	}
@@ -168,7 +167,7 @@ public final class ConditionEvaluationReport {
 	 */
 	public static ConditionEvaluationReport find(BeanFactory beanFactory) {
 		if (beanFactory != null && beanFactory instanceof ConfigurableBeanFactory) {
-			return ConditionEvaluationReport.get((ConfigurableListableBeanFactory) beanFactory);
+			return ConditionEvaluationReport.get((ConfigurableBeanFactory) beanFactory);
 		}
 		return null;
 	}
@@ -178,7 +177,7 @@ public final class ConditionEvaluationReport {
 	 * @param beanFactory the bean factory
 	 * @return an existing or new {@link ConditionEvaluationReport}
 	 */
-	public static ConditionEvaluationReport get(ConfigurableListableBeanFactory beanFactory) {
+	public static ConditionEvaluationReport get(ConfigurableBeanFactory beanFactory) {
 		synchronized (beanFactory) {
 			ConditionEvaluationReport report;
 			if (beanFactory.containsSingleton(BEAN_NAME)) {
