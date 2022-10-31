@@ -45,7 +45,7 @@ class ConfigDataLocationRuntimeHintsTests {
 		RuntimeHints hints = new RuntimeHints();
 		new TestConfigDataLocationRuntimeHints().registerHints(hints, null);
 		assertThat(hints.resources().resourcePatternHints()).singleElement()
-				.satisfies(includes("/", "config", "application*.properties", "application*.xml", "application*.yaml",
+				.satisfies(includes("application*.properties", "application*.xml", "application*.yaml",
 						"application*.yml", "config/application*.properties", "config/application*.xml",
 						"config/application*.yaml", "config/application*.yml"));
 	}
@@ -61,7 +61,7 @@ class ConfigDataLocationRuntimeHintsTests {
 
 		}.registerHints(hints, null);
 		assertThat(hints.resources().resourcePatternHints()).singleElement()
-				.satisfies(includes("/", "config", "test*.properties", "test*.xml", "test*.yaml", "test*.yml",
+				.satisfies(includes("test*.properties", "test*.xml", "test*.yaml", "test*.yml",
 						"config/test*.properties", "config/test*.xml", "config/test*.yaml", "config/test*.yml"));
 	}
 
@@ -75,7 +75,7 @@ class ConfigDataLocationRuntimeHintsTests {
 			}
 		}.registerHints(hints, null);
 		assertThat(hints.resources().resourcePatternHints()).singleElement()
-				.satisfies(includes("config", "config/application*.properties", "config/application*.xml",
+				.satisfies(includes("config/application*.properties", "config/application*.xml",
 						"config/application*.yaml", "config/application*.yml"));
 	}
 
@@ -89,7 +89,7 @@ class ConfigDataLocationRuntimeHintsTests {
 			}
 		}.registerHints(hints, null);
 		assertThat(hints.resources().resourcePatternHints()).singleElement()
-				.satisfies(includes("/", "config", "application*.conf", "config/application*.conf"));
+				.satisfies(includes("application*.conf", "config/application*.conf"));
 	}
 
 	@Test
@@ -116,8 +116,12 @@ class ConfigDataLocationRuntimeHintsTests {
 
 		private final MockSpringFactoriesLoader springFactoriesLoader;
 
+		TestConfigDataLocationRuntimeHints(MockSpringFactoriesLoader springFactoriesLoader) {
+			this.springFactoriesLoader = springFactoriesLoader;
+		}
+
 		TestConfigDataLocationRuntimeHints() {
-			this.springFactoriesLoader = springFactoriesLoader();
+			this(springFactoriesLoader());
 		}
 
 		private static MockSpringFactoriesLoader springFactoriesLoader() {
