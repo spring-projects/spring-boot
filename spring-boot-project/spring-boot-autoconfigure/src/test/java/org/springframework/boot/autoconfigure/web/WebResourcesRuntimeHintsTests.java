@@ -42,13 +42,14 @@ class WebResourcesRuntimeHintsTests {
 		RuntimeHints hints = register(
 				new TestClassLoader(List.of("META-INF/resources/", "resources/", "static/", "public/")));
 		assertThat(hints.resources().resourcePatternHints()).singleElement()
-				.satisfies(include("META-INF/resources/*", "resources/*", "static/*", "public/*"));
+				.satisfies(include("META-INF", "META-INF/resources", "META-INF/resources/*", "resources", "resources/*",
+						"static", "static/*", "public", "public/*"));
 	}
 
 	@Test
 	void registerHintsWithOnlyStaticLocations() {
 		RuntimeHints hints = register(new TestClassLoader(List.of("static/")));
-		assertThat(hints.resources().resourcePatternHints()).singleElement().satisfies(include("static/*"));
+		assertThat(hints.resources().resourcePatternHints()).singleElement().satisfies(include("static", "static/*"));
 	}
 
 	@Test
@@ -66,7 +67,7 @@ class WebResourcesRuntimeHintsTests {
 
 	private Consumer<ResourcePatternHints> include(String... patterns) {
 		return (hint) -> {
-			assertThat(hint.getIncludes()).map(ResourcePatternHint::getPattern).containsExactly(patterns);
+			assertThat(hint.getIncludes()).map(ResourcePatternHint::getPattern).containsExactlyInAnyOrder(patterns);
 			assertThat(hint.getExcludes()).isEmpty();
 		};
 	}
