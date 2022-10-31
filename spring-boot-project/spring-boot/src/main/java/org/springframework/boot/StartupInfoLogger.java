@@ -17,12 +17,10 @@
 package org.springframework.boot;
 
 import java.lang.management.ManagementFactory;
-import java.net.InetAddress;
 import java.time.Duration;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import org.springframework.aot.AotDetector;
 import org.springframework.boot.system.ApplicationHome;
@@ -41,10 +39,6 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  */
 class StartupInfoLogger {
-
-	private static final Log logger = LogFactory.getLog(StartupInfoLogger.class);
-
-	private static final long HOST_NAME_RESOLVE_THRESHOLD = 200;
 
 	private final Class<?> sourceClass;
 
@@ -71,7 +65,6 @@ class StartupInfoLogger {
 		appendApplicationName(message);
 		appendVersion(message, this.sourceClass);
 		appendJavaVersion(message);
-		appendOn(message);
 		appendPid(message);
 		appendContext(message);
 		return message;
@@ -114,26 +107,6 @@ class StartupInfoLogger {
 
 	private void appendVersion(StringBuilder message, Class<?> source) {
 		append(message, "v", () -> source.getPackage().getImplementationVersion());
-	}
-
-	private void appendOn(StringBuilder message) {
-		long startTime = System.currentTimeMillis();
-		append(message, "on ", () -> InetAddress.getLocalHost().getHostName());
-		long resolveTime = System.currentTimeMillis() - startTime;
-		if (resolveTime > HOST_NAME_RESOLVE_THRESHOLD) {
-			logger.warn(LogMessage.of(() -> {
-				StringBuilder warning = new StringBuilder();
-				warning.append("InetAddress.getLocalHost().getHostName() took ");
-				warning.append(resolveTime);
-				warning.append(" milliseconds to respond.");
-				warning.append(" Please verify your network configuration");
-				if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-					warning.append(" (macOS machines may need to add entries to /etc/hosts)");
-				}
-				warning.append(".");
-				return warning;
-			}));
-		}
 	}
 
 	private void appendPid(StringBuilder message) {

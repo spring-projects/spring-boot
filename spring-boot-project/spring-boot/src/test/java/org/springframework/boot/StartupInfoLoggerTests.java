@@ -16,8 +16,6 @@
 
 package org.springframework.boot;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.time.Duration;
 
 import org.apache.commons.logging.Log;
@@ -43,29 +41,28 @@ class StartupInfoLoggerTests {
 	private final Log log = mock(Log.class);
 
 	@Test
-	void startingFormat() throws UnknownHostException {
+	void startingFormat() {
 		given(this.log.isInfoEnabled()).willReturn(true);
 		new StartupInfoLogger(getClass()).logStarting(this.log);
 		ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 		then(this.log).should().info(captor.capture());
 		assertThat(captor.getValue().toString()).contains("Starting " + getClass().getSimpleName() + " using Java "
-				+ System.getProperty("java.version") + " on " + InetAddress.getLocalHost().getHostName() + " with PID "
-				+ new ApplicationPid() + " (started by " + System.getProperty("user.name") + " in "
-				+ System.getProperty("user.dir") + ")");
+				+ System.getProperty("java.version") + " with PID " + new ApplicationPid() + " (started by "
+				+ System.getProperty("user.name") + " in " + System.getProperty("user.dir") + ")");
 	}
 
 	@Test
-	void startingFormatInAotMode() throws UnknownHostException {
+	void startingFormatInAotMode() {
 		System.setProperty("spring.aot.enabled", "true");
 		try {
 			given(this.log.isInfoEnabled()).willReturn(true);
 			new StartupInfoLogger(getClass()).logStarting(this.log);
 			ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 			then(this.log).should().info(captor.capture());
-			assertThat(captor.getValue().toString()).contains("Starting AOT-processed " + getClass().getSimpleName()
-					+ " using Java " + System.getProperty("java.version") + " on "
-					+ InetAddress.getLocalHost().getHostName() + " with PID " + new ApplicationPid() + " (started by "
-					+ System.getProperty("user.name") + " in " + System.getProperty("user.dir") + ")");
+			assertThat(captor.getValue().toString())
+					.contains("Starting AOT-processed " + getClass().getSimpleName() + " using Java "
+							+ System.getProperty("java.version") + " with PID " + new ApplicationPid() + " (started by "
+							+ System.getProperty("user.name") + " in " + System.getProperty("user.dir") + ")");
 
 		}
 		finally {

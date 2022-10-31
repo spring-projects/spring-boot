@@ -6,7 +6,7 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::
 
-2017-08-08 17:12:30.910  INFO 19866 --- [           main] s.f.SampleWebFreeMarkerApplication       : Starting SampleWebFreeMarkerApplication on host.local with PID 19866
+2017-08-08 17:12:30.910  INFO 19866 --- [           main] s.f.SampleWebFreeMarkerApplication       : Starting SampleWebFreeMarkerApplication with PID 19866
 2017-08-08 17:12:30.913  INFO 19866 --- [           main] s.f.SampleWebFreeMarkerApplication       : No active profile set, falling back to default profiles: default
 2017-08-08 17:12:30.952  INFO 19866 --- [           main] ConfigServletWebServerApplicationContext : Refreshing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@76b10754: startup date [Tue Aug 08 17:12:30 BST 2017]; root of context hierarchy
 2017-08-08 17:12:31.878  INFO 19866 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
