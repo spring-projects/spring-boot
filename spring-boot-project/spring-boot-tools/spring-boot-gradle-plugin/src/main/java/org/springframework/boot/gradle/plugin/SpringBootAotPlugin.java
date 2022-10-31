@@ -89,8 +89,7 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		return sourceSets.create(newSourceSetName, (sourceSet) -> {
 			sourceSet.getJava().setSrcDirs(List.of("build/generated/" + newSourceSetName + "Sources"));
 			sourceSet.getResources().setSrcDirs(List.of("build/generated/" + newSourceSetName + "Resources"));
-			project.getDependencies().add(existingSourceSet.getRuntimeClasspathConfigurationName(),
-					project.files(sourceSet.getOutput()));
+			existingSourceSet.setRuntimeClasspath(existingSourceSet.getRuntimeClasspath().plus(sourceSet.getOutput()));
 			project.getConfigurations().getByName(sourceSet.getCompileClasspathConfigurationName())
 					.attributes((attributes) -> {
 						configureClassesAndResourcesLibraryElementsAttribute(project, attributes);
@@ -116,6 +115,7 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		Provider<Directory> aotClasses = project.getLayout().getBuildDirectory().dir("generated/aotClasses");
 		Configuration aotClasspath = createAotProcessingClasspath(project, PROCESS_AOT_TASK_NAME, mainSourceSet);
 		project.getDependencies().add(aotClasspath.getName(), project.files(mainSourceSet.getOutput()));
+		mainSourceSet.setRuntimeClasspath(mainSourceSet.getRuntimeClasspath().plus(project.files(aotClasses)));
 		Configuration compileClasspath = project.getConfigurations()
 				.getByName(aotSourceSet.getCompileClasspathConfigurationName());
 		compileClasspath.extendsFrom(aotClasspath);
@@ -127,7 +127,6 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 					task.setClasspath(aotClasspath);
 				});
 		project.getDependencies().add(aotSourceSet.getImplementationConfigurationName(), project.files(aotClasses));
-		aotSourceSet.getOutput().dir(aotClasses);
 		configureDependsOn(project, aotSourceSet, processAot);
 	}
 
@@ -172,20 +171,21 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 			SourceSet testSourceSet) {
 		Provider<Directory> aotTestClasses = project.getLayout().getBuildDirectory().dir("generated/aotTestClasses");
 		Configuration aotClasspath = createAotProcessingClasspath(project, PROCESS_TEST_AOT_TASK_NAME, testSourceSet);
+		project.getDependencies().add(aotClasspath.getName(), project.files(mainSourceSet.getOutput()));
+		project.getDependencies().add(aotClasspath.getName(), project.files(testSourceSet.getOutput()));
+		testSourceSet.setRuntimeClasspath(testSourceSet.getRuntimeClasspath().plus(project.files(aotTestClasses)));
 		Configuration compileClasspath = project.getConfigurations()
 				.getByName(aotTestSourceSet.getCompileClasspathConfigurationName());
 		compileClasspath.extendsFrom(aotClasspath);
 		TaskProvider<ProcessTestAot> processTestAot = project.getTasks().register(PROCESS_TEST_AOT_TASK_NAME,
 				ProcessTestAot.class, (task) -> {
 					configureAotTask(project, aotTestSourceSet, task, aotTestClasses, testSourceSet);
-					task.setClasspath(project.getObjects().fileCollection().from(aotClasspath,
-							mainSourceSet.getOutput(), testSourceSet.getOutput()));
+					task.setClasspath(aotClasspath);
 					task.setTestRuntimeClasspath(
 							project.getConfigurations().getByName(testSourceSet.getImplementationConfigurationName()));
 				});
 		project.getDependencies().add(aotTestSourceSet.getImplementationConfigurationName(),
 				project.files(aotTestClasses));
-		aotTestSourceSet.getOutput().dir(aotTestClasses);
 		configureDependsOn(project, aotTestSourceSet, processTestAot);
 	}
 

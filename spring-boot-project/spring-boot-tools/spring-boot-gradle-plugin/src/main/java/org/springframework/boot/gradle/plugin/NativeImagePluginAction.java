@@ -27,6 +27,7 @@ import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -69,8 +70,9 @@ class NativeImagePluginAction implements PluginApplicationAction {
 
 	private void configureMainNativeBinaryClasspath(Project project, SourceSetContainer sourceSets,
 			GraalVMExtension graalVmExtension) {
-		SourceSetOutput output = sourceSets.getByName(SpringBootAotPlugin.AOT_SOURCE_SET_NAME).getOutput();
-		graalVmExtension.getBinaries().getByName(NativeImagePlugin.NATIVE_MAIN_EXTENSION).classpath(output);
+		FileCollection runtimeClasspath = sourceSets.getByName(SpringBootAotPlugin.AOT_SOURCE_SET_NAME)
+				.getRuntimeClasspath();
+		graalVmExtension.getBinaries().getByName(NativeImagePlugin.NATIVE_MAIN_EXTENSION).classpath(runtimeClasspath);
 		Configuration nativeImageClasspath = project.getConfigurations().getByName("nativeImageClasspath");
 		nativeImageClasspath.setExtendsFrom(removeDevelopmentOnly(nativeImageClasspath.getExtendsFrom()));
 	}
