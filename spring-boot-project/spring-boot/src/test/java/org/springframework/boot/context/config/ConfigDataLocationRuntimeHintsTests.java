@@ -107,7 +107,7 @@ class ConfigDataLocationRuntimeHintsTests {
 	private Consumer<ResourcePatternHints> includes(String... patterns) {
 		return (hint) -> {
 			assertThat(hint.getIncludes().stream().map(ResourcePatternHint::getPattern))
-					.containsExactlyInAnyOrder(patterns);
+					.contains(patterns);
 			assertThat(hint.getExcludes()).isEmpty();
 		};
 	}

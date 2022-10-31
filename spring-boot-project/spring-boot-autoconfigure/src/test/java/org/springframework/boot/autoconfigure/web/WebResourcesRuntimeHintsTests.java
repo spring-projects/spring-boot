@@ -66,7 +66,7 @@ class WebResourcesRuntimeHintsTests {
 
 	private Consumer<ResourcePatternHints> include(String... patterns) {
 		return (hint) -> {
-			assertThat(hint.getIncludes()).map(ResourcePatternHint::getPattern).containsExactly(patterns);
+			assertThat(hint.getIncludes()).map(ResourcePatternHint::getPattern).contains(patterns);
 			assertThat(hint.getExcludes()).isEmpty();
 		};
 	}
