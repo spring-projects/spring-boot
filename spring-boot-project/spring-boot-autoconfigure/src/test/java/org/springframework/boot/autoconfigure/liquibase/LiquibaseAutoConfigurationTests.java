@@ -33,12 +33,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.LiquibaseAutoConfigurationRuntimeHints;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -406,6 +409,14 @@ class LiquibaseAutoConfigurationTests {
 					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
 					assertThat(beanDefinition.getDependsOn()).containsExactly("springLiquibase");
 				});
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints hints = new RuntimeHints();
+		new LiquibaseAutoConfigurationRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.resource().forResource("db/changelog/db.changelog-master.yaml"))
+				.accepts(hints);
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertLiquibase(Consumer<SpringLiquibase> consumer) {
