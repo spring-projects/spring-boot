@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.function.Supplier;
 
-import io.micrometer.tracing.BaggageInScope;
 import io.micrometer.tracing.BaggageManager;
 import io.micrometer.tracing.Span;
 import io.micrometer.tracing.Tracer;
@@ -59,11 +58,10 @@ class BaggagePropagationIntegrationTests {
 			Tracer tracer = tracer(context);
 			Span span = createSpan(tracer);
 			assertThatTracingContextIsInitialized(autoConfig);
-			try (Tracer.SpanInScope scope = tracer.withSpan(span.start());
-					BaggageInScope fo = context.getBean(BaggageManager.class).createBaggage(COUNTRY_CODE)
-							.set(span.context(), "FO");
-					BaggageInScope bp = context.getBean(BaggageManager.class).createBaggage(BUSINESS_PROCESS)
-							.set(span.context(), "ALM")) {
+			try (Tracer.SpanInScope scope = tracer.withSpan(span.start())) {
+				BaggageManager baggageManager = context.getBean(BaggageManager.class);
+				baggageManager.createBaggage(COUNTRY_CODE).set(span.context(), "FO");
+				baggageManager.createBaggage(BUSINESS_PROCESS).set(span.context(), "ALM");
 				assertThat(MDC.get("traceId")).isEqualTo(span.context().traceId());
 				assertThat(MDC.get(COUNTRY_CODE)).isEqualTo("FO");
 				assertThat(MDC.get(BUSINESS_PROCESS)).isEqualTo("ALM");
@@ -85,9 +83,8 @@ class BaggagePropagationIntegrationTests {
 			Tracer tracer = tracer(context);
 			Span span = createSpan(tracer);
 			assertThatTracingContextIsInitialized(autoConfig);
-			try (Tracer.SpanInScope scope = tracer.withSpan(span.start());
-					BaggageInScope fo = context.getBean(BaggageManager.class).createBaggage(COUNTRY_CODE)
-							.set(span.context(), "FO")) {
+			try (Tracer.SpanInScope scope = tracer.withSpan(span.start())) {
+				context.getBean(BaggageManager.class).createBaggage(COUNTRY_CODE).set(span.context(), "FO");
 				assertThat(MDC.get("traceId")).isEqualTo(span.context().traceId());
 				assertThat(MDC.get(COUNTRY_CODE)).isEqualTo("FO");
 

@@ -22,7 +22,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import io.micrometer.tracing.reporter.wavefront.SpanMetrics;
 import io.micrometer.tracing.reporter.wavefront.WavefrontBraveSpanHandler;
-import io.micrometer.tracing.reporter.wavefront.WavefrontOtelSpanHandler;
+import io.micrometer.tracing.reporter.wavefront.WavefrontOtelSpanExporter;
 import io.micrometer.tracing.reporter.wavefront.WavefrontSpanHandler;
 import org.junit.jupiter.api.Test;
 
@@ -52,7 +52,7 @@ class WavefrontTracingAutoConfigurationTests {
 			assertThat(context).hasSingleBean(WavefrontSpanHandler.class);
 			assertThat(context).hasSingleBean(SpanMetrics.class);
 			assertThat(context).hasSingleBean(WavefrontBraveSpanHandler.class);
-			assertThat(context).hasSingleBean(WavefrontOtelSpanHandler.class);
+			assertThat(context).hasSingleBean(WavefrontOtelSpanExporter.class);
 		});
 	}
 
@@ -63,7 +63,7 @@ class WavefrontTracingAutoConfigurationTests {
 			assertThat(context).doesNotHaveBean(WavefrontSpanHandler.class);
 			assertThat(context).doesNotHaveBean(SpanMetrics.class);
 			assertThat(context).doesNotHaveBean(WavefrontBraveSpanHandler.class);
-			assertThat(context).doesNotHaveBean(WavefrontOtelSpanHandler.class);
+			assertThat(context).doesNotHaveBean(WavefrontOtelSpanExporter.class);
 		});
 	}
 
@@ -74,7 +74,7 @@ class WavefrontTracingAutoConfigurationTests {
 					assertThat(context).doesNotHaveBean(WavefrontSpanHandler.class);
 					assertThat(context).doesNotHaveBean(SpanMetrics.class);
 					assertThat(context).doesNotHaveBean(WavefrontBraveSpanHandler.class);
-					assertThat(context).doesNotHaveBean(WavefrontOtelSpanHandler.class);
+					assertThat(context).doesNotHaveBean(WavefrontOtelSpanExporter.class);
 				});
 	}
 
@@ -86,7 +86,7 @@ class WavefrontTracingAutoConfigurationTests {
 					assertThat(context).doesNotHaveBean(WavefrontSpanHandler.class);
 					assertThat(context).doesNotHaveBean(SpanMetrics.class);
 					assertThat(context).doesNotHaveBean(WavefrontBraveSpanHandler.class);
-					assertThat(context).doesNotHaveBean(WavefrontOtelSpanHandler.class);
+					assertThat(context).doesNotHaveBean(WavefrontOtelSpanExporter.class);
 				});
 	}
 
@@ -107,10 +107,10 @@ class WavefrontTracingAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldNotSupplyWavefrontOtelSpanHandlerIfOtelIsMissing() {
+	void shouldNotSupplyWavefrontOtelSpanExporterIfOtelIsMissing() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("io.opentelemetry.sdk.trace"))
 				.withUserConfiguration(WavefrontSenderConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(WavefrontOtelSpanHandler.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(WavefrontOtelSpanExporter.class));
 	}
 
 	@Test
@@ -145,8 +145,8 @@ class WavefrontTracingAutoConfigurationTests {
 					assertThat(context).hasSingleBean(SpanMetrics.class);
 					assertThat(context).hasBean("customWavefrontBraveSpanHandler");
 					assertThat(context).hasSingleBean(WavefrontBraveSpanHandler.class);
-					assertThat(context).hasBean("customWavefrontOtelSpanHandler");
-					assertThat(context).hasSingleBean(WavefrontOtelSpanHandler.class);
+					assertThat(context).hasBean("customWavefrontOtelSpanExporter");
+					assertThat(context).hasSingleBean(WavefrontOtelSpanExporter.class);
 				});
 	}
 
@@ -174,8 +174,8 @@ class WavefrontTracingAutoConfigurationTests {
 		}
 
 		@Bean
-		WavefrontOtelSpanHandler customWavefrontOtelSpanHandler() {
-			return mock(WavefrontOtelSpanHandler.class);
+		WavefrontOtelSpanExporter customWavefrontOtelSpanExporter() {
+			return mock(WavefrontOtelSpanExporter.class);
 		}
 
 	}

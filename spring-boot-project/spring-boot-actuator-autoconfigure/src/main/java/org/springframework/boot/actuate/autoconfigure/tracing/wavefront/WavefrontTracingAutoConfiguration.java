@@ -24,7 +24,7 @@ import com.wavefront.sdk.common.application.ApplicationTags;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.tracing.reporter.wavefront.SpanMetrics;
 import io.micrometer.tracing.reporter.wavefront.WavefrontBraveSpanHandler;
-import io.micrometer.tracing.reporter.wavefront.WavefrontOtelSpanHandler;
+import io.micrometer.tracing.reporter.wavefront.WavefrontOtelSpanExporter;
 import io.micrometer.tracing.reporter.wavefront.WavefrontSpanHandler;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 
@@ -129,8 +129,8 @@ public class WavefrontTracingAutoConfiguration {
 
 			@Bean
 			@ConditionalOnMissingBean
-			WavefrontOtelSpanHandler wavefrontOtelSpanHandler(WavefrontSpanHandler wavefrontSpanHandler) {
-				return new WavefrontOtelSpanHandler(wavefrontSpanHandler);
+			WavefrontOtelSpanExporter wavefrontOtelSpanExporter(WavefrontSpanHandler wavefrontSpanHandler) {
+				return new WavefrontOtelSpanExporter(wavefrontSpanHandler);
 			}
 
 		}
