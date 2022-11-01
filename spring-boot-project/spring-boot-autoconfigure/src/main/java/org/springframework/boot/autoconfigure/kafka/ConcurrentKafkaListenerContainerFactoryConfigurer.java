@@ -24,6 +24,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
+import org.springframework.kafka.listener.BatchInterceptor;
 import org.springframework.kafka.listener.CommonErrorHandler;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ContainerProperties;
@@ -37,6 +38,7 @@ import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
  *
  * @author Gary Russell
  * @author Eddú Meléndez
+ * @author Thomas Kåsene
  * @since 1.5.0
  */
 public class ConcurrentKafkaListenerContainerFactoryConfigurer {
@@ -58,6 +60,8 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	private AfterRollbackProcessor<Object, Object> afterRollbackProcessor;
 
 	private RecordInterceptor<Object, Object> recordInterceptor;
+
+	private BatchInterceptor<Object, Object> batchInterceptor;
 
 	/**
 	 * Set the {@link KafkaProperties} to use.
@@ -134,6 +138,14 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	}
 
 	/**
+	 * Set the {@link BatchInterceptor} to use.
+	 * @param batchInterceptor the batch interceptor.
+	 */
+	void setBatchInterceptor(BatchInterceptor<Object, Object> batchInterceptor) {
+		this.batchInterceptor = batchInterceptor;
+	}
+
+	/**
 	 * Configure the specified Kafka listener container factory. The factory can be
 	 * further tuned and default settings can be overridden.
 	 * @param listenerFactory the {@link ConcurrentKafkaListenerContainerFactory} instance
@@ -160,6 +172,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(this.commonErrorHandler).to(factory::setCommonErrorHandler);
 		map.from(this.afterRollbackProcessor).to(factory::setAfterRollbackProcessor);
 		map.from(this.recordInterceptor).to(factory::setRecordInterceptor);
+		map.from(this.batchInterceptor).to(factory::setBatchInterceptor);
 	}
 
 	private void configureContainer(ContainerProperties container) {
