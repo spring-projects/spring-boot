@@ -21,20 +21,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.Dependency;
-import org.gradle.api.artifacts.DependencySet;
-import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.FileTree;
 import org.gradle.api.tasks.CacheableTask;
-import org.gradle.api.tasks.Classpath;
+import org.gradle.api.tasks.IgnoreEmptyDirectories;
+import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.JavaExec;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
+import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.api.tasks.TaskAction;
 
-import org.springframework.boot.gradle.util.VersionExtractor;
-
 /**
- * Custom {@link JavaExec} task for processing test code ahead-of-time.
+ * Custom {@link JavaExec} task for ahead-of-time processing of a Spring Boot
+ * application's tests.
  *
  * @author Andy Wilkinson
  * @since 3.0.0
@@ -42,28 +42,36 @@ import org.springframework.boot.gradle.util.VersionExtractor;
 @CacheableTask
 public class ProcessTestAot extends AbstractAot {
 
-	private final Configuration junitPlatformLauncher;
+	private FileCollection classpathRoots;
 
 	public ProcessTestAot() {
 		getMainClass().set("org.springframework.boot.test.context.SpringBootTestAotProcessor");
-		this.junitPlatformLauncher = createJUnitPlatformLauncher();
 	}
 
-	private Configuration createJUnitPlatformLauncher() {
-		Configuration configuration = getProject().getConfigurations().create(getName() + "JUnitPlatformLauncher");
-		DependencyHandler dependencyHandler = getProject().getDependencies();
-		Dependency springBootDependencies = dependencyHandler
-				.create(dependencyHandler.platform("org.springframework.boot:spring-boot-dependencies:"
-						+ VersionExtractor.forClass(ProcessTestAot.class)));
-		DependencySet dependencies = configuration.getDependencies();
-		dependencies.add(springBootDependencies);
-		dependencies.add(dependencyHandler.create("org.junit.platform:junit-platform-launcher"));
-		return configuration;
+	/**
+	 * Returns the classpath roots that should be scanned for test classes to process.
+	 * @return the classpath roots
+	 */
+	@InputFiles
+	@PathSensitive(PathSensitivity.RELATIVE)
+	public final FileCollection getClasspathRoots() {
+		return this.classpathRoots;
 	}
 
-	@Classpath
-	FileCollection getJUnitPlatformLauncher() {
-		return this.junitPlatformLauncher;
+	/**
+	 * Sets the classpath roots that should be scanned for test classes to process.
+	 * @param classpathRoots the classpath roots
+	 */
+	public void setClasspathRoots(FileCollection classpathRoots) {
+		this.classpathRoots = classpathRoots;
+	}
+
+	@InputFiles
+	@SkipWhenEmpty
+	@IgnoreEmptyDirectories
+	@PathSensitive(PathSensitivity.RELATIVE)
+	final FileTree getInputClasses() {
+		return this.classpathRoots.getAsFileTree();
 	}
 
 	@Override
@@ -74,12 +82,7 @@ public class ProcessTestAot extends AbstractAot {
 				.collect(Collectors.joining(File.pathSeparator)));
 		args.addAll(processorArgs());
 		setArgs(args);
-		classpath(this.junitPlatformLauncher);
 		super.exec();
-	}
-
-	public void setTestRuntimeClasspath(Configuration configuration) {
-		this.junitPlatformLauncher.extendsFrom(configuration);
 	}
 
 }

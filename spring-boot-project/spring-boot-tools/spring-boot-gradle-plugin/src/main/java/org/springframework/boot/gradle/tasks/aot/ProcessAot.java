@@ -26,7 +26,7 @@ import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.TaskAction;
 
 /**
- * Custom {@link JavaExec} task for processing main code ahead-of-time.
+ * Custom {@link JavaExec} task for ahead-of-time processing of a Spring Boot application.
  *
  * @author Andy Wilkinson
  * @since 3.0.0
@@ -38,14 +38,18 @@ public abstract class ProcessAot extends AbstractAot {
 		getMainClass().set("org.springframework.boot.SpringApplicationAotProcessor");
 	}
 
+	/**
+	 * Returns the main class of the application that is to be processed ahead-of-time.
+	 * @return the application main class property
+	 */
 	@Input
-	public abstract Property<String> getApplicationClass();
+	public abstract Property<String> getApplicationMainClass();
 
 	@Override
 	@TaskAction
 	public void exec() {
 		List<String> args = new ArrayList<>();
-		args.add(getApplicationClass().get());
+		args.add(getApplicationMainClass().get());
 		args.addAll(processorArgs());
 		setArgs(args);
 		super.exec();
