@@ -20,7 +20,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.jdbc.init.PlatformPlaceholderDatabaseDriverResolver;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
@@ -78,7 +77,6 @@ public class BatchDataSourceScriptDatabaseInitializer extends DataSourceScriptDa
 
 	private static List<String> resolveSchemaLocations(DataSource dataSource, BatchProperties.Jdbc properties) {
 		PlatformPlaceholderDatabaseDriverResolver platformResolver = new PlatformPlaceholderDatabaseDriverResolver();
-		platformResolver = platformResolver.withDriverPlatform(DatabaseDriver.MARIADB, "mysql");
 		if (StringUtils.hasText(properties.getPlatform())) {
 			return platformResolver.resolveAll(properties.getPlatform(), properties.getSchema());
 		}

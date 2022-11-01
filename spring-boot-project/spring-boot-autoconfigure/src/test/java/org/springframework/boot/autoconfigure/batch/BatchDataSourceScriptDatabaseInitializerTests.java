@@ -88,8 +88,9 @@ class BatchDataSourceScriptDatabaseInitializerTests {
 				.map((resource) -> resource.getFilename()).filter((resourceName) -> !resourceName.contains("-drop-"))
 				.toList();
 		assertThat(schemaNames).containsExactlyInAnyOrder("schema-derby.sql", "schema-sqlserver.sql",
-				"schema-mysql.sql", "schema-sqlite.sql", "schema-postgresql.sql", "schema-hana.sql",
-				"schema-oracle.sql", "schema-db2.sql", "schema-hsqldb.sql", "schema-sybase.sql", "schema-h2.sql");
+				"schema-mariadb.sql", "schema-mysql.sql", "schema-sqlite.sql", "schema-postgresql.sql",
+				"schema-hana.sql", "schema-oracle.sql", "schema-db2.sql", "schema-hsqldb.sql", "schema-sybase.sql",
+				"schema-h2.sql");
 	}
 
 }
