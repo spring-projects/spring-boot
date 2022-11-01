@@ -22,7 +22,10 @@ import org.springframework.test.context.ApplicationContextFailureProcessor;
 import org.springframework.test.context.TestExecutionListener;
 
 /**
- * Since 3.0.0 this class is not used internally.
+ * Callback interface trigger from {@link SpringBootTestContextBootstrapper} that can be
+ * used to post-process the list of default {@link TestExecutionListener
+ * TestExecutionListeners} to be used by a test. Can be used to add or remove existing
+ * listeners.
  *
  * @author Phillip Webb
  * @since 1.4.1

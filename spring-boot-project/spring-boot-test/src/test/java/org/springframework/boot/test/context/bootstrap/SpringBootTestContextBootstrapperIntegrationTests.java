@@ -45,6 +45,8 @@ class SpringBootTestContextBootstrapperIntegrationTests {
 	@Autowired
 	private SpringBootTestContextBootstrapperExampleConfig config;
 
+	boolean defaultTestExecutionListenersPostProcessorCalled = false;
+
 	@Test
 	void findConfigAutomatically() {
 		assertThat(this.config).isNotNull();
@@ -58,6 +60,11 @@ class SpringBootTestContextBootstrapperIntegrationTests {
 	@Test
 	void testConfigurationWasApplied() {
 		assertThat(this.context.getBean(ExampleBean.class)).isNotNull();
+	}
+
+	@Test
+	void defaultTestExecutionListenersPostProcessorShouldBeCalled() {
+		assertThat(this.defaultTestExecutionListenersPostProcessorCalled).isTrue();
 	}
 
 	@TestConfiguration(proxyBeanMethods = false)
