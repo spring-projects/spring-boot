@@ -60,6 +60,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
+import org.springframework.kafka.listener.BatchInterceptor;
 import org.springframework.kafka.listener.CommonErrorHandler;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ContainerProperties;
@@ -92,6 +93,7 @@ import static org.mockito.Mockito.never;
  * @author Eddú Meléndez
  * @author Nakul Mishra
  * @author Tomaz Fernandes
+ * @author Thomas Kåsene
  */
 class KafkaAutoConfigurationTests {
 
@@ -636,6 +638,15 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
+	void testConcurrentKafkaListenerContainerFactoryWithCustomBatchInterceptor() {
+		this.contextRunner.withUserConfiguration(BatchInterceptorConfiguration.class).run((context) -> {
+			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+					.getBean(ConcurrentKafkaListenerContainerFactory.class);
+			assertThat(factory).hasFieldOrPropertyWithValue("batchInterceptor", context.getBean("batchInterceptor"));
+		});
+	}
+
+	@Test
 	void testConcurrentKafkaListenerContainerFactoryWithCustomRebalanceListener() {
 		this.contextRunner.withUserConfiguration(RebalanceListenerConfiguration.class).run((context) -> {
 			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
@@ -740,6 +751,16 @@ class KafkaAutoConfigurationTests {
 		@Bean
 		RecordInterceptor<Object, Object> recordInterceptor() {
 			return (record, consumer) -> record;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class BatchInterceptorConfiguration {
+
+		@Bean
+		BatchInterceptor<Object, Object> batchInterceptor() {
+			return (batch, consumer) -> batch;
 		}
 
 	}
