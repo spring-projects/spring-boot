@@ -29,7 +29,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
@@ -64,7 +64,7 @@ public final class ConditionEvaluationReport {
 
 	/**
 	 * Private constructor.
-	 * @see #get(ConfigurableBeanFactory)
+	 * @see #get(ConfigurableListableBeanFactory)
 	 */
 	private ConditionEvaluationReport() {
 	}
@@ -166,8 +166,8 @@ public final class ConditionEvaluationReport {
 	 * @return the {@link ConditionEvaluationReport} or {@code null}
 	 */
 	public static ConditionEvaluationReport find(BeanFactory beanFactory) {
-		if (beanFactory != null && beanFactory instanceof ConfigurableBeanFactory) {
-			return ConditionEvaluationReport.get((ConfigurableBeanFactory) beanFactory);
+		if (beanFactory != null && beanFactory instanceof ConfigurableListableBeanFactory) {
+			return ConditionEvaluationReport.get((ConfigurableListableBeanFactory) beanFactory);
 		}
 		return null;
 	}
@@ -177,7 +177,7 @@ public final class ConditionEvaluationReport {
 	 * @param beanFactory the bean factory
 	 * @return an existing or new {@link ConditionEvaluationReport}
 	 */
-	public static ConditionEvaluationReport get(ConfigurableBeanFactory beanFactory) {
+	public static ConditionEvaluationReport get(ConfigurableListableBeanFactory beanFactory) {
 		synchronized (beanFactory) {
 			ConditionEvaluationReport report;
 			if (beanFactory.containsSingleton(BEAN_NAME)) {
