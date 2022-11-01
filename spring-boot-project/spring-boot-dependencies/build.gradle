@@ -384,7 +384,7 @@ bom {
 			]
 		}
 	}
-	library("HSQLDB", "2.7.0") {
+	library("HSQLDB", "2.7.1") {
 		group("org.hsqldb") {
 			modules = [
 				"hsqldb"
