@@ -80,6 +80,14 @@
 		<disallow pkg="org.springframework.boot.context" />
 	</subpackage>
 
+	<subpackage name="test">
+		<subpackage name="autoconfigure">
+			<subpackage name="actuate">
+				<allow pkg="io.micrometer" />
+			</subpackage>
+		</subpackage>
+	</subpackage>
+
 	<!-- Web related concerns -->
 	<subpackage name="web">
 
