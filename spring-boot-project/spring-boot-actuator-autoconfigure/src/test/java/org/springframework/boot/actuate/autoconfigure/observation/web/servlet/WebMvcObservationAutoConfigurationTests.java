@@ -149,6 +149,35 @@ class WebMvcObservationAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated(since = "3.0.0", forRemoval = true)
+	void afterMaxUrisReachedFurtherUrisAreDeniedWhenUsingCustomMetricName(CapturedOutput output) {
+		this.contextRunner.withUserConfiguration(TestController.class)
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
+						ObservationAutoConfiguration.class, WebMvcAutoConfiguration.class))
+				.withPropertyValues("management.metrics.web.server.max-uri-tags=2",
+						"management.metrics.web.server.request.metric-name=my.http.server.requests")
+				.run((context) -> {
+					MeterRegistry registry = getInitializedMeterRegistry(context);
+					assertThat(registry.get("my.http.server.requests").meters().size()).isLessThanOrEqualTo(2);
+					assertThat(output).contains("Reached the maximum number of URI tags for 'my.http.server.requests'");
+				});
+	}
+
+	@Test
+	void afterMaxUrisReachedFurtherUrisAreDeniedWhenUsingCustomObservationName(CapturedOutput output) {
+		this.contextRunner.withUserConfiguration(TestController.class)
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
+						ObservationAutoConfiguration.class, WebMvcAutoConfiguration.class))
+				.withPropertyValues("management.metrics.web.server.max-uri-tags=2",
+						"management.observations.http.server.requests.name=my.http.server.requests")
+				.run((context) -> {
+					MeterRegistry registry = getInitializedMeterRegistry(context);
+					assertThat(registry.get("my.http.server.requests").meters().size()).isLessThanOrEqualTo(2);
+					assertThat(output).contains("Reached the maximum number of URI tags for 'my.http.server.requests'");
+				});
+	}
+
+	@Test
 	void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestController.class)
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,

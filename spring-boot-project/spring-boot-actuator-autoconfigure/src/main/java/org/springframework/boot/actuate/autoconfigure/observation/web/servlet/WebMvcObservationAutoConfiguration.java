@@ -84,10 +84,7 @@ public class WebMvcObservationAutoConfiguration {
 	public FilterRegistrationBean<ServerHttpObservationFilter> webMvcObservationFilter(ObservationRegistry registry,
 			ObjectProvider<WebMvcTagsProvider> customTagsProvider,
 			ObjectProvider<WebMvcTagsContributor> contributorsProvider) {
-
-		String observationName = this.observationProperties.getHttp().getServer().getRequests().getName();
-		String metricName = this.metricsProperties.getWeb().getServer().getRequest().getMetricName();
-		String name = (observationName != null) ? observationName : metricName;
+		String name = httpRequestsMetricName(this.observationProperties, this.metricsProperties);
 		ServerRequestObservationConvention convention = new DefaultServerRequestObservationConvention(name);
 		WebMvcTagsProvider tagsProvider = customTagsProvider.getIfAvailable();
 		List<WebMvcTagsContributor> contributors = contributorsProvider.orderedStream().toList();
@@ -101,6 +98,13 @@ public class WebMvcObservationAutoConfiguration {
 		return registration;
 	}
 
+	private static String httpRequestsMetricName(ObservationProperties observationProperties,
+			MetricsProperties metricsProperties) {
+		String observationName = observationProperties.getHttp().getServer().getRequests().getName();
+		return (observationName != null) ? observationName
+				: metricsProperties.getWeb().getServer().getRequest().getMetricName();
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(MeterRegistry.class)
 	@ConditionalOnBean(MeterRegistry.class)
@@ -108,11 +112,12 @@ public class WebMvcObservationAutoConfiguration {
 
 		@Bean
 		@Order(0)
-		MeterFilter metricsHttpServerUriTagFilter(MetricsProperties properties) {
-			String metricName = properties.getWeb().getServer().getRequest().getMetricName();
+		MeterFilter metricsHttpServerUriTagFilter(MetricsProperties metricsProperties,
+				ObservationProperties observationProperties) {
+			String name = httpRequestsMetricName(observationProperties, metricsProperties);
 			MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
-					() -> String.format("Reached the maximum number of URI tags for '%s'.", metricName));
-			return MeterFilter.maximumAllowableTags(metricName, "uri", properties.getWeb().getServer().getMaxUriTags(),
+					() -> String.format("Reached the maximum number of URI tags for '%s'.", name));
+			return MeterFilter.maximumAllowableTags(name, "uri", metricsProperties.getWeb().getServer().getMaxUriTags(),
 					filter);
 		}
 
