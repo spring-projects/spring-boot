@@ -57,11 +57,7 @@ class ClientObservationConventionAdapter implements ClientRequestObservationConv
 	public KeyValues getLowCardinalityKeyValues(ClientRequestObservationContext context) {
 		mutateClientRequest(context);
 		Iterable<Tag> tags = this.tagsProvider.tags(context.getCarrier(), context.getResponse(), context.getError());
-		KeyValues keyValues = KeyValues.empty();
-		for (Tag tag : tags) {
-			keyValues = keyValues.and(tag.getKey(), tag.getValue());
-		}
-		return keyValues;
+		return KeyValues.of(tags, Tag::getKey, Tag::getValue);
 	}
 
 	private void mutateClientRequest(ClientRequestObservationContext context) {
