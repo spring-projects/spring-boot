@@ -108,11 +108,14 @@ public class WebMvcObservationAutoConfiguration {
 
 		@Bean
 		@Order(0)
-		MeterFilter metricsHttpServerUriTagFilter(MetricsProperties properties) {
-			String metricName = properties.getWeb().getServer().getRequest().getMetricName();
+		MeterFilter metricsHttpServerUriTagFilter(MetricsProperties metricsProperties,
+				ObservationProperties observationProperties) {
+			String observationName = observationProperties.getHttp().getServer().getRequests().getName();
+			String metricName = metricsProperties.getWeb().getServer().getRequest().getMetricName();
+			String name = (observationName != null) ? observationName : metricName;
 			MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
-					() -> String.format("Reached the maximum number of URI tags for '%s'.", metricName));
-			return MeterFilter.maximumAllowableTags(metricName, "uri", properties.getWeb().getServer().getMaxUriTags(),
+					() -> String.format("Reached the maximum number of URI tags for '%s'.", name));
+			return MeterFilter.maximumAllowableTags(name, "uri", metricsProperties.getWeb().getServer().getMaxUriTags(),
 					filter);
 		}
 
