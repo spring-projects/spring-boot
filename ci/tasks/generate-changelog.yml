@@ -4,7 +4,7 @@ image_resource:
   type: registry-image
   source:
     repository: springio/github-changelog-generator
-    tag: '0.0.7'
+    tag: '0.0.8'
     registry_mirror:
       host: ((docker-hub-mirror))
       username: ((docker-hub-mirror-username))
