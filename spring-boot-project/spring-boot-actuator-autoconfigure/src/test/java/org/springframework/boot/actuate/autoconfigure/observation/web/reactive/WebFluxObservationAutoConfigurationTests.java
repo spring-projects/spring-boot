@@ -16,21 +16,28 @@
 
 package org.springframework.boot.actuate.autoconfigure.observation.web.reactive;
 
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
+import org.springframework.boot.actuate.autoconfigure.metrics.web.TestController;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.actuate.metrics.web.reactive.server.DefaultWebFluxTagsProvider;
 import org.springframework.boot.actuate.metrics.web.reactive.server.WebFluxTagsContributor;
 import org.springframework.boot.actuate.metrics.web.reactive.server.WebFluxTagsProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
+import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.filter.reactive.ServerHttpObservationFilter;
 import org.springframework.web.server.ServerWebExchange;
 
@@ -74,6 +81,75 @@ class WebFluxObservationAutoConfigurationTests {
 			assertThat(context).getBean(ServerHttpObservationFilter.class).extracting("observationConvention")
 					.isInstanceOf(ServerRequestObservationConventionAdapter.class);
 		});
+	}
+
+	@Test
+	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput output) {
+		this.contextRunner.withUserConfiguration(TestController.class)
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
+						ObservationAutoConfiguration.class, WebFluxAutoConfiguration.class))
+				.withPropertyValues("management.metrics.web.server.max-uri-tags=2").run((context) -> {
+					MeterRegistry registry = getInitializedMeterRegistry(context);
+					assertThat(registry.get("http.server.requests").meters().size()).isLessThanOrEqualTo(2);
+					assertThat(output).contains("Reached the maximum number of URI tags for 'http.server.requests'");
+				});
+	}
+
+	@Test
+	@Deprecated(since = "3.0.0", forRemoval = true)
+	void afterMaxUrisReachedFurtherUrisAreDeniedWhenUsingCustomMetricName(CapturedOutput output) {
+		this.contextRunner.withUserConfiguration(TestController.class)
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
+						ObservationAutoConfiguration.class, WebFluxAutoConfiguration.class))
+				.withPropertyValues("management.metrics.web.server.max-uri-tags=2",
+						"management.metrics.web.server.request.metric-name=my.http.server.requests")
+				.run((context) -> {
+					MeterRegistry registry = getInitializedMeterRegistry(context);
+					assertThat(registry.get("my.http.server.requests").meters().size()).isLessThanOrEqualTo(2);
+					assertThat(output).contains("Reached the maximum number of URI tags for 'my.http.server.requests'");
+				});
+	}
+
+	@Test
+	void afterMaxUrisReachedFurtherUrisAreDeniedWhenUsingCustomObservationName(CapturedOutput output) {
+		this.contextRunner.withUserConfiguration(TestController.class)
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
+						ObservationAutoConfiguration.class, WebFluxAutoConfiguration.class))
+				.withPropertyValues("management.metrics.web.server.max-uri-tags=2",
+						"management.observations.http.server.requests.name=my.http.server.requests")
+				.run((context) -> {
+					MeterRegistry registry = getInitializedMeterRegistry(context);
+					assertThat(registry.get("my.http.server.requests").meters().size()).isLessThanOrEqualTo(2);
+					assertThat(output).contains("Reached the maximum number of URI tags for 'my.http.server.requests'");
+				});
+	}
+
+	@Test
+	void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput output) {
+		this.contextRunner.withUserConfiguration(TestController.class)
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
+						ObservationAutoConfiguration.class, WebFluxAutoConfiguration.class))
+				.withPropertyValues("management.metrics.web.server.max-uri-tags=5").run((context) -> {
+					MeterRegistry registry = getInitializedMeterRegistry(context);
+					assertThat(registry.get("http.server.requests").meters()).hasSize(3);
+					assertThat(output)
+							.doesNotContain("Reached the maximum number of URI tags for 'http.server.requests'");
+				});
+	}
+
+	private MeterRegistry getInitializedMeterRegistry(AssertableReactiveWebApplicationContext context)
+			throws Exception {
+		return getInitializedMeterRegistry(context, "/test0", "/test1", "/test2");
+	}
+
+	private MeterRegistry getInitializedMeterRegistry(AssertableReactiveWebApplicationContext context, String... urls)
+			throws Exception {
+		assertThat(context).hasSingleBean(ServerHttpObservationFilter.class);
+		WebTestClient client = WebTestClient.bindToApplicationContext(context).build();
+		for (String url : urls) {
+			client.get().uri(url).exchange().expectStatus().isOk();
+		}
+		return context.getBean(MeterRegistry.class);
 	}
 
 	@Deprecated(since = "3.0.0", forRemoval = true)

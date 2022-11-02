@@ -149,6 +149,7 @@ class WebMvcObservationAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated(since = "3.0.0", forRemoval = true)
 	void afterMaxUrisReachedFurtherUrisAreDeniedWhenUsingCustomMetricName(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestController.class)
 				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
