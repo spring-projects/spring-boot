@@ -45,7 +45,7 @@ class ClientObservationConventionAdapterTests {
 	private ClientObservationConventionAdapter convention = new ClientObservationConventionAdapter(TEST_METRIC_NAME,
 			new DefaultWebClientExchangeTagsProvider());
 
-	private ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/resource/test")).build();
+	private ClientRequest.Builder requestBuilder = ClientRequest.create(HttpMethod.GET, URI.create("/resource/test"));
 
 	private ClientResponse response = ClientResponse.create(HttpStatus.OK).body("foo").build();
 
@@ -54,7 +54,8 @@ class ClientObservationConventionAdapterTests {
 	@BeforeEach
 	void setup() {
 		this.context = new ClientRequestObservationContext();
-		this.context.setCarrier(this.request);
+		this.context.setCarrier(this.requestBuilder);
+		this.context.setRequest(this.requestBuilder.build());
 		this.context.setResponse(this.response);
 		this.context.setUriTemplate("/resource/{name}");
 	}
