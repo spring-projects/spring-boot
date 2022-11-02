@@ -264,25 +264,29 @@ public class WavefrontProperties {
 	public static class Tracing {
 
 		/**
-		 * Application name used in {@link ApplicationTags}. Defaults to
+		 * Wavefront Application name used in {@link ApplicationTags}. Defaults to
 		 * 'unnamed_application'.
+		 * @see <a href="https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront Application Tags</a>
 		 */
 		private String applicationName;
 
 		/**
-		 * Service name used in {@link ApplicationTags}, falling back to
+		 * Wavefront Service name used in {@link ApplicationTags}, falling back to
 		 * {@code spring.application.name}. If both are unset it defaults to
 		 * 'unnamed_service'.
+		 * @see <a href="https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront Application Tags</a>
 		 */
 		private String serviceName;
 
 		/**
-		 * Optional cluster name used in {@link ApplicationTags}.
+		 * Optional Wavefront Cluster name used in {@link ApplicationTags}.
+		 * @see <a href="https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront Application Tags</a>
 		 */
 		private String clusterName;
 
 		/**
-		 * Optional shard name used in {@link ApplicationTags}.
+		 * Optional Wavefront Shard name used in {@link ApplicationTags}.
+		 * @see <a href="https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront Application Tags</a>
 		 */
 		private String shardName;
 

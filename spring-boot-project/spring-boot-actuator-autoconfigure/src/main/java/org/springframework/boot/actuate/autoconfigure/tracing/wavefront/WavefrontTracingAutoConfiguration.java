@@ -59,22 +59,27 @@ import org.springframework.core.env.Environment;
 @ConditionalOnEnabledTracing
 public class WavefrontTracingAutoConfiguration {
 
-	private static final String DEFAULT_APPLICATION_NAME = "unnamed_application";
+	/**
+	 * Default value for the Wavefront Application name.
+	 * @see <a href="https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront Application Tags</a>
+	 */
+	private static final String DEFAULT_WAVEFRONT_APPLICATION_NAME = "unnamed_application";
 
 	/**
-	 * Default value for service name if {@code spring.application.name} is not set.
+	 * Default value for the Wavefront Service name if {@code spring.application.name} is not set.
+	 * @see <a href="https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront Application Tags</a>
 	 */
-	private static final String DEFAULT_SERVICE_NAME = "unnamed_service";
+	private static final String DEFAULT_WAVEFRONT_SERVICE_NAME = "unnamed_service";
 
 	@Bean
 	@ConditionalOnMissingBean
 	public ApplicationTags applicationTags(Environment environment, WavefrontProperties properties) {
-		String fallbackServiceName = environment.getProperty("spring.application.name", DEFAULT_SERVICE_NAME);
+		String fallbackWavefrontServiceName = environment.getProperty("spring.application.name", DEFAULT_WAVEFRONT_SERVICE_NAME);
 		Tracing tracing = properties.getTracing();
-		String serviceName = (tracing.getServiceName() != null) ? tracing.getServiceName() : fallbackServiceName;
-		String applicationName = (tracing.getApplicationName() != null) ? tracing.getApplicationName()
-				: DEFAULT_APPLICATION_NAME;
-		ApplicationTags.Builder builder = new ApplicationTags.Builder(applicationName, serviceName);
+		String wavefrontServiceName = (tracing.getServiceName() != null) ? tracing.getServiceName() : fallbackWavefrontServiceName;
+		String wavefrontApplicationName = (tracing.getApplicationName() != null) ? tracing.getApplicationName()
+				: DEFAULT_WAVEFRONT_APPLICATION_NAME;
+		ApplicationTags.Builder builder = new ApplicationTags.Builder(wavefrontApplicationName, wavefrontServiceName);
 		if (tracing.getClusterName() != null) {
 			builder.cluster(tracing.getClusterName());
 		}

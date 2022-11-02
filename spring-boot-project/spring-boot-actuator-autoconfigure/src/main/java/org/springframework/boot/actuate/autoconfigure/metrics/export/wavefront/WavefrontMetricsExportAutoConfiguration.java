@@ -77,7 +77,6 @@ public class WavefrontMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(ApplicationTags.class)
-	@ConditionalOnClass(MeterRegistryCustomizer.class)
 	MeterRegistryCustomizer<WavefrontMeterRegistry> applicationTagsCustomizer(ApplicationTags applicationTags) {
 		Tags commonTags = Tags.of(applicationTags.toPointTags().entrySet().stream()
 				.map(WavefrontMetricsExportAutoConfiguration::asTag).toList());
