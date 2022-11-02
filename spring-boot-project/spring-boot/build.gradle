@@ -120,7 +120,7 @@ dependencies {
 	testImplementation("org.eclipse.jetty:jetty-client")
 	testImplementation("org.eclipse.jetty.http2:http2-client")
 	testImplementation("org.eclipse.jetty.http2:http2-http-client-transport")
-	testImplementation("org.firebirdsql.jdbc:jaybird-jdk18") {
+	testImplementation("org.firebirdsql.jdbc:jaybird") {
 		exclude group: "javax.resource", module: "connector-api"
 	}
 	testImplementation("org.hsqldb:hsqldb")
