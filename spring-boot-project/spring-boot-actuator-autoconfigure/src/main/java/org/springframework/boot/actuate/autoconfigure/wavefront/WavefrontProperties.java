@@ -266,7 +266,9 @@ public class WavefrontProperties {
 		/**
 		 * Wavefront Application name used in {@link ApplicationTags}. Defaults to
 		 * 'unnamed_application'.
-		 * @see <a href="https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront Application Tags</a>
+		 * @see <a href=
+		 * "https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront
+		 * Application Tags</a>
 		 */
 		private String applicationName;
 
@@ -274,19 +276,25 @@ public class WavefrontProperties {
 		 * Wavefront Service name used in {@link ApplicationTags}, falling back to
 		 * {@code spring.application.name}. If both are unset it defaults to
 		 * 'unnamed_service'.
-		 * @see <a href="https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront Application Tags</a>
+		 * @see <a href=
+		 * "https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront
+		 * Application Tags</a>
 		 */
 		private String serviceName;
 
 		/**
 		 * Optional Wavefront Cluster name used in {@link ApplicationTags}.
-		 * @see <a href="https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront Application Tags</a>
+		 * @see <a href=
+		 * "https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront
+		 * Application Tags</a>
 		 */
 		private String clusterName;
 
 		/**
 		 * Optional Wavefront Shard name used in {@link ApplicationTags}.
-		 * @see <a href="https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront Application Tags</a>
+		 * @see <a href=
+		 * "https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront
+		 * Application Tags</a>
 		 */
 		private String shardName;
 
