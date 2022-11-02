@@ -337,14 +337,6 @@ bom {
 			]
 		}
 	}
-	library("Hazelcast Hibernate5", "2.2.1") {
-		group("com.hazelcast") {
-			modules = [
-				"hazelcast-hibernate52",
-				"hazelcast-hibernate53"
-			]
-		}
-	}
 	library("Hibernate", "6.1.5.Final") {
 		group("org.hibernate.orm") {
 			modules = [
