@@ -18,10 +18,20 @@ package org.springframework.boot.gradle.tasks.bundling;
 
 import groovy.lang.Closure;
 import org.gradle.api.Action;
+import org.gradle.util.GradleVersion;
 
 /**
- * Wrapper for the deprecated {@link org.gradle.util.ConfigureUtil} that allows
- * deprecation warnings to be suppressed in a single, focused location.
+ * Wrapper for {@code ConfigureUtil} that handles the API and behavior differences in the
+ * versions of Gradle that we support.
+ * <p>
+ * In Gradle 7.1 {@code org.gradle.util.ConfigureUtil} was deprecated and
+ * {@code org.gradle.util.internal.ConfigureUtil} was introduced as a replacement. In
+ * Gradle 7.6, the deprecation of {@code org.gradle.util.ConfigureUtil} was strengthened
+ * by reporting the use of deprecated API to the user.
+ * <p>
+ * To accommodate the differences, we use {@code org.gradle.util.internal.ConfigureUtil}
+ * with Gradle 7.1 and later. With earlier versions, {@code org.gradle.util.ConfigureUtil}
+ * is used. This avoids users by nagged about deprecated API usage in our plugin.
  *
  * @author Andy Wilkinson
  */
@@ -33,7 +43,10 @@ final class Closures {
 
 	@SuppressWarnings("deprecation")
 	static <T> Action<T> asAction(Closure<?> closure) {
-		return org.gradle.util.ConfigureUtil.configureUsing(closure);
+		if (GradleVersion.current().compareTo(GradleVersion.version("7.1")) < 0) {
+			return org.gradle.util.ConfigureUtil.configureUsing(closure);
+		}
+		return org.gradle.util.internal.ConfigureUtil.configureUsing(closure);
 	}
 
 }
