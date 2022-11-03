@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.data.redis.ClientResourcesBuilderCustomizer;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -47,8 +48,13 @@ import org.springframework.context.annotation.Configuration;
 public class LettuceMetricsAutoConfiguration {
 
 	@Bean
-	public ClientResourcesBuilderCustomizer lettuceMetrics(MeterRegistry meterRegistry) {
-		MicrometerOptions options = MicrometerOptions.builder().histogram(true).build();
+	@ConditionalOnMissingBean
+	MicrometerOptions micrometerOptions() {
+		return MicrometerOptions.builder().histogram(true).build();
+	}
+
+	@Bean
+	ClientResourcesBuilderCustomizer lettuceMetrics(MeterRegistry meterRegistry, MicrometerOptions options) {
 		return (client) -> client.commandLatencyRecorder(new MicrometerCommandLatencyRecorder(meterRegistry, options));
 	}
 
