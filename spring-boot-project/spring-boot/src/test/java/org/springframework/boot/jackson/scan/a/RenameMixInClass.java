@@ -23,11 +23,9 @@ import org.springframework.boot.jackson.Name;
 import org.springframework.boot.jackson.NameAndAge;
 
 @JsonMixin(type = { Name.class, NameAndAge.class })
-public class RenameMixInClass {
+public abstract class RenameMixInClass {
 
 	@JsonProperty("username")
-	String getName() {
-		return null;
-	}
+	public abstract String getName();
 
 }

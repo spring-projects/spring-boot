@@ -98,7 +98,7 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessor implements BeanRegistra
 
 		private void contributeHints(RuntimeHints runtimeHints, JsonMixinModuleEntries entries) {
 			Set<Class<?>> mixins = new LinkedHashSet<>();
-			entries.doWithEntry(this.classLoader, (type, mixin) -> mixins.add(type));
+			entries.doWithEntry(this.classLoader, (type, mixin) -> mixins.add(mixin));
 			new BindingReflectionHintsRegistrar().registerReflectionHints(runtimeHints.reflection(),
 					mixins.toArray(Class<?>[]::new));
 		}

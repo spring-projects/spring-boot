@@ -24,6 +24,7 @@ import java.util.function.BiConsumer;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.aot.test.generate.TestGenerationContext;
@@ -62,8 +63,11 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessorTests {
 		registerEntries(RenameMixInClass.class);
 		processAheadOfTime();
 		RuntimeHints runtimeHints = this.generationContext.getRuntimeHints();
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(Name.class, "getName")).accepts(runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onMethod(NameAndAge.class, "getAge")).accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(RenameMixInClass.class)
+				.withMemberCategories(MemberCategory.DECLARED_FIELDS, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
+						.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(RenameMixInClass.class, "getName").introspect())
+				.accepts(runtimeHints);
 	}
 
 	@Test
