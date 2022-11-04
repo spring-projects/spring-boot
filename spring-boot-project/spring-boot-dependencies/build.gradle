@@ -1933,6 +1933,7 @@ bom {
 		group("org.xmlunit") {
 			modules = [
 				"xmlunit-assertj",
+				"xmlunit-assertj3",
 				"xmlunit-core",
 				"xmlunit-legacy",
 				"xmlunit-matchers",
