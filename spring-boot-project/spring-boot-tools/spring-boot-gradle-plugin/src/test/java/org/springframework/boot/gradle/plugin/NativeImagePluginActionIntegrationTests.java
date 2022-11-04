@@ -115,6 +115,12 @@ class NativeImagePluginActionIntegrationTests {
 				projectPath("build/resources/aotTest"), projectPath("build/generated/aotTestClasses"));
 	}
 
+	@TestTemplate
+	void nativeImageBinariesRequireGraal22Dot3() {
+		BuildResult result = this.gradleBuild.build("requiredGraalVersion");
+		assertThat(result.getOutput()).contains("custom: 22.3", "main: 22.3", "test: 22.3");
+	}
+
 	private String projectPath(String path) {
 		return new File(this.gradleBuild.getProjectDir(), path).getAbsolutePath();
 	}

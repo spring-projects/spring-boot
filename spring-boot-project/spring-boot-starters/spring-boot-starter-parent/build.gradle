@@ -261,6 +261,7 @@ publishing.publications.withType(MavenPublication) {
 									metadataRepository {
 										delegate.enabled('true')
 									}
+									delegate.requiredVersion('22.3')
 								}
 								executions {
 									execution {
@@ -305,6 +306,7 @@ publishing.publications.withType(MavenPublication) {
 									metadataRepository {
 										delegate.enabled('true')
 									}
+									delegate.requiredVersion('22.3')
 								}
 								executions {
 									execution {
