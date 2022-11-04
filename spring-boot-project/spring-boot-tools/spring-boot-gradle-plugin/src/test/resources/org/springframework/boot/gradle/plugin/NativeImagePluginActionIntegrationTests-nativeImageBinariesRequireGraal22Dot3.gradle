@@ -18,7 +18,6 @@ graalvmNative {
 
 task('requiredGraalVersion') {
 	doFirst {
-		println "Binaries ${graalvmNative.binaries.asMap}"
 		graalvmNative.binaries.asMap.each { name, binary ->
 			println "${name}: ${binary.requiredVersion.get()}"
 		}
