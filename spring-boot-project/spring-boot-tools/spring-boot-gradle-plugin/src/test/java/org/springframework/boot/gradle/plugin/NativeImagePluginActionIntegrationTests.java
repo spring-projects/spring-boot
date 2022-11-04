@@ -101,6 +101,24 @@ class NativeImagePluginActionIntegrationTests {
 		assertThat(result.getOutput()).doesNotContain("commons-lang");
 	}
 
+	@TestTemplate
+	void classesGeneratedDuringAotProcessingAreOnTheNativeImageClasspath() {
+		BuildResult result = this.gradleBuild.build("checkNativeImageClasspath");
+		assertThat(result.getOutput()).contains(projectPath("build/classes/java/aot"),
+				projectPath("build/resources/aot"), projectPath("build/generated/aotClasses"));
+	}
+
+	@TestTemplate
+	void classesGeneratedDuringAotTestProcessingAreOnTheTestNativeImageClasspath() {
+		BuildResult result = this.gradleBuild.build("checkTestNativeImageClasspath");
+		assertThat(result.getOutput()).contains(projectPath("build/classes/java/aotTest"),
+				projectPath("build/resources/aotTest"), projectPath("build/generated/aotTestClasses"));
+	}
+
+	private String projectPath(String path) {
+		return new File(this.gradleBuild.getProjectDir(), path).getAbsolutePath();
+	}
+
 	private void writeDummySpringApplicationAotProcessorMainClass() {
 		File examplePackage = new File(this.gradleBuild.getProjectDir(), "src/main/java/org/springframework/boot");
 		examplePackage.mkdirs();

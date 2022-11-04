@@ -32,7 +32,6 @@ import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSetContainer;
-import org.gradle.api.tasks.SourceSetOutput;
 
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
@@ -60,8 +59,7 @@ class NativeImagePluginAction implements PluginApplicationAction {
 			SourceSetContainer sourceSets = javaPluginExtension.getSourceSets();
 			GraalVMExtension graalVmExtension = configureGraalVmExtension(project);
 			configureMainNativeBinaryClasspath(project, sourceSets, graalVmExtension);
-			configureTestNativeBinaryClasspath(sourceSets, graalVmExtension,
-					SpringBootAotPlugin.AOT_TEST_SOURCE_SET_NAME);
+			configureTestNativeBinaryClasspath(project, sourceSets, graalVmExtension);
 			configureGraalVmReachabilityExtension(graalVmExtension);
 			copyReachabilityMetadataToBootJar(project);
 			configureBootBuildImageToProduceANativeImage(project);
@@ -86,10 +84,11 @@ class NativeImagePluginAction implements PluginApplicationAction {
 		return !SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME.equals(configuration.getName());
 	}
 
-	private void configureTestNativeBinaryClasspath(SourceSetContainer sourceSets, GraalVMExtension graalVmExtension,
-			String sourceSetName) {
-		SourceSetOutput output = sourceSets.getByName(SpringBootAotPlugin.AOT_TEST_SOURCE_SET_NAME).getOutput();
-		graalVmExtension.getBinaries().getByName(NativeImagePlugin.NATIVE_TEST_EXTENSION).classpath(output);
+	private void configureTestNativeBinaryClasspath(Project project, SourceSetContainer sourceSets,
+			GraalVMExtension graalVmExtension) {
+		FileCollection runtimeClasspath = sourceSets.getByName(SpringBootAotPlugin.AOT_TEST_SOURCE_SET_NAME)
+				.getRuntimeClasspath();
+		graalVmExtension.getBinaries().getByName(NativeImagePlugin.NATIVE_TEST_EXTENSION).classpath(runtimeClasspath);
 	}
 
 	private GraalVMExtension configureGraalVmExtension(Project project) {
