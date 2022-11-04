@@ -44,19 +44,18 @@ public class HttpExchangesEndpoint {
 	}
 
 	@ReadOperation
-	public HttpExchanges httpExchanges() {
-		return new HttpExchanges(this.repository.findAll());
+	public HttpExchangesDescriptor httpExchanges() {
+		return new HttpExchangesDescriptor(this.repository.findAll());
 	}
 
 	/**
-	 * A description of an application's {@link HttpExchange} entries. Primarily intended
-	 * for serialization to JSON.
+	 * Description of an application's {@link HttpExchange} entries.
 	 */
-	public static final class HttpExchanges {
+	public static final class HttpExchangesDescriptor {
 
 		private final List<HttpExchange> exchanges;
 
-		private HttpExchanges(List<HttpExchange> exchanges) {
+		private HttpExchangesDescriptor(List<HttpExchange> exchanges) {
 			this.exchanges = exchanges;
 		}
 

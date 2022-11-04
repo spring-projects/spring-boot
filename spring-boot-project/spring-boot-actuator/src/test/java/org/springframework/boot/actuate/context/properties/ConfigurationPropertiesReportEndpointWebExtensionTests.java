@@ -22,7 +22,7 @@ import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.Show;
 
@@ -88,7 +88,7 @@ class ConfigurationPropertiesReportEndpointWebExtensionTests {
 
 	private void verifyPrefixed(SecurityContext securityContext, boolean showUnsanitized) {
 		given(this.delegate.getConfigurationProperties("test", showUnsanitized))
-				.willReturn(new ApplicationConfigurationProperties(Collections.emptyMap()));
+				.willReturn(new ConfigurationPropertiesDescriptor(Collections.emptyMap()));
 		this.webExtension.configurationPropertiesWithPrefix(securityContext, "test");
 		then(this.delegate).should().getConfigurationProperties("test", showUnsanitized);
 	}

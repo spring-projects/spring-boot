@@ -21,9 +21,9 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
-import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationProperties;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationPropertiesDescriptor;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -55,10 +55,11 @@ class ConfigurationPropertiesReportEndpointFilteringTests {
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			ApplicationConfigurationProperties applicationProperties = endpoint
+			ConfigurationPropertiesDescriptor applicationProperties = endpoint
 					.configurationPropertiesWithPrefix("foo.");
 			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
-			ContextConfigurationProperties contextProperties = applicationProperties.getContexts().get(context.getId());
+			ContextConfigurationPropertiesDescriptor contextProperties = applicationProperties.getContexts()
+					.get(context.getId());
 			assertThat(contextProperties.getBeans()).containsOnlyKeys("primaryFoo", "secondaryFoo");
 		});
 	}
@@ -70,10 +71,11 @@ class ConfigurationPropertiesReportEndpointFilteringTests {
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			ApplicationConfigurationProperties applicationProperties = endpoint
+			ConfigurationPropertiesDescriptor applicationProperties = endpoint
 					.configurationPropertiesWithPrefix("foo.third");
 			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
-			ContextConfigurationProperties contextProperties = applicationProperties.getContexts().get(context.getId());
+			ContextConfigurationPropertiesDescriptor contextProperties = applicationProperties.getContexts()
+					.get(context.getId());
 			assertThat(contextProperties.getBeans()).isEmpty();
 		});
 	}
@@ -98,10 +100,11 @@ class ConfigurationPropertiesReportEndpointFilteringTests {
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			ApplicationConfigurationProperties applicationProperties = endpoint
+			ConfigurationPropertiesDescriptor applicationProperties = endpoint
 					.configurationPropertiesWithPrefix("only.bar");
 			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
-			ContextConfigurationProperties contextProperties = applicationProperties.getContexts().get(context.getId());
+			ContextConfigurationPropertiesDescriptor contextProperties = applicationProperties.getContexts()
+					.get(context.getId());
 			Optional<String> key = contextProperties.getBeans().keySet().stream()
 					.filter((id) -> findIdFromPrefix("only.bar", id)).findAny();
 			ConfigurationPropertiesBeanDescriptor descriptor = contextProperties.getBeans().get(key.get());

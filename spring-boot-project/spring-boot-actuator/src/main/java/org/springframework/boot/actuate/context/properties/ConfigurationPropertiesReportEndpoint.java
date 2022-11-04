@@ -125,37 +125,37 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	@ReadOperation
-	public ApplicationConfigurationProperties configurationProperties() {
+	public ConfigurationPropertiesDescriptor configurationProperties() {
 		boolean showUnsanitized = this.showValues.isShown(true);
 		return getConfigurationProperties(showUnsanitized);
 	}
 
-	ApplicationConfigurationProperties getConfigurationProperties(boolean showUnsanitized) {
+	ConfigurationPropertiesDescriptor getConfigurationProperties(boolean showUnsanitized) {
 		return getConfigurationProperties(this.context, (bean) -> true, showUnsanitized);
 	}
 
 	@ReadOperation
-	public ApplicationConfigurationProperties configurationPropertiesWithPrefix(@Selector String prefix) {
+	public ConfigurationPropertiesDescriptor configurationPropertiesWithPrefix(@Selector String prefix) {
 		boolean showUnsanitized = this.showValues.isShown(true);
 		return getConfigurationProperties(prefix, showUnsanitized);
 	}
 
-	ApplicationConfigurationProperties getConfigurationProperties(String prefix, boolean showUnsanitized) {
+	ConfigurationPropertiesDescriptor getConfigurationProperties(String prefix, boolean showUnsanitized) {
 		return getConfigurationProperties(this.context, (bean) -> bean.getAnnotation().prefix().startsWith(prefix),
 				showUnsanitized);
 	}
 
-	private ApplicationConfigurationProperties getConfigurationProperties(ApplicationContext context,
+	private ConfigurationPropertiesDescriptor getConfigurationProperties(ApplicationContext context,
 			Predicate<ConfigurationPropertiesBean> beanFilterPredicate, boolean showUnsanitized) {
 		ObjectMapper mapper = getObjectMapper();
-		Map<String, ContextConfigurationProperties> contexts = new HashMap<>();
+		Map<String, ContextConfigurationPropertiesDescriptor> contexts = new HashMap<>();
 		ApplicationContext target = context;
 
 		while (target != null) {
 			contexts.put(target.getId(), describeBeans(mapper, target, beanFilterPredicate, showUnsanitized));
 			target = target.getParent();
 		}
-		return new ApplicationConfigurationProperties(contexts);
+		return new ConfigurationPropertiesDescriptor(contexts);
 	}
 
 	private ObjectMapper getObjectMapper() {
@@ -202,13 +202,13 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		builder.serializerFactory(factory);
 	}
 
-	private ContextConfigurationProperties describeBeans(ObjectMapper mapper, ApplicationContext context,
+	private ContextConfigurationPropertiesDescriptor describeBeans(ObjectMapper mapper, ApplicationContext context,
 			Predicate<ConfigurationPropertiesBean> beanFilterPredicate, boolean showUnsanitized) {
 		Map<String, ConfigurationPropertiesBean> beans = ConfigurationPropertiesBean.getAll(context);
 		Map<String, ConfigurationPropertiesBeanDescriptor> descriptors = beans.values().stream()
 				.filter(beanFilterPredicate).collect(Collectors.toMap(ConfigurationPropertiesBean::getName,
 						(bean) -> describeBean(mapper, bean, showUnsanitized)));
-		return new ContextConfigurationProperties(descriptors,
+		return new ContextConfigurationPropertiesDescriptor(descriptors,
 				(context.getParent() != null) ? context.getParent().getId() : null);
 	}
 
@@ -561,36 +561,34 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	/**
-	 * A description of an application's
-	 * {@link ConfigurationProperties @ConfigurationProperties} beans. Primarily intended
-	 * for serialization to JSON.
+	 * Description of an application's
+	 * {@link ConfigurationProperties @ConfigurationProperties} beans.
 	 */
-	public static final class ApplicationConfigurationProperties {
+	public static final class ConfigurationPropertiesDescriptor {
 
-		private final Map<String, ContextConfigurationProperties> contexts;
+		private final Map<String, ContextConfigurationPropertiesDescriptor> contexts;
 
-		ApplicationConfigurationProperties(Map<String, ContextConfigurationProperties> contexts) {
+		ConfigurationPropertiesDescriptor(Map<String, ContextConfigurationPropertiesDescriptor> contexts) {
 			this.contexts = contexts;
 		}
 
-		public Map<String, ContextConfigurationProperties> getContexts() {
+		public Map<String, ContextConfigurationPropertiesDescriptor> getContexts() {
 			return this.contexts;
 		}
 
 	}
 
 	/**
-	 * A description of an application context's
-	 * {@link ConfigurationProperties @ConfigurationProperties} beans. Primarily intended
-	 * for serialization to JSON.
+	 * Description of an application context's
+	 * {@link ConfigurationProperties @ConfigurationProperties} beans.
 	 */
-	public static final class ContextConfigurationProperties {
+	public static final class ContextConfigurationPropertiesDescriptor {
 
 		private final Map<String, ConfigurationPropertiesBeanDescriptor> beans;
 
 		private final String parentId;
 
-		private ContextConfigurationProperties(Map<String, ConfigurationPropertiesBeanDescriptor> beans,
+		private ContextConfigurationPropertiesDescriptor(Map<String, ConfigurationPropertiesBeanDescriptor> beans,
 				String parentId) {
 			this.beans = beans;
 			this.parentId = parentId;
@@ -607,8 +605,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	/**
-	 * A description of a {@link ConfigurationProperties @ConfigurationProperties} bean.
-	 * Primarily intended for serialization to JSON.
+	 * Description of a {@link ConfigurationProperties @ConfigurationProperties} bean.
 	 */
 	public static final class ConfigurationPropertiesBeanDescriptor {
 

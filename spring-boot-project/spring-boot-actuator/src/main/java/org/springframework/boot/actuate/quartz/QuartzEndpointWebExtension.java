@@ -29,10 +29,10 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
-import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzGroups;
-import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobDetails;
-import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobGroupSummary;
-import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzTriggerGroupSummary;
+import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzGroupsDescriptor;
+import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobDetailsDescriptor;
+import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobGroupSummaryDescriptor;
+import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzTriggerGroupSummaryDescriptor;
 import org.springframework.boot.actuate.quartz.QuartzEndpointWebExtension.QuartzEndpointWebExtensionRuntimeHints;
 import org.springframework.context.annotation.ImportRuntimeHints;
 
@@ -59,7 +59,7 @@ public class QuartzEndpointWebExtension {
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<QuartzGroups> quartzJobOrTriggerGroups(@Selector String jobsOrTriggers)
+	public WebEndpointResponse<QuartzGroupsDescriptor> quartzJobOrTriggerGroups(@Selector String jobsOrTriggers)
 			throws SchedulerException {
 		return handle(jobsOrTriggers, this.delegate::quartzJobGroups, this.delegate::quartzTriggerGroups);
 	}
@@ -110,8 +110,9 @@ public class QuartzEndpointWebExtension {
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			this.bindingRegistrar.registerReflectionHints(hints.reflection(), QuartzGroups.class,
-					QuartzJobDetails.class, QuartzJobGroupSummary.class, QuartzTriggerGroupSummary.class);
+			this.bindingRegistrar.registerReflectionHints(hints.reflection(), QuartzGroupsDescriptor.class,
+					QuartzJobDetailsDescriptor.class, QuartzJobGroupSummaryDescriptor.class,
+					QuartzTriggerGroupSummaryDescriptor.class);
 		}
 
 	}

@@ -22,7 +22,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
-import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpointWebExtension;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
 import org.springframework.boot.actuate.endpoint.Show;
@@ -115,7 +115,7 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 			assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpoint.class);
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			ApplicationConfigurationProperties properties = endpoint.configurationProperties();
+			ConfigurationPropertiesDescriptor properties = endpoint.configurationProperties();
 			Map<String, Object> nestedProperties = properties.getContexts().get(context.getId()).getBeans()
 					.get("testProperties").getProperties();
 			assertThat(nestedProperties).isNotNull();

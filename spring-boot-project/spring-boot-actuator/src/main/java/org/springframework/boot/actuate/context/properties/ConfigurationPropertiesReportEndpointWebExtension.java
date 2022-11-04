@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.context.properties;
 
 import java.util.Set;
 
-import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -50,16 +50,16 @@ public class ConfigurationPropertiesReportEndpointWebExtension {
 	}
 
 	@ReadOperation
-	public ApplicationConfigurationProperties configurationProperties(SecurityContext securityContext) {
+	public ConfigurationPropertiesDescriptor configurationProperties(SecurityContext securityContext) {
 		boolean showUnsanitized = this.showValues.isShown(securityContext, this.roles);
 		return this.delegate.getConfigurationProperties(showUnsanitized);
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<ApplicationConfigurationProperties> configurationPropertiesWithPrefix(
+	public WebEndpointResponse<ConfigurationPropertiesDescriptor> configurationPropertiesWithPrefix(
 			SecurityContext securityContext, @Selector String prefix) {
 		boolean showUnsanitized = this.showValues.isShown(securityContext, this.roles);
-		ApplicationConfigurationProperties configurationProperties = this.delegate.getConfigurationProperties(prefix,
+		ConfigurationPropertiesDescriptor configurationProperties = this.delegate.getConfigurationProperties(prefix,
 				showUnsanitized);
 		boolean foundMatchingBeans = configurationProperties.getContexts().values().stream()
 				.anyMatch((context) -> !context.getBeans().isEmpty());

@@ -30,7 +30,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
-import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationProperties;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationPropertiesDescriptor;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
 import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -330,9 +330,10 @@ class ConfigurationPropertiesReportEndpointTests {
 		return (context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties configurationProperties = endpoint
+			ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor configurationProperties = endpoint
 					.configurationProperties();
-			ContextConfigurationProperties allProperties = configurationProperties.getContexts().get(context.getId());
+			ContextConfigurationPropertiesDescriptor allProperties = configurationProperties.getContexts()
+					.get(context.getId());
 			Optional<String> key = allProperties.getBeans().keySet().stream()
 					.filter((id) -> findIdFromPrefix(prefix, id)).findAny();
 			assertThat(key).describedAs("No configuration properties with prefix '%s' found", prefix).isPresent();

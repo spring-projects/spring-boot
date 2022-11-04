@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.integration;
 
+import java.util.Collection;
+import java.util.Map;
+
 import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -34,6 +37,8 @@ import org.springframework.integration.graph.ErrorCapableMessageHandlerNode;
 import org.springframework.integration.graph.ErrorCapableRoutingNode;
 import org.springframework.integration.graph.Graph;
 import org.springframework.integration.graph.IntegrationGraphServer;
+import org.springframework.integration.graph.IntegrationNode;
+import org.springframework.integration.graph.LinkNode;
 import org.springframework.integration.graph.MessageChannelNode;
 import org.springframework.integration.graph.MessageGatewayNode;
 import org.springframework.integration.graph.MessageHandlerNode;
@@ -65,8 +70,8 @@ public class IntegrationGraphEndpoint {
 	}
 
 	@ReadOperation
-	public Graph graph() {
-		return this.graphServer.getGraph();
+	public GraphDescriptor graph() {
+		return new GraphDescriptor(this.graphServer.getGraph());
 	}
 
 	@WriteOperation
@@ -87,6 +92,37 @@ public class IntegrationGraphEndpoint {
 					MessageChannelNode.class, MessageGatewayNode.class, MessageHandlerNode.class,
 					MessageProducerNode.class, MessageSourceNode.class, PollableChannelNode.class,
 					RoutingMessageHandlerNode.class);
+		}
+
+	}
+
+	/**
+	 * Description of a {@link Graph}.
+	 */
+	public static class GraphDescriptor {
+
+		private final Map<String, Object> contentDescriptor;
+
+		private final Collection<IntegrationNode> nodes;
+
+		private final Collection<LinkNode> links;
+
+		GraphDescriptor(Graph graph) {
+			this.contentDescriptor = graph.getContentDescriptor();
+			this.nodes = graph.getNodes();
+			this.links = graph.getLinks();
+		}
+
+		public Map<String, Object> getContentDescriptor() {
+			return this.contentDescriptor;
+		}
+
+		public Collection<IntegrationNode> getNodes() {
+			return this.nodes;
+		}
+
+		public Collection<LinkNode> getLinks() {
+			return this.links;
 		}
 
 	}

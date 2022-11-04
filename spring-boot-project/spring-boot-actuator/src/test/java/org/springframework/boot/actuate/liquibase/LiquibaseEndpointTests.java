@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import javax.sql.DataSource;
 import liquibase.integration.spring.SpringLiquibase;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.liquibase.LiquibaseEndpoint.LiquibaseBean;
+import org.springframework.boot.actuate.liquibase.LiquibaseEndpoint.LiquibaseBeanDescriptor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
@@ -60,8 +60,8 @@ class LiquibaseEndpointTests {
 	@Test
 	void liquibaseReportIsReturned() {
 		this.contextRunner.withUserConfiguration(Config.class).run((context) -> {
-			Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class).liquibaseBeans()
-					.getContexts().get(context.getId()).getLiquibaseBeans();
+			Map<String, LiquibaseBeanDescriptor> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+					.liquibaseBeans().getContexts().get(context.getId()).getLiquibaseBeans();
 			assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
 		});
 	}
@@ -70,8 +70,8 @@ class LiquibaseEndpointTests {
 	void liquibaseReportIsReturnedForContextHierarchy() {
 		this.contextRunner.withUserConfiguration().run((parent) -> {
 			this.contextRunner.withUserConfiguration(Config.class).withParent(parent).run((context) -> {
-				Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class).liquibaseBeans()
-						.getContexts().get(parent.getId()).getLiquibaseBeans();
+				Map<String, LiquibaseBeanDescriptor> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+						.liquibaseBeans().getContexts().get(parent.getId()).getLiquibaseBeans();
 				assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
 			});
 		});
@@ -81,7 +81,7 @@ class LiquibaseEndpointTests {
 	void invokeWithCustomSchema() {
 		this.contextRunner.withUserConfiguration(Config.class, DataSourceWithSchemaConfiguration.class)
 				.withPropertyValues("spring.liquibase.default-schema=CUSTOMSCHEMA").run((context) -> {
-					Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+					Map<String, LiquibaseBeanDescriptor> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
 							.liquibaseBeans().getContexts().get(context.getId()).getLiquibaseBeans();
 					assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
 				});
@@ -93,7 +93,7 @@ class LiquibaseEndpointTests {
 				.withPropertyValues("spring.liquibase.database-change-log-lock-table=liquibase_database_changelog_lock",
 						"spring.liquibase.database-change-log-table=liquibase_database_changelog")
 				.run((context) -> {
-					Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+					Map<String, LiquibaseBeanDescriptor> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
 							.liquibaseBeans().getContexts().get(context.getId()).getLiquibaseBeans();
 					assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
 				});
@@ -113,7 +113,7 @@ class LiquibaseEndpointTests {
 	void whenMultipleLiquibaseBeansArePresentChangeSetsAreCorrectlyReportedForEachBean() {
 		this.contextRunner.withUserConfiguration(Config.class, MultipleDataSourceLiquibaseConfiguration.class)
 				.run((context) -> {
-					Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+					Map<String, LiquibaseBeanDescriptor> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
 							.liquibaseBeans().getContexts().get(context.getId()).getLiquibaseBeans();
 					assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
 					assertThat(liquibaseBeans.get("liquibase").getChangeSets().get(0).getChangeLog())

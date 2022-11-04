@@ -48,9 +48,9 @@ public class SessionsEndpoint {
 	}
 
 	@ReadOperation
-	public SessionsReport sessionsForUsername(String username) {
+	public SessionsDescriptor sessionsForUsername(String username) {
 		Map<String, ? extends Session> sessions = this.sessionRepository.findByPrincipalName(username);
-		return new SessionsReport(sessions);
+		return new SessionsDescriptor(sessions);
 	}
 
 	@ReadOperation
@@ -68,14 +68,13 @@ public class SessionsEndpoint {
 	}
 
 	/**
-	 * A report of user's {@link Session sessions}. Primarily intended for serialization
-	 * to JSON.
+	 * Description of user's {@link Session sessions}.
 	 */
-	public static final class SessionsReport {
+	public static final class SessionsDescriptor {
 
 		private final List<SessionDescriptor> sessions;
 
-		public SessionsReport(Map<String, ? extends Session> sessions) {
+		public SessionsDescriptor(Map<String, ? extends Session> sessions) {
 			this.sessions = sessions.values().stream().map(SessionDescriptor::new).toList();
 		}
 
@@ -86,8 +85,7 @@ public class SessionsEndpoint {
 	}
 
 	/**
-	 * A description of user's {@link Session session}. Primarily intended for
-	 * serialization to JSON.
+	 * Description of user's {@link Session session}.
 	 */
 	public static final class SessionDescriptor {
 

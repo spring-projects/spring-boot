@@ -16,6 +16,10 @@
 
 package org.springframework.boot.actuate.integration;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -23,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.boot.actuate.integration.IntegrationGraphEndpoint.GraphDescriptor;
 import org.springframework.boot.actuate.integration.IntegrationGraphEndpoint.IntegrationGraphEndpointRuntimeHints;
 import org.springframework.integration.graph.CompositeMessageHandlerNode;
 import org.springframework.integration.graph.DiscardingMessageHandlerNode;
@@ -34,6 +39,8 @@ import org.springframework.integration.graph.ErrorCapableMessageHandlerNode;
 import org.springframework.integration.graph.ErrorCapableRoutingNode;
 import org.springframework.integration.graph.Graph;
 import org.springframework.integration.graph.IntegrationGraphServer;
+import org.springframework.integration.graph.IntegrationNode;
+import org.springframework.integration.graph.LinkNode;
 import org.springframework.integration.graph.MessageChannelNode;
 import org.springframework.integration.graph.MessageGatewayNode;
 import org.springframework.integration.graph.MessageHandlerNode;
@@ -62,10 +69,18 @@ class IntegrationGraphEndpointTests {
 	@Test
 	void readOperationShouldReturnGraph() {
 		Graph mockedGraph = mock(Graph.class);
+		Map<String, Object> contentDescriptor = new LinkedHashMap<>();
+		Collection<IntegrationNode> nodes = new ArrayList<>();
+		Collection<LinkNode> links = new ArrayList<>();
+		given(mockedGraph.getContentDescriptor()).willReturn(contentDescriptor);
+		given(mockedGraph.getNodes()).willReturn(nodes);
+		given(mockedGraph.getLinks()).willReturn(links);
 		given(this.server.getGraph()).willReturn(mockedGraph);
-		Graph graph = this.endpoint.graph();
+		GraphDescriptor graph = this.endpoint.graph();
 		then(this.server).should().getGraph();
-		assertThat(graph).isEqualTo(mockedGraph);
+		assertThat(graph.getContentDescriptor()).isSameAs(contentDescriptor);
+		assertThat(graph.getNodes()).isSameAs(nodes);
+		assertThat(graph.getLinks()).isSameAs(links);
 	}
 
 	@Test

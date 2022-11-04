@@ -52,7 +52,7 @@ public class ThreadDumpEndpoint {
 	}
 
 	/**
-	 * A description of a thread dump. Primarily intended for serialization to JSON.
+	 * Description of a thread dump.
 	 */
 	public static final class ThreadDumpDescriptor {
 
