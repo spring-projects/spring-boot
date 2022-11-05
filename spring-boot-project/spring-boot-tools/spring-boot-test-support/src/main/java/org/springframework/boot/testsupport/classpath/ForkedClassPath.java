@@ -25,15 +25,15 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * Annotation used to fork the classpath. This can be helpful where neither
- * {@link ClassPathExclusions} or {@link ClassPathOverrides} are needed, but just a copy
- * of the classpath.
+ * Annotation used to fork the classpath. This can be helpful when using annotations on
+ * parameterized tests, or where neither {@link ClassPathExclusions} or
+ * {@link ClassPathOverrides} are needed, but just a copy of the classpath.
  *
  * @author Christoph Dreis
  * @since 2.4.0
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
 @ExtendWith(ModifiedClassPathExtension.class)
 public @interface ForkedClassPath {

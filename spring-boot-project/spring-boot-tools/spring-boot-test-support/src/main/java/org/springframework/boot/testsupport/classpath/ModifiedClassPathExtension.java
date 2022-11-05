@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author Christoph Dreis
  */
-class ModifiedClassPathExtension implements InvocationInterceptor {
+public class ModifiedClassPathExtension implements InvocationInterceptor {
 
 	@Override
 	public void interceptBeforeAllMethod(Invocation<Void> invocation,
@@ -75,20 +75,31 @@ class ModifiedClassPathExtension implements InvocationInterceptor {
 	@Override
 	public void interceptTestMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
 			ExtensionContext extensionContext) throws Throwable {
+		interceptMethod(invocation, invocationContext, extensionContext);
+	}
+
+	@Override
+	public void interceptTestTemplateMethod(Invocation<Void> invocation,
+			ReflectiveInvocationContext<Method> invocationContext, ExtensionContext extensionContext) throws Throwable {
+		interceptMethod(invocation, invocationContext, extensionContext);
+	}
+
+	private void interceptMethod(Invocation<Void> invocation, ReflectiveInvocationContext<Method> invocationContext,
+			ExtensionContext extensionContext) throws Throwable {
 		if (isModifiedClassPathClassLoader(extensionContext)) {
 			invocation.proceed();
 			return;
 		}
-		invocation.skip();
-		runTestWithModifiedClassPath(invocationContext, extensionContext);
-	}
-
-	private void runTestWithModifiedClassPath(ReflectiveInvocationContext<Method> invocationContext,
-			ExtensionContext extensionContext) throws Throwable {
 		Class<?> testClass = extensionContext.getRequiredTestClass();
 		Method testMethod = invocationContext.getExecutable();
+		URLClassLoader modifiedClassLoader = ModifiedClassPathClassLoader.get(testClass, testMethod,
+				invocationContext.getArguments());
+		if (modifiedClassLoader == null) {
+			invocation.proceed();
+			return;
+		}
+		invocation.skip();
 		ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
-		URLClassLoader modifiedClassLoader = ModifiedClassPathClassLoader.get(testClass);
 		Thread.currentThread().setContextClassLoader(modifiedClassLoader);
 		try {
 			runTest(modifiedClassLoader, testClass.getName(), testMethod.getName());
