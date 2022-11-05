@@ -489,23 +489,6 @@ include::code:MyTomcatConfiguration[]
 
 
 
-[[howto.webserver.use-tomcat-legacycookieprocessor]]
-=== Use Tomcat's LegacyCookieProcessor
-By default, the embedded Tomcat used by Spring Boot does not support "Version 0" of the Cookie format, so you may see the following error:
-
-[indent=0]
-----
-	java.lang.IllegalArgumentException: An invalid character [32] was present in the Cookie value
-----
-
-If at all possible, you should consider updating your code to only store values compliant with later Cookie specifications.
-If, however, you cannot change the way that cookies are written, you can instead configure Tomcat to use a `LegacyCookieProcessor`.
-To switch to the `LegacyCookieProcessor`, use an `WebServerFactoryCustomizer` bean that adds a `TomcatContextCustomizer`, as shown in the following example:
-
-include::code:MyLegacyCookieProcessorConfiguration[]
-
-
-
 [[howto.webserver.enable-tomcat-mbean-registry]]
 === Enable Tomcat's MBean Registry
 Embedded Tomcat's MBean registry is disabled by default.
