@@ -77,7 +77,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.InputStreamFactory;
@@ -112,6 +111,7 @@ import org.springframework.boot.system.ApplicationHome;
 import org.springframework.boot.system.ApplicationTemp;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
+import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.testsupport.web.servlet.ExampleFilter;
 import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
 import org.springframework.boot.web.server.Compression;
@@ -140,7 +140,6 @@ import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 
@@ -167,6 +166,7 @@ import static org.mockito.Mockito.mock;
  * @author Raja Kolli
  */
 @ExtendWith(OutputCaptureExtension.class)
+@DirtiesUrlFactories
 public abstract class AbstractServletWebServerFactoryTests {
 
 	@TempDir
@@ -204,20 +204,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 			catch (Exception ex) {
 				// Ignore
 			}
-		}
-		if (ClassUtils.isPresent("org.apache.catalina.webresources.TomcatURLStreamHandlerFactory",
-				getClass().getClassLoader())) {
-			ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance", null);
-		}
-		ReflectionTestUtils.setField(URL.class, "factory", null);
-	}
-
-	@AfterEach
-	void clearUrlStreamHandlerFactory() {
-		if (ClassUtils.isPresent("org.apache.catalina.webresources.TomcatURLStreamHandlerFactory",
-				getClass().getClassLoader())) {
-			ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance", null);
-			ReflectionTestUtils.setField(URL.class, "factory", null);
 		}
 	}
 

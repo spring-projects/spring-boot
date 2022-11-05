@@ -18,7 +18,6 @@ package org.springframework.boot.web.embedded.tomcat;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -27,7 +26,6 @@ import java.security.cert.CertificateException;
 import org.apache.catalina.LifecycleState;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
-import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
 import org.apache.coyote.http11.Http11NioProtocol;
 import org.apache.tomcat.util.net.SSLHostConfig;
 import org.junit.jupiter.api.AfterEach;
@@ -37,12 +35,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
+import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -55,6 +53,7 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  */
 @ExtendWith(OutputCaptureExtension.class)
+@DirtiesUrlFactories
 class SslConnectorCustomizerTests {
 
 	private Tomcat tomcat;
@@ -72,8 +71,6 @@ class SslConnectorCustomizerTests {
 	@AfterEach
 	void stop() throws Exception {
 		System.clearProperty("javax.net.ssl.trustStorePassword");
-		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance", null);
-		ReflectionTestUtils.setField(URL.class, "factory", null);
 		this.tomcat.stop();
 	}
 
