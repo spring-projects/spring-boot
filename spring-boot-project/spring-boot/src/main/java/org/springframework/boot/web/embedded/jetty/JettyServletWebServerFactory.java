@@ -693,6 +693,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			}
 
 			@Override
+			@SuppressWarnings("removal")
 			public void addCookie(Cookie cookie) {
 				SameSite sameSite = getSameSite(cookie);
 				if (sameSite != null) {

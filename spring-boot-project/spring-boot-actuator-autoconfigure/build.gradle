@@ -153,9 +153,7 @@ dependencies {
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("io.undertow:undertow-core")
-	testImplementation("io.undertow:undertow-servlet-jakarta") {
-		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
-	}
+	testImplementation("io.undertow:undertow-servlet")
 	testImplementation("jakarta.xml.bind:jakarta.xml.bind-api")
 	testImplementation("org.apache.activemq:artemis-jakarta-client") {
 		exclude group: "commons-logging", module: "commons-logging"

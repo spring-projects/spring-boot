@@ -11,6 +11,10 @@ configurations {
 	}
 }
 
+configurations.all {
+	resolutionStrategy.force("jakarta.servlet:jakarta.servlet-api:5.0.0")
+}
+
 dependencies {
 	compileOnly(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jetty"))
 

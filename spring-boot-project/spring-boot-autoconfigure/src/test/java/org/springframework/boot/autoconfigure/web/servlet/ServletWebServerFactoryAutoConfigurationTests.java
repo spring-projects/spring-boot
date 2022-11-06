@@ -37,6 +37,8 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
+import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
@@ -76,6 +78,7 @@ import static org.mockito.Mockito.mock;
  * @author Raheela Aslam
  * @author Madhura Bhave
  */
+@DirtiesUrlFactories
 class ServletWebServerFactoryAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
@@ -151,6 +154,7 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
+	@Servlet5ClassPathOverrides
 	void jettyServerCustomizerBeanIsAddedToFactory() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
@@ -165,6 +169,7 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
+	@Servlet5ClassPathOverrides
 	void jettyServerCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
@@ -410,7 +415,7 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	void relativeRedirectsShouldNotBeEnabledWhenNotUsingTomcatContainer() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withClassLoader(new FilteredClassLoader(Tomcat.class))
+						.withClassLoader(new FilteredClassLoader(Tomcat.class, Server.class))
 						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
 						.withPropertyValues("server.forward-headers-strategy=framework", "server.port=0");
 		runner.run((context) -> {

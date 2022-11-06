@@ -112,6 +112,7 @@ final class TldPatterns {
 		skipPatterns.add("tomcat-websocket.jar");
 		skipPatterns.add("tools.jar");
 		skipPatterns.add("websocket-api.jar");
+		skipPatterns.add("websocket-client-api.jar");
 		skipPatterns.add("wsdl4j*.jar");
 		skipPatterns.add("xercesImpl.jar");
 		skipPatterns.add("xml-apis.jar");

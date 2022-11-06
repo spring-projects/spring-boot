@@ -31,9 +31,7 @@ dependencies {
 	}
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.r2dbc:r2dbc-spi")
-	optional("io.undertow:undertow-servlet-jakarta") {
-		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
-	}
+	optional("io.undertow:undertow-servlet")
 	optional("javax.cache:cache-api")
 	optional("jakarta.jms:jakarta.jms-api")
 	optional("org.apache.tomcat.embed:tomcat-embed-core")

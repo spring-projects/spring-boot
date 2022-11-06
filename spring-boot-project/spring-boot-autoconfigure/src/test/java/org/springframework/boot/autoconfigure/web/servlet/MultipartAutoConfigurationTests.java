@@ -31,6 +31,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.classpath.ForkedClassPath;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
+import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
@@ -219,6 +220,7 @@ class MultipartAutoConfigurationTests {
 
 	}
 
+	@Servlet5ClassPathOverrides
 	@Configuration(proxyBeanMethods = false)
 	static class WebServerWithNoMultipartJetty {
 
@@ -279,6 +281,7 @@ class MultipartAutoConfigurationTests {
 
 	}
 
+	@Servlet5ClassPathOverrides
 	@Configuration(proxyBeanMethods = false)
 	static class WebServerWithEverythingJetty {
 

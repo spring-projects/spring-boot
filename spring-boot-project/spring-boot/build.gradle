@@ -36,9 +36,7 @@ dependencies {
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.rsocket:rsocket-core")
 	optional("io.rsocket:rsocket-transport-netty")
-	optional("io.undertow:undertow-servlet-jakarta") {
-		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
-	}
+	optional("io.undertow:undertow-servlet")
 	optional("jakarta.jms:jakarta.jms-api")
 	optional("jakarta.persistence:jakarta.persistence-api")
 	optional("jakarta.servlet:jakarta.servlet-api")

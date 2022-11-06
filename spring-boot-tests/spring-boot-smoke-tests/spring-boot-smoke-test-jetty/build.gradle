@@ -5,6 +5,10 @@ plugins {
 
 description = "Spring Boot Jetty smoke test"
 
+configurations.all {
+	resolutionStrategy.force("jakarta.servlet:jakarta.servlet-api:5.0.0")
+}
+
 dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web")) {
 		exclude module: "spring-boot-starter-tomcat"

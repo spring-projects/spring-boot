@@ -7,6 +7,7 @@ description = "Starter for using Jetty as the embedded servlet container. An alt
 dependencies {
 	api("jakarta.servlet:jakarta.servlet-api")
 	api("jakarta.websocket:jakarta.websocket-api")
+	api("jakarta.websocket:jakarta.websocket-client-api")
 	api("org.apache.tomcat.embed:tomcat-embed-el")
 	api("org.eclipse.jetty:jetty-servlets")
 	api("org.eclipse.jetty:jetty-webapp") {

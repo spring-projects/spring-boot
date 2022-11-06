@@ -45,6 +45,8 @@ import org.springframework.boot.autoconfigure.web.ServerProperties.Jetty;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
+import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
 import org.springframework.boot.web.embedded.jetty.ConfigurableJettyWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyWebServer;
@@ -63,6 +65,8 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author HaiTao Zhang
  */
+@DirtiesUrlFactories
+@Servlet5ClassPathOverrides
 class JettyWebServerFactoryCustomizerTests {
 
 	private MockEnvironment environment;

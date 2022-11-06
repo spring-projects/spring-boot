@@ -24,7 +24,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import org.springframework.boot.testsupport.classpath.ForkedClassPath;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
+import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
@@ -49,6 +51,7 @@ class ServletWebServerServletContextListenerTests {
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("testConfiguration")
+	@ForkedClassPath
 	void registeredServletContextListenerBeanIsCalled(String serverName, Class<?> configuration) {
 		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
 				ServletListenerRegistrationBeanConfiguration.class, configuration);
@@ -60,6 +63,7 @@ class ServletWebServerServletContextListenerTests {
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("testConfiguration")
+	@ForkedClassPath
 	void servletContextListenerBeanIsCalled(String serverName, Class<?> configuration) {
 		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
 				ServletContextListenerBeanConfiguration.class, configuration);
@@ -85,6 +89,7 @@ class ServletWebServerServletContextListenerTests {
 
 	}
 
+	@Servlet5ClassPathOverrides
 	@Configuration(proxyBeanMethods = false)
 	static class JettyConfiguration {
 
