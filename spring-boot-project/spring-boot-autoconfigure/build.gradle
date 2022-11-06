@@ -267,3 +267,7 @@ tasks.named("checkSpringConfigurationMetadata").configure {
 		"spring.groovy.template.configuration.*"
 	]
 }
+
+test {
+	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
+}

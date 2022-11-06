@@ -16,11 +16,14 @@
 
 package org.springframework.boot.autoconfigure.websocket.servlet;
 
-import jakarta.websocket.server.ServerContainer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import java.util.stream.Stream;
 
+import jakarta.websocket.server.ServerContainer;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
@@ -36,41 +39,27 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
+@DirtiesUrlFactories
 class WebSocketServletAutoConfigurationTests {
 
-	private AnnotationConfigServletWebServerApplicationContext context;
-
-	@BeforeEach
-	void createContext() {
-		this.context = new AnnotationConfigServletWebServerApplicationContext();
-	}
-
-	@AfterEach
-	void close() {
-		if (this.context != null) {
-			this.context.close();
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("testConfiguration")
+	void serverContainerIsAvailableFromTheServletContext(String server, Class<?>... configuration) {
+		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
+				configuration)) {
+			Object serverContainer = context.getServletContext()
+					.getAttribute("jakarta.websocket.server.ServerContainer");
+			assertThat(serverContainer).isInstanceOf(ServerContainer.class);
 		}
 	}
 
-	@Test
-	void tomcatServerContainerIsAvailableFromTheServletContext() {
-		serverContainerIsAvailableFromTheServletContext(TomcatConfiguration.class,
-				WebSocketServletAutoConfiguration.TomcatWebSocketConfiguration.class);
-	}
-
-	@Test
-	void jettyServerContainerIsAvailableFromTheServletContext() {
-		serverContainerIsAvailableFromTheServletContext(JettyConfiguration.class,
-				WebSocketServletAutoConfiguration.JettyWebSocketConfiguration.class);
-	}
-
-	private void serverContainerIsAvailableFromTheServletContext(Class<?>... configuration) {
-		this.context.register(configuration);
-		this.context.refresh();
-		Object serverContainer = this.context.getServletContext()
-				.getAttribute("jakarta.websocket.server.ServerContainer");
-		assertThat(serverContainer).isInstanceOf(ServerContainer.class);
-
+	static Stream<Arguments> testConfiguration() {
+		return Stream.of(
+				Arguments.of("Jetty",
+						new Class<?>[] { JettyConfiguration.class,
+								WebSocketServletAutoConfiguration.JettyWebSocketConfiguration.class }),
+				Arguments.of("Tomcat", new Class<?>[] { TomcatConfiguration.class,
+						WebSocketServletAutoConfiguration.TomcatWebSocketConfiguration.class }));
 	}
 
 	@Configuration(proxyBeanMethods = false)
