@@ -29,7 +29,6 @@ dependencies {
 	optional("com.oracle.database.jdbc:ojdbc8")
 	optional("com.oracle.database.jdbc:ucp")
 	optional("com.samskivert:jmustache")
-	optional("com.sun.mail:jakarta.mail")
 	optional("io.lettuce:lettuce-core")
 	optional("io.projectreactor.netty:reactor-netty-http")
 	optional("io.r2dbc:r2dbc-spi")
@@ -65,6 +64,7 @@ dependencies {
 	optional("org.apache.tomcat:tomcat-jdbc")
 	optional("org.apiguardian:apiguardian-api")
 	optional("org.apache.groovy:groovy-templates")
+	optional("org.eclipse.angus:angus-mail")
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.github.mxab.thymeleaf.extras:thymeleaf-extras-data-attribute")
 	optional("com.sendgrid:sendgrid-java") {
