@@ -93,8 +93,7 @@ public final class ImportCandidates implements Iterable<String> {
 			return classLoader.getResources(location);
 		}
 		catch (IOException ex) {
-			throw new IllegalArgumentException("Failed to load configurations from location [" + location + "]",
-					ex);
+			throw new IllegalArgumentException("Failed to load configurations from location [" + location + "]", ex);
 		}
 	}
 
