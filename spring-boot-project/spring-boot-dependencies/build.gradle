@@ -255,16 +255,6 @@ bom {
 			]
 		}
 	}
-	library("Glassfish EL", "4.0.2") {
-		prohibit("[5.0.0-M1,)") {
-			because "it exceeds our Jakarta EE 9 baseline"
-		}
-		group("org.glassfish") {
-			modules = [
-				"jakarta.el"
-			]
-		}
-	}
 	library("Glassfish JAXB", "3.0.2") {
 		prohibit("[3.1.0-M1,)") {
 			because "it exceeds our Jakarta EE 9 baseline"
@@ -691,13 +681,6 @@ bom {
 		group("org.glassfish.jersey") {
 			imports = [
 				"jersey-bom"
-			]
-		}
-	}
-	library("Jetty EL", "10.0.14") {
-		group("org.mortbay.jasper") {
-			modules = [
-				"apache-el"
 			]
 		}
 	}
