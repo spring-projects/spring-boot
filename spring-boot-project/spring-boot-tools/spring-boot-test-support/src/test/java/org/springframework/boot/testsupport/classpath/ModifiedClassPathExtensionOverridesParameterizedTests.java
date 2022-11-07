@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-class ModifiedClassPathExtensionOverridesParametrizedTests {
+class ModifiedClassPathExtensionOverridesParameterizedTests {
 
 	@ParameterizedTest
 	@ForkedClassPath
