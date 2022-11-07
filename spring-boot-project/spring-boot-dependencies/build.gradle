@@ -1478,7 +1478,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Session", "3.0.0-RC1") {
+	library("Spring Session", "3.0.0-SNAPSHOT") {
 		group("org.springframework.session") {
 			imports = [
 				"spring-session-bom"
