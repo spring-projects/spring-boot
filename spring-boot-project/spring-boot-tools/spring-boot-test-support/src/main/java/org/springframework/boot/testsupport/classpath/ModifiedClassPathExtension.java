@@ -32,9 +32,7 @@ import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import org.junit.platform.launcher.listeners.TestExecutionSummary;
 
-import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * A custom {@link Extension} that runs tests using a modified class path. Entries are
@@ -102,18 +100,16 @@ class ModifiedClassPathExtension implements InvocationInterceptor {
 		ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
 		Thread.currentThread().setContextClassLoader(modifiedClassLoader);
 		try {
-			runTest(modifiedClassLoader, testClass.getName(), testMethod.getName());
+			runTest(extensionContext.getUniqueId());
 		}
 		finally {
 			Thread.currentThread().setContextClassLoader(originalClassLoader);
 		}
 	}
 
-	private void runTest(ClassLoader classLoader, String testClassName, String testMethodName) throws Throwable {
-		Class<?> testClass = classLoader.loadClass(testClassName);
-		Method testMethod = findMethod(testClass, testMethodName);
+	private void runTest(String testId) throws Throwable {
 		LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
-				.selectors(DiscoverySelectors.selectMethod(testClass, testMethod)).build();
+				.selectors(DiscoverySelectors.selectUniqueId(testId)).build();
 		Launcher launcher = LauncherFactory.create();
 		TestPlan testPlan = launcher.discover(request);
 		SummaryGeneratingListener listener = new SummaryGeneratingListener();
@@ -123,20 +119,6 @@ class ModifiedClassPathExtension implements InvocationInterceptor {
 		if (!CollectionUtils.isEmpty(summary.getFailures())) {
 			throw summary.getFailures().get(0).getException();
 		}
-	}
-
-	private Method findMethod(Class<?> testClass, String testMethodName) {
-		Method method = ReflectionUtils.findMethod(testClass, testMethodName);
-		if (method == null) {
-			Method[] methods = ReflectionUtils.getUniqueDeclaredMethods(testClass);
-			for (Method candidate : methods) {
-				if (candidate.getName().equals(testMethodName)) {
-					return candidate;
-				}
-			}
-		}
-		Assert.state(method != null, () -> "Unable to find " + testClass + "." + testMethodName);
-		return method;
 	}
 
 	private void intercept(Invocation<Void> invocation, ExtensionContext extensionContext) throws Throwable {
