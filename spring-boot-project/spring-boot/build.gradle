@@ -115,6 +115,7 @@ dependencies {
 	testImplementation("org.apache.derby:derby")
 	testImplementation("org.apache.derby:derbytools")
 	testImplementation("org.awaitility:awaitility")
+	testImplementation("org.codehaus.janino:janino")
 	testImplementation("org.eclipse.jetty:jetty-client")
 	testImplementation("org.eclipse.jetty.http2:http2-client")
 	testImplementation("org.eclipse.jetty.http2:http2-http-client-transport")

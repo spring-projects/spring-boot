@@ -190,6 +190,20 @@ class SpringBootJoranConfiguratorTests {
 	}
 
 	@Test
+	void springPropertyInIfWhenTrue() throws Exception {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "my.example-property=true");
+		initialize("property-in-if.xml");
+		assertThat(this.context.getProperty("MYCHECK")).isEqualTo("i-was-included");
+	}
+
+	@Test
+	void springPropertyInIfWhenFalse() throws Exception {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "my.example-property=false");
+		initialize("property-in-if.xml");
+		assertThat(this.context.getProperty("MYCHECK")).isNull();
+	}
+
+	@Test
 	void addsAotContributionToContextDuringAotProcessing() throws Exception {
 		withSystemProperty("spring.aot.processing", "true", () -> {
 			initialize("property.xml");

@@ -55,6 +55,13 @@ bom {
 			]
 		}
 	}
+	library("Janino", "3.1.8") {
+		group("org.codehaus.janino") {
+			imports = [
+				"janino"
+			]
+		}
+	}
 	library("JLine", "2.11") {
 		prohibit("[2.12,)") {
 			because "it contains breaking changes"

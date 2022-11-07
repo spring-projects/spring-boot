@@ -84,13 +84,13 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 
 	@Override
 	protected void addModelHandlerAssociations(DefaultProcessor defaultProcessor) {
-		super.addModelHandlerAssociations(defaultProcessor);
 		defaultProcessor.addHandler(SpringPropertyModel.class,
 				(handlerContext, handlerMic) -> new SpringPropertyModelHandler(this.context,
 						this.initializationContext.getEnvironment()));
 		defaultProcessor.addHandler(SpringProfileModel.class,
 				(handlerContext, handlerMic) -> new SpringProfileModelHandler(this.context,
 						this.initializationContext.getEnvironment()));
+		super.addModelHandlerAssociations(defaultProcessor);
 	}
 
 	@Override
