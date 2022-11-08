@@ -122,7 +122,12 @@ class NativeImagePluginActionIntegrationTests {
 	}
 
 	private String projectPath(String path) {
-		return new File(this.gradleBuild.getProjectDir(), path).getAbsolutePath();
+		try {
+			return new File(this.gradleBuild.getProjectDir(), path).getCanonicalPath();
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
 	}
 
 	private void writeDummySpringApplicationAotProcessorMainClass() {
