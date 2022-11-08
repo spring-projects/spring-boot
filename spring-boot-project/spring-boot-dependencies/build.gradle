@@ -270,20 +270,10 @@ bom {
 			]
 		}
 	}
-	library("Glassfish JAXB", "3.0.2") {
-		prohibit("[3.1.0-M1,)") {
-			because "it exceeds our Jakarta EE 9 baseline"
-		}
+	library("Glassfish JAXB", "4.0.1") {
 		group("org.glassfish.jaxb") {
-			modules = [
-				"codemodel",
-				"codemodel-annotation-compiler",
-				"jaxb-jxc",
-				"jaxb-runtime",
-				"jaxb-xjc",
-				"txw2",
-				"txwc2",
-				"xsom"
+			imports = [
+				"jaxb-bom"
 			]
 		}
 	}
@@ -587,10 +577,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta XML Bind", "3.0.1") {
-		prohibit("[4.0.0-RC1,)") {
-			because "it exceeds our Jakarta EE 9 baseline"
-		}
+	library("Jakarta XML Bind", "4.0.0") {
 		group("jakarta.xml.bind") {
 			modules = [
 				"jakarta.xml.bind-api"
