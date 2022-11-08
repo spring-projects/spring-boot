@@ -15,7 +15,7 @@ The supported modes are `embedded` (to make explicit that an embedded broker is 
 When the latter is configured, Spring Boot configures a `ConnectionFactory` that connects to a broker running on the local machine with the default settings.
 
 NOTE: If you use `spring-boot-starter-artemis`, the necessary dependencies to connect to an existing ActiveMQ Artemis instance are provided, as well as the Spring infrastructure to integrate with JMS.
-Adding `org.apache.activemq:artemis-jms-server` to your application lets you use embedded mode.
+Adding `org.apache.activemq:artemis-jakarta-server` to your application lets you use embedded mode.
 
 ActiveMQ Artemis configuration is controlled by external configuration properties in `+spring.artemis.*+`.
 For example, you might declare the following section in `application.properties`:
