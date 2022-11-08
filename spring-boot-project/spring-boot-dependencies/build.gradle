@@ -494,10 +494,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Json Bind", "2.0.0") {
-		prohibit("[3.0.0-RC1,)") {
-			because "it exceeds our Jakarta EE 9 baseline"
-		}
+	library("Jakarta Json Bind", "3.0.0") {
 		group("jakarta.json.bind") {
 			modules = [
 				"jakarta.json.bind-api"
@@ -1582,10 +1579,7 @@ bom {
 			]
 		}
 	}
-	library("Yasson", "2.0.4") {
-		prohibit("[3.0.0-RC1,)") {
-			because "it exceeds our Jakarta EE 9 baseline"
-		}
+	library("Yasson", "3.0.0") {
 		group("org.eclipse") {
 			modules = [
 				"yasson"
