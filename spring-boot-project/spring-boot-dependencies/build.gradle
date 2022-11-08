@@ -487,10 +487,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Json", "2.0.2") {
-		prohibit("[2.1.0-RC1,)") {
-			because "it exceeds our Jakarta EE 9 baseline"
-		}
+	library("Jakarta Json", "2.1.1") {
 		group("jakarta.json") {
 			modules = [
 				"jakarta.json-api"
