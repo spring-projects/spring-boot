@@ -452,15 +452,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Activation", "2.0.1") {
-		prohibit("[2.1.0-RC1,)") {
-			because "it exceeds our Jakarta EE 9 baseline"
-		}
-		group("com.sun.activation") {
-			modules = [
-				"jakarta.activation"
-			]
-		}
+	library("Jakarta Activation", "2.1.0") {
 		group("jakarta.activation") {
 			modules = [
 				"jakarta.activation-api"
