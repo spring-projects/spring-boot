@@ -21,7 +21,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -299,10 +298,8 @@ class PaketoBuilderTests {
 				metadata.buildpacks().contains("paketo-buildpacks/ca-certificates",
 						"paketo-buildpacks/bellsoft-liberica", "paketo-buildpacks/executable-jar",
 						"paketo-buildpacks/spring-boot", "paketo-buildpacks/native-image");
-				metadata.processOfType("web").extracting("command")
-						.isEqualTo(Collections.singletonList("/workspace/example.ExampleApplication"));
-				metadata.processOfType("native-image").extracting("command")
-						.isEqualTo(Collections.singletonList("/workspace/example.ExampleApplication"));
+				metadata.processOfType("web").containsExactly("/workspace/example.ExampleApplication");
+				metadata.processOfType("native-image").containsExactly("/workspace/example.ExampleApplication");
 			});
 			assertImageHasDependenciesSbomLayer(imageReference, config, "native-image");
 		}
