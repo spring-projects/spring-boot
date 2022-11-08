@@ -487,7 +487,7 @@ NOTE: Because the standard `log4j2.xml` configuration file is loaded too early, 
 You need to either use `log4j2-spring.xml` or define a configprop:logging.config[] property.
 
 NOTE: The extensions supersede the https://logging.apache.org/log4j/2.x/log4j-spring-boot/index.html[Spring Boot support] provided by Log4J.
-You should make sure not include the `org.apache.logging.log4j:log4j-spring-boot` module in your build.
+You should make sure not to include the `org.apache.logging.log4j:log4j-spring-boot` module in your build.
 
 
 
@@ -536,12 +536,12 @@ NOTE: The lookup key should be specified in kebab case (such as `my.property-nam
 
 
 
-[[features.logging.log4j2-extensions.environment-peroperty-source]]
+[[features.logging.log4j2-extensions.environment-property-source]]
 ==== Log4j2 System Properties
-Log4j2 supports a number of https://logging.apache.org/log4j/2.x/manual/configuration.html#SystemProperties[System Properties] that can be used configure various items.
+Log4j2 supports a number of https://logging.apache.org/log4j/2.x/manual/configuration.html#SystemProperties[System Properties] that can be used to configure various items.
 For example, the `log4j2.skipJansi` system property can be used to configure if the `ConsoleAppender` will try to use a https://github.com/fusesource/jansi[Jansi] output stream on Windows.
 
-All system properties that are loaded after the Log4J initialization can be obtained from the Spring `Environment`.
+All system properties that are loaded after the Log4j2 initialization can be obtained from the Spring `Environment`.
 For example, you could add `log4j2.skipJansi=false` to your `application.properties` file to have the `ConsoleAppender` use a Jansi on Windows.
 
 NOTE: The Spring `Environment` is only considered when system properties and OS environment variables do not contain the value being loaded.

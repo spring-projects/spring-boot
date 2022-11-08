@@ -25,7 +25,7 @@ import org.apache.logging.log4j.core.config.Configuration;
 
 class TestLog4J2LoggingSystem extends Log4J2LoggingSystem {
 
-	private List<String> availableClasses = new ArrayList<>();
+	private final List<String> availableClasses = new ArrayList<>();
 
 	TestLog4J2LoggingSystem() {
 		super(TestLog4J2LoggingSystem.class.getClassLoader());

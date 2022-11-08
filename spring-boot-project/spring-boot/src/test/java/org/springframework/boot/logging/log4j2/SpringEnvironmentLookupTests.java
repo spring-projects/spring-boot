@@ -68,7 +68,7 @@ class SpringEnvironmentLookupTests {
 	void lookupWhenNoSpringEnvironmentThrowsException() {
 		this.loggerContext.removeObject(Log4J2LoggingSystem.ENVIRONMENT_KEY);
 		Interpolator lookup = createLookup(this.loggerContext);
-		assertThatIllegalStateException().isThrownBy(() -> assertThat(lookup.lookup("spring:test")).isEqualTo("test"))
+		assertThatIllegalStateException().isThrownBy(() -> lookup.lookup("spring:test"))
 				.withMessage("Unable to obtain Spring Environment from LoggerContext");
 	}
 
