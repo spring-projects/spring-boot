@@ -466,10 +466,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta JMS", "3.0.0") {
-		prohibit("[3.1.0,)") {
-			because "it exceeds our Jakarta EE 9 baseline"
-		}
+	library("Jakarta JMS", "3.1.0") {
 		group("jakarta.jms") {
 			modules = [
 				"jakarta.jms-api"
