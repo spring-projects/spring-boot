@@ -137,7 +137,7 @@ public class ConditionEvaluationReportLoggingListener
 			}
 			else if (event instanceof ApplicationFailedEvent applicationFailedEvent
 					&& applicationFailedEvent.getApplicationContext() == this.context) {
-				this.logger.logReport(false);
+				this.logger.logReport(true);
 			}
 		}
 
