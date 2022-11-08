@@ -521,10 +521,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Persistence", "3.0.0") {
-		prohibit("[3.1.0-RC1,)") {
-			because "it exceeds our Jakarta EE 9 baseline"
-		}
+	library("Jakarta Persistence", "3.1.0") {
 		group("jakarta.persistence") {
 			modules = [
 				"jakarta.persistence-api"
