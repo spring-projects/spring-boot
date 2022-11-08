@@ -100,8 +100,11 @@ public class ContainerConfigAssert extends AbstractAssert<ContainerConfigAssert,
 			return this.actual.extractingJsonPathArrayValue("$.buildpacks[*].id");
 		}
 
-		public AbstractObjectAssert<?, Object> processOfType(String type) {
-			return this.actual.extractingJsonPathArrayValue("$.processes[?(@.type=='%s')]", type).singleElement();
+		@SuppressWarnings("unchecked")
+		public AbstractListAssert<?, List<? extends String>, String, ObjectAssert<String>> processOfType(String type) {
+			return this.actual.extractingJsonPathArrayValue("$.processes[?(@.type=='%s')]", type).singleElement()
+					.extracting("command", "args").flatExtracting((list) -> (List<String>) list);
+
 		}
 
 	}

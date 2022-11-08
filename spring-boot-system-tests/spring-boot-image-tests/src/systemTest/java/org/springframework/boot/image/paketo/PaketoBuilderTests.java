@@ -21,7 +21,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -92,10 +91,9 @@ class PaketoBuilderTests {
 				metadata.buildpacks().contains("paketo-buildpacks/ca-certificates",
 						"paketo-buildpacks/bellsoft-liberica", "paketo-buildpacks/executable-jar",
 						"paketo-buildpacks/dist-zip", "paketo-buildpacks/spring-boot");
-				metadata.processOfType("web").extracting("command", "args").containsExactly("java",
-						Collections.singletonList("org.springframework.boot.loader.JarLauncher"));
-				metadata.processOfType("executable-jar").extracting("command", "args").containsExactly("java",
-						Collections.singletonList("org.springframework.boot.loader.JarLauncher"));
+				metadata.processOfType("web").containsExactly("java", "org.springframework.boot.loader.JarLauncher");
+				metadata.processOfType("executable-jar").containsExactly("java",
+						"org.springframework.boot.loader.JarLauncher");
 			});
 			assertImageHasJvmSbomLayer(imageReference, config);
 			assertImageHasDependenciesSbomLayer(imageReference, config, "executable-jar");
@@ -163,10 +161,9 @@ class PaketoBuilderTests {
 				metadata.buildpacks().contains("paketo-buildpacks/ca-certificates",
 						"paketo-buildpacks/bellsoft-liberica", "paketo-buildpacks/dist-zip",
 						"paketo-buildpacks/spring-boot");
-				metadata.processOfType("web").extracting("command", "args").containsExactly(
-						"/workspace/" + projectName + "-boot/bin/" + projectName, Collections.emptyList());
-				metadata.processOfType("dist-zip").extracting("command", "args").containsExactly(
-						"/workspace/" + projectName + "-boot/bin/" + projectName, Collections.emptyList());
+				String launcher = "/workspace/" + projectName + "-boot/bin/" + projectName;
+				metadata.processOfType("web").containsExactly(launcher);
+				metadata.processOfType("dist-zip").containsExactly(launcher);
 			});
 			assertImageHasJvmSbomLayer(imageReference, config);
 			assertImageHasDependenciesSbomLayer(imageReference, config, "dist-zip");
@@ -198,10 +195,9 @@ class PaketoBuilderTests {
 				metadata.buildpacks().contains("paketo-buildpacks/ca-certificates",
 						"paketo-buildpacks/bellsoft-liberica", "paketo-buildpacks/dist-zip",
 						"paketo-buildpacks/spring-boot");
-				metadata.processOfType("web").extracting("command", "args")
-						.containsExactly("/workspace/" + projectName + "/bin/" + projectName, Collections.emptyList());
-				metadata.processOfType("dist-zip").extracting("command", "args")
-						.containsExactly("/workspace/" + projectName + "/bin/" + projectName, Collections.emptyList());
+				String launcher = "/workspace/" + projectName + "/bin/" + projectName;
+				metadata.processOfType("web").containsExactly(launcher);
+				metadata.processOfType("dist-zip").containsExactly(launcher);
 			});
 			assertImageHasJvmSbomLayer(imageReference, config);
 			assertImageHasDependenciesSbomLayer(imageReference, config, "dist-zip");
@@ -236,10 +232,9 @@ class PaketoBuilderTests {
 				metadata.buildpacks().contains("paketo-buildpacks/ca-certificates",
 						"paketo-buildpacks/bellsoft-liberica", "paketo-buildpacks/executable-jar",
 						"paketo-buildpacks/dist-zip", "paketo-buildpacks/spring-boot");
-				metadata.processOfType("web").extracting("command", "args").containsExactly("java",
-						Collections.singletonList("org.springframework.boot.loader.WarLauncher"));
-				metadata.processOfType("executable-jar").extracting("command", "args").containsExactly("java",
-						Collections.singletonList("org.springframework.boot.loader.WarLauncher"));
+				metadata.processOfType("web").containsExactly("java", "org.springframework.boot.loader.WarLauncher");
+				metadata.processOfType("executable-jar").containsExactly("java",
+						"org.springframework.boot.loader.WarLauncher");
 			});
 			assertImageHasJvmSbomLayer(imageReference, config);
 			assertImageHasDependenciesSbomLayer(imageReference, config, "executable-jar");
@@ -266,10 +261,8 @@ class PaketoBuilderTests {
 				metadata.buildpacks().contains("paketo-buildpacks/ca-certificates",
 						"paketo-buildpacks/bellsoft-liberica", "paketo-buildpacks/apache-tomcat",
 						"paketo-buildpacks/dist-zip", "paketo-buildpacks/spring-boot");
-				metadata.processOfType("web").extracting("command", "args").containsExactly("bash",
-						Arrays.asList("catalina.sh", "run"));
-				metadata.processOfType("tomcat").extracting("command", "args").containsExactly("bash",
-						Arrays.asList("catalina.sh", "run"));
+				metadata.processOfType("web").containsExactly("bash", "catalina.sh", "run");
+				metadata.processOfType("tomcat").containsExactly("bash", "catalina.sh", "run");
 			});
 			assertImageHasJvmSbomLayer(imageReference, config);
 			assertImageHasDependenciesSbomLayer(imageReference, config, "apache-tomcat");
@@ -306,9 +299,10 @@ class PaketoBuilderTests {
 				metadata.buildpacks().contains("paketo-buildpacks/ca-certificates",
 						"paketo-buildpacks/bellsoft-liberica", "paketo-buildpacks/executable-jar",
 						"paketo-buildpacks/spring-boot", "paketo-buildpacks/native-image");
-				metadata.processOfType("web").extracting("command").isEqualTo("/workspace/example.ExampleApplication");
+				metadata.processOfType("web").extracting("command")
+						.isEqualTo(Collections.singletonList("/workspace/example.ExampleApplication"));
 				metadata.processOfType("native-image").extracting("command")
-						.isEqualTo("/workspace/example.ExampleApplication");
+						.isEqualTo(Collections.singletonList("/workspace/example.ExampleApplication"));
 			});
 			assertImageHasDependenciesSbomLayer(imageReference, config, "native-image");
 		}
