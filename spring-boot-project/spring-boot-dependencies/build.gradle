@@ -1277,15 +1277,27 @@ bom {
 	library("Selenium", "4.5.3") {
 		group("org.seleniumhq.selenium") {
 			modules = [
+				"lift",
 				"selenium-api",
 				"selenium-chrome-driver",
+				"selenium-chromium-driver",
+				"selenium-devtools-v104",
+				"selenium-devtools-v105",
+				"selenium-devtools-v106",
+				"selenium-devtools-v85",
 				"selenium-edge-driver",
 				"selenium-firefox-driver",
+				"selenium-grid",
+				"selenium-http",
+				"selenium-http-jdk-client",
 				"selenium-ie-driver",
 				"selenium-java",
+				"selenium-json",
 				"selenium-remote-driver",
 				"selenium-safari-driver",
-				"selenium-support"
+				"selenium-session-map-jdbc",
+				"selenium-session-map-redis",
+				"selenium-support",
 			]
 		}
 	}
