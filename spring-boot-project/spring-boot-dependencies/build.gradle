@@ -350,10 +350,7 @@ bom {
 			]
 		}
 	}
-	library("Hibernate Validator", "7.0.5.Final") {
-		prohibit("[8.0.0.Alpha1,)") {
-			because "it exceeds our Jakarta EE 9 baseline"
-		}
+	library("Hibernate Validator", "8.0.0.Final") {
 		group("org.hibernate.validator") {
 			modules = [
 				"hibernate-validator",
