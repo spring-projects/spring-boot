@@ -515,7 +515,9 @@ The following example `scrape_config` adds to `prometheus.yml`:
 		  - targets: ["HOST:PORT"]
 ----
 
-https://prometheus.io/docs/prometheus/latest/feature_flags/#exemplars-storage[Prometheus Exemplars] are also supported. To enable this feature, a `SpanContextSupplier` bean should present. If you use https://spring.io/projects/spring-cloud-sleuth[Spring Cloud Sleuth], this will be auto-configured for you, but you can always create your own if you want. +
+https://prometheus.io/docs/prometheus/latest/feature_flags/#exemplars-storage[Prometheus Exemplars] are also supported.
+To enable this feature, a `SpanContextSupplier` bean should present.
+If you use https://micrometer.io/docs/tracing[Micrometer Tracing], this will be auto-configured for you, but you can always create your own if you want.
 Please check the https://prometheus.io/docs/prometheus/latest/feature_flags/#exemplars-storage[Prometheus Docs], since this feature needs to be explicitly enabled on Prometheus' side, and it is only supported using the https://github.com/OpenObservability/OpenMetrics/blob/v1.0.0/specification/OpenMetrics.md#exemplars[OpenMetrics] format.
 
 For ephemeral or batch jobs that may not exist long enough to be scraped, you can use https://github.com/prometheus/pushgateway[Prometheus Pushgateway] support to expose the metrics to Prometheus.
