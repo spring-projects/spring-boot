@@ -459,10 +459,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Annotation", "2.0.0") {
-		prohibit("[2.1.0-B1,)") {
-			because "it exceeds our Jakarta EE 9 baseline"
-		}
+	library("Jakarta Annotation", "2.1.1") {
 		group("jakarta.annotation") {
 			modules = [
 				"jakarta.annotation-api"
