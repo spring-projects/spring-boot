@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Sebastien Deleuze
  */
-public class TomcatWebServerRuntimeHintsTests {
+class TomcatWebServerRuntimeHintsTests {
 
 	@Test
 	void registersHints() {
