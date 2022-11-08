@@ -8,11 +8,6 @@ repositories {
 	mavenCentral()
 	gradlePluginPortal()
 	maven { url "https://repo.spring.io/release" }
-	jcenter() {
-		content {
-			includeGroup("org.ysb33r.gradle")
-		}
-	}
 }
 
 sourceCompatibility = 1.8
