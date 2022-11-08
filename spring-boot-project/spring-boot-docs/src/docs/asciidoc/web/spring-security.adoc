@@ -95,7 +95,7 @@ You can register multiple OAuth2 clients and providers under the `spring.securit
 	            scope: "user"
 	            redirect-uri: "https://my-redirect-uri.com"
 	            client-authentication-method: "basic"
-	            authorization-grant-type: "authorization-code"
+	            authorization-grant-type: "authorization_code"
 
 	          my-client-2:
 	            client-id: "abcd"
