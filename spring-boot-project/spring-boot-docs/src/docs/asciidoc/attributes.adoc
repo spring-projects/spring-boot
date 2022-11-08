@@ -112,4 +112,4 @@
 :tomcat-docs: https://tomcat.apache.org/tomcat-{tomcat-version}-doc
 :graal-version: 22.3
 :graal-native-image-docs: https://www.graalvm.org/{graal-version}/reference-manual/native-image
-:liberica-nik-download: https://bell-sw.com/pages/downloads/native-image-kit/#/nik-22-17-ea
+:liberica-nik-download: https://bell-sw.com/pages/downloads/native-image-kit/#/nik-22-17
