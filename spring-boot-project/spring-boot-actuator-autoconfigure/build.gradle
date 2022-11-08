@@ -43,7 +43,6 @@ dependencies {
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.hazelcast:hazelcast")
 	optional("com.hazelcast:hazelcast-spring")
-	optional("com.sun.mail:jakarta.mail")
 	optional("com.zaxxer:HikariCP")
 	optional("io.dropwizard.metrics:metrics-jmx")
 	optional("io.lettuce:lettuce-core")
@@ -100,6 +99,7 @@ dependencies {
 	optional("org.aspectj:aspectjweaver")
 	optional("org.cache2k:cache2k-micrometer")
 	optional("org.cache2k:cache2k-spring")
+	optional("org.eclipse.angus:angus-mail")
 	optional("org.eclipse.jetty:jetty-server") {
 		exclude group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api"
 	}

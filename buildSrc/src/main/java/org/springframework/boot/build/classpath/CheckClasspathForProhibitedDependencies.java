@@ -96,6 +96,9 @@ public class CheckClasspathForProhibitedDependencies extends DefaultTask {
 		if (group.equals("org.apache.geronimo.specs")) {
 			return true;
 		}
+		if (group.equals("com.sun.activation")) {
+			return true;
+		}
 		return false;
 	}
 
