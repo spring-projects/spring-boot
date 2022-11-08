@@ -8,6 +8,11 @@ pluginManagement {
 		if (version.endsWith('-SNAPSHOT')) {
 			maven { url "https://repo.spring.io/snapshot" }
 		}
+		jcenter() {
+			content {
+				includeGroup("org.ysb33r.gradle")
+			}
+		}
 	}
 	resolutionStrategy {
 		eachPlugin {
