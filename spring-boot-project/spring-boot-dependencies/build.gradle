@@ -1608,15 +1608,18 @@ bom {
 	library("Selenium", "3.141.59") {
 		group("org.seleniumhq.selenium") {
 			modules = [
+				"lift",
 				"selenium-api",
 				"selenium-chrome-driver",
 				"selenium-edge-driver",
 				"selenium-firefox-driver",
 				"selenium-ie-driver",
 				"selenium-java",
+				"selenium-leg-rc",
 				"selenium-opera-driver",
 				"selenium-remote-driver",
 				"selenium-safari-driver",
+				"selenium-server",
 				"selenium-support"
 			]
 		}
