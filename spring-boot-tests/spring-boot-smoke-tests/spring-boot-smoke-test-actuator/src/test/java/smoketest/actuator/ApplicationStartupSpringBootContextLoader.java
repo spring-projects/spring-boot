@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package smoketest.jersey;
+package smoketest.actuator;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 
-@SpringBootApplication
-public class SampleJerseyApplication extends SpringBootServletInitializer {
+class ApplicationStartupSpringBootContextLoader extends SpringBootContextLoader {
 
-	public static void main(String[] args) {
-		new SampleJerseyApplication().configure(new SpringApplicationBuilder(SampleJerseyApplication.class)
-				.applicationStartup(new BufferingApplicationStartup(2048))).run(args);
+	@Override
+	protected SpringApplication getSpringApplication() {
+		SpringApplication application = new SpringApplication();
+		application.setApplicationStartup(new BufferingApplicationStartup(1024));
+		return application;
 	}
 
 }

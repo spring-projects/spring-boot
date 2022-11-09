@@ -14,41 +14,40 @@
  * limitations under the License.
  */
 
-package smoketest.webflux;
+package smoketest.actuator;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.test.web.server.LocalManagementPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ContextConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for separate management and main service ports with empty endpoint
- * base path.
+ * Integration test for WebMVC actuator when using an isolated {@link ObjectMapper}.
  *
- * @author HaiTao Zhang
+ * @author Phillip Webb
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = { "management.server.port=0", "management.endpoints.web.base-path=/" })
-class WebFluxDifferentPortSampleActuatorApplicationTests {
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
+		properties = "management.endpoints.jackson.isolated-object-mapper=true")
+@ContextConfiguration(loader = ApplicationStartupSpringBootContextLoader.class)
+class SampleActuatorApplicationIsolatedObjectMapperTrueTests {
 
-	@LocalManagementPort
-	private int managementPort;
+	@Autowired
+	private TestRestTemplate testRestTemplate;
 
 	@Test
-	void linksEndpointShouldBeAvailable() {
-		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:" + this.managementPort + "/", String.class);
+	void resourceShouldBeAvailableOnMainPort() {
+		ResponseEntity<String> entity = this.testRestTemplate.withBasicAuth("user", "password")
+				.getForEntity("/actuator/startup", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("\"_links\"");
-	}
-
-	private String getPassword() {
-		return "password";
+		assertThat(entity.getBody()).contains("\"timeline\":");
 	}
 
 }
