@@ -40,10 +40,10 @@ import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebAppl
  *
  * @author Madhura Bhave
  */
-class WebfluxHealthEndpointAdditionalPathIntegrationTests extends
+class WebFluxHealthEndpointAdditionalPathIntegrationTests extends
 		AbstractHealthEndpointAdditionalPathIntegrationTests<ReactiveWebApplicationContextRunner, ConfigurableReactiveWebApplicationContext, AssertableReactiveWebApplicationContext> {
 
-	WebfluxHealthEndpointAdditionalPathIntegrationTests() {
+	WebFluxHealthEndpointAdditionalPathIntegrationTests() {
 		super(new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
 				.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, CodecsAutoConfiguration.class,
 						WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class,
