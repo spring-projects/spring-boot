@@ -26,17 +26,22 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.cfg.ConstructorDetector;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 
+import org.springframework.aot.hint.ReflectionHints;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -75,6 +80,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Johannes Edmeier
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Ralf Ueberfuhr
  * @since 1.1.0
  */
 @AutoConfiguration
@@ -338,6 +344,38 @@ public class JacksonAutoConfiguration {
 				}
 			}
 
+		}
+
+	}
+
+	static class JacksonAutoConfigurationRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			if (ClassUtils.isPresent("com.fasterxml.jackson.databind.PropertyNamingStrategy", classLoader)) {
+				registerPropertyNamingStrategyHints(hints.reflection());
+			}
+		}
+
+		/**
+		 * Register hints for the {@code configurePropertyNamingStrategyField} method to
+		 * use.
+		 * @param hints reflection hints
+		 */
+		private void registerPropertyNamingStrategyHints(ReflectionHints hints) {
+			registerPropertyNamingStrategyHints(hints, PropertyNamingStrategies.class);
+			// PropertyNamingStrategy is used pre Jackson 2.12
+			registerPropertyNamingStrategyHints(hints, PropertyNamingStrategy.class);
+		}
+
+		private void registerPropertyNamingStrategyHints(ReflectionHints hints, Class<?> type) {
+			Stream.of(type.getDeclaredFields()).filter(this::isPropertyNamingStrategyField)
+					.forEach(hints::registerField);
+		}
+
+		private boolean isPropertyNamingStrategyField(Field candidate) {
+			return ReflectionUtils.isPublicStaticFinal(candidate)
+					&& candidate.getType().isAssignableFrom(PropertyNamingStrategy.class);
 		}
 
 	}
