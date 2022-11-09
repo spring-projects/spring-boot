@@ -25,7 +25,6 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
-import org.assertj.core.api.Assertions;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.Location;
 import org.flywaydb.core.api.MigrationVersion;
@@ -671,9 +670,8 @@ class FlywayAutoConfigurationTests {
 	void shouldRegisterResourceHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new FlywayAutoConfigurationRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		Assertions.assertThat(RuntimeHintsPredicates.resource().forResource("db/migration/")).accepts(runtimeHints);
-		Assertions.assertThat(RuntimeHintsPredicates.resource().forResource("db/migration/V1__init.sql"))
-				.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.resource().forResource("db/migration/")).accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.resource().forResource("db/migration/V1__init.sql")).accepts(runtimeHints);
 	}
 
 	private ContextConsumer<AssertableApplicationContext> validateFlywayTeamsPropertyOnly(String propertyName) {

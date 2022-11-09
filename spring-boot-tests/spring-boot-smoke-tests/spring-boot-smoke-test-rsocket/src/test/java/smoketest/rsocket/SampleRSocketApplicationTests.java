@@ -17,7 +17,6 @@
 package smoketest.rsocket;
 
 import io.rsocket.metadata.WellKnownMimeType;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -29,6 +28,8 @@ import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.security.rsocket.metadata.SimpleAuthenticationEncoder;
 import org.springframework.security.rsocket.metadata.UsernamePasswordMetadata;
 import org.springframework.util.MimeTypeUtils;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(properties = "spring.rsocket.server.port=0")
 class SampleRSocketApplicationTests {
@@ -54,8 +55,7 @@ class SampleRSocketApplicationTests {
 						MimeTypeUtils.parseMimeType(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION.getString()))
 				.tcp("localhost", this.port);
 		Mono<Project> result = requester.route("find.project.spring-boot").retrieveMono(Project.class);
-		StepVerifier.create(result)
-				.assertNext((project) -> Assertions.assertThat(project.getName()).isEqualTo("spring-boot"))
+		StepVerifier.create(result).assertNext((project) -> assertThat(project.getName()).isEqualTo("spring-boot"))
 				.verifyComplete();
 	}
 
