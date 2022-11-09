@@ -16,28 +16,29 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
+
 /**
- * An operation on an {@link ExposableEndpoint endpoint}.
+ * Tests for {@link OperationResponseBody}.
  *
- * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 2.0.0
  */
-public interface Operation {
+class OperationResponseBodyTests {
 
-	/**
-	 * Returns the {@link OperationType type} of the operation.
-	 * @return the type
-	 */
-	OperationType getType();
-
-	/**
-	 * Invoke the underlying operation using the given {@code context}. Results intended
-	 * to be returned in the body of the response should additionally implement
-	 * {@link OperationResponseBody}.
-	 * @param context the context in to use when invoking the operation
-	 * @return the result of the operation, may be {@code null}
-	 */
-	Object invoke(InvocationContext context);
+	@Test
+	void ofMapReturnsOperationResponseBody() {
+		LinkedHashMap<String, String> map = new LinkedHashMap<>();
+		map.put("one", "1");
+		map.put("two", "2");
+		Map<String, String> mapDescriptor = OperationResponseBody.of(map);
+		assertThat(mapDescriptor).containsExactly(entry("one", "1"), entry("two", "2"));
+		assertThat(mapDescriptor).isInstanceOf(OperationResponseBody.class);
+	}
 
 }

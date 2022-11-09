@@ -16,28 +16,20 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
- * An operation on an {@link ExposableEndpoint endpoint}.
+ * {@link LinkedHashMap} to support {@link OperationResponseBody#of(java.util.Map)}.
  *
- * @author Andy Wilkinson
+ * @param <K> the key type
+ * @param <V> the value type
  * @author Phillip Webb
- * @since 2.0.0
  */
-public interface Operation {
+class OperationResponseBodyMap<K, V> extends LinkedHashMap<K, V> implements OperationResponseBody {
 
-	/**
-	 * Returns the {@link OperationType type} of the operation.
-	 * @return the type
-	 */
-	OperationType getType();
-
-	/**
-	 * Invoke the underlying operation using the given {@code context}. Results intended
-	 * to be returned in the body of the response should additionally implement
-	 * {@link OperationResponseBody}.
-	 * @param context the context in to use when invoking the operation
-	 * @return the result of the operation, may be {@code null}
-	 */
-	Object invoke(InvocationContext context);
+	OperationResponseBodyMap(Map<? extends K, ? extends V> map) {
+		super(map);
+	}
 
 }

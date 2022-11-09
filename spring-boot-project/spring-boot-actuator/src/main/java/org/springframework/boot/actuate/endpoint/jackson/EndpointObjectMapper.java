@@ -14,30 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint;
+package org.springframework.boot.actuate.endpoint.jackson;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 
 /**
- * An operation on an {@link ExposableEndpoint endpoint}.
+ * Interface used to supply the {@link ObjectMapper} that should be used when serializing
+ * {@link OperationResponseBody} endpoint results.
  *
- * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 2.0.0
+ * @since 3.0.0
+ * @see OperationResponseBody
  */
-public interface Operation {
+public interface EndpointObjectMapper {
 
 	/**
-	 * Returns the {@link OperationType type} of the operation.
-	 * @return the type
+	 * Return the {@link ObjectMapper} that should be used to serialize
+	 * {@link OperationResponseBody} endpoint results.
+	 * @return the object mapper
 	 */
-	OperationType getType();
-
-	/**
-	 * Invoke the underlying operation using the given {@code context}. Results intended
-	 * to be returned in the body of the response should additionally implement
-	 * {@link OperationResponseBody}.
-	 * @param context the context in to use when invoking the operation
-	 * @return the result of the operation, may be {@code null}
-	 */
-	Object invoke(InvocationContext context);
+	ObjectMapper get();
 
 }
