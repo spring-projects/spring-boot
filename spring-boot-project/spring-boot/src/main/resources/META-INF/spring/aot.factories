@@ -14,7 +14,8 @@ org.springframework.boot.web.embedded.undertow.UndertowWebServer.UndertowWebServ
 org.springframework.boot.web.server.MimeMappings.MimeMappingsRuntimeHints
 
 org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor=\
-org.springframework.boot.context.properties.ConfigurationPropertiesBeanFactoryInitializationAotProcessor
+org.springframework.boot.context.properties.ConfigurationPropertiesBeanFactoryInitializationAotProcessor,\
+org.springframework.boot.jackson.JsonComponentModule.JsonComponentBeanFactoryInitializationAotProcessor
 
 org.springframework.beans.factory.aot.BeanRegistrationAotProcessor=\
 org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrationAotProcessor,\
