@@ -41,7 +41,6 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.cfg.ConstructorDetector;
@@ -468,8 +467,6 @@ class JacksonAutoConfigurationTests {
 	void shouldRegisterPropertyNamingStrategyHints() {
 		shouldRegisterPropertyNamingStrategyHints(PropertyNamingStrategies.class, "LOWER_CAMEL_CASE",
 				"UPPER_CAMEL_CASE", "SNAKE_CASE", "UPPER_SNAKE_CASE", "LOWER_CASE", "KEBAB_CASE", "LOWER_DOT_CASE");
-		shouldRegisterPropertyNamingStrategyHints(PropertyNamingStrategy.class, "LOWER_CAMEL_CASE", "UPPER_CAMEL_CASE",
-				"SNAKE_CASE", "LOWER_CASE", "KEBAB_CASE", "LOWER_DOT_CASE");
 	}
 
 	private void shouldRegisterPropertyNamingStrategyHints(Class<?> type, String... fieldNames) {

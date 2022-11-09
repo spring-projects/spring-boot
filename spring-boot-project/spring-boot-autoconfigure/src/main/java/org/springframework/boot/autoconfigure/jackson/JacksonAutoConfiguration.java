@@ -299,14 +299,8 @@ public class JacksonAutoConfiguration {
 			}
 
 			private Field findPropertyNamingStrategyField(String fieldName) {
-				try {
-					return ReflectionUtils.findField(com.fasterxml.jackson.databind.PropertyNamingStrategies.class,
-							fieldName, PropertyNamingStrategy.class);
-				}
-				catch (NoClassDefFoundError ex) { // Fallback pre Jackson 2.12
-					return ReflectionUtils.findField(PropertyNamingStrategy.class, fieldName,
-							PropertyNamingStrategy.class);
-				}
+				return ReflectionUtils.findField(com.fasterxml.jackson.databind.PropertyNamingStrategies.class,
+						fieldName, PropertyNamingStrategy.class);
 			}
 
 			private void configureModules(Jackson2ObjectMapperBuilder builder) {
@@ -364,8 +358,6 @@ public class JacksonAutoConfiguration {
 		 */
 		private void registerPropertyNamingStrategyHints(ReflectionHints hints) {
 			registerPropertyNamingStrategyHints(hints, PropertyNamingStrategies.class);
-			// PropertyNamingStrategy is used pre Jackson 2.12
-			registerPropertyNamingStrategyHints(hints, PropertyNamingStrategy.class);
 		}
 
 		private void registerPropertyNamingStrategyHints(ReflectionHints hints, Class<?> type) {
