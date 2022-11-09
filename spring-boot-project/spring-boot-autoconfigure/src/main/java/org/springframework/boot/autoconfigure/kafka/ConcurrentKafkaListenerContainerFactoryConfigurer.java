@@ -151,6 +151,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Listener properties = this.properties.getListener();
 		map.from(properties::getConcurrency).to(factory::setConcurrency);
+		map.from(properties::isAutoStartup).to(factory::setAutoStartup);
 		map.from(this.messageConverter).to(factory::setMessageConverter);
 		map.from(this.recordFilterStrategy).to(factory::setRecordFilterStrategy);
 		map.from(this.replyTemplate).to(factory::setReplyTemplate);
