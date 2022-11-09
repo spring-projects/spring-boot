@@ -159,7 +159,7 @@ To change which endpoints are exposed, use the following technology-specific `in
 |
 
 | configprop:management.endpoints.jmx.exposure.include[]
-| `*`
+| `health`
 
 | configprop:management.endpoints.web.exposure.exclude[]
 |
