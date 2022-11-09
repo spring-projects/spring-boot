@@ -22,6 +22,7 @@ import java.util.Map;
 import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
@@ -99,7 +100,7 @@ public class IntegrationGraphEndpoint {
 	/**
 	 * Description of a {@link Graph}.
 	 */
-	public static class GraphDescriptor {
+	public static class GraphDescriptor implements OperationResponseBody {
 
 		private final Map<String, Object> contentDescriptor;
 

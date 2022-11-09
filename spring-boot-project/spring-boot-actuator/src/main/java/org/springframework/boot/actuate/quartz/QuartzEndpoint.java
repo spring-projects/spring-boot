@@ -47,6 +47,7 @@ import org.quartz.Trigger.TriggerState;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.SanitizableData;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
@@ -236,8 +237,9 @@ public class QuartzEndpoint {
 			return null;
 		}
 		TriggerState triggerState = this.scheduler.getTriggerState(triggerKey);
-		return TriggerDescriptor.of(trigger).buildDetails(triggerState,
-				sanitizeJobDataMap(trigger.getJobDataMap(), showUnsanitized));
+		TriggerDescriptor triggerDescriptor = TriggerDescriptor.of(trigger);
+		Map<String, Object> jobDataMap = sanitizeJobDataMap(trigger.getJobDataMap(), showUnsanitized);
+		return OperationResponseBody.of(triggerDescriptor.buildDetails(triggerState, jobDataMap));
 	}
 
 	private static Duration getIntervalDuration(long amount, IntervalUnit unit) {
@@ -279,7 +281,7 @@ public class QuartzEndpoint {
 	/**
 	 * Description of available job and trigger group names.
 	 */
-	public static final class QuartzDescriptor {
+	public static final class QuartzDescriptor implements OperationResponseBody {
 
 		private final GroupNamesDescriptor jobs;
 
@@ -320,7 +322,7 @@ public class QuartzEndpoint {
 	/**
 	 * Description of each group identified by name.
 	 */
-	public static class QuartzGroupsDescriptor {
+	public static class QuartzGroupsDescriptor implements OperationResponseBody {
 
 		private final Map<String, Object> groups;
 
@@ -337,7 +339,7 @@ public class QuartzEndpoint {
 	/**
 	 * Description of the {@link JobDetail jobs} in a given group.
 	 */
-	public static final class QuartzJobGroupSummaryDescriptor {
+	public static final class QuartzJobGroupSummaryDescriptor implements OperationResponseBody {
 
 		private final String group;
 
@@ -382,7 +384,7 @@ public class QuartzEndpoint {
 	/**
 	 * Description of a {@link Job Quartz Job}.
 	 */
-	public static final class QuartzJobDetailsDescriptor {
+	public static final class QuartzJobDetailsDescriptor implements OperationResponseBody {
 
 		private final String group;
 
@@ -449,7 +451,7 @@ public class QuartzEndpoint {
 	/**
 	 * Description of the {@link Trigger triggers} in a given group.
 	 */
-	public static final class QuartzTriggerGroupSummaryDescriptor {
+	public static final class QuartzTriggerGroupSummaryDescriptor implements OperationResponseBody {
 
 		private final String group;
 

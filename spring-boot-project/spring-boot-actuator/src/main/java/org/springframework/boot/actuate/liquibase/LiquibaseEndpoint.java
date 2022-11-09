@@ -32,6 +32,7 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.integration.spring.SpringLiquibase;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.context.ApplicationContext;
@@ -106,7 +107,7 @@ public class LiquibaseEndpoint {
 	/**
 	 * Description of an application's {@link SpringLiquibase} beans.
 	 */
-	public static final class LiquibaseBeansDescriptor {
+	public static final class LiquibaseBeansDescriptor implements OperationResponseBody {
 
 		private final Map<String, ContextLiquibaseBeansDescriptor> contexts;
 

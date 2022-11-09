@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.web.exchanges;
 
 import java.util.List;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.util.Assert;
@@ -51,7 +52,7 @@ public class HttpExchangesEndpoint {
 	/**
 	 * Description of an application's {@link HttpExchange} entries.
 	 */
-	public static final class HttpExchangesDescriptor {
+	public static final class HttpExchangesDescriptor implements OperationResponseBody {
 
 		private final List<HttpExchange> exchanges;
 

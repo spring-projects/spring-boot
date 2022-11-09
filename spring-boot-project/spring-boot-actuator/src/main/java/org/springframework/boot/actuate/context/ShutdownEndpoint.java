@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.context;
 
 import org.springframework.beans.BeansException;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.context.ApplicationContext;
@@ -71,7 +72,7 @@ public class ShutdownEndpoint implements ApplicationContextAware {
 	/**
 	 * Description of the shutdown.
 	 */
-	public static class ShutdownDescriptor {
+	public static class ShutdownDescriptor implements OperationResponseBody {
 
 		private static final ShutdownDescriptor DEFAULT = new ShutdownDescriptor("Shutting down, bye...");
 

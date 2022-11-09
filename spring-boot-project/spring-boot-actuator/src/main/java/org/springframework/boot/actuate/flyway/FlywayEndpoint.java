@@ -28,6 +28,7 @@ import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.MigrationInfo;
 import org.flywaydb.core.api.MigrationState;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.context.ApplicationContext;
@@ -69,7 +70,7 @@ public class FlywayEndpoint {
 	/**
 	 * Description of an application's {@link Flyway} beans.
 	 */
-	public static final class FlywayBeansDescriptor {
+	public static final class FlywayBeansDescriptor implements OperationResponseBody {
 
 		private final Map<String, ContextFlywayBeansDescriptor> contexts;
 
