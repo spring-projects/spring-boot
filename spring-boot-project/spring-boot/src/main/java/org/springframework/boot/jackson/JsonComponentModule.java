@@ -178,11 +178,11 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 
 	}
 
-	private static class JsonComponentAotContribution implements BeanFactoryInitializationAotContribution {
+	private static final class JsonComponentAotContribution implements BeanFactoryInitializationAotContribution {
 
 		private final Map<Class<?>, List<Class<?>>> innerComponents;
 
-		public JsonComponentAotContribution(Map<Class<?>, List<Class<?>>> innerComponents) {
+		private JsonComponentAotContribution(Map<Class<?>, List<Class<?>>> innerComponents) {
 			this.innerComponents = innerComponents;
 		}
 

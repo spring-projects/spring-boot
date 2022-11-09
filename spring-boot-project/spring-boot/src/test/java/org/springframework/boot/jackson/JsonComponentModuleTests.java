@@ -191,7 +191,7 @@ class JsonComponentModuleTests {
 	private void assertKeyDeserialize(Module module) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(module);
-		TypeReference<Map<NameAndAge, Boolean>> typeRef = new TypeReference<Map<NameAndAge, Boolean>>() {
+		TypeReference<Map<NameAndAge, Boolean>> typeRef = new TypeReference<>() {
 		};
 		Map<NameAndAge, Boolean> map = mapper.readValue("{\"spring is 100\":  true}", typeRef);
 		assertThat(map).containsEntry(new NameAndAge("spring", 100), true);
@@ -210,7 +210,7 @@ class JsonComponentModuleTests {
 	@JsonComponent
 	static class ComponentWithInnerAbstractClass {
 
-		static abstract class AbstractSerializer extends NameAndAgeJsonComponent.Serializer {
+		abstract static class AbstractSerializer extends NameAndAgeJsonComponent.Serializer {
 
 		}
 
