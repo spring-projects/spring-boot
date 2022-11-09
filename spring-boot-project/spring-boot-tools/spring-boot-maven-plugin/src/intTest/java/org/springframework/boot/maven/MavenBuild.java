@@ -44,6 +44,8 @@ import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 
+import org.springframework.util.FileSystemUtils;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.contentOf;
 
@@ -190,6 +192,9 @@ class MavenBuild {
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(ex);
+		}
+		finally {
+			FileSystemUtils.deleteRecursively(this.temp);
 		}
 	}
 
