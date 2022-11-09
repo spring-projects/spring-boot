@@ -161,7 +161,8 @@ class SecurityAutoConfigurationTests {
 							DelegatingFilterProxyRegistrationBean.class);
 					assertThat(bean)
 							.extracting("dispatcherTypes", InstanceOfAssertFactories.iterable(DispatcherType.class))
-							.containsOnly(DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST);
+							.containsOnly(DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST,
+									DispatcherType.INCLUDE, DispatcherType.FORWARD);
 				});
 	}
 

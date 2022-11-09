@@ -16,6 +16,8 @@
 
 package smoketest.security.method;
 
+import jakarta.servlet.DispatcherType;
+
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -71,7 +73,10 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 		@Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
 			http.csrf().disable();
-			http.authorizeHttpRequests((requests) -> requests.anyRequest().fullyAuthenticated());
+			http.authorizeHttpRequests((requests) -> {
+				requests.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll();
+				requests.anyRequest().fullyAuthenticated();
+			});
 			http.httpBasic();
 			http.formLogin((form) -> form.loginPage("/login").permitAll());
 			http.exceptionHandling((exceptions) -> exceptions.accessDeniedPage("/access"));

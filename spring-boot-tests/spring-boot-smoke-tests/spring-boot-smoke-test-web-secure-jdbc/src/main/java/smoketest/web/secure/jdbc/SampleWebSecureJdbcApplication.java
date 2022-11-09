@@ -18,6 +18,8 @@ package smoketest.web.secure.jdbc;
 
 import javax.sql.DataSource;
 
+import jakarta.servlet.DispatcherType;
+
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.annotation.Bean;
@@ -47,7 +49,10 @@ public class SampleWebSecureJdbcApplication implements WebMvcConfigurer {
 		@Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
 			http.csrf().disable();
-			http.authorizeHttpRequests((requests) -> requests.anyRequest().fullyAuthenticated());
+			http.authorizeHttpRequests((requests) -> {
+				requests.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll();
+				requests.anyRequest().fullyAuthenticated();
+			});
 			http.formLogin((form) -> form.loginPage("/login").permitAll());
 			return http.build();
 		}
