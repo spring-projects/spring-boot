@@ -19,12 +19,15 @@ package org.springframework.boot.context.properties.bind;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.KotlinDetector;
 import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
  * Default {@link BindConstructorProvider} implementation.
@@ -75,9 +78,9 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 		}
 
 		static Constructors getConstructors(Class<?> type) {
+			boolean hasAutowiredConstructor = isAutowiredPresent(type);
 			Constructor<?>[] candidates = getCandidateConstructors(type);
 			MergedAnnotations[] candidateAnnotations = getAnnotations(candidates);
-			boolean hasAutowiredConstructor = isAutowiredPresent(candidateAnnotations);
 			Constructor<?> bind = getConstructorBindingAnnotated(type, candidates, candidateAnnotations);
 			if (bind == null && !hasAutowiredConstructor) {
 				bind = deduceBindConstructor(type, candidates);
@@ -86,6 +89,15 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 				bind = deduceKotlinBindConstructor(type);
 			}
 			return new Constructors(hasAutowiredConstructor, bind);
+		}
+
+		private static boolean isAutowiredPresent(Class<?> type) {
+			if (Stream.of(type.getDeclaredConstructors()).map(MergedAnnotations::from)
+					.anyMatch((annotations) -> annotations.isPresent(Autowired.class))) {
+				return true;
+			}
+			Class<?> userClass = ClassUtils.getUserClass(type);
+			return (userClass != type) ? isAutowiredPresent(userClass) : false;
 		}
 
 		private static Constructor<?>[] getCandidateConstructors(Class<?> type) {
@@ -112,18 +124,9 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 		private static MergedAnnotations[] getAnnotations(Constructor<?>[] candidates) {
 			MergedAnnotations[] candidateAnnotations = new MergedAnnotations[candidates.length];
 			for (int i = 0; i < candidates.length; i++) {
-				candidateAnnotations[i] = MergedAnnotations.from(candidates[i]);
+				candidateAnnotations[i] = MergedAnnotations.from(candidates[i], SearchStrategy.SUPERCLASS);
 			}
 			return candidateAnnotations;
-		}
-
-		private static boolean isAutowiredPresent(MergedAnnotations[] candidateAnnotations) {
-			for (MergedAnnotations annotations : candidateAnnotations) {
-				if (annotations.isPresent(Autowired.class)) {
-					return true;
-				}
-			}
-			return false;
 		}
 
 		private static Constructor<?> getConstructorBindingAnnotated(Class<?> type, Constructor<?>[] candidates,

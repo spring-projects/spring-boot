@@ -21,6 +21,9 @@ import java.lang.reflect.Constructor;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -95,6 +98,16 @@ class DefaultBindConstructorProviderTests {
 		Constructor<?> constructor = this.provider.getBindConstructor(MemberTypeWithPrivateConstructor.Member.class,
 				false);
 		assertThat(constructor).isNull();
+	}
+
+	@Test
+	void getBindConstructorFromProxiedClassWithOneAutowiredConstructorReturnsNull() {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				ProxiedWithOneConstructorWithAutowired.class)) {
+			ProxiedWithOneConstructorWithAutowired bean = context.getBean(ProxiedWithOneConstructorWithAutowired.class);
+			Constructor<?> bindConstructor = this.provider.getBindConstructor(bean.getClass(), false);
+			assertThat(bindConstructor).isNull();
+		}
 	}
 
 	static class OnlyDefaultConstructor {
@@ -184,6 +197,15 @@ class DefaultBindConstructorProviderTests {
 			private Member(String name) {
 			}
 
+		}
+
+	}
+
+	@Configuration
+	static class ProxiedWithOneConstructorWithAutowired {
+
+		@Autowired
+		ProxiedWithOneConstructorWithAutowired(Environment environment) {
 		}
 
 	}
