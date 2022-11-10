@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.aot.AotDetector;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -83,6 +84,9 @@ public class TestDatabaseAutoConfiguration {
 
 		@Override
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+			if (AotDetector.useGeneratedArtifacts()) {
+				return;
+			}
 			Assert.isInstanceOf(ConfigurableListableBeanFactory.class, registry,
 					"Test Database Auto-configuration can only be used with a ConfigurableListableBeanFactory");
 			process(registry, (ConfigurableListableBeanFactory) registry);
