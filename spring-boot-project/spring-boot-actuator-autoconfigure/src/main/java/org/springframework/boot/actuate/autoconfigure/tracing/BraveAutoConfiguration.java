@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 import java.util.Collections;
 import java.util.List;
 
+import brave.CurrentSpanCustomizer;
+import brave.SpanCustomizer;
 import brave.Tracer;
 import brave.Tracing;
 import brave.Tracing.Builder;
@@ -52,6 +54,7 @@ import io.micrometer.tracing.brave.bridge.BraveCurrentTraceContext;
 import io.micrometer.tracing.brave.bridge.BraveHttpClientHandler;
 import io.micrometer.tracing.brave.bridge.BraveHttpServerHandler;
 import io.micrometer.tracing.brave.bridge.BravePropagator;
+import io.micrometer.tracing.brave.bridge.BraveSpanCustomizer;
 import io.micrometer.tracing.brave.bridge.BraveTracer;
 import io.micrometer.tracing.brave.bridge.CompositeSpanHandler;
 import io.micrometer.tracing.brave.bridge.W3CPropagation;
@@ -183,6 +186,18 @@ public class BraveAutoConfiguration {
 	BraveHttpClientHandler braveHttpClientHandler(
 			HttpClientHandler<HttpClientRequest, HttpClientResponse> httpClientHandler) {
 		return new BraveHttpClientHandler(httpClientHandler);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(SpanCustomizer.class)
+	CurrentSpanCustomizer currentSpanCustomizer(Tracing tracing) {
+		return CurrentSpanCustomizer.create(tracing);
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(io.micrometer.tracing.SpanCustomizer.class)
+	BraveSpanCustomizer braveSpanCustomizer(SpanCustomizer spanCustomizer) {
+		return new BraveSpanCustomizer(spanCustomizer);
 	}
 
 	@Configuration(proxyBeanMethods = false)

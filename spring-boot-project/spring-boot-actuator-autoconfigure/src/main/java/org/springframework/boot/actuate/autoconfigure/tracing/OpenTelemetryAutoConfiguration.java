@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import io.micrometer.tracing.SamplerFunction;
+import io.micrometer.tracing.SpanCustomizer;
 import io.micrometer.tracing.otel.bridge.DefaultHttpClientAttributesGetter;
 import io.micrometer.tracing.otel.bridge.DefaultHttpServerAttributesExtractor;
 import io.micrometer.tracing.otel.bridge.EventListener;
@@ -30,6 +31,7 @@ import io.micrometer.tracing.otel.bridge.OtelCurrentTraceContext;
 import io.micrometer.tracing.otel.bridge.OtelHttpClientHandler;
 import io.micrometer.tracing.otel.bridge.OtelHttpServerHandler;
 import io.micrometer.tracing.otel.bridge.OtelPropagator;
+import io.micrometer.tracing.otel.bridge.OtelSpanCustomizer;
 import io.micrometer.tracing.otel.bridge.OtelTracer;
 import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
 import io.micrometer.tracing.otel.bridge.Slf4JBaggageEventListener;
@@ -180,6 +182,12 @@ public class OpenTelemetryAutoConfiguration {
 	@ConditionalOnMissingBean
 	Slf4JEventListener otelSlf4JEventListener() {
 		return new Slf4JEventListener();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(SpanCustomizer.class)
+	OtelSpanCustomizer otelSpanCustomizer() {
+		return new OtelSpanCustomizer();
 	}
 
 	@Configuration(proxyBeanMethods = false)

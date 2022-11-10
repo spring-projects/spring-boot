@@ -19,10 +19,12 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 import java.util.Collection;
 import java.util.List;
 
+import io.micrometer.tracing.SpanCustomizer;
 import io.micrometer.tracing.otel.bridge.OtelCurrentTraceContext;
 import io.micrometer.tracing.otel.bridge.OtelHttpClientHandler;
 import io.micrometer.tracing.otel.bridge.OtelHttpServerHandler;
 import io.micrometer.tracing.otel.bridge.OtelPropagator;
+import io.micrometer.tracing.otel.bridge.OtelSpanCustomizer;
 import io.micrometer.tracing.otel.bridge.OtelTracer;
 import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
 import io.micrometer.tracing.otel.bridge.Slf4JBaggageEventListener;
@@ -78,6 +80,7 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).hasSingleBean(SpanProcessor.class);
 			assertThat(context).hasSingleBean(OtelPropagator.class);
 			assertThat(context).hasSingleBean(TextMapPropagator.class);
+			assertThat(context).hasSingleBean(OtelSpanCustomizer.class);
 		});
 	}
 
@@ -100,6 +103,7 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).doesNotHaveBean(SpanProcessor.class);
 			assertThat(context).doesNotHaveBean(OtelPropagator.class);
 			assertThat(context).doesNotHaveBean(TextMapPropagator.class);
+			assertThat(context).doesNotHaveBean(OtelSpanCustomizer.class);
 		});
 	}
 
@@ -132,6 +136,8 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).hasSingleBean(Slf4JBaggageEventListener.class);
 			assertThat(context).hasBean("customOtelPropagator");
 			assertThat(context).hasSingleBean(OtelPropagator.class);
+			assertThat(context).hasBean("customSpanCustomizer");
+			assertThat(context).hasSingleBean(SpanCustomizer.class);
 		});
 	}
 
@@ -273,6 +279,11 @@ class OpenTelemetryAutoConfigurationTests {
 		@Bean
 		TextMapPropagator customTextMapPropagator() {
 			return mock(TextMapPropagator.class);
+		}
+
+		@Bean
+		SpanCustomizer customSpanCustomizer() {
+			return mock(SpanCustomizer.class);
 		}
 
 	}
