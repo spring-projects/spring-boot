@@ -693,13 +693,6 @@ bom {
 			]
 		}
 	}
-	library("JSTL", "1.2") {
-		group("javax.servlet") {
-			modules = [
-				"jstl"
-			]
-		}
-	}
 	library("JTDS", "1.3.1") {
 		group("net.sourceforge.jtds") {
 			modules = [
@@ -1312,13 +1305,6 @@ bom {
 		group("com.sendgrid") {
 			modules = [
 				"sendgrid-java"
-			]
-		}
-	}
-	library("Servlet API", "4.0.1") {
-		group("javax.servlet") {
-			modules = [
-				"javax.servlet-api"
 			]
 		}
 	}
