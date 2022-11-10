@@ -51,6 +51,7 @@ import org.springframework.boot.maven.CommandLineBuilder.ClasspathBuilder;
  * Abstract base class for AOT processing MOJOs.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 3.0.0
  */
 public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
@@ -85,6 +86,13 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 	 */
 	@Parameter(property = "spring-boot.aot.jvmArguments")
 	private String jvmArguments;
+
+	/**
+	 * Arguments that should be provided to the AOT compile process. On command line, make
+	 * sure to wrap multiple values between quotes.
+	 */
+	@Parameter(property = "spring-boot.aot.compilerArguments")
+	private String compilerArguments;
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
@@ -127,6 +135,7 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 			options.add(ClasspathBuilder.build(Arrays.asList(classPath)));
 			options.add("-d");
 			options.add(outputDirectory.toPath().toAbsolutePath().toString());
+			options.addAll(new RunArguments(this.compilerArguments).getArgs());
 			Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromPaths(sourceFiles);
 			Errors errors = new Errors();
 			CompilationTask task = compiler.getTask(null, fileManager, errors, options, null, compilationUnits);
@@ -169,10 +178,12 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 			if (diagnostic.getKind() == Diagnostic.Kind.ERROR) {
 				this.message.append("\n");
 				this.message.append(diagnostic.getMessage(Locale.getDefault()));
-				this.message.append(" ");
-				this.message.append(diagnostic.getSource().getName());
-				this.message.append(" ");
-				this.message.append(diagnostic.getLineNumber()).append(":").append(diagnostic.getColumnNumber());
+				if (diagnostic.getSource() != null) {
+					this.message.append(" ");
+					this.message.append(diagnostic.getSource().getName());
+					this.message.append(" ");
+					this.message.append(diagnostic.getLineNumber()).append(":").append(diagnostic.getColumnNumber());
+				}
 			}
 		}
 

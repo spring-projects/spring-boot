@@ -16,6 +16,7 @@
 
 package org.springframework.boot.maven;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,12 +26,14 @@ import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
 
 /**
  * Integration tests for the Maven plugin's AOT support.
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 @ExtendWith(MavenBuildExtension.class)
 public class AotTests {
@@ -103,6 +106,21 @@ public class AotTests {
 	}
 
 	@TestTemplate
+	void whenAotRunsWithJvmArgumentsSourcesAreGenerated(MavenBuild mavenBuild) {
+		mavenBuild.project("aot-jvm-arguments").goals("package").execute((project) -> {
+			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
+			assertThat(collectRelativePaths(aotDirectory.resolve("sources")))
+					.contains(Path.of("org", "test", "TestProfileConfiguration__BeanDefinitions.java"));
+		});
+	}
+
+	@TestTemplate
+	void whenAotRunsWithInvalidCompilerArgumentsCompileFails(MavenBuild mavenBuild) {
+		mavenBuild.project("aot-compiler-arguments").goals("package").executeAndFail(
+				(project) -> assertThat(buildLog(project)).contains("invalid flag: --invalid-compiler-arg"));
+	}
+
+	@TestTemplate
 	void whenAotRunsSourcesAreCompiled(MavenBuild mavenBuild) {
 		mavenBuild.project("aot").goals("package").execute((project) -> {
 			Path classesDirectory = project.toPath().resolve("target/classes");
@@ -154,6 +172,10 @@ public class AotTests {
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
 		}
+	}
+
+	protected String buildLog(File project) {
+		return contentOf(new File(project, "target/build.log"));
 	}
 
 }
