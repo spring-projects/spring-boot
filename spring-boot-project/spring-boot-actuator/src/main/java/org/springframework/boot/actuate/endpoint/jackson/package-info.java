@@ -14,30 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.health;
-
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-
-import org.springframework.boot.actuate.endpoint.OperationResponseBody;
-
 /**
- * A component that contributes data to results returned from the {@link HealthEndpoint}.
- *
- * @author Phillip Webb
- * @since 2.2.0
- * @see Health
- * @see CompositeHealth
+ * Jackson support classes for actuator endpoints.
  */
-public abstract class HealthComponent implements OperationResponseBody {
-
-	HealthComponent() {
-	}
-
-	/**
-	 * Return the status of the component.
-	 * @return the component status
-	 */
-	@JsonUnwrapped
-	public abstract Status getStatus();
-
-}
+package org.springframework.boot.actuate.endpoint.jackson;

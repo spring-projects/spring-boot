@@ -34,6 +34,7 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
@@ -159,7 +160,7 @@ public class MetricsEndpoint {
 	/**
 	 * Description of metric names.
 	 */
-	public static final class MetricNamesDescriptor {
+	public static final class MetricNamesDescriptor implements OperationResponseBody {
 
 		private final Set<String> names;
 
@@ -176,7 +177,7 @@ public class MetricsEndpoint {
 	/**
 	 * Description of a metric.
 	 */
-	public static final class MetricDescriptor {
+	public static final class MetricDescriptor implements OperationResponseBody {
 
 		private final String name;
 

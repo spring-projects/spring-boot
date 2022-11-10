@@ -14,30 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.health;
+package org.springframework.boot.actuate.endpoint.jackson;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 
 /**
- * A component that contributes data to results returned from the {@link HealthEndpoint}.
+ * Interface used to supply the {@link ObjectMapper} that should be used when serializing
+ * {@link OperationResponseBody} endpoint results.
  *
  * @author Phillip Webb
- * @since 2.2.0
- * @see Health
- * @see CompositeHealth
+ * @since 3.0.0
+ * @see OperationResponseBody
  */
-public abstract class HealthComponent implements OperationResponseBody {
-
-	HealthComponent() {
-	}
+public interface EndpointObjectMapper {
 
 	/**
-	 * Return the status of the component.
-	 * @return the component status
+	 * Return the {@link ObjectMapper} that should be used to serialize
+	 * {@link OperationResponseBody} endpoint results.
+	 * @return the object mapper
 	 */
-	@JsonUnwrapped
-	public abstract Status getStatus();
+	ObjectMapper get();
 
 }

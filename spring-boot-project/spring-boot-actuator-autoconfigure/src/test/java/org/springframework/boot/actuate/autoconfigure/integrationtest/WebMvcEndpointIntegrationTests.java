@@ -52,6 +52,7 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.test.context.TestSecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcConfigurer;
@@ -138,6 +139,16 @@ class WebMvcEndpointIntegrationTests {
 		TestPropertyValues.of("management.endpoints.web.discovery.enabled=false").applyTo(this.context);
 		MockMvc mockMvc = doCreateMockMvc();
 		mockMvc.perform(get("/actuator").accept("*/*")).andExpect(status().isNotFound());
+	}
+
+	@Test
+	void endpointObjectMapperCanBeApplied() throws Exception {
+		this.context = new AnnotationConfigServletWebApplicationContext();
+		this.context.register(EndpointObjectMapperConfiguration.class, DefaultConfiguration.class);
+		TestPropertyValues.of("management.endpoints.web.exposure.include=*").applyTo(this.context);
+		MockMvc mockMvc = doCreateMockMvc();
+		MvcResult result = mockMvc.perform(get("/actuator/beans")).andExpect(status().isOk()).andReturn();
+		assertThat(result.getResponse().getContentAsString()).contains("\"scope\":\"notelgnis\"");
 	}
 
 	private MockMvc createSecureMockMvc() {

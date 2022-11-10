@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,16 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.reactive;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.CorsEndpointProperties;
@@ -28,7 +35,9 @@ import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfi
 import org.springframework.boot.actuate.autoconfigure.web.server.ConditionalOnManagementPort;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementPortType;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.jackson.EndpointObjectMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -48,7 +57,14 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Role;
+import org.springframework.core.codec.Encoder;
 import org.springframework.core.env.Environment;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.EncoderHttpMessageWriter;
+import org.springframework.http.codec.HttpMessageWriter;
+import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.DispatcherHandler;
@@ -112,6 +128,57 @@ public class WebFluxEndpointManagementContextConfiguration {
 		EndpointMapping endpointMapping = new EndpointMapping(webEndpointProperties.getBasePath());
 		return new ControllerEndpointHandlerMapping(endpointMapping, controllerEndpointsSupplier.getEndpoints(),
 				corsProperties.toCorsConfiguration());
+	}
+
+	@Bean
+	@ConditionalOnBean(EndpointObjectMapper.class)
+	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+	static ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor serverCodecConfigurerEndpointObjectMapperBeanPostProcessor(
+			EndpointObjectMapper endpointObjectMapper) {
+		return new ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor(endpointObjectMapper);
+	}
+
+	/**
+	 * {@link BeanPostProcessor} to apply {@link EndpointObjectMapper} for
+	 * {@link OperationResponseBody} to {@link Jackson2JsonEncoder} instances.
+	 */
+	private static class ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor implements BeanPostProcessor {
+
+		private static final List<MediaType> MEDIA_TYPES = Collections
+				.unmodifiableList(Arrays.asList(MediaType.APPLICATION_JSON, new MediaType("application", "*+json")));
+
+		private final EndpointObjectMapper endpointObjectMapper;
+
+		ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor(EndpointObjectMapper endpointObjectMapper) {
+			this.endpointObjectMapper = endpointObjectMapper;
+		}
+
+		@Override
+		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+			if (bean instanceof ServerCodecConfigurer) {
+				process((ServerCodecConfigurer) bean);
+			}
+			return bean;
+		}
+
+		private void process(ServerCodecConfigurer configurer) {
+			for (HttpMessageWriter<?> writer : configurer.getWriters()) {
+				if (writer instanceof EncoderHttpMessageWriter) {
+					process(((EncoderHttpMessageWriter<?>) writer).getEncoder());
+				}
+			}
+		}
+
+		private void process(Encoder<?> encoder) {
+			if (encoder instanceof Jackson2JsonEncoder) {
+				Jackson2JsonEncoder jackson2JsonEncoder = (Jackson2JsonEncoder) encoder;
+				jackson2JsonEncoder.registerObjectMappersForType(OperationResponseBody.class, (associations) -> {
+					ObjectMapper objectMapper = this.endpointObjectMapper.get();
+					MEDIA_TYPES.forEach((mimeType) -> associations.put(mimeType, objectMapper));
+				});
+			}
+		}
+
 	}
 
 }

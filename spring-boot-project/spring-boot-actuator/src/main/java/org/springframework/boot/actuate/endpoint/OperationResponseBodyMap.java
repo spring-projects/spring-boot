@@ -14,30 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.health;
+package org.springframework.boot.actuate.endpoint;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-
-import org.springframework.boot.actuate.endpoint.OperationResponseBody;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
- * A component that contributes data to results returned from the {@link HealthEndpoint}.
+ * {@link LinkedHashMap} to support {@link OperationResponseBody#of(java.util.Map)}.
  *
+ * @param <K> the key type
+ * @param <V> the value type
  * @author Phillip Webb
- * @since 2.2.0
- * @see Health
- * @see CompositeHealth
  */
-public abstract class HealthComponent implements OperationResponseBody {
+class OperationResponseBodyMap<K, V> extends LinkedHashMap<K, V> implements OperationResponseBody {
 
-	HealthComponent() {
+	OperationResponseBodyMap(Map<? extends K, ? extends V> map) {
+		super(map);
 	}
-
-	/**
-	 * Return the status of the component.
-	 * @return the component status
-	 */
-	@JsonUnwrapped
-	public abstract Status getStatus();
 
 }

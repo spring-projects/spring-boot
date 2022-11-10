@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -148,7 +149,7 @@ public class CachesEndpoint {
 	/**
 	 * Description of the caches.
 	 */
-	public static final class CachesDescriptor {
+	public static final class CachesDescriptor implements OperationResponseBody {
 
 		private final Map<String, CacheManagerDescriptor> cacheManagers;
 
@@ -182,7 +183,7 @@ public class CachesEndpoint {
 	/**
 	 * Description of a {@link Cache}.
 	 */
-	public static class CacheDescriptor {
+	public static class CacheDescriptor implements OperationResponseBody {
 
 		private final String target;
 

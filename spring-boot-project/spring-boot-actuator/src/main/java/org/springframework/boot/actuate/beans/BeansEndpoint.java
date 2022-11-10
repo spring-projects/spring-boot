@@ -22,6 +22,7 @@ import java.util.Map;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.context.ApplicationContext;
@@ -73,7 +74,7 @@ public class BeansEndpoint {
 	/**
 	 * Description of an application's beans.
 	 */
-	public static final class BeansDescriptor {
+	public static final class BeansDescriptor implements OperationResponseBody {
 
 		private final Map<String, ContextBeansDescriptor> contexts;
 

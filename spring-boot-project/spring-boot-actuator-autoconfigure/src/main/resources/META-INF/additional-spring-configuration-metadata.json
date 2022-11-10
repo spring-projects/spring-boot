@@ -61,6 +61,12 @@
       "description": "Whether to enable or disable all endpoints by default."
     },
     {
+      "name": "management.endpoints.jackson.isolated-object-mapper",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use an isolated object mapper to serialize endpoint JSON.",
+      "defaultValue": true
+    },
+    {
       "name": "management.endpoints.jmx.domain",
       "defaultValue": "org.springframework.boot"
     },

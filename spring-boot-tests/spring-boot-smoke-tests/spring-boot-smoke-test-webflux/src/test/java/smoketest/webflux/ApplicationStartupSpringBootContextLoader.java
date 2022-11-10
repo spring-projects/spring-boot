@@ -14,30 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.health;
+package smoketest.webflux;
 
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
+import org.springframework.boot.test.context.SpringBootContextLoader;
 
-import org.springframework.boot.actuate.endpoint.OperationResponseBody;
+class ApplicationStartupSpringBootContextLoader extends SpringBootContextLoader {
 
-/**
- * A component that contributes data to results returned from the {@link HealthEndpoint}.
- *
- * @author Phillip Webb
- * @since 2.2.0
- * @see Health
- * @see CompositeHealth
- */
-public abstract class HealthComponent implements OperationResponseBody {
-
-	HealthComponent() {
+	@Override
+	protected SpringApplication getSpringApplication() {
+		SpringApplication application = new SpringApplication();
+		application.setApplicationStartup(new BufferingApplicationStartup(1024));
+		return application;
 	}
-
-	/**
-	 * Return the status of the component.
-	 * @return the component status
-	 */
-	@JsonUnwrapped
-	public abstract Status getStatus();
 
 }

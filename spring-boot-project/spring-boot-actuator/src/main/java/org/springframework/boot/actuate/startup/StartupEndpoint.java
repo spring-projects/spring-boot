@@ -21,6 +21,7 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.boot.SpringBootVersion;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
@@ -68,7 +69,7 @@ public class StartupEndpoint {
 	/**
 	 * Description of an application startup.
 	 */
-	public static final class StartupDescriptor {
+	public static final class StartupDescriptor implements OperationResponseBody {
 
 		private final String springBootVersion;
 

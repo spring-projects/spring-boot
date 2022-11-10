@@ -54,6 +54,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.BeansException;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.SanitizableData;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
@@ -564,7 +565,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 * Description of an application's
 	 * {@link ConfigurationProperties @ConfigurationProperties} beans.
 	 */
-	public static final class ConfigurationPropertiesDescriptor {
+	public static final class ConfigurationPropertiesDescriptor implements OperationResponseBody {
 
 		private final Map<String, ContextConfigurationPropertiesDescriptor> contexts;
 

@@ -68,19 +68,19 @@ class IntegrationGraphEndpointTests {
 
 	@Test
 	void readOperationShouldReturnGraph() {
-		Graph mockedGraph = mock(Graph.class);
+		Graph graph = mock(Graph.class);
 		Map<String, Object> contentDescriptor = new LinkedHashMap<>();
 		Collection<IntegrationNode> nodes = new ArrayList<>();
 		Collection<LinkNode> links = new ArrayList<>();
-		given(mockedGraph.getContentDescriptor()).willReturn(contentDescriptor);
-		given(mockedGraph.getNodes()).willReturn(nodes);
-		given(mockedGraph.getLinks()).willReturn(links);
-		given(this.server.getGraph()).willReturn(mockedGraph);
-		GraphDescriptor graph = this.endpoint.graph();
+		given(graph.getContentDescriptor()).willReturn(contentDescriptor);
+		given(graph.getNodes()).willReturn(nodes);
+		given(graph.getLinks()).willReturn(links);
+		given(this.server.getGraph()).willReturn(graph);
+		GraphDescriptor descriptor = this.endpoint.graph();
 		then(this.server).should().getGraph();
-		assertThat(graph.getContentDescriptor()).isSameAs(contentDescriptor);
-		assertThat(graph.getNodes()).isSameAs(nodes);
-		assertThat(graph.getLinks()).isSameAs(links);
+		assertThat(descriptor.getContentDescriptor()).isSameAs(contentDescriptor);
+		assertThat(descriptor.getNodes()).isSameAs(nodes);
+		assertThat(descriptor.getLinks()).isSameAs(links);
 	}
 
 	@Test
