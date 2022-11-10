@@ -135,7 +135,7 @@ public class OpenTelemetryAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(io.micrometer.tracing.Tracer.class)
 	OtelTracer micrometerOtelTracer(Tracer tracer, EventPublisher eventPublisher,
 			OtelCurrentTraceContext otelCurrentTraceContext) {
 		return new OtelTracer(tracer, otelCurrentTraceContext, eventPublisher,

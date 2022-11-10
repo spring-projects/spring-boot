@@ -106,8 +106,8 @@ class OpenTelemetryAutoConfigurationTests {
 	@Test
 	void shouldBackOffOnCustomBeans() {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
-			assertThat(context).hasBean("customOtelTracer");
-			assertThat(context).hasSingleBean(OtelTracer.class);
+			assertThat(context).hasBean("customMicrometerTracer");
+			assertThat(context).hasSingleBean(io.micrometer.tracing.Tracer.class);
 			assertThat(context).hasBean("customEventPublisher");
 			assertThat(context).hasSingleBean(EventPublisher.class);
 			assertThat(context).hasBean("customOtelCurrentTraceContext");
@@ -201,8 +201,8 @@ class OpenTelemetryAutoConfigurationTests {
 	private static class CustomConfiguration {
 
 		@Bean
-		OtelTracer customOtelTracer() {
-			return mock(OtelTracer.class);
+		io.micrometer.tracing.Tracer customMicrometerTracer() {
+			return mock(io.micrometer.tracing.Tracer.class);
 		}
 
 		@Bean
