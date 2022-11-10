@@ -83,7 +83,6 @@ class PrometheusExemplarsAutoConfigurationTests {
 			assertThat(context).hasSingleBean(SpanContextSupplier.class);
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			Observation.start("test.observation", observationRegistry).stop();
-
 			PrometheusMeterRegistry prometheusMeterRegistry = context.getBean(PrometheusMeterRegistry.class);
 			String openMetricsOutput = prometheusMeterRegistry.scrape(TextFormat.CONTENT_TYPE_OPENMETRICS_100);
 			assertThat(openMetricsOutput).contains("test_observation_seconds_bucket").containsOnlyOnce("trace_id=")
