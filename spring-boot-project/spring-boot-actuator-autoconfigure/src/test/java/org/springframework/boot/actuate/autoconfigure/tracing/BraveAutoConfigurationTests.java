@@ -113,8 +113,8 @@ class BraveAutoConfigurationTests {
 			assertThat(context).hasSingleBean(HttpServerHandler.class);
 			assertThat(context).hasBean("customHttpClientHandler");
 			assertThat(context).hasSingleBean(HttpClientHandler.class);
-			assertThat(context).hasBean("customBraveTracer");
-			assertThat(context).hasSingleBean(BraveTracer.class);
+			assertThat(context).hasBean("customMicrometerTracer");
+			assertThat(context).hasSingleBean(io.micrometer.tracing.Tracer.class);
 			assertThat(context).hasBean("customBraveBaggageManager");
 			assertThat(context).hasSingleBean(BraveBaggageManager.class);
 			assertThat(context).hasBean("customBraveHttpServerHandler");
@@ -397,8 +397,8 @@ class BraveAutoConfigurationTests {
 		}
 
 		@Bean
-		BraveTracer customBraveTracer() {
-			return mock(BraveTracer.class);
+		io.micrometer.tracing.Tracer customMicrometerTracer() {
+			return mock(io.micrometer.tracing.Tracer.class);
 		}
 
 		@Bean
