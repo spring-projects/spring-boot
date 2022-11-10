@@ -416,12 +416,26 @@ public class IntegrationProperties {
 		 */
 		private boolean defaultLoggingEnabled = true;
 
+		/**
+		 * Comma-separated simple patterns to match integration components for observation
+		 * instrumentation.
+		 */
+		private List<String> observationPatterns = new ArrayList<>();
+
 		public boolean isDefaultLoggingEnabled() {
 			return this.defaultLoggingEnabled;
 		}
 
 		public void setDefaultLoggingEnabled(boolean defaultLoggingEnabled) {
 			this.defaultLoggingEnabled = defaultLoggingEnabled;
+		}
+
+		public List<String> getObservationPatterns() {
+			return this.observationPatterns;
+		}
+
+		public void setObservationPatterns(List<String> observationPatterns) {
+			this.observationPatterns = observationPatterns;
 		}
 
 	}

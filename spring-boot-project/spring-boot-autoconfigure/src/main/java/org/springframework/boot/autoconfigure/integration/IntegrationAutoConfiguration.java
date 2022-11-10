@@ -209,7 +209,8 @@ public class IntegrationAutoConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
 		@EnableIntegrationManagement(
-				defaultLoggingEnabled = "${spring.integration.management.default-logging-enabled:true}")
+				defaultLoggingEnabled = "${spring.integration.management.default-logging-enabled:true}",
+				observationPatterns = "${spring.integration.management.observation-patterns:}")
 		protected static class EnableIntegrationManagementConfiguration {
 
 		}

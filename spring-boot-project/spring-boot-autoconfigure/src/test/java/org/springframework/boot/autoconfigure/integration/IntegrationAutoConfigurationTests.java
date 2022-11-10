@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import javax.management.MBeanServer;
 import javax.sql.DataSource;
 
+import io.micrometer.observation.ObservationRegistry;
 import io.rsocket.transport.ClientTransport;
 import io.rsocket.transport.netty.client.TcpClientTransport;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -62,6 +63,8 @@ import org.springframework.integration.context.IntegrationContextUtils;
 import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.endpoint.MessageProcessorMessageSource;
 import org.springframework.integration.gateway.RequestReplyExchanger;
+import org.springframework.integration.handler.BridgeHandler;
+import org.springframework.integration.handler.LoggingHandler;
 import org.springframework.integration.handler.MessageProcessor;
 import org.springframework.integration.rsocket.ClientRSocketConnector;
 import org.springframework.integration.rsocket.IntegrationRSocketEndpoint;
@@ -489,6 +492,17 @@ class IntegrationAutoConfigurationTests {
 				.withBean(DirectChannel.class, DirectChannel::new).run((context) -> assertThat(context)
 						.getBean(DirectChannel.class).extracting(DirectChannel::isLoggingEnabled).isEqualTo(false));
 
+	}
+
+	@Test
+	void integrationManagementInstrumentedWithObservation() {
+		this.contextRunner.withPropertyValues("spring.integration.management.observation-patterns=testHandler")
+				.withBean("testHandler", LoggingHandler.class, () -> new LoggingHandler("warn"))
+				.withBean(ObservationRegistry.class, ObservationRegistry::create)
+				.withBean(BridgeHandler.class, BridgeHandler::new).run((context) -> {
+					assertThat(context).getBean("testHandler").extracting("observationRegistry").isNotNull();
+					assertThat(context).getBean(BridgeHandler.class).extracting("observationRegistry").isNull();
+				});
 	}
 
 	@Configuration(proxyBeanMethods = false)
