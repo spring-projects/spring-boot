@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.tracing.exemplars;
+package org.springframework.boot.actuate.autoconfigure.tracing.prometheus;
 
 import io.micrometer.tracing.Span;
 import io.micrometer.tracing.Tracer;
@@ -44,7 +44,7 @@ import org.springframework.util.function.SingletonSupplier;
 @ConditionalOnBean(Tracer.class)
 @ConditionalOnClass({ Tracer.class, SpanContextSupplier.class })
 @ConditionalOnEnabledTracing
-public class ExemplarsAutoConfiguration {
+public class PrometheusExemplarsAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

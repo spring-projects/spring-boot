@@ -17,4 +17,4 @@
 /**
  * Auto-configuration for Prometheus Exemplars with Micrometer Tracing.
  */
-package org.springframework.boot.actuate.autoconfigure.tracing.exemplars;
+package org.springframework.boot.actuate.autoconfigure.tracing.prometheus;
