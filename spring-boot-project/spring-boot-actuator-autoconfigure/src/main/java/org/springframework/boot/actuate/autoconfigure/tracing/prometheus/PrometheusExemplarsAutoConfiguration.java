@@ -80,7 +80,11 @@ public class PrometheusExemplarsAutoConfiguration {
 		@Override
 		public boolean isSampled() {
 			Span currentSpan = currentSpan();
-			return currentSpan != null && currentSpan.context().sampled();
+			if (currentSpan == null) {
+				return false;
+			}
+			Boolean sampled = currentSpan.context().sampled();
+			return sampled != null && sampled;
 		}
 
 		private Span currentSpan() {
