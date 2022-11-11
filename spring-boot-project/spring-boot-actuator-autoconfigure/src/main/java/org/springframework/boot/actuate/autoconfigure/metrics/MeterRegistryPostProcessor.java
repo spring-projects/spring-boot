@@ -44,7 +44,7 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 
 	private final boolean hasNoCompositeMeterRegistryBeans;
 
-	private final boolean useGlobalRegistry;
+	private final ObjectProvider<MetricsProperties> properties;
 
 	private final ObjectProvider<MeterRegistryCustomizer<?>> customizers;
 
@@ -56,22 +56,21 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 
 	private final Set<MeterRegistry> deferredBindings = new LinkedHashSet<>();
 
-	MeterRegistryPostProcessor(ApplicationContext applicationContext, MetricsProperties metricsProperties,
-			ObjectProvider<MeterRegistryCustomizer<?>> customizers, ObjectProvider<MeterFilter> filters,
-			ObjectProvider<MeterBinder> binders) {
-		this(hasNoCompositeMeterRegistryBeans(applicationContext), metricsProperties.isUseGlobalRegistry(), customizers,
-				filters, binders);
+	MeterRegistryPostProcessor(ApplicationContext applicationContext,
+			ObjectProvider<MetricsProperties> metricsProperties, ObjectProvider<MeterRegistryCustomizer<?>> customizers,
+			ObjectProvider<MeterFilter> filters, ObjectProvider<MeterBinder> binders) {
+		this(hasNoCompositeMeterRegistryBeans(applicationContext), metricsProperties, customizers, filters, binders);
 	}
 
 	private static boolean hasNoCompositeMeterRegistryBeans(ApplicationContext applicationContext) {
 		return applicationContext.getBeanNamesForType(CompositeMeterRegistry.class, false, false).length == 0;
 	}
 
-	MeterRegistryPostProcessor(boolean hasNoCompositeMeterRegistryBeans, boolean useGlobalRegistry,
+	MeterRegistryPostProcessor(boolean hasNoCompositeMeterRegistryBeans, ObjectProvider<MetricsProperties> properties,
 			ObjectProvider<MeterRegistryCustomizer<?>> customizers, ObjectProvider<MeterFilter> filters,
 			ObjectProvider<MeterBinder> binders) {
 		this.hasNoCompositeMeterRegistryBeans = hasNoCompositeMeterRegistryBeans;
-		this.useGlobalRegistry = useGlobalRegistry;
+		this.properties = properties;
 		this.customizers = customizers;
 		this.filters = filters;
 		this.binders = binders;
@@ -121,7 +120,7 @@ class MeterRegistryPostProcessor implements BeanPostProcessor, SmartInitializing
 	}
 
 	private void addToGlobalRegistryIfNecessary(MeterRegistry meterRegistry) {
-		if (this.useGlobalRegistry && !isGlobalRegistry(meterRegistry)) {
+		if (this.properties.getObject().isUseGlobalRegistry() && !isGlobalRegistry(meterRegistry)) {
 			Metrics.addRegistry(meterRegistry);
 		}
 	}

@@ -21,10 +21,12 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
@@ -67,6 +69,7 @@ import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.util.StringUtils;
+import org.springframework.util.function.SingletonSupplier;
 import org.springframework.web.reactive.DispatcherHandler;
 
 /**
@@ -134,8 +137,9 @@ public class WebFluxEndpointManagementContextConfiguration {
 	@ConditionalOnBean(EndpointObjectMapper.class)
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	static ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor serverCodecConfigurerEndpointObjectMapperBeanPostProcessor(
-			EndpointObjectMapper endpointObjectMapper) {
-		return new ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor(endpointObjectMapper);
+			ObjectProvider<EndpointObjectMapper> endpointObjectMapper) {
+		return new ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor(
+				SingletonSupplier.of(endpointObjectMapper::getObject));
 	}
 
 	/**
@@ -147,9 +151,10 @@ public class WebFluxEndpointManagementContextConfiguration {
 		private static final List<MediaType> MEDIA_TYPES = Collections
 				.unmodifiableList(Arrays.asList(MediaType.APPLICATION_JSON, new MediaType("application", "*+json")));
 
-		private final EndpointObjectMapper endpointObjectMapper;
+		private final Supplier<EndpointObjectMapper> endpointObjectMapper;
 
-		ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor(EndpointObjectMapper endpointObjectMapper) {
+		ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor(
+				Supplier<EndpointObjectMapper> endpointObjectMapper) {
 			this.endpointObjectMapper = endpointObjectMapper;
 		}
 
@@ -173,7 +178,7 @@ public class WebFluxEndpointManagementContextConfiguration {
 			if (encoder instanceof Jackson2JsonEncoder) {
 				Jackson2JsonEncoder jackson2JsonEncoder = (Jackson2JsonEncoder) encoder;
 				jackson2JsonEncoder.registerObjectMappersForType(OperationResponseBody.class, (associations) -> {
-					ObjectMapper objectMapper = this.endpointObjectMapper.get();
+					ObjectMapper objectMapper = this.endpointObjectMapper.get().get();
 					MEDIA_TYPES.forEach((mimeType) -> associations.put(mimeType, objectMapper));
 				});
 			}
