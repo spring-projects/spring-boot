@@ -205,7 +205,7 @@ class PropertyDescriptorResolver {
 				MetadataGenerationEnvironment env) {
 			if (constructors.size() == 1) {
 				ExecutableElement candidate = constructors.get(0);
-				if (candidate.getParameters().size() > 0 && !env.hasAutowiredAnnotation(constructors.get(0))) {
+				if (candidate.getParameters().size() > 0 && !env.hasAutowiredAnnotation(candidate)) {
 					if (type.getNestingKind() == NestingKind.MEMBER
 							&& candidate.getModifiers().contains(Modifier.PRIVATE)) {
 						return null;

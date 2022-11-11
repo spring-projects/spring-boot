@@ -21,6 +21,7 @@ import java.util.List;
 
 import io.micrometer.common.KeyValue;
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Tags;
 import io.micrometer.observation.Observation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -96,7 +97,7 @@ class ServerRequestObservationConventionAdapterTests {
 		@Override
 		public Iterable<Tag> getTags(HttpServletRequest request, HttpServletResponse response, Object handler,
 				Throwable exception) {
-			return List.of(Tag.of("custom", "value"));
+			return Tags.of("custom", "value");
 		}
 
 		@Override

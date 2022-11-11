@@ -81,7 +81,7 @@ class ConditionEvaluationReportLoggingListenerTests {
 		assertThatExceptionOfType(Exception.class).isThrownBy(context::refresh)
 				.satisfies((ex) -> withInfoLogging(() -> context.publishEvent(
 						new ApplicationFailedEvent(new SpringApplication(), new String[0], context, ex))));
-		assertThat(output).doesNotContain("CONDITONS EVALUATION REPORT")
+		assertThat(output).doesNotContain("CONDITIONS EVALUATION REPORT")
 				.contains("re-run your application with 'debug' enabled");
 	}
 

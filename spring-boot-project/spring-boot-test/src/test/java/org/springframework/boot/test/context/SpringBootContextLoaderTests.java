@@ -354,8 +354,7 @@ class SpringBootContextLoaderTests {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@SpringBootConfiguration
+	@SpringBootConfiguration(proxyBeanMethods = false)
 	public static class ConfigWithMain {
 
 		public static void main(String[] args) {
@@ -364,14 +363,12 @@ class SpringBootContextLoaderTests {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@SpringBootConfiguration
+	@SpringBootConfiguration(proxyBeanMethods = false)
 	static class ConfigWithNoMain {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@SpringBootConfiguration
+	@SpringBootConfiguration(proxyBeanMethods = false)
 	public static class ConfigWithMainWithBeanThrowingException {
 
 		public static void main(String[] args) {
@@ -385,8 +382,7 @@ class SpringBootContextLoaderTests {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@SpringBootConfiguration
+	@SpringBootConfiguration(proxyBeanMethods = false)
 	static class ConfigWithNoMainWithBeanThrowingException {
 
 		@Bean
@@ -396,8 +392,7 @@ class SpringBootContextLoaderTests {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@SpringBootConfiguration
+	@SpringBootConfiguration(proxyBeanMethods = false)
 	public static class ConfigWithMainThrowingException {
 
 		public static void main(String[] args) {
