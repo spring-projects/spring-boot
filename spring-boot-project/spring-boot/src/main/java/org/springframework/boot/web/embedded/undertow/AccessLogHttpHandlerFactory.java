@@ -33,7 +33,7 @@ import org.xnio.XnioWorker;
 import org.springframework.util.Assert;
 
 /**
- * A {@link HttpHandlerFactory} for an {@link AccessLogHandler}.
+ * An {@link HttpHandlerFactory} for an {@link AccessLogHandler}.
  *
  * @author Andy Wilkinson
  */

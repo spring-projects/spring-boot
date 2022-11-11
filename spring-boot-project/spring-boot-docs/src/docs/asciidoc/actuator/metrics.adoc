@@ -516,7 +516,7 @@ The following example `scrape_config` adds to `prometheus.yml`:
 ----
 
 https://prometheus.io/docs/prometheus/latest/feature_flags/#exemplars-storage[Prometheus Exemplars] are also supported.
-To enable this feature, a `SpanContextSupplier` bean should present.
+To enable this feature, a `SpanContextSupplier` bean should be present.
 If you use https://micrometer.io/docs/tracing[Micrometer Tracing], this will be auto-configured for you, but you can always create your own if you want.
 Please check the https://prometheus.io/docs/prometheus/latest/feature_flags/#exemplars-storage[Prometheus Docs], since this feature needs to be explicitly enabled on Prometheus' side, and it is only supported using the https://github.com/OpenObservability/OpenMetrics/blob/v1.0.0/specification/OpenMetrics.md#exemplars[OpenMetrics] format.
 
