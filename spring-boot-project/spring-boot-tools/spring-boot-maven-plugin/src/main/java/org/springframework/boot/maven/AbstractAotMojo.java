@@ -130,11 +130,21 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 		}
 		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
 		try (StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null)) {
+			JavaCompilerPluginConfiguration compilerConfiguration = new JavaCompilerPluginConfiguration(this.project);
 			List<String> options = new ArrayList<>();
 			options.add("-cp");
 			options.add(ClasspathBuilder.build(Arrays.asList(classPath)));
 			options.add("-d");
 			options.add(outputDirectory.toPath().toAbsolutePath().toString());
+			options.add("--source");
+			options.add(compilerConfiguration.getSourceMajorVersion());
+			options.add("--target");
+			options.add(compilerConfiguration.getTargetMajorVersion());
+			String releaseVersion = compilerConfiguration.getReleaseVersion();
+			if (releaseVersion != null) {
+				options.add("--release");
+				options.add(releaseVersion);
+			}
 			options.addAll(new RunArguments(this.compilerArguments).getArgs());
 			Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromPaths(sourceFiles);
 			Errors errors = new Errors();

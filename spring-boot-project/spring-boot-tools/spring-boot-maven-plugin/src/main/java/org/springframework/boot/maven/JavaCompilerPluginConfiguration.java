@@ -55,6 +55,16 @@ class JavaCompilerPluginConfiguration {
 		return majorVersionFor(version);
 	}
 
+	String getReleaseVersion() {
+		String version = getConfigurationValue("release");
+
+		if (version == null) {
+			version = getPropertyValue("maven.compiler.release");
+		}
+
+		return majorVersionFor(version);
+	}
+
 	private String getConfigurationValue(String propertyName) {
 		Plugin plugin = this.project.getPlugin("org.apache.maven.plugins:maven-compiler-plugin");
 		if (plugin != null) {
