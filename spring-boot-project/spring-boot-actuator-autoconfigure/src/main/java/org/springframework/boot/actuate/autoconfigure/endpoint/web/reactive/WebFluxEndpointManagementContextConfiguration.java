@@ -142,7 +142,7 @@ public class WebFluxEndpointManagementContextConfiguration {
 	 * {@link BeanPostProcessor} to apply {@link EndpointObjectMapper} for
 	 * {@link OperationResponseBody} to {@link Jackson2JsonEncoder} instances.
 	 */
-	private static class ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor implements BeanPostProcessor {
+	static class ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor implements BeanPostProcessor {
 
 		private static final List<MediaType> MEDIA_TYPES = Collections
 				.unmodifiableList(Arrays.asList(MediaType.APPLICATION_JSON, new MediaType("application", "*+json")));
