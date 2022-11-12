@@ -55,9 +55,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.util.*;
 
 /**
  * {@link DeferredImportSelector} to handle {@link EnableAutoConfiguration
@@ -77,6 +75,8 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		ResourceLoaderAware, BeanFactoryAware, EnvironmentAware, Ordered {
 
 	private static final AutoConfigurationEntry EMPTY_ENTRY = new AutoConfigurationEntry();
+
+	private static final PathMatcher PATH_MATCHER = new AntPathMatcher();
 
 	private static final String[] NO_IMPORTS = {};
 
@@ -126,8 +126,7 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		List<String> configurations = getCandidateConfigurations(annotationMetadata, attributes);
 		configurations = removeDuplicates(configurations);
 		Set<String> exclusions = getExclusions(annotationMetadata, attributes);
-		checkExcludedClasses(configurations, exclusions);
-		configurations.removeAll(exclusions);
+		configurations = removeExclusions(configurations, exclusions);
 		configurations = getConfigurationClassFilter().filter(configurations);
 		fireAutoConfigurationImportEvents(configurations, exclusions);
 		return new AutoConfigurationEntry(configurations, exclusions);
@@ -186,31 +185,17 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		return configurations;
 	}
 
-	private void checkExcludedClasses(List<String> configurations, Set<String> exclusions) {
-		List<String> invalidExcludes = new ArrayList<>(exclusions.size());
-		for (String exclusion : exclusions) {
-			if (ClassUtils.isPresent(exclusion, getClass().getClassLoader()) && !configurations.contains(exclusion)) {
-				invalidExcludes.add(exclusion);
-			}
-		}
-		if (!invalidExcludes.isEmpty()) {
-			handleInvalidExcludes(invalidExcludes);
-		}
-	}
-
-	/**
-	 * Handle any invalid excludes that have been specified.
-	 * @param invalidExcludes the list of invalid excludes (will always have at least one
-	 * element)
-	 */
-	protected void handleInvalidExcludes(List<String> invalidExcludes) {
-		StringBuilder message = new StringBuilder();
-		for (String exclude : invalidExcludes) {
-			message.append("\t- ").append(exclude).append(String.format("%n"));
-		}
-		throw new IllegalStateException(String.format(
-				"The following classes could not be excluded because they are not auto-configuration classes:%n%s",
-				message));
+	protected List<String> removeExclusions(List<String> configurations, Set<String> exclusions) {
+		return configurations
+				.stream()
+				.filter(c -> exclusions.stream()
+						.noneMatch(exclusion -> {
+							if (PATH_MATCHER.isPattern(exclusion)) {
+								return PATH_MATCHER.match(exclusion, c);
+							}
+							return c.startsWith(exclusion);
+						}))
+				.toList();
 	}
 
 	/**

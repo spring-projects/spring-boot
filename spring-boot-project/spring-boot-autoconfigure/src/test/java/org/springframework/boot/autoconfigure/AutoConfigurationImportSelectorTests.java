@@ -56,7 +56,7 @@ class AutoConfigurationImportSelectorTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
 
-	private List<AutoConfigurationImportFilter> filters = new ArrayList<>();
+	private final List<AutoConfigurationImportFilter> filters = new ArrayList<>();
 
 	@BeforeEach
 	void setup() {
@@ -149,25 +149,6 @@ class AutoConfigurationImportSelectorTests {
 		assertThat(this.importSelector.getLastEvent().getExclusions()).contains(
 				FreeMarkerAutoConfiguration.class.getName(), MustacheAutoConfiguration.class.getName(),
 				ThymeleafAutoConfiguration.class.getName());
-	}
-
-	@Test
-	void nonAutoConfigurationClassExclusionsShouldThrowException() {
-		assertThatIllegalStateException()
-				.isThrownBy(() -> selectImports(EnableAutoConfigurationWithFaultyClassExclude.class));
-	}
-
-	@Test
-	void nonAutoConfigurationClassNameExclusionsWhenPresentOnClassPathShouldThrowException() {
-		assertThatIllegalStateException()
-				.isThrownBy(() -> selectImports(EnableAutoConfigurationWithFaultyClassNameExclude.class));
-	}
-
-	@Test
-	void nonAutoConfigurationPropertyExclusionsWhenPresentOnClassPathShouldThrowException() {
-		this.environment.setProperty("spring.autoconfigure.exclude",
-				"org.springframework.boot.autoconfigure.AutoConfigurationImportSelectorTests.TestConfiguration");
-		assertThatIllegalStateException().isThrownBy(() -> selectImports(BasicEnableAutoConfiguration.class));
 	}
 
 	@Test

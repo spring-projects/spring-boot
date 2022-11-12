@@ -150,10 +150,4 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	public int getOrder() {
 		return super.getOrder() - 1;
 	}
-
-	@Override
-	protected void handleInvalidExcludes(List<String> invalidExcludes) {
-		// Ignore for test
-	}
-
 }
