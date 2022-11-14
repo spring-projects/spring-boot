@@ -28,6 +28,8 @@ import org.springframework.boot.web.server.WebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigRegistry;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 
 /**
  * Factory for creating a separate management context when the management web server is
@@ -55,8 +57,15 @@ public final class ManagementContextFactory {
 	}
 
 	public ConfigurableApplicationContext createManagementContext(ApplicationContext parentContext) {
+		Environment parentEnvironment = parentContext.getEnvironment();
+		ConfigurableEnvironment childEnvironment = ApplicationContextFactory.DEFAULT
+				.createEnvironment(this.webApplicationType);
+		if (parentEnvironment instanceof ConfigurableEnvironment) {
+			childEnvironment.setConversionService(((ConfigurableEnvironment) parentEnvironment).getConversionService());
+		}
 		ConfigurableApplicationContext managementContext = ApplicationContextFactory.DEFAULT
 				.create(this.webApplicationType);
+		managementContext.setEnvironment(childEnvironment);
 		managementContext.setParent(parentContext);
 		return managementContext;
 	}
