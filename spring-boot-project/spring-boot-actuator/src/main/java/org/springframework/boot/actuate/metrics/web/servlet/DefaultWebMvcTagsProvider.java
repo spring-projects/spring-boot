@@ -30,7 +30,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author Jon Schneider
  * @since 2.0.0
  * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
- * {@link org.springframework.http.observation.ServerRequestObservationConvention}
+ * {@link org.springframework.http.server.observation.ServerRequestObservationConvention}
  */
 @Deprecated(since = "3.0.0", forRemoval = true)
 @SuppressWarnings("removal")

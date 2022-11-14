@@ -25,8 +25,8 @@ import io.micrometer.observation.Observation;
 import org.springframework.boot.actuate.metrics.web.servlet.DefaultWebMvcTagsProvider;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsContributor;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsProvider;
-import org.springframework.http.observation.ServerRequestObservationContext;
-import org.springframework.http.observation.ServerRequestObservationConvention;
+import org.springframework.http.server.observation.ServerRequestObservationContext;
+import org.springframework.http.server.observation.ServerRequestObservationConvention;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.HandlerMapping;
 

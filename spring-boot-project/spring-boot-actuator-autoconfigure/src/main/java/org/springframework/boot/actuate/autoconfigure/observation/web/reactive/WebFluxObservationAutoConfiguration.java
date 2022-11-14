@@ -43,8 +43,8 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.observation.reactive.DefaultServerRequestObservationConvention;
-import org.springframework.http.observation.reactive.ServerRequestObservationConvention;
+import org.springframework.http.server.reactive.observation.DefaultServerRequestObservationConvention;
+import org.springframework.http.server.reactive.observation.ServerRequestObservationConvention;
 import org.springframework.web.filter.reactive.ServerHttpObservationFilter;
 
 /**
@@ -85,11 +85,11 @@ public class WebFluxObservationAutoConfiguration {
 		String name = (observationName != null) ? observationName : metricName;
 		WebFluxTagsProvider tagsProvider = tagConfigurer.getIfAvailable();
 		List<WebFluxTagsContributor> tagsContributors = contributorsProvider.orderedStream().toList();
-		ServerRequestObservationConvention convention = extracted(name, tagsProvider, tagsContributors);
+		ServerRequestObservationConvention convention = createConvention(name, tagsProvider, tagsContributors);
 		return new ServerHttpObservationFilter(registry, convention);
 	}
 
-	private ServerRequestObservationConvention extracted(String name, WebFluxTagsProvider tagsProvider,
+	private ServerRequestObservationConvention createConvention(String name, WebFluxTagsProvider tagsProvider,
 			List<WebFluxTagsContributor> tagsContributors) {
 		if (tagsProvider != null) {
 			return new ServerRequestObservationConventionAdapter(name, tagsProvider);

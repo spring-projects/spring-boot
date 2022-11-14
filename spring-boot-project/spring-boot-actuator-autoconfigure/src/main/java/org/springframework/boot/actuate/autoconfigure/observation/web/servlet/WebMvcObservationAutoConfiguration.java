@@ -46,8 +46,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.observation.DefaultServerRequestObservationConvention;
-import org.springframework.http.observation.ServerRequestObservationConvention;
+import org.springframework.http.server.observation.DefaultServerRequestObservationConvention;
+import org.springframework.http.server.observation.ServerRequestObservationConvention;
 import org.springframework.web.filter.ServerHttpObservationFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 

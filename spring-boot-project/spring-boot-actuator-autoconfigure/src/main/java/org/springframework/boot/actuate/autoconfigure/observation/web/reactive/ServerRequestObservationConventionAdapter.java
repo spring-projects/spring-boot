@@ -24,8 +24,14 @@ import io.micrometer.core.instrument.Tag;
 import org.springframework.boot.actuate.metrics.web.reactive.server.DefaultWebFluxTagsProvider;
 import org.springframework.boot.actuate.metrics.web.reactive.server.WebFluxTagsContributor;
 import org.springframework.boot.actuate.metrics.web.reactive.server.WebFluxTagsProvider;
-import org.springframework.http.observation.reactive.ServerRequestObservationContext;
-import org.springframework.http.observation.reactive.ServerRequestObservationConvention;
+import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.http.server.reactive.observation.ServerRequestObservationContext;
+import org.springframework.http.server.reactive.observation.ServerRequestObservationConvention;
+import org.springframework.web.server.adapter.DefaultServerWebExchange;
+import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
+import org.springframework.web.server.i18n.LocaleContextResolver;
+import org.springframework.web.server.session.DefaultWebSessionManager;
+import org.springframework.web.server.session.WebSessionManager;
 
 /**
  * Adapter class that applies {@link WebFluxTagsProvider} tags as a
@@ -36,6 +42,12 @@ import org.springframework.http.observation.reactive.ServerRequestObservationCon
 @SuppressWarnings("removal")
 @Deprecated(since = "3.0.0", forRemoval = true)
 class ServerRequestObservationConventionAdapter implements ServerRequestObservationConvention {
+
+	private final WebSessionManager webSessionManager = new DefaultWebSessionManager();
+
+	private final ServerCodecConfigurer serverCodecConfigurer = ServerCodecConfigurer.create();
+
+	private final LocaleContextResolver localeContextResolver = new AcceptHeaderLocaleContextResolver();
 
 	private final String name;
 
@@ -58,7 +70,10 @@ class ServerRequestObservationConventionAdapter implements ServerRequestObservat
 
 	@Override
 	public KeyValues getLowCardinalityKeyValues(ServerRequestObservationContext context) {
-		Iterable<Tag> tags = this.tagsProvider.httpRequestTags(context.getServerWebExchange(), context.getError());
+		DefaultServerWebExchange serverWebExchange = new DefaultServerWebExchange(context.getCarrier(),
+				context.getResponse(), this.webSessionManager, this.serverCodecConfigurer, this.localeContextResolver);
+		serverWebExchange.getAttributes().putAll(context.getAttributes());
+		Iterable<Tag> tags = this.tagsProvider.httpRequestTags(serverWebExchange, context.getError());
 		return KeyValues.of(tags, Tag::getKey, Tag::getValue);
 	}
 
