@@ -17,9 +17,7 @@
 package org.springframework.boot.web.embedded.tomcat;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -39,10 +37,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.naming.ContextBindings;
 
-import org.springframework.aot.hint.ExecutableMode;
-import org.springframework.aot.hint.RuntimeHints;
-import org.springframework.aot.hint.RuntimeHintsRegistrar;
-import org.springframework.aot.hint.TypeReference;
 import org.springframework.boot.web.server.GracefulShutdownCallback;
 import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.PortInUseException;
@@ -394,28 +388,6 @@ public class TomcatWebServer implements WebServer {
 			return;
 		}
 		this.gracefulShutdown.shutDownGracefully(callback);
-	}
-
-	/**
-	 * {@link RuntimeHintsRegistrar} that allows Tomcat protocol properties accessed
-	 * reflectively to be retrieved at runtime in a native image.
-	 */
-	static class TomcatWebServerRuntimeHints implements RuntimeHintsRegistrar {
-
-		@Override
-		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.reflection().registerTypeIfPresent(classLoader, "org.apache.coyote.AbstractProtocol",
-					(hint) -> hint.withMethod("setPort", List.of(TypeReference.of(int.class)), ExecutableMode.INVOKE)
-							.withMethod("setPortOffset", List.of(TypeReference.of(int.class)), ExecutableMode.INVOKE)
-							.withMethod("getPort", Collections.emptyList(), ExecutableMode.INVOKE)
-							.withMethod("getPortOffset", Collections.emptyList(), ExecutableMode.INVOKE)
-							.withMethod("getLocalPort", Collections.emptyList(), ExecutableMode.INVOKE))
-					.registerTypeIfPresent(classLoader, "org.apache.coyote.http11.AbstractHttp11Protocol",
-							(hint) -> hint.withMethod("setMaxSavePostSize", List.of(TypeReference.of(int.class)),
-									ExecutableMode.INVOKE).withMethod("setSecure",
-											List.of(TypeReference.of(boolean.class)), ExecutableMode.INVOKE));
-		}
-
 	}
 
 }

@@ -9,7 +9,6 @@ org.springframework.boot.json.JacksonRuntimeHints,\
 org.springframework.boot.logging.java.JavaLoggingSystemRuntimeHints,\
 org.springframework.boot.logging.logback.LogbackRuntimeHints,\
 org.springframework.boot.web.client.ClientHttpRequestFactoriesRuntimeHints,\
-org.springframework.boot.web.embedded.tomcat.TomcatWebServer.TomcatWebServerRuntimeHints,\
 org.springframework.boot.web.embedded.undertow.UndertowWebServer.UndertowWebServerRuntimeHints,\
 org.springframework.boot.web.server.MimeMappings.MimeMappingsRuntimeHints
 
