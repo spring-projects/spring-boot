@@ -20,7 +20,6 @@ import java.nio.charset.Charset;
 import java.util.function.BiConsumer;
 
 import ch.qos.logback.core.util.FileSize;
-import org.flywaydb.core.internal.util.ClassUtils;
 
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LoggingSystemProperties;
@@ -28,6 +27,7 @@ import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.unit.DataSize;
 
 /**
