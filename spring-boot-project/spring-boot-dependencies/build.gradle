@@ -1765,7 +1765,7 @@ bom {
 			]
 		}
 	}
-	library("Spring RESTDocs", "2.0.6.RELEASE") {
+	library("Spring RESTDocs", "2.0.7.BUILD-SNAPSHOT") {
 		prohibit("[3.0.0-M1,)") {
 			because "it uses Spring Framework 6"
 		}
