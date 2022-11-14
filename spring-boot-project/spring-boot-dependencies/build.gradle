@@ -1435,8 +1435,12 @@ bom {
 	}
 	library("Spring WS", "4.0.0-SNAPSHOT") {
 		group("org.springframework.ws") {
-			imports = [
-					"spring-ws-bom"
+			modules = [
+				"spring-ws-core",
+				"spring-ws-security",
+				"spring-ws-support",
+				"spring-ws-test",
+				"spring-xml"
 			]
 		}
 	}
