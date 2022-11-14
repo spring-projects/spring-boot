@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -417,8 +417,11 @@ public class IntegrationProperties {
 		private boolean defaultLoggingEnabled = true;
 
 		/**
-		 * Comma-separated simple patterns to match integration components for observation
-		 * instrumentation.
+		 * Comma-separated list of simple patterns to match against the names of Spring
+		 * Integration components. When matched, observation instrumentation will be
+		 * performed for the component. Please refer to the javadoc of the smartMatch
+		 * method of Spring Integration's PatternMatchUtils for details of the pattern
+		 * syntax.
 		 */
 		private List<String> observationPatterns = new ArrayList<>();
 
