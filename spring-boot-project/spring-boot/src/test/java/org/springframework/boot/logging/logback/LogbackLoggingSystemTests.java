@@ -55,6 +55,7 @@ import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
+import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.core.convert.ConversionService;
@@ -116,6 +117,22 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		System.getProperties().keySet().retainAll(this.systemPropertyNames);
 		this.loggingSystem.cleanUp();
 		((LoggerContext) LoggerFactory.getILoggerFactory()).stop();
+	}
+
+	@Test
+	@ClassPathOverrides("org.jboss.logging:jboss-logging:3.5.0.Final")
+	void jbossLoggingRoutesThroughLog4j2ByDefault() {
+		org.jboss.logging.Logger jbossLogger = org.jboss.logging.Logger.getLogger(getClass());
+		assertThat(jbossLogger.getClass().getName()).isEqualTo("org.jboss.logging.Log4j2Logger");
+	}
+
+	@Test
+	@ClassPathOverrides("org.jboss.logging:jboss-logging:3.5.0.Final")
+	void jbossLoggingRoutesThroughSlf4jWhenLoggingSystemIsInitialized() {
+		this.loggingSystem.beforeInitialize();
+		initialize(this.initializationContext, null, null);
+		assertThat(org.jboss.logging.Logger.getLogger(getClass()).getClass().getName())
+				.isEqualTo("org.jboss.logging.Slf4jLocationAwareLogger");
 	}
 
 	@Test
@@ -523,6 +540,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		ReflectionUtils.doWithFields(LogbackLoggingSystemProperties.class,
 				(field) -> expectedProperties.add((String) field.get(null)), this::isPublicStaticFinal);
 		expectedProperties.removeAll(Arrays.asList("LOG_FILE", "LOG_PATH"));
+		expectedProperties.add("org.jboss.logging.provider");
 		assertThat(properties).containsOnlyKeys(expectedProperties);
 		assertThat(properties).containsEntry("CONSOLE_LOG_CHARSET", Charset.defaultCharset().name());
 	}

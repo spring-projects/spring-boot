@@ -20,6 +20,7 @@ import java.nio.charset.Charset;
 import java.util.function.BiConsumer;
 
 import ch.qos.logback.core.util.FileSize;
+import org.flywaydb.core.internal.util.ClassUtils;
 
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LoggingSystemProperties;
@@ -36,6 +37,9 @@ import org.springframework.util.unit.DataSize;
  * @since 2.4.0
  */
 public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
+
+	private static final boolean JBOSS_LOGGING_PRESENT = ClassUtils.isPresent("org.jboss.logging.Logger",
+			LogbackLoggingSystemProperties.class.getClassLoader());
 
 	/**
 	 * The name of the System property that contains the rolled-over log file name
@@ -85,6 +89,17 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 	@Override
 	protected void apply(LogFile logFile, PropertyResolver resolver) {
 		super.apply(logFile, resolver);
+		applyJBossLoggingProperties();
+		applyRollingPolicyProperties(resolver);
+	}
+
+	private void applyJBossLoggingProperties() {
+		if (JBOSS_LOGGING_PRESENT) {
+			setSystemProperty("org.jboss.logging.provider", "slf4j");
+		}
+	}
+
+	private void applyRollingPolicyProperties(PropertyResolver resolver) {
 		applyRollingPolicy(resolver, ROLLINGPOLICY_FILE_NAME_PATTERN, "logging.logback.rollingpolicy.file-name-pattern",
 				"logging.pattern.rolling-file-name");
 		applyRollingPolicy(resolver, ROLLINGPOLICY_CLEAN_HISTORY_ON_START,
