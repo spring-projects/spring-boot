@@ -17,14 +17,13 @@
 package org.springframework.boot.web.client;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
-import java.util.function.Consumer;
 
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
-import org.springframework.aot.hint.TypeHint;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequestFactory;
@@ -52,35 +51,33 @@ class ClientHttpRequestFactoriesRuntimeHints implements RuntimeHintsRegistrar {
 
 	private void registerHints(ReflectionHints hints, ClassLoader classLoader) {
 		hints.registerField(findField(AbstractClientHttpRequestFactoryWrapper.class, "requestFactory"));
-		if (ClassUtils.isPresent(ClientHttpRequestFactories.APACHE_HTTP_CLIENT_CLASS, classLoader)) {
-			registerReflectionHints(hints, HttpComponentsClientHttpRequestFactory.class, this::onReachableHttpClient);
-		}
-		if (ClassUtils.isPresent(ClientHttpRequestFactories.OKHTTP_CLIENT_CLASS, classLoader)) {
-			registerReflectionHints(hints, OkHttp3ClientHttpRequestFactory.class, this::onReachableOkHttpClient);
-		}
-		registerReflectionHints(hints, SimpleClientHttpRequestFactory.class, this::onReachableHttpUrlConnection);
-	}
-
-	private void onReachableHttpUrlConnection(TypeHint.Builder typeHint) {
-		typeHint.onReachableType(HttpURLConnection.class);
-	}
-
-	private void onReachableHttpClient(TypeHint.Builder typeHint) {
-		typeHint.onReachableType(TypeReference.of(ClientHttpRequestFactories.APACHE_HTTP_CLIENT_CLASS));
-	}
-
-	private void onReachableOkHttpClient(TypeHint.Builder typeHint) {
-		typeHint.onReachableType(TypeReference.of(ClientHttpRequestFactories.OKHTTP_CLIENT_CLASS));
+		hints.registerTypeIfPresent(classLoader, ClientHttpRequestFactories.APACHE_HTTP_CLIENT_CLASS, (typeHint) -> {
+			typeHint.onReachableType(TypeReference.of(ClientHttpRequestFactories.APACHE_HTTP_CLIENT_CLASS));
+			registerReflectionHints(hints, HttpComponentsClientHttpRequestFactory.class);
+		});
+		hints.registerTypeIfPresent(classLoader, ClientHttpRequestFactories.OKHTTP_CLIENT_CLASS, (typeHint) -> {
+			typeHint.onReachableType(TypeReference.of(ClientHttpRequestFactories.OKHTTP_CLIENT_CLASS));
+			registerReflectionHints(hints, OkHttp3ClientHttpRequestFactory.class);
+		});
+		hints.registerType(SimpleClientHttpRequestFactory.class, (typeHint) -> {
+			typeHint.onReachableType(HttpURLConnection.class);
+			registerReflectionHints(hints, SimpleClientHttpRequestFactory.class);
+		});
 	}
 
 	private void registerReflectionHints(ReflectionHints hints,
-			Class<? extends ClientHttpRequestFactory> requestFactoryType, Consumer<TypeHint.Builder> hintCustomizer) {
-		hints.registerType(requestFactoryType, (typeHint) -> {
-			typeHint.withMethod("setConnectTimeout", TypeReference.listOf(int.class), ExecutableMode.INVOKE);
-			typeHint.withMethod("setReadTimeout", TypeReference.listOf(int.class), ExecutableMode.INVOKE);
-			typeHint.withMethod("setBufferRequestBody", TypeReference.listOf(boolean.class), ExecutableMode.INVOKE);
-			hintCustomizer.accept(typeHint);
-		});
+			Class<? extends ClientHttpRequestFactory> requestFactoryType) {
+		registerMethod(hints, requestFactoryType, "setConnectTimeout", int.class);
+		registerMethod(hints, requestFactoryType, "setReadTimeout", int.class);
+		registerMethod(hints, requestFactoryType, "setBufferRequestBody", boolean.class);
+	}
+
+	private void registerMethod(ReflectionHints hints, Class<? extends ClientHttpRequestFactory> requestFactoryType,
+			String methodName, Class<?>... parameterTypes) {
+		Method method = ReflectionUtils.findMethod(requestFactoryType, methodName, parameterTypes);
+		if (method != null) {
+			hints.registerMethod(method, ExecutableMode.INVOKE);
+		}
 	}
 
 	private Field findField(Class<?> type, String name) {
