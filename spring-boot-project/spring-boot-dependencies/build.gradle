@@ -602,7 +602,7 @@ bom {
 			]
 		}
 	}
-	library("Jaybird", "4.0.6.java11") {
+	library("Jaybird", "4.0.7.java11") {
 		group("org.firebirdsql.jdbc") {
 			modules = [
 				"jaybird"
