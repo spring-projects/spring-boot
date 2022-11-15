@@ -82,7 +82,7 @@ You can download the Spring CLI distribution from the Spring software repository
 Cutting edge
 https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/[snapshot distributions] are also available.
 
-Once downloaded, follow the {github-raw}/spring-boot-project/spring-boot-cli/src/main/content/INSTALL.txt[INSTALL.txt] instructions from the unpacked archive.
+Once downloaded, follow the {github-raw}/spring-boot-project/spring-boot-tools/spring-boot-cli/src/main/content/INSTALL.txt[INSTALL.txt] instructions from the unpacked archive.
 In summary, there is a `spring` script (`spring.bat` for Windows) in a `bin/` directory in the `.zip` file.
 Alternatively, you can use `java -jar` with the `.jar` file (the script helps you to be sure that the classpath is set correctly).
 
