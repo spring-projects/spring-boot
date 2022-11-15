@@ -1108,7 +1108,7 @@ bom {
 			]
 		}
 	}
-	library("R2DBC Pool", "1.0.0.RC1") {
+	library("R2DBC Pool", "1.0.0.RELEASE") {
 		group("io.r2dbc") {
 			modules = [
 				"r2dbc-pool"
