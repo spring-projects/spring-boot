@@ -1115,7 +1115,7 @@ bom {
 			]
 		}
 	}
-	library("R2DBC Postgresql", "1.0.0.RC1") {
+	library("R2DBC Postgresql", "1.0.0.RELEASE") {
 		group("org.postgresql") {
 			modules = [
 				"r2dbc-postgresql"
