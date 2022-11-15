@@ -1554,7 +1554,7 @@ bom {
 			]
 		}
 	}
-	library("Yasson", "3.0.0") {
+	library("Yasson", "3.0.2") {
 		group("org.eclipse") {
 			modules = [
 				"yasson"
