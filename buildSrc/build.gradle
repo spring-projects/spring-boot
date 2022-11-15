@@ -25,6 +25,7 @@ ext {
 dependencies {
 	checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}"
 	implementation(platform("org.springframework:spring-framework-bom:5.3.15"))
+	implementation("com.tngtech.archunit:archunit:1.0.0")
 	implementation("com.fasterxml.jackson.core:jackson-databind:2.11.4")
 	implementation("commons-codec:commons-codec:1.13")
 	implementation("org.apache.maven:maven-embedder:3.6.2")
@@ -50,6 +51,10 @@ gradlePlugin {
 		annotationProcessorPlugin {
 			id = "org.springframework.boot.annotation-processor"
 			implementationClass = "org.springframework.boot.build.processors.AnnotationProcessorPlugin"
+		}
+		architecturePlugin {
+		 	id = "org.springframework.boot.architecture"
+		 	implementationClass = "org.springframework.boot.build.architecture.ArchitecturePlugin"
 		}
 		autoConfigurationPlugin {
 			id = "org.springframework.boot.auto-configuration"
