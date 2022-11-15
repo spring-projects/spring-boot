@@ -122,6 +122,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	@ClassPathOverrides("org.jboss.logging:jboss-logging:3.5.0.Final")
 	void jbossLoggingRoutesThroughLog4j2ByDefault() {
+		System.getProperties().remove("org.jboss.logging.provider");
 		org.jboss.logging.Logger jbossLogger = org.jboss.logging.Logger.getLogger(getClass());
 		assertThat(jbossLogger.getClass().getName()).isEqualTo("org.jboss.logging.Log4j2Logger");
 	}
