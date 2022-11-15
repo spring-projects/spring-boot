@@ -27,7 +27,7 @@ The main differences are:
 * There is no lazy class loading, everything shipped in the executables will be loaded in memory on startup.
 * There are some limitations around some aspects of Java applications that are not fully supported.
 
-TIP: The {graal-native-image-docs}/Limitations/[Native Image Compatibility and Optimization Guide] section of the GraalVM reference documentation provide more details about GraalVM limitations.
+TIP: The {graal-native-image-docs}/metadata/Compatibility/[Native Image Compatibility Guide] section of the GraalVM reference documentation provide more details about GraalVM limitations.
 
 
 

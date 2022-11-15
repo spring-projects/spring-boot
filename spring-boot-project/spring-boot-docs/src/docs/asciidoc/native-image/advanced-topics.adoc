@@ -93,7 +93,7 @@ You need to ensure that all jars are listed (the command above uses `find` and `
 
 [[native-image.advanced.using-the-tracing-agent]]
 === Using the Tracing Agent
-The GraalVM native image https://www.graalvm.org/reference-manual/native-image/Agent/[tracing agent] allows you to intercept reflection, resources or proxy usage on the JVM in order to generate the related hints.
+The GraalVM native image {graal-native-image-docs}/metadata/AutomaticMetadataCollection[tracing agent] allows you to intercept reflection, resources or proxy usage on the JVM in order to generate the related hints.
 Spring should generate most of these hints automatically, but the tracing agent can be used to quickly identify the missing entries.
 
 When using the agent to generate hints for a native image, there are a couple of approaches:
@@ -128,7 +128,7 @@ To use them as input, copy them into the `src/main/resources/META-INF/native-ima
 The next time you build the native image, GraalVM will take these files into consideration.
 
 There are more advanced options which can be set on the native image tracing agent, for example filtering the recorded hints by caller classes, etc.
-For further reading, please see https://www.graalvm.org/reference-manual/native-image/Agent/[the official documentation].
+For further reading, please see {graal-native-image-docs}/metadata/AutomaticMetadataCollection[the official documentation].
 
 
 
