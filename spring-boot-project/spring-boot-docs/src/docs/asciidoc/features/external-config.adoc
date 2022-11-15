@@ -740,6 +740,9 @@ include::code:nonnull/MyProperties[tag=*]
 NOTE: To use constructor binding the class must be enabled using `@EnableConfigurationProperties` or configuration property scanning.
 You cannot use constructor binding with beans that are created by the regular Spring mechanisms (for example `@Component` beans, beans created by using `@Bean` methods or beans loaded by using `@Import`)
 
+NOTE: To use constructor binding in a native image the class must be compiled with `-parameters`.
+This will happen automatically if you use Spring Boot's Gradle plugin or if you use Maven and `spring-boot-starter-parent`.
+
 NOTE: The use of `java.util.Optional` with `@ConfigurationProperties` is not recommended as it is primarily intended for use as a return type.
 As such, it is not well-suited to configuration property injection.
 For consistency with properties of other types, if you do declare an `Optional` property and it has no value, `null` rather than an empty `Optional` will be bound.

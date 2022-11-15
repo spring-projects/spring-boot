@@ -37,7 +37,9 @@ import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.BeanInfoFactory;
 import org.springframework.beans.ExtendedBeanInfoFactory;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.StandardReflectionParameterNameDiscoverer;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -71,8 +73,12 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 	}
 
 	public void registerHints(RuntimeHints hints) {
+		Set<Class<?>> compiledWithoutParameters = new HashSet<>();
 		for (Class<?> type : this.types) {
-			new Processor(type).process(hints.reflection());
+			new Processor(type, compiledWithoutParameters).process(hints.reflection());
+		}
+		if (!compiledWithoutParameters.isEmpty()) {
+			throw new MissingParametersCompilerArgumentException(compiledWithoutParameters);
 		}
 	}
 
@@ -87,6 +93,8 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 
 	private final class Processor {
 
+		private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new StandardReflectionParameterNameDiscoverer();
+
 		private final Class<?> type;
 
 		private final Constructor<?> bindConstructor;
@@ -95,15 +103,19 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 
 		private final Set<Class<?>> seen;
 
-		Processor(Class<?> type) {
-			this(type, false, new HashSet<>());
+		private final Set<Class<?>> compiledWithoutParameters;
+
+		Processor(Class<?> type, Set<Class<?>> compiledWithoutParameters) {
+			this(type, false, new HashSet<>(), compiledWithoutParameters);
 		}
 
-		private Processor(Class<?> type, boolean nestedType, Set<Class<?>> seen) {
+		private Processor(Class<?> type, boolean nestedType, Set<Class<?>> seen,
+				Set<Class<?>> compiledWithoutParameters) {
 			this.type = type;
 			this.bindConstructor = BindConstructorProvider.DEFAULT.getBindConstructor(Bindable.of(type), nestedType);
 			this.beanInfo = getBeanInfo(type);
 			this.seen = seen;
+			this.compiledWithoutParameters = compiledWithoutParameters;
 		}
 
 		private static BeanInfo getBeanInfo(Class<?> beanType) {
@@ -135,11 +147,19 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 
 		private void handleConstructor(ReflectionHints hints) {
 			if (this.bindConstructor != null) {
+				verifyParameterNamesAreAvailable();
 				hints.registerConstructor(this.bindConstructor, ExecutableMode.INVOKE);
 				return;
 			}
 			Arrays.stream(this.type.getDeclaredConstructors()).filter(this::hasNoParameters).findFirst()
 					.ifPresent((constructor) -> hints.registerConstructor(constructor, ExecutableMode.INVOKE));
+		}
+
+		private void verifyParameterNamesAreAvailable() {
+			String[] parameterNames = PARAMETER_NAME_DISCOVERER.getParameterNames(this.bindConstructor);
+			if (parameterNames == null) {
+				this.compiledWithoutParameters.add(this.bindConstructor.getDeclaringClass());
+			}
 		}
 
 		private boolean hasNoParameters(Constructor<?> candidate) {
@@ -205,7 +225,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 
 		private void processNested(Class<?> type, ReflectionHints hints) {
-			new Processor(type, true, this.seen).process(hints);
+			new Processor(type, true, this.seen, this.compiledWithoutParameters).process(hints);
 		}
 
 		private Class<?> getComponentClass(ResolvableType type) {
