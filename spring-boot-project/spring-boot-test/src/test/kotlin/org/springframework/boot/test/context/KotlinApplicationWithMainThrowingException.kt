@@ -1,0 +1,15 @@
+package org.springframework.boot.test.context
+
+import org.springframework.boot.SpringBootConfiguration
+import org.springframework.boot.runApplication
+import org.springframework.context.annotation.Configuration
+
+@Configuration(proxyBeanMethods = false)
+@SpringBootConfiguration
+open class KotlinApplicationWithMainThrowingException {
+}
+
+fun main(args: Array<String>) {
+	runApplication<KotlinApplicationWithMainThrowingException>(*args)
+	throw IllegalStateException("ThrownFromMain")
+}

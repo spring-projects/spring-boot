@@ -44,6 +44,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.aot.AotApplicationContextInitializer;
+import org.springframework.core.KotlinDetector;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.core.SpringVersion;
@@ -65,6 +66,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoaderUti
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -153,6 +155,15 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 				"Cannot use main method as no @SpringBootConfiguration-annotated class is available");
 		Method mainMethod = (springBootConfiguration != null)
 				? ReflectionUtils.findMethod(springBootConfiguration, "main", String[].class) : null;
+		if (mainMethod == null && KotlinDetector.isKotlinPresent()) {
+			try {
+				Class<?> kotlinClass = ClassUtils.forName(springBootConfiguration.getName() + "Kt",
+						springBootConfiguration.getClassLoader());
+				mainMethod = ReflectionUtils.findMethod(kotlinClass, "main", String[].class);
+			}
+			catch (ClassNotFoundException ex) {
+			}
+		}
 		Assert.state(mainMethod != null || useMainMethod == UseMainMethod.WHEN_AVAILABLE,
 				() -> "Main method not found on '%s'".formatted(springBootConfiguration.getName()));
 		return mainMethod;
