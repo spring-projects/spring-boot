@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,9 @@
 
 package org.springframework.boot.autoconfigure.sql.init;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
 import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration.SqlInitializationModeCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer;
@@ -36,7 +33,6 @@ import org.springframework.context.annotation.Import;
  * @since 2.5.0
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureAfter({ R2dbcAutoConfiguration.class, DataSourceAutoConfiguration.class })
 @EnableConfigurationProperties(SqlInitializationProperties.class)
 @Import({ DatabaseInitializationDependencyConfigurer.class, R2dbcInitializationConfiguration.class,
 		DataSourceInitializationConfiguration.class })
