@@ -19,7 +19,7 @@ package org.springframework.boot.jackson.scan.b;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import org.springframework.boot.jackson.JsonMixin;
-import org.springframework.boot.jackson.NameAndAge;
+import org.springframework.boot.jackson.types.NameAndAge;
 
 @JsonMixin(type = NameAndAge.class)
 public abstract class RenameMixInAbstractClass {

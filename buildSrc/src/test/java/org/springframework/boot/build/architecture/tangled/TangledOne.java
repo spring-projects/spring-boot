@@ -14,20 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jackson.scan.a;
+package org.springframework.boot.build.architecture.tangled;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.boot.build.architecture.tangled.sub.TangledTwo;
 
-import org.springframework.boot.jackson.JsonMixin;
-import org.springframework.boot.jackson.types.Name;
-import org.springframework.boot.jackson.types.NameAndAge;
+public final class TangledOne {
 
-@JsonMixin(type = { Name.class, NameAndAge.class })
-public class RenameMixInClass {
+	public static final String ID = TangledTwo.class.getName() + "One";
 
-	@JsonProperty("username")
-	String getName() {
-		return null;
+	private TangledOne() {
+
 	}
 
 }
