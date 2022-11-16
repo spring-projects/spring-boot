@@ -34,6 +34,7 @@ import org.springframework.core.Ordered;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link ApplicationListener} to trigger early initialization in a background thread of
@@ -104,8 +105,14 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 				public void run() {
 					runSafely(new ConversionServiceInitializer());
 					runSafely(new ValidationInitializer());
-					runSafely(new MessageConverterInitializer());
-					runSafely(new JacksonInitializer());
+					if (ClassUtils.isPresent(
+							"org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter",
+							BackgroundPreinitializer.class.getClassLoader())) {
+						runSafely(new MessageConverterInitializer());
+					}
+					else {
+						runSafely(new JacksonInitializer());
+					}
 					runSafely(new CharsetInitializer());
 					preinitializationComplete.countDown();
 				}
