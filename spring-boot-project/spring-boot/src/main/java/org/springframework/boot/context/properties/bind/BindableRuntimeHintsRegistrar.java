@@ -63,6 +63,10 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 
 	private final Class<?>[] types;
 
+	/**
+	 * Create a new {@link BindableRuntimeHintsRegistrar} for the specified types.
+	 * @param types the types to process
+	 */
 	protected BindableRuntimeHintsRegistrar(Class<?>... types) {
 		this.types = types;
 	}
@@ -72,6 +76,10 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		registerHints(hints);
 	}
 
+	/**
+	 * Contribute hints to the given {@link RuntimeHints} instance.
+	 * @param hints the hints contributed so far for the deployment unit
+	 */
 	public void registerHints(RuntimeHints hints) {
 		Set<Class<?>> compiledWithoutParameters = new HashSet<>();
 		for (Class<?> type : this.types) {
@@ -82,15 +90,28 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 	}
 
+	/**
+	 * Create a new {@link BindableRuntimeHintsRegistrar} for the specified types.
+	 * @param types the types to process
+	 * @return a new {@link BindableRuntimeHintsRegistrar} instance
+	 */
 	public static BindableRuntimeHintsRegistrar forTypes(Iterable<Class<?>> types) {
 		Assert.notNull(types, "Types must not be null");
 		return forTypes(StreamSupport.stream(types.spliterator(), false).toArray(Class<?>[]::new));
 	}
 
+	/**
+	 * Create a new {@link BindableRuntimeHintsRegistrar} for the specified types.
+	 * @param types the types to process
+	 * @return a new {@link BindableRuntimeHintsRegistrar} instance
+	 */
 	public static BindableRuntimeHintsRegistrar forTypes(Class<?>... types) {
 		return new BindableRuntimeHintsRegistrar(types);
 	}
 
+	/**
+	 * Processor used to register the hints.
+	 */
 	private final class Processor {
 
 		private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new StandardReflectionParameterNameDiscoverer();
