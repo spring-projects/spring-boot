@@ -44,7 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
  * Data JDBC components.
  * <p>
  * Using this annotation will disable full auto-configuration, scan for
- * {@code AbstractJdbcConfiguration} sub-classes, and apply only configuration relevant to
+ * {@code AbstractJdbcConfiguration} subclasses, and apply only configuration relevant to
  * Data JDBC tests.
  * <p>
  * By default, tests annotated with {@code @DataJdbcTest} are transactional and roll back

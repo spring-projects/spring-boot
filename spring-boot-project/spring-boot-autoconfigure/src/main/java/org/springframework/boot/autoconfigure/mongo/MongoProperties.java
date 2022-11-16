@@ -63,7 +63,7 @@ public class MongoProperties {
 
 	/**
 	 * Additional server hosts. Cannot be set with URI or if 'host' is not specified.
-	 * Additional hosts will use the default mongo port of 27017, if you want to use a
+	 * Additional hosts will use the default mongo port of 27017. If you want to use a
 	 * different port you can use the "host:port" syntax.
 	 */
 	private List<String> additionalHosts;

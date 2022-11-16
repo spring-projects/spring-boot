@@ -59,8 +59,7 @@ class ServerRequestObservationConventionAdapter implements ServerRequestObservat
 	}
 
 	ServerRequestObservationConventionAdapter(String name, List<WebFluxTagsContributor> contributors) {
-		this.name = name;
-		this.tagsProvider = new DefaultWebFluxTagsProvider(contributors);
+		this(name, new DefaultWebFluxTagsProvider(contributors));
 	}
 
 	@Override

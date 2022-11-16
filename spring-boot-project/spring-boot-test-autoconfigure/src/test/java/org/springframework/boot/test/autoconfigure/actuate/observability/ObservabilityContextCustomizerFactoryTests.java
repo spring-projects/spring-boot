@@ -20,7 +20,6 @@ import java.util.Collections;
 
 import io.micrometer.tracing.Tracer;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -33,6 +32,7 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.test.context.ContextCustomizer;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link AutoConfigureObservability} and
@@ -197,7 +197,7 @@ class ObservabilityContextCustomizerFactoryTests {
 
 		@Bean
 		Tracer customTracer() {
-			return Mockito.mock(Tracer.class);
+			return mock(Tracer.class);
 		}
 
 	}
