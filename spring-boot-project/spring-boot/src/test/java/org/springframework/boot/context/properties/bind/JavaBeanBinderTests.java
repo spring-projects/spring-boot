@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.springframework.boot.context.properties.bind.handler.IgnoreErrorsBind
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.convert.Delimiter;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.ConversionService;
@@ -583,6 +584,18 @@ class JavaBeanBinderTests {
 		this.sources.add(source);
 		JavaBeanWithGetIs bean = this.binder.bind("test", Bindable.of(JavaBeanWithGetIs.class)).get();
 		assertThat(bean.getNames()).containsExactly("spring", "boot");
+	}
+
+	@Test // gh-33105
+	void bindWhenHasBridgeMethods() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("test.value", "spring-boot");
+		this.sources.add(source);
+		ApplicationConversionService conversionService = new ApplicationConversionService();
+		conversionService.addConverter(String.class, BridgeType.class, BridgeType::new);
+		Binder binder = new Binder(this.sources, null, conversionService);
+		BridgeMethods bean = binder.bind("test", Bindable.of(BridgeMethods.class)).get();
+		assertThat(bean.getValue()).hasToString("spring-boot");
 	}
 
 	static class ExampleValueBean {
@@ -1174,6 +1187,48 @@ class JavaBeanBinderTests {
 
 		void setGamma(int gamma) {
 			this.gamma = gamma + atomic.getAndIncrement();
+		}
+
+	}
+
+	static class BridgeMethodsBase<T extends BridgeBaseType> {
+
+		private T value;
+
+		T getValue() {
+			return this.value;
+		}
+
+		void setValue(T value) {
+			this.value = value;
+		}
+
+	}
+
+	static class BridgeMethods extends BridgeMethodsBase<BridgeType> {
+
+		@Override
+		BridgeType getValue() {
+			return super.getValue();
+		}
+
+	}
+
+	static class BridgeBaseType {
+
+	}
+
+	static class BridgeType extends BridgeBaseType {
+
+		private String value;
+
+		BridgeType(String value) {
+			this.value = value;
+		}
+
+		@Override
+		public String toString() {
+			return this.value;
 		}
 
 	}
