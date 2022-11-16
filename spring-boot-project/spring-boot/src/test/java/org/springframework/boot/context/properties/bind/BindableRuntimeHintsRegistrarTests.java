@@ -420,7 +420,7 @@ class BindableRuntimeHintsRegistrarTests {
 
 	}
 
-	public class WithWellKnownTypes implements ApplicationContextAware, EnvironmentAware {
+	public static class WithWellKnownTypes implements ApplicationContextAware, EnvironmentAware {
 
 		private ApplicationContext applicationContext;
 
