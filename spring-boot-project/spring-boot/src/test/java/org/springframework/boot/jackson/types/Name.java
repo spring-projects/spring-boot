@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jackson.scan.a;
+package org.springframework.boot.jackson.types;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+/**
+ * Sample object used for tests.
+ *
+ * @author Paul Aly
+ */
+public class Name {
 
-import org.springframework.boot.jackson.JsonMixin;
-import org.springframework.boot.jackson.types.Name;
-import org.springframework.boot.jackson.types.NameAndAge;
+	protected final String name;
 
-@JsonMixin(type = { Name.class, NameAndAge.class })
-public abstract class RenameMixInClass {
+	public Name(String name) {
+		this.name = name;
+	}
 
-	@JsonProperty("username")
-	public abstract String getName();
+	public String getName() {
+		return this.name;
+	}
 
 }

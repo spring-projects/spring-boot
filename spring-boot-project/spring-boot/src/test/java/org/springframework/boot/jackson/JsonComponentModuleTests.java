@@ -37,6 +37,9 @@ import org.springframework.boot.jackson.JsonComponentModule.JsonComponentBeanFac
 import org.springframework.boot.jackson.JsonComponentModuleTests.ComponentWithInnerAbstractClass.AbstractSerializer;
 import org.springframework.boot.jackson.JsonComponentModuleTests.ComponentWithInnerAbstractClass.ConcreteSerializer;
 import org.springframework.boot.jackson.JsonComponentModuleTests.ComponentWithInnerAbstractClass.NotSuitable;
+import org.springframework.boot.jackson.types.Name;
+import org.springframework.boot.jackson.types.NameAndAge;
+import org.springframework.boot.jackson.types.NameAndCareer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;

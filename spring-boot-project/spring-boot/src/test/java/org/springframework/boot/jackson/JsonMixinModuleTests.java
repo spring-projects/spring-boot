@@ -29,6 +29,8 @@ import org.springframework.boot.jackson.scan.a.RenameMixInClass;
 import org.springframework.boot.jackson.scan.b.RenameMixInAbstractClass;
 import org.springframework.boot.jackson.scan.c.RenameMixInInterface;
 import org.springframework.boot.jackson.scan.d.EmptyMixInClass;
+import org.springframework.boot.jackson.types.Name;
+import org.springframework.boot.jackson.types.NameAndAge;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.util.ClassUtils;
 

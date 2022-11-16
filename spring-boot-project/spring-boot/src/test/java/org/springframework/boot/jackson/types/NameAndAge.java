@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jackson;
+package org.springframework.boot.jackson.types;
 
 import org.springframework.util.ObjectUtils;
 

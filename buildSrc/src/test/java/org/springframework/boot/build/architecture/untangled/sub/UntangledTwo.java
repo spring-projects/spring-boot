@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jackson.scan.a;
+package org.springframework.boot.build.architecture.untangled.sub;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+public final class UntangledTwo {
 
-import org.springframework.boot.jackson.JsonMixin;
-import org.springframework.boot.jackson.types.Name;
-import org.springframework.boot.jackson.types.NameAndAge;
+	public static final String ID = "Two";
 
-@JsonMixin(type = { Name.class, NameAndAge.class })
-public abstract class RenameMixInClass {
+	private UntangledTwo() {
 
-	@JsonProperty("username")
-	public abstract String getName();
+	}
 
 }
