@@ -22,6 +22,8 @@ import graphql.schema.idl.TypeRuntimeWiring;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration;
 import org.springframework.boot.autoconfigure.graphql.GraphQlTestDataFetchers;
@@ -166,6 +168,13 @@ class GraphQlWebMvcAutoConfigurationTests {
 			assertThat(beans.get("graphQlRouterFunction")).isSameAs(ordered[1]);
 			assertThat(beans.get("after")).isSameAs(ordered[2]);
 		});
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints hints = new RuntimeHints();
+		new GraphQlWebMvcAutoConfiguration.GraphiQlResourceHints().registerHints(hints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.resource().forResource("graphiql/index.html")).accepts(hints);
 	}
 
 	private void testWith(MockMvcConsumer mockMvcConsumer) {

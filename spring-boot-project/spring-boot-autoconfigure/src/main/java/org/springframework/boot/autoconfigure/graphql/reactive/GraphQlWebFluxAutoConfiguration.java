@@ -23,6 +23,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import reactor.core.publisher.Mono;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -37,6 +39,7 @@ import org.springframework.boot.autoconfigure.graphql.GraphQlProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.log.LogMessage;
 import org.springframework.graphql.ExecutionGraphQlService;
@@ -79,6 +82,7 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 @ConditionalOnClass({ GraphQL.class, GraphQlHttpHandler.class })
 @ConditionalOnBean(ExecutionGraphQlService.class)
 @EnableConfigurationProperties(GraphQlCorsProperties.class)
+@ImportRuntimeHints(GraphQlWebFluxAutoConfiguration.GraphiQlResourceHints.class)
 public class GraphQlWebFluxAutoConfiguration {
 
 	private static final RequestPredicate SUPPORTS_MEDIATYPES = accept(MediaType.APPLICATION_GRAPHQL,
@@ -171,6 +175,15 @@ public class GraphQlWebFluxAutoConfiguration {
 			mapping.setUrlMap(Collections.singletonMap(path, graphQlWebSocketHandler));
 			mapping.setOrder(-2); // Ahead of HTTP endpoint ("routerFunctionMapping" bean)
 			return mapping;
+		}
+
+	}
+
+	static class GraphiQlResourceHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.resources().registerPattern("graphiql/index.html");
 		}
 
 	}

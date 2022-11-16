@@ -29,6 +29,8 @@ import graphql.schema.visibility.NoIntrospectionGraphqlFieldVisibility;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -141,6 +143,15 @@ public class GraphQlAutoConfiguration {
 		controllerConfigurer
 				.addFormatterRegistrar((registry) -> ApplicationConversionService.addBeans(registry, this.beanFactory));
 		return controllerConfigurer;
+	}
+
+	static class GraphQlResourcesRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.resources().registerPattern("graphql/*.graphqls").registerPattern("graphql/*.gqls");
+		}
+
 	}
 
 }
