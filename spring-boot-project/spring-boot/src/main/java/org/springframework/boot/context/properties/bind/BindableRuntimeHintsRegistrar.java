@@ -16,9 +16,6 @@
 
 package org.springframework.boot.context.properties.bind;
 
-import java.beans.BeanInfo;
-import java.beans.IntrospectionException;
-import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -34,14 +31,14 @@ import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
-import org.springframework.beans.BeanInfoFactory;
-import org.springframework.beans.ExtendedBeanInfoFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.StandardReflectionParameterNameDiscoverer;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -58,8 +55,6 @@ import org.springframework.util.ReflectionUtils;
  * @since 3.0.0
  */
 public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
-
-	private static final BeanInfoFactory beanInfoFactory = new ExtendedBeanInfoFactory();
 
 	private final Class<?>[] types;
 
@@ -120,7 +115,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 
 		private final Constructor<?> bindConstructor;
 
-		private final BeanInfo beanInfo;
+		private final PropertyDescriptor[] propertyDescriptors;
 
 		private final Set<Class<?>> seen;
 
@@ -134,22 +129,9 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 				Set<Class<?>> compiledWithoutParameters) {
 			this.type = type;
 			this.bindConstructor = BindConstructorProvider.DEFAULT.getBindConstructor(Bindable.of(type), nestedType);
-			this.beanInfo = getBeanInfo(type);
+			this.propertyDescriptors = BeanUtils.getPropertyDescriptors(type);
 			this.seen = seen;
 			this.compiledWithoutParameters = compiledWithoutParameters;
-		}
-
-		private static BeanInfo getBeanInfo(Class<?> beanType) {
-			try {
-				BeanInfo beanInfo = beanInfoFactory.getBeanInfo(beanType);
-				if (beanInfo != null) {
-					return beanInfo;
-				}
-				return Introspector.getBeanInfo(beanType, Introspector.IGNORE_ALL_BEANINFO);
-			}
-			catch (IntrospectionException ex) {
-				return null;
-			}
 		}
 
 		void process(ReflectionHints hints) {
@@ -161,7 +143,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 			if (this.bindConstructor != null) {
 				handleValueObjectProperties(hints);
 			}
-			else if (this.beanInfo != null) {
+			else if (!ObjectUtils.isEmpty(this.propertyDescriptors)) {
 				handleJavaBeanProperties(hints);
 			}
 		}
@@ -196,7 +178,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 
 		private void handleJavaBeanProperties(ReflectionHints hints) {
-			for (PropertyDescriptor propertyDescriptor : this.beanInfo.getPropertyDescriptors()) {
+			for (PropertyDescriptor propertyDescriptor : this.propertyDescriptors) {
 				Method writeMethod = propertyDescriptor.getWriteMethod();
 				if (writeMethod != null) {
 					hints.registerMethod(writeMethod, ExecutableMode.INVOKE);
