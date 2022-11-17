@@ -64,12 +64,8 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 
 	private static final CountDownLatch preinitializationComplete = new CountDownLatch(1);
 
-	private static final boolean ENABLED;
-
-	static {
-		ENABLED = !Boolean.getBoolean(IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME) && !NativeDetector.inNativeImage()
-				&& Runtime.getRuntime().availableProcessors() > 1;
-	}
+	private static final boolean ENABLED = !Boolean.getBoolean(IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME)
+			&& Runtime.getRuntime().availableProcessors() > 1;
 
 	@Override
 	public int getOrder() {
@@ -78,7 +74,7 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 
 	@Override
 	public void onApplicationEvent(SpringApplicationEvent event) {
-		if (!ENABLED) {
+		if (!ENABLED || NativeDetector.inNativeImage()) {
 			return;
 		}
 		if (event instanceof ApplicationEnvironmentPreparedEvent
