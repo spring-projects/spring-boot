@@ -54,6 +54,28 @@ public class WavefrontProperties {
 	private String apiToken;
 
 	/**
+	 * Wavefront Application name used in ApplicationTags. Defaults to
+	 * 'unnamed_application'.
+	 */
+	private String applicationName;
+
+	/**
+	 * Wavefront Service name used in ApplicationTags, falling back to
+	 * 'spring.application.name'. If both are unset it defaults to 'unnamed_service'.
+	 */
+	private String serviceName;
+
+	/**
+	 * Optional Wavefront Cluster name used in ApplicationTags.
+	 */
+	private String clusterName;
+
+	/**
+	 * Optional Wavefront Shard name used in ApplicationTags.
+	 */
+	private String shardName;
+
+	/**
 	 * Sender configuration.
 	 */
 	private final Sender sender = new Sender();
@@ -63,21 +85,12 @@ public class WavefrontProperties {
 	 */
 	private final Metrics metrics = new Metrics();
 
-	/**
-	 * Tracing configuration.
-	 */
-	private final Tracing tracing = new Tracing();
-
 	public Sender getSender() {
 		return this.sender;
 	}
 
 	public Metrics getMetrics() {
 		return this.metrics;
-	}
-
-	public Tracing getTracing() {
-		return this.tracing;
 	}
 
 	public URI getUri() {
@@ -102,6 +115,38 @@ public class WavefrontProperties {
 
 	public void setApiToken(String apiToken) {
 		this.apiToken = apiToken;
+	}
+
+	public String getServiceName() {
+		return this.serviceName;
+	}
+
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
+	}
+
+	public String getApplicationName() {
+		return this.applicationName;
+	}
+
+	public void setApplicationName(String applicationName) {
+		this.applicationName = applicationName;
+	}
+
+	public String getClusterName() {
+		return this.clusterName;
+	}
+
+	public void setClusterName(String clusterName) {
+		this.clusterName = clusterName;
+	}
+
+	public String getShardName() {
+		return this.shardName;
+	}
+
+	public void setShardName(String shardName) {
+		this.shardName = shardName;
 	}
 
 	/**
@@ -255,64 +300,6 @@ public class WavefrontProperties {
 				throw new UnsupportedOperationException("Use Sender.setBatchSize(int) instead");
 			}
 
-		}
-
-	}
-
-	public static class Tracing {
-
-		/**
-		 * Wavefront Application name used in ApplicationTags. Defaults to
-		 * 'unnamed_application'.
-		 */
-		private String applicationName;
-
-		/**
-		 * Wavefront Service name used in ApplicationTags, falling back to
-		 * 'spring.application.name'. If both are unset it defaults to 'unnamed_service'.
-		 */
-		private String serviceName;
-
-		/**
-		 * Optional Wavefront Cluster name used in ApplicationTags.
-		 */
-		private String clusterName;
-
-		/**
-		 * Optional Wavefront Shard name used in ApplicationTags.
-		 */
-		private String shardName;
-
-		public String getServiceName() {
-			return this.serviceName;
-		}
-
-		public void setServiceName(String serviceName) {
-			this.serviceName = serviceName;
-		}
-
-		public String getApplicationName() {
-			return this.applicationName;
-		}
-
-		public void setApplicationName(String applicationName) {
-			this.applicationName = applicationName;
-		}
-
-		public String getClusterName() {
-			return this.clusterName;
-		}
-
-		public void setClusterName(String clusterName) {
-			this.clusterName = clusterName;
-		}
-
-		public String getShardName() {
-			return this.shardName;
-		}
-
-		public void setShardName(String shardName) {
-			this.shardName = shardName;
 		}
 
 	}

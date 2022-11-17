@@ -31,6 +31,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryCusto
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.ConditionalOnEnabledMetricsExport;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties;
 import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontSenderConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -53,7 +54,7 @@ import org.springframework.context.annotation.Import;
  */
 @AutoConfiguration(
 		before = { CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class },
-		after = MetricsAutoConfiguration.class)
+		after = { MetricsAutoConfiguration.class, WavefrontAutoConfiguration.class })
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass({ WavefrontMeterRegistry.class, WavefrontSender.class })
 @ConditionalOnEnabledMetricsExport("wavefront")

@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.tracing.wavefront;
 
 import java.util.Collections;
-import java.util.function.Supplier;
 
 import brave.handler.SpanHandler;
 import com.wavefront.sdk.common.WavefrontSender;
@@ -32,8 +31,8 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
+import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties;
-import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties.Tracing;
 import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontSenderConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -41,12 +40,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.env.Environment;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Wavefront tracing.
@@ -55,107 +51,67 @@ import org.springframework.util.StringUtils;
  * @author Glenn Oppegard
  * @since 3.0.0
  */
-@AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
-@EnableConfigurationProperties(WavefrontProperties.class)
-@ConditionalOnClass(WavefrontSender.class)
-@Import(WavefrontSenderConfiguration.class)
+@AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
+		WavefrontAutoConfiguration.class })
+@ConditionalOnClass({ WavefrontSender.class, WavefrontSpanHandler.class })
 @ConditionalOnEnabledTracing
+@EnableConfigurationProperties(WavefrontProperties.class)
+@Import(WavefrontSenderConfiguration.class)
 public class WavefrontTracingAutoConfiguration {
-
-	/**
-	 * Default value for the Wavefront Application name.
-	 * @see <a href=
-	 * "https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront
-	 * Application Tags</a>
-	 */
-	private static final String DEFAULT_APPLICATION_NAME = "unnamed_application";
-
-	/**
-	 * Default value for the Wavefront Service name if {@code spring.application.name} is
-	 * not set.
-	 * @see <a href=
-	 * "https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront
-	 * Application Tags</a>
-	 */
-	private static final String DEFAULT_SERVICE_NAME = "unnamed_service";
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ApplicationTags wavefrontApplicationTags(Environment environment, WavefrontProperties properties) {
-		Tracing tracing = properties.getTracing();
-		String wavefrontServiceName = getName(tracing.getServiceName(),
-				() -> environment.getProperty("spring.application.name", DEFAULT_SERVICE_NAME));
-		String wavefrontApplicationName = getName(tracing.getApplicationName(), () -> DEFAULT_APPLICATION_NAME);
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		ApplicationTags.Builder builder = new ApplicationTags.Builder(wavefrontApplicationName, wavefrontServiceName);
-		map.from(tracing::getClusterName).to(builder::cluster);
-		map.from(tracing::getShardName).to(builder::shard);
-		return builder.build();
-	}
-
-	private String getName(String value, Supplier<String> fallback) {
-		return (StringUtils.hasText(value)) ? value : fallback.get();
+	@ConditionalOnBean(WavefrontSender.class)
+	WavefrontSpanHandler wavefrontSpanHandler(WavefrontProperties properties, WavefrontSender wavefrontSender,
+			SpanMetrics spanMetrics, ApplicationTags applicationTags) {
+		return new WavefrontSpanHandler(properties.getSender().getMaxQueueSize(), wavefrontSender, spanMetrics,
+				properties.getSourceOrDefault(), applicationTags, Collections.emptySet());
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(WavefrontSpanHandler.class)
-	static class WavefrontMicrometer {
+	@ConditionalOnBean(MeterRegistry.class)
+	static class MeterRegistrySpanMetricsConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnBean(WavefrontSender.class)
-		WavefrontSpanHandler wavefrontSpanHandler(WavefrontProperties properties, WavefrontSender wavefrontSender,
-				SpanMetrics spanMetrics, ApplicationTags applicationTags) {
-			return new WavefrontSpanHandler(properties.getSender().getMaxQueueSize(), wavefrontSender, spanMetrics,
-					properties.getSourceOrDefault(), applicationTags, Collections.emptySet());
+		MeterRegistrySpanMetrics meterRegistrySpanMetrics(MeterRegistry meterRegistry) {
+			return new MeterRegistrySpanMetrics(meterRegistry);
 		}
 
-		@Configuration(proxyBeanMethods = false)
-		@ConditionalOnBean(MeterRegistry.class)
-		static class MeterRegistrySpanMetricsConfiguration {
+	}
 
-			@Bean
-			@ConditionalOnMissingBean
-			MeterRegistrySpanMetrics meterRegistrySpanMetrics(MeterRegistry meterRegistry) {
-				return new MeterRegistrySpanMetrics(meterRegistry);
-			}
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean(MeterRegistry.class)
+	static class NoopSpanMetricsConfiguration {
 
+		@Bean
+		@ConditionalOnMissingBean
+		SpanMetrics meterRegistrySpanMetrics() {
+			return SpanMetrics.NOOP;
 		}
 
-		@Configuration(proxyBeanMethods = false)
-		@ConditionalOnMissingBean(MeterRegistry.class)
-		static class NoopSpanMetricsConfiguration {
+	}
 
-			@Bean
-			@ConditionalOnMissingBean
-			SpanMetrics meterRegistrySpanMetrics() {
-				return SpanMetrics.NOOP;
-			}
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(SpanHandler.class)
+	static class WavefrontBrave {
 
+		@Bean
+		@ConditionalOnMissingBean
+		WavefrontBraveSpanHandler wavefrontBraveSpanHandler(WavefrontSpanHandler wavefrontSpanHandler) {
+			return new WavefrontBraveSpanHandler(wavefrontSpanHandler);
 		}
 
-		@Configuration(proxyBeanMethods = false)
-		@ConditionalOnClass(SpanHandler.class)
-		static class WavefrontBrave {
+	}
 
-			@Bean
-			@ConditionalOnMissingBean
-			WavefrontBraveSpanHandler wavefrontBraveSpanHandler(WavefrontSpanHandler wavefrontSpanHandler) {
-				return new WavefrontBraveSpanHandler(wavefrontSpanHandler);
-			}
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(SpanExporter.class)
+	static class WavefrontOpenTelemetry {
 
-		}
-
-		@Configuration(proxyBeanMethods = false)
-		@ConditionalOnClass(SpanExporter.class)
-		static class WavefrontOpenTelemetry {
-
-			@Bean
-			@ConditionalOnMissingBean
-			WavefrontOtelSpanExporter wavefrontOtelSpanExporter(WavefrontSpanHandler wavefrontSpanHandler) {
-				return new WavefrontOtelSpanExporter(wavefrontSpanHandler);
-			}
-
+		@Bean
+		@ConditionalOnMissingBean
+		WavefrontOtelSpanExporter wavefrontOtelSpanExporter(WavefrontSpanHandler wavefrontSpanHandler) {
+			return new WavefrontOtelSpanExporter(wavefrontSpanHandler);
 		}
 
 	}
