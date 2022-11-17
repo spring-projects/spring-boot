@@ -30,6 +30,7 @@ import org.springframework.util.unit.DataSize;
  * Configuration properties to configure Wavefront.
  *
  * @author Moritz Halbritter
+ * @author Glenn Oppegard
  * @since 3.0.0
  */
 @ConfigurationProperties(prefix = "management.wavefront")
@@ -261,14 +262,26 @@ public class WavefrontProperties {
 	public static class Tracing {
 
 		/**
-		 * Application name. Defaults to 'spring.application.name'.
+		 * Wavefront Application name used in ApplicationTags. Defaults to
+		 * 'unnamed_application'.
 		 */
 		private String applicationName;
 
 		/**
-		 * Service name. Defaults to 'spring.application.name'.
+		 * Wavefront Service name used in ApplicationTags, falling back to
+		 * 'spring.application.name'. If both are unset it defaults to 'unnamed_service'.
 		 */
 		private String serviceName;
+
+		/**
+		 * Optional Wavefront Cluster name used in ApplicationTags.
+		 */
+		private String clusterName;
+
+		/**
+		 * Optional Wavefront Shard name used in ApplicationTags.
+		 */
+		private String shardName;
 
 		public String getServiceName() {
 			return this.serviceName;
@@ -284,6 +297,22 @@ public class WavefrontProperties {
 
 		public void setApplicationName(String applicationName) {
 			this.applicationName = applicationName;
+		}
+
+		public String getClusterName() {
+			return this.clusterName;
+		}
+
+		public void setClusterName(String clusterName) {
+			this.clusterName = clusterName;
+		}
+
+		public String getShardName() {
+			return this.shardName;
+		}
+
+		public void setShardName(String shardName) {
+			this.shardName = shardName;
 		}
 
 	}
