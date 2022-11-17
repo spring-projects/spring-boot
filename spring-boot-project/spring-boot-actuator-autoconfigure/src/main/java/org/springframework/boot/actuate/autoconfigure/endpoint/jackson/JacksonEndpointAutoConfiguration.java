@@ -16,7 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.jackson;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 
 import org.springframework.boot.actuate.endpoint.jackson.EndpointObjectMapper;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -42,7 +44,10 @@ public class JacksonEndpointAutoConfiguration {
 	@ConditionalOnProperty(name = "management.endpoints.jackson.isolated-object-mapper", matchIfMissing = true)
 	@ConditionalOnClass({ ObjectMapper.class, Jackson2ObjectMapperBuilder.class })
 	public EndpointObjectMapper endpointObjectMapper() {
-		ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json().build();
+		ObjectMapper objectMapper = Jackson2ObjectMapperBuilder.json()
+				.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS,
+						SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS)
+				.serializationInclusion(Include.NON_NULL).build();
 		return () -> objectMapper;
 	}
 
