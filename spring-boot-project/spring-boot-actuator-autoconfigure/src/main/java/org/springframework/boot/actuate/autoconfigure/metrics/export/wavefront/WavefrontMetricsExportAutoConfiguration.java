@@ -77,13 +77,13 @@ public class WavefrontMetricsExportAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(ApplicationTags.class)
-	MeterRegistryCustomizer<WavefrontMeterRegistry> applicationTagsCustomizer(ApplicationTags applicationTags) {
-		Tags commonTags = Tags.of(applicationTags.toPointTags().entrySet().stream()
-				.map(WavefrontMetricsExportAutoConfiguration::asTag).toList());
+	MeterRegistryCustomizer<WavefrontMeterRegistry> wavefrontApplicationTagsCustomizer(
+			ApplicationTags wavefrontApplicationTags) {
+		Tags commonTags = Tags.of(wavefrontApplicationTags.toPointTags().entrySet().stream().map(this::asTag).toList());
 		return (registry) -> registry.config().commonTags(commonTags);
 	}
 
-	private static Tag asTag(Map.Entry<String, String> entry) {
+	private Tag asTag(Map.Entry<String, String> entry) {
 		return Tag.of(entry.getKey(), entry.getValue());
 	}
 

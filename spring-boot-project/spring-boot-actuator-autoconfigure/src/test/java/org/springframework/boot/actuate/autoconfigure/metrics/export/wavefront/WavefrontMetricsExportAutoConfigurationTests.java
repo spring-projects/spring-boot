@@ -88,13 +88,12 @@ class WavefrontMetricsExportAutoConfigurationTests {
 
 	@Test
 	void exportsApplicationTagsInWavefrontRegistry() {
-		ApplicationTags.Builder appTagsBuilder = new ApplicationTags.Builder("super-application", "super-service");
-		appTagsBuilder.cluster("super-cluster");
-		appTagsBuilder.shard("super-shard");
-		appTagsBuilder.customTags(Map.of("custom-key", "custom-val"));
-
+		ApplicationTags.Builder builder = new ApplicationTags.Builder("super-application", "super-service");
+		builder.cluster("super-cluster");
+		builder.shard("super-shard");
+		builder.customTags(Map.of("custom-key", "custom-val"));
 		this.contextRunner.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
-				.withUserConfiguration(BaseConfiguration.class).withBean(ApplicationTags.class, appTagsBuilder::build)
+				.withUserConfiguration(BaseConfiguration.class).withBean(ApplicationTags.class, builder::build)
 				.run((context) -> {
 					WavefrontMeterRegistry registry = context.getBean(WavefrontMeterRegistry.class);
 					registry.counter("my.counter", "env", "qa");

@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.tracing.wavefront;
 
 import java.util.Collections;
+import java.util.function.Supplier;
 
 import brave.handler.SpanHandler;
 import com.wavefront.sdk.common.WavefrontSender;
@@ -40,10 +41,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Wavefront tracing.
@@ -65,7 +68,7 @@ public class WavefrontTracingAutoConfiguration {
 	 * "https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront
 	 * Application Tags</a>
 	 */
-	private static final String DEFAULT_WAVEFRONT_APPLICATION_NAME = "unnamed_application";
+	private static final String DEFAULT_APPLICATION_NAME = "unnamed_application";
 
 	/**
 	 * Default value for the Wavefront Service name if {@code spring.application.name} is
@@ -74,26 +77,24 @@ public class WavefrontTracingAutoConfiguration {
 	 * "https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront
 	 * Application Tags</a>
 	 */
-	private static final String DEFAULT_WAVEFRONT_SERVICE_NAME = "unnamed_service";
+	private static final String DEFAULT_SERVICE_NAME = "unnamed_service";
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ApplicationTags applicationTags(Environment environment, WavefrontProperties properties) {
-		String fallbackWavefrontServiceName = environment.getProperty("spring.application.name",
-				DEFAULT_WAVEFRONT_SERVICE_NAME);
+	public ApplicationTags wavefrontApplicationTags(Environment environment, WavefrontProperties properties) {
 		Tracing tracing = properties.getTracing();
-		String wavefrontServiceName = (tracing.getServiceName() != null) ? tracing.getServiceName()
-				: fallbackWavefrontServiceName;
-		String wavefrontApplicationName = (tracing.getApplicationName() != null) ? tracing.getApplicationName()
-				: DEFAULT_WAVEFRONT_APPLICATION_NAME;
+		String wavefrontServiceName = getName(tracing.getServiceName(),
+				() -> environment.getProperty("spring.application.name", DEFAULT_SERVICE_NAME));
+		String wavefrontApplicationName = getName(tracing.getApplicationName(), () -> DEFAULT_APPLICATION_NAME);
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		ApplicationTags.Builder builder = new ApplicationTags.Builder(wavefrontApplicationName, wavefrontServiceName);
-		if (tracing.getClusterName() != null) {
-			builder.cluster(tracing.getClusterName());
-		}
-		if (tracing.getShardName() != null) {
-			builder.shard(tracing.getShardName());
-		}
+		map.from(tracing::getClusterName).to(builder::cluster);
+		map.from(tracing::getShardName).to(builder::shard);
 		return builder.build();
+	}
+
+	private String getName(String value, Supplier<String> fallback) {
+		return (StringUtils.hasText(value)) ? value : fallback.get();
 	}
 
 	@Configuration(proxyBeanMethods = false)

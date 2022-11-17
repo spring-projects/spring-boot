@@ -21,8 +21,6 @@ import java.net.URI;
 import java.net.UnknownHostException;
 import java.time.Duration;
 
-import com.wavefront.sdk.common.application.ApplicationTags;
-
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PushRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
@@ -264,37 +262,24 @@ public class WavefrontProperties {
 	public static class Tracing {
 
 		/**
-		 * Wavefront Application name used in {@link ApplicationTags}. Defaults to
+		 * Wavefront Application name used in ApplicationTags. Defaults to
 		 * 'unnamed_application'.
-		 * @see <a href=
-		 * "https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront
-		 * Application Tags</a>
 		 */
 		private String applicationName;
 
 		/**
-		 * Wavefront Service name used in {@link ApplicationTags}, falling back to
-		 * {@code spring.application.name}. If both are unset it defaults to
-		 * 'unnamed_service'.
-		 * @see <a href=
-		 * "https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront
-		 * Application Tags</a>
+		 * Wavefront Service name used in ApplicationTags, falling back to
+		 * 'spring.application.name'. If both are unset it defaults to 'unnamed_service'.
 		 */
 		private String serviceName;
 
 		/**
-		 * Optional Wavefront Cluster name used in {@link ApplicationTags}.
-		 * @see <a href=
-		 * "https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront
-		 * Application Tags</a>
+		 * Optional Wavefront Cluster name used in ApplicationTags.
 		 */
 		private String clusterName;
 
 		/**
-		 * Optional Wavefront Shard name used in {@link ApplicationTags}.
-		 * @see <a href=
-		 * "https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront
-		 * Application Tags</a>
+		 * Optional Wavefront Shard name used in ApplicationTags.
 		 */
 		private String shardName;
 
