@@ -33,7 +33,10 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.core.KotlinDetector;
+import org.springframework.core.KotlinReflectionParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
+import org.springframework.core.PrioritizedParameterNameDiscoverer;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.StandardReflectionParameterNameDiscoverer;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -109,7 +112,16 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 	 */
 	private final class Processor {
 
-		private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new StandardReflectionParameterNameDiscoverer();
+		private static final ParameterNameDiscoverer parameterNameDiscoverer;
+
+		static {
+			PrioritizedParameterNameDiscoverer discoverer = new PrioritizedParameterNameDiscoverer();
+			if (KotlinDetector.isKotlinReflectPresent()) {
+				discoverer.addDiscoverer(new KotlinReflectionParameterNameDiscoverer());
+			}
+			discoverer.addDiscoverer(new StandardReflectionParameterNameDiscoverer());
+			parameterNameDiscoverer = discoverer;
+		}
 
 		private final Class<?> type;
 
@@ -159,7 +171,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 
 		private void verifyParameterNamesAreAvailable() {
-			String[] parameterNames = PARAMETER_NAME_DISCOVERER.getParameterNames(this.bindConstructor);
+			String[] parameterNames = parameterNameDiscoverer.getParameterNames(this.bindConstructor);
 			if (parameterNames == null) {
 				this.compiledWithoutParameters.add(this.bindConstructor.getDeclaringClass());
 			}
