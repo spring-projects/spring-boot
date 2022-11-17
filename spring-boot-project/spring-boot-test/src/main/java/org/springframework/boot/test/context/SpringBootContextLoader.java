@@ -149,6 +149,8 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		if (useMainMethod == UseMainMethod.NEVER) {
 			return null;
 		}
+		Assert.state(mergedConfig.getParent() == null,
+				() -> "UseMainMethod.%s cannot be used with @ContextHierarchy tests".formatted(useMainMethod));
 		Class<?> springBootConfiguration = Arrays.stream(mergedConfig.getClasses())
 				.filter(this::isSpringBootConfiguration).findFirst().orElse(null);
 		Assert.state(springBootConfiguration != null || useMainMethod == UseMainMethod.WHEN_AVAILABLE,

@@ -39,6 +39,8 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ApplicationContextFailureProcessor;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.ContextHierarchy;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestContextManager;
@@ -232,6 +234,14 @@ class SpringBootContextLoaderTests {
 		assertThat(ContextLoaderApplicationContextFailureProcessor.failedContext).isNotNull();
 	}
 
+	@Test
+	void whenUseMainMethodWithContextHierarchyThrowsException() {
+		TestContext testContext = new ExposedTestContextManager(UseMainMethodWithContextHierarchy.class)
+				.getExposedTestContext();
+		assertThatIllegalStateException().isThrownBy(testContext::getApplicationContext).havingCause()
+				.withMessage("UseMainMethod.ALWAYS cannot be used with @ContextHierarchy tests");
+	}
+
 	private String[] getActiveProfiles(Class<?> testClass) {
 		TestContext testContext = new ExposedTestContextManager(testClass).getExposedTestContext();
 		ApplicationContext applicationContext = testContext.getApplicationContext();
@@ -349,6 +359,13 @@ class SpringBootContextLoaderTests {
 
 	}
 
+	@SpringBootTest(useMainMethod = UseMainMethod.ALWAYS)
+	@ContextHierarchy({ @ContextConfiguration(classes = ConfigWithMain.class),
+			@ContextConfiguration(classes = AnotherConfigWithMain.class) })
+	static class UseMainMethodWithContextHierarchy {
+
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class Config {
 
@@ -359,6 +376,15 @@ class SpringBootContextLoaderTests {
 
 		public static void main(String[] args) {
 			new SpringApplication(ConfigWithMain.class).run("--spring.profiles.active=frommain");
+		}
+
+	}
+
+	@SpringBootConfiguration(proxyBeanMethods = false)
+	public static class AnotherConfigWithMain {
+
+		public static void main(String[] args) {
+			new SpringApplication(AnotherConfigWithMain.class).run("--spring.profiles.active=anotherfrommain");
 		}
 
 	}
