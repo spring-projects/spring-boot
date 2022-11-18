@@ -17,13 +17,18 @@
 package org.springframework.boot.test.context;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.test.context.SpringBootTestContextHierarchyTests.ChildConfiguration;
 import org.springframework.boot.test.context.SpringBootTestContextHierarchyTests.ParentConfiguration;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link SpringBootTest @SpringBootTest} and
@@ -34,11 +39,12 @@ import org.springframework.test.context.ContextHierarchy;
 @SpringBootTest
 @ContextHierarchy({ @ContextConfiguration(classes = ParentConfiguration.class),
 		@ContextConfiguration(classes = ChildConfiguration.class) })
+@ExtendWith(OutputCaptureExtension.class)
 class SpringBootTestContextHierarchyTests {
 
 	@Test
-	void contextLoads() {
-
+	void contextLoads(CapturedOutput capturedOutput) {
+		assertThat(capturedOutput).containsOnlyOnce(":: Spring Boot ::");
 	}
 
 	@Configuration(proxyBeanMethods = false)

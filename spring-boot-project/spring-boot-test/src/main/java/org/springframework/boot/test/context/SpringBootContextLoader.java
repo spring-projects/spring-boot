@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.ApplicationContextFactory;
+import org.springframework.boot.Banner;
 import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplication.AbandonedRunException;
@@ -195,6 +196,9 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		}
 		application.setApplicationContextFactory(
 				(webApplicationType) -> getApplicationContextFactory(mergedConfig, webApplicationType));
+		if (mergedConfig.getParent() != null) {
+			application.setBannerMode(Banner.Mode.OFF);
+		}
 		application.setInitializers(initializers);
 		ConfigurableEnvironment environment = getEnvironment();
 		if (environment != null) {
