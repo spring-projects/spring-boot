@@ -16,28 +16,17 @@
 
 package org.springframework.boot.docs.nativeimage.advanced.nestedconfigurationproperties;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
+public class Nested {
 
-@ConfigurationProperties(prefix = "my.properties")
-public class MyProperties {
-
-	private String name;
-
-	@NestedConfigurationProperty
-	private Nested nested = new Nested();
+	private int number;
 
 	// @fold:on // getters / setters...
-	public String getName() {
-		return this.name;
+	public int getNumber() {
+		return this.number;
 	}
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Nested getNested() {
-		return this.nested;
+	public void setNumber(int number) {
+		this.number = number;
 	}
 	// @fold:off
 

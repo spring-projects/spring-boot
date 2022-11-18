@@ -14,31 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.nativeimage.advanced.nestedconfigurationproperties;
+package org.springframework.boot.docs.nativeimage.advanced.nestedconfigurationproperties
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.context.properties.ConfigurationProperties
+import org.springframework.boot.context.properties.NestedConfigurationProperty
 
 @ConfigurationProperties(prefix = "my.properties")
-public class MyProperties {
-
-	private String name;
-
-	@NestedConfigurationProperty
-	private Nested nested = new Nested();
-
-	// @fold:on // getters / setters...
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Nested getNested() {
-		return this.nested;
-	}
-	// @fold:off
-
-}
+data class MyPropertiesKotlin(
+	val name: String,
+	@NestedConfigurationProperty val nested: Nested
+)

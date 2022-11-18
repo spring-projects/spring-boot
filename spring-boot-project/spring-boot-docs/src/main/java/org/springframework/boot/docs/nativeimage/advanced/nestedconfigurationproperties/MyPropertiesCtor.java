@@ -20,20 +20,21 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 @ConfigurationProperties(prefix = "my.properties")
-public class MyProperties {
+public class MyPropertiesCtor {
 
-	private String name;
+	private final String name;
 
 	@NestedConfigurationProperty
-	private Nested nested = new Nested();
+	private final Nested nested;
+
+	public MyPropertiesCtor(String name, Nested nested) {
+		this.name = name;
+		this.nested = nested;
+	}
 
 	// @fold:on // getters / setters...
 	public String getName() {
 		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public Nested getNested() {

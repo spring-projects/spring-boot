@@ -5,20 +5,36 @@
 
 [[native-image.advanced.nested-configuration-properties]]
 === Nested Configuration Properties
+
 Reflection hints are automatically created for configuration properties by the Spring ahead-of-time engine.
 Nested configuration properties which are no inner classes, however, *must* be annotated with `@NestedConfigurationProperty`, otherwise they won't be detected and will not be bindable.
 
 include::code:MyProperties[]
 
+where `Nested` is:
+
+include::code:Nested[]
+
 The example above produces configuration properties for `my.properties.name` and `my.properties.nested.number`.
 Without the `@NestedConfigurationProperty` annotation on the `nested` field, the `my.properties.nested.number` property would not be bindable in a native image.
 
-NOTE: Please use public getters and setters, otherwise the properties will not be bindable.
+When using constructor binding, you have to annotate the field with `@NestedConfigurationProperty`:
 
+include::code:MyPropertiesCtor[]
 
+When using records, you have to annotate the parameter with `@NestedConfigurationProperty`:
+
+include::code:MyPropertiesRecord[]
+
+When using Kotlin, you need to annotate the parameter of a data class with `@NestedConfigurationProperty`:
+
+include::code:MyPropertiesKotlin[]
+
+NOTE: Please use public getters and setters in all cases, otherwise the properties will not be bindable.
 
 [[native-image.advanced.converting-executable-jars]]
 === Converting a Spring Boot Executable Jar
+
 It is possible to convert a Spring Boot <<executable-jar#appendix.executable-jar, executable jar>> into a native image as long at the jar contains the AOT generated assets.
 This can be useful for a number of reasons, including:
 
