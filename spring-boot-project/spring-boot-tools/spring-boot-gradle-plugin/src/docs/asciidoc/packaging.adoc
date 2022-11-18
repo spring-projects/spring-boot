@@ -76,6 +76,8 @@ include::../gradle/packaging/only-boot-jar.gradle[tags=disable-jar]
 include::../gradle/packaging/only-boot-jar.gradle.kts[tags=disable-jar]
 ----
 
+WARNING: Do not disable the `jar` task when creating native images.
+See https://github.com/spring-projects/spring-boot/issues/33238[#33238] for details.
 
 
 [[packaging-executable.configuring]]
