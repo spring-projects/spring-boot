@@ -6,7 +6,7 @@
 [[native-image.advanced.nested-configuration-properties]]
 === Nested Configuration Properties
 Reflection hints are automatically created for configuration properties by the Spring ahead-of-time engine.
-Nested configuration properties, however, *must* be annotated with `@NestedConfigurationProperty`, otherwise they won't be detected and will not be bindable.
+Nested configuration properties which are no inner classes, however, *must* be annotated with `@NestedConfigurationProperty`, otherwise they won't be detected and will not be bindable.
 
 include::code:MyProperties[]
 

@@ -41,20 +41,20 @@ public class MyProperties {
 	}
 	// @fold:off
 
-	public static class Nested {
+}
 
-		private int number;
+class Nested {
 
-		// @fold:on // getters / setters...
-		public int getNumber() {
-			return this.number;
-		}
+	private int number;
 
-		public void setNumber(int number) {
-			this.number = number;
-		}
-		// @fold:off
-
+	// @fold:on // getters / setters...
+	public int getNumber() {
+		return this.number;
 	}
+
+	public void setNumber(int number) {
+		this.number = number;
+	}
+	// @fold:off
 
 }
