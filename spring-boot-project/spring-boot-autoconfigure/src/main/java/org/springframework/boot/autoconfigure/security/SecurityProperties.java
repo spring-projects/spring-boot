@@ -17,8 +17,7 @@
 package org.springframework.boot.autoconfigure.security;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -83,8 +82,7 @@ public class SecurityProperties {
 		/**
 		 * Security filter chain dispatcher types.
 		 */
-		private Set<DispatcherType> dispatcherTypes = new HashSet<>(Arrays.asList(DispatcherType.ASYNC,
-				DispatcherType.ERROR, DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE));
+		private Set<DispatcherType> dispatcherTypes = EnumSet.allOf(DispatcherType.class);
 
 		public int getOrder() {
 			return this.order;
