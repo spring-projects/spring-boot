@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.security.servlet;
 
 import java.security.interfaces.RSAPublicKey;
+import java.util.EnumSet;
 
 import jakarta.servlet.DispatcherType;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -161,8 +162,7 @@ class SecurityAutoConfigurationTests {
 							DelegatingFilterProxyRegistrationBean.class);
 					assertThat(bean)
 							.extracting("dispatcherTypes", InstanceOfAssertFactories.iterable(DispatcherType.class))
-							.containsOnly(DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST,
-									DispatcherType.INCLUDE, DispatcherType.FORWARD);
+							.containsExactlyInAnyOrderElementsOf(EnumSet.allOf(DispatcherType.class));
 				});
 	}
 
