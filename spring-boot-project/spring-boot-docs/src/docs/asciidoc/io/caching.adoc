@@ -110,13 +110,18 @@ No further customization is applied to it.
 
 [[io.caching.provider.hazelcast]]
 ==== Hazelcast
+
 Spring Boot has <<io#io.hazelcast,general support for Hazelcast>>.
-If a `HazelcastInstance` has been auto-configured, it is automatically wrapped in a `CacheManager`.
+If a `HazelcastInstance` has been auto-configured and `com.hazelcast:hazelcast-spring` is on the classpath, it is automatically wrapped in a `CacheManager`.
 
-
+NOTE: Hazelcast can be used as a JCache compliant cache or as a Spring `CacheManager` compliant cache.
+When setting configprop:spring.cache.type[] to `hazelcast`, Spring Boot will use the `CacheManager` based implementation.
+If you want to use Hazelcast as a JCache compliant cache, set configprop:spring.cache.type[] to `jcache`.
+If you have multiple JCache compliant cache providers and want to force the use of Hazelcast, you have to <<io#io.caching.provider.jcache,explicitly set the JCache provider>>.
 
 [[io.caching.provider.infinispan]]
 ==== Infinispan
+
 https://infinispan.org/[Infinispan] has no default configuration file location, so it must be specified explicitly.
 Otherwise, the default bootstrap is used.
 
