@@ -1,0 +1,16 @@
+{
+  "properties": [
+    {
+      "name": "invalid.PropertyName",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "valid.property-name",
+        "level": "error"
+      }
+    },
+    {
+      "name": "valid.property-name",
+      "type": "java.lang.String"
+    }
+  ]
+}
