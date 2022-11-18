@@ -99,8 +99,10 @@ class PropertiesMigrationReporter {
 		List<ConfigurationMetadataProperty> candidates = this.allProperties.values().stream().filter(filter)
 				.collect(Collectors.toList());
 		getPropertySourcesAsMap().forEach((name, source) -> candidates.forEach((metadata) -> {
-			ConfigurationProperty configurationProperty = source
-					.getConfigurationProperty(ConfigurationPropertyName.of(metadata.getId()));
+			ConfigurationPropertyName metadataName = ConfigurationPropertyName.isValid(metadata.getId())
+					? ConfigurationPropertyName.of(metadata.getId())
+					: ConfigurationPropertyName.adapt(metadata.getId(), '.');
+			ConfigurationProperty configurationProperty = source.getConfigurationProperty(metadataName);
 			if (configurationProperty != null) {
 				result.add(name,
 						new PropertyMigration(configurationProperty, metadata, determineReplacementMetadata(metadata)));

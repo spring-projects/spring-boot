@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties.migrator;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,6 +143,15 @@ class PropertiesMigrationReporterTests {
 		assertThat(report).containsSubsequence("Property source 'first'", "deprecated.six.test", "Line: 1", "Reason",
 				"No metadata found for replacement key 'does.not.exist'");
 		assertThat(report).doesNotContain("null");
+	}
+
+	@Test
+	void invalidNameHandledGracefully() {
+		this.environment.getPropertySources()
+				.addFirst(new MapPropertySource("first", Collections.singletonMap("invalid.property-name", "value")));
+		String report = createWarningReport(loadRepository("metadata/sample-metadata-invalid-name.json"));
+		assertThat(report).isNotNull();
+		assertThat(report).contains("Key: invalid.PropertyName").contains("Replacement: valid.property-name");
 	}
 
 	private List<String> mapToNames(PropertySources sources) {
