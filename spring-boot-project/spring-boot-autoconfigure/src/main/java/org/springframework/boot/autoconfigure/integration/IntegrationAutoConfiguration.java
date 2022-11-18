@@ -24,6 +24,9 @@ import javax.sql.DataSource;
 import io.rsocket.transport.netty.server.TcpServerTransport;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.aot.BeanRegistrationAotContribution;
+import org.springframework.beans.factory.aot.BeanRegistrationAotProcessor;
+import org.springframework.beans.factory.support.RegisteredBean;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
@@ -223,7 +226,15 @@ public class IntegrationAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(IntegrationComponentScanRegistrar.class)
 	@Import(IntegrationAutoConfigurationScanRegistrar.class)
-	protected static class IntegrationComponentScanConfiguration {
+	protected static class IntegrationComponentScanConfiguration
+			// This is only a simple way to exclude this bean from AOT at the moment.
+			// See https://github.com/spring-projects/spring-framework/issues/29484
+			implements BeanRegistrationAotProcessor {
+
+		@Override
+		public BeanRegistrationAotContribution processAheadOfTime(RegisteredBean registeredBean) {
+			return null;
+		}
 
 	}
 
