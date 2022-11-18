@@ -2722,6 +2722,8 @@
       "defaultValue": [
         "async",
         "error",
+        "forward",
+        "include",
         "request"
       ]
     },
