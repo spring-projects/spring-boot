@@ -1111,6 +1111,8 @@ include::{docs-java}/actuator/metrics/supported/timedannotation/change/MyControl
 NOTE: A `@Timed` annotation with `longTask = true` enables a long task timer for the method.
 Long task timers require a separate metric name and can be stacked with a short task timer.
 
+TIP: To use `@Timed` where it is not directly supported by Spring Boot, refer to the {micrometer-concepts-docs}#_the_timed_annotation[Micrometer documentation].
+
 
 
 [[actuator.metrics.supported.redis]]
