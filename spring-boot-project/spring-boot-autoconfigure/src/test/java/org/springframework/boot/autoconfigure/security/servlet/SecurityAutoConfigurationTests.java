@@ -162,7 +162,7 @@ class SecurityAutoConfigurationTests {
 							DelegatingFilterProxyRegistrationBean.class);
 					assertThat(bean)
 							.extracting("dispatcherTypes", InstanceOfAssertFactories.iterable(DispatcherType.class))
-							.containsOnly(EnumSet.allOf(DispatcherType.class).toArray(new DispatcherType[0]));
+							.containsExactlyInAnyOrderElementsOf(EnumSet.allOf(DispatcherType.class));
 				});
 	}
 
