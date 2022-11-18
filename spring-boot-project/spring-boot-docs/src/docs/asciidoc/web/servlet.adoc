@@ -397,9 +397,6 @@ The error page filter can only forward the request to the correct error page if 
 By default, WebSphere Application Server 8.0 and later commits the response upon successful completion of a servlet's service method.
 You should disable this behavior by setting `com.ibm.ws.webcontainer.invokeFlushAfterService` to `false`.
 
-If you are using Spring Security and want to access the principal in an error page, you must configure Spring Security's filter to be invoked on error dispatches.
-To do so, set the `spring.security.filter.dispatcher-types` property to `async, error, forward, request`.
-
 
 
 [[web.servlet.spring-mvc.cors]]
