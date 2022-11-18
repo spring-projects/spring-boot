@@ -17,14 +17,12 @@
 package org.springframework.boot.docs.nativeimage.advanced.nestedconfigurationproperties;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 @ConfigurationProperties(prefix = "my.properties")
 public class MyProperties {
 
 	private String name;
 
-	@NestedConfigurationProperty
 	private Nested nested = new Nested();
 
 	// @fold:on // getters / setters...
