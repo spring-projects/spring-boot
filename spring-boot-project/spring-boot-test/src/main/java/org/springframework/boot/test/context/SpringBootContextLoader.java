@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.ApplicationContextFactory;
+import org.springframework.boot.Banner.Mode;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -119,6 +120,9 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 			}
 			return ApplicationContextFactory.DEFAULT.create(type);
 		});
+		if (config.getParent() != null) {
+			application.setBannerMode(Mode.OFF);
+		}
 		application.setInitializers(initializers);
 		ConfigurableEnvironment environment = getEnvironment();
 		if (environment != null) {
