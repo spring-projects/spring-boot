@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 import com.wavefront.sdk.common.WavefrontSender;
 import com.wavefront.sdk.common.application.ApplicationTags;
 
+import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties.Application;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -65,13 +66,14 @@ public class WavefrontAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public ApplicationTags wavefrontApplicationTags(Environment environment, WavefrontProperties properties) {
-		String wavefrontServiceName = getName(properties.getServiceName(),
+		Application application = properties.getApplication();
+		String serviceName = getName(application.getServiceName(),
 				() -> environment.getProperty("spring.application.name", DEFAULT_SERVICE_NAME));
-		String wavefrontApplicationName = getName(properties.getApplicationName(), () -> DEFAULT_APPLICATION_NAME);
+		String applicationName = getName(application.getName(), () -> DEFAULT_APPLICATION_NAME);
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		ApplicationTags.Builder builder = new ApplicationTags.Builder(wavefrontApplicationName, wavefrontServiceName);
-		map.from(properties::getClusterName).to(builder::cluster);
-		map.from(properties::getShardName).to(builder::shard);
+		ApplicationTags.Builder builder = new ApplicationTags.Builder(applicationName, serviceName);
+		map.from(application::getClusterName).to(builder::cluster);
+		map.from(application::getShardName).to(builder::shard);
 		return builder.build();
 	}
 

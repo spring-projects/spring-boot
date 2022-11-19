@@ -51,10 +51,10 @@ class WavefrontAutoConfigurationTests {
 	@Test
 	void wavefrontApplicationTagsMapsProperties() {
 		List<String> properties = new ArrayList<>();
-		properties.add("management.wavefront.application-name=test-application");
-		properties.add("management.wavefront.service-name=test-service");
-		properties.add("management.wavefront.cluster-name=test-cluster");
-		properties.add("management.wavefront.shard-name=test-shard");
+		properties.add("management.wavefront.application.name=test-application");
+		properties.add("management.wavefront.application.service-name=test-service");
+		properties.add("management.wavefront.application.cluster-name=test-cluster");
+		properties.add("management.wavefront.application.shard-name=test-shard");
 		this.contextRunner.withPropertyValues(properties.toArray(String[]::new)).run((context) -> {
 			ApplicationTags tags = context.getBean(ApplicationTags.class);
 			assertThat(tags.getApplication()).isEqualTo("test-application");

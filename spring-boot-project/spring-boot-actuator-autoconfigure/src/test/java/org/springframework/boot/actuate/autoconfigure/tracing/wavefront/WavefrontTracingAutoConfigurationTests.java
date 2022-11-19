@@ -137,10 +137,13 @@ class WavefrontTracingAutoConfigurationTests {
 
 	@Test
 	void shouldHonorConfigProperties() {
-		this.contextRunner.withUserConfiguration(WavefrontSenderConfiguration.class).withPropertyValues(
-				"spring.application.name=ignored", "management.wavefront.application-name=super-application",
-				"management.wavefront.service-name=super-service", "management.wavefront.cluster-name=super-cluster",
-				"management.wavefront.shard-name=super-shard").run((context) -> {
+		this.contextRunner.withUserConfiguration(WavefrontSenderConfiguration.class)
+				.withPropertyValues("spring.application.name=ignored",
+						"management.wavefront.application.name=super-application",
+						"management.wavefront.application.service-name=super-service",
+						"management.wavefront.application.cluster-name=super-cluster",
+						"management.wavefront.application.shard-name=super-shard")
+				.run((context) -> {
 					ApplicationTags applicationTags = context.getBean(ApplicationTags.class);
 					assertThat(applicationTags.getApplication()).isEqualTo("super-application");
 					assertThat(applicationTags.getService()).isEqualTo("super-service");

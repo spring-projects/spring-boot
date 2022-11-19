@@ -53,27 +53,7 @@ public class WavefrontProperties {
 	 */
 	private String apiToken;
 
-	/**
-	 * Wavefront Application name used in ApplicationTags. Defaults to
-	 * 'unnamed_application'.
-	 */
-	private String applicationName;
-
-	/**
-	 * Wavefront Service name used in ApplicationTags, falling back to
-	 * 'spring.application.name'. If both are unset it defaults to 'unnamed_service'.
-	 */
-	private String serviceName;
-
-	/**
-	 * Optional Wavefront Cluster name used in ApplicationTags.
-	 */
-	private String clusterName;
-
-	/**
-	 * Optional Wavefront Shard name used in ApplicationTags.
-	 */
-	private String shardName;
+	private final Application application = new Application();
 
 	/**
 	 * Sender configuration.
@@ -84,6 +64,10 @@ public class WavefrontProperties {
 	 * Metrics configuration.
 	 */
 	private final Metrics metrics = new Metrics();
+
+	public Application getApplication() {
+		return this.application;
+	}
 
 	public Sender getSender() {
 		return this.sender;
@@ -115,38 +99,6 @@ public class WavefrontProperties {
 
 	public void setApiToken(String apiToken) {
 		this.apiToken = apiToken;
-	}
-
-	public String getServiceName() {
-		return this.serviceName;
-	}
-
-	public void setServiceName(String serviceName) {
-		this.serviceName = serviceName;
-	}
-
-	public String getApplicationName() {
-		return this.applicationName;
-	}
-
-	public void setApplicationName(String applicationName) {
-		this.applicationName = applicationName;
-	}
-
-	public String getClusterName() {
-		return this.clusterName;
-	}
-
-	public void setClusterName(String clusterName) {
-		this.clusterName = clusterName;
-	}
-
-	public String getShardName() {
-		return this.shardName;
-	}
-
-	public void setShardName(String shardName) {
-		this.shardName = shardName;
 	}
 
 	/**
@@ -193,6 +145,64 @@ public class WavefrontProperties {
 
 	private boolean usesProxy() {
 		return "proxy".equals(this.uri.getScheme());
+	}
+
+	public static class Application {
+
+		/**
+		 * Wavefront Application name used in ApplicationTags. Defaults to
+		 * 'unnamed_application'.
+		 */
+		private String name;
+
+		/**
+		 * Wavefront Service name used in ApplicationTags, falling back to
+		 * 'spring.application.name'. If both are unset it defaults to 'unnamed_service'.
+		 */
+		private String serviceName;
+
+		/**
+		 * Optional Wavefront Cluster name used in ApplicationTags.
+		 */
+		private String clusterName;
+
+		/**
+		 * Optional Wavefront Shard name used in ApplicationTags.
+		 */
+		private String shardName;
+
+		public String getServiceName() {
+			return this.serviceName;
+		}
+
+		public void setServiceName(String serviceName) {
+			this.serviceName = serviceName;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		public String getClusterName() {
+			return this.clusterName;
+		}
+
+		public void setClusterName(String clusterName) {
+			this.clusterName = clusterName;
+		}
+
+		public String getShardName() {
+			return this.shardName;
+		}
+
+		public void setShardName(String shardName) {
+			this.shardName = shardName;
+		}
+
 	}
 
 	public static class Sender {

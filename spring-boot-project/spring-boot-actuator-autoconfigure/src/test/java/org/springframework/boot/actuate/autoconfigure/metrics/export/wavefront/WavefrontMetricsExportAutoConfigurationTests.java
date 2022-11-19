@@ -107,10 +107,10 @@ class WavefrontMetricsExportAutoConfigurationTests {
 	@Test
 	void exportsApplicationTagsInWavefrontRegistryWhenInProperties() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
-				.withPropertyValues("management.wavefront.service-name=super-service",
-						"management.wavefront.application-name=super-application",
-						"management.wavefront.cluster-name=super-cluster",
-						"management.wavefront.shard-name=super-shard")
+				.withPropertyValues("management.wavefront.application.service-name=super-service",
+						"management.wavefront.application.name=super-application",
+						"management.wavefront.application.cluster-name=super-cluster",
+						"management.wavefront.application.shard-name=super-shard")
 				.withUserConfiguration(BaseConfiguration.class).run((context) -> {
 					WavefrontMeterRegistry registry = context.getBean(WavefrontMeterRegistry.class);
 					registry.counter("my.counter", "env", "qa");
