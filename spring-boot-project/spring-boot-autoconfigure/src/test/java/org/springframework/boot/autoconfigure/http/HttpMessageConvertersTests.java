@@ -33,7 +33,6 @@ import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
-import org.springframework.http.converter.xml.SourceHttpMessageConverter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -55,9 +54,9 @@ class HttpMessageConvertersTests {
 		}
 		assertThat(converterClasses).containsExactly(ByteArrayHttpMessageConverter.class,
 				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
-				ResourceRegionHttpMessageConverter.class, SourceHttpMessageConverter.class,
-				AllEncompassingFormHttpMessageConverter.class, MappingJackson2HttpMessageConverter.class,
-				MappingJackson2CborHttpMessageConverter.class, MappingJackson2XmlHttpMessageConverter.class);
+				ResourceRegionHttpMessageConverter.class, AllEncompassingFormHttpMessageConverter.class,
+				MappingJackson2HttpMessageConverter.class, MappingJackson2CborHttpMessageConverter.class,
+				MappingJackson2XmlHttpMessageConverter.class);
 	}
 
 	@Test
@@ -125,9 +124,8 @@ class HttpMessageConvertersTests {
 		}
 		assertThat(converterClasses).containsExactly(ByteArrayHttpMessageConverter.class,
 				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
-				ResourceRegionHttpMessageConverter.class, SourceHttpMessageConverter.class,
-				AllEncompassingFormHttpMessageConverter.class, MappingJackson2HttpMessageConverter.class,
-				MappingJackson2CborHttpMessageConverter.class);
+				ResourceRegionHttpMessageConverter.class, AllEncompassingFormHttpMessageConverter.class,
+				MappingJackson2HttpMessageConverter.class, MappingJackson2CborHttpMessageConverter.class);
 	}
 
 	@Test
@@ -147,7 +145,7 @@ class HttpMessageConvertersTests {
 			converterClasses.add(converter.getClass());
 		}
 		assertThat(converterClasses).containsExactly(ByteArrayHttpMessageConverter.class,
-				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class, SourceHttpMessageConverter.class,
+				StringHttpMessageConverter.class, ResourceHttpMessageConverter.class,
 				MappingJackson2HttpMessageConverter.class);
 	}
 
