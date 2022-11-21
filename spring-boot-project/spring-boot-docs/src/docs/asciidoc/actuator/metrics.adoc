@@ -1009,8 +1009,11 @@ Auto-configuration enables the instrumentation of all Spring Data `Repository` m
 By default, metrics are generated with the name, `spring.data.repository.invocations`.
 You can customize the name by setting the configprop:management.metrics.data.repository.metric-name[] property.
 
-`@Timed` annotations are supported on `Repository` classes and methods (see <<actuator#actuator.metrics.supported.timed-annotation>> for details).
+The `@Timed` annotation from the `io.micrometer.core.annotation` package is supported on `Repository` interfaces and methods.
 If you do not want to record metrics for all `Repository` invocations, you can set configprop:management.metrics.data.repository.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
+
+NOTE: A `@Timed` annotation with `longTask = true` enables a long task timer for the method.
+Long task timers require a separate metric name and can be stacked with a short task timer.
 
 By default, repository invocation related metrics are tagged with the following information:
 
@@ -1147,25 +1150,7 @@ Metrics for Jetty's `Connector` instances are bound by using Micrometer's `Jetty
 
 [[actuator.metrics.supported.timed-annotation]]
 ==== @Timed Annotation Support
-You can use the `@Timed` annotation from the `io.micrometer.core.annotation` package with several of the supported technologies described earlier.
-If supported, you can use the annotation at either the class level or the method level.
-
-For example, the following code shows how you can use the annotation to instrument all request mappings in a `@RestController`:
-
-include::code:all/MyController[]
-
-If you want only to instrument a single mapping, you can use the annotation on the method instead of the class:
-
-include::code:single/MyController[]
-
-You can also combine class-level and method-level annotations if you want to change the timing details for a specific method:
-
-include::code:change/MyController[]
-
-NOTE: A `@Timed` annotation with `longTask = true` enables a long task timer for the method.
-Long task timers require a separate metric name and can be stacked with a short task timer.
-
-TIP: To use `@Timed` where it is not directly supported by Spring Boot, refer to the {micrometer-concepts-docs}#_the_timed_annotation[Micrometer documentation].
+To use `@Timed` where it is not directly supported by Spring Boot, refer to the {micrometer-concepts-docs}#_the_timed_annotation[Micrometer documentation].
 
 
 
