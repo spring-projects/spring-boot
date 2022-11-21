@@ -32,11 +32,7 @@ import org.apache.commons.compress.archivers.tar.TarConstants;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.Execute;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.springframework.boot.buildpack.platform.build.AbstractBuildLog;
 import org.springframework.boot.buildpack.platform.build.BuildLog;
@@ -62,11 +58,7 @@ import org.springframework.util.StringUtils;
  * @author Jeroen Meijer
  * @since 2.3.0
  */
-@Mojo(name = "build-image", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true,
-		requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
-		requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
-@Execute(phase = LifecyclePhase.PACKAGE)
-public class BuildImageMojo extends AbstractPackagerMojo {
+public abstract class BuildImageMojo extends AbstractPackagerMojo {
 
 	static {
 		System.setProperty("org.slf4j.simpleLogger.log.org.apache.http.wire", "ERROR");

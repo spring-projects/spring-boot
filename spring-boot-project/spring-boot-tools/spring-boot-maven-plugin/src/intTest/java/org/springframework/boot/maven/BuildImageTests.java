@@ -65,6 +65,23 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void whenBuildImageIsInvokedOnTheCommandLineWithoutRepackageTheArchiveIsRepackagedOnTheFly(MavenBuild mavenBuild) {
+		mavenBuild.project("build-image-cmd-line").goals("spring-boot:build-image")
+				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+				.prepare(this::writeLongNameResource).execute((project) -> {
+					File jar = new File(project, "target/build-image-cmd-line-0.0.1.BUILD-SNAPSHOT.jar");
+					assertThat(jar).isFile();
+					File original = new File(project, "target/build-image-cmd-line-0.0.1.BUILD-SNAPSHOT.jar.original");
+					assertThat(original).doesNotExist();
+					assertThat(buildLog(project)).contains("Building image")
+							.contains("docker.io/library/build-image-cmd-line:0.0.1.BUILD-SNAPSHOT")
+							.contains("---> Test Info buildpack building").contains("---> Test Info buildpack done")
+							.contains("Successfully built image");
+					removeImage("build-image-cmd-line", "0.0.1.BUILD-SNAPSHOT");
+				});
+	}
+
+	@TestTemplate
 	void whenBuildImageIsInvokedWithClassifierWithoutRepackageTheArchiveIsRepackagedOnTheFly(MavenBuild mavenBuild) {
 		mavenBuild.project("build-image-classifier").goals("package")
 				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")

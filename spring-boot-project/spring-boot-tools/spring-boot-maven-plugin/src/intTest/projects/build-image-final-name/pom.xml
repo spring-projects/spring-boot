@@ -20,7 +20,7 @@
 					<execution>
 						<goals>
 							<goal>repackage</goal>
-							<goal>build-image</goal>
+							<goal>build-image-no-fork</goal>
 						</goals>
 						<configuration>
 							<finalName>final-name</finalName>
