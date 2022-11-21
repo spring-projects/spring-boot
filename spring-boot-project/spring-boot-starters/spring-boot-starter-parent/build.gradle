@@ -232,42 +232,44 @@ publishing.publications.withType(MavenPublication) {
 				profile {
 					delegate.id("native")
 					build {
-						plugins {
-							plugin {
-								delegate.groupId('org.springframework.boot')
-								delegate.artifactId('spring-boot-maven-plugin')
-								configuration {
-									image {
-										delegate.builder("paketobuildpacks/builder:tiny");
-										env {
-											delegate.BP_NATIVE_IMAGE("true")
+						pluginManagement {
+							plugins {
+								plugin {
+									delegate.groupId('org.springframework.boot')
+									delegate.artifactId('spring-boot-maven-plugin')
+									configuration {
+										image {
+											delegate.builder("paketobuildpacks/builder:tiny");
+											env {
+												delegate.BP_NATIVE_IMAGE("true")
+											}
+										}
+									}
+									executions {
+										execution {
+											delegate.id('process-aot')
+											goals {
+												delegate.goal('process-aot')
+											}
 										}
 									}
 								}
-								executions {
-									execution {
-										delegate.id('process-aot')
-										goals {
-											delegate.goal('process-aot')
+								plugin {
+									delegate.groupId('org.graalvm.buildtools')
+									delegate.artifactId('native-maven-plugin')
+									configuration {
+										delegate.classesDirectory('${project.build.outputDirectory}')
+										metadataRepository {
+											delegate.enabled('true')
 										}
+										delegate.requiredVersion('22.3')
 									}
-								}
-							}
-							plugin {
-								delegate.groupId('org.graalvm.buildtools')
-								delegate.artifactId('native-maven-plugin')
-								configuration {
-									delegate.classesDirectory('${project.build.outputDirectory}')
-									metadataRepository {
-										delegate.enabled('true')
-									}
-									delegate.requiredVersion('22.3')
-								}
-								executions {
-									execution {
-										delegate.id('add-reachability-metadata')
-										goals {
-											delegate.goal('add-reachability-metadata')
+									executions {
+										execution {
+											delegate.id('add-reachability-metadata')
+											goals {
+												delegate.goal('add-reachability-metadata')
+											}
 										}
 									}
 								}

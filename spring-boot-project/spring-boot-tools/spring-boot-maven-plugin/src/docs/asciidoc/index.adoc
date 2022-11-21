@@ -13,6 +13,7 @@ v{gradle-project-version}
 :docinfo: shared,private
 :attribute-missing: warn
 :buildpacks-reference: https://buildpacks.io/docs
+:nbt-reference: https://graalvm.github.io/native-build-tools/latest/maven-plugin.html
 :spring-boot-docs: https://docs.spring.io/spring-boot/docs/{gradle-project-version}
 :spring-boot-api: {spring-boot-docs}/api/org/springframework/boot
 :spring-boot-reference: {spring-boot-docs}/reference/htmlsingle
