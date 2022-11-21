@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.wavefront;
 
-import java.util.function.Supplier;
-
 import com.wavefront.sdk.common.WavefrontSender;
 import com.wavefront.sdk.common.application.ApplicationTags;
 
@@ -46,39 +44,18 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties(WavefrontProperties.class)
 public class WavefrontAutoConfiguration {
 
-	/**
-	 * Default value for the Wavefront Service name if {@code spring.application.name} is
-	 * not set.
-	 * @see <a href=
-	 * "https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront
-	 * Application Tags</a>
-	 */
-	private static final String DEFAULT_SERVICE_NAME = "unnamed_service";
-
-	/**
-	 * Default value for the Wavefront Application name.
-	 * @see <a href=
-	 * "https://docs.wavefront.com/trace_data_details.html#application-tags">Wavefront
-	 * Application Tags</a>
-	 */
-	private static final String DEFAULT_APPLICATION_NAME = "unnamed_application";
-
 	@Bean
 	@ConditionalOnMissingBean
 	public ApplicationTags wavefrontApplicationTags(Environment environment, WavefrontProperties properties) {
 		Application application = properties.getApplication();
-		String serviceName = getName(application.getServiceName(),
-				() -> environment.getProperty("spring.application.name", DEFAULT_SERVICE_NAME));
-		String applicationName = getName(application.getName(), () -> DEFAULT_APPLICATION_NAME);
+		String serviceName = application.getServiceName();
+		serviceName = (StringUtils.hasText(serviceName)) ? serviceName
+				: environment.getProperty("spring.application.name", "unnamed_service");
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		ApplicationTags.Builder builder = new ApplicationTags.Builder(applicationName, serviceName);
+		ApplicationTags.Builder builder = new ApplicationTags.Builder(application.getName(), serviceName);
 		map.from(application::getClusterName).to(builder::cluster);
 		map.from(application::getShardName).to(builder::shard);
 		return builder.build();
-	}
-
-	private String getName(String value, Supplier<String> fallback) {
-		return (StringUtils.hasText(value)) ? value : fallback.get();
 	}
 
 }

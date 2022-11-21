@@ -53,6 +53,9 @@ public class WavefrontProperties {
 	 */
 	private String apiToken;
 
+	/**
+	 * Application configuration.
+	 */
 	private final Application application = new Application();
 
 	/**
@@ -150,24 +153,23 @@ public class WavefrontProperties {
 	public static class Application {
 
 		/**
-		 * Wavefront Application name used in ApplicationTags. Defaults to
-		 * 'unnamed_application'.
+		 * Wavefront 'Application' name used in ApplicationTags.
 		 */
-		private String name;
+		private String name = "unnamed_application";
 
 		/**
-		 * Wavefront Service name used in ApplicationTags, falling back to
-		 * 'spring.application.name'. If both are unset it defaults to 'unnamed_service'.
+		 * Wavefront 'Service' name used in t, falling back to 'spring.application.name'.
+		 * If both are unset it defaults to 'unnamed_service'.
 		 */
 		private String serviceName;
 
 		/**
-		 * Optional Wavefront Cluster name used in ApplicationTags.
+		 * Wavefront Cluster name used in ApplicationTags.
 		 */
 		private String clusterName;
 
 		/**
-		 * Optional Wavefront Shard name used in ApplicationTags.
+		 * Wavefront Shard name used in ApplicationTags.
 		 */
 		private String shardName;
 
