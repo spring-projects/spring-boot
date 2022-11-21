@@ -1740,10 +1740,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Kafka", "2.8.11-SNAPSHOT") {
-		prohibit("[3.0.0-M1,)") {
-			because "it uses Spring Framework 6"
-		}
+	library("Spring Kafka", "2.8.11") {
 		group("org.springframework.kafka") {
 			modules = [
 				"spring-kafka",
