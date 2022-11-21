@@ -21,8 +21,6 @@ import java.util.List;
 
 import io.micrometer.tracing.SpanCustomizer;
 import io.micrometer.tracing.otel.bridge.OtelCurrentTraceContext;
-import io.micrometer.tracing.otel.bridge.OtelHttpClientHandler;
-import io.micrometer.tracing.otel.bridge.OtelHttpServerHandler;
 import io.micrometer.tracing.otel.bridge.OtelPropagator;
 import io.micrometer.tracing.otel.bridge.OtelSpanCustomizer;
 import io.micrometer.tracing.otel.bridge.OtelTracer;
@@ -68,8 +66,6 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).hasSingleBean(OtelTracer.class);
 			assertThat(context).hasSingleBean(EventPublisher.class);
 			assertThat(context).hasSingleBean(OtelCurrentTraceContext.class);
-			assertThat(context).hasSingleBean(OtelHttpClientHandler.class);
-			assertThat(context).hasSingleBean(OtelHttpServerHandler.class);
 			assertThat(context).hasSingleBean(OpenTelemetry.class);
 			assertThat(context).hasSingleBean(SdkTracerProvider.class);
 			assertThat(context).hasSingleBean(ContextPropagators.class);
@@ -91,8 +87,6 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).doesNotHaveBean(OtelTracer.class);
 			assertThat(context).doesNotHaveBean(EventPublisher.class);
 			assertThat(context).doesNotHaveBean(OtelCurrentTraceContext.class);
-			assertThat(context).doesNotHaveBean(OtelHttpClientHandler.class);
-			assertThat(context).doesNotHaveBean(OtelHttpServerHandler.class);
 			assertThat(context).doesNotHaveBean(OpenTelemetry.class);
 			assertThat(context).doesNotHaveBean(SdkTracerProvider.class);
 			assertThat(context).doesNotHaveBean(ContextPropagators.class);
@@ -116,10 +110,6 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).hasSingleBean(EventPublisher.class);
 			assertThat(context).hasBean("customOtelCurrentTraceContext");
 			assertThat(context).hasSingleBean(OtelCurrentTraceContext.class);
-			assertThat(context).hasBean("customOtelHttpClientHandler");
-			assertThat(context).hasSingleBean(OtelHttpClientHandler.class);
-			assertThat(context).hasBean("customOtelHttpServerHandler");
-			assertThat(context).hasSingleBean(OtelHttpServerHandler.class);
 			assertThat(context).hasBean("customOpenTelemetry");
 			assertThat(context).hasSingleBean(OpenTelemetry.class);
 			assertThat(context).hasBean("customSdkTracerProvider");
@@ -219,16 +209,6 @@ class OpenTelemetryAutoConfigurationTests {
 		@Bean
 		OtelCurrentTraceContext customOtelCurrentTraceContext() {
 			return mock(OtelCurrentTraceContext.class);
-		}
-
-		@Bean
-		OtelHttpClientHandler customOtelHttpClientHandler() {
-			return mock(OtelHttpClientHandler.class);
-		}
-
-		@Bean
-		OtelHttpServerHandler customOtelHttpServerHandler() {
-			return mock(OtelHttpServerHandler.class);
 		}
 
 		@Bean
