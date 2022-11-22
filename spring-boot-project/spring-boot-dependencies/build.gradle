@@ -1164,7 +1164,7 @@ bom {
 			]
 		}
 	}
-	library("REST Assured", "5.2.0") {
+	library("REST Assured", "5.2.1") {
 		group("io.rest-assured") {
 			imports = [
 				"rest-assured-bom"
