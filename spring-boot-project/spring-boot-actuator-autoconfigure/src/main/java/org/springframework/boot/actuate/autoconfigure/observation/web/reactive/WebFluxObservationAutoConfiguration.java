@@ -78,6 +78,7 @@ public class WebFluxObservationAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public ServerHttpObservationFilter webfluxObservationFilter(ObservationRegistry registry,
+			ObjectProvider<ServerRequestObservationConvention> customConvention,
 			ObjectProvider<WebFluxTagsProvider> tagConfigurer,
 			ObjectProvider<WebFluxTagsContributor> contributorsProvider) {
 		String observationName = this.observationProperties.getHttp().getServer().getRequests().getName();
@@ -85,12 +86,17 @@ public class WebFluxObservationAutoConfiguration {
 		String name = (observationName != null) ? observationName : metricName;
 		WebFluxTagsProvider tagsProvider = tagConfigurer.getIfAvailable();
 		List<WebFluxTagsContributor> tagsContributors = contributorsProvider.orderedStream().toList();
-		ServerRequestObservationConvention convention = createConvention(name, tagsProvider, tagsContributors);
+		ServerRequestObservationConvention convention = createConvention(customConvention.getIfAvailable(), name,
+				tagsProvider, tagsContributors);
 		return new ServerHttpObservationFilter(registry, convention);
 	}
 
-	private ServerRequestObservationConvention createConvention(String name, WebFluxTagsProvider tagsProvider,
+	private static ServerRequestObservationConvention createConvention(
+			ServerRequestObservationConvention customConvention, String name, WebFluxTagsProvider tagsProvider,
 			List<WebFluxTagsContributor> tagsContributors) {
+		if (customConvention != null) {
+			return customConvention;
+		}
 		if (tagsProvider != null) {
 			return new ServerRequestObservationConventionAdapter(name, tagsProvider);
 		}

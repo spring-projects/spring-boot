@@ -37,6 +37,7 @@ import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.server.reactive.observation.DefaultServerRequestObservationConvention;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.filter.reactive.ServerHttpObservationFilter;
 import org.springframework.web.server.ServerWebExchange;
@@ -80,6 +81,15 @@ class WebFluxObservationAutoConfigurationTests {
 			assertThat(context).hasSingleBean(WebFluxTagsContributor.class);
 			assertThat(context).getBean(ServerHttpObservationFilter.class).extracting("observationConvention")
 					.isInstanceOf(ServerRequestObservationConventionAdapter.class);
+		});
+	}
+
+	@Test
+	void shouldUseCustomConventionWhenAvailable() {
+		this.contextRunner.withUserConfiguration(CustomConventionConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(ServerHttpObservationFilter.class);
+			assertThat(context).getBean(ServerHttpObservationFilter.class).extracting("observationConvention")
+					.isInstanceOf(CustomConvention.class);
 		});
 	}
 
@@ -180,6 +190,20 @@ class WebFluxObservationAutoConfigurationTests {
 		public Iterable<Tag> httpRequestTags(ServerWebExchange exchange, Throwable ex) {
 			return Tags.of("custom", "testvalue");
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomConventionConfiguration {
+
+		@Bean
+		CustomConvention customConvention() {
+			return new CustomConvention();
+		}
+
+	}
+
+	static class CustomConvention extends DefaultServerRequestObservationConvention {
 
 	}
 

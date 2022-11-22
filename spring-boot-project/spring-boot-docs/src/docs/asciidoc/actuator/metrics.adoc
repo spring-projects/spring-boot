@@ -769,7 +769,7 @@ By default, Spring MVC related metrics are tagged with the following information
 |===
 
 To add to the default tags, provide a `@Bean` that extends `DefaultServerRequestObservationConvention` from the `org.springframework.http.observation` package.
-To replace the default tags, provide a `@Bean` that implements `GlobalObservationConvention<ServerRequestObservationContext>`.
+To replace the default tags, provide a `@Bean` that implements `ServerRequestObservationConvention`.
 
 
 TIP: In some cases, exceptions handled in web controllers are not recorded as request metrics tags.
@@ -809,7 +809,7 @@ By default, WebFlux related metrics are tagged with the following information:
 |===
 
 To add to the default tags, provide a `@Bean` that extends `DefaultServerRequestObservationConvention` from the `org.springframework.http.observation.reactive` package.
-To replace the default tags, provide a `@Bean` that implements `GlobalObservationConvention<ServerRequestObservationContext>`.
+To replace the default tags, provide a `@Bean` that implements `ServerRequestObservationConvention`.
 
 TIP: In some cases, exceptions handled in controllers and handler functions are not recorded as request metrics tags.
 Applications can opt in and record exceptions by <<web#web.reactive.webflux.error-handling, setting handled exceptions as request attributes>>.

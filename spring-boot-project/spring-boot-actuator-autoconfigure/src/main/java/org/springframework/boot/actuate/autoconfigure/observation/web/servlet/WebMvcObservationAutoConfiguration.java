@@ -82,20 +82,31 @@ public class WebMvcObservationAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingFilterBean
 	public FilterRegistrationBean<ServerHttpObservationFilter> webMvcObservationFilter(ObservationRegistry registry,
+			ObjectProvider<ServerRequestObservationConvention> customConvention,
 			ObjectProvider<WebMvcTagsProvider> customTagsProvider,
 			ObjectProvider<WebMvcTagsContributor> contributorsProvider) {
 		String name = httpRequestsMetricName(this.observationProperties, this.metricsProperties);
-		ServerRequestObservationConvention convention = new DefaultServerRequestObservationConvention(name);
-		WebMvcTagsProvider tagsProvider = customTagsProvider.getIfAvailable();
-		List<WebMvcTagsContributor> contributors = contributorsProvider.orderedStream().toList();
-		if (tagsProvider != null || contributors.size() > 0) {
-			convention = new ServerRequestObservationConventionAdapter(name, tagsProvider, contributors);
-		}
+		ServerRequestObservationConvention convention = createConvention(customConvention.getIfAvailable(), name,
+				customTagsProvider.getIfAvailable(), contributorsProvider.orderedStream().toList());
 		ServerHttpObservationFilter filter = new ServerHttpObservationFilter(registry, convention);
 		FilterRegistrationBean<ServerHttpObservationFilter> registration = new FilterRegistrationBean<>(filter);
 		registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
 		registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
 		return registration;
+	}
+
+	private static ServerRequestObservationConvention createConvention(
+			ServerRequestObservationConvention customConvention, String name, WebMvcTagsProvider tagsProvider,
+			List<WebMvcTagsContributor> contributors) {
+		if (customConvention != null) {
+			return customConvention;
+		}
+		else if (tagsProvider != null || contributors.size() > 0) {
+			return new ServerRequestObservationConventionAdapter(name, tagsProvider, contributors);
+		}
+		else {
+			return new DefaultServerRequestObservationConvention(name);
+		}
 	}
 
 	private static String httpRequestsMetricName(ObservationProperties observationProperties,

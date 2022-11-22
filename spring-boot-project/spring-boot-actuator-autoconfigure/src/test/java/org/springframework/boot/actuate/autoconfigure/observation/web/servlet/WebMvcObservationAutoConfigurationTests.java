@@ -46,6 +46,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.http.server.observation.DefaultServerRequestObservationConvention;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -95,6 +96,13 @@ class WebMvcObservationAutoConfigurationTests {
 				.run((context) -> assertThat(context.getBean(FilterRegistrationBean.class).getFilter())
 						.extracting("observationConvention")
 						.isInstanceOf(ServerRequestObservationConventionAdapter.class));
+	}
+
+	@Test
+	void customConventionWhenPresent() {
+		this.contextRunner.withUserConfiguration(CustomConventionConfiguration.class)
+				.run((context) -> assertThat(context.getBean(FilterRegistrationBean.class).getFilter())
+						.extracting("observationConvention").isInstanceOf(CustomConvention.class));
 	}
 
 	@Test
@@ -294,6 +302,20 @@ class WebMvcObservationAutoConfigurationTests {
 		Filter testFilter() {
 			return mock(Filter.class);
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomConventionConfiguration {
+
+		@Bean
+		CustomConvention customConvention() {
+			return new CustomConvention();
+		}
+
+	}
+
+	static class CustomConvention extends DefaultServerRequestObservationConvention {
 
 	}
 

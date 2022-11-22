@@ -20,6 +20,7 @@ import graphql.GraphQL;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.ObservationRegistry;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -28,6 +29,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.graphql.execution.GraphQlSource;
+import org.springframework.graphql.observation.DataFetcherObservationConvention;
+import org.springframework.graphql.observation.ExecutionRequestObservationConvention;
 import org.springframework.graphql.observation.GraphQlObservationInstrumentation;
 
 /**
@@ -45,9 +48,11 @@ public class GraphQlObservationAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public GraphQlObservationInstrumentation graphQlObservationInstrumentation(
-			ObservationRegistry observationRegistry) {
-		return new GraphQlObservationInstrumentation(observationRegistry);
+	public GraphQlObservationInstrumentation graphQlObservationInstrumentation(ObservationRegistry observationRegistry,
+			ObjectProvider<ExecutionRequestObservationConvention> executionConvention,
+			ObjectProvider<DataFetcherObservationConvention> dataFetcherConvention) {
+		return new GraphQlObservationInstrumentation(observationRegistry, executionConvention.getIfAvailable(),
+				dataFetcherConvention.getIfAvailable());
 	}
 
 }

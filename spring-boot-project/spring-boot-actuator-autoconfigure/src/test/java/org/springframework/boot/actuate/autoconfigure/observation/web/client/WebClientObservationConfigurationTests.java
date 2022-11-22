@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.observation.web.client;
 
 import java.time.Duration;
 
+import io.micrometer.common.KeyValues;
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.tck.TestObservationRegistry;
 import io.micrometer.observation.tck.TestObservationRegistryAssert;
@@ -41,6 +42,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.mock.http.client.reactive.MockClientHttpResponse;
+import org.springframework.web.reactive.function.client.ClientRequestObservationContext;
+import org.springframework.web.reactive.function.client.DefaultClientRequestObservationConvention;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -82,6 +85,20 @@ class WebClientObservationConfigurationTests {
 	void shouldNotOverrideCustomTagsProvider() {
 		this.contextRunner.withUserConfiguration(CustomTagsProviderConfig.class).run((context) -> assertThat(context)
 				.getBeans(WebClientExchangeTagsProvider.class).hasSize(1).containsKey("customTagsProvider"));
+	}
+
+	@Test
+	void shouldUseCustomConventionIfAvailable() {
+		this.contextRunner.withUserConfiguration(CustomConvention.class).run((context) -> {
+			TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
+			WebClient.Builder builder = context.getBean(WebClient.Builder.class);
+			WebClient webClient = mockWebClient(builder);
+			TestObservationRegistryAssert.assertThat(registry).doesNotHaveAnyObservation();
+			webClient.get().uri("https://example.org/projects/{project}", "spring-boot").retrieve().toBodilessEntity()
+					.block(Duration.ofSeconds(30));
+			TestObservationRegistryAssert.assertThat(registry).hasObservationWithNameEqualTo("http.client.requests")
+					.that().hasLowCardinalityKeyValue("project", "spring-boot");
+		});
 	}
 
 	@Test
@@ -137,6 +154,25 @@ class WebClientObservationConfigurationTests {
 		@Bean
 		WebClientExchangeTagsProvider customTagsProvider() {
 			return mock(WebClientExchangeTagsProvider.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomConventionConfig {
+
+		@Bean
+		CustomConvention customConvention() {
+			return new CustomConvention();
+		}
+
+	}
+
+	static class CustomConvention extends DefaultClientRequestObservationConvention {
+
+		@Override
+		public KeyValues getLowCardinalityKeyValues(ClientRequestObservationContext context) {
+			return super.getLowCardinalityKeyValues(context).and("project", "spring-boot");
 		}
 
 	}

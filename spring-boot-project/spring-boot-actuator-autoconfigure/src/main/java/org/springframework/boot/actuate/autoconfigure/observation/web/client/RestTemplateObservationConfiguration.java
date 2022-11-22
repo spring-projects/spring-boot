@@ -45,16 +45,34 @@ class RestTemplateObservationConfiguration {
 
 	@Bean
 	ObservationRestTemplateCustomizer observationRestTemplateCustomizer(ObservationRegistry observationRegistry,
+			ObjectProvider<ClientRequestObservationConvention> customConvention,
 			ObservationProperties observationProperties, MetricsProperties metricsProperties,
 			ObjectProvider<RestTemplateExchangeTagsProvider> optionalTagsProvider) {
+		String name = observationName(observationProperties, metricsProperties);
+		ClientRequestObservationConvention observationConvention = createConvention(customConvention.getIfAvailable(),
+				name, optionalTagsProvider.getIfAvailable());
+		return new ObservationRestTemplateCustomizer(observationRegistry, observationConvention);
+	}
+
+	private static String observationName(ObservationProperties observationProperties,
+			MetricsProperties metricsProperties) {
 		String metricName = metricsProperties.getWeb().getClient().getRequest().getMetricName();
 		String observationName = observationProperties.getHttp().getClient().getRequests().getName();
-		String name = (observationName != null) ? observationName : metricName;
-		RestTemplateExchangeTagsProvider tagsProvider = optionalTagsProvider.getIfAvailable();
-		ClientRequestObservationConvention observationConvention = (tagsProvider != null)
-				? new ClientHttpObservationConventionAdapter(name, tagsProvider)
-				: new DefaultClientRequestObservationConvention(name);
-		return new ObservationRestTemplateCustomizer(observationRegistry, observationConvention);
+		return (observationName != null) ? observationName : metricName;
+	}
+
+	private static ClientRequestObservationConvention createConvention(
+			ClientRequestObservationConvention customConvention, String name,
+			RestTemplateExchangeTagsProvider tagsProvider) {
+		if (customConvention != null) {
+			return customConvention;
+		}
+		else if (tagsProvider != null) {
+			return new ClientHttpObservationConventionAdapter(name, tagsProvider);
+		}
+		else {
+			return new DefaultClientRequestObservationConvention(name);
+		}
 	}
 
 }
