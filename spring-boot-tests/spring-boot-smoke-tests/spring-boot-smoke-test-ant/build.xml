@@ -14,7 +14,11 @@
 	<property name="lib.dir" location="${basedir}/build/ant/lib" />
 	<property name="start-class" value="smoketest.ant.SampleAntApplication" />
 
-	<target name="resolve" description="--> retrieve dependencies with ivy">
+	<target name="clean-ivy-cache">
+		<ivy:cleancache />
+	</target>
+
+	<target name="resolve" depends="clean-ivy-cache" description="--> retrieve dependencies with ivy">
 		<ivy:retrieve pattern="${lib.dir}/[conf]/[artifact]-[type]-[revision].[ext]" />
 	</target>
 
@@ -37,6 +41,7 @@
 	</target>
 
 	<target name="build" depends="compile">
+		<delete file="build/ant/libs/${ant.project.name}.jar"/>
 		<spring-boot:exejar destfile="build/ant/libs/${ant.project.name}.jar" classes="build/ant/classes">
 			<spring-boot:lib>
 				<fileset dir="${lib.dir}/runtime" />

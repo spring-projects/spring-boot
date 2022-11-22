@@ -1,5 +1,6 @@
 <ivysettings>
 	<settings defaultResolver="chain" />
+	<caches defaultCacheDir="${projectDir}/build/ivy-cache"/>
 	<resolvers>
 		<chain name="chain" returnFirst="true">
 			<!-- NOTE: You should declare only repositories that you need here -->
