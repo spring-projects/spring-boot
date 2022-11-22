@@ -26,6 +26,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -133,7 +134,7 @@ class ObservabilityContextCustomizerFactory implements ContextCustomizerFactory 
 	 * {@link ConfigurationClassPostProcessor} and adds a {@link Tracer} bean definition
 	 * when a {@link Tracer} hasn't already been registered.
 	 */
-	private static class NoopTracerRegistrar implements BeanDefinitionRegistryPostProcessor, Ordered, BeanFactoryAware {
+	static class NoopTracerRegistrar implements BeanDefinitionRegistryPostProcessor, Ordered, BeanFactoryAware {
 
 		private BeanFactory beanFactory;
 
@@ -154,12 +155,26 @@ class ObservabilityContextCustomizerFactory implements ContextCustomizerFactory 
 			}
 			if (BeanFactoryUtils.beanNamesForTypeIncludingAncestors((ListableBeanFactory) this.beanFactory,
 					Tracer.class, false, false).length == 0) {
-				registry.registerBeanDefinition("noopTracer", new RootBeanDefinition(Tracer.class, () -> Tracer.NOOP));
+				registry.registerBeanDefinition("noopTracer", new RootBeanDefinition(NoopTracerFactoryBean.class));
 			}
 		}
 
 		@Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+		}
+
+	}
+
+	static class NoopTracerFactoryBean implements FactoryBean<Tracer> {
+
+		@Override
+		public Tracer getObject() {
+			return Tracer.NOOP;
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return Tracer.class;
 		}
 
 	}
