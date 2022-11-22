@@ -277,7 +277,7 @@ bom {
 			]
 		}
 	}
-	library("Glassfish JSTL", "3.0.0") {
+	library("Glassfish JSTL", "3.0.1") {
 		group("org.glassfish.web") {
 			modules = [
 				"jakarta.servlet.jsp.jstl"
