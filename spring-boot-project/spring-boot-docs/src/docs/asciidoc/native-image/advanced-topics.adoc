@@ -178,7 +178,7 @@ GraalVM native images are an evolving technology and not all libraries provide s
 The GraalVM community is helping by providing https://github.com/oracle/graalvm-reachability-metadata[reachability metadata] for projects that don't yet ship their own.
 Spring itself doesn't contain hints for 3rd party libraries and instead relies on the reachability metadata project.
 
-If you encounter problems when generating native images for Spring Boot applications, please check the {github-wiki}/Known-GraalVM-Native-Image-Limitations[Known GraalVM Native Image Limitations] page of the Spring Boot wiki.
+If you encounter problems when generating native images for Spring Boot applications, please check the {github-wiki}/Spring-Boot-with-GraalVM[Spring Boot with GraalVM] page of the Spring Boot wiki.
 You can also contribute issues to the https://github.com/spring-projects/spring-aot-smoke-tests[spring-aot-smoke-tests] project on GitHub which is used to confirm that common application types are working as expected.
 
 If you find a library which doesn't work with GraalVM, please raise an issue on the https://github.com/oracle/graalvm-reachability-metadata[reachability metadata project].
