@@ -35,13 +35,6 @@ import brave.baggage.CorrelationScopeCustomizer;
 import brave.baggage.CorrelationScopeDecorator;
 import brave.context.slf4j.MDCScopeDecorator;
 import brave.handler.SpanHandler;
-import brave.http.HttpClientHandler;
-import brave.http.HttpClientRequest;
-import brave.http.HttpClientResponse;
-import brave.http.HttpServerHandler;
-import brave.http.HttpServerRequest;
-import brave.http.HttpServerResponse;
-import brave.http.HttpTracing;
 import brave.propagation.B3Propagation;
 import brave.propagation.CurrentTraceContext;
 import brave.propagation.CurrentTraceContext.ScopeDecorator;
@@ -51,8 +44,6 @@ import brave.propagation.ThreadLocalCurrentTraceContext;
 import brave.sampler.Sampler;
 import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
 import io.micrometer.tracing.brave.bridge.BraveCurrentTraceContext;
-import io.micrometer.tracing.brave.bridge.BraveHttpClientHandler;
-import io.micrometer.tracing.brave.bridge.BraveHttpServerHandler;
 import io.micrometer.tracing.brave.bridge.BravePropagator;
 import io.micrometer.tracing.brave.bridge.BraveSpanCustomizer;
 import io.micrometer.tracing.brave.bridge.BraveTracer;
@@ -145,24 +136,6 @@ public class BraveAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	public HttpTracing httpTracing(Tracing tracing) {
-		return HttpTracing.newBuilder(tracing).build();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public HttpServerHandler<HttpServerRequest, HttpServerResponse> httpServerHandler(HttpTracing httpTracing) {
-		return HttpServerHandler.create(httpTracing);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public HttpClientHandler<HttpClientRequest, HttpClientResponse> httpClientHandler(HttpTracing httpTracing) {
-		return HttpClientHandler.create(httpTracing);
-	}
-
-	@Bean
 	@ConditionalOnMissingBean(io.micrometer.tracing.Tracer.class)
 	BraveTracer braveTracerBridge(brave.Tracer tracer, CurrentTraceContext currentTraceContext) {
 		return new BraveTracer(tracer, new BraveCurrentTraceContext(currentTraceContext), BRAVE_BAGGAGE_MANAGER);
@@ -172,20 +145,6 @@ public class BraveAutoConfiguration {
 	@ConditionalOnMissingBean
 	BravePropagator bravePropagator(Tracing tracing) {
 		return new BravePropagator(tracing);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	BraveHttpServerHandler braveHttpServerHandler(
-			HttpServerHandler<HttpServerRequest, HttpServerResponse> httpServerHandler) {
-		return new BraveHttpServerHandler(httpServerHandler);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	BraveHttpClientHandler braveHttpClientHandler(
-			HttpClientHandler<HttpClientRequest, HttpClientResponse> httpClientHandler) {
-		return new BraveHttpClientHandler(httpClientHandler);
 	}
 
 	@Bean
