@@ -158,8 +158,8 @@ public class WavefrontProperties {
 		private String name = "unnamed_application";
 
 		/**
-		 * Wavefront 'Service' name used in t, falling back to 'spring.application.name'.
-		 * If both are unset it defaults to 'unnamed_service'.
+		 * Wavefront 'Service' name used in ApplicationTags, falling back to
+		 * 'spring.application.name'. If both are unset it defaults to 'unnamed_service'.
 		 */
 		private String serviceName;
 
