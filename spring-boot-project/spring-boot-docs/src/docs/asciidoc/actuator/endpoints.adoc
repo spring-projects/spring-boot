@@ -885,7 +885,10 @@ These health groups are automatically enabled only if the application <<deployme
 You can enable them in any environment by using the configprop:management.endpoint.health.probes.enabled[] configuration property.
 
 NOTE: If an application takes longer to start than the configured liveness period, Kubernetes mentions the `"startupProbe"` as a possible solution.
-The `"startupProbe"` is not necessarily needed here, as the `"readinessProbe"` fails until all startup tasks are done. See the section that describes <<actuator#actuator.endpoints.kubernetes-probes.lifecycle,how probes behave during the application lifecycle>>.
+Generally speaking, the `"startupProbe"` is not necessarily needed here, as the `"readinessProbe"` fails until all startup tasks are done.
+This means your application will not receive traffic until it is ready.
+However, if your application takes a long time to start, consider using a `"startupProbe"` to make sure that Kubernetes won't kill your application while it is in the process of starting.
+See the section that describes <<actuator#actuator.endpoints.kubernetes-probes.lifecycle,how probes behave during the application lifecycle>>.
 
 If your Actuator endpoints are deployed on a separate management context, the endpoints do not use the same web infrastructure (port, connection pools, framework components) as the main application.
 In this case, a probe check could be successful even if the main application does not work properly (for example, it cannot accept new connections).
