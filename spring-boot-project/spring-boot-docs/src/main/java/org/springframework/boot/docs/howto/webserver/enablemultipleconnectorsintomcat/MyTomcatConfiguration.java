@@ -27,13 +27,13 @@ import org.springframework.context.annotation.Configuration;
 public class MyTomcatConfiguration {
 
 	@Bean
-	public WebServerFactoryCustomizer<TomcatServletWebServerFactory> sslConnectorCustomizer() {
-		return (tomcat) -> tomcat.addAdditionalTomcatConnectors(createConnectorConnector());
+	public WebServerFactoryCustomizer<TomcatServletWebServerFactory> connectorCustomizer() {
+		return (tomcat) -> tomcat.addAdditionalTomcatConnectors(createConnector());
 	}
 
-	private Connector createConnectorConnector() {
+	private Connector createConnector() {
 		Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-		connector.setPort(8080);
+		connector.setPort(8081);
 		return connector;
 	}
 
