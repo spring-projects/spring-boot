@@ -30,15 +30,12 @@ import org.springframework.context.annotation.Conditional;
  * <p>
  * A {@code Class} {@link #value() value} can be safely specified on
  * {@code @Configuration} classes as the annotation metadata is parsed by using ASM before
- * the class is loaded. If a class reference cannot be used then a {@link #name() name}
- * {@code String} attribute can be used.
- * <p>
- * <b>Note:</b> Extra care must be taken when using {@code @ConditionalOnClass} on
- * {@code @Bean} methods where typically the return type is the target of the condition.
- * Before the condition on the method applies, the JVM will have loaded the class and
- * potentially processed method references which will fail if the class is not present. To
- * handle this scenario, a separate {@code @Configuration} class should be used to isolate
- * the condition. For example: <pre class="code">
+ * the class is loaded. This only holds true if {@code @ConditionalOnClass} is used on a
+ * class. Extra care must be taken when using {@code @ConditionalOnClass} on {@code @Bean}
+ * methods: the {@link #value() value} attribute must not be used, instead the
+ * {@link #name() name} attribute can be used to reference the class which must be present
+ * as a {@code String}. Alternatively create a separate {@code @Configuration} class that
+ * isolates the condition. For example: <pre class="code">
  * &#064;AutoConfiguration
  * public class MyAutoConfiguration {
  *
@@ -66,17 +63,21 @@ import org.springframework.context.annotation.Conditional;
 public @interface ConditionalOnClass {
 
 	/**
-	 * The classes that must be present. Since this annotation is parsed by loading class
-	 * bytecode, it is safe to specify classes here that may ultimately not be on the
-	 * classpath, only if this annotation is directly on the affected component and
-	 * <b>not</b> if this annotation is used as a composed, meta-annotation. In order to
-	 * use this annotation as a meta-annotation, only use the {@link #name} attribute.
+	 * The classes that must be present. Using this attribute is safe when using
+	 * {@code ConditionalOnClass} at class level, but it must not be used when using
+	 * {@code ConditionalOnClass} on a {@code @Bean} method.
+	 * <p>
+	 * Since this annotation is parsed by loading class bytecode, it is safe to specify
+	 * classes here that may ultimately not be on the classpath, only if this annotation
+	 * is directly on the affected component and <b>not</b> if this annotation is used as
+	 * a composed, meta-annotation. In order to use this annotation as a meta-annotation,
+	 * only use the {@link #name} attribute.
 	 * @return the classes that must be present
 	 */
 	Class<?>[] value() default {};
 
 	/**
-	 * The classes names that must be present.
+	 * The class names that must be present.
 	 * @return the class names that must be present.
 	 */
 	String[] name() default {};
