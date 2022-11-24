@@ -16,8 +16,9 @@ You can additionally register any number of `ObservationRegistryCustomizer` bean
 
 For more details please see the https://micrometer.io/docs/observation[Micrometer Observation documentation].
 
-TIP: Observability for JDBC can be configured using the https://github.com/jdbc-observations/datasource-micrometer[Datasource Micrometer project].
-It provides a Spring Boot starter which automatically creates observations when JDBC operations are invoked.
+TIP: Observability for JDBC and R2DBC can be configured using separate projects.
+For JDBC, the https://github.com/jdbc-observations/datasource-micrometer[Datasource Micrometer project] provides a Spring Boot starter which automatically creates observations when JDBC operations are invoked.
 Read more about it https://jdbc-observations.github.io/datasource-micrometer/docs/current/docs/html/[in the reference documentation].
+For R2DBC, the https://github.com/spring-projects-experimental/r2dbc-micrometer-spring-boot[Spring Boot Auto Configuration for R2DBC Observation] creates observations for R2DBC query invocations.
 
 The next sections will provide more details about logging, metrics and traces.
