@@ -65,7 +65,9 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 					.hasEntryWithNameStartingWith("BOOT-INF/lib/jakarta.servlet-api-6")
 					.hasEntryWithName("BOOT-INF/classes/org/test/SampleApplication.class")
 					.hasEntryWithName("org/springframework/boot/loader/JarLauncher.class");
-			assertThat(buildLog(project)).contains("Replacing main artifact with repackaged archive")
+			assertThat(buildLog(project))
+					.contains("Replacing main artifact " + repackaged + " with repackaged archive,")
+					.contains("The original artifact has been renamed to " + original)
 					.contains("Installing " + repackaged + " to").doesNotContain("Installing " + original + " to");
 		});
 	}
@@ -107,7 +109,9 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			assertThat(original).isFile();
 			File repackaged = new File(project, "target/jar-classifier-source-0.0.1.BUILD-SNAPSHOT-test.jar");
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/");
-			assertThat(buildLog(project)).contains("Replacing artifact with classifier test with repackaged archive")
+			assertThat(buildLog(project))
+					.contains("Replacing artifact with classifier test " + repackaged + " with repackaged archive,")
+					.contains("The original artifact has been renamed to " + original)
 					.doesNotContain("Installing " + original + " to").contains("Installing " + repackaged + " to");
 		});
 	}

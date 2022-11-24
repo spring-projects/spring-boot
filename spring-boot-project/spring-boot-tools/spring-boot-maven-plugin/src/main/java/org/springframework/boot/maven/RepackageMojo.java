@@ -279,7 +279,7 @@ public class RepackageMojo extends AbstractPackagerMojo {
 
 	private void updateArtifact(Artifact source, File target, File original) {
 		if (this.attach) {
-			attachArtifact(source, target);
+			attachArtifact(source, target, original);
 		}
 		else if (source.getFile().equals(target) && original.exists()) {
 			String artifactId = (this.classifier != null) ? "artifact with classifier " + this.classifier
@@ -292,7 +292,7 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		}
 	}
 
-	private void attachArtifact(Artifact source, File target) {
+	private void attachArtifact(Artifact source, File target, File original) {
 		if (this.classifier != null && !source.getFile().equals(target)) {
 			getLog().info("Attaching repackaged archive " + target + " with classifier " + this.classifier);
 			this.projectHelper.attachArtifact(this.project, this.project.getPackaging(), this.classifier, target);
@@ -300,7 +300,10 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		else {
 			String artifactId = (this.classifier != null) ? "artifact with classifier " + this.classifier
 					: "main artifact";
-			getLog().info("Replacing " + artifactId + " with repackaged archive");
+			getLog().info(
+					String.format("Replacing %s %s with repackaged archive, adding nested dependencies in BOOT-INF/.",
+							artifactId, source.getFile()));
+			getLog().info("The original artifact has been renamed to " + original);
 			source.setFile(target);
 		}
 	}
