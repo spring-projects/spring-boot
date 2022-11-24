@@ -1343,7 +1343,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Batch", "5.0.0-SNAPSHOT") {
+	library("Spring Batch", "5.0.0") {
 		group("org.springframework.batch") {
 			imports = [
 				"spring-batch-bom"
