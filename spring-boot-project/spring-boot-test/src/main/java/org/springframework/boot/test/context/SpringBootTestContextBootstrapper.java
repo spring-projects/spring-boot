@@ -244,8 +244,6 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			return classes;
 		}
 		Class<?> found = findConfigurationClass(mergedConfig.getTestClass());
-		Assert.state(found != null, "Unable to find a @SpringBootConfiguration, you need to use "
-				+ "@ContextConfiguration or @SpringBootTest(classes=...) with your test");
 		logger.info("Found @SpringBootConfiguration " + found.getName() + " for test " + mergedConfig.getTestClass());
 		return merge(found, classes);
 	}
@@ -258,6 +256,8 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 			return ClassUtils.resolveClassName(foundClassName, testClass.getClassLoader());
 		}
 		Class<?> found = new AnnotatedClassFinder(SpringBootConfiguration.class).findFromClass(testClass);
+		Assert.state(found != null, "Unable to find a @SpringBootConfiguration, you need to use "
+				+ "@ContextConfiguration or @SpringBootTest(classes=...) with your test");
 		this.aotTestAttributes.setAttribute(propertyName, found.getName());
 		return found;
 	}
