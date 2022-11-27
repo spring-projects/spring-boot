@@ -110,7 +110,7 @@ class LazyTracingSpanContextSupplierTests {
 	}
 
 	@Test
-	void whenCurrentSpanHasNoTraceIdThenTraceIdIsFNull() {
+	void whenCurrentSpanHasNoTraceIdThenTraceIdIsNull() {
 		Span span = mock(Span.class);
 		given(this.tracer.currentSpan()).willReturn(span);
 		TraceContext traceContext = mock(TraceContext.class);
