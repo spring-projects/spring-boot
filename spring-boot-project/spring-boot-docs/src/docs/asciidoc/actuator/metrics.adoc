@@ -768,7 +768,7 @@ By default, Spring MVC related metrics are tagged with the following information
 | The request's URI template prior to variable substitution, if possible (for example, `/api/person/\{id}`)
 |===
 
-To add to the default tags, provide a `@Bean` that extends `DefaultServerRequestObservationConvention` from the `org.springframework.http.observation` package.
+To add to the default tags, provide a `@Bean` that extends `DefaultServerRequestObservationConvention` from the `org.springframework.http.server.observation` package.
 To replace the default tags, provide a `@Bean` that implements `ServerRequestObservationConvention`.
 
 
@@ -808,7 +808,7 @@ By default, WebFlux related metrics are tagged with the following information:
 | The request's URI template prior to variable substitution, if possible (for example, `/api/person/\{id}`)
 |===
 
-To add to the default tags, provide a `@Bean` that extends `DefaultServerRequestObservationConvention` from the `org.springframework.http.observation.reactive` package.
+To add to the default tags, provide a `@Bean` that extends `DefaultServerRequestObservationConvention` from the `org.springframework.http.server.reactive.observation` package.
 To replace the default tags, provide a `@Bean` that implements `ServerRequestObservationConvention`.
 
 TIP: In some cases, exceptions handled in controllers and handler functions are not recorded as request metrics tags.

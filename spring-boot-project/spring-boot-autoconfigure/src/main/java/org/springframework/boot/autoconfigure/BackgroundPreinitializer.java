@@ -101,7 +101,8 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 					runSafely(new ConversionServiceInitializer());
 					runSafely(new ValidationInitializer());
 					if (!runSafely(new MessageConverterInitializer())) {
-						// If the MessageConverterInitializer we still might be able to
+						// If the MessageConverterInitializer fails to run, we still might
+						// be able to
 						// initialize Jackson
 						runSafely(new JacksonInitializer());
 					}

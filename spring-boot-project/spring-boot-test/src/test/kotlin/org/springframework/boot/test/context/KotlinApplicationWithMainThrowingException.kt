@@ -2,10 +2,8 @@ package org.springframework.boot.test.context
 
 import org.springframework.boot.SpringBootConfiguration
 import org.springframework.boot.runApplication
-import org.springframework.context.annotation.Configuration
 
-@Configuration(proxyBeanMethods = false)
-@SpringBootConfiguration
+@SpringBootConfiguration(proxyBeanMethods = false)
 open class KotlinApplicationWithMainThrowingException {
 }
 
