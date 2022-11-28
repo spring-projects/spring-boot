@@ -32,7 +32,7 @@ $ java -Dspring.aot.enabled=true -jar myapplication.jar
 ----
 
 NOTE: You need to ensure that the jar you are testing includes AOT generated code.
-For Maven, this means that you should build with `-Pnative` to active the `native` profile.
+For Maven, this means that you should build with `-Pnative` to activate the `native` profile.
 For Gradle, you need to ensure that your build includes the `org.graalvm.buildtools.native` plugin.
 
 If your application starts with the `spring.aot.enabled` property set to `true`, then you have higher confidence that it will work when converted to a native image.

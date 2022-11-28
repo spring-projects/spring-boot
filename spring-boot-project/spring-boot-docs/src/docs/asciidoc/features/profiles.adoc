@@ -102,7 +102,7 @@ For example, we can create a `production` group that consists of our `proddb` an
 	      - "prodmq"
 ----
 
-Our application can now be started using `--spring.profiles.active=production` to active the `production`, `proddb` and `prodmq` profiles in one hit.
+Our application can now be started using `--spring.profiles.active=production` to activate the `production`, `proddb` and `prodmq` profiles in one hit.
 
 
 
