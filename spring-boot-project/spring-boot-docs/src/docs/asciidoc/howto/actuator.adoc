@@ -42,7 +42,7 @@ Viewing original values in the unsanitized form can be configured per endpoint u
 This property can be configured to have the following values:
 
 - `ALWAYS` - all values are shown in their unsanitized form to all users
-- `NEVER  - all values are always sanitized (that is replaced by `+******+`)
+- `NEVER`  - all values are always sanitized (that is replaced by `+******+`)
 - `WHEN_AUTHORIZED` - all values are shown in their unsanitized form to authorized users
 
 For HTTP endpoints, a user is considered to be authorized if they have authenticated and have the roles configured by the endpoint's roles property.
