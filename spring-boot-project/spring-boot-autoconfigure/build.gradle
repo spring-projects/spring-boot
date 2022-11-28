@@ -89,11 +89,7 @@ dependencies {
 		exclude(group: "org.eclipse.jetty", module: "jetty-jndi")
 		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
 	}
-	optional("org.ehcache:ehcache") {
-		artifact {
-			classifier = 'jakarta'
-		}
-	}
+	optional("org.ehcache:ehcache")
 	optional("org.elasticsearch.client:elasticsearch-rest-client") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}

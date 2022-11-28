@@ -35,7 +35,7 @@ dependencies {
 
 	ehcache(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
 	ehcache("javax.cache:cache-api")
-	ehcache("org.ehcache:ehcache::jakarta")
+	ehcache("org.ehcache:ehcache")
 
 	hazelcast(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
 	hazelcast("com.hazelcast:hazelcast")
