@@ -291,7 +291,8 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 					.filter((method) -> !method.getDeclaringClass().equals(ContextAware.class)
 							&& !method.getDeclaringClass().equals(ContextAwareBase.class))
 					.map(Method::getParameterTypes).flatMap(Stream::of)
-					.filter((type) -> !type.isPrimitive() && !type.equals(String.class)).map(Class::getName).toList();
+					.filter((type) -> !type.isPrimitive() && !type.equals(String.class))
+					.map((type) -> type.isArray() ? type.getComponentType() : type).map(Class::getName).toList();
 		}
 
 	}

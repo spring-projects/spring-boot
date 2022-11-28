@@ -18,6 +18,7 @@ package org.springframework.boot.logging.logback;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -178,6 +179,15 @@ class LogbackConfigurationAotContributionTests {
 				.accepts(generationContext.getRuntimeHints());
 	}
 
+	@Test
+	void componentTypesOfArraysAreRegisteredForReflection() {
+		ComponentModel component = new ComponentModel();
+		component.setClassName(ArrayParmeters.class.getName());
+		TestGenerationContext generationContext = applyContribution(component);
+		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(InetSocketAddress.class))
+				.accepts(generationContext.getRuntimeHints());
+	}
+
 	private Predicate<RuntimeHints> invokePublicConstructorsOf(String name) {
 		return RuntimeHintsPredicates.reflection().onType(TypeReference.of(name))
 				.withMemberCategory(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
@@ -251,6 +261,14 @@ class LogbackConfigurationAotContributionTests {
 	}
 
 	public interface Contract {
+
+	}
+
+	public static class ArrayParmeters {
+
+		public void addDestinations(InetSocketAddress... addresses) {
+
+		}
 
 	}
 
