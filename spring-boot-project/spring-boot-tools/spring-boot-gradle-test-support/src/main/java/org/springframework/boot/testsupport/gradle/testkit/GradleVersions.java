@@ -32,11 +32,11 @@ public final class GradleVersions {
 	}
 
 	public static List<String> allCompatible() {
-		return Arrays.asList(GradleVersion.current().getVersion(), "7.6-rc-3");
+		return Arrays.asList("7.5.1", GradleVersion.current().getVersion());
 	}
 
-	public static String currentOrMinimumCompatible() {
-		return GradleVersion.current().getVersion();
+	public static String minimumCompatible() {
+		return allCompatible().get(0);
 	}
 
 }

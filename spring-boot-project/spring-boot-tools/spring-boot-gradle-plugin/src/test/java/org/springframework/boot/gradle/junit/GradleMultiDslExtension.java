@@ -61,7 +61,7 @@ public class GradleMultiDslExtension implements TestTemplateInvocationContextPro
 		@Override
 		public List<Extension> getAdditionalExtensions() {
 			GradleBuild gradleBuild = new GradleBuild(this.dsl);
-			gradleBuild.gradleVersion(GradleVersions.currentOrMinimumCompatible());
+			gradleBuild.gradleVersion(GradleVersions.minimumCompatible());
 			return Arrays.asList(new GradleBuildFieldSetter(gradleBuild), new GradleBuildExtension());
 		}
 
