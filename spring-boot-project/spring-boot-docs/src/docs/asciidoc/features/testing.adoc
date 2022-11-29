@@ -468,7 +468,29 @@ Spring GraphQL offers a dedicated testing support module; you'll need to add it 
 ----
 
 This testing module ships the {spring-graphql-docs}/#testing-graphqltester[GraphQlTester].
-spring-boot-project/spring-boot-docs/src/docs/asciidoc/features/testing.adoc
+The tester is heavily used in test, so be sure to become familiar with using it.
+There are `GraphQlTester` variants and Spring Boot will auto-configure them depending on the type of tests:
+
+* the `ExecutionGraphQlServiceTester` performs tests on the server side, without a client nor a transport
+* the `HttpGraphQlTester` performs tests with a client that connects to a server, with or without a live server
+
+Spring Boot helps you to test your {spring-graphql-docs}#controllers[Spring GraphQL Controllers] with the `@GraphQlTest` annotation.
+`@GraphQlTest` auto-configures the Spring GraphQL infrastructure, without any transport nor server being involved.
+This limits scanned beans to `@Controller`, `RuntimeWiringConfigurer`, `JsonComponent`, `Converter`, `GenericConverter`, `DataFetcherExceptionResolver`, `Instrumentation` and `GraphQlSourceBuilderCustomizer`.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@GraphQlTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
+
+TIP: A list of the auto-configurations that are enabled by `@GraphQlTest` can be <<test-auto-configuration#appendix.test-auto-configuration,found in the appendix>>.
+
+Often, `@GraphQlTest` is limited to a set of controllers and used in combination with the `@MockBean` annotation to provide mock implementations for required collaborators.
+
+include::code:GreetingControllerTests[]
+
+`@SpringBootTest` tests are full integration tests and involve the entire application.
+When using a random or defined port, a live server is configured and an `HttpGraphQlTester` bean is contributed automatically so you can use it to test your server.
+When a MOCK environment is configured, you can also request an `HttpGraphQlTester` bean by annotating your test class with `@AutoConfigureHttpGraphQlTester`:
+
+include::code:GraphQlIntegrationTests[]
 
 
 [[features.testing.spring-boot-applications.autoconfigured-spring-data-cassandra]]
