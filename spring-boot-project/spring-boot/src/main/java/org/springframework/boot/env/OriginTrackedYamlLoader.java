@@ -79,7 +79,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 	}
 
 	List<Map<String, Object>> load() {
-		final List<Map<String, Object>> result = new ArrayList<>();
+		List<Map<String, Object>> result = new ArrayList<>();
 		process((properties, map) -> result.add(getFlattenedMap(map)));
 		return result;
 	}
@@ -119,7 +119,9 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		}
 
 		private void replaceMappingNodeKeys(MappingNode node) {
-			node.setValue(node.getValue().stream().map(KeyScalarNode::get).toList());
+			List<NodeTuple> newValue = new ArrayList<>();
+			node.getValue().stream().map(KeyScalarNode::get).forEach(newValue::add);
+			node.setValue(newValue);
 		}
 
 		private Object constructTrackedObject(Node node, Object value) {

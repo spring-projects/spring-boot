@@ -173,6 +173,15 @@ class OriginTrackedYamlLoaderTests {
 		assertThat(loaded.get("test.b.boot")).hasToString("b");
 	}
 
+	@Test
+	void loadWhenUsingAnchors() {
+		Resource resource = new ClassPathResource("anchors.yml", getClass());
+		this.loader = new OriginTrackedYamlLoader(resource);
+		Map<String, Object> loaded = this.loader.load().get(0);
+		assertThat(loaded.get("some.path.config.key")).hasToString("value");
+		assertThat(loaded.get("some.anotherpath.config.key")).hasToString("value");
+	}
+
 	private OriginTrackedValue getValue(String name) {
 		if (this.result == null) {
 			this.result = this.loader.load();
