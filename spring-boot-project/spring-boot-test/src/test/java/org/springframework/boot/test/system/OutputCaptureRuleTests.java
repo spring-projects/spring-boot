@@ -54,4 +54,10 @@ public class OutputCaptureRuleTests {
 		System.out.println("Hello World");
 		assertThat(this.output).contains("Hello World");
 	}
+
+	@Test
+	public void getErrShouldReturnAllCapturedOutput() {
+		System.err.println("Hello Error");
+		assertThat(this.output.getErr()).contains("Hello Error");
+	}
 }
