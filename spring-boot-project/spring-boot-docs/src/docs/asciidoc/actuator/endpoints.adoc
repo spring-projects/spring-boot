@@ -76,16 +76,16 @@ The following technology-agnostic endpoints are available:
 
 | `sessions`
 | Allows retrieval and deletion of user sessions from a Spring Session-backed session store.
-Requires a servlet-based web application that uses Spring Session.
+  Requires a servlet-based web application that uses Spring Session.
 
 | `shutdown`
 | Lets the application be gracefully shutdown.
-Only works when using jar packaging.
-Disabled by default.
+  Only works when using jar packaging.
+  Disabled by default.
 
 | `startup`
 | Shows the <<features#features.spring-application.startup-tracking,startup steps data>> collected by the `ApplicationStartup`.
-Requires the `SpringApplication` to be configured with a `BufferingApplicationStartup`.
+  Requires the `SpringApplication` to be configured with a `BufferingApplicationStartup`.
 
 | `threaddump`
 | Performs a thread dump.
