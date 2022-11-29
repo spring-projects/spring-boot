@@ -41,7 +41,6 @@ public class OutputCaptureRuleTests {
 	public void getAllShouldReturnAllCapturedOutput() {
 		System.out.println("Hello World");
 		System.err.println("Hello Error");
-
 		assertThat(this.output.getAll()).contains("Hello World", "Hello Error");
 	}
 
@@ -49,9 +48,16 @@ public class OutputCaptureRuleTests {
 	public void getOutShouldOnlyReturnOutputCapturedFromSystemOut() {
 		System.out.println("Hello World");
 		System.err.println("Hello Error");
-
 		assertThat(this.output.getOut()).contains("Hello World");
 		assertThat(this.output.getOut()).doesNotContain("Hello Error");
+	}
+
+	@Test
+	public void getErrShouldOnlyReturnOutputCapturedFromSystemErr() {
+		System.out.println("Hello World");
+		System.err.println("Hello Error");
+		assertThat(this.output.getErr()).contains("Hello Error");
+		assertThat(this.output.getErr()).doesNotContain("Hello World");
 	}
 
 	@Test
@@ -60,12 +66,4 @@ public class OutputCaptureRuleTests {
 		assertThat(this.output).contains("Hello World");
 	}
 
-	@Test
-	public void getErrShouldOnlyReturnOutputCapturedFromSystemErr() {
-		System.out.println("Hello World");
-		System.err.println("Hello Error");
-
-		assertThat(this.output.getErr()).contains("Hello Error");
-		assertThat(this.output.getErr()).doesNotContain("Hello World");
-	}
 }
