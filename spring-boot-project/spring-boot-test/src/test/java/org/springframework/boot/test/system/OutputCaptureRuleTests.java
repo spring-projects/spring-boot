@@ -38,9 +38,20 @@ public class OutputCaptureRuleTests {
 	}
 
 	@Test
+	public void getAllShouldReturnAllCapturedOutput() {
+		System.out.println("Hello World");
+		assertThat(this.output.getAll()).contains("Hello World");
+	}
+
+	@Test
+	public void getOutShouldReturnAllCapturedOutput() {
+		System.out.println("Hello World");
+		assertThat(this.output.getOut()).contains("Hello World");
+	}
+
+	@Test
 	public void captureShouldBeAssertable() {
 		System.out.println("Hello World");
 		assertThat(this.output).contains("Hello World");
 	}
-
 }
