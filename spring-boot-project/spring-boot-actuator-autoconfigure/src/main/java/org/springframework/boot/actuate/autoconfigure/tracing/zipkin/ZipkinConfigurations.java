@@ -80,8 +80,19 @@ class ZipkinConfigurations {
 				ObjectProvider<ZipkinRestTemplateBuilderCustomizer> customizers) {
 			RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder()
 					.setConnectTimeout(properties.getConnectTimeout()).setReadTimeout(properties.getReadTimeout());
-			customizers.orderedStream().forEach((customizer) -> customizer.customize(restTemplateBuilder));
+			restTemplateBuilder = applyCustomizers(restTemplateBuilder, customizers);
 			return new ZipkinRestTemplateSender(properties.getEndpoint(), restTemplateBuilder.build());
+		}
+
+		private RestTemplateBuilder applyCustomizers(RestTemplateBuilder restTemplateBuilder,
+				ObjectProvider<ZipkinRestTemplateBuilderCustomizer> customizers) {
+			Iterable<ZipkinRestTemplateBuilderCustomizer> orderedCustomizers = () -> customizers.orderedStream()
+					.iterator();
+			RestTemplateBuilder currentBuilder = restTemplateBuilder;
+			for (ZipkinRestTemplateBuilderCustomizer customizer : orderedCustomizers) {
+				currentBuilder = customizer.customize(currentBuilder);
+			}
+			return currentBuilder;
 		}
 
 	}

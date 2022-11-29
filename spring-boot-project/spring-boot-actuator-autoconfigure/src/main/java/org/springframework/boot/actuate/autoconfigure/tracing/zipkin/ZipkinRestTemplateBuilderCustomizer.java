@@ -31,7 +31,8 @@ public interface ZipkinRestTemplateBuilderCustomizer {
 	/**
 	 * Customize the rest template builder.
 	 * @param restTemplateBuilder the {@code RestTemplateBuilder} to customize
+	 * @return the customized {@code RestTemplateBuilder}
 	 */
-	void customize(RestTemplateBuilder restTemplateBuilder);
+	RestTemplateBuilder customize(RestTemplateBuilder restTemplateBuilder);
 
 }

@@ -27,6 +27,7 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -143,8 +144,8 @@ class ZipkinConfigurationsSenderConfigurationTests {
 	private static class RestTemplateConfiguration {
 
 		@Bean
-		ZipkinRestTemplateBuilderCustomizer restTemplateBuilder() {
-			return mock(ZipkinRestTemplateBuilderCustomizer.class);
+		ZipkinRestTemplateBuilderCustomizer zipkinRestTemplateBuilderCustomizer() {
+			return new DummyZipkinRestTemplateBuilderCustomizer();
 		}
 
 	}
@@ -165,6 +166,15 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		@Bean
 		Sender customSender() {
 			return mock(Sender.class);
+		}
+
+	}
+
+	private static class DummyZipkinRestTemplateBuilderCustomizer implements ZipkinRestTemplateBuilderCustomizer {
+
+		@Override
+		public RestTemplateBuilder customize(RestTemplateBuilder restTemplateBuilder) {
+			return restTemplateBuilder;
 		}
 
 	}
