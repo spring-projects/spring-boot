@@ -202,6 +202,13 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	}
 
 	@Test
+	void nativeImageArgFileIsNotWrittenWhenExcludesAreEmpty() throws IOException {
+		try (JarFile jarFile = new JarFile(createLayeredJar(false))) {
+			assertThat(jarFile.getEntry("META-INF/native-image/argfile")).isNull();
+		}
+	}
+
+	@Test
 	void javaVersionIsWrittenToManifest() throws IOException {
 		try (JarFile jarFile = new JarFile(createPopulatedJar())) {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Build-Jdk-Spec"))

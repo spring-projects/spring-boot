@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
@@ -31,7 +30,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Pattern;
@@ -59,6 +57,8 @@ import org.springframework.boot.loader.tools.JarModeLibrary;
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.LayersIndex;
 import org.springframework.boot.loader.tools.LibraryCoordinates;
+import org.springframework.boot.loader.tools.NativeImageArgFile;
+import org.springframework.boot.loader.tools.ReachabilityMetadataProperties;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
@@ -76,10 +76,9 @@ class BootZipCopyAction implements CopyAction {
 	static final long CONSTANT_TIME_FOR_ZIP_ENTRIES = new GregorianCalendar(1980, Calendar.FEBRUARY, 1, 0, 0, 0)
 			.getTimeInMillis();
 
-	private static final String REACHABILITY_METADATA_PROPERTIES_LOCATION = "META-INF/native-image/%s/%s/%s/reachability-metadata.properties";
-
 	private static final Pattern REACHABILITY_METADATA_PROPERTIES_LOCATION_PATTERN = Pattern
-			.compile(REACHABILITY_METADATA_PROPERTIES_LOCATION.formatted(".*", ".*", ".*"));
+			.compile(ReachabilityMetadataProperties.REACHABILITY_METADATA_PROPERTIES_LOCATION_TEMPLATE.formatted(".*",
+					".*", ".*"));
 
 	private final File output;
 
@@ -355,32 +354,23 @@ class BootZipCopyAction implements CopyAction {
 				DependencyDescriptor descriptor = BootZipCopyAction.this.resolvedDependencies
 						.find(entry.getValue().getFile());
 				LibraryCoordinates coordinates = (descriptor != null) ? descriptor.getCoordinates() : null;
-				FileCopyDetails propertiesFile = (coordinates != null)
-						? this.reachabilityMetadataProperties.get(REACHABILITY_METADATA_PROPERTIES_LOCATION.formatted(
-								coordinates.getGroupId(), coordinates.getArtifactId(), coordinates.getVersion()))
-						: null;
+				FileCopyDetails propertiesFile = (coordinates != null) ? this.reachabilityMetadataProperties
+						.get(ReachabilityMetadataProperties.getLocation(coordinates)) : null;
 				if (propertiesFile != null) {
 					try (InputStream inputStream = propertiesFile.open()) {
-						Properties properties = new Properties();
-						properties.load(inputStream);
-						if (Boolean.parseBoolean(properties.getProperty("override"))) {
+						ReachabilityMetadataProperties properties = ReachabilityMetadataProperties
+								.fromInputStream(inputStream);
+						if (properties.isOverridden()) {
 							excludes.add(entry.getKey());
 						}
 					}
 				}
 			}
-			if (excludes != null) {
-				List<String> args = new ArrayList<>();
-				for (String exclude : excludes) {
-					int lastSlash = exclude.lastIndexOf('/');
-					String jar = (lastSlash != -1) ? exclude.substring(lastSlash + 1) : exclude;
-					args.add("--exclude-config");
-					args.add(Pattern.quote(jar));
-					args.add("^/META-INF/native-image/.*");
-				}
-				ZipEntryContentWriter writer = ZipEntryContentWriter.fromLines(BootZipCopyAction.this.encoding, args);
-				writeEntry("META-INF/native-image/argfile", writer, true);
-			}
+			NativeImageArgFile argFile = new NativeImageArgFile(excludes);
+			argFile.writeIfNecessary((lines) -> {
+				ZipEntryContentWriter writer = ZipEntryContentWriter.fromLines(BootZipCopyAction.this.encoding, lines);
+				writeEntry(NativeImageArgFile.LOCATION, writer, true);
+			});
 		}
 
 		private void writeLayersIndexIfNecessary() throws IOException {
