@@ -169,6 +169,35 @@ class DatabaseInitializationDependencyConfigurerTests {
 				});
 	}
 
+	@Test
+	void whenInAnAotProcessedContextDependsOnDatabaseInitializationPostProcessorDoesNothing() {
+		withAotEnabled(() -> {
+			BeanDefinition alpha = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
+			BeanDefinition bravo = BeanDefinitionBuilder.rootBeanDefinition(String.class).getBeanDefinition();
+			performDetection(Arrays.asList(MockDatabaseInitializerDetector.class,
+					MockedDependsOnDatabaseInitializationDetector.class), (context) -> {
+						context.registerBeanDefinition("alpha", alpha);
+						context.registerBeanDefinition("bravo", bravo);
+						context.register(DependencyConfigurerConfiguration.class);
+						context.refresh();
+						assertThat(alpha.getAttribute(DatabaseInitializerDetector.class.getName())).isNull();
+						assertThat(bravo.getAttribute(DatabaseInitializerDetector.class.getName())).isNull();
+						then(MockDatabaseInitializerDetector.instance).shouldHaveNoInteractions();
+						assertThat(bravo.getDependsOn()).isNull();
+					});
+		});
+	}
+
+	private void withAotEnabled(Runnable action) {
+		System.setProperty("spring.aot.enabled", "true");
+		try {
+			action.run();
+		}
+		finally {
+			System.clearProperty("spring.aot.enabled");
+		}
+	}
+
 	private void performDetection(Collection<Class<?>> detectors,
 			Consumer<AnnotationConfigApplicationContext> contextCallback) {
 		DetectorSpringFactoriesClassLoader detectorSpringFactories = new DetectorSpringFactoriesClassLoader(this.temp);
