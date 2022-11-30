@@ -5,10 +5,8 @@ plugins {
 
 // tag::env[]
 tasks.named("bootBuildImage") {
-	environment = [
-			"HTTP_PROXY" : "http://proxy.example.com",
-			"HTTPS_PROXY": "https://proxy.example.com"
-	]
+	environment["HTTP_PROXY"] = "http://proxy.example.com"
+	environment["HTTPS_PROXY"] = "https://proxy.example.com"
 }
 // end::env[]
 
