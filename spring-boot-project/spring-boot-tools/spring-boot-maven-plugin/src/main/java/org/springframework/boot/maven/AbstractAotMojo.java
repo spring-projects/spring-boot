@@ -136,14 +136,16 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 			options.add(ClasspathBuilder.build(Arrays.asList(classPath)));
 			options.add("-d");
 			options.add(outputDirectory.toPath().toAbsolutePath().toString());
-			options.add("--source");
-			options.add(compilerConfiguration.getSourceMajorVersion());
-			options.add("--target");
-			options.add(compilerConfiguration.getTargetMajorVersion());
 			String releaseVersion = compilerConfiguration.getReleaseVersion();
 			if (releaseVersion != null) {
 				options.add("--release");
 				options.add(releaseVersion);
+			}
+			else {
+				options.add("--source");
+				options.add(compilerConfiguration.getSourceMajorVersion());
+				options.add("--target");
+				options.add(compilerConfiguration.getTargetMajorVersion());
 			}
 			options.addAll(new RunArguments(this.compilerArguments).getArgs());
 			Iterable<? extends JavaFileObject> compilationUnits = fileManager.getJavaFileObjectsFromPaths(sourceFiles);

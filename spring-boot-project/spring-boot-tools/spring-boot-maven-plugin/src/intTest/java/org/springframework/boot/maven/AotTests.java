@@ -115,6 +115,15 @@ public class AotTests {
 	}
 
 	@TestTemplate
+	void whenAotRunsWithReleaseSourcesAreGenerated(MavenBuild mavenBuild) {
+		mavenBuild.project("aot-release").goals("package").execute((project) -> {
+			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
+			assertThat(collectRelativePaths(aotDirectory.resolve("sources")))
+					.contains(Path.of("org", "test", "SampleApplication__ApplicationContextInitializer.java"));
+		});
+	}
+
+	@TestTemplate
 	void whenAotRunsWithInvalidCompilerArgumentsCompileFails(MavenBuild mavenBuild) {
 		mavenBuild.project("aot-compiler-arguments").goals("package").executeAndFail(
 				(project) -> assertThat(buildLog(project)).contains("invalid flag: --invalid-compiler-arg"));
