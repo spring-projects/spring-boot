@@ -53,7 +53,7 @@ On Microsoft Windows, make sure to enable the https://docs.docker.com/docker-for
 
 [[native-image.developing-your-first-application.buildpacks.maven]]
 ==== Using Maven
-To build a native image container using Maven you should ensure that your `pom.xml` file uses the `spring-boot-starter-parent`.
+To build a native image container using Maven you should ensure that your `pom.xml` file uses the `spring-boot-starter-parent` and the `org.graalvm.buildtools:native-maven-plugin`.
 You should have a `<parent>` section that looks like this:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
@@ -63,6 +63,16 @@ You should have a `<parent>` section that looks like this:
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>{spring-boot-version}</version>
 	</parent>
+----
+
+You additionally should have this in the `<build> <plugins>` section:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<plugin>
+		<groupId>org.graalvm.buildtools</groupId>
+		<artifactId>native-maven-plugin</artifactId>
+	</plugin>
 ----
 
 The `spring-boot-starter-parent` declares a `native` profile that configures the executions that need to run in order to create a native image.
@@ -181,7 +191,8 @@ Due to the https://docs.microsoft.com/en-US/troubleshoot/windows-client/shell-ex
 
 [[native-image.developing-your-first-application.native-build-tools.maven]]
 ==== Using Maven
-As with the <<native-image#native-image.developing-your-first-application.buildpacks.maven, buildpack support>>, you need to make sure that you're using `spring-boot-starter-parent` in order to inherit the `native` profile.
+
+As with the <<native-image#native-image.developing-your-first-application.buildpacks.maven, buildpack support>>, you need to make sure that you're using `spring-boot-starter-parent` in order to inherit the `native` profile and that the `org.graalvm.buildtools:native-maven-plugin` plugin is used.
 
 With the `native` profile active, you can invoke the `native:compile` goal to trigger `native-image` compilation:
 
