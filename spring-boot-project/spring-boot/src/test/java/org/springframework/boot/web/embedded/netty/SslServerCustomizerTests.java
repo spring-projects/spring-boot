@@ -17,22 +17,49 @@
 package org.springframework.boot.web.embedded.netty;
 
 import java.security.NoSuchProviderException;
+import java.security.Provider;
+import java.security.Security;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 /**
  * Tests for {@link SslServerCustomizer}.
  *
  * @author Andy Wilkinson
  * @author Raheela Aslam
+ * @author Cyril Dangerville
  */
 @SuppressWarnings("deprecation")
 class SslServerCustomizerTests {
+
+	private static final Provider PKCS11_PROVIDER = new MockPkcs11SecurityProvider();
+
+	@BeforeAll
+	static void setup() {
+		/*
+		 * Add the mock Java security provider for PKCS#11-related unit tests.
+		 *
+		 * For an integration test with an actual PKCS#11 library - SoftHSM - properly
+		 * installed and configured on the system (inside a container), used via Java
+		 * built-in SunPKCS11 provider, see the 'spring-boot-smoke-test-webflux-ssl'
+		 * project in 'spring-boot-tests/spring-boot-smoke-tests' folder.
+		 */
+		Security.addProvider(PKCS11_PROVIDER);
+	}
+
+	@AfterAll
+	static void shutdown() {
+		// Remove the provider previously added in setup()
+		Security.removeProvider(PKCS11_PROVIDER.getName());
+	}
 
 	@Test
 	void keyStoreProviderIsUsedWhenCreatingKeyStore() {
@@ -58,12 +85,42 @@ class SslServerCustomizerTests {
 				.withMessageContaining("com.example.TrustStoreProvider");
 	}
 
+	/**
+	 * Null/undefined keystore is not valid unless keystore type is PKCS11.
+	 */
 	@Test
-	void getKeyManagerFactoryWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException() {
+	void getKeyManagerFactoryWhenSslIsEnabledWithNoKeyStoreAndNotPkcs11ThrowsWebServerException() {
 		Ssl ssl = new Ssl();
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
 		assertThatIllegalStateException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
 				.withCauseInstanceOf(WebServerException.class).withMessageContaining("Could not load key store 'null'");
+	}
+
+	/**
+	 * No keystore path should be defined if keystore type is PKCS#11.
+	 */
+	@Test
+	void getKeyManagerFactoryWhenSslIsEnabledWithPkcs11AndKeyStoreThrowsIllegalArgumentException() {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStoreType("PKCS11");
+		ssl.setKeyStoreProvider(PKCS11_PROVIDER.getName());
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyPassword("password");
+		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
+		assertThatIllegalStateException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
+				.withCauseInstanceOf(IllegalArgumentException.class)
+				.withMessageContaining("Input keystore location is not valid for keystore type 'PKCS11'");
+	}
+
+	@Test
+	void getKeyManagerFactoryWhenSslIsEnabledWithPkcs11AndKeyStoreProvider() {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStoreType("PKCS11");
+		ssl.setKeyStoreProvider(PKCS11_PROVIDER.getName());
+		ssl.setKeyStorePassword("1234");
+		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
+		// Loading the KeyManagerFactory should be successful
+		assertThatNoException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null));
 	}
 
 }
