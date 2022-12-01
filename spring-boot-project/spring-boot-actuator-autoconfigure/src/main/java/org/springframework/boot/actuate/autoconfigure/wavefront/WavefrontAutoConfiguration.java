@@ -31,8 +31,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for for Wavefront common
- * infrastructure.
+ * {@link EnableAutoConfiguration Auto-configuration} for Wavefront common infrastructure.
  *
  * @author Moritz Halbritter
  * @author Glenn Oppegard
