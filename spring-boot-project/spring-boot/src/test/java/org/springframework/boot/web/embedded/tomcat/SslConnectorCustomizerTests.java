@@ -40,8 +40,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
-import org.springframework.boot.web.embedded.netty.MockPkcs11SecurityProvider;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
+import org.springframework.boot.web.embedded.netty.MockPkcs11SecurityProvider;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.boot.web.server.WebServerException;

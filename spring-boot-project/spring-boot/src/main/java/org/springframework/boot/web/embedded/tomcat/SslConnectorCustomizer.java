@@ -17,7 +17,6 @@
 package org.springframework.boot.web.embedded.tomcat;
 
 import java.io.FileNotFoundException;
-import java.util.Objects;
 
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.ProtocolHandler;
@@ -141,10 +140,10 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 	}
 
 	private void configureSslKeyStore(SSLHostConfigCertificate certificate, Ssl ssl) {
-		final String keystoreType = Objects.requireNonNullElse(ssl.getKeyStoreType(), "JKS");
-		final String keystoreLocation = ssl.getKeyStore();
+		String keystoreType = (ssl.getKeyStoreType() != null) ? ssl.getKeyStoreType() : "JKS";
+		String keystoreLocation = ssl.getKeyStore();
 		if (keystoreType.equalsIgnoreCase("PKCS11")) {
-			if (keystoreLocation != null && !keystoreLocation.isBlank()) {
+			if (keystoreLocation != null && !keystoreLocation.isEmpty()) {
 				throw new IllegalArgumentException("Input keystore location is not valid for keystore type 'PKCS11': '"
 						+ keystoreLocation + "'. Must be undefined / null.");
 			}
@@ -157,7 +156,6 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 				throw new WebServerException("Could not load key store '" + keystoreLocation + "'", ex);
 			}
 		}
-
 		certificate.setCertificateKeystoreType(keystoreType);
 		if (ssl.getKeyStoreProvider() != null) {
 			certificate.setCertificateKeystoreProvider(ssl.getKeyStoreProvider());

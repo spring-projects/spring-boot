@@ -173,11 +173,10 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 		type = (type != null) ? type : "JKS";
 		KeyStore store = (provider != null) ? KeyStore.getInstance(type, provider) : KeyStore.getInstance(type);
 		if (type.equalsIgnoreCase("PKCS11")) {
-			if (resource != null && !resource.isBlank()) {
+			if (resource != null && !resource.isEmpty()) {
 				throw new IllegalArgumentException("Input keystore location is not valid for keystore type 'PKCS11': '"
 						+ resource + "'. Must be undefined / null.");
 			}
-
 			store.load(null, (password != null) ? password.toCharArray() : null);
 		}
 		else {
@@ -191,7 +190,6 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 				throw new WebServerException("Could not load key store '" + resource + "'", ex);
 			}
 		}
-
 		return store;
 	}
 

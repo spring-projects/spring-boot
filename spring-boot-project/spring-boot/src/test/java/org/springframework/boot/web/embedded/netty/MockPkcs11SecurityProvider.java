@@ -29,7 +29,7 @@ public class MockPkcs11SecurityProvider extends Provider {
 
 	private static final String DEFAULT_PROVIDER_NAME = "Mock-PKCS11";
 
-	private static final String VERSION = "0.1";
+	private static final double VERSION = 0.1;
 
 	private static final String DESCRIPTION = "Mock PKCS11 Provider";
 
