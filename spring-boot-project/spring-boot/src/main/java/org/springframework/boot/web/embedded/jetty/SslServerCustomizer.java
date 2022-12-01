@@ -51,6 +51,7 @@ import org.springframework.util.ResourceUtils;
  * @author Brian Clozel
  * @author Olivier Lamy
  * @author Chris Bono
+ * @author Cyril Dangerville
  */
 class SslServerCustomizer implements JettyServerCustomizer {
 
@@ -220,16 +221,24 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	}
 
 	private void configureSslKeyStore(SslContextFactory.Server factory, Ssl ssl) {
-		try {
-			URL url = ResourceUtils.getURL(ssl.getKeyStore());
-			factory.setKeyStoreResource(Resource.newResource(url));
+		String keystoreType = (ssl.getKeyStoreType() != null) ? ssl.getKeyStoreType() : "JKS";
+		String keystoreLocation = ssl.getKeyStore();
+		if (keystoreType.equalsIgnoreCase("PKCS11")) {
+			if (keystoreLocation != null && !keystoreLocation.isEmpty()) {
+				throw new IllegalArgumentException("Input keystore location is not valid for keystore type 'PKCS11': '"
+						+ keystoreLocation + "'. Must be undefined / null.");
+			}
 		}
-		catch (Exception ex) {
-			throw new WebServerException("Could not load key store '" + ssl.getKeyStore() + "'", ex);
+		else {
+			try {
+				URL url = ResourceUtils.getURL(keystoreLocation);
+				factory.setKeyStoreResource(Resource.newResource(url));
+			}
+			catch (Exception ex) {
+				throw new WebServerException("Could not load key store '" + keystoreLocation + "'", ex);
+			}
 		}
-		if (ssl.getKeyStoreType() != null) {
-			factory.setKeyStoreType(ssl.getKeyStoreType());
-		}
+		factory.setKeyStoreType(keystoreType);
 		if (ssl.getKeyStoreProvider() != null) {
 			factory.setKeyStoreProvider(ssl.getKeyStoreProvider());
 		}

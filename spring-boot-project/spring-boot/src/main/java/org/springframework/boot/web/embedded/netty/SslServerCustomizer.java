@@ -57,6 +57,7 @@ import org.springframework.util.ResourceUtils;
  * @author Brian Clozel
  * @author Raheela Aslam
  * @author Chris Bono
+ * @author Cyril Dangerville
  * @since 2.0.0
  * @deprecated this class is meant for Spring Boot internal use only.
  */
@@ -171,17 +172,25 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	private KeyStore loadStore(String type, String provider, String resource, String password) throws Exception {
 		type = (type != null) ? type : "JKS";
 		KeyStore store = (provider != null) ? KeyStore.getInstance(type, provider) : KeyStore.getInstance(type);
-		try {
-			URL url = ResourceUtils.getURL(resource);
-			try (InputStream stream = url.openStream()) {
-				store.load(stream, (password != null) ? password.toCharArray() : null);
+		if (type.equalsIgnoreCase("PKCS11")) {
+			if (resource != null && !resource.isEmpty()) {
+				throw new IllegalArgumentException("Input keystore location is not valid for keystore type 'PKCS11': '"
+						+ resource + "'. Must be undefined / null.");
 			}
-			return store;
+			store.load(null, (password != null) ? password.toCharArray() : null);
 		}
-		catch (Exception ex) {
-			throw new WebServerException("Could not load key store '" + resource + "'", ex);
+		else {
+			try {
+				URL url = ResourceUtils.getURL(resource);
+				try (InputStream stream = url.openStream()) {
+					store.load(stream, (password != null) ? password.toCharArray() : null);
+				}
+			}
+			catch (Exception ex) {
+				throw new WebServerException("Could not load key store '" + resource + "'", ex);
+			}
 		}
-
+		return store;
 	}
 
 	/**
