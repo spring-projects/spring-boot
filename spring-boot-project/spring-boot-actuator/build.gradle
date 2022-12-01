@@ -98,6 +98,8 @@ dependencies {
 	testImplementation("org.springframework:spring-test")
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 	testImplementation("org.testcontainers:junit-jupiter")
+	testImplementation("org.testcontainers:neo4j")
+	testImplementation("org.testcontainers:testcontainers")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("io.projectreactor.netty:reactor-netty-http")
