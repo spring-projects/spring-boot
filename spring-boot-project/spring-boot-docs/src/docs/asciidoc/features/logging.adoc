@@ -528,7 +528,7 @@ The following example shows how to set a Log4j2 property named `applicationName`
 [source,xml,subs="verbatim",indent=0]
 ----
 	<Properties>
-		<Property name="applicationName">${spring:spring.application.name}</property>
+		<Property name="applicationName">${spring:spring.application.name}</Property>
 	</Properties>
 ----
 
