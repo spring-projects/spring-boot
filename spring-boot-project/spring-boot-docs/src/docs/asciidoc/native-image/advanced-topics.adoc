@@ -7,7 +7,7 @@
 === Nested Configuration Properties
 
 Reflection hints are automatically created for configuration properties by the Spring ahead-of-time engine.
-Nested configuration properties which are no inner classes, however, *must* be annotated with `@NestedConfigurationProperty`, otherwise they won't be detected and will not be bindable.
+Nested configuration properties which are not inner classes, however, *must* be annotated with `@NestedConfigurationProperty`, otherwise they won't be detected and will not be bindable.
 
 include::code:MyProperties[]
 
@@ -35,7 +35,7 @@ NOTE: Please use public getters and setters in all cases, otherwise the properti
 [[native-image.advanced.converting-executable-jars]]
 === Converting a Spring Boot Executable Jar
 
-It is possible to convert a Spring Boot <<executable-jar#appendix.executable-jar, executable jar>> into a native image as long at the jar contains the AOT generated assets.
+It is possible to convert a Spring Boot <<executable-jar#appendix.executable-jar, executable jar>> into a native image as long as the jar contains the AOT generated assets.
 This can be useful for a number of reasons, including:
 
 * You can keep your regular JVM pipeline and turn the JVM application into a native image on your CI/CD platform.
@@ -97,7 +97,7 @@ Assuming an AOT processed Spring Boot executable jar built as `myproject-0.0.1-S
 	$ mv myproject ../
 ----
 
-NOTE: These commands work on Linux or MacOS machines, you will need to adapt them for Windows.
+NOTE: These commands work on Linux or macOS machines, but you will need to adapt them for Windows.
 
 TIP: The `@META-INF/native-image/argfile` might not be packaged in your jar.
 It is only included when reachability metadata overrides are needed.
@@ -151,7 +151,7 @@ For further reading, please see {graal-native-image-docs}/metadata/AutomaticMeta
 [[native-image.advanced.custom-hints]]
 === Custom Hints
 If you need to provide your own hints for reflection, resources, serialization, proxy usage etc. you can use the `RuntimeHintsRegistrar` API.
-Create a class that implements the `RuntimeHintsRegistrar` interface, then make appropriate calls to the provided `RuntimeHints` instance:
+Create a class that implements the `RuntimeHintsRegistrar` interface, and then make appropriate calls to the provided `RuntimeHints` instance:
 
 include::code:MyRuntimeHints[]
 

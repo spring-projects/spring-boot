@@ -6,7 +6,7 @@ With broad test coverage on the JVM, you can then focus native image testing on 
 
 For native image testing, you're generally looking to ensure that the following aspects work:
 
-* The Spring AOT engine is able to process your application and will it run in an AOT-processed mode.
+* The Spring AOT engine is able to process your application, and it will run in an AOT-processed mode.
 * GraalVM has enough hints to ensure that a valid native image can be produced.
 
 
@@ -39,7 +39,7 @@ If your application starts with the `spring.aot.enabled` property set to `true`,
 
 You can also consider running integration tests against the running application.
 For example, you could use the Spring `WebClient` to call your application REST endpoints.
-Or you might consider using a project like Selenium to check your applications HTML responses.
+Or you might consider using a project like Selenium to check your application's HTML responses.
 
 
 
@@ -59,7 +59,7 @@ You can also use Spring Boot <<features#features.testing.spring-boot-application
 
 Spring Framework's native testing support works in the following way:
 
-* Test are analyzed in order to discover any `ApplicationContext` instances that will be required.
+* Tests are analyzed in order to discover any `ApplicationContext` instances that will be required.
 * Ahead-of-time processing is applied to each of these application contexts and assets are generated.
 * A native image is created, with the generated assets being processed by GraalVM.
 * The native image also includes the JUnit `TestEngine` configured with a list of the discovered tests.
@@ -98,7 +98,7 @@ To build the image and run the tests, use the `test` goal with the `nativeTest` 
 [[native-image.testing.with-native-build-tools.gradle]]
 ==== Using Gradle
 The Spring Boot Gradle plugin automatically configures AOT test tasks when the GraalVM Native Image plugin is applied.
-You should check that your gradle build contains a `plugins` block that includes `org.graalvm.buildtools.native`.
+You should check that your Gradle build contains a `plugins` block that includes `org.graalvm.buildtools.native`.
 
 To run native tests using Gradle you can use the `nativeTest` task:
 

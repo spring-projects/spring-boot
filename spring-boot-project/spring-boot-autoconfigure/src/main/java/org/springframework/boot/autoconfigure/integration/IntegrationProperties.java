@@ -170,7 +170,7 @@ public class IntegrationProperties {
 	public static class Error {
 
 		/**
-		 * Whether to not silently ignore messages on the global 'errorChannel' when they
+		 * Whether to not silently ignore messages on the global 'errorChannel' when there
 		 * are no subscribers.
 		 */
 		private boolean requireSubscribers = true;
