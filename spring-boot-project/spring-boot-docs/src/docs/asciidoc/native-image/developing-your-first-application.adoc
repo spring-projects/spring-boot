@@ -33,20 +33,20 @@ The resulting image doesn't contain a JVM, instead the native image is compiled 
 This leads to smaller images.
 
 NOTE: The builder used for the images is `paketobuildpacks/builder:tiny`.
-It has small footprint and reduced surface attack, but you can also use `paketobuildpacks/builder:base` or `paketobuildpacks/builder:full` to have more tools available in the image if required.
+It has small footprint and reduced attack surface, but you can also use `paketobuildpacks/builder:base` or `paketobuildpacks/builder:full` to have more tools available in the image if required.
 
 
 
 [[native-image.developing-your-first-application.buildpacks.system-requirements]]
 ==== System Requirements
-Docker should be installed, see https://docs.docker.com/installation/#installation[Get Docker] for more details.
+Docker should be installed. See https://docs.docker.com/installation/#installation[Get Docker] for more details.
 https://docs.docker.com/engine/install/linux-postinstall/#manage-docker-as-a-non-root-user[Configure it to allow non-root user] if you are on Linux.
 
 NOTE: You can run `docker run hello-world` (without `sudo`) to check the Docker daemon is reachable as expected.
 Check the {spring-boot-maven-plugin-docs}/#build-image-docker-daemon[Maven] or {spring-boot-gradle-plugin-docs}/#build-image-docker-daemon[Gradle] Spring Boot plugin documentation for more details.
 
-TIP: On MacOS, it is recommended to increase the memory allocated to Docker to at least `8GB`, and potentially add more CPUs as well.
-See this https://stackoverflow.com/questions/44533319/how-to-assign-more-memory-to-docker-container/44533437#44533437[Stackoverflow answer] for more details.
+TIP: On macOS, it is recommended to increase the memory allocated to Docker to at least `8GB`, and potentially add more CPUs as well.
+See this https://stackoverflow.com/questions/44533319/how-to-assign-more-memory-to-docker-container/44533437#44533437[Stack Overflow answer] for more details.
 On Microsoft Windows, make sure to enable the https://docs.docker.com/docker-for-windows/wsl/[Docker WSL 2 backend] for better performance.
 
 
@@ -92,7 +92,7 @@ To build the image, you can run the `spring-boot:build-image` goal with the `nat
 [[native-image.developing-your-first-application.buildpacks.gradle]]
 ==== Using Gradle
 The Spring Boot Gradle plugin automatically configures AOT tasks when the GraalVM Native Image plugin is applied.
-You should check that your gradle build contains a `plugins` block that includes `org.graalvm.buildtools.native`.
+You should check that your Gradle build contains a `plugins` block that includes `org.graalvm.buildtools.native`.
 
 As long as the `org.graalvm.buildtools.native` plugin is applied, the `bootBuildImage` task will generate a native image rather than a JVM one.
 You can run the task using:
@@ -158,9 +158,9 @@ To build a native image using the Native Build Tools, you'll need a GraalVM dist
 You can either download it manually on the {liberica-nik-download}[Liberica Native Image Kit page], or you can use a download manager like SDKMAN!.
 
 [[native-image.developing-your-first-application.native-build-tools.prerequisites.linux-macos]]
-===== Linux and MacOS
+===== Linux and macOS
 
-To install the native image compiler on MacOS or Linux, we recommend using SDKMAN!.
+To install the native image compiler on macOS or Linux, we recommend using SDKMAN!.
 Get SDKMAN! from https://sdkman.io and install the Liberica GraalVM distribution by using the following commands:
 
 [source,shell,indent=0,subs="verbatim,attributes"]
@@ -221,7 +221,7 @@ The native image executable can be found in the `build/native/nativeCompile` dir
 
 [[native-image.developing-your-first-application.native-build-tools.running]]
 ==== Running the Example
-At this point, your application should work, you can now start the application by running it directly:
+At this point, your application should worK. You can now start the application by running it directly:
 
 [source,shell,indent=0,subs="verbatim",role="primary"]
 .Maven
