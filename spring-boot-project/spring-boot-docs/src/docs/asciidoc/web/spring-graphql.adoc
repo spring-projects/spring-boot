@@ -52,12 +52,12 @@ If you wish to not expose information about the schema, you can disable introspe
 
 [[web.graphql.runtimewiring]]
 === GraphQL RuntimeWiring
-The GraphQL Java `RuntimeWiring.Builder` can be used to register custom scalar types, directives, type resolvers, `DataFetcher`s, and more.
+The GraphQL Java `RuntimeWiring.Builder` can be used to register custom scalar types, directives, type resolvers, ``DataFetcher``s, and more.
 You can declare `RuntimeWiringConfigurer` beans in your Spring config to get access to the `RuntimeWiring.Builder`.
 Spring Boot detects such beans and adds them to the {spring-graphql-docs}#execution-graphqlsource[GraphQlSource builder].
 
 Typically, however, applications will not implement `DataFetcher` directly and will instead create {spring-graphql-docs}#controllers[annotated controllers].
-Spring Boot will automatically detect `@Controller` classes with annotated handler methods and register those as `DataFetcher`s.
+Spring Boot will automatically detect `@Controller` classes with annotated handler methods and register those as ``DataFetcher``s.
 Here's a sample implementation for our greeting query with a `@Controller` class:
 
 include::code:GreetingController[]
@@ -86,7 +86,7 @@ are detected by Spring Boot and considered as candidates for `DataFetcher` for m
 
 [[web.graphql.transports.http-websocket]]
 ==== HTTP and WebSocket
-The GraphQL HTTP endpoint is at HTTP POST "/graphql" by default.
+The GraphQL HTTP endpoint is at HTTP POST `/graphql` by default.
 The path can be customized with configprop:spring.graphql.path[].
 
 TIP: The HTTP endpoint for both Spring MVC and Spring WebFlux is provided by a `RouterFunction` bean with an `@Order` of `0`.
@@ -136,7 +136,7 @@ include::code:RSocketGraphQlClientExample[tag=request]
 
 
 [[web.graphql.exception-handling]]
-=== Exceptions Handling
+=== Exception Handling
 Spring GraphQL enables applications to register one or more Spring `DataFetcherExceptionResolver` components that are invoked sequentially.
 The Exception must be resolved to a list of `graphql.GraphQLError` objects, see {spring-graphql-docs}#execution-exceptions[Spring GraphQL exception handling documentation].
 Spring Boot will automatically detect `DataFetcherExceptionResolver` beans and register them with the `GraphQlSource.Builder`.
