@@ -55,17 +55,12 @@ class ClientObservationConventionAdapter implements ClientRequestObservationConv
 
 	@Override
 	public KeyValues getLowCardinalityKeyValues(ClientRequestObservationContext context) {
-		mutateClientRequest(context);
-		Iterable<Tag> tags = this.tagsProvider.tags(context.getRequest(), context.getResponse(), context.getError());
+		ClientRequest request = context.getRequest();
+		if (request == null) {
+			request = context.getCarrier().attribute(URI_TEMPLATE_ATTRIBUTE, context.getUriTemplate()).build();
+		}
+		Iterable<Tag> tags = this.tagsProvider.tags(request, context.getResponse(), context.getError());
 		return KeyValues.of(tags, Tag::getKey, Tag::getValue);
-	}
-
-	private void mutateClientRequest(ClientRequestObservationContext context) {
-		// WebClientExchangeTagsProvider relies on a request attribute to get the URI
-		// template, we need to adapt to that.
-		ClientRequest clientRequest = ClientRequest.from(context.getRequest())
-				.attribute(URI_TEMPLATE_ATTRIBUTE, context.getUriTemplate()).build();
-		context.setRequest(clientRequest);
 	}
 
 	@Override
