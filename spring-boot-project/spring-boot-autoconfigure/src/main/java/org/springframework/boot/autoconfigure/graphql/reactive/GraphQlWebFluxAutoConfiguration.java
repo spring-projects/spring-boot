@@ -85,8 +85,9 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 @ImportRuntimeHints(GraphQlWebFluxAutoConfiguration.GraphiQlResourceHints.class)
 public class GraphQlWebFluxAutoConfiguration {
 
-	private static final RequestPredicate SUPPORTS_MEDIATYPES = accept(MediaType.APPLICATION_GRAPHQL,
-			MediaType.APPLICATION_JSON).and(contentType(MediaType.APPLICATION_GRAPHQL, MediaType.APPLICATION_JSON));
+	@SuppressWarnings("removal")
+	private static final RequestPredicate SUPPORTS_MEDIATYPES = accept(MediaType.APPLICATION_GRAPHQL_RESPONSE,
+			MediaType.APPLICATION_JSON, MediaType.APPLICATION_GRAPHQL).and(contentType(MediaType.APPLICATION_JSON));
 
 	private static final Log logger = LogFactory.getLog(GraphQlWebFluxAutoConfiguration.class);
 
