@@ -16,8 +16,11 @@
 
 package org.springframework.boot.test.autoconfigure.data.r2dbc;
 
+import java.util.Map;
+
 import io.r2dbc.spi.ConnectionFactory;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
 import reactor.test.StepVerifier;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +49,8 @@ class DataR2dbcTestIntegrationTests {
 
 	@Test
 	void testDatabaseClient() {
-		this.databaseClient.sql("SELECT * FROM example").fetch().all().as(StepVerifier::create).verifyComplete();
+		Flux<Map<String, Object>> all = this.databaseClient.sql("SELECT * FROM example").fetch().all();
+		StepVerifier.create(all).expectNextCount(1).verifyComplete();
 	}
 
 	@Test
