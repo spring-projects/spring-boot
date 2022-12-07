@@ -26,12 +26,8 @@ allprojects {
 
 	repositories {
 		mavenCentral()
-		maven {
-			url "https://repo.spring.io/milestone"
-			content {
-				// Thymeleaf uses 6.0.0-RC2 of Security's bom in its dependency management
-				includeModule("org.springframework.security", "spring-security-bom")
-			}
+		if (version.contains('-')) {
+			maven { url "https://repo.spring.io/milestone" }
 		}
 		if (version.endsWith('-SNAPSHOT')) {
 			maven { url "https://repo.spring.io/snapshot" }
