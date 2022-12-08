@@ -21,7 +21,9 @@ import io.getunleash.UnleashContextProvider;
 import io.getunleash.event.UnleashSubscriber;
 import io.getunleash.repository.ToggleBootstrapProvider;
 import io.getunleash.strategy.Strategy;
+import io.getunleash.util.MetricSenderFactory;
 import io.getunleash.util.UnleashConfig;
+import io.getunleash.util.UnleashFeatureFetcherFactory;
 import io.getunleash.util.UnleashScheduledExecutor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,88 +45,105 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("UnleashBeanConfigBuilderCustomizer")
 class UnleashBeanConfigBuilderCustomizerTest {
 
-  @Mock
-  private UnleashContextProvider contextProviderMock;
-  @Mock
-  private Strategy fallbackStrategyMock;
-  @Mock
-  private CustomHttpHeadersProvider httpHeadersProviderMock;
-  @Mock
-  private Proxy proxyMock;
-  @Mock
-  private UnleashScheduledExecutor scheduledExecutorMock;
-  @Mock
-  private UnleashSubscriber subscriberMock;
-  @Mock
-  private ToggleBootstrapProvider toggleBootstrapProviderMock;
+	@Mock
+	private UnleashContextProvider contextProviderMock;
 
-  private UnleashBeanConfigBuilderCustomizer customizer;
-  private UnleashConfig.Builder configBuilder;
+	@Mock
+	private UnleashFeatureFetcherFactory featureFetcherFactoryMock;
 
-  @BeforeEach
-  void setUp() {
-    customizer = new UnleashBeanConfigBuilderCustomizer(
-        contextProviderMock,
-        fallbackStrategyMock,
-        httpHeadersProviderMock,
-        proxyMock,
-        scheduledExecutorMock,
-        subscriberMock,
-        toggleBootstrapProviderMock
-    );
-    configBuilder = UnleashConfig.builder()
-        .appName("TestApp")
-        .unleashAPI("http://unleash.com")
-        .apiKey("c13n753cr37");
-  }
+	@Mock
+	private Strategy fallbackStrategyMock;
 
-  @Test
-  void shouldCustomizeContextProvider() {
-    customizer.customize(configBuilder);
+	@Mock
+	private CustomHttpHeadersProvider httpHeadersProviderMock;
 
-    assertThat(configBuilder.build().getContextProvider()).isEqualTo(contextProviderMock);
-  }
+	@Mock
+	private MetricSenderFactory metricSenderFactoryMock;
+	@Mock
+	private Proxy proxyMock;
 
-  @Test
-  void shouldCustomizeFallbackStrategy() {
-    customizer.customize(configBuilder);
+	@Mock
+	private UnleashScheduledExecutor scheduledExecutorMock;
 
-    assertThat(configBuilder.build().getFallbackStrategy()).isEqualTo(fallbackStrategyMock);
-  }
+	@Mock
+	private UnleashSubscriber subscriberMock;
 
-  @Test
-  void shouldCustomizeHttpHeadersProvider() {
-    customizer.customize(configBuilder);
+	@Mock
+	private ToggleBootstrapProvider toggleBootstrapProviderMock;
 
-    assertThat(configBuilder.build().getCustomHttpHeadersProvider()).isEqualTo(httpHeadersProviderMock);
-  }
+	private UnleashBeanConfigBuilderCustomizer customizer;
 
-  @Test
-  void shouldCustomizeProxy() {
-    customizer.customize(configBuilder);
+	private UnleashConfig.Builder configBuilder;
 
-    assertThat(configBuilder.build().getProxy()).isEqualTo(proxyMock);
-  }
+	@BeforeEach
+	void setUp() {
+		customizer = new UnleashBeanConfigBuilderCustomizer(contextProviderMock, featureFetcherFactoryMock, fallbackStrategyMock,
+				httpHeadersProviderMock, metricSenderFactoryMock, proxyMock, scheduledExecutorMock, subscriberMock, toggleBootstrapProviderMock);
+		configBuilder = UnleashConfig.builder().appName("TestApp").unleashAPI("https://unleash.com")
+				.apiKey("c13n753cr37");
+	}
 
-  @Test
-  void shouldCustomizeSchedulerExecutor() {
-    customizer.customize(configBuilder);
+	@Test
+	void shouldCustomizeContextProvider() {
+		customizer.customize(configBuilder);
 
-    assertThat(configBuilder.build().getScheduledExecutor()).isEqualTo(scheduledExecutorMock);
-  }
+		assertThat(configBuilder.build().getContextProvider()).isEqualTo(contextProviderMock);
+	}
 
-  @Test
-  void shouldCustomizeSubscriber() {
-    customizer.customize(configBuilder);
+	@Test
+	void shouldCustomizeFeatureFetcherFactory() {
+		customizer.customize(configBuilder);
 
-    assertThat(configBuilder.build().getSubscriber()).isEqualTo(subscriberMock);
-  }
+		assertThat(configBuilder.build().getUnleashFeatureFetcherFactory()).isEqualTo(featureFetcherFactoryMock);
+	}
 
-  @Test
-  void shouldCustomizeToggleBootstrapProvider() {
-    customizer.customize(configBuilder);
+	@Test
+	void shouldCustomizeFallbackStrategy() {
+		customizer.customize(configBuilder);
 
-    assertThat(configBuilder.build().getToggleBootstrapProvider()).isEqualTo(toggleBootstrapProviderMock);
-  }
+		assertThat(configBuilder.build().getFallbackStrategy()).isEqualTo(fallbackStrategyMock);
+	}
+
+	@Test
+	void shouldCustomizeHttpHeadersProvider() {
+		customizer.customize(configBuilder);
+
+		assertThat(configBuilder.build().getCustomHttpHeadersProvider()).isEqualTo(httpHeadersProviderMock);
+	}
+
+	@Test
+	void shouldCustomizeMetricsSenderFactory() {
+		customizer.customize(configBuilder);
+
+		assertThat(configBuilder.build().getMetricSenderFactory()).isEqualTo(metricSenderFactoryMock);
+	}
+
+	@Test
+	void shouldCustomizeProxy() {
+		customizer.customize(configBuilder);
+
+		assertThat(configBuilder.build().getProxy()).isEqualTo(proxyMock);
+	}
+
+	@Test
+	void shouldCustomizeSchedulerExecutor() {
+		customizer.customize(configBuilder);
+
+		assertThat(configBuilder.build().getScheduledExecutor()).isEqualTo(scheduledExecutorMock);
+	}
+
+	@Test
+	void shouldCustomizeSubscriber() {
+		customizer.customize(configBuilder);
+
+		assertThat(configBuilder.build().getSubscriber()).isEqualTo(subscriberMock);
+	}
+
+	@Test
+	void shouldCustomizeToggleBootstrapProvider() {
+		customizer.customize(configBuilder);
+
+		assertThat(configBuilder.build().getToggleBootstrapProvider()).isEqualTo(toggleBootstrapProviderMock);
+	}
 
 }

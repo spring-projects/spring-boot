@@ -23,7 +23,9 @@ import io.getunleash.UnleashContextProvider;
 import io.getunleash.event.UnleashSubscriber;
 import io.getunleash.repository.ToggleBootstrapProvider;
 import io.getunleash.strategy.Strategy;
+import io.getunleash.util.MetricSenderFactory;
 import io.getunleash.util.UnleashConfig;
+import io.getunleash.util.UnleashFeatureFetcherFactory;
 import io.getunleash.util.UnleashScheduledExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -39,7 +41,8 @@ import java.util.List;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Unleash.<br>
  * For available configuration options see the
- * <a href="https://github.com/Unleash/unleash-client-java#configuration-options">Unleash Java client documentation</a>.
+ * <a href="https://github.com/Unleash/unleash-client-java#configuration-options">Unleash
+ * Java client documentation</a>.
  *
  * @author Max Schwaab
  */
@@ -47,59 +50,47 @@ import java.util.List;
 @Conditional(UnleashPropertiesOrUnleashConfig.class)
 class UnleashAutoConfiguration {
 
-  @AutoConfiguration
-  @ConditionalOnUnleashRequiredProperties
-  @EnableConfigurationProperties(UnleashProperties.class)
-  static class EnableUnleashProperties {
+	@AutoConfiguration
+	@ConditionalOnUnleashRequiredProperties
+	@EnableConfigurationProperties(UnleashProperties.class)
+	static class EnableUnleashProperties {
 
-    @Bean
-    UnleashConfigBuilderCustomizer propertiesConfigBuilderCustomizer(final UnleashProperties properties) {
-      return new UnleashPropertiesConfigBuilderCustomizer(properties);
-    }
+		@Bean
+		UnleashConfigBuilderCustomizer propertiesConfigBuilderCustomizer(final UnleashProperties properties) {
+			return new UnleashPropertiesConfigBuilderCustomizer(properties);
+		}
 
-  }
+	}
 
-  @Bean
-  @ConditionalOnMissingBean({ Unleash.class, UnleashConfig.class })
-  UnleashConfig unleashConfig(final List<UnleashConfigBuilderCustomizer> configBuilderCustomizers) {
-    final UnleashConfig.Builder configBuilder = UnleashConfig.builder();
+	@Bean
+	@ConditionalOnMissingBean({ Unleash.class, UnleashConfig.class })
+	UnleashConfig unleashConfig(final List<UnleashConfigBuilderCustomizer> configBuilderCustomizers) {
+		final UnleashConfig.Builder configBuilder = UnleashConfig.builder();
 
-    configBuilderCustomizers.forEach(customizer -> customizer.customize(configBuilder));
+		configBuilderCustomizers.forEach(customizer -> customizer.customize(configBuilder));
 
-    return configBuilder.build();
-  }
+		return configBuilder.build();
+	}
 
-  @Bean
-  @ConditionalOnMissingBean(Unleash.class)
-  Unleash unleash(final UnleashConfig unleashConfig) {
-    return new DefaultUnleash(unleashConfig);
-  }
+	@Bean
+	@ConditionalOnMissingBean(Unleash.class)
+	Unleash unleash(final UnleashConfig unleashConfig) {
+		return new DefaultUnleash(unleashConfig);
+	}
 
-  @Bean
-  UnleashConfigBuilderCustomizer beanConfigBuilderCustomizer(
-      @Autowired(required = false)
-      final UnleashContextProvider contextProvider,
-      @Autowired(required = false)
-      final Strategy fallbackStrategy,
-      @Autowired(required = false)
-      final CustomHttpHeadersProvider httpHeadersProvider,
-      @Autowired(required = false)
-      final Proxy proxy,
-      @Autowired(required = false)
-      final UnleashScheduledExecutor scheduledExecutor,
-      @Autowired(required = false)
-      final UnleashSubscriber subscriber,
-      @Autowired(required = false)
-      final ToggleBootstrapProvider toggleBootstrapProvider) {
-    return new UnleashBeanConfigBuilderCustomizer(
-        contextProvider,
-        fallbackStrategy,
-        httpHeadersProvider,
-        proxy,
-        scheduledExecutor,
-        subscriber,
-        toggleBootstrapProvider
-    );
-  }
+	@Bean
+	UnleashConfigBuilderCustomizer beanConfigBuilderCustomizer(
+			@Autowired(required = false) final UnleashContextProvider contextProvider,
+			@Autowired(required = false) final UnleashFeatureFetcherFactory featureFetcherFactory,
+			@Autowired(required = false) final Strategy fallbackStrategy,
+			@Autowired(required = false) final CustomHttpHeadersProvider httpHeadersProvider,
+			@Autowired(required = false) final MetricSenderFactory metricSenderFactory,
+			@Autowired(required = false) final Proxy proxy,
+			@Autowired(required = false) final UnleashScheduledExecutor scheduledExecutor,
+			@Autowired(required = false) final UnleashSubscriber subscriber,
+			@Autowired(required = false) final ToggleBootstrapProvider toggleBootstrapProvider) {
+		return new UnleashBeanConfigBuilderCustomizer(contextProvider, featureFetcherFactory, fallbackStrategy, httpHeadersProvider, metricSenderFactory, proxy,
+				scheduledExecutor, subscriber, toggleBootstrapProvider);
+	}
 
 }

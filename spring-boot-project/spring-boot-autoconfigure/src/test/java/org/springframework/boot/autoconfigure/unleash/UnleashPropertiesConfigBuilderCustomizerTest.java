@@ -22,6 +22,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.net.URI;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,158 +37,202 @@ import static org.assertj.core.api.Assertions.entry;
 @DisplayName("UnleashPropertiesConfigBuilderCustomizer")
 class UnleashPropertiesConfigBuilderCustomizerTest {
 
-  private UnleashProperties properties;
-  private UnleashConfigBuilderCustomizer customizer;
-  private UnleashConfig.Builder configBuilder;
+	private UnleashProperties properties;
 
-  @BeforeEach
-  void setUp() {
-    properties = new UnleashProperties()
-         .setAppName("TestApp")
-         .setApiUrl("http://unleash.com")
-         .setApiClientSecret("c13n753cr37");
-    customizer = new UnleashPropertiesConfigBuilderCustomizer(properties);
-    configBuilder = UnleashConfig.builder();
-  }
+	private UnleashConfigBuilderCustomizer customizer;
 
-  @Test
-  void shouldCustomizeAppName() {
-    final String appName = "MyAppName";
+	private UnleashConfig.Builder configBuilder;
 
-    properties.setAppName(appName);
-    customizer.customize(configBuilder);
+	@BeforeEach
+	void setUp() {
+		properties = new UnleashProperties().setAppName("TestApp").setUnleashApi("https://unleash.com")
+				.setApiKey("c13n753cr37");
+		customizer = new UnleashPropertiesConfigBuilderCustomizer(properties);
+		configBuilder = UnleashConfig.builder();
+	}
 
-    assertThat(configBuilder.build().getAppName()).isEqualTo(appName);
-  }
+	@Test
+	void shouldCustomizeAppName() {
+		final String appName = "MyAppName";
 
-  @Test
-  void shouldCustomizeApiUrl() {
-    final String apiUrl = "http://my.unleash.com";
+		properties.setAppName(appName);
+		customizer.customize(configBuilder);
 
-    properties.setApiUrl(apiUrl);
-    customizer.customize(configBuilder);
+		assertThat(configBuilder.build().getAppName()).isEqualTo(appName);
+	}
 
-    assertThat(configBuilder.build().getUnleashAPI()).isEqualTo(URI.create(apiUrl));
-  }
+	@Test
+	void shouldCustomizeUnleashApi() {
+		final String unleashApi = "https://my.unleash.com";
 
-  @Test
-  void shouldCustomizeApiClientSecret() {
-    final String apiClientSecret = "MyApi";
+		properties.setUnleashApi(unleashApi);
+		customizer.customize(configBuilder);
 
-    properties.setApiClientSecret(apiClientSecret);
-    customizer.customize(configBuilder);
+		assertThat(configBuilder.build().getUnleashAPI()).isEqualTo(URI.create(unleashApi));
+	}
 
-    assertThat(configBuilder.build().getCustomHttpHeaders()).containsExactly(entry("Authorization", apiClientSecret));
-  }
+	@Test
+	void shouldCustomizeApiKey() {
+		final String apiKey = "MyApi";
 
-  @Test
-  void shouldCustomizeDisableMetrcis() {
-    properties.setDisableMetrics(true);
-    customizer.customize(configBuilder);
+		properties.setApiKey(apiKey);
+		customizer.customize(configBuilder);
 
-    assertThat(configBuilder.build().isDisableMetrics()).isTrue();
-  }
+		assertThat(configBuilder.build().getCustomHttpHeaders())
+				.containsExactly(entry("Authorization", apiKey));
+	}
 
-  @Test
-  void shouldCustomizeEnableProxyAuthenticationByJvmProperties() {
-    properties.setEnableProxyAuthenticationByJvmProperties(true);
-    customizer.customize(configBuilder);
+	@Test
+	void shouldCustomizeDisableMetrics() {
+		properties.setDisableMetrics(true);
+		customizer.customize(configBuilder);
 
-    assertThat(configBuilder.build().isProxyAuthenticationByJvmProperties()).isTrue();
-  }
+		assertThat(configBuilder.build().isDisableMetrics()).isTrue();
+	}
 
-  @Test
-  void shouldCustomizeSynchronousFetchOnInitialisation() {
-    properties.setSynchronousFetchOnInitialisation(true);
-    customizer.customize(configBuilder);
+	@Test
+	void shouldCustomizeDisablePolling() {
+		properties.setDisablePolling(true);
+		customizer.customize(configBuilder);
 
-    assertThat(configBuilder.build().isSynchronousFetchOnInitialisation()).isTrue();
-  }
+		assertThat(configBuilder.build().isDisablePolling()).isTrue();
+	}
 
-  @Test
-  void shouldCustomizeBackupFile() {
-    final String backupFile = "myBackupFile";
+	@Test
+	void shouldCustomizeEnableProxyAuthenticationByJvmProperties() {
+		properties.setEnableProxyAuthenticationByJvmProperties(true);
+		customizer.customize(configBuilder);
 
-    properties.setBackUpFile(backupFile);
-    customizer.customize(configBuilder);
+		assertThat(configBuilder.build().isProxyAuthenticationByJvmProperties()).isTrue();
+	}
 
-    assertThat(configBuilder.build().getBackupFile()).isEqualTo(backupFile);
-  }
+	@Test
+	void shouldCustomizeSynchronousFetchOnInitialisation() {
+		properties.setSynchronousFetchOnInitialisation(true);
+		customizer.customize(configBuilder);
 
-  @Test
-  void shouldCustomizeEnvironement() {
-    final String environment = "myEnv";
+		assertThat(configBuilder.build().isSynchronousFetchOnInitialisation()).isTrue();
+	}
 
-    properties.setEnvironment(environment);
-    customizer.customize(configBuilder);
+	@Test
+	void shouldCustomizeBackupFile() {
+		final String backupFile = "myBackupFile";
 
-    assertThat(configBuilder.build().getEnvironment()).isEqualTo(environment);
-  }
+		properties.setBackUpFile(backupFile);
+		customizer.customize(configBuilder);
 
-  @Test
-  void shouldCustomizeInstanceId() {
-    final String instanceId = "myInstance";
+		assertThat(configBuilder.build().getBackupFile()).isEqualTo(backupFile);
+	}
 
-    properties.setInstanceId(instanceId);
-    customizer.customize(configBuilder);
+	@Test
+	void shouldCustomizeEnvironment() {
+		final String environment = "myEnv";
 
-    assertThat(configBuilder.build().getInstanceId()).isEqualTo(instanceId);
-  }
+		properties.setEnvironment(environment);
+		customizer.customize(configBuilder);
 
-  @Test
-  void shouldCustomizeNamePrefix() {
-    final String namePrefix = "myPrefix";
+		assertThat(configBuilder.build().getEnvironment()).isEqualTo(environment);
+	}
 
-    properties.setNamePrefix(namePrefix);
-    customizer.customize(configBuilder);
+	@Test
+	void shouldCustomizeInstanceId() {
+		final String instanceId = "myInstance";
 
-    assertThat(configBuilder.build().getNamePrefix()).isEqualTo(namePrefix);
-  }
+		properties.setInstanceId(instanceId);
+		customizer.customize(configBuilder);
 
-  @Test
-  void shouldCustomizeProjectName() {
-    final String projectName = "myProjectName";
+		assertThat(configBuilder.build().getInstanceId()).isEqualTo(instanceId);
+	}
 
-    properties.setProjectName(projectName);
-    customizer.customize(configBuilder);
+	@Test
+	void shouldCustomizeNamePrefix() {
+		final String namePrefix = "myPrefix";
 
-    assertThat(configBuilder.build().getProjectName()).isEqualTo(projectName);
-  }
+		properties.setNamePrefix(namePrefix);
+		customizer.customize(configBuilder);
 
-  @Test
-  void shouldCustomizeFetchTogglesInterval() {
-    final long fetchTogglesInterval = 100;
+		assertThat(configBuilder.build().getNamePrefix()).isEqualTo(namePrefix);
+	}
 
-    properties.setFetchTogglesInterval(fetchTogglesInterval);
-    customizer.customize(configBuilder);
+	@Test
+	void shouldCustomizeProjectName() {
+		final String projectName = "myProjectName";
 
-    assertThat(configBuilder.build().getFetchTogglesInterval()).isEqualTo(fetchTogglesInterval);
-  }
+		properties.setProjectName(projectName);
+		customizer.customize(configBuilder);
 
-  @Test
-  void shouldCustomizeSendMetricsInterval() {
-    final long sendMetricsInterval = 100;
+		assertThat(configBuilder.build().getProjectName()).isEqualTo(projectName);
+	}
 
-    properties.setSendMetricsInterval(sendMetricsInterval);
-    customizer.customize(configBuilder);
+	@Test
+	void shouldCustomizeFetchTogglesInterval() {
+		final long fetchTogglesInterval = 100;
 
-    assertThat(configBuilder.build().getSendMetricsInterval()).isEqualTo(sendMetricsInterval);
-  }
+		properties.setFetchTogglesInterval(fetchTogglesInterval);
+		customizer.customize(configBuilder);
 
-  @Test
-  void shouldCustomizeCustomHeaders() {
-    final Map<String, String> customHeaders = Map.of(
-        "X-Wayfair", "WFN",
-        "Accept", "application/json"
-    );
+		assertThat(configBuilder.build().getFetchTogglesInterval()).isEqualTo(fetchTogglesInterval);
+	}
 
-    properties.setCustomHeaders(customHeaders);
-    customizer.customize(configBuilder);
+	@Test
+	void shouldCustomizeFetchTogglesConnectTimeoutSeconds() {
+		final long fetchTogglesConnectTimeout = 10;
 
-    assertThat(configBuilder.build().getCustomHttpHeaders()).contains(
-        entry("X-Wayfair", "WFN"),
-        entry("Accept", "application/json")
-    );
-  }
+		properties.setFetchTogglesConnectTimeoutSeconds(fetchTogglesConnectTimeout);
+		customizer.customize(configBuilder);
+
+		assertThat(configBuilder.build().getFetchTogglesConnectTimeout()).isEqualTo(Duration.of(fetchTogglesConnectTimeout, ChronoUnit.SECONDS));
+	}
+
+	@Test
+	void shouldCustomizeFetchTogglesReadTimeoutSeconds() {
+		final long fetchTogglesReadTimeout = 10;
+
+		properties.setFetchTogglesReadTimeoutSeconds(fetchTogglesReadTimeout);
+		customizer.customize(configBuilder);
+
+		assertThat(configBuilder.build().getFetchTogglesReadTimeout()).isEqualTo(Duration.of(fetchTogglesReadTimeout, ChronoUnit.SECONDS));
+	}
+
+	@Test
+	void shouldCustomizeSendMetricsInterval() {
+		final long sendMetricsInterval = 100;
+
+		properties.setSendMetricsInterval(sendMetricsInterval);
+		customizer.customize(configBuilder);
+
+		assertThat(configBuilder.build().getSendMetricsInterval()).isEqualTo(sendMetricsInterval);
+	}
+
+	@Test
+	void shouldCustomizeSendMetricsConnectTimeoutSeconds() {
+		final long sendMetricsConnectTimeout = 10;
+
+		properties.setSendMetricsConnectTimeoutSeconds(sendMetricsConnectTimeout);
+		customizer.customize(configBuilder);
+
+		assertThat(configBuilder.build().getSendMetricsConnectTimeout()).isEqualTo(Duration.of(sendMetricsConnectTimeout, ChronoUnit.SECONDS));
+	}
+
+	@Test
+	void shouldCustomizeSendMetricsReadTimeoutSeconds() {
+		final long sendMetricsReadTimeout = 10;
+
+		properties.setSendMetricsReadTimeoutSeconds(sendMetricsReadTimeout);
+		customizer.customize(configBuilder);
+
+		assertThat(configBuilder.build().getSendMetricsReadTimeout()).isEqualTo(Duration.of(sendMetricsReadTimeout, ChronoUnit.SECONDS));
+	}
+
+	@Test
+	void shouldCustomizeCustomHeaders() {
+		final Map<String, String> customHeaders = Map.of("X-Wayfair", "WFN", "Accept", "application/json");
+
+		properties.setCustomHeaders(customHeaders);
+		customizer.customize(configBuilder);
+
+		assertThat(configBuilder.build().getCustomHttpHeaders()).contains(entry("X-Wayfair", "WFN"),
+				entry("Accept", "application/json"));
+	}
 
 }

@@ -20,10 +20,13 @@ import io.getunleash.util.UnleashConfig;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link UnleashConfig} via a {@link UnleashConfig.Builder} whilst retaining default auto-configuration.
+ * {@link UnleashConfig} via a {@link UnleashConfig.Builder} whilst retaining default
+ * auto-configuration.
  *
  * @author Max Schwaab
  */
 public interface UnleashConfigBuilderCustomizer {
-  void customize(UnleashConfig.Builder configBuilder);
+
+	void customize(UnleashConfig.Builder configBuilder);
+
 }

@@ -40,51 +40,45 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("UnleashProperties")
 class UnleashPropertiesTest {
 
-  private static final String MUST_NOT_BE_BLANK_MESSAGE = "must not be blank";
+	private static final String MUST_NOT_BE_BLANK_MESSAGE = "must not be blank";
 
-  private static UnleashProperties properties = new UnleashProperties();
+	private static UnleashProperties properties = new UnleashProperties();
 
-  private ValidatorFactory validatorFactory;
-  private Validator validator;
+	private ValidatorFactory validatorFactory;
 
-  @BeforeEach
-  void setUp() {
-    properties.setAppName("TestApp")
-        .setApiUrl("http://unleash.com")
-        .setApiClientSecret("c13n753cr37");
-    validatorFactory = Validation.buildDefaultValidatorFactory();
-    validator = validatorFactory.getValidator();
-  }
+	private Validator validator;
 
-  @AfterEach
-  void tearDown() {
-    validatorFactory.close();
-  }
+	@BeforeEach
+	void setUp() {
+		properties.setAppName("TestApp").setUnleashApi("https://unleash.com").setApiKey("c13n753cr37");
+		validatorFactory = Validation.buildDefaultValidatorFactory();
+		validator = validatorFactory.getValidator();
+	}
 
-  @ParameterizedTest(name = "{0} violates validation on argument {2}")
-  @MethodSource("validatedSettersWithInvalidArgs")
-  void setValidatedStringPropertyShouldReturnViolationOnBlankString(final String methodName, final Function<String, UnleashProperties> setter, final String value) {
-    assertThat(validator.validate(setter.apply(value)))
-        .extracting(ConstraintViolation::getMessage)
-        .containsExactly(MUST_NOT_BE_BLANK_MESSAGE);
-  }
+	@AfterEach
+	void tearDown() {
+		validatorFactory.close();
+	}
 
-  private static Stream<Arguments> validatedSettersWithInvalidArgs() {
-    final Function<String, UnleashProperties> setAppName = properties::setAppName;
-    final Function<String, UnleashProperties> setApiUrl = properties::setApiUrl;
-    final Function<String, UnleashProperties> setApiClientSecret = properties::setApiClientSecret;
+	@ParameterizedTest(name = "{0} violates validation on argument {2}")
+	@MethodSource("validatedSettersWithInvalidArgs")
+	void setValidatedStringPropertyShouldReturnViolationOnBlankString(final String methodName,
+			final Function<String, UnleashProperties> setter, final String value) {
+		assertThat(validator.validate(setter.apply(value))).extracting(ConstraintViolation::getMessage)
+				.containsExactly(MUST_NOT_BE_BLANK_MESSAGE);
+	}
 
-    return Stream.of(
-        Arguments.of("setAppName", setAppName, null),
-        Arguments.of("setAppName", setAppName, ""),
-        Arguments.of("setAppName", setAppName, " "),
-        Arguments.of("setApiUrl", setApiUrl, null),
-        Arguments.of("setApiUrl", setApiUrl, ""),
-        Arguments.of("setApiUrl", setApiUrl, " "),
-        Arguments.of("setApiClientSecret", setApiClientSecret, null),
-        Arguments.of("setApiClientSecret", setApiClientSecret, ""),
-        Arguments.of("setApiClientSecret", setApiClientSecret, " ")
-    );
-  }
+	private static Stream<Arguments> validatedSettersWithInvalidArgs() {
+		final Function<String, UnleashProperties> setAppName = properties::setAppName;
+		final Function<String, UnleashProperties> setUnleashApi = properties::setUnleashApi;
+		final Function<String, UnleashProperties> setApiKey = properties::setApiKey;
+
+		return Stream.of(Arguments.of("setAppName", setAppName, null), Arguments.of("setAppName", setAppName, ""),
+				Arguments.of("setAppName", setAppName, " "), Arguments.of("setUnleashApi", setUnleashApi, null),
+				Arguments.of("setUnleashApi", setUnleashApi, ""), Arguments.of("setUnleashApi", setUnleashApi, " "),
+				Arguments.of("setApiKey", setApiKey, null),
+				Arguments.of("setApiKey", setApiKey, ""),
+				Arguments.of("setApiKey", setApiKey, " "));
+	}
 
 }

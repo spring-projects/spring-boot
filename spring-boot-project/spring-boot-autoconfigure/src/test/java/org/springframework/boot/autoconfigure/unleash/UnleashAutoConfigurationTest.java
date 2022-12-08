@@ -21,11 +21,11 @@ import io.getunleash.FakeUnleash;
 import io.getunleash.Unleash;
 import io.getunleash.UnleashContextProvider;
 import io.getunleash.event.UnleashSubscriber;
-import io.getunleash.repository.ClientFeaturesResponse;
-import io.getunleash.repository.FeatureFetcher;
-import io.getunleash.repository.FeatureToggleResponse;
+import io.getunleash.metric.ClientRegistration;
+import io.getunleash.metric.MetricSender;
 import io.getunleash.repository.ToggleBootstrapProvider;
 import io.getunleash.strategy.Strategy;
+import io.getunleash.util.MetricSenderFactory;
 import io.getunleash.util.UnleashConfig;
 import io.getunleash.util.UnleashFeatureFetcherFactory;
 import io.getunleash.util.UnleashScheduledExecutor;
@@ -49,180 +49,201 @@ import static org.mockito.Mockito.verify;
 @DisplayName("UnleashAutoConfiguration")
 class UnleashAutoConfigurationTest {
 
-  private static final String[] UNLEASH_REQUIRED_PROPERTIES = new String[]{
-      "spring.unleash.app-name=TestApp",
-      "spring.unleash.api-url=https://unleash.com",
-      "spring.unleash.api-client-secret=c13n753cr37"
-  };
-  private static final FeatureFetcher NO_OP_FEATURE_FETCHER = () -> new ClientFeaturesResponse(FeatureToggleResponse.Status.NOT_CHANGED, 200);
-  private static final UnleashFeatureFetcherFactory NO_OP_FEATURE_FETCHER_FACTORY = config -> NO_OP_FEATURE_FETCHER;
-  private static final UnleashConfig CUSTOM_UNLEASH_CONFIG = UnleashConfig.builder()
-      .appName("CustomTestApp")
-      .unleashAPI("https://custom.unleash.com")
-      .apiKey("cu570mc13n753cr37")
-      .disableMetrics()
-      .unleashFeatureFetcherFactory(NO_OP_FEATURE_FETCHER_FACTORY)
-      .build();
+	private static final String[] UNLEASH_REQUIRED_PROPERTIES = new String[] { "spring.unleash.app-name=TestApp",
+			"spring.unleash.unleash-api=https://unleash.com", "spring.unleash.api-key=c13n753cr37", "spring.unleash.disable-metrics=true", "spring.unleash.disable-polling=true" };
 
-  private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-      .withConfiguration(AutoConfigurations.of(UnleashAutoConfiguration.class));
+	private static final UnleashConfig CUSTOM_UNLEASH_CONFIG = UnleashConfig.builder().appName("CustomTestApp")
+			.unleashAPI("https://custom.unleash.com").apiKey("cu570mc13n753cr37")
+			.disableMetrics()
+			.disablePolling()
+			.build();
 
-  @Test
-  void shouldNotCreateUnleashOnAppNameOrUnleashConfigNotPresent() {
-    this.contextRunner.withPropertyValues(
-            "spring.unleash.api-url=https://unleash.com",
-            "spring.unleash.api-client-secret=c13n753cr37"
-        )
-        .run((ctx) -> assertThat(ctx).doesNotHaveBean(Unleash.class));
-  }
+	private final UnleashScheduledExecutor unleashScheduledExecutorMock = mock(UnleashScheduledExecutor.class);
 
-  @Test
-  void shouldNotCreateUnleashOnApiUrlOrUnleashConfigNotPresent() {
-    this.contextRunner.withPropertyValues(
-        "spring.unleash.app-name=TestApp",
-            "spring.unleash.api-client-secret=c13n753cr37"
-        )
-        .run((ctx) -> assertThat(ctx).doesNotHaveBean(Unleash.class));
-  }
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withBean("mockedScheduledExecutor", UnleashScheduledExecutor.class, () -> unleashScheduledExecutorMock)
+			.withConfiguration(AutoConfigurations.of(UnleashAutoConfiguration.class));
 
-  @Test
-  void shouldNotCreateUnleashOnApiClientSecretOrUnleashConfigNotPresent() {
-    this.contextRunner.withPropertyValues(
-        "spring.unleash.app-name=TestApp",
-            "spring.unleash.api-url=https://unleash.com"
-        )
-        .run((ctx) -> assertThat(ctx).doesNotHaveBean(Unleash.class));
-  }
+	@Test
+	void shouldNotCreateUnleashOnAppNameOrUnleashConfigNotPresent() {
+		this.contextRunner
+				.withPropertyValues("spring.unleash.unleash-api=https://unleash.com",
+						"spring.unleash.api-key=c13n753cr37")
+				.run((ctx) -> assertThat(ctx).doesNotHaveBean(Unleash.class));
+	}
 
-  @Test
-  void shouldNotCreateUnleashOnUnleashBeanAlreadyPresent() {
-    this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
-        .withBean("customUnleash", Unleash.class, FakeUnleash::new)
-        .run((ctx) -> assertThat(ctx).doesNotHaveBean("unleash"));
-  }
+	@Test
+	void shouldNotCreateUnleashOnUnleashApiOrUnleashConfigNotPresent() {
+		this.contextRunner
+				.withPropertyValues("spring.unleash.app-name=TestApp", "spring.unleash.api-key=c13n753cr37")
+				.run((ctx) -> assertThat(ctx).doesNotHaveBean(Unleash.class));
+	}
 
-  @Test
-  void shouldCreateUnleashOnUnleashRequiredPropertiesPresent() {
-    this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
-        .run((ctx) -> assertThat(ctx).hasSingleBean(Unleash.class));
-  }
+	@Test
+	void shouldNotCreateUnleashOnApiKeyOrUnleashConfigNotPresent() {
+		this.contextRunner
+				.withPropertyValues("spring.unleash.app-name=TestApp", "spring.unleash.unleash-api=https://unleash.com")
+				.run((ctx) -> assertThat(ctx).doesNotHaveBean(Unleash.class));
+	}
 
-  @Test
-  void shouldCreateUnleashOnUnleashConfigPresent() {
-    this.contextRunner.withBean(UnleashConfig.class, () -> CUSTOM_UNLEASH_CONFIG)
-        .run((ctx) -> assertThat(ctx).hasSingleBean(Unleash.class));
-  }
+	@Test
+	void shouldNotCreateUnleashOnUnleashBeanAlreadyPresent() {
+		this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
+				.withBean("customUnleash", Unleash.class, FakeUnleash::new)
+				.run((ctx) -> assertThat(ctx).doesNotHaveBean("unleash"));
+	}
 
-  @Test
-  void shouldCreateUnleashPropertiesOnRequiredPropertiesPresent() {
-    this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
-        .run((ctx) -> assertThat(ctx).hasSingleBean(UnleashProperties.class));
-  }
+	@Test
+	void shouldCreateUnleashOnUnleashRequiredPropertiesPresent() {
+		this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
+				.run((ctx) -> assertThat(ctx).hasSingleBean(Unleash.class));
+	}
 
-  @Test
-  void shouldNotCreateUnleashPropertiesOnRequiredPropertiesNotPresent() {
-    this.contextRunner.run((ctx) -> assertThat(ctx).doesNotHaveBean(UnleashProperties.class));
-  }
+	@Test
+	void shouldCreateUnleashOnUnleashConfigPresent() {
+		this.contextRunner.withBean(UnleashConfig.class, () -> CUSTOM_UNLEASH_CONFIG)
+				.run((ctx) -> assertThat(ctx).hasSingleBean(Unleash.class));
+	}
 
-  @Test
-  void shouldCreateUnleashConfig() {
-    this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
-        .run((ctx) -> assertThat(ctx).hasSingleBean(UnleashConfig.class));
-  }
+	@Test
+	void shouldCreateUnleashPropertiesOnRequiredPropertiesPresent() {
+		this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
+				.run((ctx) -> assertThat(ctx).hasSingleBean(UnleashProperties.class));
+	}
 
-  @Test
-  void shouldNotCreateUnleashConfigOnUnleashConfigBeanAlreadyPresent() {
-    this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
-        .withBean("customUnleashConfig", UnleashConfig.class, () -> CUSTOM_UNLEASH_CONFIG)
-        .run((ctx) -> assertThat(ctx).doesNotHaveBean("unleashConfig"));
-  }
+	@Test
+	void shouldNotCreateUnleashPropertiesOnRequiredPropertiesNotPresent() {
+		this.contextRunner.run((ctx) -> assertThat(ctx).doesNotHaveBean(UnleashProperties.class));
+	}
 
-  @Test
-  void shouldNotCreateUnleashConfigOnUnleashBeanAlreadyPresent() {
-    this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
-        .withBean("customUnleash", Unleash.class, FakeUnleash::new)
-        .run((ctx) -> assertThat(ctx).doesNotHaveBean("unleashConfig").doesNotHaveBean(UnleashConfig.class));
-  }
+	@Test
+	void shouldCreateUnleashConfig() {
+		this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
+				.run((ctx) -> assertThat(ctx).hasSingleBean(UnleashConfig.class));
+	}
 
-  @Test
-  void shouldCreateUnleashPropertiesConfigBuilderCustomizerOnUnleashRequiredPropertiesPresent() {
-    this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
-        .run((ctx) -> assertThat(ctx).hasSingleBean(UnleashPropertiesConfigBuilderCustomizer.class));
-  }
+	@Test
+	void shouldNotCreateUnleashConfigOnUnleashConfigBeanAlreadyPresent() {
+		this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
+				.withBean("customUnleashConfig", UnleashConfig.class, () -> CUSTOM_UNLEASH_CONFIG)
+				.run((ctx) -> assertThat(ctx).doesNotHaveBean("unleashConfig"));
+	}
 
-  @Test
-  void shouldNotCreateUnleashPropertiesConfigBuilderCustomizerOnUnleashRequiredPropertiesNotPresent() {
-    this.contextRunner.run((ctx) -> assertThat(ctx).doesNotHaveBean(UnleashPropertiesConfigBuilderCustomizer.class));
-  }
+	@Test
+	void shouldNotCreateUnleashConfigOnUnleashBeanAlreadyPresent() {
+		this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
+				.withBean("customUnleash", Unleash.class, FakeUnleash::new)
+				.run((ctx) -> assertThat(ctx).doesNotHaveBean("unleashConfig").doesNotHaveBean(UnleashConfig.class));
+	}
 
-  @Test
-  void shouldCreateUnleashBeanConfigBuilderCustomizer() {
-    this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
-        .run((ctx) -> assertThat(ctx).hasSingleBean(UnleashBeanConfigBuilderCustomizer.class));
-  }
+	@Test
+	void shouldCreateUnleashPropertiesConfigBuilderCustomizerOnUnleashRequiredPropertiesPresent() {
+		this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
+				.run((ctx) -> assertThat(ctx).hasSingleBean(UnleashPropertiesConfigBuilderCustomizer.class));
+	}
 
-  @Test
-  void shouldUseAdditionalUnleashConfigBuilderCustomizer() {
-    final UnleashConfigBuilderCustomizer unleashConfigBuilderCustomizerMock = mock(UnleashConfigBuilderCustomizer.class);
-    this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
-        .withBean("customUnleash", UnleashConfigBuilderCustomizer.class, () -> unleashConfigBuilderCustomizerMock)
-        .run((ctx) -> verify(unleashConfigBuilderCustomizerMock).customize(any(UnleashConfig.Builder.class)));
-  }
+	@Test
+	void shouldNotCreateUnleashPropertiesConfigBuilderCustomizerOnUnleashRequiredPropertiesNotPresent() {
+		this.contextRunner
+				.run((ctx) -> assertThat(ctx).doesNotHaveBean(UnleashPropertiesConfigBuilderCustomizer.class));
+	}
 
-  @Test
-  void shouldCustomizeUnleashContextProvider() {
-    final UnleashContextProvider unleashContextProviderMock = mock(UnleashContextProvider.class);
-    this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
-        .withBean("customUnleashContextProvider", UnleashContextProvider.class, () -> unleashContextProviderMock)
-        .run((ctx) -> assertThat(ctx).getBean(UnleashConfig.class).hasFieldOrPropertyWithValue("contextProvider", unleashContextProviderMock));
-  }
+	@Test
+	void shouldCreateUnleashBeanConfigBuilderCustomizer() {
+		this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
+				.run((ctx) -> assertThat(ctx).hasSingleBean(UnleashBeanConfigBuilderCustomizer.class));
+	}
 
-  @Test
-  void shouldCustomizeStrategy() {
-    final Strategy fallbackStrategyMock = mock(Strategy.class);
-    this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
-        .withBean("customFallbackStrategy", Strategy.class, () -> fallbackStrategyMock)
-        .run((ctx) -> assertThat(ctx).getBean(UnleashConfig.class).hasFieldOrPropertyWithValue("fallbackStrategy", fallbackStrategyMock));
-  }
+	@Test
+	void shouldUseAdditionalUnleashConfigBuilderCustomizer() {
+		final UnleashConfigBuilderCustomizer unleashConfigBuilderCustomizerMock = mock(
+				UnleashConfigBuilderCustomizer.class);
+		this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
+				.withBean("customUnleash", UnleashConfigBuilderCustomizer.class,
+						() -> unleashConfigBuilderCustomizerMock)
+				.run((ctx) -> verify(unleashConfigBuilderCustomizerMock).customize(any(UnleashConfig.Builder.class)));
+	}
 
-  @Test
-  void shouldCustomizeCustomHttpHeadersProvider() {
-    final CustomHttpHeadersProvider customHttpHeadersProviderMock = mock(CustomHttpHeadersProvider.class);
-    this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
-        .withBean("customHttpHeadersProvider", CustomHttpHeadersProvider.class, () -> customHttpHeadersProviderMock)
-        .run((ctx) -> assertThat(ctx).getBean(UnleashConfig.class).hasFieldOrPropertyWithValue("customHttpHeadersProvider", customHttpHeadersProviderMock));
-  }
+	@Test
+	void shouldCustomizeUnleashContextProvider() {
+		final UnleashContextProvider unleashContextProviderMock = mock(UnleashContextProvider.class);
+		this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
+				.withBean("customUnleashContextProvider", UnleashContextProvider.class,
+						() -> unleashContextProviderMock)
+				.run((ctx) -> assertThat(ctx).getBean(UnleashConfig.class)
+						.hasFieldOrPropertyWithValue("contextProvider", unleashContextProviderMock));
+	}
 
-  @Test
-  void shouldCustomizeProxy() {
-    final Proxy customProxy = Proxy.NO_PROXY;
-    this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
-        .withBean("customProxy", Proxy.class, () -> customProxy)
-        .run((ctx) -> assertThat(ctx).getBean(UnleashConfig.class).hasFieldOrPropertyWithValue("proxy", customProxy));
-  }
+	@Test
+	void shouldCustomizeUnleashFeatureFetcherFactory() {
+		final UnleashFeatureFetcherFactory featureFetcherFactory = mock(UnleashFeatureFetcherFactory.class);
+		this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
+				.withBean("customFeatureFetcherFactory", UnleashFeatureFetcherFactory.class, () -> featureFetcherFactory)
+				.run((ctx) -> assertThat(ctx).getBean(UnleashConfig.class)
+						.hasFieldOrPropertyWithValue("unleashFeatureFetcherFactory", featureFetcherFactory));
+	}
 
-  @Test
-  void shouldCustomizeUnleashScheduledExecutor() {
-    final UnleashScheduledExecutor unleashScheduledExecutorMock = mock(UnleashScheduledExecutor.class);
-    this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
-        .withBean("customUnleashScheduledExecutor", UnleashScheduledExecutor.class, () -> unleashScheduledExecutorMock)
-        .run((ctx) -> assertThat(ctx).getBean(UnleashConfig.class).hasFieldOrPropertyWithValue("unleashScheduledExecutor", unleashScheduledExecutorMock));
-  }
+	@Test
+	void shouldCustomizeFallbackStrategy() {
+		final Strategy fallbackStrategyMock = mock(Strategy.class);
+		this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
+				.withBean("customFallbackStrategy", Strategy.class, () -> fallbackStrategyMock)
+				.run((ctx) -> assertThat(ctx).getBean(UnleashConfig.class)
+						.hasFieldOrPropertyWithValue("fallbackStrategy", fallbackStrategyMock));
+	}
 
-  @Test
-  void shouldCustomizeUnleashSubscriber() {
-    final UnleashSubscriber unleashSubscriberMock = mock(UnleashSubscriber.class);
-    this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
-        .withBean("customUnleashSubscriber", UnleashSubscriber.class, () -> unleashSubscriberMock)
-        .run((ctx) -> assertThat(ctx).getBean(UnleashConfig.class).hasFieldOrPropertyWithValue("unleashSubscriber", unleashSubscriberMock));
-  }
+	@Test
+	void shouldCustomizeCustomHttpHeadersProvider() {
+		final CustomHttpHeadersProvider customHttpHeadersProviderMock = mock(CustomHttpHeadersProvider.class);
+		this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
+				.withBean("customHttpHeadersProvider", CustomHttpHeadersProvider.class,
+						() -> customHttpHeadersProviderMock)
+				.run((ctx) -> assertThat(ctx).getBean(UnleashConfig.class)
+						.hasFieldOrPropertyWithValue("customHttpHeadersProvider", customHttpHeadersProviderMock));
+	}
 
-  @Test
-  void shouldCustomizeToggleBootstrapProvider() {
-    final ToggleBootstrapProvider toggleBootstrapProviderMock = mock(ToggleBootstrapProvider.class);
-    this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
-        .withBean("customToggleBootstrapProvider", ToggleBootstrapProvider.class, () -> toggleBootstrapProviderMock)
-        .run((ctx) -> assertThat(ctx).getBean(UnleashConfig.class).hasFieldOrPropertyWithValue("toggleBootstrapProvider", toggleBootstrapProviderMock));
-  }
+	@Test
+	void shouldCustomizeMetricsSenderFactory() {
+		final MetricSender metricSenderMock = mock(MetricSender.class);
+		final MetricSenderFactory metricSenderFactory = config -> metricSenderMock;
+
+		this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
+				.withBean("customMetricsSenderFactory", MetricSenderFactory.class, () -> metricSenderFactory)
+				.run((ctx) -> verify(metricSenderMock).registerClient(any(ClientRegistration.class)));
+	}
+
+	@Test
+	void shouldCustomizeProxy() {
+		final Proxy customProxy = Proxy.NO_PROXY;
+		this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
+				.withBean("customProxy", Proxy.class, () -> customProxy).run((ctx) -> assertThat(ctx)
+						.getBean(UnleashConfig.class).hasFieldOrPropertyWithValue("proxy", customProxy));
+	}
+
+	@Test
+	void shouldCustomizeUnleashScheduledExecutor() {
+		this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
+				.run((ctx) -> assertThat(ctx).getBean(UnleashConfig.class)
+						.hasFieldOrPropertyWithValue("unleashScheduledExecutor", unleashScheduledExecutorMock));
+	}
+
+	@Test
+	void shouldCustomizeUnleashSubscriber() {
+		final UnleashSubscriber unleashSubscriberMock = mock(UnleashSubscriber.class);
+		this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
+				.withBean("customUnleashSubscriber", UnleashSubscriber.class, () -> unleashSubscriberMock)
+				.run((ctx) -> assertThat(ctx).getBean(UnleashConfig.class)
+						.hasFieldOrPropertyWithValue("unleashSubscriber", unleashSubscriberMock));
+	}
+
+	@Test
+	void shouldCustomizeToggleBootstrapProvider() {
+		final ToggleBootstrapProvider toggleBootstrapProviderMock = mock(ToggleBootstrapProvider.class);
+		this.contextRunner.withPropertyValues(UNLEASH_REQUIRED_PROPERTIES)
+				.withBean("customToggleBootstrapProvider", ToggleBootstrapProvider.class,
+						() -> toggleBootstrapProviderMock)
+				.run((ctx) -> assertThat(ctx).getBean(UnleashConfig.class)
+						.hasFieldOrPropertyWithValue("toggleBootstrapProvider", toggleBootstrapProviderMock));
+	}
 
 }

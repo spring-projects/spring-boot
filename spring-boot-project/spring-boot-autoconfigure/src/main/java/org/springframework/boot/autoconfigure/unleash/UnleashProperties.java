@@ -32,148 +32,281 @@ import java.util.Map;
 @ConfigurationProperties(prefix = "spring.unleash")
 class UnleashProperties {
 
-  @NotBlank
-  private String appName;
-  @NotBlank
-  private String apiUrl;
-  @NotBlank
-  private String apiClientSecret;
-  private boolean disableMetrics;
-  private boolean enableProxyAuthenticationByJvmProperties;
-  private boolean synchronousFetchOnInitialisation;
-  private String backUpFile;
-  private String environment;
-  private String instanceId;
-  private String namePrefix;
-  private String projectName;
-  private Long fetchTogglesInterval;
-  private Long sendMetricsInterval;
-  private Map<String, String> customHeaders = new HashMap<>();
+	/**
+	 * The name of the application as shown in the Unleash UI. Registered applications are listed on the Applications page.
+	 */
+	@NotBlank
+	private String appName;
 
-  public String getAppName() {
-    return appName;
-  }
+	/**
+	 * The URL of the Unleash API.
+	 */
+	@NotBlank
+	private String unleashApi;
 
-  public UnleashProperties setAppName(final String appName) {
-    this.appName = appName;
-    return this;
-  }
+	/**
+	 * The api key to use for authenticating against the Unleash API.
+	 */
+	@NotBlank
+	private String apiKey;
 
-  public String getApiUrl() {
-    return apiUrl;
-  }
+	/**
+	 * A boolean indicating whether the client should disable sending usage metrics to the Unleash server.
+	 */
+	private boolean disableMetrics;
 
-  public UnleashProperties setApiUrl(final String apiUrl) {
-    this.apiUrl = apiUrl;
-    return this;
-  }
+	/**
+	 * A boolean indicating whether the client should poll the unleash api for updates to toggles.
+	 */
+	private boolean disablePolling;
 
-  public String getApiClientSecret() {
-    return apiClientSecret;
-  }
+	/**
+	 * Enable support for using JVM properties for HTTP proxy authentication.
+	 */
+	private boolean enableProxyAuthenticationByJvmProperties;
 
-  public UnleashProperties setApiClientSecret(final String apiClientSecret) {
-    this.apiClientSecret = apiClientSecret;
-    return this;
-  }
+	/**
+	 * Whether the client should fetch toggle configuration synchronously (in a blocking manner).
+	 */
+	private boolean synchronousFetchOnInitialisation;
 
-  public boolean isDisableMetrics() {
-    return disableMetrics;
-  }
+	/**
+	 * The path to the file where local backups get stored.
+	 */
+	private String backUpFile;
 
-  public UnleashProperties setDisableMetrics(final boolean disableMetrics) {
-    this.disableMetrics = disableMetrics;
-    return this;
-  }
+	/**
+	 * 	The name of the current environment.
+	 */
+	private String environment;
 
-  public boolean isEnableProxyAuthenticationByJvmProperties() {
-    return enableProxyAuthenticationByJvmProperties;
-  }
+	/**
+	 * A unique(-ish) identifier for your instance. Typically a hostname, pod id or something similar.
+	 * Unleash uses this to separate metrics from the client SDKs with the same appName.
+	 */
+	private String instanceId;
 
-  public UnleashProperties setEnableProxyAuthenticationByJvmProperties(final boolean enableProxyAuthenticationByJvmProperties) {
-    this.enableProxyAuthenticationByJvmProperties = enableProxyAuthenticationByJvmProperties;
-    return this;
-  }
+	/**
+	 * If provided, the client will only fetch toggles whose name starts with the provided value.
+	 */
+	private String namePrefix;
 
-  public boolean isSynchronousFetchOnInitialisation() {
-    return synchronousFetchOnInitialisation;
-  }
+	/**
+	 * If provided, the client will only fetch toggles from the specified project.
+	 * (This can also be achieved with an API token).
+	 */
+	private String projectName;
 
-  public UnleashProperties setSynchronousFetchOnInitialisation(final boolean synchronousFetchOnInitialisation) {
-    this.synchronousFetchOnInitialisation = synchronousFetchOnInitialisation;
-    return this;
-  }
+	/**
+	 * How often (in seconds) the client should check for toggle updates. Set to 0 if you want to only check once.
+	 */
+	private Long fetchTogglesInterval;
 
-  public String getBackUpFile() {
-    return backUpFile;
-  }
+	/**
+	 * Connect timeout for fetch toggles operation in seconds.
+	 */
+	private Long fetchTogglesConnectTimeoutSeconds;
 
-  public UnleashProperties setBackUpFile(final String backUpFile) {
-    this.backUpFile = backUpFile;
-    return this;
-  }
+	/**
+	 * Read timeout for fetch toggles operation in seconds.
+	 */
+	private Long fetchTogglesReadTimeoutSeconds;
 
-  public String getEnvironment() {
-    return environment;
-  }
+	/**
+	 * How often (in seconds) the client should send metrics to the Unleash server.
+	 * Ignored if you disable metrics with the disableMetrics method.
+	 */
+	private Long sendMetricsInterval;
 
-  public UnleashProperties setEnvironment(final String environment) {
-    this.environment = environment;
-    return this;
-  }
+	/**
+	 * Connect timeout for send metrics operation in seconds.
+	 */
+	private Long sendMetricsConnectTimeoutSeconds;
 
-  public String getInstanceId() {
-    return instanceId;
-  }
+	/**
+	 * Read timeout for send metrics operation in seconds.
+	 */
+	private Long sendMetricsReadTimeoutSeconds;
 
-  public UnleashProperties setInstanceId(final String instanceId) {
-    this.instanceId = instanceId;
-    return this;
-  }
+	/**
+	 * Add a custom HTTP header to the list of HTTP headers that will the client sends to the Unleash API.
+	 * Each method call will add a new header.
+	 * Note: in most cases, you'll need to use this method to provide an API token.<br>
+	 * <br>
+	 * Headers can be defined as a map in YAML.
+	 */
+	private Map<String, String> customHeaders = new HashMap<>();
 
-  public String getNamePrefix() {
-    return namePrefix;
-  }
+	public String getAppName() {
+		return appName;
+	}
 
-  public UnleashProperties setNamePrefix(final String namePrefix) {
-    this.namePrefix = namePrefix;
-    return this;
-  }
+	public UnleashProperties setAppName(final String appName) {
+		this.appName = appName;
+		return this;
+	}
 
-  public String getProjectName() {
-    return projectName;
-  }
+	public String getUnleashApi() {
+		return unleashApi;
+	}
 
-  public UnleashProperties setProjectName(final String projectName) {
-    this.projectName = projectName;
-    return this;
-  }
+	public UnleashProperties setUnleashApi(final String unleashApi) {
+		this.unleashApi = unleashApi;
+		return this;
+	}
 
-  public Long getFetchTogglesInterval() {
-    return fetchTogglesInterval;
-  }
+	public String getApiKey() {
+		return apiKey;
+	}
 
-  public UnleashProperties setFetchTogglesInterval(final Long fetchTogglesInterval) {
-    this.fetchTogglesInterval = fetchTogglesInterval;
-    return this;
-  }
+	public UnleashProperties setApiKey(final String apiKey) {
+		this.apiKey = apiKey;
+		return this;
+	}
 
-  public Long getSendMetricsInterval() {
-    return sendMetricsInterval;
-  }
+	public boolean isDisableMetrics() {
+		return disableMetrics;
+	}
 
-  public UnleashProperties setSendMetricsInterval(final Long sendMetricsInterval) {
-    this.sendMetricsInterval = sendMetricsInterval;
-    return this;
-  }
+	public UnleashProperties setDisableMetrics(final boolean disableMetrics) {
+		this.disableMetrics = disableMetrics;
+		return this;
+	}
 
-  public Map<String, String> getCustomHeaders() {
-    return customHeaders;
-  }
+	public boolean isDisablePolling() {
+		return disablePolling;
+	}
 
-  public UnleashProperties setCustomHeaders(final Map<String, String> customHeaders) {
-    this.customHeaders = customHeaders;
-    return this;
-  }
+	public UnleashProperties setDisablePolling(final boolean disablePolling) {
+		this.disablePolling = disablePolling;
+		return this;
+	}
+
+	public boolean isEnableProxyAuthenticationByJvmProperties() {
+		return enableProxyAuthenticationByJvmProperties;
+	}
+
+	public UnleashProperties setEnableProxyAuthenticationByJvmProperties(
+			final boolean enableProxyAuthenticationByJvmProperties) {
+		this.enableProxyAuthenticationByJvmProperties = enableProxyAuthenticationByJvmProperties;
+		return this;
+	}
+
+	public boolean isSynchronousFetchOnInitialisation() {
+		return synchronousFetchOnInitialisation;
+	}
+
+	public UnleashProperties setSynchronousFetchOnInitialisation(final boolean synchronousFetchOnInitialisation) {
+		this.synchronousFetchOnInitialisation = synchronousFetchOnInitialisation;
+		return this;
+	}
+
+	public String getBackUpFile() {
+		return backUpFile;
+	}
+
+	public UnleashProperties setBackUpFile(final String backUpFile) {
+		this.backUpFile = backUpFile;
+		return this;
+	}
+
+	public String getEnvironment() {
+		return environment;
+	}
+
+	public UnleashProperties setEnvironment(final String environment) {
+		this.environment = environment;
+		return this;
+	}
+
+	public String getInstanceId() {
+		return instanceId;
+	}
+
+	public UnleashProperties setInstanceId(final String instanceId) {
+		this.instanceId = instanceId;
+		return this;
+	}
+
+	public String getNamePrefix() {
+		return namePrefix;
+	}
+
+	public UnleashProperties setNamePrefix(final String namePrefix) {
+		this.namePrefix = namePrefix;
+		return this;
+	}
+
+	public String getProjectName() {
+		return projectName;
+	}
+
+	public UnleashProperties setProjectName(final String projectName) {
+		this.projectName = projectName;
+		return this;
+	}
+
+	public Long getFetchTogglesInterval() {
+		return fetchTogglesInterval;
+	}
+
+	public UnleashProperties setFetchTogglesInterval(final Long fetchTogglesInterval) {
+		this.fetchTogglesInterval = fetchTogglesInterval;
+		return this;
+	}
+
+	public Long getFetchTogglesConnectTimeoutSeconds() {
+		return fetchTogglesConnectTimeoutSeconds;
+	}
+
+	public UnleashProperties setFetchTogglesConnectTimeoutSeconds(final Long fetchTogglesConnectTimeoutSeconds) {
+		this.fetchTogglesConnectTimeoutSeconds = fetchTogglesConnectTimeoutSeconds;
+		return this;
+	}
+
+	public Long getFetchTogglesReadTimeoutSeconds() {
+		return fetchTogglesReadTimeoutSeconds;
+	}
+
+	public UnleashProperties setFetchTogglesReadTimeoutSeconds(final Long fetchTogglesReadTimeoutSeconds) {
+		this.fetchTogglesReadTimeoutSeconds = fetchTogglesReadTimeoutSeconds;
+		return this;
+	}
+
+	public Long getSendMetricsInterval() {
+		return sendMetricsInterval;
+	}
+
+	public UnleashProperties setSendMetricsInterval(final Long sendMetricsInterval) {
+		this.sendMetricsInterval = sendMetricsInterval;
+		return this;
+	}
+
+	public Long getSendMetricsConnectTimeoutSeconds() {
+		return sendMetricsConnectTimeoutSeconds;
+	}
+
+	public UnleashProperties setSendMetricsConnectTimeoutSeconds(final Long sendMetricsConnectTimeoutSeconds) {
+		this.sendMetricsConnectTimeoutSeconds = sendMetricsConnectTimeoutSeconds;
+		return this;
+	}
+
+	public Long getSendMetricsReadTimeoutSeconds() {
+		return sendMetricsReadTimeoutSeconds;
+	}
+
+	public UnleashProperties setSendMetricsReadTimeoutSeconds(final Long sendMetricsReadTimeoutSeconds) {
+		this.sendMetricsReadTimeoutSeconds = sendMetricsReadTimeoutSeconds;
+		return this;
+	}
+
+	public Map<String, String> getCustomHeaders() {
+		return customHeaders;
+	}
+
+	public UnleashProperties setCustomHeaders(final Map<String, String> customHeaders) {
+		this.customHeaders = customHeaders;
+		return this;
+	}
 
 }

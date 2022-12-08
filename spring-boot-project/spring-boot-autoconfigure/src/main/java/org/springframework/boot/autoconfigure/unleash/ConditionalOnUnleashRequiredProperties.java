@@ -25,12 +25,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Shortcut for
- * <pre class="code">
+ * Shortcut for <pre class="code">
  * &#064;@ConditionalOnProperty({
  *     "spring.unleash.app-name",
- *     "spring.unleash.api-url",
- *     "spring.unleash.api-client-secret"
+ *     "spring.unleash.unleash-api",
+ *     "spring.unleash.api-key"
  * })
  * </pre>
  *
@@ -39,9 +38,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Documented
-@ConditionalOnProperty({
-    "spring.unleash.app-name",
-    "spring.unleash.api-url",
-    "spring.unleash.api-client-secret"
-})
-@interface ConditionalOnUnleashRequiredProperties { }
+@ConditionalOnProperty({ "spring.unleash.app-name", "spring.unleash.unleash-api", "spring.unleash.api-key" })
+@interface ConditionalOnUnleashRequiredProperties {
+
+}

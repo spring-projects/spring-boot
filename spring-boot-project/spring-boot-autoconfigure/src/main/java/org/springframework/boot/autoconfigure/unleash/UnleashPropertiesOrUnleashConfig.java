@@ -25,14 +25,18 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
  */
 class UnleashPropertiesOrUnleashConfig extends AnyNestedCondition {
 
-  public UnleashPropertiesOrUnleashConfig() {
-    super(ConfigurationPhase.REGISTER_BEAN);
-  }
+	public UnleashPropertiesOrUnleashConfig() {
+		super(ConfigurationPhase.REGISTER_BEAN);
+	}
 
-  @ConditionalOnUnleashRequiredProperties
-  static class UnleashRequiredProperties { }
+	@ConditionalOnUnleashRequiredProperties
+	static class UnleashRequiredProperties {
 
-  @ConditionalOnBean(UnleashConfig.class)
-  static class UnleashConfigBean { }
+	}
+
+	@ConditionalOnBean(UnleashConfig.class)
+	static class UnleashConfigBean {
+
+	}
 
 }

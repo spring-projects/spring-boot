@@ -27,44 +27,57 @@ import org.apache.commons.lang3.StringUtils;
  */
 class UnleashPropertiesConfigBuilderCustomizer implements UnleashConfigBuilderCustomizer {
 
-  private final UnleashProperties properties;
+	private final UnleashProperties properties;
 
-  UnleashPropertiesConfigBuilderCustomizer(final UnleashProperties properties) {
-    this.properties = properties;
-  }
+	UnleashPropertiesConfigBuilderCustomizer(final UnleashProperties properties) {
+		this.properties = properties;
+	}
 
-  @Override
-  public void customize(final UnleashConfig.Builder configBuilder) {
-    configBuilder.appName(properties.getAppName())
-        .unleashAPI(properties.getApiUrl())
-        .apiKey(properties.getApiClientSecret())
-        .namePrefix(properties.getNamePrefix())
-        .projectName(properties.getProjectName())
-        .synchronousFetchOnInitialisation(properties.isSynchronousFetchOnInitialisation());
+	@Override
+	public void customize(final UnleashConfig.Builder configBuilder) {
+		configBuilder.appName(properties.getAppName()).unleashAPI(properties.getUnleashApi())
+				.apiKey(properties.getApiKey()).namePrefix(properties.getNamePrefix())
+				.projectName(properties.getProjectName())
+				.synchronousFetchOnInitialisation(properties.isSynchronousFetchOnInitialisation());
 
-    if (properties.isDisableMetrics()) {
-      configBuilder.disableMetrics();
-    }
-    if (properties.isEnableProxyAuthenticationByJvmProperties()) {
-      configBuilder.enableProxyAuthenticationByJvmProperties();
-    }
-    if (StringUtils.isNotBlank(properties.getEnvironment())) {
-      configBuilder.environment(properties.getEnvironment());
-    }
-    if (StringUtils.isNotBlank(properties.getInstanceId())) {
-      configBuilder.instanceId(properties.getInstanceId());
-    }
-    if (StringUtils.isNotBlank(properties.getBackUpFile())) {
-      configBuilder.backupFile(properties.getBackUpFile());
-    }
-    if (properties.getFetchTogglesInterval() != null) {
-      configBuilder.fetchTogglesInterval(properties.getFetchTogglesInterval());
-    }
-    if (properties.getSendMetricsInterval() != null) {
-      configBuilder.sendMetricsInterval(properties.getSendMetricsInterval());
-    }
+		if (properties.isDisableMetrics()) {
+			configBuilder.disableMetrics();
+		}
+		if (properties.isDisablePolling()) {
+			configBuilder.disablePolling();
+		}
+		if (properties.isEnableProxyAuthenticationByJvmProperties()) {
+			configBuilder.enableProxyAuthenticationByJvmProperties();
+		}
+		if (StringUtils.isNotBlank(properties.getEnvironment())) {
+			configBuilder.environment(properties.getEnvironment());
+		}
+		if (StringUtils.isNotBlank(properties.getInstanceId())) {
+			configBuilder.instanceId(properties.getInstanceId());
+		}
+		if (StringUtils.isNotBlank(properties.getBackUpFile())) {
+			configBuilder.backupFile(properties.getBackUpFile());
+		}
+		if (properties.getFetchTogglesInterval() != null) {
+			configBuilder.fetchTogglesInterval(properties.getFetchTogglesInterval());
+		}
+		if (properties.getFetchTogglesConnectTimeoutSeconds() != null) {
+			configBuilder.fetchTogglesConnectTimeoutSeconds(properties.getFetchTogglesConnectTimeoutSeconds());
+		}
+		if (properties.getFetchTogglesReadTimeoutSeconds() != null) {
+			configBuilder.fetchTogglesReadTimeoutSeconds(properties.getFetchTogglesReadTimeoutSeconds());
+		}
+		if (properties.getSendMetricsInterval() != null) {
+			configBuilder.sendMetricsInterval(properties.getSendMetricsInterval());
+		}
+		if (properties.getSendMetricsConnectTimeoutSeconds() != null) {
+			configBuilder.sendMetricsConnectTimeoutSeconds(properties.getSendMetricsConnectTimeoutSeconds());
+		}
+		if (properties.getSendMetricsReadTimeoutSeconds() != null) {
+			configBuilder.sendMetricsReadTimeoutSeconds(properties.getSendMetricsReadTimeoutSeconds());
+		}
 
-    properties.getCustomHeaders().forEach(configBuilder::customHttpHeader);
-  }
+		properties.getCustomHeaders().forEach(configBuilder::customHttpHeader);
+	}
 
 }
