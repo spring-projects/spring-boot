@@ -37,6 +37,7 @@ dependencies {
 	optional("io.rsocket:rsocket-transport-netty")
 	optional("io.undertow:undertow-servlet")
 	optional("io.undertow:undertow-websockets-jsr")
+	optional("io.getunleash:unleash-client-java")
 	optional("jakarta.jms:jakarta.jms-api")
 	optional("jakarta.mail:jakarta.mail-api")
 	optional("jakarta.json.bind:jakarta.json.bind-api")

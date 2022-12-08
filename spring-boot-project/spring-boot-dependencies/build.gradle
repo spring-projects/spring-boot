@@ -1513,6 +1513,13 @@ bom {
 			]
 		}
 	}
+	library("Unleash Client", "7.0.0") {
+		group("io.getunleash") {
+			modules = [
+					"unleash-client-java"
+			]
+		}
+	}
 	library("Versions Maven Plugin", "2.12.0") {
 		group("org.codehaus.mojo") {
 			plugins = [
