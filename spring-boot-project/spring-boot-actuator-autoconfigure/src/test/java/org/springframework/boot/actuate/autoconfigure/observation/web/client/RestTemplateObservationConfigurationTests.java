@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.observation.web.client;
 
 import io.micrometer.common.KeyValues;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.observation.ObservationRegistry;
@@ -134,7 +135,6 @@ class RestTemplateObservationConfigurationTests {
 	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput output) {
 		this.contextRunner.with(MetricsRun.simple()).withPropertyValues("management.metrics.web.client.max-uri-tags=2")
 				.run((context) -> {
-
 					RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class).build();
 					MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
 					for (int i = 0; i < 3; i++) {
@@ -144,8 +144,10 @@ class RestTemplateObservationConfigurationTests {
 						restTemplate.getForObject("/test/" + i, String.class);
 					}
 					TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
-					TestObservationRegistryAssert.assertThat(registry);
-					// TODO: check observation count for name
+					TestObservationRegistryAssert.assertThat(registry)
+							.hasNumberOfObservationsWithNameEqualTo("http.client.requests", 3);
+					MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+					assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(2);
 					assertThat(output).contains("Reached the maximum number of URI tags for 'http.client.requests'.")
 							.contains("Are you using 'uriVariables'?");
 				});
