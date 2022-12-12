@@ -687,7 +687,7 @@ public class ServerProperties {
 			private String locale;
 
 			/**
-			 * Whether to check for log file existence so it can be recreated it if an
+			 * Whether to check for log file existence so it can be recreated if an
 			 * external process has renamed it.
 			 */
 			private boolean checkExists = false;
