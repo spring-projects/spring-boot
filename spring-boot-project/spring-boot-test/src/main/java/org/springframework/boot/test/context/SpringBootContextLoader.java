@@ -160,6 +160,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 				? ReflectionUtils.findMethod(springBootConfiguration, "main", String[].class) : null;
 		if (mainMethod == null && KotlinDetector.isKotlinPresent()) {
 			try {
+				Assert.notNull(springBootConfiguration, "springBootConfiguration must not be null");
 				Class<?> kotlinClass = ClassUtils.forName(springBootConfiguration.getName() + "Kt",
 						springBootConfiguration.getClassLoader());
 				mainMethod = ReflectionUtils.findMethod(kotlinClass, "main", String[].class);

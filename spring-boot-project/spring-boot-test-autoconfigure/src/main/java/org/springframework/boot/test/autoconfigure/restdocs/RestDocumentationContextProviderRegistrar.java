@@ -23,6 +23,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.restdocs.ManualRestDocumentation;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -38,6 +39,7 @@ class RestDocumentationContextProviderRegistrar implements ImportBeanDefinitionR
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		Map<String, Object> annotationAttributes = importingClassMetadata
 				.getAnnotationAttributes(AutoConfigureRestDocs.class.getName());
+		Assert.notNull(annotationAttributes, "annotationAttributes must not be null");
 		BeanDefinitionBuilder definitionBuilder = BeanDefinitionBuilder
 				.genericBeanDefinition(ManualRestDocumentation.class);
 		String outputDir = (String) annotationAttributes.get("outputDir");

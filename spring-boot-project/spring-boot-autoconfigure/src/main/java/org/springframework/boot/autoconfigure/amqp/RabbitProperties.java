@@ -28,6 +28,7 @@ import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.Cache
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.ConfirmType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -1128,13 +1129,15 @@ public class RabbitProperties {
 
 		private String parseUsernameAndPassword(String input) {
 			if (input.contains("@")) {
-				String[] split = StringUtils.split(input, "@");
-				String creds = split[0];
-				input = split[1];
-				split = StringUtils.split(creds, ":");
-				this.username = split[0];
-				if (split.length > 0) {
-					this.password = split[1];
+				String[] splittedInput = StringUtils.split(input, "@");
+				Assert.notNull(splittedInput, "splittedInput must not be null");
+				String creds = splittedInput[0];
+				input = splittedInput[1];
+				String[] splittedCreds = StringUtils.split(creds, ":");
+				Assert.notNull(splittedCreds, "splittedCreds must not be null");
+				this.username = splittedCreds[0];
+				if (splittedCreds.length >= 2) {
+					this.password = splittedCreds[1];
 				}
 			}
 			return input;

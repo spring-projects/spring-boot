@@ -25,6 +25,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 
 /**
  * {@link Condition} that checks for a required version of Java.
@@ -41,6 +42,7 @@ class OnJavaCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnJava.class.getName());
+		Assert.notNull(attributes, "attributes must not be null");
 		Range range = (Range) attributes.get("range");
 		JavaVersion version = (JavaVersion) attributes.get("value");
 		return getMatchOutcome(range, JVM_VERSION, version);

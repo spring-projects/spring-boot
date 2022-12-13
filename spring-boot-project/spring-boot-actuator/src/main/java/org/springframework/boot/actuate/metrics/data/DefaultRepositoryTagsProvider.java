@@ -23,7 +23,9 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 
 import org.springframework.data.repository.core.support.RepositoryMethodInvocationListener.RepositoryMethodInvocation;
+import org.springframework.data.repository.core.support.RepositoryMethodInvocationListener.RepositoryMethodInvocationResult;
 import org.springframework.data.repository.core.support.RepositoryMethodInvocationListener.RepositoryMethodInvocationResult.State;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -41,8 +43,10 @@ public class DefaultRepositoryTagsProvider implements RepositoryTagsProvider {
 		Tags tags = Tags.empty();
 		tags = and(tags, invocation.getRepositoryInterface(), "repository", this::getSimpleClassName);
 		tags = and(tags, invocation.getMethod(), "method", Method::getName);
-		tags = and(tags, invocation.getResult().getState(), "state", State::name);
-		tags = and(tags, invocation.getResult().getError(), "exception", this::getExceptionName, EXCEPTION_NONE);
+		RepositoryMethodInvocationResult result = invocation.getResult();
+		Assert.notNull(result, "result must not be null");
+		tags = and(tags, result.getState(), "state", State::name);
+		tags = and(tags, result.getError(), "exception", this::getExceptionName, EXCEPTION_NONE);
 		return tags;
 	}
 

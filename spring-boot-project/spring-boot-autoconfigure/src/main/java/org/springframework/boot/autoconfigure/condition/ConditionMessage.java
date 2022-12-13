@@ -381,8 +381,7 @@ public final class ConditionMessage {
 			Assert.notNull(style, "Style must not be null");
 			StringBuilder message = new StringBuilder(this.reason);
 			items = style.applyTo(items);
-			if ((this.condition == null || items == null || items.size() <= 1)
-					&& StringUtils.hasLength(this.singular)) {
+			if ((items == null || items.size() <= 1) && StringUtils.hasLength(this.singular)) {
 				message.append(" ").append(this.singular);
 			}
 			else if (StringUtils.hasLength(this.plural)) {

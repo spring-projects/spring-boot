@@ -156,7 +156,9 @@ public class RestartServer {
 		try {
 			URL actualUrl = ResourceUtils.extractJarFileURL(url);
 			File file = ResourceUtils.getFile(actualUrl, "Jar URL");
-			file.setLastModified(System.currentTimeMillis());
+			if (!file.setLastModified(System.currentTimeMillis())) {
+				logger.debug("Failed to set last modified timestamp on " + file);
+			}
 		}
 		catch (Exception ex) {
 			// Ignore

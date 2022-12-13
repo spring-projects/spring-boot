@@ -41,6 +41,7 @@ import org.springframework.core.Ordered;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextAnnotationUtils;
+import org.springframework.util.Assert;
 
 /**
  * {@link ContextCustomizer} for {@link TestRestTemplate}.
@@ -58,6 +59,7 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 		}
 		SpringBootTest springBootTest = TestContextAnnotationUtils
 				.findMergedAnnotation(mergedContextConfiguration.getTestClass(), SpringBootTest.class);
+		Assert.notNull(springBootTest, "springBootTest must not be null");
 		if (springBootTest.webEnvironment().isEmbedded()) {
 			registerTestRestTemplate(context);
 		}

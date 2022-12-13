@@ -25,6 +25,7 @@ import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebAppl
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -45,6 +46,7 @@ class OnManagementPortCondition extends SpringBootCondition {
 			return ConditionOutcome.noMatch(message.because("non web application context"));
 		}
 		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnManagementPort.class.getName());
+		Assert.notNull(attributes, "attributes must not be null");
 		ManagementPortType requiredType = (ManagementPortType) attributes.get("value");
 		ManagementPortType actualType = ManagementPortType.get(context.getEnvironment());
 		if (actualType == requiredType) {

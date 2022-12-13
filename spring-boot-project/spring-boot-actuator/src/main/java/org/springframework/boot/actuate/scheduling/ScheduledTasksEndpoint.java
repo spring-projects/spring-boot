@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.scheduling;
 
 import java.lang.reflect.Method;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -46,6 +47,7 @@ import org.springframework.scheduling.config.TriggerTask;
 import org.springframework.scheduling.support.CronTrigger;
 import org.springframework.scheduling.support.PeriodicTrigger;
 import org.springframework.scheduling.support.ScheduledMethodRunnable;
+import org.springframework.util.Assert;
 
 /**
  * {@link Endpoint @Endpoint} to expose information about an application's scheduled
@@ -180,7 +182,9 @@ public class ScheduledTasksEndpoint {
 
 		protected IntervalTaskDescriptor(TaskType type, TriggerTask task, PeriodicTrigger trigger) {
 			super(type, task.getRunnable());
-			this.initialDelay = trigger.getInitialDelayDuration().toMillis();
+			Duration initialDelayDuration = trigger.getInitialDelayDuration();
+			Assert.notNull(initialDelayDuration, "initialDelayDuration must not be null");
+			this.initialDelay = initialDelayDuration.toMillis();
 			this.interval = trigger.getPeriodDuration().toMillis();
 		}
 

@@ -31,6 +31,7 @@ import org.apache.derby.jdbc.EmbeddedDriver;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
@@ -51,6 +52,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for DevTools-specific
@@ -178,11 +180,13 @@ public class DevToolsDataSourceAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("DevTools DataSource Condition");
-			String[] dataSourceBeanNames = context.getBeanFactory().getBeanNamesForType(DataSource.class, true, false);
+			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+			Assert.notNull(beanFactory, "beanFactory must not be null");
+			String[] dataSourceBeanNames = beanFactory.getBeanNamesForType(DataSource.class, true, false);
 			if (dataSourceBeanNames.length != 1) {
 				return ConditionOutcome.noMatch(message.didNotFind("a single DataSource bean").atAll());
 			}
-			if (context.getBeanFactory().getBeanNamesForType(DataSourceProperties.class, true, false).length != 1) {
+			if (beanFactory.getBeanNamesForType(DataSourceProperties.class, true, false).length != 1) {
 				return ConditionOutcome.noMatch(message.didNotFind("a single DataSourceProperties bean").atAll());
 			}
 			BeanDefinition dataSourceDefinition = context.getRegistry().getBeanDefinition(dataSourceBeanNames[0]);

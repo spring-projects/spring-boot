@@ -34,6 +34,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 
 /**
  * {@link Condition} that checks whether a GraphQL schema has been defined in the
@@ -74,6 +75,7 @@ class DefaultGraphQlSchemaCondition extends SpringBootCondition implements Confi
 					Arrays.asList(schema.getLocations())));
 		}
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+		Assert.notNull(beanFactory, "beanFactory must not be null");
 		String[] customizerBeans = beanFactory.getBeanNamesForType(GraphQlSourceBuilderCustomizer.class, false, false);
 		if (customizerBeans.length != 0) {
 			match = true;

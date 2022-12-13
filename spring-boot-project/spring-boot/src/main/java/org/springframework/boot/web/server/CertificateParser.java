@@ -42,7 +42,7 @@ import org.springframework.util.ResourceUtils;
  */
 final class CertificateParser {
 
-	private static final String HEADER = "-+BEGIN\\s+.*CERTIFICATE[^-]*-+(?:\\s|\\r|\\n)+";
+	private static final String HEADER = "-+BEGIN\\s+.*CERTIFICATE[^-]*-+\\s+";
 
 	private static final String BASE64_TEXT = "([a-z0-9+/=\\r\\n]+)";
 

@@ -24,6 +24,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 
 /**
  * {@link Condition} that checks if a metrics exporter is enabled.
@@ -41,6 +42,7 @@ class OnMetricsExportEnabledCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		AnnotationAttributes annotationAttributes = AnnotationAttributes
 				.fromMap(metadata.getAnnotationAttributes(ConditionalOnEnabledMetricsExport.class.getName()));
+		Assert.notNull(annotationAttributes, "annotationAttributes must not be null");
 		String endpointName = annotationAttributes.getString("value");
 		ConditionOutcome outcome = getProductOutcome(context, endpointName);
 		if (outcome != null) {

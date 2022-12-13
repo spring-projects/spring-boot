@@ -101,7 +101,9 @@ class CloudFoundrySecurityService {
 	 */
 	Map<String, String> fetchTokenKeys() {
 		try {
-			return extractTokenKeys(this.restTemplate.getForObject(getUaaUrl() + "/token_keys", Map.class));
+			Map<?, ?> response = this.restTemplate.getForObject(getUaaUrl() + "/token_keys", Map.class);
+			Assert.notNull(response, "Response must not be null");
+			return extractTokenKeys(response);
 		}
 		catch (HttpStatusCodeException ex) {
 			throw new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE, "UAA not reachable");
@@ -125,6 +127,7 @@ class CloudFoundrySecurityService {
 		if (this.uaaUrl == null) {
 			try {
 				Map<?, ?> response = this.restTemplate.getForObject(this.cloudControllerUrl + "/info", Map.class);
+				Assert.notNull(response, "Response must not be null");
 				this.uaaUrl = (String) response.get("token_endpoint");
 			}
 			catch (HttpStatusCodeException ex) {

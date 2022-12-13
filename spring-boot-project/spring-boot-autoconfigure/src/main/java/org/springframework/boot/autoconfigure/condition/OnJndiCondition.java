@@ -26,6 +26,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jndi.JndiLocatorDelegate;
 import org.springframework.jndi.JndiLocatorSupport;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -41,6 +42,7 @@ class OnJndiCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		AnnotationAttributes annotationAttributes = AnnotationAttributes
 				.fromMap(metadata.getAnnotationAttributes(ConditionalOnJndi.class.getName()));
+		Assert.notNull(annotationAttributes, "annotationAttributes must not be null");
 		String[] locations = annotationAttributes.getStringArray("value");
 		try {
 			return getMatchOutcome(locations);

@@ -115,12 +115,11 @@ public abstract class AnnotationCustomizableTypeExcludeFilter extends TypeExclud
 		if (this == obj) {
 			return true;
 		}
-		if (getClass() != obj.getClass()) {
+		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
 		AnnotationCustomizableTypeExcludeFilter other = (AnnotationCustomizableTypeExcludeFilter) obj;
-		boolean result = true;
-		result = result && hasAnnotation() == other.hasAnnotation();
+		boolean result = hasAnnotation() == other.hasAnnotation();
 		for (FilterType filterType : FilterType.values()) {
 			result &= ObjectUtils.nullSafeEquals(getFilters(filterType), other.getFilters(filterType));
 		}

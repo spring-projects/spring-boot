@@ -58,6 +58,7 @@ import org.springframework.security.authorization.AuthorityAuthorizationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -345,6 +346,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 		private Object getRemainingPathSegments(ServerWebExchange exchange) {
 			PathPattern pathPattern = exchange.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
+			Assert.notNull(pathPattern, "pathPattern must not be null");
 			if (pathPattern.hasPatternSyntax()) {
 				String remainingSegments = pathPattern
 						.extractPathWithinPattern(exchange.getRequest().getPath().pathWithinApplication()).value();

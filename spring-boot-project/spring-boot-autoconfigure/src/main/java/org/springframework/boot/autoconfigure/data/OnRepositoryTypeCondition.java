@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 
 /**
  * {@link SpringBootCondition} for controlling what type of Spring Data repositories are
@@ -38,6 +39,7 @@ class OnRepositoryTypeCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnRepositoryType.class.getName(),
 				true);
+		Assert.notNull(attributes, "attributes must not be null");
 		RepositoryType configuredType = getTypeProperty(context.getEnvironment(), (String) attributes.get("store"));
 		RepositoryType requiredType = (RepositoryType) attributes.get("type");
 		ConditionMessage.Builder message = ConditionMessage.forCondition(ConditionalOnRepositoryType.class);

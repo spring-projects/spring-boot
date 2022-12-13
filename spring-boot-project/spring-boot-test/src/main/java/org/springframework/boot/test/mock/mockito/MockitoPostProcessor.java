@@ -407,8 +407,10 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 		SpyPostProcessor.register(registry);
 		BeanDefinition definition = getOrAddBeanDefinition(registry, postProcessor);
 		ValueHolder constructorArg = definition.getConstructorArgumentValues().getIndexedArgumentValue(0, Set.class);
+		Assert.notNull(constructorArg, "constructorArg must not be null");
 		Set<Definition> existing = (Set<Definition>) constructorArg.getValue();
 		if (definitions != null) {
+			Assert.notNull(existing, "existing must not be null");
 			existing.addAll(definitions);
 		}
 	}

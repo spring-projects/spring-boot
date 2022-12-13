@@ -202,6 +202,7 @@ public final class TestPropertyValues {
 	private void addToSources(MutablePropertySources sources, Type type, String name) {
 		if (sources.contains(name)) {
 			PropertySource<?> propertySource = sources.get(name);
+			Assert.notNull(propertySource, "propertySource must not be null");
 			if (propertySource.getClass() == type.getSourceClass()) {
 				((Map<String, Object>) propertySource.getSource()).putAll(this.properties);
 				return;

@@ -33,6 +33,7 @@ import org.junit.jupiter.params.provider.EnumSource.Mode;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -85,8 +86,7 @@ class BatchDataSourceScriptDatabaseInitializerTests {
 		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
 		List<String> schemaNames = Stream
 				.of(resolver.getResources("classpath:org/springframework/batch/core/schema-*.sql"))
-				.map((resource) -> resource.getFilename()).filter((resourceName) -> !resourceName.contains("-drop-"))
-				.toList();
+				.map(Resource::getFilename).filter((resourceName) -> !resourceName.contains("-drop-")).toList();
 		assertThat(schemaNames).containsExactlyInAnyOrder("schema-derby.sql", "schema-sqlserver.sql",
 				"schema-mariadb.sql", "schema-mysql.sql", "schema-sqlite.sql", "schema-postgresql.sql",
 				"schema-hana.sql", "schema-oracle.sql", "schema-db2.sql", "schema-hsqldb.sql", "schema-sybase.sql",

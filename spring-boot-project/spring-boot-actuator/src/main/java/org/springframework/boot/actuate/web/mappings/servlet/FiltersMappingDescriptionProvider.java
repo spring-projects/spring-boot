@@ -29,6 +29,7 @@ import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
 import org.springframework.boot.actuate.web.mappings.servlet.FiltersMappingDescriptionProvider.FiltersMappingDescriptionProviderRuntimeHints;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
@@ -44,7 +45,9 @@ public class FiltersMappingDescriptionProvider implements MappingDescriptionProv
 	@Override
 	public List<FilterRegistrationMappingDescription> describeMappings(ApplicationContext context) {
 		if (context instanceof WebApplicationContext webApplicationContext) {
-			return webApplicationContext.getServletContext().getFilterRegistrations().values().stream()
+			ServletContext servletContext = webApplicationContext.getServletContext();
+			Assert.notNull(servletContext, "servletContext must not be null");
+			return servletContext.getFilterRegistrations().values().stream()
 					.map(FilterRegistrationMappingDescription::new).toList();
 		}
 		return Collections.emptyList();

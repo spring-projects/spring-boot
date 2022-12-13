@@ -29,6 +29,7 @@ import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
 import org.springframework.boot.actuate.web.mappings.servlet.ServletsMappingDescriptionProvider.ServletsMappingDescriptionProviderRuntimeHints;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.util.Assert;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
@@ -44,7 +45,9 @@ public class ServletsMappingDescriptionProvider implements MappingDescriptionPro
 	@Override
 	public List<ServletRegistrationMappingDescription> describeMappings(ApplicationContext context) {
 		if (context instanceof WebApplicationContext webApplicationContext) {
-			return webApplicationContext.getServletContext().getServletRegistrations().values().stream()
+			ServletContext servletContext = webApplicationContext.getServletContext();
+			Assert.notNull(servletContext, "servletContext must not be null");
+			return servletContext.getServletRegistrations().values().stream()
 					.map(ServletRegistrationMappingDescription::new).toList();
 		}
 		return Collections.emptyList();

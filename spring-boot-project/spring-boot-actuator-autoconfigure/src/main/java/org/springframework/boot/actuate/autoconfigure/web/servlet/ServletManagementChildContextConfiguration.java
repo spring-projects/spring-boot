@@ -56,6 +56,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -105,14 +106,16 @@ class ServletManagementChildContextConfiguration {
 		@Bean
 		Filter springSecurityFilterChain(HierarchicalBeanFactory beanFactory) {
 			BeanFactory parent = beanFactory.getParentBeanFactory();
+			Assert.notNull(parent, "parent must not be null");
 			return parent.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN, Filter.class);
 		}
 
 		@Bean
 		@ConditionalOnBean(name = "securityFilterChainRegistration", search = SearchStrategy.ANCESTORS)
 		DelegatingFilterProxyRegistrationBean securityFilterChainRegistration(HierarchicalBeanFactory beanFactory) {
-			return beanFactory.getParentBeanFactory().getBean("securityFilterChainRegistration",
-					DelegatingFilterProxyRegistrationBean.class);
+			BeanFactory parent = beanFactory.getParentBeanFactory();
+			Assert.notNull(parent, "parent must not be null");
+			return parent.getBean("securityFilterChainRegistration", DelegatingFilterProxyRegistrationBean.class);
 		}
 
 	}

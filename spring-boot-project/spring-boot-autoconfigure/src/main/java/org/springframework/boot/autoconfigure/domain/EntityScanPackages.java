@@ -140,6 +140,7 @@ public class EntityScanPackages {
 		private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
 			AnnotationAttributes attributes = AnnotationAttributes
 					.fromMap(metadata.getAnnotationAttributes(EntityScan.class.getName()));
+			Assert.notNull(attributes, "attributes must not be null");
 			Set<String> packagesToScan = new LinkedHashSet<>();
 			for (String basePackage : attributes.getStringArray("basePackages")) {
 				String[] tokenized = StringUtils.tokenizeToStringArray(

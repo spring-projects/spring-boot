@@ -22,7 +22,9 @@ import io.micrometer.observation.Observation;
 
 import org.springframework.boot.actuate.metrics.web.reactive.client.WebClientExchangeTagsProvider;
 import org.springframework.core.Conventions;
+import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.client.ClientRequest;
+import org.springframework.web.reactive.function.client.ClientRequest.Builder;
 import org.springframework.web.reactive.function.client.ClientRequestObservationContext;
 import org.springframework.web.reactive.function.client.ClientRequestObservationConvention;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -57,7 +59,9 @@ class ClientObservationConventionAdapter implements ClientRequestObservationConv
 	public KeyValues getLowCardinalityKeyValues(ClientRequestObservationContext context) {
 		ClientRequest request = context.getRequest();
 		if (request == null) {
-			request = context.getCarrier().attribute(URI_TEMPLATE_ATTRIBUTE, context.getUriTemplate()).build();
+			Builder carrier = context.getCarrier();
+			Assert.notNull(carrier, "carrier must not be null");
+			request = carrier.attribute(URI_TEMPLATE_ATTRIBUTE, context.getUriTemplate()).build();
 		}
 		Iterable<Tag> tags = this.tagsProvider.tags(request, context.getResponse(), context.getError());
 		return KeyValues.of(tags, Tag::getKey, Tag::getValue);

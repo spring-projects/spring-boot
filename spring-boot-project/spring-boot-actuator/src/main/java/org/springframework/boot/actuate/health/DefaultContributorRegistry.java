@@ -21,6 +21,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
 import org.springframework.util.Assert;
@@ -37,7 +39,7 @@ class DefaultContributorRegistry<C> implements ContributorRegistry<C> {
 
 	private final Function<String, String> nameFactory;
 
-	private final Object monitor = new Object();
+	private final Lock lock = new ReentrantLock();
 
 	private volatile Map<String, C> contributors;
 
@@ -63,12 +65,16 @@ class DefaultContributorRegistry<C> implements ContributorRegistry<C> {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(contributor, "Contributor must not be null");
 		String adaptedName = this.nameFactory.apply(name);
-		synchronized (this.monitor) {
+		this.lock.lock();
+		try {
 			Assert.state(!this.contributors.containsKey(adaptedName),
 					() -> "A contributor named \"" + adaptedName + "\" has already been registered");
 			Map<String, C> contributors = new LinkedHashMap<>(this.contributors);
 			contributors.put(adaptedName, contributor);
 			this.contributors = Collections.unmodifiableMap(contributors);
+		}
+		finally {
+			this.lock.unlock();
 		}
 	}
 
@@ -76,7 +82,8 @@ class DefaultContributorRegistry<C> implements ContributorRegistry<C> {
 	public C unregisterContributor(String name) {
 		Assert.notNull(name, "Name must not be null");
 		String adaptedName = this.nameFactory.apply(name);
-		synchronized (this.monitor) {
+		this.lock.lock();
+		try {
 			C unregistered = this.contributors.get(adaptedName);
 			if (unregistered != null) {
 				Map<String, C> contributors = new LinkedHashMap<>(this.contributors);
@@ -84,6 +91,9 @@ class DefaultContributorRegistry<C> implements ContributorRegistry<C> {
 				this.contributors = Collections.unmodifiableMap(contributors);
 			}
 			return unregistered;
+		}
+		finally {
+			this.lock.unlock();
 		}
 	}
 
@@ -95,7 +105,7 @@ class DefaultContributorRegistry<C> implements ContributorRegistry<C> {
 	@Override
 	public Iterator<NamedContributor<C>> iterator() {
 		Iterator<Map.Entry<String, C>> iterator = this.contributors.entrySet().iterator();
-		return new Iterator<NamedContributor<C>>() {
+		return new Iterator<>() {
 
 			@Override
 			public boolean hasNext() {

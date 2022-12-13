@@ -113,7 +113,8 @@ public class WebMvcEndpointManagementContextConfiguration {
 			WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups groups) {
 		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
 		ExposableWebEndpoint health = webEndpoints.stream()
-				.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID)).findFirst().get();
+				.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID)).findFirst().orElseThrow(
+						() -> new IllegalStateException("No endpoint with id '%s' found".formatted(HealthEndpoint.ID)));
 		return new AdditionalHealthEndpointPathsWebMvcHandlerMapping(health,
 				groups.getAllWithAdditionalPath(WebServerNamespace.MANAGEMENT));
 	}

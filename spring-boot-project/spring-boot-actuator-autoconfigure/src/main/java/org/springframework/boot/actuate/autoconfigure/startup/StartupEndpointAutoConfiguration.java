@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.startup;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.startup.StartupEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -30,6 +31,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.core.metrics.ApplicationStartup;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the {@link StartupEndpoint}.
@@ -60,7 +62,9 @@ public class StartupEndpointAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("ApplicationStartup");
-			ApplicationStartup applicationStartup = context.getBeanFactory().getApplicationStartup();
+			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+			Assert.notNull(beanFactory, "beanFactory must not be null");
+			ApplicationStartup applicationStartup = beanFactory.getApplicationStartup();
 			if (applicationStartup instanceof BufferingApplicationStartup) {
 				return ConditionOutcome.match(
 						message.because("configured applicationStartup is of type BufferingApplicationStartup."));

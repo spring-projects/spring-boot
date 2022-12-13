@@ -169,6 +169,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		boolean considerHierarchy = spec.getStrategy() != SearchStrategy.CURRENT;
 		Set<Class<?>> parameterizedContainers = spec.getParameterizedContainers();
 		if (spec.getStrategy() == SearchStrategy.ANCESTORS) {
+			Assert.notNull(beanFactory, "beanFactory must not be null");
 			BeanFactory parent = beanFactory.getParentBeanFactory();
 			Assert.isInstanceOf(ConfigurableListableBeanFactory.class, parent,
 					"Unable to use SearchStrategy.ANCESTORS");
@@ -517,6 +518,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		private Set<String> deducedBeanTypeForBeanMethod(ConditionContext context, MethodMetadata metadata) {
 			try {
 				Class<?> returnType = getReturnType(context, metadata);
+				Assert.notNull(returnType, "returnType must not be null");
 				return Collections.singleton(returnType.getName());
 			}
 			catch (Throwable ex) {

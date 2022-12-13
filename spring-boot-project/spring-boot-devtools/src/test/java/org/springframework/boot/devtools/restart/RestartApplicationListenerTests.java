@@ -36,7 +36,6 @@ import org.springframework.core.Ordered;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -103,7 +102,7 @@ class RestartApplicationListenerTests {
 		SpringApplication application = new SpringApplication();
 		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
 		listener.onApplicationEvent(new ApplicationStartingEvent(bootstrapContext, application, ARGS));
-		assertThat(Restarter.getInstance()).isNotEqualTo(nullValue());
+		assertThat(Restarter.getInstance()).isNotNull();
 		assertThat(Restarter.getInstance().isFinished()).isFalse();
 		listener.onApplicationEvent(new ApplicationPreparedEvent(application, ARGS, context));
 		if (failed) {

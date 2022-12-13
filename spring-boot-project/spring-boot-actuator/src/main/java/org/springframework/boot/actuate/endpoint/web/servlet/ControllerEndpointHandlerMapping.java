@@ -31,9 +31,11 @@ import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEn
 import org.springframework.util.Assert;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.mvc.condition.PathPatternsRequestCondition;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.util.pattern.PathPattern;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 /**
  * {@link HandlerMapping} that exposes {@link ControllerEndpoint @ControllerEndpoint} and
@@ -88,9 +90,13 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 
 	private RequestMappingInfo withEndpointMappedPatterns(ExposableControllerEndpoint endpoint,
 			RequestMappingInfo mapping) {
-		Set<PathPattern> patterns = mapping.getPathPatternsCondition().getPatterns();
+		PathPatternsRequestCondition pathPatternsCondition = mapping.getPathPatternsCondition();
+		Assert.notNull(pathPatternsCondition, "pathPatternsCondition must not be null");
+		Set<PathPattern> patterns = pathPatternsCondition.getPatterns();
 		if (patterns.isEmpty()) {
-			patterns = Collections.singleton(getPatternParser().parse(""));
+			PathPatternParser patternParser = getPatternParser();
+			Assert.notNull(patternParser, "patternParser must not be null");
+			patterns = Collections.singleton(patternParser.parse(""));
 		}
 		String[] endpointMappedPatterns = patterns.stream()
 				.map((pattern) -> getEndpointMappedPattern(endpoint, pattern)).toArray(String[]::new);

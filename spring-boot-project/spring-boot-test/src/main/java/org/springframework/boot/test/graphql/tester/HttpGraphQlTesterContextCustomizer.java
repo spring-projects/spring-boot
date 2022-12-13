@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.graphql.tester;
 
+import jakarta.servlet.ServletContext;
+
 import org.springframework.aot.AotDetector;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -41,6 +43,7 @@ import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
@@ -59,6 +62,7 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 		}
 		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(mergedConfig.getTestClass(),
 				SpringBootTest.class);
+		Assert.notNull(springBootTest, "springBootTest must not be null");
 		if (springBootTest.webEnvironment().isEmbedded()) {
 			registerHttpGraphQlTester(context);
 		}
@@ -183,7 +187,9 @@ class HttpGraphQlTesterContextCustomizer implements ContextCustomizer {
 
 			}
 			else if (webApplicationType == WebApplicationType.SERVLET) {
-				serverBasePath = ((WebApplicationContext) this.applicationContext).getServletContext().getContextPath();
+				ServletContext servletContext = ((WebApplicationContext) this.applicationContext).getServletContext();
+				Assert.notNull(servletContext, "servletContext must not be null");
+				serverBasePath = servletContext.getContextPath();
 			}
 			return (serverBasePath != null) ? serverBasePath : "";
 		}

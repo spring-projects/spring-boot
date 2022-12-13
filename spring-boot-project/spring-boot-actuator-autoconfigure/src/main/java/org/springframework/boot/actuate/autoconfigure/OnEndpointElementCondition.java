@@ -25,6 +25,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 
 /**
  * Base endpoint element condition. An element can be disabled globally via the
@@ -49,6 +50,7 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		AnnotationAttributes annotationAttributes = AnnotationAttributes
 				.fromMap(metadata.getAnnotationAttributes(this.annotationType.getName()));
+		Assert.notNull(annotationAttributes, "annotationAttributes must not be null");
 		String endpointName = annotationAttributes.getString("value");
 		ConditionOutcome outcome = getEndpointOutcome(context, endpointName);
 		if (outcome != null) {

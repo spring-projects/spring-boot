@@ -32,6 +32,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -54,8 +55,10 @@ class ManagementContextConfigurationImportSelector implements DeferredImportSele
 
 	@Override
 	public String[] selectImports(AnnotationMetadata metadata) {
-		ManagementContextType contextType = (ManagementContextType) metadata
-				.getAnnotationAttributes(EnableManagementContext.class.getName()).get("value");
+		Map<String, Object> annotationAttributes = metadata
+				.getAnnotationAttributes(EnableManagementContext.class.getName());
+		Assert.notNull(annotationAttributes, "annotationAttributes must not be null");
+		ManagementContextType contextType = (ManagementContextType) annotationAttributes.get("value");
 		// Find all management context configuration classes, filtering duplicates
 		List<ManagementConfiguration> configurations = getConfigurations();
 		OrderComparator.sort(configurations);

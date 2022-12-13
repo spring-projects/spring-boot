@@ -2,6 +2,7 @@ plugins {
 	id "base"
 	id "org.jetbrains.kotlin.jvm" apply false // https://youtrack.jetbrains.com/issue/KT-30276
 	id "io.spring.nohttp" version "0.0.10"
+	id "org.sonarqube" version "3.5.0.2730"
 }
 
 description = "Spring Boot Build"

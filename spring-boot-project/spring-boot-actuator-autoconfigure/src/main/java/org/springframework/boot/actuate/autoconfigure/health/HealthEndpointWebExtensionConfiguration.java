@@ -79,7 +79,8 @@ class HealthEndpointWebExtensionConfiguration {
 	private static ExposableWebEndpoint getHealthEndpoint(WebEndpointsSupplier webEndpointsSupplier) {
 		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
 		return webEndpoints.stream().filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
-				.findFirst().get();
+				.findFirst().orElseThrow(
+						() -> new IllegalStateException("No endpoint with id '%s' found".formatted(HealthEndpoint.ID)));
 	}
 
 	@ConditionalOnBean(DispatcherServlet.class)

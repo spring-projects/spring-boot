@@ -36,6 +36,7 @@ import org.springframework.boot.actuate.web.mappings.reactive.DispatcherHandlers
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.reactive.DispatcherHandler;
 import org.springframework.web.reactive.HandlerMapping;
@@ -78,7 +79,9 @@ public class DispatcherHandlersMappingDescriptionProvider implements MappingDesc
 	}
 
 	private List<DispatcherHandlerMappingDescription> describeMappings(DispatcherHandler dispatcherHandler) {
-		return dispatcherHandler.getHandlerMappings().stream().flatMap(this::describe).toList();
+		List<HandlerMapping> handlerMappings = dispatcherHandler.getHandlerMappings();
+		Assert.notNull(handlerMappings, "handlerMappings must not be null");
+		return handlerMappings.stream().flatMap(this::describe).toList();
 	}
 
 	@SuppressWarnings("unchecked")

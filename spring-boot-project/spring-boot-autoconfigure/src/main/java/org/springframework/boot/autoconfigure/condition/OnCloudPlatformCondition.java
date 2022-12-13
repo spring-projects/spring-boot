@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 
 /**
  * {@link Condition} that checks for a required {@link CloudPlatform}.
@@ -35,6 +36,7 @@ class OnCloudPlatformCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Map<String, Object> attributes = metadata.getAnnotationAttributes(ConditionalOnCloudPlatform.class.getName());
+		Assert.notNull(attributes, "attributes must not be null");
 		CloudPlatform cloudPlatform = (CloudPlatform) attributes.get("value");
 		return getMatchOutcome(context.getEnvironment(), cloudPlatform);
 	}

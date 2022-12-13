@@ -217,6 +217,7 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 	private JobParameters getNextJobParametersForExisting(Job job, JobParameters jobParameters) {
 		JobExecution lastExecution = this.jobRepository.getLastJobExecution(job.getName(), jobParameters);
 		if (isStoppedOrFailed(lastExecution) && job.isRestartable()) {
+			Assert.notNull(lastExecution, "lastExecution must not be null");
 			JobParameters previousIdentifyingParameters = getGetIdentifying(lastExecution.getJobParameters());
 			return merge(previousIdentifyingParameters, jobParameters);
 		}
