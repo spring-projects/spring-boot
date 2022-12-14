@@ -390,20 +390,6 @@ bom {
 			]
 		}
 	}
-	library("HttpClient", "4.5.14") {
-		group("org.apache.httpcomponents") {
-			modules = [
-				"fluent-hc",
-				"httpclient" {
-					exclude group: "commons-logging", module: "commons-logging"
-				},
-				"httpclient-cache",
-				"httpclient-osgi",
-				"httpclient-win",
-				"httpmime"
-			]
-		}
-	}
 	library("HttpClient5", "5.1.4") {
 		group("org.apache.httpcomponents.client5") {
 			modules = [
