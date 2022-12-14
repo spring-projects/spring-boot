@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 
 import javax.net.ssl.SSLContext;
 
-import org.apache.http.HttpHost;
+import org.apache.hc.core5.http.HttpHost;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
