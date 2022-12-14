@@ -19,14 +19,14 @@ package org.springframework.boot.cli.command.init;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHeaders;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.message.BasicHeader;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.message.BasicHeader;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mockito.ArgumentMatcher;
@@ -35,19 +35,20 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Abstract base class for tests that use a mock {@link CloseableHttpClient}.
+ * Abstract base class for tests that use a mock {@link HttpClient}.
  *
  * @author Stephane Nicoll
  */
 public abstract class AbstractHttpClientMockTests {
 
-	protected final CloseableHttpClient http = mock(CloseableHttpClient.class);
+	protected final HttpClient http = mock(HttpClient.class);
 
 	protected void mockSuccessfulMetadataTextGet() throws IOException {
 		mockSuccessfulMetadataGet("metadata/service-metadata-2.1.0.txt", "text/plain", true);
@@ -65,11 +66,12 @@ public abstract class AbstractHttpClientMockTests {
 
 	protected void mockSuccessfulMetadataGet(String contentPath, String contentType, boolean serviceCapabilities)
 			throws IOException {
-		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+		ClassicHttpResponse response = mock(ClassicHttpResponse.class);
 		byte[] content = readClasspathResource(contentPath);
 		mockHttpEntity(response, content, contentType);
 		mockStatus(response, 200);
-		given(this.http.execute(argThat(getForMetadata(serviceCapabilities)))).willReturn(response);
+		given(this.http.execute(any(HttpHost.class), argThat(getForMetadata(serviceCapabilities))))
+				.willReturn(response);
 	}
 
 	protected byte[] readClasspathResource(String contentPath) throws IOException {
@@ -80,36 +82,37 @@ public abstract class AbstractHttpClientMockTests {
 	protected void mockSuccessfulProjectGeneration(MockHttpProjectGenerationRequest request) throws IOException {
 		// Required for project generation as the metadata is read first
 		mockSuccessfulMetadataGet(false);
-		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+		ClassicHttpResponse response = mock(ClassicHttpResponse.class);
 		mockHttpEntity(response, request.content, request.contentType);
 		mockStatus(response, 200);
 		String header = (request.fileName != null) ? contentDispositionValue(request.fileName) : null;
 		mockHttpHeader(response, "Content-Disposition", header);
-		given(this.http.execute(argThat(getForNonMetadata()))).willReturn(response);
+		given(this.http.execute(any(HttpHost.class), argThat(getForNonMetadata()))).willReturn(response);
 	}
 
 	protected void mockProjectGenerationError(int status, String message) throws IOException, JSONException {
 		// Required for project generation as the metadata is read first
 		mockSuccessfulMetadataGet(false);
-		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+		ClassicHttpResponse response = mock(ClassicHttpResponse.class);
 		mockHttpEntity(response, createJsonError(status, message).getBytes(), "application/json");
 		mockStatus(response, status);
-		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
+		given(this.http.execute(any(HttpHost.class), isA(HttpGet.class))).willReturn(response);
 	}
 
 	protected void mockMetadataGetError(int status, String message) throws IOException, JSONException {
-		CloseableHttpResponse response = mock(CloseableHttpResponse.class);
+		ClassicHttpResponse response = mock(ClassicHttpResponse.class);
 		mockHttpEntity(response, createJsonError(status, message).getBytes(), "application/json");
 		mockStatus(response, status);
-		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
+		given(this.http.execute(any(HttpHost.class), isA(HttpGet.class))).willReturn(response);
 	}
 
-	protected HttpEntity mockHttpEntity(CloseableHttpResponse response, byte[] content, String contentType) {
+	protected HttpEntity mockHttpEntity(ClassicHttpResponse response, byte[] content, String contentType) {
 		try {
 			HttpEntity entity = mock(HttpEntity.class);
 			given(entity.getContent()).willReturn(new ByteArrayInputStream(content));
 			Header contentTypeHeader = (contentType != null) ? new BasicHeader("Content-Type", contentType) : null;
-			given(entity.getContentType()).willReturn(contentTypeHeader);
+			given(entity.getContentType())
+					.willReturn((contentTypeHeader != null) ? contentTypeHeader.getValue() : null);
 			given(response.getEntity()).willReturn(entity);
 			return entity;
 		}
@@ -118,13 +121,11 @@ public abstract class AbstractHttpClientMockTests {
 		}
 	}
 
-	protected void mockStatus(CloseableHttpResponse response, int status) {
-		StatusLine statusLine = mock(StatusLine.class);
-		given(statusLine.getStatusCode()).willReturn(status);
-		given(response.getStatusLine()).willReturn(statusLine);
+	protected void mockStatus(ClassicHttpResponse response, int status) {
+		given(response.getCode()).willReturn(status);
 	}
 
-	protected void mockHttpHeader(CloseableHttpResponse response, String headerName, String value) {
+	protected void mockHttpHeader(ClassicHttpResponse response, String headerName, String value) {
 		Header header = (value != null) ? new BasicHeader(headerName, value) : null;
 		given(response.getFirstHeader(headerName)).willReturn(header);
 	}
@@ -166,7 +167,7 @@ public abstract class AbstractHttpClientMockTests {
 		}
 
 		MockHttpProjectGenerationRequest(String contentType, String fileName, byte[] content) {
-			this.contentType = contentType;
+			this.contentType = (contentType != null) ? contentType : "application/text";
 			this.fileName = fileName;
 			this.content = content;
 		}

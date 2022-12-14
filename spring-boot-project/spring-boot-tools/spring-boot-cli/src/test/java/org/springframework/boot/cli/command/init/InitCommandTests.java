@@ -25,8 +25,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import joptsimple.OptionSet;
-import org.apache.http.Header;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpHost;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -37,6 +38,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.cli.command.status.ExitStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 
 /**
@@ -204,6 +207,9 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 			mockSuccessfulProjectGeneration(request);
 			assertThat(this.command.run("--extract", tempDir.getAbsolutePath())).isEqualTo(ExitStatus.OK);
 			assertThat(file).as("file should have been saved instead").exists();
+		}
+		catch (Exception ex) {
+			fail(ex);
 		}
 		finally {
 			assertThat(file.delete()).as("failed to delete test file").isTrue();
@@ -393,7 +399,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 	@Test
 	void userAgent() throws Exception {
 		this.command.run("--list", "--target=https://fake-service");
-		then(this.http).should().execute(this.requestCaptor.capture());
+		then(this.http).should().execute(any(HttpHost.class), this.requestCaptor.capture());
 		Header agent = this.requestCaptor.getValue().getHeaders("User-Agent")[0];
 		assertThat(agent.getValue()).startsWith("SpringBootCli/");
 	}

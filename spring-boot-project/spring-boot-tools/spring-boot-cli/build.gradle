@@ -25,9 +25,7 @@ dependencies {
 	implementation("com.vaadin.external.google:android-json")
 	implementation("jline:jline")
 	implementation("net.sf.jopt-simple:jopt-simple")
-	implementation("org.apache.httpcomponents:httpclient") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	implementation("org.apache.httpcomponents.client5:httpclient5")
 	implementation("org.slf4j:slf4j-simple")
 	implementation("org.springframework:spring-core")
 	implementation("org.springframework.security:spring-security-crypto")
