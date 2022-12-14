@@ -74,7 +74,8 @@ class FlywayPropertiesTests {
 		assertThat(properties.getSqlMigrationSeparator()).isEqualTo(configuration.getSqlMigrationSeparator());
 		assertThat(properties.getRepeatableSqlMigrationPrefix())
 				.isEqualTo(configuration.getRepeatableSqlMigrationPrefix());
-		assertThat(properties.getTarget()).isEqualTo(configuration.getTarget());
+		assertThat(properties.getTarget()).isNull();
+		assertThat(configuration.getTarget()).isNull();
 		assertThat(configuration.getInitSql()).isNull();
 		assertThat(properties.getInitSqls()).isEmpty();
 		assertThat(properties.isBaselineOnMigrate()).isEqualTo(configuration.isBaselineOnMigrate());

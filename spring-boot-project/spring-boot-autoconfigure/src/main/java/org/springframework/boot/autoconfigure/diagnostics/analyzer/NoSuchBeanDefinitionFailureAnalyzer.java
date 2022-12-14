@@ -135,6 +135,7 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 		String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, type);
 		return Arrays.stream(beanNames)
 				.map((beanName) -> new UserConfigurationResult(getFactoryMethodMetadata(beanName),
+						// This check against null is fine, see NullBean javadoc
 						this.beanFactory.getBean(beanName).equals(null)))
 				.toList();
 	}

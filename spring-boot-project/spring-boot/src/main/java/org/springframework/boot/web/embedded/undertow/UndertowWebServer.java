@@ -249,9 +249,11 @@ public class UndertowWebServer implements WebServer {
 
 	private UndertowWebServer.Port getPortFromListener(Object listener) {
 		Field typeField = ReflectionUtils.findField(listener.getClass(), "type");
+		Assert.notNull(typeField, "typeField must not be null");
 		ReflectionUtils.makeAccessible(typeField);
 		String protocol = ReflectionUtils.getField(typeField, listener).toString();
 		Field portField = ReflectionUtils.findField(listener.getClass(), "port");
+		Assert.notNull(portField, "portField must not be null");
 		ReflectionUtils.makeAccessible(portField);
 		int port = (Integer) ReflectionUtils.getField(portField, listener);
 		return new UndertowWebServer.Port(port, protocol);

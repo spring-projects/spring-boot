@@ -84,7 +84,7 @@ public class NamedPipeSocket extends Socket {
 	}
 
 	@Override
-	public void close() throws IOException {
+	public synchronized void close() throws IOException {
 		if (this.channel != null) {
 			this.channel.close();
 		}

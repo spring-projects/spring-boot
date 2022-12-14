@@ -110,6 +110,7 @@ public class WebServerPortFileWriter implements ApplicationListener<WebServerIni
 		}
 		String name = this.file.getName();
 		String extension = StringUtils.getFilenameExtension(this.file.getName());
+		Assert.notNull(extension, "extension must not be null");
 		name = name.substring(0, name.length() - extension.length() - 1);
 		if (isUpperCase(name)) {
 			name = name + "-" + namespace.toUpperCase(Locale.ENGLISH);

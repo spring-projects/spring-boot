@@ -167,6 +167,7 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 			Map<Class<?>, List<Class<?>>> innerComponents = new HashMap<>();
 			for (String jsonComponent : jsonComponents) {
 				Class<?> type = beanFactory.getType(jsonComponent, true);
+				Assert.notNull(type, "type must not be null");
 				for (Class<?> declaredClass : type.getDeclaredClasses()) {
 					if (isSuitableInnerClass(declaredClass)) {
 						innerComponents.computeIfAbsent(type, (t) -> new ArrayList<>()).add(declaredClass);

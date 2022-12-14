@@ -68,7 +68,7 @@ class CharSequenceToObjectConverter implements ConditionalGenericConverter {
 			return this.conversionService.canConvert(STRING, targetType);
 		}
 		finally {
-			this.disable.set(null);
+			this.disable.remove();
 		}
 	}
 

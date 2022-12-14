@@ -703,7 +703,7 @@ public class JSONObject {
 			return stringer.toString();
 		}
 		catch (JSONException e) {
-			return null;
+			return "";
 		}
 	}
 

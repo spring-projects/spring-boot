@@ -26,6 +26,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import org.springframework.util.Assert;
+
 /**
  * Define the metadata available for a particular service instance.
  *
@@ -193,6 +195,7 @@ class InitializrServiceMetadata {
 		String id = getStringValue(object, ID_ATTRIBUTE, null);
 		String name = getStringValue(object, NAME_ATTRIBUTE, null);
 		String action = getStringValue(object, ACTION_ATTRIBUTE, null);
+		Assert.notNull(id, "id must not be null");
 		boolean defaultType = id.equals(defaultId);
 		Map<String, String> tags = new HashMap<>();
 		if (object.has("tags")) {

@@ -106,10 +106,10 @@ class ThreadDumpEndpointTests {
 						hexIdentityHashCode(contendedMonitor), Thread.currentThread().getName(),
 						Thread.currentThread().getId()))
 				.satisfiesAnyOf(
-						(dump) -> dump.contains(String.format("\t- waiting on <%s> (a java.lang.Object)",
+						(dump) -> assertThat(dump).contains(String.format("\t- waiting on <%s> (a java.lang.Object)",
 								hexIdentityHashCode(monitor))),
-						(dump) -> dump.contains(String.format("\t- parking to wait for <%s> (a java.lang.Object)",
-								hexIdentityHashCode(monitor))))
+						(dump) -> assertThat(dump).contains(String.format(
+								"\t- parking to wait for <%s> (a java.lang.Object)", hexIdentityHashCode(monitor))))
 				.containsPattern(
 						String.format("Locked ownable synchronizers:%n\t- Locked <[0-9a-z]+> \\(a %s\\$NonfairSync\\)",
 								ReentrantReadWriteLock.class.getName().replace(".", "\\.")));

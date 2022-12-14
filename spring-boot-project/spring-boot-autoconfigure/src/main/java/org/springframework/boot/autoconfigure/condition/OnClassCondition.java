@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure.condition;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.boot.autoconfigure.AutoConfigurationImportFilter;
 import org.springframework.boot.autoconfigure.AutoConfigurationMetadata;
@@ -138,10 +140,20 @@ class OnClassCondition extends FilteringSpringBootCondition {
 
 		private final Thread thread;
 
+		private final Lock outcomesLock = new ReentrantLock();
+
 		private volatile ConditionOutcome[] outcomes;
 
 		private ThreadedOutcomesResolver(OutcomesResolver outcomesResolver) {
-			this.thread = new Thread(() -> this.outcomes = outcomesResolver.resolveOutcomes());
+			this.thread = new Thread(() -> {
+				this.outcomesLock.lock();
+				try {
+					this.outcomes = outcomesResolver.resolveOutcomes();
+				}
+				finally {
+					this.outcomesLock.unlock();
+				}
+			});
 			this.thread.start();
 		}
 
@@ -153,7 +165,13 @@ class OnClassCondition extends FilteringSpringBootCondition {
 			catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
 			}
-			return this.outcomes;
+			this.outcomesLock.lock();
+			try {
+				return this.outcomes;
+			}
+			finally {
+				this.outcomesLock.unlock();
+			}
 		}
 
 	}

@@ -77,7 +77,7 @@ class BatchDataSourceScriptDatabaseInitializerTests {
 		DatabaseInitializationSettings settings = BatchDataSourceScriptDatabaseInitializer.getSettings(dataSource,
 				properties.getJdbc());
 		List<String> schemaLocations = settings.getSchemaLocations();
-		assertThat(schemaLocations)
+		assertThat(schemaLocations).isNotEmpty()
 				.allSatisfy((location) -> assertThat(resourceLoader.getResource(location).exists()).isTrue());
 	}
 

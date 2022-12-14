@@ -22,6 +22,7 @@ import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.FailureAnalyzer;
 import org.springframework.core.annotation.Order;
+import org.springframework.util.Assert;
 
 /**
  * A {@link FailureAnalyzer} that performs analysis of failures caused by a
@@ -35,8 +36,10 @@ class MissingWebServerFactoryBeanFailureAnalyzer extends AbstractFailureAnalyzer
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, MissingWebServerFactoryBeanException cause) {
+		Class<?> beanType = cause.getBeanType();
+		Assert.notNull(beanType, "beanType must not be null");
 		return new FailureAnalysis(
-				"Web application could not be started as there was no " + cause.getBeanType().getName()
+				"Web application could not be started as there was no " + beanType.getName()
 						+ " bean defined in the context.",
 				"Check your application's dependencies for a supported "
 						+ cause.getWebApplicationType().name().toLowerCase(Locale.ENGLISH) + " web server.\n"

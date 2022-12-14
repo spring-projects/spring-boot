@@ -27,7 +27,9 @@ import com.samskivert.mustache.Template;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.view.AbstractTemplateView;
 
@@ -66,15 +68,23 @@ public class MustacheView extends AbstractTemplateView {
 	}
 
 	@Override
-	public boolean checkResource(Locale locale) throws Exception {
-		Resource resource = getApplicationContext().getResource(getUrl());
-		return (resource != null && resource.exists());
+	public boolean checkResource(Locale locale) {
+		ApplicationContext applicationContext = getApplicationContext();
+		Assert.notNull(applicationContext, "applicationContext must not be null");
+		String url = getUrl();
+		Assert.notNull(url, "url must not be null");
+		Resource resource = applicationContext.getResource(url);
+		return resource.exists();
 	}
 
 	@Override
 	protected void renderMergedTemplateModel(Map<String, Object> model, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
-		Template template = createTemplate(getApplicationContext().getResource(getUrl()));
+		ApplicationContext applicationContext = getApplicationContext();
+		Assert.notNull(applicationContext, "applicationContext must not be null");
+		String url = getUrl();
+		Assert.notNull(url, "url must not be null");
+		Template template = createTemplate(applicationContext.getResource(url));
 		if (template != null) {
 			template.execute(model, response.getWriter());
 		}

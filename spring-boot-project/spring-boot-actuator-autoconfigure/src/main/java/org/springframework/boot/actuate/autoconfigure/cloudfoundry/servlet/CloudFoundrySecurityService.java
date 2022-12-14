@@ -70,6 +70,7 @@ class CloudFoundrySecurityService {
 			URI uri = getPermissionsUri(applicationId);
 			RequestEntity<?> request = RequestEntity.get(uri).header("Authorization", "bearer " + token).build();
 			Map<?, ?> body = this.restTemplate.exchange(request, Map.class).getBody();
+			Assert.notNull(body, "body must not be null");
 			if (Boolean.TRUE.equals(body.get("read_sensitive_data"))) {
 				return AccessLevel.FULL;
 			}

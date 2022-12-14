@@ -627,7 +627,7 @@ public class JSONArray {
 			return stringer.toString();
 		}
 		catch (JSONException e) {
-			return null;
+			return "";
 		}
 	}
 

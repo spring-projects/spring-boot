@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.util.SystemPropertyUtils;
@@ -120,7 +121,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 	protected abstract String[] getStandardConfigLocations();
 
 	/**
-	 * Return the spring config locations for this system. By default this method returns
+	 * Return the spring config locations for this system. By default, this method returns
 	 * a set of locations based on {@link #getStandardConfigLocations()}.
 	 * @return the spring config locations
 	 * @see #getSpringInitializationConfig()
@@ -129,6 +130,7 @@ public abstract class AbstractLoggingSystem extends LoggingSystem {
 		String[] locations = getStandardConfigLocations();
 		for (int i = 0; i < locations.length; i++) {
 			String extension = StringUtils.getFilenameExtension(locations[i]);
+			Assert.notNull(extension, "extension must not be null");
 			locations[i] = locations[i].substring(0, locations[i].length() - extension.length() - 1) + "-spring."
 					+ extension;
 		}

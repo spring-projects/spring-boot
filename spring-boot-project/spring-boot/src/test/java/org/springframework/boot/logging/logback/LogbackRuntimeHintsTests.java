@@ -71,8 +71,7 @@ class LogbackRuntimeHintsTests {
 	private ReflectionHints registerHints() {
 		RuntimeHints hints = new RuntimeHints();
 		new LogbackRuntimeHints().registerHints(hints, getClass().getClassLoader());
-		ReflectionHints reflection = hints.reflection();
-		return reflection;
+		return hints.reflection();
 	}
 
 	private Consumer<Class<?>> registeredForPublicConstructorInvocation(ReflectionHints reflection) {

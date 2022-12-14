@@ -31,11 +31,13 @@ import com.samskivert.mustache.Template;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.core.io.buffer.DefaultDataBufferFactory;
 import org.springframework.http.MediaType;
+import org.springframework.util.Assert;
 import org.springframework.web.reactive.result.view.AbstractUrlBasedView;
 import org.springframework.web.reactive.result.view.View;
 import org.springframework.web.server.ServerWebExchange;
@@ -100,8 +102,12 @@ public class MustacheView extends AbstractUrlBasedView {
 	}
 
 	private Resource resolveResource() {
-		Resource resource = getApplicationContext().getResource(getUrl());
-		if (resource == null || !resource.exists()) {
+		ApplicationContext applicationContext = getApplicationContext();
+		Assert.notNull(applicationContext, "applicationContext must not be null");
+		String url = getUrl();
+		Assert.notNull(url, "url must not be null");
+		Resource resource = applicationContext.getResource(url);
+		if (!resource.exists()) {
 			return null;
 		}
 		return resource;

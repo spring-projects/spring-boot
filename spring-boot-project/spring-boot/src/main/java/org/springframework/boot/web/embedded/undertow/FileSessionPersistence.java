@@ -29,6 +29,8 @@ import java.util.Map;
 
 import io.undertow.servlet.UndertowServletLogger;
 import io.undertow.servlet.api.SessionPersistenceManager;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.core.ConfigurableObjectInputStream;
 
@@ -40,6 +42,8 @@ import org.springframework.core.ConfigurableObjectInputStream;
  * @author Raja Kolli
  */
 class FileSessionPersistence implements SessionPersistenceManager {
+
+	private static final Log logger = LogFactory.getLog(FileSessionPersistence.class);
 
 	private final File dir;
 
@@ -118,7 +122,10 @@ class FileSessionPersistence implements SessionPersistenceManager {
 
 	@Override
 	public void clear(String deploymentName) {
-		getSessionFile(deploymentName).delete();
+		File sessionFile = getSessionFile(deploymentName);
+		if (!sessionFile.delete()) {
+			logger.debug("Failed to delete session file " + sessionFile);
+		}
 	}
 
 	/**

@@ -111,7 +111,7 @@ public abstract class DomainSocket extends AbstractSocket {
 	}
 
 	@Override
-	public void close() throws IOException {
+	public synchronized void close() throws IOException {
 		super.close();
 		try {
 			this.fileDescriptor.close();
