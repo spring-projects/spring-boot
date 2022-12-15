@@ -350,7 +350,9 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 	@SuppressWarnings("unchecked")
 	private Class<? extends EventListener> loadWebListenerClass(String className) throws ClassNotFoundException {
-		return (Class<? extends EventListener>) getServletClassLoader().loadClass(className);
+		ClassLoader servletClassLoader = getServletClassLoader();
+		Assert.notNull(servletClassLoader, "servletClassLoader must not be null");
+		return (Class<? extends EventListener>) servletClassLoader.loadClass(className);
 	}
 
 	private boolean isZeroOrLess(Duration timeoutDuration) {

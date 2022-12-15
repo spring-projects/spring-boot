@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.tools.Diagnostic;
 import javax.tools.DiagnosticListener;
@@ -124,7 +125,10 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 
 	protected final void compileSourceFiles(URL[] classPath, File sourcesDirectory, File outputDirectory)
 			throws Exception {
-		List<Path> sourceFiles = Files.walk(sourcesDirectory.toPath()).filter(Files::isRegularFile).toList();
+		List<Path> sourceFiles;
+		try (Stream<Path> fileStream = Files.walk(sourcesDirectory.toPath())) {
+			sourceFiles = fileStream.filter(Files::isRegularFile).toList();
+		}
 		if (sourceFiles.isEmpty()) {
 			return;
 		}
@@ -167,8 +171,13 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 	}
 
 	protected final void copyAll(Path from, Path to) throws IOException {
-		List<Path> files = (Files.exists(from)) ? Files.walk(from).filter(Files::isRegularFile).toList()
-				: Collections.emptyList();
+		if (!Files.exists(from)) {
+			return;
+		}
+		List<Path> files;
+		try (Stream<Path> pathStream = Files.walk(from)) {
+			files = pathStream.filter(Files::isRegularFile).toList();
+		}
 		for (Path file : files) {
 			String relativeFileName = file.subpath(from.getNameCount(), file.getNameCount()).toString();
 			getLog().debug("Copying '" + relativeFileName + "' to " + to);

@@ -18,6 +18,7 @@ package org.springframework.boot.context.config;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -118,7 +119,9 @@ public final class ConfigDataLocation implements OriginProvider {
 		String[] values = StringUtils.delimitedListToStringArray(toString(), delimiter);
 		ConfigDataLocation[] result = new ConfigDataLocation[values.length];
 		for (int i = 0; i < values.length; i++) {
-			result[i] = of(values[i]).withOrigin(getOrigin());
+			ConfigDataLocation location = of(values[i]);
+			Assert.notNull(location, "location must not be null");
+			result[i] = location.withOrigin(getOrigin());
 		}
 		return result;
 	}

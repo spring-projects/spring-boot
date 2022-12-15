@@ -40,7 +40,7 @@ import static org.mockito.Mockito.spy;
  */
 class RandomValuePropertySourceTests {
 
-	private RandomValuePropertySource source = new RandomValuePropertySource();
+	private final RandomValuePropertySource source = new RandomValuePropertySource();
 
 	@Test
 	void getPropertyWhenNotRandomReturnsNull() {

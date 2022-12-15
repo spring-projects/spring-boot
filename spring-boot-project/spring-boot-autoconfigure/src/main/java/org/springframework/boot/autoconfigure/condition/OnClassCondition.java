@@ -142,7 +142,7 @@ class OnClassCondition extends FilteringSpringBootCondition {
 
 		private final Lock outcomesLock = new ReentrantLock();
 
-		private volatile ConditionOutcome[] outcomes;
+		private ConditionOutcome[] outcomes;
 
 		private ThreadedOutcomesResolver(OutcomesResolver outcomesResolver) {
 			this.thread = new Thread(() -> {

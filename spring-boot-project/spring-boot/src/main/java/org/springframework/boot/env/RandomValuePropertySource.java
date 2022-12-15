@@ -16,6 +16,7 @@
 
 package org.springframework.boot.env;
 
+import java.util.HexFormat;
 import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Random;
@@ -31,7 +32,6 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
-import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -136,9 +136,9 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 	}
 
 	private Object getRandomBytes() {
-		byte[] bytes = new byte[32];
+		byte[] bytes = new byte[128 / 8];
 		getSource().nextBytes(bytes);
-		return DigestUtils.md5DigestAsHex(bytes);
+		return HexFormat.of().withLowerCase().formatHex(bytes);
 	}
 
 	public static void addToEnvironment(ConfigurableEnvironment environment) {

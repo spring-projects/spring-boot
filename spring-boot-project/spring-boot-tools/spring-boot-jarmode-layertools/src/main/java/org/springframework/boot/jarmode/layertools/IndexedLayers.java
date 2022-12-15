@@ -54,6 +54,7 @@ class IndexedLayers implements Layers {
 				this.layers.put(line.substring(3, line.length() - 2), contents);
 			}
 			else if (line.startsWith("  - ")) {
+				Assert.notNull(contents, "contents must not be null");
 				contents.add(line.substring(5, line.length() - 1));
 			}
 			else {

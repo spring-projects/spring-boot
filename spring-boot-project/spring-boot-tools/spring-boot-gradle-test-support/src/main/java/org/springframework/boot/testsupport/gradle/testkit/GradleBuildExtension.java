@@ -25,6 +25,7 @@ import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
 
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -38,7 +39,7 @@ public class GradleBuildExtension implements BeforeEachCallback, AfterEachCallba
 
 	private static final Pattern GRADLE_VERSION_PATTERN = Pattern.compile("\\[Gradle .+\\]");
 
-	private Dsl dsl = Dsl.GROOVY;
+	private final Dsl dsl = Dsl.GROOVY;
 
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {
@@ -57,9 +58,9 @@ public class GradleBuildExtension implements BeforeEachCallback, AfterEachCallba
 	private GradleBuild extractGradleBuild(ExtensionContext context) throws Exception {
 		Object testInstance = context.getRequiredTestInstance();
 		Field gradleBuildField = ReflectionUtils.findField(testInstance.getClass(), "gradleBuild");
+		Assert.notNull(gradleBuildField, "gradleBuildField must not be null");
 		gradleBuildField.setAccessible(true);
-		GradleBuild gradleBuild = (GradleBuild) gradleBuildField.get(testInstance);
-		return gradleBuild;
+		return (GradleBuild) gradleBuildField.get(testInstance);
 	}
 
 	private URL findDefaultScript(ExtensionContext context) {

@@ -438,16 +438,17 @@ public class PropertiesLauncher extends Launcher {
 			// Ignore
 		}
 		// Otherwise try the parent archive
-		Manifest manifest = createArchive().getManifest();
-		if (manifest != null) {
-			String value = manifest.getMainAttributes().getValue(manifestKey);
-			if (value != null) {
-				debug("Property '" + manifestKey + "' from archive manifest: " + value);
-				return SystemPropertyUtils.resolvePlaceholders(this.properties, value);
+		try (Archive parentArchive = createArchive()) {
+			Manifest manifest = parentArchive.getManifest();
+			if (manifest != null) {
+				String value = manifest.getMainAttributes().getValue(manifestKey);
+				if (value != null) {
+					debug("Property '" + manifestKey + "' from archive manifest: " + value);
+					return SystemPropertyUtils.resolvePlaceholders(this.properties, value);
+				}
 			}
 		}
-		return (defaultValue != null) ? SystemPropertyUtils.resolvePlaceholders(this.properties, defaultValue)
-				: defaultValue;
+		return (defaultValue != null) ? SystemPropertyUtils.resolvePlaceholders(this.properties, defaultValue) : null;
 	}
 
 	@Override

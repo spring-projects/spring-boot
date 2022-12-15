@@ -111,6 +111,7 @@ class NoSuchBeanDefinitionFailureAnalyzer extends AbstractInjectionFailureAnalyz
 	private String getBeanDescription(NoSuchBeanDefinitionException cause) {
 		if (cause.getResolvableType() != null) {
 			Class<?> type = extractBeanType(cause.getResolvableType());
+			Assert.notNull(type, "type must not be null");
 			return "a bean of type '" + type.getName() + "'";
 		}
 		return "a bean named '" + cause.getBeanName() + "'";

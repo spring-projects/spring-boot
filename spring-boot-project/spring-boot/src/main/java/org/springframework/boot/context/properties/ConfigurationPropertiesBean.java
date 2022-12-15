@@ -247,6 +247,7 @@ public final class ConfigurationPropertiesBean {
 			return null;
 		}
 		Class<?> factoryType = beanFactory.getType(factoryBeanName);
+		Assert.notNull(factoryType, "factoryType must not be null");
 		if (factoryType.getName().contains(ClassUtils.CGLIB_CLASS_SEPARATOR)) {
 			factoryType = factoryType.getSuperclass();
 		}

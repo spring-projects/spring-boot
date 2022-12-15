@@ -53,8 +53,6 @@ class JarFileArchiveTests {
 	@TempDir
 	File tempDir;
 
-	private File rootJarFile;
-
 	private JarFileArchive archive;
 
 	private String rootJarFileUrl;
@@ -70,13 +68,13 @@ class JarFileArchiveTests {
 	}
 
 	private void setup(boolean unpackNested) throws Exception {
-		this.rootJarFile = new File(this.tempDir, "root.jar");
-		this.rootJarFileUrl = this.rootJarFile.toURI().toString();
-		TestJarCreator.createTestJar(this.rootJarFile, unpackNested);
+		File rootJarFile = new File(this.tempDir, "root.jar");
+		this.rootJarFileUrl = rootJarFile.toURI().toString();
+		TestJarCreator.createTestJar(rootJarFile, unpackNested);
 		if (this.archive != null) {
 			this.archive.close();
 		}
-		this.archive = new JarFileArchive(this.rootJarFile);
+		this.archive = new JarFileArchive(rootJarFile);
 	}
 
 	@Test

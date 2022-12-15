@@ -32,6 +32,7 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.util.EnumSet;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
@@ -223,6 +224,9 @@ public class JarFileArchive implements Archive {
 
 		@Override
 		public T next() {
+			if (!hasNext()) {
+				throw new NoSuchElementException();
+			}
 			T result = adapt(this.current);
 			this.current = poll();
 			return result;

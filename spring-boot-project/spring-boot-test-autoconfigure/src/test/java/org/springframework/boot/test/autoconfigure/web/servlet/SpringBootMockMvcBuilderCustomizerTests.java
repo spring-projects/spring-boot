@@ -50,8 +50,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class SpringBootMockMvcBuilderCustomizerTests {
 
-	private SpringBootMockMvcBuilderCustomizer customizer;
-
 	@Test
 	@SuppressWarnings("unchecked")
 	void customizeShouldAddFilters() {
@@ -61,8 +59,8 @@ class SpringBootMockMvcBuilderCustomizerTests {
 		context.register(ServletConfiguration.class, FilterConfiguration.class);
 		context.refresh();
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(context);
-		this.customizer = new SpringBootMockMvcBuilderCustomizer(context);
-		this.customizer.customize(builder);
+		SpringBootMockMvcBuilderCustomizer customizer = new SpringBootMockMvcBuilderCustomizer(context);
+		customizer.customize(builder);
 		FilterRegistrationBean<?> registrationBean = (FilterRegistrationBean<?>) context
 				.getBean("filterRegistrationBean");
 		Filter testFilter = (Filter) context.getBean("testFilter");

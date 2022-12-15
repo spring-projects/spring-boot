@@ -163,7 +163,9 @@ class BeanDefinitionLoader {
 	}
 
 	private void load(Resource source) {
-		if (source.getFilename().endsWith(".groovy")) {
+		String filename = source.getFilename();
+		Assert.notNull(filename, "filename must not be null");
+		if (filename.endsWith(".groovy")) {
 			if (this.groovyReader == null) {
 				throw new BeanDefinitionStoreException("Cannot load Groovy beans without Groovy on classpath");
 			}
@@ -263,11 +265,10 @@ class BeanDefinitionLoader {
 			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(getClass().getClassLoader());
 			Resource[] resources = resolver
 					.getResources(ClassUtils.convertClassNameToResourcePath(source.toString()) + "/*.class");
-			for (Resource resource : resources) {
-				String className = StringUtils.stripFilenameExtension(resource.getFilename());
-				load(Class.forName(source.toString() + "." + className));
-				break;
-			}
+			String filename = resources[0].getFilename();
+			Assert.notNull(filename, "filename must not be null");
+			String className = StringUtils.stripFilenameExtension(filename);
+			load(Class.forName(source + "." + className));
 		}
 		catch (Exception ex) {
 			// swallow exception and continue

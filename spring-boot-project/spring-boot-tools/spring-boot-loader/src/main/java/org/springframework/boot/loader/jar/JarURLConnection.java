@@ -20,12 +20,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.net.URLStreamHandler;
+import java.nio.charset.StandardCharsets;
 import java.security.Permission;
 
 /**
@@ -37,7 +37,7 @@ import java.security.Permission;
  */
 final class JarURLConnection extends java.net.JarURLConnection {
 
-	private static ThreadLocal<Boolean> useFastExceptions = new ThreadLocal<>();
+	private static final ThreadLocal<Boolean> USE_FAST_EXCEPTIONS = new ThreadLocal<>();
 
 	private static final FileNotFoundException FILE_NOT_FOUND_EXCEPTION = new FileNotFoundException(
 			"Jar file or entry not found");
@@ -169,7 +169,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 	}
 
 	private void throwFileNotFound(Object entry, AbstractJarFile jarFile) throws FileNotFoundException {
-		if (Boolean.TRUE.equals(useFastExceptions.get())) {
+		if (Boolean.TRUE.equals(USE_FAST_EXCEPTIONS.get())) {
 			throw FILE_NOT_FOUND_EXCEPTION;
 		}
 		throw new FileNotFoundException("JAR entry " + entry + " not found in " + jarFile.getName());
@@ -238,14 +238,14 @@ final class JarURLConnection extends java.net.JarURLConnection {
 	}
 
 	static void setUseFastExceptions(boolean useFastExceptions) {
-		JarURLConnection.useFastExceptions.set(useFastExceptions);
+		JarURLConnection.USE_FAST_EXCEPTIONS.set(useFastExceptions);
 	}
 
 	static JarURLConnection get(URL url, JarFile jarFile) throws IOException {
 		StringSequence spec = new StringSequence(url.getFile());
 		int index = indexOfRootSpec(spec, jarFile.getPathFromRoot());
 		if (index == -1) {
-			return (Boolean.TRUE.equals(useFastExceptions.get()) ? NOT_FOUND_CONNECTION
+			return (Boolean.TRUE.equals(USE_FAST_EXCEPTIONS.get()) ? NOT_FOUND_CONNECTION
 					: new JarURLConnection(url, null, EMPTY_JAR_ENTRY_NAME));
 		}
 		int separator;
@@ -259,7 +259,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			index = separator + SEPARATOR.length();
 		}
 		JarEntryName jarEntryName = JarEntryName.get(spec, index);
-		if (Boolean.TRUE.equals(useFastExceptions.get()) && !jarEntryName.isEmpty()
+		if (Boolean.TRUE.equals(USE_FAST_EXCEPTIONS.get()) && !jarEntryName.isEmpty()
 				&& !jarFile.containsEntry(jarEntryName.toString())) {
 			return NOT_FOUND_CONNECTION;
 		}
@@ -284,7 +284,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 	}
 
 	private static JarURLConnection notFound(JarFile jarFile, JarEntryName jarEntryName) throws IOException {
-		if (Boolean.TRUE.equals(useFastExceptions.get())) {
+		if (Boolean.TRUE.equals(USE_FAST_EXCEPTIONS.get())) {
 			return NOT_FOUND_CONNECTION;
 		}
 		return new JarURLConnection(null, jarFile, jarEntryName);
@@ -318,13 +318,8 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			for (int i = 0; i < length; i++) {
 				int c = source.charAt(i);
 				if (c > 127) {
-					try {
-						String encoded = URLEncoder.encode(String.valueOf((char) c), "UTF-8");
-						write(encoded, outputStream);
-					}
-					catch (UnsupportedEncodingException ex) {
-						throw new IllegalStateException(ex);
-					}
+					String encoded = URLEncoder.encode(String.valueOf((char) c), StandardCharsets.UTF_8);
+					write(encoded, outputStream);
 				}
 				else {
 					if (c == '%') {

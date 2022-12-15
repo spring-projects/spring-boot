@@ -37,7 +37,7 @@ public class RunProcess {
 
 	private static final long JUST_ENDED_LIMIT = 500;
 
-	private File workingDirectory;
+	private final File workingDirectory;
 
 	private final String[] command;
 

@@ -79,6 +79,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	private void assertEnumerablePropertySource() {
 		if (getPropertySource() instanceof MapPropertySource mapSource) {
 			try {
+				// ReadOnlySystemAttributesMap.size throws UnsupportedOperationException
 				mapSource.getSource().size();
 			}
 			catch (UnsupportedOperationException ex) {

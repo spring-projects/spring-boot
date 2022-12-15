@@ -18,6 +18,7 @@ package org.springframework.boot.loader.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.attribute.FileTime;
 import java.util.jar.JarFile;
 
@@ -110,10 +111,10 @@ public class Repackager extends Packager {
 		File workingSource = source;
 		if (source.equals(destination)) {
 			workingSource = getBackupFile();
-			workingSource.delete();
+			Files.deleteIfExists(workingSource.toPath());
 			renameFile(source, workingSource);
 		}
-		destination.delete();
+		Files.deleteIfExists(destination.toPath());
 		try {
 			try (JarFile sourceJar = new JarFile(workingSource)) {
 				repackage(sourceJar, destination, libraries, launchScript, lastModifiedTime);

@@ -101,6 +101,7 @@ public class MapConfigurationPropertySource implements IterableConfigurationProp
 
 	private void assertNotReadOnlySystemAttributesMap(Map<?, ?> map) {
 		try {
+			// ReadOnlySystemAttributesMap.size throws UnsupportedOperationException
 			map.size();
 		}
 		catch (UnsupportedOperationException ex) {

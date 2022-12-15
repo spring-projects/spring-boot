@@ -169,6 +169,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 		if (rootSource.getSource() instanceof Map) {
 			// Check we're not security restricted
 			try {
+				// ReadOnlySystemAttributesMap.size throws UnsupportedOperationException
 				((Map<?, ?>) rootSource.getSource()).size();
 			}
 			catch (UnsupportedOperationException ex) {
@@ -179,7 +180,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	}
 
 	private static PropertySource<?> getRootSource(PropertySource<?> source) {
-		while (source.getSource() != null && source.getSource() instanceof PropertySource) {
+		while (source.getSource() instanceof PropertySource) {
 			source = (PropertySource<?>) source.getSource();
 		}
 		return source;
