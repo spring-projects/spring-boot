@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.env;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,7 +70,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 			properties.load(stream);
 		}
 		catch (IOException ex) {
-			throw new RuntimeException("Failed to load devtools-property-defaults.properties", ex);
+			throw new UncheckedIOException("Failed to load devtools-property-defaults.properties", ex);
 		}
 		Map<String, Object> map = new HashMap<>();
 		for (String name : properties.stringPropertyNames()) {

@@ -77,8 +77,7 @@ public class UndertowWebServerFactoryCustomizer
 	public void customize(ConfigurableUndertowWebServerFactory factory) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		ServerOptions options = new ServerOptions(factory);
-		ServerProperties properties = this.serverProperties;
-		map.from(properties::getMaxHttpRequestHeaderSize).asInt(DataSize::toBytes).when(this::isPositive)
+		map.from(this.serverProperties::getMaxHttpRequestHeaderSize).asInt(DataSize::toBytes).when(this::isPositive)
 				.to(options.option(UndertowOptions.MAX_HEADER_SIZE));
 		mapUndertowProperties(factory, options);
 		mapAccessLogProperties(factory);
@@ -151,6 +150,7 @@ public class UndertowWebServerFactoryCustomizer
 						lookup.put(getCanonicalName(field.getName()), option);
 					}
 					catch (IllegalAccessException ex) {
+						// Ignore
 					}
 				}
 			});

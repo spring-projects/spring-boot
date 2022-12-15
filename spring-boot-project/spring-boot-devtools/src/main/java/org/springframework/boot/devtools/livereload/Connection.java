@@ -78,9 +78,10 @@ class Connection {
 
 	/**
 	 * Run the connection.
-	 * @throws Exception in case of errors
+	 * @throws NoSuchAlgorithmException in case of errors
+	 * @throws IOException in case of errors
 	 */
-	void run() throws Exception {
+	void run() throws NoSuchAlgorithmException, IOException {
 		String lowerCaseHeader = this.header.toLowerCase();
 		if (lowerCaseHeader.contains("upgrade: websocket") && lowerCaseHeader.contains("sec-websocket-version: 13")) {
 			runWebSocket();
@@ -90,7 +91,7 @@ class Connection {
 		}
 	}
 
-	private void runWebSocket() throws Exception {
+	private void runWebSocket() throws NoSuchAlgorithmException, IOException {
 		this.webSocket = true;
 		String accept = getWebsocketAcceptResponse();
 		this.outputStream.writeHeaders("HTTP/1.1 101 Switching Protocols", "Upgrade: websocket", "Connection: Upgrade",

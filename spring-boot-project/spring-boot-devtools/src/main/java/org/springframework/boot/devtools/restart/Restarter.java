@@ -22,7 +22,6 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +29,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadFactory;
@@ -92,7 +92,7 @@ public class Restarter {
 
 	private final ClassLoaderFiles classLoaderFiles = new ClassLoaderFiles();
 
-	private final Map<String, Object> attributes = new HashMap<>();
+	private final Map<String, Object> attributes = new ConcurrentHashMap<>();
 
 	private final BlockingDeque<LeakSafeThread> leakSafeThreads = new LinkedBlockingDeque<>();
 
@@ -106,7 +106,7 @@ public class Restarter {
 
 	private boolean enabled = true;
 
-	private URL[] initialUrls;
+	private final URL[] initialUrls;
 
 	private final String mainClassName;
 
@@ -256,9 +256,9 @@ public class Restarter {
 	/**
 	 * Start the application.
 	 * @param failureHandler a failure handler for application that won't start
-	 * @throws Exception in case of errors
+	 * @throws InterruptedException in case of errors
 	 */
-	protected void start(FailureHandler failureHandler) throws Exception {
+	protected void start(FailureHandler failureHandler) throws InterruptedException {
 		do {
 			Throwable error = doStart();
 			if (error == null) {
@@ -271,7 +271,7 @@ public class Restarter {
 		while (true);
 	}
 
-	private Throwable doStart() throws Exception {
+	private Throwable doStart() throws InterruptedException {
 		Assert.notNull(this.mainClassName, "Unable to find the main class to restart");
 		URL[] urls = this.urls.toArray(new URL[0]);
 		ClassLoaderFiles updatedFiles = new ClassLoaderFiles(this.classLoaderFiles);
@@ -286,9 +286,9 @@ public class Restarter {
 	 * Relaunch the application using the specified classloader.
 	 * @param classLoader the classloader to use
 	 * @return any exception that caused the launch to fail or {@code null}
-	 * @throws Exception in case of errors
+	 * @throws InterruptedException in case of errors
 	 */
-	protected Throwable relaunch(ClassLoader classLoader) throws Exception {
+	protected Throwable relaunch(ClassLoader classLoader) throws InterruptedException {
 		RestartLauncher launcher = new RestartLauncher(classLoader, this.mainClassName, this.args,
 				this.exceptionHandler);
 		launcher.start();
@@ -439,19 +439,12 @@ public class Restarter {
 		}
 	}
 
-	public Object getOrAddAttribute(String name, final ObjectFactory<?> objectFactory) {
-		synchronized (this.attributes) {
-			if (!this.attributes.containsKey(name)) {
-				this.attributes.put(name, objectFactory.getObject());
-			}
-			return this.attributes.get(name);
-		}
+	public Object getOrAddAttribute(String name, ObjectFactory<?> objectFactory) {
+		return this.attributes.computeIfAbsent(name, (key) -> objectFactory.getObject());
 	}
 
 	public Object removeAttribute(String name) {
-		synchronized (this.attributes) {
-			return this.attributes.remove(name);
-		}
+		return this.attributes.remove(name);
 	}
 
 	/**
@@ -587,13 +580,13 @@ public class Restarter {
 
 		void call(Callable<?> callable) {
 			this.callable = callable;
-			start();
+			super.start();
 		}
 
 		@SuppressWarnings("unchecked")
 		<V> V callAndWait(Callable<V> callable) {
 			this.callable = callable;
-			start();
+			super.start();
 			try {
 				join();
 				return (V) this.result;

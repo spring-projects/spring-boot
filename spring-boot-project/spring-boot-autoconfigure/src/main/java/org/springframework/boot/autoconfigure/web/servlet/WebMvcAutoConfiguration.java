@@ -489,11 +489,14 @@ public class WebMvcAutoConfiguration {
 		private Resource getIndexHtml(Resource location) {
 			try {
 				Resource resource = location.createRelative("index.html");
-				if (resource.exists() && (resource.getURL() != null)) {
+				if (resource.exists()) {
+					// Trigger exceptions if any
+					resource.getURL();
 					return resource;
 				}
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 			return null;
 		}

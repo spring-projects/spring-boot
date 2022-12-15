@@ -35,7 +35,10 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
  *
  * @author Madhura Bhave
  */
-class ReactiveOAuth2ResourceServerOpaqueTokenConfiguration {
+final class ReactiveOAuth2ResourceServerOpaqueTokenConfiguration {
+
+	private ReactiveOAuth2ResourceServerOpaqueTokenConfiguration() {
+	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ReactiveOpaqueTokenIntrospector.class)

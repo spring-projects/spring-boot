@@ -50,7 +50,10 @@ import org.springframework.http.client.reactive.ReactorResourceFactory;
  * @author Raheela Aslam
  * @author Sergey Serdyuk
  */
-abstract class ReactiveWebServerFactoryConfiguration {
+final class ReactiveWebServerFactoryConfiguration {
+
+	private ReactiveWebServerFactoryConfiguration() {
+	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(ReactiveWebServerFactory.class)

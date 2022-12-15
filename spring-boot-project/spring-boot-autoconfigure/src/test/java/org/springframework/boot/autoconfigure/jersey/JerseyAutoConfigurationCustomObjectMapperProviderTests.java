@@ -60,8 +60,8 @@ class JerseyAutoConfigurationCustomObjectMapperProviderTests {
 	@Test
 	void contextLoads() {
 		ResponseEntity<String> response = this.restTemplate.getForEntity("/rest/message", String.class);
-		assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
-		assertThat("{\"subject\":\"Jersey\"}").isEqualTo(response.getBody());
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getBody()).isEqualTo("{\"subject\":\"Jersey\"}");
 	}
 
 	@MinimalWebConfiguration

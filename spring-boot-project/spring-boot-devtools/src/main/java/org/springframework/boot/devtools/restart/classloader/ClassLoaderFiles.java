@@ -108,12 +108,7 @@ public class ClassLoaderFiles implements ClassLoaderFileRepository, Serializable
 	 * @return an existing or newly added {@link SourceDirectory}
 	 */
 	protected final SourceDirectory getOrCreateSourceDirectory(String name) {
-		SourceDirectory sourceDirectory = this.sourceDirectories.get(name);
-		if (sourceDirectory == null) {
-			sourceDirectory = new SourceDirectory(name);
-			this.sourceDirectories.put(name, sourceDirectory);
-		}
-		return sourceDirectory;
+		return this.sourceDirectories.computeIfAbsent(name, (key) -> new SourceDirectory(name));
 	}
 
 	/**

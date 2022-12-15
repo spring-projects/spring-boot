@@ -38,7 +38,10 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Andy Wilkinson
  */
-class TemplateEngineConfigurations {
+final class TemplateEngineConfigurations {
+
+	private TemplateEngineConfigurations() {
+	}
 
 	@Configuration(proxyBeanMethods = false)
 	static class DefaultTemplateEngineConfiguration {

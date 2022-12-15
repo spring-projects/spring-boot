@@ -16,8 +16,11 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.resource.reactive;
 
+import java.io.IOException;
 import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -108,7 +111,8 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 
 		@Bean
 		@Conditional(KeyValueCondition.class)
-		NimbusReactiveJwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
+		NimbusReactiveJwtDecoder jwtDecoderByPublicKeyValue()
+				throws NoSuchAlgorithmException, IOException, InvalidKeySpecException {
 			RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
 					.generatePublic(new X509EncodedKeySpec(getKeySpec(this.properties.readPublicKey())));
 			NimbusReactiveJwtDecoder jwtDecoder = NimbusReactiveJwtDecoder.withPublicKey(publicKey)

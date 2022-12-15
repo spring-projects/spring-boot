@@ -126,6 +126,7 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 				}
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 		}
 		return null;

@@ -92,15 +92,14 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 		try {
 			ClassLoaderFiles classLoaderFiles = getClassLoaderFiles(event);
 			byte[] bytes = serialize(classLoaderFiles);
-			performUpload(classLoaderFiles, bytes, event);
+			performUpload(bytes, event);
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
 
-	private void performUpload(ClassLoaderFiles classLoaderFiles, byte[] bytes, ClassPathChangedEvent event)
-			throws IOException {
+	private void performUpload(byte[] bytes, ClassPathChangedEvent event) throws IOException {
 		try {
 			while (true) {
 				try {

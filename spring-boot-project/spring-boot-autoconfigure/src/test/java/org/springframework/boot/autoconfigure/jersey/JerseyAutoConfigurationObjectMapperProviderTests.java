@@ -62,8 +62,8 @@ class JerseyAutoConfigurationObjectMapperProviderTests {
 	@Test
 	void responseIsSerializedUsingAutoConfiguredObjectMapper() {
 		ResponseEntity<String> response = this.restTemplate.getForEntity("/rest/message", String.class);
-		assertThat(HttpStatus.OK).isEqualTo(response.getStatusCode());
-		assertThat(response.getBody()).isEqualTo("{\"subject\":\"Jersey\"}");
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat("{\"subject\":\"Jersey\"}").isEqualTo(response.getBody());
 	}
 
 	@MinimalWebConfiguration

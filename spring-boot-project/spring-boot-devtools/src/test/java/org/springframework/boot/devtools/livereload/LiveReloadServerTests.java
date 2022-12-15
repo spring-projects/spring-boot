@@ -23,6 +23,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
+import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -204,7 +205,7 @@ class LiveReloadServerTests {
 			}
 
 			@Override
-			public void run() throws Exception {
+			public void run() throws NoSuchAlgorithmException, IOException {
 				try {
 					super.run();
 				}

@@ -22,6 +22,7 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -268,7 +269,7 @@ public class LiveReloadServer {
 			}
 		}
 
-		private void handle() throws Exception {
+		private void handle() throws IOException, NoSuchAlgorithmException {
 			try {
 				try (OutputStream outputStream = this.socket.getOutputStream()) {
 					Connection connection = createConnection(this.socket, this.inputStream, outputStream);
@@ -283,7 +284,7 @@ public class LiveReloadServer {
 			}
 		}
 
-		private void runConnection(Connection connection) throws Exception {
+		private void runConnection(Connection connection) throws NoSuchAlgorithmException, IOException {
 			try {
 				addConnection(connection);
 				connection.run();

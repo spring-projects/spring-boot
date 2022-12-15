@@ -27,7 +27,10 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
  *
  * @author Madhura Bhave
  */
-class Oauth2ResourceServerConfiguration {
+final class Oauth2ResourceServerConfiguration {
+
+	private Oauth2ResourceServerConfiguration() {
+	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JwtDecoder.class)
