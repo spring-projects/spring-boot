@@ -156,8 +156,8 @@ public class WebMvcEndpointManagementContextConfiguration {
 		@Override
 		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 			for (HttpMessageConverter<?> converter : converters) {
-				if (converter instanceof MappingJackson2HttpMessageConverter) {
-					configure((MappingJackson2HttpMessageConverter) converter);
+				if (converter instanceof MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter) {
+					configure(mappingJackson2HttpMessageConverter);
 				}
 			}
 		}

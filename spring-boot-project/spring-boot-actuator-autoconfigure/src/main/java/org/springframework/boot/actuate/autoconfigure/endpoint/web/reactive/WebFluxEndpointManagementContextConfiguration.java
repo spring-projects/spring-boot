@@ -161,8 +161,8 @@ public class WebFluxEndpointManagementContextConfiguration {
 
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-			if (bean instanceof ServerCodecConfigurer) {
-				process((ServerCodecConfigurer) bean);
+			if (bean instanceof ServerCodecConfigurer serverCodecConfigurer) {
+				process(serverCodecConfigurer);
 			}
 			return bean;
 		}
@@ -176,8 +176,7 @@ public class WebFluxEndpointManagementContextConfiguration {
 		}
 
 		private void process(Encoder<?> encoder) {
-			if (encoder instanceof Jackson2JsonEncoder) {
-				Jackson2JsonEncoder jackson2JsonEncoder = (Jackson2JsonEncoder) encoder;
+			if (encoder instanceof Jackson2JsonEncoder jackson2JsonEncoder) {
 				jackson2JsonEncoder.registerObjectMappersForType(OperationResponseBody.class, (associations) -> {
 					ObjectMapper objectMapper = this.endpointObjectMapper.get().get();
 					MEDIA_TYPES.forEach((mimeType) -> associations.put(mimeType, objectMapper));

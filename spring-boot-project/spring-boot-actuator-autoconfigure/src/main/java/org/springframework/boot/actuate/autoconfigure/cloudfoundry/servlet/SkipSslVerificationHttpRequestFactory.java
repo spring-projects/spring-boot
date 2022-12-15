@@ -18,6 +18,8 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 
@@ -56,7 +58,7 @@ class SkipSslVerificationHttpRequestFactory extends SimpleClientHttpRequestFacto
 		}
 	}
 
-	private SSLSocketFactory createSslSocketFactory() throws Exception {
+	private SSLSocketFactory createSslSocketFactory() throws NoSuchAlgorithmException, KeyManagementException {
 		SSLContext context = SSLContext.getInstance("TLS");
 		context.init(null, new TrustManager[] { new SkipX509TrustManager() }, new SecureRandom());
 		return context.getSocketFactory();

@@ -53,8 +53,6 @@ class ReactiveCloudFoundrySecurityService {
 
 	private final String cloudControllerUrl;
 
-	private Mono<String> uaaUrl;
-
 	ReactiveCloudFoundrySecurityService(WebClient.Builder webClientBuilder, String cloudControllerUrl,
 			boolean skipSslValidation) {
 		Assert.notNull(webClientBuilder, "WebClient must not be null");
@@ -141,11 +139,10 @@ class ReactiveCloudFoundrySecurityService {
 	 * @return the UAA url Mono
 	 */
 	Mono<String> getUaaUrl() {
-		this.uaaUrl = this.webClient.get().uri(this.cloudControllerUrl + "/info").retrieve().bodyToMono(Map.class)
+		return this.webClient.get().uri(this.cloudControllerUrl + "/info").retrieve().bodyToMono(Map.class)
 				.map((response) -> (String) response.get("token_endpoint")).cache()
 				.onErrorMap((ex) -> new CloudFoundryAuthorizationException(Reason.SERVICE_UNAVAILABLE,
 						"Unable to fetch token keys from UAA."));
-		return this.uaaUrl;
 	}
 
 }

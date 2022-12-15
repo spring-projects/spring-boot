@@ -150,7 +150,7 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 		private final Set<EndpointId> endpointIds;
 
 		EndpointPatterns(String[] patterns) {
-			this((patterns != null) ? Arrays.asList(patterns) : (Collection<String>) null);
+			this((patterns != null) ? Arrays.asList(patterns) : null);
 		}
 
 		EndpointPatterns(Collection<String> patterns) {

@@ -101,7 +101,7 @@ public class WebMvcObservationAutoConfiguration {
 		if (customConvention != null) {
 			return customConvention;
 		}
-		else if (tagsProvider != null || contributors.size() > 0) {
+		else if (tagsProvider != null || !contributors.isEmpty()) {
 			return new ServerRequestObservationConventionAdapter(name, tagsProvider, contributors);
 		}
 		else {

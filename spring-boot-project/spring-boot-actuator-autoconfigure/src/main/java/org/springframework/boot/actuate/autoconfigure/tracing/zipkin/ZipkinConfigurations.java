@@ -43,7 +43,10 @@ import org.springframework.web.reactive.function.client.WebClient;
  * @author Moritz Halbritter
  * @author Stefan Bratanov
  */
-class ZipkinConfigurations {
+final class ZipkinConfigurations {
+
+	private ZipkinConfigurations() {
+	}
 
 	@Configuration(proxyBeanMethods = false)
 	@Import({ UrlConnectionSenderConfiguration.class, WebClientSenderConfiguration.class,

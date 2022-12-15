@@ -38,7 +38,7 @@ class WebEndpointPropertiesTests {
 	void basePathShouldBeCleaned() {
 		WebEndpointProperties properties = new WebEndpointProperties();
 		properties.setBasePath("/");
-		assertThat(properties.getBasePath()).isEqualTo("");
+		assertThat(properties.getBasePath()).isEmpty();
 		properties.setBasePath("/actuator/");
 		assertThat(properties.getBasePath()).isEqualTo("/actuator");
 	}
@@ -54,7 +54,7 @@ class WebEndpointPropertiesTests {
 	void basePathCanBeEmpty() {
 		WebEndpointProperties properties = new WebEndpointProperties();
 		properties.setBasePath("");
-		assertThat(properties.getBasePath()).isEqualTo("");
+		assertThat(properties.getBasePath()).isEmpty();
 	}
 
 }

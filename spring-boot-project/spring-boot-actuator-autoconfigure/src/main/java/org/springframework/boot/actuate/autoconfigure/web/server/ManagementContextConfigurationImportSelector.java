@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -88,7 +89,7 @@ class ManagementContextConfigurationImportSelector implements DeferredImportSele
 			configurations.add(new ManagementConfiguration(metadataReader));
 		}
 		catch (IOException ex) {
-			throw new RuntimeException("Failed to read annotation metadata for '" + className + "'", ex);
+			throw new UncheckedIOException("Failed to read annotation metadata for '" + className + "'", ex);
 		}
 	}
 

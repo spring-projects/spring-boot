@@ -60,8 +60,8 @@ public final class ManagementContextFactory {
 		Environment parentEnvironment = parentContext.getEnvironment();
 		ConfigurableEnvironment childEnvironment = ApplicationContextFactory.DEFAULT
 				.createEnvironment(this.webApplicationType);
-		if (parentEnvironment instanceof ConfigurableEnvironment) {
-			childEnvironment.setConversionService(((ConfigurableEnvironment) parentEnvironment).getConversionService());
+		if (parentEnvironment instanceof ConfigurableEnvironment parentConfigurableEnvironment) {
+			childEnvironment.setConversionService(parentConfigurableEnvironment.getConversionService());
 		}
 		ConfigurableApplicationContext managementContext = ApplicationContextFactory.DEFAULT
 				.create(this.webApplicationType);

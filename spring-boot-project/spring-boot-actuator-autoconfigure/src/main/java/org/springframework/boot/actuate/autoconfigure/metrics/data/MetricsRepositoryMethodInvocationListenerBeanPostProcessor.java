@@ -22,6 +22,7 @@ import org.springframework.boot.actuate.metrics.data.MetricsRepositoryMethodInvo
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
 import org.springframework.data.repository.core.support.RepositoryFactoryCustomizer;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
+import org.springframework.util.Assert;
 import org.springframework.util.function.SingletonSupplier;
 
 /**
@@ -58,7 +59,9 @@ class MetricsRepositoryMethodInvocationListenerBeanPostProcessor implements Bean
 
 		@Override
 		public void customize(RepositoryFactorySupport repositoryFactory) {
-			repositoryFactory.addInvocationListener(this.listenerSupplier.get());
+			MetricsRepositoryMethodInvocationListener listener = this.listenerSupplier.get();
+			Assert.notNull(listener, "listener must not be null");
+			repositoryFactory.addInvocationListener(listener);
 		}
 
 	}

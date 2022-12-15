@@ -36,7 +36,10 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Stephane Nicoll
  */
-class CassandraHealthContributorConfigurations {
+final class CassandraHealthContributorConfigurations {
+
+	private CassandraHealthContributorConfigurations() {
+	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(CqlSession.class)

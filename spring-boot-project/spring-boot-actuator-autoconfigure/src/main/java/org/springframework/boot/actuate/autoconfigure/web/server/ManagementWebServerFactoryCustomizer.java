@@ -81,6 +81,7 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 				customizers.add(BeanFactoryUtils.beanOfTypeIncludingAncestors(this.beanFactory, customizerClass));
 			}
 			catch (NoSuchBeanDefinitionException ex) {
+				// Ignore
 			}
 		}
 		invokeCustomizers(factory, customizers);

@@ -157,7 +157,7 @@ class ReactiveCloudFoundrySecurityServiceTests {
 			response.setHeader("Content-Type", "application/json");
 		});
 		StepVerifier.create(this.securityService.fetchTokenKeys())
-				.consumeNextWith((tokenKeys) -> assertThat(tokenKeys.get("test-key")).isEqualTo(tokenKeyValue))
+				.consumeNextWith((tokenKeys) -> assertThat(tokenKeys).containsEntry("test-key", tokenKeyValue))
 				.expectComplete().verify();
 		expectRequest((request) -> assertThat(request.getPath()).isEqualTo("/my-cloud-controller.com/info"));
 		expectRequest((request) -> assertThat(request.getPath()).isEqualTo("/my-uaa.com/token_keys"));

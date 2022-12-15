@@ -92,7 +92,7 @@ class EnvironmentEndpointAutoConfigurationTests {
 					assertThat(context).hasSingleBean(EnvironmentEndpointWebExtension.class);
 					EnvironmentEndpointWebExtension endpoint = context.getBean(EnvironmentEndpointWebExtension.class);
 					Set<String> roles = (Set<String>) ReflectionTestUtils.getField(endpoint, "roles");
-					assertThat(roles.contains("test")).isTrue();
+					assertThat(roles).contains("test");
 				});
 	}
 
