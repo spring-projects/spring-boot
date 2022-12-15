@@ -85,8 +85,7 @@ public class InMemoryAuditEventRepository implements AuditEventRepository {
 	}
 
 	private boolean isMatch(String principal, Instant after, String type, AuditEvent event) {
-		boolean match = true;
-		match = match && (principal == null || event.getPrincipal().equals(principal));
+		boolean match = principal == null || event.getPrincipal().equals(principal);
 		match = match && (after == null || event.getTimestamp().isAfter(after));
 		match = match && (type == null || event.getType().equals(type));
 		return match;

@@ -196,7 +196,7 @@ class JsonReader {
 	}
 
 	private JSONObject readJson(InputStream in, Charset charset) throws Exception {
-		try {
+		try (in) {
 			StringBuilder out = new StringBuilder();
 			InputStreamReader reader = new InputStreamReader(in, charset);
 			char[] buffer = new char[BUFFER_SIZE];
@@ -205,9 +205,6 @@ class JsonReader {
 				out.append(buffer, 0, bytesRead);
 			}
 			return new JSONObject(out.toString());
-		}
-		finally {
-			in.close();
 		}
 	}
 

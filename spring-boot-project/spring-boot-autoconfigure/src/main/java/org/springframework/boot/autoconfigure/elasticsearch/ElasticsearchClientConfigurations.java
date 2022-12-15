@@ -41,7 +41,10 @@ import org.springframework.context.annotation.Import;
  *
  * @author Andy Wilkinson
  */
-class ElasticsearchClientConfigurations {
+final class ElasticsearchClientConfigurations {
+
+	private ElasticsearchClientConfigurations() {
+	}
 
 	@ConditionalOnMissingBean(JsonpMapper.class)
 	@ConditionalOnBean(ObjectMapper.class)

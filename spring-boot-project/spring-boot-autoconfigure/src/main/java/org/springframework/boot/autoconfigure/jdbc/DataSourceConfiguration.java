@@ -41,10 +41,13 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Fabio Grassi
  */
-abstract class DataSourceConfiguration {
+final class DataSourceConfiguration {
+
+	private DataSourceConfiguration() {
+	}
 
 	@SuppressWarnings("unchecked")
-	protected static <T> T createDataSource(DataSourceProperties properties, Class<? extends DataSource> type) {
+	private static <T> T createDataSource(DataSourceProperties properties, Class<? extends DataSource> type) {
 		return (T) properties.initializeDataSourceBuilder().type(type).build();
 	}
 

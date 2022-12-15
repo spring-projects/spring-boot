@@ -52,9 +52,12 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Rodolpho S. Couto
  */
-abstract class ConnectionFactoryConfigurations {
+final class ConnectionFactoryConfigurations {
 
-	protected static ConnectionFactory createConnectionFactory(R2dbcProperties properties, ClassLoader classLoader,
+	private ConnectionFactoryConfigurations() {
+	}
+
+	private static ConnectionFactory createConnectionFactory(R2dbcProperties properties, ClassLoader classLoader,
 			List<ConnectionFactoryOptionsBuilderCustomizer> optionsCustomizers) {
 		try {
 			return org.springframework.boot.r2dbc.ConnectionFactoryBuilder

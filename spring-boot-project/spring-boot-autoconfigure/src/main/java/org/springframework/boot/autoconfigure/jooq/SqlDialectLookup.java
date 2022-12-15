@@ -52,10 +52,7 @@ final class SqlDialectLookup {
 		}
 		try {
 			String url = JdbcUtils.extractDatabaseMetaData(dataSource, DatabaseMetaData::getURL);
-			SQLDialect sqlDialect = JDBCUtils.dialect(url);
-			if (sqlDialect != null) {
-				return sqlDialect;
-			}
+			return JDBCUtils.dialect(url);
 		}
 		catch (MetaDataAccessException ex) {
 			logger.warn("Unable to determine jdbc url from datasource", ex);

@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jms.artemis;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
 import org.apache.activemq.artemis.api.core.client.ActiveMQClient;
@@ -79,7 +80,8 @@ class ArtemisConnectionFactoryFactory {
 		}
 	}
 
-	private <T extends ActiveMQConnectionFactory> T doCreateConnectionFactory(Class<T> factoryClass) throws Exception {
+	private <T extends ActiveMQConnectionFactory> T doCreateConnectionFactory(Class<T> factoryClass)
+			throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 		ArtemisMode mode = this.properties.getMode();
 		if (mode == null) {
 			mode = deduceMode();
@@ -111,7 +113,7 @@ class ArtemisConnectionFactoryFactory {
 	}
 
 	private <T extends ActiveMQConnectionFactory> T createEmbeddedConnectionFactory(Class<T> factoryClass)
-			throws Exception {
+			throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 		try {
 			TransportConfiguration transportConfiguration = new TransportConfiguration(
 					InVMConnectorFactory.class.getName(), this.properties.getEmbedded().generateTransportParameters());
@@ -125,7 +127,7 @@ class ArtemisConnectionFactoryFactory {
 	}
 
 	private <T extends ActiveMQConnectionFactory> T createNativeConnectionFactory(Class<T> factoryClass)
-			throws Exception {
+			throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
 		T connectionFactory = newNativeConnectionFactory(factoryClass);
 		String user = this.properties.getUser();
 		if (StringUtils.hasText(user)) {
@@ -135,7 +137,8 @@ class ArtemisConnectionFactoryFactory {
 		return connectionFactory;
 	}
 
-	private <T extends ActiveMQConnectionFactory> T newNativeConnectionFactory(Class<T> factoryClass) throws Exception {
+	private <T extends ActiveMQConnectionFactory> T newNativeConnectionFactory(Class<T> factoryClass)
+			throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
 		String brokerUrl = StringUtils.hasText(this.properties.getBrokerUrl()) ? this.properties.getBrokerUrl()
 				: DEFAULT_BROKER_URL;
 		Constructor<T> constructor = factoryClass.getConstructor(String.class);

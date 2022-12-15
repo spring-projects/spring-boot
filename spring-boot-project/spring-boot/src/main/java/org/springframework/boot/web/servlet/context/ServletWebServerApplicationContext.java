@@ -17,10 +17,8 @@
 package org.springframework.boot.web.servlet.context;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.EventListener;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -343,14 +341,8 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	 */
 	public static class ExistingWebApplicationScopes {
 
-		private static final Set<String> SCOPES;
-
-		static {
-			Set<String> scopes = new LinkedHashSet<>();
-			scopes.add(WebApplicationContext.SCOPE_REQUEST);
-			scopes.add(WebApplicationContext.SCOPE_SESSION);
-			SCOPES = Collections.unmodifiableSet(scopes);
-		}
+		private static final Set<String> DEFAULT_SCOPES = Set.of(WebApplicationContext.SCOPE_REQUEST,
+				WebApplicationContext.SCOPE_SESSION);
 
 		private final ConfigurableListableBeanFactory beanFactory;
 
@@ -358,7 +350,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 
 		public ExistingWebApplicationScopes(ConfigurableListableBeanFactory beanFactory) {
 			this.beanFactory = beanFactory;
-			for (String scopeName : SCOPES) {
+			for (String scopeName : DEFAULT_SCOPES) {
 				Scope scope = beanFactory.getRegisteredScope(scopeName);
 				if (scope != null) {
 					this.scopes.put(scopeName, scope);

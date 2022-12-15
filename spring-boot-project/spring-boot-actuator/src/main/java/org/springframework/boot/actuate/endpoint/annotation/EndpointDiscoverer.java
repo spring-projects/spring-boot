@@ -141,7 +141,9 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	}
 
 	private EndpointBean createEndpointBean(String beanName) {
-		Class<?> beanType = ClassUtils.getUserClass(this.applicationContext.getType(beanName, false));
+		Class<?> type = this.applicationContext.getType(beanName, false);
+		Assert.notNull(type, "type must not be null");
+		Class<?> beanType = ClassUtils.getUserClass(type);
 		Supplier<Object> beanSupplier = () -> this.applicationContext.getBean(beanName);
 		return new EndpointBean(this.applicationContext.getEnvironment(), beanName, beanType, beanSupplier);
 	}
@@ -161,7 +163,9 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	}
 
 	private ExtensionBean createExtensionBean(String beanName) {
-		Class<?> beanType = ClassUtils.getUserClass(this.applicationContext.getType(beanName));
+		Class<?> type = this.applicationContext.getType(beanName);
+		Assert.notNull(type, "type must not be null");
+		Class<?> beanType = ClassUtils.getUserClass(type);
 		Supplier<Object> beanSupplier = () -> this.applicationContext.getBean(beanName);
 		return new ExtensionBean(this.applicationContext.getEnvironment(), beanName, beanType, beanSupplier);
 	}
@@ -301,13 +305,8 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	}
 
 	private E getFilterEndpoint(EndpointBean endpointBean) {
-		E endpoint = this.filterEndpoints.get(endpointBean);
-		if (endpoint == null) {
-			endpoint = createEndpoint(endpointBean.getBean(), endpointBean.getId(), endpointBean.isEnabledByDefault(),
-					Collections.emptySet());
-			this.filterEndpoints.put(endpointBean, endpoint);
-		}
-		return endpoint;
+		return this.filterEndpoints.computeIfAbsent(endpointBean, (key) -> createEndpoint(endpointBean.getBean(),
+				endpointBean.getId(), endpointBean.isEnabledByDefault(), Collections.emptySet()));
 	}
 
 	@SuppressWarnings("unchecked")

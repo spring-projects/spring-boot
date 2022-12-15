@@ -152,7 +152,7 @@ final class PrivateKeyParser {
 		}
 
 		private static byte[] decodeBase64(String content) {
-			byte[] contentBytes = content.replaceAll("\r", "").replaceAll("\n", "").getBytes();
+			byte[] contentBytes = content.replace("\r", "").replace("\n", "").getBytes();
 			return Base64Utils.decode(contentBytes);
 		}
 

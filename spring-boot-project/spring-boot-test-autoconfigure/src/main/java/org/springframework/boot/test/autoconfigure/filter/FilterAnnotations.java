@@ -70,18 +70,21 @@ public class FilterAnnotations implements Iterable<TypeFilter> {
 	@SuppressWarnings("unchecked")
 	private TypeFilter createTypeFilter(FilterType filterType, Class<?> filterClass) {
 		switch (filterType) {
-			case ANNOTATION:
+			case ANNOTATION -> {
 				Assert.isAssignable(Annotation.class, filterClass,
 						"An error occurred while processing an ANNOTATION type filter: ");
 				return new AnnotationTypeFilter((Class<Annotation>) filterClass);
-			case ASSIGNABLE_TYPE:
+			}
+			case ASSIGNABLE_TYPE -> {
 				return new AssignableTypeFilter(filterClass);
-			case CUSTOM:
+			}
+			case CUSTOM -> {
 				Assert.isAssignable(TypeFilter.class, filterClass,
 						"An error occurred while processing a CUSTOM type filter: ");
 				return BeanUtils.instantiateClass(filterClass, TypeFilter.class);
+			}
+			default -> throw new IllegalArgumentException("Filter type not supported with Class value: " + filterType);
 		}
-		throw new IllegalArgumentException("Filter type not supported with Class value: " + filterType);
 	}
 
 	private TypeFilter createTypeFilter(FilterType filterType, String pattern) {

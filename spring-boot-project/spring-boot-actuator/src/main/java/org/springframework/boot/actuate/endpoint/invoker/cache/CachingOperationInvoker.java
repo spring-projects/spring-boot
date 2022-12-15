@@ -19,9 +19,7 @@ package org.springframework.boot.actuate.endpoint.invoker.cache;
 import java.security.Principal;
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 
 import reactor.core.publisher.Flux;
@@ -109,15 +107,10 @@ public class CachingOperationInvoker implements OperationInvoker {
 
 	private void cleanExpiredCachedResponses(long accessTime) {
 		try {
-			Iterator<Entry<CacheKey, CachedResponse>> iterator = this.cachedResponses.entrySet().iterator();
-			while (iterator.hasNext()) {
-				Entry<CacheKey, CachedResponse> entry = iterator.next();
-				if (entry.getValue().isStale(accessTime, this.timeToLive)) {
-					iterator.remove();
-				}
-			}
+			this.cachedResponses.entrySet().removeIf((entry) -> entry.getValue().isStale(accessTime, this.timeToLive));
 		}
-		catch (Exception ex) {
+		catch (Exception ignored) {
+			// Ignore
 		}
 	}
 

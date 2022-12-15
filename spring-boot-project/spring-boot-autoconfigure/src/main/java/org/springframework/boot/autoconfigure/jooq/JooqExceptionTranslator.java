@@ -59,11 +59,9 @@ public class JooqExceptionTranslator implements ExecuteListener {
 
 	private SQLExceptionTranslator getTranslator(ExecuteContext context) {
 		SQLDialect dialect = context.configuration().dialect();
-		if (dialect != null && dialect.thirdParty() != null) {
-			String dbName = dialect.thirdParty().springDbName();
-			if (dbName != null) {
-				return new SQLErrorCodeSQLExceptionTranslator(dbName);
-			}
+		String dbName = dialect.thirdParty().springDbName();
+		if (dbName != null) {
+			return new SQLErrorCodeSQLExceptionTranslator(dbName);
 		}
 		return new SQLStateSQLExceptionTranslator();
 	}

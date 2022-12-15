@@ -35,7 +35,7 @@ import org.springframework.util.ObjectUtils;
  */
 class OperationMethodParameter implements OperationParameter {
 
-	private static final boolean jsr305Present = ClassUtils.isPresent("javax.annotation.Nonnull", null);
+	private static final boolean JSR_305_PRESENT = ClassUtils.isPresent("javax.annotation.Nonnull", null);
 
 	private final String name;
 
@@ -66,7 +66,7 @@ class OperationMethodParameter implements OperationParameter {
 		if (!ObjectUtils.isEmpty(this.parameter.getAnnotationsByType(Nullable.class))) {
 			return false;
 		}
-		return (jsr305Present) ? new Jsr305().isMandatory(this.parameter) : true;
+		return (JSR_305_PRESENT) ? new Jsr305().isMandatory(this.parameter) : true;
 	}
 
 	@Override

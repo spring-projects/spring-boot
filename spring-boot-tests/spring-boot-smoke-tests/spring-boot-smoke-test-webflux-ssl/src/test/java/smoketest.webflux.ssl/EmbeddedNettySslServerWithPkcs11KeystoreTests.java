@@ -66,7 +66,7 @@ class EmbeddedNettySslServerWithPkcs11KeystoreTests {
 		try (SpringBootJarTestContainer container = new SpringBootJarTestContainer()) {
 			container.withLogConsumer(consumer);
 			container.start();
-			assertThat(consumer.toUtf8String().contains("Netty started"));
+			assertThat(consumer.toUtf8String()).contains("Netty started");
 
 			// HTTPS connection test
 			container.copyFileFromContainer("/server-cert.pem", serverCertDestinationFile.getAbsolutePath());

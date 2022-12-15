@@ -80,7 +80,7 @@ class ConditionEvaluationReportLogger {
 
 	private void logMessage(String logLevel) {
 		this.logger.info(String.format("%n%nError starting ApplicationContext. To display the "
-				+ "condition evaluation report re-run your application with '" + logLevel + "' enabled."));
+				+ "condition evaluation report re-run your application with '%s' enabled.", logLevel));
 	}
 
 }

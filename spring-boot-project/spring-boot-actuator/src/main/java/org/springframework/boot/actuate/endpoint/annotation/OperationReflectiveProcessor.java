@@ -42,9 +42,7 @@ class OperationReflectiveProcessor extends SimpleReflectiveProcessor {
 	protected void registerMethodHint(ReflectionHints hints, Method method) {
 		super.registerMethodHint(hints, method);
 		Type returnType = extractReturnType(method);
-		if (returnType != null) {
-			registerReflectionHints(hints, returnType);
-		}
+		registerReflectionHints(hints, returnType);
 	}
 
 	private Type extractReturnType(Method method) {

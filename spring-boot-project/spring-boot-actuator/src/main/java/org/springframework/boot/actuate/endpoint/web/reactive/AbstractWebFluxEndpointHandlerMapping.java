@@ -190,8 +190,9 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		RequestMappingInfo mapping = RequestMappingInfo.paths(linksPath).methods(RequestMethod.GET).produces(produces)
 				.build();
 		LinksHandler linksHandler = getLinksHandler();
-		registerMapping(mapping, linksHandler,
-				ReflectionUtils.findMethod(linksHandler.getClass(), "links", ServerWebExchange.class));
+		Method linksMethod = ReflectionUtils.findMethod(linksHandler.getClass(), "links", ServerWebExchange.class);
+		Assert.notNull(linksMethod, "linksMethod must not be null");
+		registerMapping(mapping, linksHandler, linksMethod);
 	}
 
 	@Override
@@ -381,10 +382,9 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		private ResponseEntity<Object> toResponseEntity(Object response) {
-			if (!(response instanceof WebEndpointResponse)) {
+			if (!(response instanceof WebEndpointResponse<?> webEndpointResponse)) {
 				return new ResponseEntity<>(response, HttpStatus.OK);
 			}
-			WebEndpointResponse<?> webEndpointResponse = (WebEndpointResponse<?>) response;
 			MediaType contentType = (webEndpointResponse.getContentType() != null)
 					? new MediaType(webEndpointResponse.getContentType()) : null;
 			return ResponseEntity.status(webEndpointResponse.getStatus()).contentType(contentType)

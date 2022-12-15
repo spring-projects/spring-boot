@@ -75,8 +75,7 @@ public final class AdditionalHealthEndpointPath {
 			return false;
 		}
 		AdditionalHealthEndpointPath other = (AdditionalHealthEndpointPath) obj;
-		boolean result = true;
-		result = result && this.namespace.equals(other.namespace);
+		boolean result = this.namespace.equals(other.namespace);
 		result = result && this.canonicalValue.equals(other.canonicalValue);
 		return result;
 	}

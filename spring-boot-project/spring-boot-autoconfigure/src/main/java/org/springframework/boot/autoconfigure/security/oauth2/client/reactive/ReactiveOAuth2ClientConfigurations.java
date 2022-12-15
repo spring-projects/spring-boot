@@ -43,7 +43,10 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
  *
  * @author Madhura Bhave
  */
-class ReactiveOAuth2ClientConfigurations {
+final class ReactiveOAuth2ClientConfigurations {
+
+	private ReactiveOAuth2ClientConfigurations() {
+	}
 
 	@Configuration(proxyBeanMethods = false)
 	@Conditional(ClientsConfiguredCondition.class)

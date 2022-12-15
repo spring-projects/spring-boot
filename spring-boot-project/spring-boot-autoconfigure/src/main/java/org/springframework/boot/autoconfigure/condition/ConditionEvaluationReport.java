@@ -80,10 +80,7 @@ public final class ConditionEvaluationReport {
 		Assert.notNull(condition, "Condition must not be null");
 		Assert.notNull(outcome, "Outcome must not be null");
 		this.unconditionalClasses.remove(source);
-		if (!this.outcomes.containsKey(source)) {
-			this.outcomes.put(source, new ConditionAndOutcomes());
-		}
-		this.outcomes.get(source).add(condition, outcome);
+		this.outcomes.computeIfAbsent(source, (key) -> new ConditionAndOutcomes()).add(condition, outcome);
 		this.addedAncestorOutcomes = false;
 	}
 

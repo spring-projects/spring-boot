@@ -61,7 +61,7 @@ class CouchbaseDataConfiguration {
 	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_MAPPING_CONTEXT)
 	CouchbaseMappingContext couchbaseMappingContext(CouchbaseDataProperties properties,
 			ApplicationContext applicationContext, CouchbaseCustomConversions couchbaseCustomConversions)
-			throws Exception {
+			throws ClassNotFoundException {
 		CouchbaseMappingContext mappingContext = new CouchbaseMappingContext();
 		mappingContext.setInitialEntitySet(new EntityScanner(applicationContext).scan(Document.class));
 		mappingContext.setSimpleTypeHolder(couchbaseCustomConversions.getSimpleTypeHolder());

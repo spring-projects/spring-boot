@@ -209,8 +209,10 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 				.produces(this.endpointMediaTypes.getProduced().toArray(new String[0])).options(this.builderConfig)
 				.build();
 		LinksHandler linksHandler = getLinksHandler();
-		registerMapping(mapping, linksHandler, ReflectionUtils.findMethod(linksHandler.getClass(), "links",
-				HttpServletRequest.class, HttpServletResponse.class));
+		Method linksMethod = ReflectionUtils.findMethod(linksHandler.getClass(), "links", HttpServletRequest.class,
+				HttpServletResponse.class);
+		Assert.notNull(linksMethod, "linksMethod must not be null");
+		registerMapping(mapping, linksHandler, linksMethod);
 	}
 
 	@Override

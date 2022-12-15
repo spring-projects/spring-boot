@@ -67,7 +67,7 @@ abstract class AbstractJarFile extends java.util.jar.JarFile {
 	abstract InputStream getInputStream() throws IOException;
 
 	/**
-	 * The type of a {@link JarFile}.
+	 * The type of {@link JarFile}.
 	 */
 	enum JarFileType {
 

@@ -156,26 +156,21 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	private Class<?> loadClassInLaunchedClassLoader(String name) throws ClassNotFoundException {
 		String internalName = name.replace('.', '/') + ".class";
 		InputStream inputStream = getParent().getResourceAsStream(internalName);
-		if (inputStream == null) {
-			throw new ClassNotFoundException(name);
-		}
-		try {
-			try {
-				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-				byte[] buffer = new byte[BUFFER_SIZE];
-				int bytesRead = -1;
-				while ((bytesRead = inputStream.read(buffer)) != -1) {
-					outputStream.write(buffer, 0, bytesRead);
-				}
-				inputStream.close();
-				byte[] bytes = outputStream.toByteArray();
-				Class<?> definedClass = defineClass(name, bytes, 0, bytes.length);
-				definePackageIfNecessary(name);
-				return definedClass;
+		try (inputStream) {
+			if (inputStream == null) {
+				throw new ClassNotFoundException(name);
 			}
-			finally {
-				inputStream.close();
+			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+			byte[] buffer = new byte[BUFFER_SIZE];
+			int bytesRead = -1;
+			while ((bytesRead = inputStream.read(buffer)) != -1) {
+				outputStream.write(buffer, 0, bytesRead);
 			}
+			inputStream.close();
+			byte[] bytes = outputStream.toByteArray();
+			Class<?> definedClass = defineClass(name, bytes, 0, bytes.length);
+			definePackageIfNecessary(name);
+			return definedClass;
 		}
 		catch (IOException ex) {
 			throw new ClassNotFoundException("Cannot load resource for class [" + name + "]", ex);

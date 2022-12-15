@@ -75,7 +75,7 @@ public abstract class ResourceCondition extends SpringBootCondition {
 		List<String> found = new ArrayList<>();
 		for (String location : this.resourceLocations) {
 			Resource resource = context.getResourceLoader().getResource(location);
-			if (resource != null && resource.exists()) {
+			if (resource.exists()) {
 				found.add(location);
 			}
 		}

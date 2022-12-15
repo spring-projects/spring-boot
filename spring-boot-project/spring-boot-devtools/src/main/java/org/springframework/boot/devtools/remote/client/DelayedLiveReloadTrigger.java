@@ -39,11 +39,11 @@ import org.springframework.util.Assert;
  */
 class DelayedLiveReloadTrigger implements Runnable {
 
-	private static final long SHUTDOWN_TIME = 1000;
+	private static final long DEFAULT_SHUTDOWN_TIME = 1000;
 
-	private static final long SLEEP_TIME = 500;
+	private static final long DEFAULT_SLEEP_TIME = 500;
 
-	private static final long TIMEOUT = 30000;
+	private static final long DEFAULT_TIMEOUT = 30000;
 
 	private static final Log logger = LogFactory.getLog(DelayedLiveReloadTrigger.class);
 
@@ -53,11 +53,11 @@ class DelayedLiveReloadTrigger implements Runnable {
 
 	private final URI uri;
 
-	private long shutdownTime = SHUTDOWN_TIME;
+	private long shutdownTime = DEFAULT_SHUTDOWN_TIME;
 
-	private long sleepTime = SLEEP_TIME;
+	private long sleepTime = DEFAULT_SLEEP_TIME;
 
-	private long timeout = TIMEOUT;
+	private long timeout = DEFAULT_TIMEOUT;
 
 	DelayedLiveReloadTrigger(OptionalLiveReloadServer liveReloadServer, ClientHttpRequestFactory requestFactory,
 			String url) {

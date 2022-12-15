@@ -24,7 +24,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -181,13 +180,8 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		for (String type : spec.getTypes()) {
 			Collection<String> typeMatches = getBeanNamesForType(classLoader, considerHierarchy, beanFactory, type,
 					parameterizedContainers);
-			Iterator<String> iterator = typeMatches.iterator();
-			while (iterator.hasNext()) {
-				String match = iterator.next();
-				if (beansIgnoredByType.contains(match) || ScopedProxyUtils.isScopedTarget(match)) {
-					iterator.remove();
-				}
-			}
+			typeMatches
+					.removeIf((match) -> beansIgnoredByType.contains(match) || ScopedProxyUtils.isScopedTarget(match));
 			if (typeMatches.isEmpty()) {
 				result.recordUnmatchedType(type);
 			}
@@ -480,6 +474,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 					resolved.add(resolve(className, this.classLoader));
 				}
 				catch (ClassNotFoundException | NoClassDefFoundError ex) {
+					// Ignore
 				}
 			}
 			return resolved;

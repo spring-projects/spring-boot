@@ -101,7 +101,7 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 		}
 	}
 
-	private void doDataSourceHealthCheck(Health.Builder builder) throws Exception {
+	private void doDataSourceHealthCheck(Health.Builder builder) {
 		builder.up().withDetail("database", getProduct());
 		String validationQuery = this.query;
 		if (StringUtils.hasText(validationQuery)) {

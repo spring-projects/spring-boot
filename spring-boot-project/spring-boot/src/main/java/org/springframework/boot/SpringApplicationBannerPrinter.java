@@ -128,7 +128,7 @@ class SpringApplicationBannerPrinter {
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.resources().registerPattern("banner.txt");
+			hints.resources().registerPattern(DEFAULT_BANNER_LOCATION);
 		}
 
 	}

@@ -68,13 +68,10 @@ public class DefaultLaunchScript implements LaunchScript {
 	}
 
 	private String loadContent(InputStream inputStream) throws IOException {
-		try {
+		try (inputStream) {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			copy(inputStream, outputStream);
 			return outputStream.toString(StandardCharsets.UTF_8);
-		}
-		finally {
-			inputStream.close();
 		}
 	}
 

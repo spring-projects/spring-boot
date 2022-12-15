@@ -102,7 +102,7 @@ final class CertificateParser {
 	}
 
 	private static byte[] decodeBase64(String content) {
-		byte[] bytes = content.replaceAll("\r", "").replaceAll("\n", "").getBytes();
+		byte[] bytes = content.replace("\r", "").replace("\n", "").getBytes();
 		return Base64Utils.decode(bytes);
 	}
 

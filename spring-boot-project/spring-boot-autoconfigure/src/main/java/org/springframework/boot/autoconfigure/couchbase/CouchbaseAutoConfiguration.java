@@ -16,9 +16,13 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
@@ -112,7 +116,8 @@ public class CouchbaseAutoConfiguration {
 		}
 	}
 
-	private KeyStore loadKeyStore(String resource, String keyStorePassword) throws Exception {
+	private KeyStore loadKeyStore(String resource, String keyStorePassword)
+			throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
 		KeyStore store = KeyStore.getInstance(KeyStore.getDefaultType());
 		URL url = ResourceUtils.getURL(resource);
 		try (InputStream stream = url.openStream()) {

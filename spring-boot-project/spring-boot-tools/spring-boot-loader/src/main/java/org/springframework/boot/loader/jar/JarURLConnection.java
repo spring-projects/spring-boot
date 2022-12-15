@@ -156,7 +156,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		if (this.jarFile == null) {
 			throw FILE_NOT_FOUND_EXCEPTION;
 		}
-		if (this.jarEntryName.isEmpty() && this.jarFile.getType() == JarFile.JarFileType.DIRECT) {
+		if (this.jarEntryName.isEmpty() && this.jarFile.getType() == AbstractJarFile.JarFileType.DIRECT) {
 			throw new IOException("no entry name specified");
 		}
 		connect();

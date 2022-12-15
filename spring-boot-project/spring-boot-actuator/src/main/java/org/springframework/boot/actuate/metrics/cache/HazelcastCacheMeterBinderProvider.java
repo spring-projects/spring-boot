@@ -55,6 +55,7 @@ public class HazelcastCacheMeterBinderProvider implements CacheMeterBinderProvid
 	private MeterBinder createHazelcast4CacheMetrics(HazelcastCache cache, Iterable<Tag> tags) {
 		try {
 			Method nativeCacheAccessor = ReflectionUtils.findMethod(HazelcastCache.class, "getNativeCache");
+			Assert.notNull(nativeCacheAccessor, "nativeCacheAccessor must not be null");
 			Object nativeCache = ReflectionUtils.invokeMethod(nativeCacheAccessor, cache);
 			return HazelcastCacheMetrics.class.getConstructor(Object.class, Iterable.class).newInstance(nativeCache,
 					tags);

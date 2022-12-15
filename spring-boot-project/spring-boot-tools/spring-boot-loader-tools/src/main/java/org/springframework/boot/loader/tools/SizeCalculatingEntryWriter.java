@@ -43,11 +43,8 @@ final class SizeCalculatingEntryWriter implements EntryWriter {
 
 	private SizeCalculatingEntryWriter(EntryWriter entryWriter) throws IOException {
 		SizeCalculatingOutputStream outputStream = new SizeCalculatingOutputStream();
-		try {
+		try (outputStream) {
 			entryWriter.write(outputStream);
-		}
-		finally {
-			outputStream.close();
 		}
 		this.content = outputStream.getContent();
 		this.size = outputStream.getSize();

@@ -29,7 +29,10 @@ import org.springframework.security.oauth2.server.resource.introspection.Reactiv
  *
  * @author Madhura Bhave
  */
-class ReactiveOAuth2ResourceServerConfiguration {
+final class ReactiveOAuth2ResourceServerConfiguration {
+
+	private ReactiveOAuth2ResourceServerConfiguration() {
+	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ BearerTokenAuthenticationToken.class, ReactiveJwtDecoder.class })

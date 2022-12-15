@@ -126,8 +126,7 @@ public final class WebOperationRequestPredicate {
 			return false;
 		}
 		WebOperationRequestPredicate other = (WebOperationRequestPredicate) obj;
-		boolean result = true;
-		result = result && this.consumes.equals(other.consumes);
+		boolean result = this.consumes.equals(other.consumes);
 		result = result && this.httpMethod == other.httpMethod;
 		result = result && this.canonicalPath.equals(other.canonicalPath);
 		result = result && this.produces.equals(other.produces);

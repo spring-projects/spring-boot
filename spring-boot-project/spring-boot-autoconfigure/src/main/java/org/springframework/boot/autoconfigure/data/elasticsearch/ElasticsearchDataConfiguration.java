@@ -48,7 +48,10 @@ import org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMa
  * @author Scott Frederick
  * @author Stephane Nicoll
  */
-abstract class ElasticsearchDataConfiguration {
+final class ElasticsearchDataConfiguration {
+
+	private ElasticsearchDataConfiguration() {
+	}
 
 	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
