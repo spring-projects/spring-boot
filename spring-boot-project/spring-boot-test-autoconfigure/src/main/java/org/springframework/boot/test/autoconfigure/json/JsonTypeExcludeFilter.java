@@ -43,6 +43,7 @@ public final class JsonTypeExcludeFilter extends StandardAnnotationCustomizableT
 			includes.add(ClassUtils.forName(JACKSON_MODULE, null));
 		}
 		catch (Exception ex) {
+			// Ignore
 		}
 		includes.add(JsonComponent.class);
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(includes);

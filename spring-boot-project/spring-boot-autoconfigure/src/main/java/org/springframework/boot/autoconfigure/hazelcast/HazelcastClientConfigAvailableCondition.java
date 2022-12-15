@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.util.Assert;
 
 /**
  * {@link HazelcastConfigResourceCondition} that checks if the
@@ -54,10 +55,14 @@ class HazelcastClientConfigAvailableCondition extends HazelcastConfigResourceCon
 		return getResourceOutcome(context, metadata);
 	}
 
-	static class HazelcastClientValidation {
+	static final class HazelcastClientValidation {
+
+		private HazelcastClientValidation() {
+		}
 
 		static ConditionOutcome clientConfigOutcome(ConditionContext context, String propertyName, Builder builder) {
 			String resourcePath = context.getEnvironment().getProperty(propertyName);
+			Assert.notNull(resourcePath, "resourcePath must not be null");
 			Resource resource = context.getResourceLoader().getResource(resourcePath);
 			if (!resource.exists()) {
 				return ConditionOutcome.noMatch(builder.because("Hazelcast configuration does not exist"));

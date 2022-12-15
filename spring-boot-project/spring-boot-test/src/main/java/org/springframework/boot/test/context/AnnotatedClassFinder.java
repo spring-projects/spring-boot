@@ -91,7 +91,9 @@ public final class AnnotatedClassFinder {
 			if (!components.isEmpty()) {
 				Assert.state(components.size() == 1, () -> "Found multiple @" + this.annotationType.getSimpleName()
 						+ " annotated classes " + components);
-				return ClassUtils.resolveClassName(components.iterator().next().getBeanClassName(), null);
+				String beanClassName = components.iterator().next().getBeanClassName();
+				Assert.notNull(beanClassName, "beanClassName must not be null");
+				return ClassUtils.resolveClassName(beanClassName, null);
 			}
 			source = getParentPackage(source);
 		}

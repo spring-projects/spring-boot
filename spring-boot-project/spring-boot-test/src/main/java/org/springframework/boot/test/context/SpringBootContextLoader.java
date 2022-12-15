@@ -166,6 +166,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 				mainMethod = ReflectionUtils.findMethod(kotlinClass, "main", String[].class);
 			}
 			catch (ClassNotFoundException ex) {
+				// Ignore
 			}
 		}
 		Assert.state(mainMethod != null || useMainMethod == UseMainMethod.WHEN_AVAILABLE,
@@ -186,7 +187,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		if (mergedConfig instanceof WebMergedContextConfiguration) {
 			application.setWebApplicationType(WebApplicationType.SERVLET);
 			if (!isEmbeddedWebEnvironment(mergedConfig)) {
-				new WebConfigurer().configure(mergedConfig, application, initializers);
+				new WebConfigurer().configure(mergedConfig, initializers);
 			}
 		}
 		else if (mergedConfig instanceof ReactiveWebMergedContextConfiguration) {
@@ -373,8 +374,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	 */
 	private static class WebConfigurer {
 
-		void configure(MergedContextConfiguration mergedConfig, SpringApplication application,
-				List<ApplicationContextInitializer<?>> initializers) {
+		void configure(MergedContextConfiguration mergedConfig, List<ApplicationContextInitializer<?>> initializers) {
 			WebMergedContextConfiguration webMergedConfig = (WebMergedContextConfiguration) mergedConfig;
 			addMockServletContext(initializers, webMergedConfig);
 		}
@@ -547,6 +547,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 				}
 			}
 			catch (AbandonedRunException ex) {
+				// Ignore
 			}
 			catch (Exception ex) {
 				if (this.failedContexts.size() == 1) {

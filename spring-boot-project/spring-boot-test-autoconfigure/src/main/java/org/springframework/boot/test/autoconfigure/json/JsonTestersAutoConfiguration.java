@@ -18,6 +18,7 @@ package org.springframework.boot.test.autoconfigure.json;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
@@ -51,6 +52,7 @@ import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.ResolvableType;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -236,9 +238,9 @@ public class JsonTestersAutoConfiguration {
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			ReflectionHints reflection = hints.reflection();
 			reflection.registerType(this.tester, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
-			reflection.registerMethod(
-					ReflectionUtils.findMethod(this.tester, "initialize", Class.class, ResolvableType.class),
-					ExecutableMode.INVOKE);
+			Method method = ReflectionUtils.findMethod(this.tester, "initialize", Class.class, ResolvableType.class);
+			Assert.notNull(method, "method must not be null");
+			reflection.registerMethod(method, ExecutableMode.INVOKE);
 		}
 
 	}
@@ -249,8 +251,9 @@ public class JsonTestersAutoConfiguration {
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 			ReflectionHints reflection = hints.reflection();
 			reflection.registerType(BasicJsonTester.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
-			reflection.registerMethod(ReflectionUtils.findMethod(BasicJsonTester.class, "initialize", Class.class),
-					ExecutableMode.INVOKE);
+			Method method = ReflectionUtils.findMethod(BasicJsonTester.class, "initialize", Class.class);
+			Assert.notNull(method, "method must not be null");
+			reflection.registerMethod(method, ExecutableMode.INVOKE);
 		}
 
 	}

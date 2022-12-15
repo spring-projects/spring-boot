@@ -203,6 +203,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 					getApplicationContext(), name, bean));
 		}
 		catch (NoSuchBeanDefinitionException ex) {
+			// Ignore
 		}
 		return this;
 	}

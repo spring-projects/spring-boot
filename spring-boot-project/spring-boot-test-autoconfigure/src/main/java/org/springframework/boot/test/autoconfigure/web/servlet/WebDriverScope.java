@@ -57,12 +57,7 @@ public class WebDriverScope implements Scope {
 	@Override
 	public Object get(String name, ObjectFactory<?> objectFactory) {
 		synchronized (this.instances) {
-			Object instance = this.instances.get(name);
-			if (instance == null) {
-				instance = objectFactory.getObject();
-				this.instances.put(name, instance);
-			}
-			return instance;
+			return this.instances.computeIfAbsent(name, (key) -> objectFactory.getObject());
 		}
 	}
 
