@@ -310,6 +310,7 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		private boolean isBetterGetter(Method getter) {
+			// TODO MH: getter is not used here, is this a bug?
 			return this.getter != null && this.getter.getName().startsWith("is");
 		}
 

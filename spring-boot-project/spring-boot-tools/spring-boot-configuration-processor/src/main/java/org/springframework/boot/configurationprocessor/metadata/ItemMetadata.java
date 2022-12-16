@@ -146,8 +146,7 @@ public final class ItemMetadata implements Comparable<ItemMetadata> {
 			return false;
 		}
 		ItemMetadata other = (ItemMetadata) o;
-		boolean result = true;
-		result = result && nullSafeEquals(this.itemType, other.itemType);
+		boolean result = nullSafeEquals(this.itemType, other.itemType);
 		result = result && nullSafeEquals(this.name, other.name);
 		result = result && nullSafeEquals(this.type, other.type);
 		result = result && nullSafeEquals(this.description, other.description);

@@ -31,6 +31,7 @@ import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DefaultArtifact;
 import org.apache.maven.artifact.handler.DefaultArtifactHandler;
 import org.apache.maven.artifact.repository.ArtifactRepository;
+import org.apache.maven.artifact.resolver.ArtifactResolutionException;
 import org.apache.maven.artifact.resolver.ArtifactResolutionRequest;
 import org.apache.maven.artifact.resolver.ArtifactResolutionResult;
 import org.apache.maven.artifact.resolver.ResolutionErrorHandler;
@@ -180,7 +181,7 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 		return version;
 	}
 
-	private ArtifactResolutionResult resolveArtifact(Artifact artifact) throws Exception {
+	private ArtifactResolutionResult resolveArtifact(Artifact artifact) throws ArtifactResolutionException {
 		ArtifactResolutionRequest request = new ArtifactResolutionRequest();
 		request.setArtifact(artifact);
 		request.setLocalRepository(this.localRepository);

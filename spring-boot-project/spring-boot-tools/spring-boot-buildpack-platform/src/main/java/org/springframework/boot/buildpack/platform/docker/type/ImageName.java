@@ -73,8 +73,7 @@ public class ImageName {
 			return false;
 		}
 		ImageName other = (ImageName) obj;
-		boolean result = true;
-		result = result && this.domain.equals(other.domain);
+		boolean result = this.domain.equals(other.domain);
 		result = result && this.name.equals(other.name);
 		return result;
 	}

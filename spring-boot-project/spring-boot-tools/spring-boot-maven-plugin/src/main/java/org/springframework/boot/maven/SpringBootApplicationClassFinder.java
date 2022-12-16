@@ -29,9 +29,12 @@ import org.springframework.boot.loader.tools.MainClassFinder;
  * @author Stephane Nicoll
  * @see MainClassFinder
  */
-abstract class SpringBootApplicationClassFinder {
+final class SpringBootApplicationClassFinder {
 
 	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
+
+	private SpringBootApplicationClassFinder() {
+	}
 
 	static String findSingleClass(File classesDirectory) throws MojoExecutionException {
 		try {

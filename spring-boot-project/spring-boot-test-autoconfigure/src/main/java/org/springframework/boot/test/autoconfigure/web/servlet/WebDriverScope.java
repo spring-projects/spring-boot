@@ -57,7 +57,14 @@ public class WebDriverScope implements Scope {
 	@Override
 	public Object get(String name, ObjectFactory<?> objectFactory) {
 		synchronized (this.instances) {
-			return this.instances.computeIfAbsent(name, (key) -> objectFactory.getObject());
+			// This can't be replaced by a putIfAbsent, otherwise a
+			// ConcurrentModificationException is thrown
+			Object instance = this.instances.get(name);
+			if (instance == null) {
+				instance = objectFactory.getObject();
+				this.instances.put(name, instance);
+			}
+			return instance;
 		}
 	}
 

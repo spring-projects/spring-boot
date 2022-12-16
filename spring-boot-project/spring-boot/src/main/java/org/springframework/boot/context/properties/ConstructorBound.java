@@ -26,7 +26,10 @@ import org.springframework.beans.factory.BeanFactory;
  * @since 3.0.0
  * @see ConstructorBinding
  */
-public abstract class ConstructorBound {
+public final class ConstructorBound {
+
+	private ConstructorBound() {
+	}
 
 	/**
 	 * Create an immutable {@link ConfigurationProperties} instance for the specified

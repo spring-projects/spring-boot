@@ -16,6 +16,7 @@
 
 package smoketest.webservices.endpoint;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -35,13 +36,13 @@ public class HolidayEndpoint {
 
 	private static final String NAMESPACE_URI = "https://company.example.com/hr/schemas";
 
-	private XPathExpression<Element> startDateExpression;
+	private final XPathExpression<Element> startDateExpression;
 
-	private XPathExpression<Element> endDateExpression;
+	private final XPathExpression<Element> endDateExpression;
 
-	private XPathExpression<String> nameExpression;
+	private final XPathExpression<String> nameExpression;
 
-	private HumanResourceService humanResourceService;
+	private final HumanResourceService humanResourceService;
 
 	public HolidayEndpoint(HumanResourceService humanResourceService) {
 		this.humanResourceService = humanResourceService;
@@ -54,7 +55,7 @@ public class HolidayEndpoint {
 	}
 
 	@PayloadRoot(namespace = NAMESPACE_URI, localPart = "HolidayRequest")
-	public void handleHolidayRequest(@RequestPayload Element holidayRequest) throws Exception {
+	public void handleHolidayRequest(@RequestPayload Element holidayRequest) throws ParseException {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		Date startDate = dateFormat.parse(this.startDateExpression.evaluateFirst(holidayRequest).getText());
 		Date endDate = dateFormat.parse(this.endDateExpression.evaluateFirst(holidayRequest).getText());

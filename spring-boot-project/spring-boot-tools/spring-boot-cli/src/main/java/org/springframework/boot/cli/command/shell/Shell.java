@@ -145,7 +145,7 @@ public class Shell {
 		System.out.println(ansi("Hit TAB to complete. Type 'help' and hit RETURN for help, and 'exit' to quit."));
 	}
 
-	private void runInputLoop() throws Exception {
+	private void runInputLoop() throws IOException {
 		String line;
 		while ((line = this.consoleReader.readLine(getPrompt())) != null) {
 			while (line.endsWith("\\")) {

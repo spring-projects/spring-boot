@@ -89,6 +89,7 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 				}
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 		}
 		return null;

@@ -127,6 +127,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 				return result;
 			}
 			catch (ClassNotFoundException ex) {
+				// Ignore
 			}
 		}
 		if (this.exploded) {

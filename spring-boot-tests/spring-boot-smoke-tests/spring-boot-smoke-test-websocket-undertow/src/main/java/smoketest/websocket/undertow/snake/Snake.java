@@ -16,6 +16,7 @@
 
 package smoketest.websocket.undertow.snake;
 
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.Deque;
@@ -57,25 +58,25 @@ public class Snake {
 		this.length = DEFAULT_LENGTH;
 	}
 
-	private void kill() throws Exception {
+	private void kill() throws IOException {
 		synchronized (this.monitor) {
 			resetState();
 			sendMessage("{'type': 'dead'}");
 		}
 	}
 
-	private void reward() throws Exception {
+	private void reward() throws IOException {
 		synchronized (this.monitor) {
 			this.length++;
 			sendMessage("{'type': 'kill'}");
 		}
 	}
 
-	protected void sendMessage(String msg) throws Exception {
+	protected void sendMessage(String msg) throws IOException {
 		this.session.sendMessage(new TextMessage(msg));
 	}
 
-	public void update(Collection<Snake> snakes) throws Exception {
+	public void update(Collection<Snake> snakes) throws IOException {
 		synchronized (this.monitor) {
 			Location nextLocation = this.head.getAdjacentLocation(this.direction);
 			if (nextLocation.x >= SnakeUtils.PLAYFIELD_WIDTH) {
@@ -102,7 +103,7 @@ public class Snake {
 		}
 	}
 
-	private void handleCollisions(Collection<Snake> snakes) throws Exception {
+	private void handleCollisions(Collection<Snake> snakes) throws IOException {
 		for (Snake snake : snakes) {
 			boolean headCollision = this.id != snake.id && snake.getHead().equals(this.head);
 			boolean tailCollision = snake.getTail().contains(this.head);
@@ -136,12 +137,12 @@ public class Snake {
 	public String getLocationsJson() {
 		synchronized (this.monitor) {
 			StringBuilder sb = new StringBuilder();
-			sb.append(String.format("{x: %d, y: %d}", Integer.valueOf(this.head.x), Integer.valueOf(this.head.y)));
+			sb.append(String.format("{x: %d, y: %d}", this.head.x, this.head.y));
 			for (Location location : this.tail) {
 				sb.append(',');
-				sb.append(String.format("{x: %d, y: %d}", Integer.valueOf(location.x), Integer.valueOf(location.y)));
+				sb.append(String.format("{x: %d, y: %d}", location.x, location.y));
 			}
-			return String.format("{'id':%d,'body':[%s]}", Integer.valueOf(this.id), sb.toString());
+			return String.format("{'id':%d,'body':[%s]}", this.id, sb);
 		}
 	}
 

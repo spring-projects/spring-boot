@@ -104,8 +104,8 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			if (isInnerClass(type)) {
 				return new Constructor<?>[0];
 			}
-			return Arrays.stream(type.getDeclaredConstructors())
-					.filter((constructor) -> isNonSynthetic(constructor, type)).toArray(Constructor[]::new);
+			return Arrays.stream(type.getDeclaredConstructors()).filter(Constructors::isNonSynthetic)
+					.toArray(Constructor[]::new);
 		}
 
 		private static boolean isInnerClass(Class<?> type) {
@@ -117,7 +117,7 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			}
 		}
 
-		private static boolean isNonSynthetic(Constructor<?> constructor, Class<?> type) {
+		private static boolean isNonSynthetic(Constructor<?> constructor) {
 			return !constructor.isSynthetic();
 		}
 

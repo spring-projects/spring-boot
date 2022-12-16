@@ -17,6 +17,7 @@
 package org.springframework.boot.type.classreading;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.Map;
 
 import org.springframework.core.io.Resource;
@@ -68,12 +69,19 @@ public class ConcurrentReferenceCachingMetadataReaderFactory extends SimpleMetad
 
 	@Override
 	public MetadataReader getMetadataReader(Resource resource) throws IOException {
-		MetadataReader metadataReader = this.cache.get(resource);
-		if (metadataReader == null) {
-			metadataReader = createMetadataReader(resource);
-			this.cache.put(resource, metadataReader);
+		try {
+			return this.cache.computeIfAbsent(resource, (key) -> {
+				try {
+					return createMetadataReader(resource);
+				}
+				catch (IOException ex) {
+					throw new UncheckedIOException(ex);
+				}
+			});
 		}
-		return metadataReader;
+		catch (UncheckedIOException ex) {
+			throw ex.getCause();
+		}
 	}
 
 	/**

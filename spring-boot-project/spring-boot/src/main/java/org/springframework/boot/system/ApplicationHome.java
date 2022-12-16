@@ -82,6 +82,7 @@ public class ApplicationHome {
 				}
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 		}
 		return null;
@@ -98,6 +99,7 @@ public class ApplicationHome {
 			}
 		}
 		catch (Exception ex) {
+			// Ignore
 		}
 		return null;
 	}
@@ -112,6 +114,7 @@ public class ApplicationHome {
 			}
 		}
 		catch (Exception ex) {
+			// Ignore
 		}
 		return false;
 	}

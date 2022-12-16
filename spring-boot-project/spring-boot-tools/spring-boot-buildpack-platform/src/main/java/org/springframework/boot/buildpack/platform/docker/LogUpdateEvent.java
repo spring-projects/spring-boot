@@ -100,6 +100,7 @@ public class LogUpdateEvent extends UpdateEvent {
 			size = (size << 8) + (header[i + 4] & 0xff);
 		}
 		byte[] payload = read(inputStream, size);
+		Assert.notNull(payload, "payload must not be null");
 		return new LogUpdateEvent(streamType, payload);
 	}
 

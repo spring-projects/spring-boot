@@ -55,7 +55,7 @@ public class GradleBuildExtension implements BeforeEachCallback, AfterEachCallba
 		gradleBuild.before();
 	}
 
-	private GradleBuild extractGradleBuild(ExtensionContext context) throws Exception {
+	private GradleBuild extractGradleBuild(ExtensionContext context) throws IllegalAccessException {
 		Object testInstance = context.getRequiredTestInstance();
 		Field gradleBuildField = ReflectionUtils.findField(testInstance.getClass(), "gradleBuild");
 		Assert.notNull(gradleBuildField, "gradleBuildField must not be null");

@@ -19,6 +19,7 @@ package org.springframework.boot.web.embedded.undertow;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.concurrent.TimeUnit;
 
 import io.undertow.Undertow;
@@ -109,7 +110,7 @@ class AccessLogHttpHandlerFactory implements HttpHandlerFactory {
 				this.worker.awaitTermination(30, TimeUnit.SECONDS);
 			}
 			catch (IOException ex) {
-				throw new RuntimeException(ex);
+				throw new UncheckedIOException(ex);
 			}
 			catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();

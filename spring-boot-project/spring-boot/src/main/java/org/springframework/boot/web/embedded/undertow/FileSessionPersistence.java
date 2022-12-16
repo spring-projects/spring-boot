@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -123,8 +124,11 @@ class FileSessionPersistence implements SessionPersistenceManager {
 	@Override
 	public void clear(String deploymentName) {
 		File sessionFile = getSessionFile(deploymentName);
-		if (!sessionFile.delete()) {
-			logger.debug("Failed to delete session file " + sessionFile);
+		try {
+			Files.delete(sessionFile.toPath());
+		}
+		catch (IOException ex) {
+			logger.debug("Failed to delete session file " + sessionFile, ex);
 		}
 	}
 

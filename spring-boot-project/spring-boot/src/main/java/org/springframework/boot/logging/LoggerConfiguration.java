@@ -80,11 +80,10 @@ public final class LoggerConfiguration {
 			return false;
 		}
 		if (obj instanceof LoggerConfiguration other) {
-			boolean rtn = true;
-			rtn = rtn && ObjectUtils.nullSafeEquals(this.name, other.name);
-			rtn = rtn && ObjectUtils.nullSafeEquals(this.configuredLevel, other.configuredLevel);
-			rtn = rtn && ObjectUtils.nullSafeEquals(this.effectiveLevel, other.effectiveLevel);
-			return rtn;
+			boolean result = ObjectUtils.nullSafeEquals(this.name, other.name);
+			result = result && ObjectUtils.nullSafeEquals(this.configuredLevel, other.configuredLevel);
+			result = result && ObjectUtils.nullSafeEquals(this.effectiveLevel, other.effectiveLevel);
+			return result;
 		}
 		return super.equals(obj);
 	}

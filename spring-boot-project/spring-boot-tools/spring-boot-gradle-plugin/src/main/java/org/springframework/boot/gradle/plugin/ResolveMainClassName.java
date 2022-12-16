@@ -18,6 +18,7 @@ package org.springframework.boot.gradle.plugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -160,7 +161,7 @@ public class ResolveMainClassName extends DefaultTask {
 				return Files.readString(output);
 			}
 			catch (IOException ex) {
-				throw new RuntimeException("Failed to read main class name from '" + output + "'");
+				throw new UncheckedIOException("Failed to read main class name from '" + output + "'", ex);
 			}
 		}
 

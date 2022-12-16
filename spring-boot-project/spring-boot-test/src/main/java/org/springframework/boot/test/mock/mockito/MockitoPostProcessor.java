@@ -145,7 +145,9 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 	private Set<Class<?>> getConfigurationClasses(ConfigurableListableBeanFactory beanFactory) {
 		Set<Class<?>> configurationClasses = new LinkedHashSet<>();
 		for (BeanDefinition beanDefinition : getConfigurationBeanDefinitions(beanFactory).values()) {
-			configurationClasses.add(ClassUtils.resolveClassName(beanDefinition.getBeanClassName(), this.classLoader));
+			String beanClassName = beanDefinition.getBeanClassName();
+			Assert.notNull(beanClassName, "beanClassName must not be null");
+			configurationClasses.add(ClassUtils.resolveClassName(beanClassName, this.classLoader));
 		}
 		return configurationClasses;
 	}

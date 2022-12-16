@@ -29,7 +29,10 @@ import org.springframework.util.ClassUtils;
  * @author Dave Syer
  * @since 1.1.0
  */
-public abstract class LogbackInitializer {
+public final class LogbackInitializer {
+
+	private LogbackInitializer() {
+	}
 
 	public static void initialize() {
 		if (ClassUtils.isPresent("org.slf4j.LoggerFactory", null)

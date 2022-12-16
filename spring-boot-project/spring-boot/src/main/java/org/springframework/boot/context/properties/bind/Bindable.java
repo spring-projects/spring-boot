@@ -133,8 +133,7 @@ public final class Bindable<T> {
 			return false;
 		}
 		Bindable<?> other = (Bindable<?>) obj;
-		boolean result = true;
-		result = result && nullSafeEquals(this.type.resolve(), other.type.resolve());
+		boolean result = nullSafeEquals(this.type.resolve(), other.type.resolve());
 		result = result && nullSafeEquals(this.annotations, other.annotations);
 		result = result && nullSafeEquals(this.bindRestrictions, other.bindRestrictions);
 		return result;

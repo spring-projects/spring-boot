@@ -388,7 +388,10 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	/**
 	 * Format System properties.
 	 */
-	static class SystemPropertyFormatter {
+	static final class SystemPropertyFormatter {
+
+		private SystemPropertyFormatter() {
+		}
 
 		static String format(String key, String value) {
 			if (key == null) {

@@ -17,7 +17,9 @@
 package org.springframework.boot.loader;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
@@ -121,7 +123,7 @@ public abstract class Launcher {
 	 */
 	protected abstract Iterator<Archive> getClassPathArchivesIterator() throws Exception;
 
-	protected final Archive createArchive() throws Exception {
+	protected final Archive createArchive() throws URISyntaxException, IOException {
 		ProtectionDomain protectionDomain = getClass().getProtectionDomain();
 		CodeSource codeSource = protectionDomain.getCodeSource();
 		URI location = (codeSource != null) ? codeSource.getLocation().toURI() : null;

@@ -131,7 +131,10 @@ public final class ClientHttpRequestFactories {
 	/**
 	 * Support for {@link HttpComponentsClientHttpRequestFactory}.
 	 */
-	static class HttpComponents {
+	static final class HttpComponents {
+
+		private HttpComponents() {
+		}
 
 		static HttpComponentsClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
 			HttpComponentsClientHttpRequestFactory requestFactory = createRequestFactory(settings.readTimeout());
@@ -159,7 +162,10 @@ public final class ClientHttpRequestFactories {
 	/**
 	 * Support for {@link OkHttp3ClientHttpRequestFactory}.
 	 */
-	static class OkHttp {
+	static final class OkHttp {
+
+		private OkHttp() {
+		}
 
 		static OkHttp3ClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
 			Assert.state(settings.bufferRequestBody() == null,
@@ -176,7 +182,10 @@ public final class ClientHttpRequestFactories {
 	/**
 	 * Support for {@link SimpleClientHttpRequestFactory}.
 	 */
-	static class Simple {
+	static final class Simple {
+
+		private Simple() {
+		}
 
 		static SimpleClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
 			SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
@@ -193,7 +202,10 @@ public final class ClientHttpRequestFactories {
 	 * Support for reflective configuration of an unknown {@link ClientHttpRequestFactory}
 	 * implementation.
 	 */
-	static class Reflective {
+	static final class Reflective {
+
+		private Reflective() {
+		}
 
 		static <T extends ClientHttpRequestFactory> T get(Supplier<T> requestFactorySupplier,
 				ClientHttpRequestFactorySettings settings) {
@@ -218,6 +230,7 @@ public final class ClientHttpRequestFactories {
 				return requestFactory;
 			}
 			Field field = ReflectionUtils.findField(AbstractClientHttpRequestFactoryWrapper.class, "requestFactory");
+			Assert.notNull(field, "field must not be null");
 			ReflectionUtils.makeAccessible(field);
 			ClientHttpRequestFactory unwrappedRequestFactory = requestFactory;
 			while (unwrappedRequestFactory instanceof AbstractClientHttpRequestFactoryWrapper) {

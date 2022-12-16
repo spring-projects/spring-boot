@@ -60,7 +60,7 @@ class NativeImagePluginAction implements PluginApplicationAction {
 			SourceSetContainer sourceSets = javaPluginExtension.getSourceSets();
 			GraalVMExtension graalVmExtension = configureGraalVmExtension(project);
 			configureMainNativeBinaryClasspath(project, sourceSets, graalVmExtension);
-			configureTestNativeBinaryClasspath(project, sourceSets, graalVmExtension);
+			configureTestNativeBinaryClasspath(sourceSets, graalVmExtension);
 			configureGraalVmReachabilityExtension(graalVmExtension);
 			copyReachabilityMetadataToBootJar(project);
 			configureBootBuildImageToProduceANativeImage(project);
@@ -85,8 +85,7 @@ class NativeImagePluginAction implements PluginApplicationAction {
 		return !SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME.equals(configuration.getName());
 	}
 
-	private void configureTestNativeBinaryClasspath(Project project, SourceSetContainer sourceSets,
-			GraalVMExtension graalVmExtension) {
+	private void configureTestNativeBinaryClasspath(SourceSetContainer sourceSets, GraalVMExtension graalVmExtension) {
 		FileCollection runtimeClasspath = sourceSets.getByName(SpringBootAotPlugin.AOT_TEST_SOURCE_SET_NAME)
 				.getRuntimeClasspath();
 		graalVmExtension.getBinaries().getByName(NativeImagePlugin.NATIVE_TEST_EXTENSION).classpath(runtimeClasspath);

@@ -18,6 +18,7 @@ package org.springframework.boot.loader;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -214,7 +215,7 @@ public class PropertiesLauncher extends Launcher {
 		}
 	}
 
-	private InputStream getResource(String config) throws Exception {
+	private InputStream getResource(String config) throws IOException {
 		if (config.startsWith("classpath:")) {
 			return getClasspathResource(config.substring("classpath:".length()));
 		}
@@ -251,7 +252,7 @@ public class PropertiesLauncher extends Launcher {
 		return getClass().getResourceAsStream(config);
 	}
 
-	private InputStream getFileResource(String config) throws Exception {
+	private InputStream getFileResource(String config) throws FileNotFoundException {
 		File file = new File(config);
 		debug("Trying file: " + config);
 		if (file.canRead()) {
@@ -260,7 +261,7 @@ public class PropertiesLauncher extends Launcher {
 		return null;
 	}
 
-	private InputStream getURLResource(String config) throws Exception {
+	private InputStream getURLResource(String config) throws IOException {
 		URL url = new URL(config);
 		if (exists(url)) {
 			URLConnection con = url.openConnection();
@@ -315,7 +316,7 @@ public class PropertiesLauncher extends Launcher {
 		for (String path : commaSeparatedPaths.split(",")) {
 			path = cleanupPath(path);
 			// "" means the user wants root of archive but not current directory
-			path = (path == null || path.isEmpty()) ? "/" : path;
+			path = path.isEmpty() ? "/" : path;
 			paths.add(path);
 		}
 		if (paths.isEmpty()) {

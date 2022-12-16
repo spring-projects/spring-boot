@@ -158,9 +158,7 @@ class TypeElementMembers {
 
 	private void processField(VariableElement field) {
 		String name = field.getSimpleName().toString();
-		if (!this.fields.containsKey(name)) {
-			this.fields.put(name, field);
-		}
+		this.fields.putIfAbsent(name, field);
 	}
 
 	Map<String, VariableElement> getFields() {

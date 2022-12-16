@@ -17,6 +17,7 @@
 package org.springframework.boot.logging.log4j2;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -342,7 +343,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 				configurations.add((AbstractConfiguration) load(override, context));
 			}
 			catch (IOException ex) {
-				throw new RuntimeException("Failed to load overriding configuration from '" + override + "'", ex);
+				throw new UncheckedIOException("Failed to load overriding configuration from '" + override + "'", ex);
 			}
 		}
 		CompositeConfiguration composite = new CompositeConfiguration(configurations);

@@ -90,7 +90,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 				@Override
 				protected boolean removeEldestEntry(Map.Entry<Integer, FileHeader> eldest) {
-					return size() >= ENTRY_CACHE_SIZE;
+					return super.size() >= ENTRY_CACHE_SIZE;
 				}
 
 			});

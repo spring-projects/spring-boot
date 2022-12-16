@@ -19,6 +19,7 @@ package org.springframework.boot.configurationprocessor.metadata;
 import java.util.Collection;
 
 import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
 
@@ -30,17 +31,17 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.Ite
 public class TestJsonConverter extends JsonConverter {
 
 	@Override
-	public JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType) throws Exception {
+	public JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType) throws JSONException {
 		return super.toJsonArray(metadata, itemType);
 	}
 
 	@Override
-	public JSONArray toJsonArray(Collection<ItemHint> hints) throws Exception {
+	public JSONArray toJsonArray(Collection<ItemHint> hints) throws JSONException {
 		return super.toJsonArray(hints);
 	}
 
 	@Override
-	public JSONObject toJsonObject(ItemMetadata item) throws Exception {
+	public JSONObject toJsonObject(ItemMetadata item) throws JSONException {
 		return super.toJsonObject(item);
 	}
 

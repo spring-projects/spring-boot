@@ -18,6 +18,7 @@ package smoketest.integration;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 
 import org.springframework.integration.annotation.MessageEndpoint;
 import org.springframework.integration.annotation.ServiceActivator;
@@ -33,10 +34,11 @@ public class SampleEndpoint {
 	}
 
 	@ServiceActivator
-	public String hello(File input) throws Exception {
-		FileInputStream in = new FileInputStream(input);
-		String name = new String(StreamUtils.copyToByteArray(in));
-		in.close();
+	public String hello(File input) throws IOException {
+		String name;
+		try (FileInputStream in = new FileInputStream(input)) {
+			name = new String(StreamUtils.copyToByteArray(in));
+		}
 		return this.helloWorldService.getHelloMessage(name);
 	}
 

@@ -72,10 +72,7 @@ final class StringSequence implements CharSequence {
 		return new StringSequence(this.source, subSequenceStart, subSequenceEnd);
 	}
 
-	/**
-	 * Returns {@code true} if the sequence is empty. Public to be compatible with JDK 15.
-	 * @return {@code true} if {@link #length()} is {@code 0}, otherwise {@code false}
-	 */
+	@Override
 	public boolean isEmpty() {
 		return length() == 0;
 	}

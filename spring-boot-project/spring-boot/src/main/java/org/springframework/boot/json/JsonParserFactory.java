@@ -27,7 +27,10 @@ import org.springframework.util.ClassUtils;
  * @see GsonJsonParser
  * @see BasicJsonParser
  */
-public abstract class JsonParserFactory {
+public final class JsonParserFactory {
+
+	private JsonParserFactory() {
+	}
 
 	/**
 	 * Static factory for the "best" JSON parser available on the classpath. Tries

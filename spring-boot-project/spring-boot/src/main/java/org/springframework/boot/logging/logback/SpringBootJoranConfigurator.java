@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.io.UncheckedIOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
@@ -164,7 +165,7 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 				output.writeObject(this.model);
 			}
 			catch (IOException ex) {
-				throw new RuntimeException(ex);
+				throw new UncheckedIOException(ex);
 			}
 			Resource modelResource = new ByteArrayResource(bytes.toByteArray());
 			generationContext.getGeneratedFiles().addResourceFile(MODEL_RESOURCE_LOCATION, modelResource);
@@ -373,7 +374,7 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 				properties.store(bytes, "");
 			}
 			catch (IOException ex) {
-				throw new RuntimeException(ex);
+				throw new UncheckedIOException(ex);
 			}
 			return new ByteArrayInputStream(bytes.toByteArray());
 		}

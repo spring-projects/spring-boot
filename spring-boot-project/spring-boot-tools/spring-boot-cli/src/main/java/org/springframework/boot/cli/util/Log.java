@@ -22,9 +22,12 @@ package org.springframework.boot.cli.util;
  * @author Phillip Webb
  * @since 1.0.0
  */
-public abstract class Log {
+public final class Log {
 
 	private static LogListener listener;
+
+	private Log() {
+	}
 
 	public static void info(String message) {
 		System.out.println(message);

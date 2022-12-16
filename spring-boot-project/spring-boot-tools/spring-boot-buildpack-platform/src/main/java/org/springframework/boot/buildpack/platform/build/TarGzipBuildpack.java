@@ -18,6 +18,7 @@ package org.springframework.boot.buildpack.platform.build;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -69,7 +70,7 @@ final class TarGzipBuildpack implements Buildpack {
 			}
 		}
 		catch (IOException ex) {
-			throw new RuntimeException("Error parsing descriptor for buildpack '" + path + "'", ex);
+			throw new UncheckedIOException("Error parsing descriptor for buildpack '" + path + "'", ex);
 		}
 	}
 

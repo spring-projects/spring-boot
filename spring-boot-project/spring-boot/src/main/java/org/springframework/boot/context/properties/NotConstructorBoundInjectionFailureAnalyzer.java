@@ -49,9 +49,9 @@ class NotConstructorBoundInjectionFailureAnalyzer
 		InjectionPoint injectionPoint = findInjectionPoint(rootFailure);
 		if (isConstructorBindingConfigurationProperties(injectionPoint)) {
 			String simpleName = injectionPoint.getMember().getDeclaringClass().getSimpleName();
-			String action = String.format("Update your configuration so that " + simpleName + " is defined via @"
+			String action = "Update your configuration so that " + simpleName + " is defined via @"
 					+ ConfigurationPropertiesScan.class.getSimpleName() + " or @"
-					+ EnableConfigurationProperties.class.getSimpleName() + ".", simpleName);
+					+ EnableConfigurationProperties.class.getSimpleName() + ".";
 			return new FailureAnalysis(
 					simpleName + " is annotated with @" + ConstructorBinding.class.getSimpleName()
 							+ " but it is defined as a regular bean which caused dependency injection to fail.",
@@ -61,8 +61,7 @@ class NotConstructorBoundInjectionFailureAnalyzer
 	}
 
 	private boolean isConstructorBindingConfigurationProperties(InjectionPoint injectionPoint) {
-		if (injectionPoint != null && injectionPoint.getMember() instanceof Constructor) {
-			Constructor<?> constructor = (Constructor<?>) injectionPoint.getMember();
+		if (injectionPoint != null && injectionPoint.getMember() instanceof Constructor<?> constructor) {
 			Class<?> declaringClass = constructor.getDeclaringClass();
 			MergedAnnotation<ConfigurationProperties> configurationProperties = MergedAnnotations.from(declaringClass)
 					.get(ConfigurationProperties.class);

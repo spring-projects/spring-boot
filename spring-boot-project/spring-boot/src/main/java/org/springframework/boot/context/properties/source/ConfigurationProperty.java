@@ -96,8 +96,7 @@ public final class ConfigurationProperty implements OriginProvider, Comparable<C
 			return false;
 		}
 		ConfigurationProperty other = (ConfigurationProperty) obj;
-		boolean result = true;
-		result = result && ObjectUtils.nullSafeEquals(this.name, other.name);
+		boolean result = ObjectUtils.nullSafeEquals(this.name, other.name);
 		result = result && ObjectUtils.nullSafeEquals(this.value, other.value);
 		return result;
 	}

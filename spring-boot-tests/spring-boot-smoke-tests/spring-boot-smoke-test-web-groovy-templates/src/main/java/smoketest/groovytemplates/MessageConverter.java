@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package smoketest.web.thymeleaf;
+package smoketest.groovytemplates;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.stereotype.Component;
 
-@SpringBootApplication
-public class SampleWebUiApplication {
+@Component
+class MessageConverter implements Converter<String, Message> {
 
-	@Bean
-	public MessageRepository messageRepository() {
-		return new InMemoryMessageRepository();
+	private final MessageRepository messageRepository;
+
+	MessageConverter(MessageRepository messageRepository) {
+		this.messageRepository = messageRepository;
 	}
 
-	public static void main(String[] args) {
-		SpringApplication.run(SampleWebUiApplication.class, args);
+	@Override
+	public Message convert(String source) {
+		return this.messageRepository.findMessage(Long.valueOf(source));
 	}
 
 }

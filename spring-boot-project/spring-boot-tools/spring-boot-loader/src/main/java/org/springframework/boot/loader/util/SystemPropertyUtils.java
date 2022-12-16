@@ -36,7 +36,7 @@ import java.util.Set;
  * @since 1.0.0
  * @see System#getProperty(String)
  */
-public abstract class SystemPropertyUtils {
+public final class SystemPropertyUtils {
 
 	/**
 	 * Prefix for system property placeholders: "${".
@@ -54,6 +54,9 @@ public abstract class SystemPropertyUtils {
 	public static final String VALUE_SEPARATOR = ":";
 
 	private static final String SIMPLE_PREFIX = PLACEHOLDER_PREFIX.substring(1);
+
+	private SystemPropertyUtils() {
+	}
 
 	/**
 	 * Resolve ${...} placeholders in the given text, replacing them with corresponding

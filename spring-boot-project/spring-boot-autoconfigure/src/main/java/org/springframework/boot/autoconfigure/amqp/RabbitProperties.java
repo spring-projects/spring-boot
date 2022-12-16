@@ -1129,15 +1129,15 @@ public class RabbitProperties {
 
 		private String parseUsernameAndPassword(String input) {
 			if (input.contains("@")) {
-				String[] splittedInput = StringUtils.split(input, "@");
-				Assert.notNull(splittedInput, "splittedInput must not be null");
-				String creds = splittedInput[0];
-				input = splittedInput[1];
-				String[] splittedCreds = StringUtils.split(creds, ":");
-				Assert.notNull(splittedCreds, "splittedCreds must not be null");
-				this.username = splittedCreds[0];
-				if (splittedCreds.length >= 2) {
-					this.password = splittedCreds[1];
+				String[] splitInput = StringUtils.split(input, "@");
+				Assert.notNull(splitInput, "splitInput must not be null");
+				String creds = splitInput[0];
+				input = splitInput[1];
+				String[] splitCreds = StringUtils.split(creds, ":");
+				Assert.notNull(splitCreds, "splitCreds must not be null");
+				this.username = splitCreds[0];
+				if (splitCreds.length >= 2) {
+					this.password = splitCreds[1];
 				}
 			}
 			return input;

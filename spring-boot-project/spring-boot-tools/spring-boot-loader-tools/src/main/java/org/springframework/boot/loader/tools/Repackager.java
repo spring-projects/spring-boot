@@ -144,8 +144,11 @@ public class Repackager extends Packager {
 	}
 
 	private void deleteFile(File file) {
-		if (!file.delete()) {
-			throw new IllegalStateException("Unable to delete '" + file + "'");
+		try {
+			Files.delete(file.toPath());
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Unable to delete '" + file + "'", ex);
 		}
 	}
 

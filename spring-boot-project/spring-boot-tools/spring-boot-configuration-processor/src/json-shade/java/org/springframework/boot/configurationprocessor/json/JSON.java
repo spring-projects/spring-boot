@@ -16,7 +16,10 @@
 
 package org.springframework.boot.configurationprocessor.json;
 
-class JSON {
+final class JSON {
+
+	private JSON() {
+	}
 
 	static double checkDouble(double d) throws JSONException {
 		if (Double.isInfinite(d) || Double.isNaN(d)) {
@@ -51,7 +54,8 @@ class JSON {
 			try {
 				return Double.valueOf((String) value);
 			}
-			catch (NumberFormatException ignored) {
+			catch (NumberFormatException ex) {
+				// Ignore
 			}
 		}
 		return null;
@@ -68,7 +72,8 @@ class JSON {
 			try {
 				return (int) Double.parseDouble((String) value);
 			}
-			catch (NumberFormatException ignored) {
+			catch (NumberFormatException ex) {
+				// Ignore
 			}
 		}
 		return null;
@@ -85,7 +90,8 @@ class JSON {
 			try {
 				return (long) Double.parseDouble((String) value);
 			}
-			catch (NumberFormatException ignored) {
+			catch (NumberFormatException ex) {
+				// Ignore
 			}
 		}
 		return null;

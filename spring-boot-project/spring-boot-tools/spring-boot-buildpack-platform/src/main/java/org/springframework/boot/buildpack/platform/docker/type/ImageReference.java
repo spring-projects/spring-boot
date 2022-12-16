@@ -96,8 +96,7 @@ public final class ImageReference {
 			return false;
 		}
 		ImageReference other = (ImageReference) obj;
-		boolean result = true;
-		result = result && this.name.equals(other.name);
+		boolean result = this.name.equals(other.name);
 		result = result && ObjectUtils.nullSafeEquals(this.tag, other.tag);
 		result = result && ObjectUtils.nullSafeEquals(this.digest, other.digest);
 		return result;

@@ -51,8 +51,7 @@ class LifecycleVersion implements Comparable<LifecycleVersion> {
 			return false;
 		}
 		LifecycleVersion other = (LifecycleVersion) obj;
-		boolean result = true;
-		result = result && this.major == other.major;
+		boolean result = this.major == other.major;
 		result = result && this.minor == other.minor;
 		result = result && this.patch == other.patch;
 		return result;

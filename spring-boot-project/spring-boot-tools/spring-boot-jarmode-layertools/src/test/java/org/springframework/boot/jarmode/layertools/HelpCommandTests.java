@@ -62,13 +62,13 @@ class HelpCommandTests {
 
 	@Test
 	void runWhenHasNoParametersPrintsUsage() {
-		this.command.run(this.out, Collections.emptyMap(), Collections.emptyList());
+		this.command.run(this.out, Collections.emptyList());
 		assertThat(this.out).hasSameContentAsResource("help-output.txt");
 	}
 
 	@Test
 	void runWhenHasNoCommandParameterPrintsUsage() {
-		this.command.run(this.out, Collections.emptyMap(), Arrays.asList("extract"));
+		this.command.run(this.out, Arrays.asList("extract"));
 		System.out.println(this.out);
 		assertThat(this.out).hasSameContentAsResource("help-extract-output.txt");
 	}

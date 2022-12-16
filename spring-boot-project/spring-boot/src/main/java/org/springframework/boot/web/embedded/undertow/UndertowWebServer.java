@@ -155,6 +155,7 @@ public class UndertowWebServer implements WebServer {
 			closeable.close();
 		}
 		catch (Exception ex) {
+			// Ignore
 		}
 	}
 
@@ -210,6 +211,7 @@ public class UndertowWebServer implements WebServer {
 	@SuppressWarnings("unchecked")
 	private List<BoundChannel> extractChannels() {
 		Field channelsField = ReflectionUtils.findField(Undertow.class, "channels");
+		Assert.notNull(channelsField, "channelsField must not be null");
 		ReflectionUtils.makeAccessible(channelsField);
 		return (List<BoundChannel>) ReflectionUtils.getField(channelsField, this.undertow);
 	}
@@ -243,6 +245,7 @@ public class UndertowWebServer implements WebServer {
 	@SuppressWarnings("unchecked")
 	private List<Object> extractListeners() {
 		Field listenersField = ReflectionUtils.findField(Undertow.class, "listeners");
+		Assert.notNull(listenersField, "listenersField must not be null");
 		ReflectionUtils.makeAccessible(listenersField);
 		return (List<Object>) ReflectionUtils.getField(listenersField, this.undertow);
 	}

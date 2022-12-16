@@ -25,7 +25,10 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-public abstract class ApplicationContextTestUtils {
+public final class ApplicationContextTestUtils {
+
+	private ApplicationContextTestUtils() {
+	}
 
 	/**
 	 * Closes this {@link ApplicationContext} and its parent hierarchy if any.

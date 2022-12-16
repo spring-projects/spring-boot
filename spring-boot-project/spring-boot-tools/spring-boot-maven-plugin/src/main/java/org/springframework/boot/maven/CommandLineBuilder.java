@@ -91,7 +91,10 @@ final class CommandLineBuilder {
 		return commandLine;
 	}
 
-	static class ClasspathBuilder {
+	static final class ClasspathBuilder {
+
+		private ClasspathBuilder() {
+		}
 
 		static String build(List<URL> classpathElements) {
 			StringBuilder classpath = new StringBuilder();

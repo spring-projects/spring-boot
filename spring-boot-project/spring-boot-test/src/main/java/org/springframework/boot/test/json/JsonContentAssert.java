@@ -1095,6 +1095,7 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 				failWithMessage("Expecting no JSON path \"%s\"", this.expression);
 			}
 			catch (PathNotFoundException ex) {
+				// Ignore
 			}
 		}
 

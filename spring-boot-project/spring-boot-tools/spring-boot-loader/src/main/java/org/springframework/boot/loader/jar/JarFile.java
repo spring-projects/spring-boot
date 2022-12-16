@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FilePermission;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.lang.ref.SoftReference;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -79,9 +80,9 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 
 	private String urlString;
 
-	private JarFileEntries entries;
+	private final JarFileEntries entries;
 
-	private Supplier<Manifest> manifestSupplier;
+	private final Supplier<Manifest> manifestSupplier;
 
 	private SoftReference<Manifest> manifest;
 
@@ -144,6 +145,7 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 				super.close();
 			}
 			catch (IOException ioex) {
+				// Ignore
 			}
 			throw ex;
 		}
@@ -155,7 +157,7 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 				return new Manifest(inputStream);
 			}
 			catch (IOException ex) {
-				throw new RuntimeException(ex);
+				throw new UncheckedIOException(ex);
 			}
 		};
 	}

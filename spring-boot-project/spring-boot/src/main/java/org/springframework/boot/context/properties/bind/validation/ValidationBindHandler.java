@@ -150,6 +150,8 @@ public class ValidationBindHandler extends AbstractBindHandler {
 		private final ConfigurationPropertyName name;
 
 		protected ValidationResult(ConfigurationPropertyName name, Object target) {
+			// TODO MH: This looks like a bug, here's a null is explicitly passed into a
+			// non-null parameter
 			super(target, null);
 			this.name = name;
 		}
@@ -212,6 +214,7 @@ public class ValidationBindHandler extends AbstractBindHandler {
 				}
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 			return null;
 		}

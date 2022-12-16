@@ -124,7 +124,7 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 	}
 
 	protected final void compileSourceFiles(URL[] classPath, File sourcesDirectory, File outputDirectory)
-			throws Exception {
+			throws IOException {
 		List<Path> sourceFiles;
 		try (Stream<Path> fileStream = Files.walk(sourcesDirectory.toPath())) {
 			sourceFiles = fileStream.filter(Files::isRegularFile).toList();

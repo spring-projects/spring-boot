@@ -74,8 +74,7 @@ public class TextResourceOrigin implements Origin {
 			return false;
 		}
 		if (obj instanceof TextResourceOrigin other) {
-			boolean result = true;
-			result = result && ObjectUtils.nullSafeEquals(this.resource, other.resource);
+			boolean result = ObjectUtils.nullSafeEquals(this.resource, other.resource);
 			result = result && ObjectUtils.nullSafeEquals(this.location, other.location);
 			return result;
 		}
@@ -121,6 +120,7 @@ public class TextResourceOrigin implements Origin {
 			}
 		}
 		catch (IOException ex) {
+			// Ignore
 		}
 		return resource.getDescription();
 	}
@@ -169,8 +169,7 @@ public class TextResourceOrigin implements Origin {
 				return false;
 			}
 			Location other = (Location) obj;
-			boolean result = true;
-			result = result && this.line == other.line;
+			boolean result = this.line == other.line;
 			result = result && this.column == other.column;
 			return result;
 		}

@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
 
@@ -36,7 +37,7 @@ class JsonConverter {
 
 	private static final ItemMetadataComparator ITEM_COMPARATOR = new ItemMetadataComparator();
 
-	JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType) throws Exception {
+	JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType) throws JSONException {
 		JSONArray jsonArray = new JSONArray();
 		List<ItemMetadata> items = metadata.getItems().stream().filter((item) -> item.isOfItemType(itemType))
 				.sorted(ITEM_COMPARATOR).toList();
@@ -48,7 +49,7 @@ class JsonConverter {
 		return jsonArray;
 	}
 
-	JSONArray toJsonArray(Collection<ItemHint> hints) throws Exception {
+	JSONArray toJsonArray(Collection<ItemHint> hints) throws JSONException {
 		JSONArray jsonArray = new JSONArray();
 		for (ItemHint hint : hints) {
 			jsonArray.put(toJsonObject(hint));
@@ -56,7 +57,7 @@ class JsonConverter {
 		return jsonArray;
 	}
 
-	JSONObject toJsonObject(ItemMetadata item) throws Exception {
+	JSONObject toJsonObject(ItemMetadata item) throws JSONException {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("name", item.getName());
 		jsonObject.putOpt("type", item.getType());
@@ -85,7 +86,7 @@ class JsonConverter {
 		return jsonObject;
 	}
 
-	private JSONObject toJsonObject(ItemHint hint) throws Exception {
+	private JSONObject toJsonObject(ItemHint hint) throws JSONException {
 		JSONObject jsonObject = new JSONObject();
 		jsonObject.put("name", hint.getName());
 		if (!hint.getValues().isEmpty()) {
@@ -97,7 +98,7 @@ class JsonConverter {
 		return jsonObject;
 	}
 
-	private JSONArray getItemHintValues(ItemHint hint) throws Exception {
+	private JSONArray getItemHintValues(ItemHint hint) throws JSONException {
 		JSONArray values = new JSONArray();
 		for (ItemHint.ValueHint value : hint.getValues()) {
 			values.put(getItemHintValue(value));
@@ -105,14 +106,14 @@ class JsonConverter {
 		return values;
 	}
 
-	private JSONObject getItemHintValue(ItemHint.ValueHint value) throws Exception {
+	private JSONObject getItemHintValue(ItemHint.ValueHint value) throws JSONException {
 		JSONObject result = new JSONObject();
 		putHintValue(result, value.getValue());
 		result.putOpt("description", value.getDescription());
 		return result;
 	}
 
-	private JSONArray getItemHintProviders(ItemHint hint) throws Exception {
+	private JSONArray getItemHintProviders(ItemHint hint) throws JSONException {
 		JSONArray providers = new JSONArray();
 		for (ItemHint.ValueProvider provider : hint.getProviders()) {
 			providers.put(getItemHintProvider(provider));
@@ -120,7 +121,7 @@ class JsonConverter {
 		return providers;
 	}
 
-	private JSONObject getItemHintProvider(ItemHint.ValueProvider provider) throws Exception {
+	private JSONObject getItemHintProvider(ItemHint.ValueProvider provider) throws JSONException {
 		JSONObject result = new JSONObject();
 		result.put("name", provider.getName());
 		if (provider.getParameters() != null && !provider.getParameters().isEmpty()) {
@@ -133,12 +134,12 @@ class JsonConverter {
 		return result;
 	}
 
-	private void putHintValue(JSONObject jsonObject, Object value) throws Exception {
+	private void putHintValue(JSONObject jsonObject, Object value) throws JSONException {
 		Object hintValue = extractItemValue(value);
 		jsonObject.put("value", hintValue);
 	}
 
-	private void putDefaultValue(JSONObject jsonObject, Object value) throws Exception {
+	private void putDefaultValue(JSONObject jsonObject, Object value) throws JSONException {
 		Object defaultValue = extractItemValue(value);
 		jsonObject.put("defaultValue", defaultValue);
 	}

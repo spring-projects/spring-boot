@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
@@ -109,7 +110,7 @@ public class ProcessAotMojo extends AbstractAotMojo {
 		return aotArguments.toArray(String[]::new);
 	}
 
-	private URL[] getClassPath() throws Exception {
+	private URL[] getClassPath() throws MojoExecutionException {
 		File[] directories = new File[] { this.classesDirectory, this.generatedClasses };
 		return getClassPath(directories, new ExcludeTestScopeArtifactFilter());
 	}

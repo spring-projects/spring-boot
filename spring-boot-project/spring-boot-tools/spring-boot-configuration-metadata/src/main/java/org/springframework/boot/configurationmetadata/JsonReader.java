@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Locale;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -58,7 +59,7 @@ class JsonReader {
 		}
 	}
 
-	private List<ConfigurationMetadataSource> parseAllSources(JSONObject root) throws Exception {
+	private List<ConfigurationMetadataSource> parseAllSources(JSONObject root) throws JSONException {
 		List<ConfigurationMetadataSource> result = new ArrayList<>();
 		if (!root.has("groups")) {
 			return result;
@@ -71,7 +72,7 @@ class JsonReader {
 		return result;
 	}
 
-	private List<ConfigurationMetadataItem> parseAllItems(JSONObject root) throws Exception {
+	private List<ConfigurationMetadataItem> parseAllItems(JSONObject root) throws JSONException {
 		List<ConfigurationMetadataItem> result = new ArrayList<>();
 		if (!root.has("properties")) {
 			return result;
@@ -84,7 +85,7 @@ class JsonReader {
 		return result;
 	}
 
-	private List<ConfigurationMetadataHint> parseAllHints(JSONObject root) throws Exception {
+	private List<ConfigurationMetadataHint> parseAllHints(JSONObject root) throws JSONException {
 		List<ConfigurationMetadataHint> result = new ArrayList<>();
 		if (!root.has("hints")) {
 			return result;
@@ -97,7 +98,7 @@ class JsonReader {
 		return result;
 	}
 
-	private ConfigurationMetadataSource parseSource(JSONObject json) throws Exception {
+	private ConfigurationMetadataSource parseSource(JSONObject json) throws JSONException {
 		ConfigurationMetadataSource source = new ConfigurationMetadataSource();
 		source.setGroupId(json.getString("name"));
 		source.setType(json.optString("type", null));
@@ -109,7 +110,7 @@ class JsonReader {
 		return source;
 	}
 
-	private ConfigurationMetadataItem parseItem(JSONObject json) throws Exception {
+	private ConfigurationMetadataItem parseItem(JSONObject json) throws JSONException {
 		ConfigurationMetadataItem item = new ConfigurationMetadataItem();
 		item.setId(json.getString("name"));
 		item.setType(json.optString("type", null));
@@ -123,7 +124,7 @@ class JsonReader {
 		return item;
 	}
 
-	private ConfigurationMetadataHint parseHint(JSONObject json) throws Exception {
+	private ConfigurationMetadataHint parseHint(JSONObject json) throws JSONException {
 		ConfigurationMetadataHint hint = new ConfigurationMetadataHint();
 		hint.setId(json.getString("name"));
 		if (json.has("values")) {
@@ -158,7 +159,7 @@ class JsonReader {
 		return hint;
 	}
 
-	private Deprecation parseDeprecation(JSONObject object) throws Exception {
+	private Deprecation parseDeprecation(JSONObject object) throws JSONException {
 		if (object.has("deprecation")) {
 			JSONObject deprecationJsonObject = object.getJSONObject("deprecation");
 			Deprecation deprecation = new Deprecation();
@@ -184,7 +185,7 @@ class JsonReader {
 		return Deprecation.Level.WARNING;
 	}
 
-	private Object readItemValue(Object value) throws Exception {
+	private Object readItemValue(Object value) throws JSONException {
 		if (value instanceof JSONArray array) {
 			Object[] content = new Object[array.length()];
 			for (int i = 0; i < array.length(); i++) {
@@ -195,7 +196,7 @@ class JsonReader {
 		return value;
 	}
 
-	private JSONObject readJson(InputStream in, Charset charset) throws Exception {
+	private JSONObject readJson(InputStream in, Charset charset) throws IOException, JSONException {
 		try (in) {
 			StringBuilder out = new StringBuilder();
 			InputStreamReader reader = new InputStreamReader(in, charset);

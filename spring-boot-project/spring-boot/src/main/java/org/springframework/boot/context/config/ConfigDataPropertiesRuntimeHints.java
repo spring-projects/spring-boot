@@ -16,10 +16,13 @@
 
 package org.springframework.boot.context.config;
 
+import java.lang.reflect.Method;
+
 import org.springframework.aot.hint.ExecutableMode;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -32,8 +35,9 @@ class ConfigDataPropertiesRuntimeHints implements RuntimeHintsRegistrar {
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		BindableRuntimeHintsRegistrar.forTypes(ConfigDataProperties.class).registerHints(hints);
-		hints.reflection().registerMethod(ReflectionUtils.findMethod(ConfigDataLocation.class, "of", String.class),
-				ExecutableMode.INVOKE);
+		Method method = ReflectionUtils.findMethod(ConfigDataLocation.class, "of", String.class);
+		Assert.notNull(method, "method must not be null");
+		hints.reflection().registerMethod(method, ExecutableMode.INVOKE);
 	}
 
 }

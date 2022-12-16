@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
 
@@ -62,7 +63,7 @@ public class JsonMarshaller {
 		}
 	}
 
-	public ConfigurationMetadata read(InputStream inputStream) throws Exception {
+	public ConfigurationMetadata read(InputStream inputStream) throws IOException, JSONException {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		JSONObject object = new JSONObject(toString(inputStream));
 		JSONArray groups = object.optJSONArray("groups");
@@ -86,7 +87,7 @@ public class JsonMarshaller {
 		return metadata;
 	}
 
-	private ItemMetadata toItemMetadata(JSONObject object, ItemType itemType) throws Exception {
+	private ItemMetadata toItemMetadata(JSONObject object, ItemType itemType) throws JSONException {
 		String name = object.getString("name");
 		String type = object.optString("type", null);
 		String description = object.optString("description", null);
@@ -98,7 +99,7 @@ public class JsonMarshaller {
 				deprecation);
 	}
 
-	private ItemDeprecation toItemDeprecation(JSONObject object) throws Exception {
+	private ItemDeprecation toItemDeprecation(JSONObject object) throws JSONException {
 		if (object.has("deprecation")) {
 			JSONObject deprecationJsonObject = object.getJSONObject("deprecation");
 			ItemDeprecation deprecation = new ItemDeprecation();
@@ -110,7 +111,7 @@ public class JsonMarshaller {
 		return object.optBoolean("deprecated") ? new ItemDeprecation() : null;
 	}
 
-	private ItemHint toItemHint(JSONObject object) throws Exception {
+	private ItemHint toItemHint(JSONObject object) throws JSONException {
 		String name = object.getString("name");
 		List<ItemHint.ValueHint> values = new ArrayList<>();
 		if (object.has("values")) {
@@ -129,13 +130,13 @@ public class JsonMarshaller {
 		return new ItemHint(name, values, providers);
 	}
 
-	private ItemHint.ValueHint toValueHint(JSONObject object) throws Exception {
+	private ItemHint.ValueHint toValueHint(JSONObject object) throws JSONException {
 		Object value = readItemValue(object.get("value"));
 		String description = object.optString("description", null);
 		return new ItemHint.ValueHint(value, description);
 	}
 
-	private ItemHint.ValueProvider toValueProvider(JSONObject object) throws Exception {
+	private ItemHint.ValueProvider toValueProvider(JSONObject object) throws JSONException {
 		String name = object.getString("name");
 		Map<String, Object> parameters = new HashMap<>();
 		if (object.has("parameters")) {
@@ -149,7 +150,7 @@ public class JsonMarshaller {
 		return new ItemHint.ValueProvider(name, parameters);
 	}
 
-	private Object readItemValue(Object value) throws Exception {
+	private Object readItemValue(Object value) throws JSONException {
 		if (value instanceof JSONArray array) {
 			Object[] content = new Object[array.length()];
 			for (int i = 0; i < array.length(); i++) {

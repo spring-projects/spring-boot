@@ -91,7 +91,9 @@ public class BasicJsonParser extends AbstractJsonParser {
 		Map<String, Object> map = new LinkedHashMap<>();
 		json = trimLeadingCharacter(trimTrailingCharacter(json, '}'), '{').trim();
 		for (String pair : tokenize(json)) {
-			String[] values = StringUtils.trimArrayElements(StringUtils.split(pair, ":"));
+			String[] split = StringUtils.split(pair, ":");
+			Assert.notNull(split, "split must not be null");
+			String[] values = StringUtils.trimArrayElements(split);
 			Assert.state(values[0].startsWith("\"") && values[0].endsWith("\""),
 					"Expecting double-quotes around field names");
 			String key = trimLeadingCharacter(trimTrailingCharacter(values[0], '"'), '"');

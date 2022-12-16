@@ -111,6 +111,7 @@ public class StandardConfigDataResource extends ConfigDataResource {
 				return "file [" + this.resource.getFile().toString() + "]";
 			}
 			catch (IOException ex) {
+				// Ignore
 			}
 		}
 		return this.resource.toString();

@@ -203,8 +203,7 @@ public class JSONTokener {
 			int c = this.in.charAt(this.pos++);
 			if (c == quote) {
 				if (builder == null) {
-					// a new string avoids leaking memory
-					return new String(this.in.substring(start, this.pos - 1));
+					return this.in.substring(start, this.pos - 1);
 				}
 				else {
 					builder.append(this.in, start, this.pos - 1);
@@ -313,7 +312,7 @@ public class JSONTokener {
 					return longValue;
 				}
 			}
-			catch (NumberFormatException e) {
+			catch (NumberFormatException ex) {
 				/*
 				 * This only happens for integral numbers greater than Long.MAX_VALUE,
 				 * numbers in exponential form (5e-10) and unquoted strings. Fall through
@@ -326,11 +325,12 @@ public class JSONTokener {
 		try {
 			return Double.valueOf(literal);
 		}
-		catch (NumberFormatException ignored) {
+		catch (NumberFormatException ex) {
+			// Ignore
 		}
 
 		/* ... finally give up. We have an unquoted string */
-		return new String(literal); // a new string avoids leaking memory
+		return literal;
 	}
 
 	/**

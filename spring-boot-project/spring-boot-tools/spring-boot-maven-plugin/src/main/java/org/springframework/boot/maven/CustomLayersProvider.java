@@ -123,7 +123,7 @@ class CustomLayersProvider {
 		return new IncludeExcludeContentSelector<>(layer, includes, excludes, filterFactory);
 	}
 
-	private <T> ContentSelector<Library> getLibrarySelector(Element element,
+	private ContentSelector<Library> getLibrarySelector(Element element,
 			Function<String, ContentFilter<Library>> filterFactory) {
 		Layer layer = new Layer(element.getAttribute("layer"));
 		List<String> includes = getChildNodeTextContent(element, "include");

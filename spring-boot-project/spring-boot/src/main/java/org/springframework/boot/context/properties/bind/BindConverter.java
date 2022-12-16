@@ -202,8 +202,7 @@ final class BindConverter {
 		@Override
 		public boolean matches(TypeDescriptor sourceType, TypeDescriptor targetType) {
 			Class<?> type = targetType.getType();
-			if (type == null || type == Object.class || Collection.class.isAssignableFrom(type)
-					|| Map.class.isAssignableFrom(type)) {
+			if (type == Object.class || Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type)) {
 				return false;
 			}
 			PropertyEditor editor = this.matchesOnlyTypeConverter.getDefaultEditor(type);

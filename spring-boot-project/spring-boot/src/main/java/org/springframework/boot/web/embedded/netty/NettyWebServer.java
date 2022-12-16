@@ -128,6 +128,7 @@ public class NettyWebServer implements WebServer {
 			message.append(String.format(format, value));
 		}
 		catch (UnsupportedOperationException ex) {
+			// Ignore
 		}
 	}
 
@@ -152,6 +153,7 @@ public class NettyWebServer implements WebServer {
 			}
 		}
 		catch (Throwable ignore) {
+			// Ignore
 		}
 		return false;
 	}

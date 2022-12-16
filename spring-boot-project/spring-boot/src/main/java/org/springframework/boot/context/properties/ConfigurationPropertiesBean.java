@@ -174,6 +174,7 @@ public final class ConfigurationPropertiesBean {
 					}
 				}
 				catch (Exception ex) {
+					// Ignore
 				}
 			}
 		}

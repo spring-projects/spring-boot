@@ -28,7 +28,10 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 1.0.0
  */
-public abstract class FileUtils {
+public final class FileUtils {
+
+	private FileUtils() {
+	}
 
 	/**
 	 * Utility to remove duplicate files from an "output" directory if they already exist

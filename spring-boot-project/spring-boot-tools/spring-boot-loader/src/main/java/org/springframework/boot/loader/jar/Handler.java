@@ -140,6 +140,7 @@ public class Handler extends URLStreamHandler {
 				return connection;
 			}
 			catch (IOException ex) {
+				// Ignore
 			}
 		}
 		return null;
@@ -154,6 +155,7 @@ public class Handler extends URLStreamHandler {
 				}
 			}
 			catch (Exception ex) {
+				// Ignore
 			}
 		}
 		return false;
@@ -174,6 +176,7 @@ public class Handler extends URLStreamHandler {
 			}
 		}
 		catch (Exception ex) {
+			// Ignore
 		}
 		return null;
 	}
@@ -183,9 +186,9 @@ public class Handler extends URLStreamHandler {
 	 * jar {@link URLStreamHandler}.
 	 * @param url the URL to open
 	 * @return the {@link URLConnection}
-	 * @throws Exception if not connection could be opened
+	 * @throws IOException if not connection could be opened
 	 */
-	private URLConnection openFallbackHandlerConnection(URL url) throws Exception {
+	private URLConnection openFallbackHandlerConnection(URL url) throws IOException {
 		URLStreamHandler fallbackHandler = getFallbackHandler();
 		return new URL(null, url.toExternalForm(), fallbackHandler).openConnection();
 	}
@@ -425,6 +428,7 @@ public class Handler extends URLStreamHandler {
 					}
 				}
 				catch (Exception ex) {
+					// Ignore
 				}
 			}
 			finally {

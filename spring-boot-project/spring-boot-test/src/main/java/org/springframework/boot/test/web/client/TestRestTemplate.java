@@ -961,8 +961,7 @@ public class TestRestTemplate {
 	}
 
 	private URI resolveUri(RequestEntity<?> entity) {
-		if (entity instanceof UriTemplateRequestEntity) {
-			UriTemplateRequestEntity<?> templatedUriEntity = (UriTemplateRequestEntity<?>) entity;
+		if (entity instanceof UriTemplateRequestEntity<?> templatedUriEntity) {
 			if (templatedUriEntity.getVars() != null) {
 				return this.restTemplate.getUriTemplateHandler().expand(templatedUriEntity.getUriTemplate(),
 						templatedUriEntity.getVars());

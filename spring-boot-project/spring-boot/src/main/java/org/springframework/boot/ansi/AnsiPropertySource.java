@@ -151,6 +151,7 @@ public class AnsiPropertySource extends PropertySource<AnsiElement> {
 					return this.factory.apply(Integer.parseInt(postfix));
 				}
 				catch (IllegalArgumentException ex) {
+					// Ignore
 				}
 			}
 			return null;

@@ -90,7 +90,9 @@ class SpyDefinition extends Definition {
 	@SuppressWarnings("unchecked")
 	<T> T createSpy(String name, Object instance) {
 		Assert.notNull(instance, "Instance must not be null");
-		Assert.isInstanceOf(this.typeToSpy.resolve(), instance);
+		Class<?> resolvedType = this.typeToSpy.resolve();
+		Assert.notNull(resolvedType, "resolvedType must not be null");
+		Assert.isInstanceOf(resolvedType, instance);
 		if (Mockito.mockingDetails(instance).isSpy()) {
 			return (T) instance;
 		}
