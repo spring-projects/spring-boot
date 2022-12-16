@@ -178,11 +178,15 @@ class RabbitAutoConfigurationTests {
 			com.rabbitmq.client.ConnectionFactory rcf = mock(com.rabbitmq.client.ConnectionFactory.class);
 			given(rcf.newConnection(isNull(), eq(addresses), anyString())).willReturn(mock(Connection.class));
 			ReflectionTestUtils.setField(connectionFactory, "rabbitConnectionFactory", rcf);
-			connectionFactory.createConnection();
-			then(rcf).should().newConnection(isNull(), eq(addresses), eq("test#0"));
+			try (org.springframework.amqp.rabbit.connection.Connection connection = connectionFactory
+					.createConnection()) {
+				then(rcf).should().newConnection(isNull(), eq(addresses), eq("test#0"));
+			}
 			connectionFactory.resetConnection();
-			connectionFactory.createConnection();
-			then(rcf).should().newConnection(isNull(), eq(addresses), eq("test#1"));
+			try (org.springframework.amqp.rabbit.connection.Connection connection = connectionFactory
+					.createConnection()) {
+				then(rcf).should().newConnection(isNull(), eq(addresses), eq("test#1"));
+			}
 		});
 	}
 

@@ -17,6 +17,7 @@
 package org.springframework.boot.origin;
 
 import java.io.IOException;
+import java.nio.channels.ReadableByteChannel;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -100,8 +101,9 @@ class OriginTrackedResourceTests {
 
 	@Test
 	void readableChannelDelegatesToResource() throws IOException {
-		this.tracked.readableChannel();
-		then(this.resource).should().readableChannel();
+		try (ReadableByteChannel ignore = this.tracked.readableChannel()) {
+			then(this.resource).should().readableChannel();
+		}
 	}
 
 	@Test

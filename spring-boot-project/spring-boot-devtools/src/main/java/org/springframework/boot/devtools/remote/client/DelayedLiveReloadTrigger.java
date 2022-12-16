@@ -103,8 +103,9 @@ class DelayedLiveReloadTrigger implements Runnable {
 	private boolean isUp() {
 		try {
 			ClientHttpRequest request = createRequest();
-			ClientHttpResponse response = request.execute();
-			return response.getStatusCode() == HttpStatus.OK;
+			try (ClientHttpResponse response = request.execute()) {
+				return response.getStatusCode() == HttpStatus.OK;
+			}
 		}
 		catch (Exception ex) {
 			return false;

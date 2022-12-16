@@ -53,34 +53,37 @@ class SocketTargetServerConnectionTests {
 	void readData() throws Exception {
 		this.server.willSend("hello".getBytes());
 		this.server.start();
-		ByteChannel channel = this.connection.open(DEFAULT_TIMEOUT);
-		ByteBuffer buffer = ByteBuffer.allocate(5);
-		channel.read(buffer);
-		assertThat(buffer.array()).isEqualTo("hello".getBytes());
+		try (ByteChannel channel = this.connection.open(DEFAULT_TIMEOUT)) {
+			ByteBuffer buffer = ByteBuffer.allocate(5);
+			channel.read(buffer);
+			assertThat(buffer.array()).isEqualTo("hello".getBytes());
+		}
 	}
 
 	@Test
 	void writeData() throws Exception {
 		this.server.expect("hello".getBytes());
 		this.server.start();
-		ByteChannel channel = this.connection.open(DEFAULT_TIMEOUT);
-		ByteBuffer buffer = ByteBuffer.wrap("hello".getBytes());
-		channel.write(buffer);
-		this.server.closeAndVerify();
+		try (ByteChannel channel = this.connection.open(DEFAULT_TIMEOUT)) {
+			ByteBuffer buffer = ByteBuffer.wrap("hello".getBytes());
+			channel.write(buffer);
+			this.server.closeAndVerify();
+		}
 	}
 
 	@Test
 	void timeout() throws Exception {
 		this.server.delay(1000);
 		this.server.start();
-		ByteChannel channel = this.connection.open(10);
-		long startTime = System.currentTimeMillis();
-		assertThatExceptionOfType(SocketTimeoutException.class).isThrownBy(() -> channel.read(ByteBuffer.allocate(5)))
-				.satisfies((ex) -> {
-					long runTime = System.currentTimeMillis() - startTime;
-					assertThat(runTime).isGreaterThanOrEqualTo(10L);
-					assertThat(runTime).isLessThan(10000L);
-				});
+		try (ByteChannel channel = this.connection.open(10)) {
+			long startTime = System.currentTimeMillis();
+			assertThatExceptionOfType(SocketTimeoutException.class)
+					.isThrownBy(() -> channel.read(ByteBuffer.allocate(5))).satisfies((ex) -> {
+						long runTime = System.currentTimeMillis() - startTime;
+						assertThat(runTime).isGreaterThanOrEqualTo(10L);
+						assertThat(runTime).isLessThan(10000L);
+					});
+		}
 	}
 
 	static class MockServer {

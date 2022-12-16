@@ -205,8 +205,9 @@ class MultipartAutoConfigurationTests {
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
 		ClientHttpRequest request = requestFactory.createRequest(
 				new URI("http://localhost:" + this.context.getWebServer().getPort() + "/"), HttpMethod.GET);
-		ClientHttpResponse response = request.execute();
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		try (ClientHttpResponse response = request.execute()) {
+			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		}
 	}
 
 	private void verifyServletWorks() {

@@ -47,6 +47,8 @@ class MavenBuildExtension implements TestTemplateInvocationContextProvider {
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 		try {
+			// Returning a stream which must be closed here is fine, as JUnit will take
+			// care of closing it
 			return Files.list(Paths.get("build/maven-binaries")).map(MavenVersionTestTemplateInvocationContext::new);
 		}
 		catch (IOException ex) {

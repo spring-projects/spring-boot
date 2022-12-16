@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.TestTemplate;
@@ -173,10 +174,10 @@ public class AotTests {
 		});
 	}
 
-	Stream<Path> collectRelativePaths(Path sourceDirectory) {
-		try {
-			return Files.walk(sourceDirectory).filter(Files::isRegularFile)
-					.map((path) -> path.subpath(sourceDirectory.getNameCount(), path.getNameCount()));
+	List<Path> collectRelativePaths(Path sourceDirectory) {
+		try (Stream<Path> pathStream = Files.walk(sourceDirectory)) {
+			return pathStream.filter(Files::isRegularFile)
+					.map((path) -> path.subpath(sourceDirectory.getNameCount(), path.getNameCount())).toList();
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);

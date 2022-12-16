@@ -111,7 +111,7 @@ public class DevToolsDataSourceAutoConfiguration {
 			DERBY(null, new HashSet<>(Arrays.asList("org.apache.derby.jdbc.EmbeddedDriver")), (dataSource) -> {
 				String url = dataSource.getConnection().getMetaData().getURL();
 				try {
-					new EmbeddedDriver().connect(url + ";drop=true", new Properties());
+					new EmbeddedDriver().connect(url + ";drop=true", new Properties()).close();
 				}
 				catch (SQLException ex) {
 					if (!"08006".equals(ex.getSQLState())) {
