@@ -38,7 +38,7 @@ public class GradleBuildExtension implements BeforeEachCallback, AfterEachCallba
 
 	private static final Pattern GRADLE_VERSION_PATTERN = Pattern.compile("\\[Gradle .+\\]");
 
-	private Dsl dsl = Dsl.GROOVY;
+	private final Dsl dsl = Dsl.GROOVY;
 
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {

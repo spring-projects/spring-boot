@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 class LocationResourceLoaderTests {
 
-	private LocationResourceLoader loader = new LocationResourceLoader(new DefaultResourceLoader());
+	private final LocationResourceLoader loader = new LocationResourceLoader(new DefaultResourceLoader());
 
 	@TempDir
 	File temp;

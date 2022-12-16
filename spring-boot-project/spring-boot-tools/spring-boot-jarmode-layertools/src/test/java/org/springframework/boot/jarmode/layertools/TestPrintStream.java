@@ -37,7 +37,7 @@ import org.springframework.util.FileCopyUtils;
  */
 class TestPrintStream extends PrintStream implements AssertProvider<PrintStreamAssert> {
 
-	private Class<? extends Object> testClass;
+	private final Class<? extends Object> testClass;
 
 	TestPrintStream(Object testInstance) {
 		super(new ByteArrayOutputStream());

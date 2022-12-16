@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 class PropertyMapperTests {
 
-	private PropertyMapper map = PropertyMapper.get();
+	private final PropertyMapper map = PropertyMapper.get();
 
 	@Test
 	void fromNullValue() {

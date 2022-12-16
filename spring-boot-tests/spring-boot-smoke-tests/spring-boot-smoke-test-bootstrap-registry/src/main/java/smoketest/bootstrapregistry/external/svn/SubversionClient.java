@@ -23,7 +23,7 @@ package smoketest.bootstrapregistry.external.svn;
  */
 public class SubversionClient {
 
-	private SubversionServerCertificate serverCertificate;
+	private final SubversionServerCertificate serverCertificate;
 
 	public SubversionClient(SubversionServerCertificate serverCertificate) {
 		this.serverCertificate = serverCertificate;

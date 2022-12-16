@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class OverrideAutoConfigurationContextCustomizerFactoryTests {
 
-	private OverrideAutoConfigurationContextCustomizerFactory factory = new OverrideAutoConfigurationContextCustomizerFactory();
+	private final OverrideAutoConfigurationContextCustomizerFactory factory = new OverrideAutoConfigurationContextCustomizerFactory();
 
 	@Test
 	void getContextCustomizerWhenHasNoAnnotationShouldReturnNull() {

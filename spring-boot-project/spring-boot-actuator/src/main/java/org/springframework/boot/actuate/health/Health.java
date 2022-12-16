@@ -190,7 +190,7 @@ public final class Health extends HealthComponent {
 
 		private Status status;
 
-		private Map<String, Object> details;
+		private final Map<String, Object> details;
 
 		private Throwable exception;
 

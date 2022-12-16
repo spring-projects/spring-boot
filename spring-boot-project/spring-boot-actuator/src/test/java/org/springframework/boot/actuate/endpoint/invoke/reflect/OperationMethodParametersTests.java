@@ -43,9 +43,9 @@ import static org.mockito.Mockito.mock;
  */
 class OperationMethodParametersTests {
 
-	private Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example", String.class);
+	private final Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example", String.class);
 
-	private Method exampleNoParamsMethod = ReflectionUtils.findMethod(getClass(), "exampleNoParams");
+	private final Method exampleNoParamsMethod = ReflectionUtils.findMethod(getClass(), "exampleNoParams");
 
 	@Test
 	void createWhenMethodIsNullShouldThrowException() {

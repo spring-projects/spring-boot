@@ -30,9 +30,9 @@ public class ExampleEntity {
 	@Id
 	private Long id;
 
-	private String name;
+	private final String name;
 
-	private String reference;
+	private final String reference;
 
 	public ExampleEntity(String name, String reference) {
 		this.name = name;

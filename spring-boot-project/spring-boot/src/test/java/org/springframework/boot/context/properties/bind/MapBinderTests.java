@@ -647,7 +647,7 @@ class MapBinderTests {
 
 	static class NestableFoo {
 
-		private Map<String, NestableFoo> foos = new LinkedHashMap<>();
+		private final Map<String, NestableFoo> foos = new LinkedHashMap<>();
 
 		private String value;
 
@@ -699,7 +699,7 @@ class MapBinderTests {
 
 	static class ExampleCustomWithDefaultConstructorBean {
 
-		private MyCustomWithDefaultConstructorMap items = new MyCustomWithDefaultConstructorMap();
+		private final MyCustomWithDefaultConstructorMap items = new MyCustomWithDefaultConstructorMap();
 
 		MyCustomWithDefaultConstructorMap getItems() {
 			return this.items;

@@ -48,13 +48,13 @@ class StandardConfigDataLocationResolverTests {
 
 	private StandardConfigDataLocationResolver resolver;
 
-	private ConfigDataLocationResolverContext context = mock(ConfigDataLocationResolverContext.class);
+	private final ConfigDataLocationResolverContext context = mock(ConfigDataLocationResolverContext.class);
 
 	private MockEnvironment environment;
 
 	private Binder environmentBinder;
 
-	private ResourceLoader resourceLoader = new DefaultResourceLoader();
+	private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
 	@BeforeEach
 	void setup() {

@@ -38,11 +38,11 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 class ConfigDataResourceNotFoundExceptionTests {
 
-	private ConfigDataResource resource = new TestConfigDataResource();
+	private final ConfigDataResource resource = new TestConfigDataResource();
 
-	private ConfigDataLocation location = ConfigDataLocation.of("optional:test");
+	private final ConfigDataLocation location = ConfigDataLocation.of("optional:test");
 
-	private Throwable cause = new RuntimeException();
+	private final Throwable cause = new RuntimeException();
 
 	private File exists;
 

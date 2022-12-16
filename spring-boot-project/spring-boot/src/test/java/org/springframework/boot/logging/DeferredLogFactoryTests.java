@@ -29,7 +29,7 @@ import static org.mockito.Mockito.mock;
  */
 class DeferredLogFactoryTests {
 
-	private DeferredLogFactory factory = (supplier) -> this.log = supplier.get();
+	private final DeferredLogFactory factory = (supplier) -> this.log = supplier.get();
 
 	private Log log;
 

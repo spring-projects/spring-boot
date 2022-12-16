@@ -106,7 +106,7 @@ public class Restarter {
 
 	private boolean enabled = true;
 
-	private URL[] initialUrls;
+	private final URL[] initialUrls;
 
 	private final String mainClassName;
 

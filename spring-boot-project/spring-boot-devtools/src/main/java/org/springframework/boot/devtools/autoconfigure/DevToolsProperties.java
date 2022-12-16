@@ -35,9 +35,9 @@ import org.springframework.util.StringUtils;
 @ConfigurationProperties(prefix = "spring.devtools")
 public class DevToolsProperties {
 
-	private Restart restart = new Restart();
+	private final Restart restart = new Restart();
 
-	private Livereload livereload = new Livereload();
+	private final Livereload livereload = new Livereload();
 
 	@NestedConfigurationProperty
 	private final RemoteDevToolsProperties remote = new RemoteDevToolsProperties();

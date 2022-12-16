@@ -87,11 +87,11 @@ class BindValidationFailureAnalyzer extends AbstractFailureAnalyzer<Throwable> {
 
 	private static class ExceptionDetails {
 
-		private List<ObjectError> errors;
+		private final List<ObjectError> errors;
 
-		private Object target;
+		private final Object target;
 
-		private Throwable cause;
+		private final Throwable cause;
 
 		ExceptionDetails(List<ObjectError> errors, Object target, Throwable cause) {
 			this.errors = errors;

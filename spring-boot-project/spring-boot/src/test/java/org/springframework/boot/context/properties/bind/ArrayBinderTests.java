@@ -52,7 +52,7 @@ class ArrayBinderTests {
 
 	private static final Bindable<Integer[]> INTEGER_ARRAY = Bindable.of(Integer[].class);
 
-	private List<ConfigurationPropertySource> sources = new ArrayList<>();
+	private final List<ConfigurationPropertySource> sources = new ArrayList<>();
 
 	private final Binder binder = new Binder(this.sources);
 

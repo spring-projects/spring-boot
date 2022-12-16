@@ -113,7 +113,7 @@ public class HttpTunnelConnection implements TunnelConnection {
 
 		private boolean open = true;
 
-		private AtomicLong requestSeq = new AtomicLong();
+		private final AtomicLong requestSeq = new AtomicLong();
 
 		public TunnelChannel(WritableByteChannel incomingChannel, Closeable closeable) {
 			this.forwarder = new HttpTunnelPayloadForwarder(incomingChannel);

@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
  */
 class JsonObjectDeserializerTests {
 
-	private TestJsonObjectDeserializer<Object> testDeserializer = new TestJsonObjectDeserializer<>();
+	private final TestJsonObjectDeserializer<Object> testDeserializer = new TestJsonObjectDeserializer<>();
 
 	@Test
 	void deserializeObjectShouldReadJson() throws Exception {

@@ -52,7 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class GraphQlTypeExcludeFilterTests {
 
-	private MetadataReaderFactory metadataReaderFactory = new SimpleMetadataReaderFactory();
+	private final MetadataReaderFactory metadataReaderFactory = new SimpleMetadataReaderFactory();
 
 	@Test
 	void matchWhenHasNoControllers() throws Exception {

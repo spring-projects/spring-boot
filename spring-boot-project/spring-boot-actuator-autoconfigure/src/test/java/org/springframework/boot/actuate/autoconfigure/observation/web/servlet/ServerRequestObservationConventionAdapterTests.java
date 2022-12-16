@@ -47,14 +47,15 @@ class ServerRequestObservationConventionAdapterTests {
 
 	private static final String TEST_METRIC_NAME = "test.metric.name";
 
-	private ServerRequestObservationConventionAdapter convention = new ServerRequestObservationConventionAdapter(
+	private final ServerRequestObservationConventionAdapter convention = new ServerRequestObservationConventionAdapter(
 			TEST_METRIC_NAME, new DefaultWebMvcTagsProvider(), Collections.emptyList());
 
-	private MockHttpServletRequest request = new MockHttpServletRequest("GET", "/resource/test");
+	private final MockHttpServletRequest request = new MockHttpServletRequest("GET", "/resource/test");
 
-	private MockHttpServletResponse response = new MockHttpServletResponse();
+	private final MockHttpServletResponse response = new MockHttpServletResponse();
 
-	private ServerRequestObservationContext context = new ServerRequestObservationContext(this.request, this.response);
+	private final ServerRequestObservationContext context = new ServerRequestObservationContext(this.request,
+			this.response);
 
 	@Test
 	void customNameIsUsed() {

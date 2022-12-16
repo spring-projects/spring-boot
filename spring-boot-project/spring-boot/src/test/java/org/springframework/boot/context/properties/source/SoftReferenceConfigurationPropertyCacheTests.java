@@ -37,7 +37,7 @@ class SoftReferenceConfigurationPropertyCacheTests {
 
 	private Clock clock = FIXED_CLOCK;
 
-	private AtomicInteger createCount = new AtomicInteger();
+	private final AtomicInteger createCount = new AtomicInteger();
 
 	private TestSoftReferenceConfigurationPropertyCache cache = new TestSoftReferenceConfigurationPropertyCache(false);
 
@@ -152,7 +152,7 @@ class SoftReferenceConfigurationPropertyCacheTests {
 
 		private final int createCount;
 
-		private int refreshCount;
+		private final int refreshCount;
 
 		Value(int createCount, int refreshCount) {
 			this.createCount = createCount;

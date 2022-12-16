@@ -85,7 +85,7 @@ class SocketTargetServerConnectionTests {
 
 	static class MockServer {
 
-		private ServerSocketChannel serverSocket;
+		private final ServerSocketChannel serverSocket;
 
 		private byte[] send;
 

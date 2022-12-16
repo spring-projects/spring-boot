@@ -31,7 +31,7 @@ import static org.mockito.Mockito.mock;
  */
 class CloudFoundryEndpointFilterTests {
 
-	private CloudFoundryEndpointFilter filter = new CloudFoundryEndpointFilter();
+	private final CloudFoundryEndpointFilter filter = new CloudFoundryEndpointFilter();
 
 	@Test
 	void matchIfDiscovererCloudFoundryShouldReturnFalse() {

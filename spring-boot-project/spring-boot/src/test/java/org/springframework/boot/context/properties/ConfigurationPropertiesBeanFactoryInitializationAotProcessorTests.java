@@ -430,7 +430,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	public static class SampleImmutablePropertiesWithRecursive {
 
 		@NestedConfigurationProperty
-		private ImmutableRecursive recursive;
+		private final ImmutableRecursive recursive;
 
 		SampleImmutablePropertiesWithRecursive(ImmutableRecursive recursive) {
 			this.recursive = recursive;
@@ -519,7 +519,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	public static class ImmutableRecursive {
 
 		@SuppressWarnings("unused")
-		private ImmutableRecursive recursive;
+		private final ImmutableRecursive recursive;
 
 		ImmutableRecursive(ImmutableRecursive recursive) {
 			this.recursive = recursive;

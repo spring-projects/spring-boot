@@ -60,7 +60,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 class ValidationBindHandlerTests {
 
-	private List<ConfigurationPropertySource> sources = new ArrayList<>();
+	private final List<ConfigurationPropertySource> sources = new ArrayList<>();
 
 	private ValidationBindHandler handler;
 
@@ -380,7 +380,7 @@ class ValidationBindHandlerTests {
 	static class ExampleCamelCase {
 
 		@Valid
-		private InnerProperties inner = new InnerProperties();
+		private final InnerProperties inner = new InnerProperties();
 
 		InnerProperties getInner() {
 			return this.inner;
@@ -414,7 +414,7 @@ class ValidationBindHandlerTests {
 
 	static class ExampleWithMap {
 
-		private Map<String, ExampleMapValue> items = new LinkedHashMap<>();
+		private final Map<String, ExampleMapValue> items = new LinkedHashMap<>();
 
 		Map<String, ExampleMapValue> getItems() {
 			return this.items;
@@ -438,7 +438,7 @@ class ValidationBindHandlerTests {
 
 	static class TestHandler extends AbstractBindHandler {
 
-		private Object result;
+		private final Object result;
 
 		TestHandler(Object result) {
 			this.result = result;

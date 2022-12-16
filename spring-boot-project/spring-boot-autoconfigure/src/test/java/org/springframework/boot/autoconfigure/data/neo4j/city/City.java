@@ -32,11 +32,11 @@ public class City implements Serializable {
 	@GeneratedValue
 	private Long id;
 
-	private String name;
+	private final String name;
 
 	private String state;
 
-	private Country country;
+	private final Country country;
 
 	private String map;
 

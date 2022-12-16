@@ -346,11 +346,11 @@ class HttpTunnelServerTests {
 
 		private int timeout;
 
-		private BlockingDeque<ByteBuffer> outgoing = new LinkedBlockingDeque<>();
+		private final BlockingDeque<ByteBuffer> outgoing = new LinkedBlockingDeque<>();
 
-		private ByteArrayOutputStream written = new ByteArrayOutputStream();
+		private final ByteArrayOutputStream written = new ByteArrayOutputStream();
 
-		private AtomicBoolean open = new AtomicBoolean(true);
+		private final AtomicBoolean open = new AtomicBoolean(true);
 
 		void setTimeout(int timeout) {
 			this.timeout = timeout;

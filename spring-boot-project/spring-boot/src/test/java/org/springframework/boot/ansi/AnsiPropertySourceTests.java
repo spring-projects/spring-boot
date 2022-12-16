@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class AnsiPropertySourceTests {
 
-	private AnsiPropertySource source = new AnsiPropertySource("ansi", false);
+	private final AnsiPropertySource source = new AnsiPropertySource("ansi", false);
 
 	@AfterEach
 	void reset() {

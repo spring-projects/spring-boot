@@ -56,15 +56,15 @@ import static org.mockito.Mockito.mock;
  */
 class ConfigDataEnvironmentTests {
 
-	private DeferredLogFactory logFactory = Supplier::get;
+	private final DeferredLogFactory logFactory = Supplier::get;
 
-	private DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
+	private final DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
 
-	private MockApplicationEnvironment environment = new MockApplicationEnvironment();
+	private final MockApplicationEnvironment environment = new MockApplicationEnvironment();
 
-	private ResourceLoader resourceLoader = new DefaultResourceLoader();
+	private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
-	private Collection<String> additionalProfiles = Collections.emptyList();
+	private final Collection<String> additionalProfiles = Collections.emptyList();
 
 	@Test
 	void createExposesEnvironmentBinderToConfigDataLocationResolvers() {

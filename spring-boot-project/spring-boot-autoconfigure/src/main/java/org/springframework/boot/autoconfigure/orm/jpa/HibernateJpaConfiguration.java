@@ -80,7 +80,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	private final HibernateDefaultDdlAutoProvider defaultDdlAutoProvider;
 
-	private DataSourcePoolMetadataProvider poolMetadataProvider;
+	private final DataSourcePoolMetadataProvider poolMetadataProvider;
 
 	private final List<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers;
 

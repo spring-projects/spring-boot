@@ -63,11 +63,11 @@ import static org.mockito.Mockito.never;
 @ExtendWith(OutputCaptureExtension.class)
 class ErrorPageFilterTests {
 
-	private ErrorPageFilter filter = new ErrorPageFilter();
+	private final ErrorPageFilter filter = new ErrorPageFilter();
 
-	private DispatchRecordingMockHttpServletRequest request = new DispatchRecordingMockHttpServletRequest();
+	private final DispatchRecordingMockHttpServletRequest request = new DispatchRecordingMockHttpServletRequest();
 
-	private MockHttpServletResponse response = new MockHttpServletResponse();
+	private final MockHttpServletResponse response = new MockHttpServletResponse();
 
 	private MockFilterChain chain = new TestFilterChain((request, response, chain) -> {
 	});

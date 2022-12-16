@@ -94,7 +94,7 @@ class AbstractHealthIndicatorTests {
 
 	static class TestHealthIndicator extends AbstractHealthIndicator {
 
-		private Consumer<Builder> action;
+		private final Consumer<Builder> action;
 
 		TestHealthIndicator(String message, Consumer<Builder> action) {
 			super(message);

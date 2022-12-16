@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
  */
 class MBeanInfoFactoryTests {
 
-	private MBeanInfoFactory factory = new MBeanInfoFactory(new TestJmxOperationResponseMapper());
+	private final MBeanInfoFactory factory = new MBeanInfoFactory(new TestJmxOperationResponseMapper());
 
 	@Test
 	void getMBeanInfoShouldReturnMBeanInfo() {

@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  */
 public class HttpTunnelServerHandler implements Handler {
 
-	private HttpTunnelServer server;
+	private final HttpTunnelServer server;
 
 	/**
 	 * Create a new {@link HttpTunnelServerHandler} instance.

@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 class DefaultBindConstructorProviderTests {
 
-	private DefaultBindConstructorProvider provider = new DefaultBindConstructorProvider();
+	private final DefaultBindConstructorProvider provider = new DefaultBindConstructorProvider();
 
 	@Test
 	void getBindConstructorWhenHasOnlyDefaultConstructorReturnsNull() {

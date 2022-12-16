@@ -28,7 +28,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class ExampleRestClient {
 
-	private RestTemplate restTemplate;
+	private final RestTemplate restTemplate;
 
 	public ExampleRestClient(RestTemplateBuilder builder) {
 		this.restTemplate = builder.rootUri("https://example.com").build();

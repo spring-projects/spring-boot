@@ -43,7 +43,7 @@ class OutputCaptureTests {
 
 	private TestPrintStream systemErr;
 
-	private TestOutputCapture output = new TestOutputCapture();
+	private final TestOutputCapture output = new TestOutputCapture();
 
 	@BeforeEach
 	void replaceSystemStreams() {

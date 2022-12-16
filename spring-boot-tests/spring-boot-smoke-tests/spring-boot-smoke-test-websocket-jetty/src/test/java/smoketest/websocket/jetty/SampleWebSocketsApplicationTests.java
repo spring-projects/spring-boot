@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(classes = SampleJettyWebSocketsApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 class SampleWebSocketsApplicationTests {
 
-	private static Log logger = LogFactory.getLog(SampleWebSocketsApplicationTests.class);
+	private static final Log logger = LogFactory.getLog(SampleWebSocketsApplicationTests.class);
 
 	@LocalServerPort
 	private int port = 1234;

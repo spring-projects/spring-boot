@@ -25,7 +25,7 @@ import org.springframework.util.Assert;
  */
 public final class VehicleIdentificationNumber {
 
-	private String vin;
+	private final String vin;
 
 	public VehicleIdentificationNumber(String vin) {
 		Assert.notNull(vin, "VIN must not be null");

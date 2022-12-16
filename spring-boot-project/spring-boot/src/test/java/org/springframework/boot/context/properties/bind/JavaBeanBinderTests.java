@@ -724,7 +724,7 @@ class JavaBeanBinderTests {
 
 	static class ExampleMapBeanWithoutSetter {
 
-		private Map<ExampleEnum, Integer> map = new LinkedHashMap<>();
+		private final Map<ExampleEnum, Integer> map = new LinkedHashMap<>();
 
 		Map<ExampleEnum, Integer> getMap() {
 			return this.map;
@@ -734,7 +734,7 @@ class JavaBeanBinderTests {
 
 	static class ExampleListBeanWithoutSetter {
 
-		private List<ExampleEnum> list = new ArrayList<>();
+		private final List<ExampleEnum> list = new ArrayList<>();
 
 		List<ExampleEnum> getList() {
 			return this.list;
@@ -744,7 +744,7 @@ class JavaBeanBinderTests {
 
 	static class ExampleSetBeanWithoutSetter {
 
-		private Set<ExampleEnum> set = new LinkedHashSet<>();
+		private final Set<ExampleEnum> set = new LinkedHashSet<>();
 
 		Set<ExampleEnum> getSet() {
 			return this.set;
@@ -754,7 +754,7 @@ class JavaBeanBinderTests {
 
 	static class ExampleCollectionBeanWithoutSetter {
 
-		private Collection<ExampleEnum> collection = new ArrayList<>();
+		private final Collection<ExampleEnum> collection = new ArrayList<>();
 
 		Collection<ExampleEnum> getCollection() {
 			return this.collection;
@@ -793,7 +793,7 @@ class JavaBeanBinderTests {
 
 	static class ExampleNestedBeanWithoutSetter {
 
-		private ExampleValueBean valueBean = new ExampleValueBean();
+		private final ExampleValueBean valueBean = new ExampleValueBean();
 
 		ExampleValueBean getValueBean() {
 			return this.valueBean;
@@ -803,7 +803,7 @@ class JavaBeanBinderTests {
 
 	static class ExampleNestedBeanWithoutSetterOrType {
 
-		private ExampleValueBean valueBean = new ExampleValueBean();
+		private final ExampleValueBean valueBean = new ExampleValueBean();
 
 		Object getValueBean() {
 			return this.valueBean;
@@ -813,7 +813,7 @@ class JavaBeanBinderTests {
 
 	static class ExampleImmutableNestedBeanWithoutSetter {
 
-		private NestedImmutable nested = new NestedImmutable();
+		private final NestedImmutable nested = new NestedImmutable();
 
 		NestedImmutable getNested() {
 			return this.nested;
@@ -1143,7 +1143,7 @@ class JavaBeanBinderTests {
 
 	static class JavaBeanWithGetIs {
 
-		private List<String> names = new ArrayList<>();
+		private final List<String> names = new ArrayList<>();
 
 		boolean isNames() {
 			return !this.names.isEmpty();
@@ -1220,7 +1220,7 @@ class JavaBeanBinderTests {
 
 	static class BridgeType extends BridgeBaseType {
 
-		private String value;
+		private final String value;
 
 		BridgeType(String value) {
 			this.value = value;

@@ -36,7 +36,7 @@ class ConfigurationPropertyTests {
 
 	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName.of("foo");
 
-	private ConfigurationPropertySource source = ConfigurationPropertySource.from(mock(PropertySource.class));
+	private final ConfigurationPropertySource source = ConfigurationPropertySource.from(mock(PropertySource.class));
 
 	@Test
 	void createWhenNameIsNullShouldThrowException() {

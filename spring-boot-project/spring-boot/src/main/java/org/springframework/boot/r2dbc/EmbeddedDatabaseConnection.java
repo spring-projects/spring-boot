@@ -49,7 +49,7 @@ public enum EmbeddedDatabaseConnection {
 
 	private final String url;
 
-	private Predicate<ConnectionFactoryOptions> embedded;
+	private final Predicate<ConnectionFactoryOptions> embedded;
 
 	EmbeddedDatabaseConnection(String driverClassName, String url, Predicate<ConnectionFactoryOptions> embedded) {
 		this.driverClassName = driverClassName;

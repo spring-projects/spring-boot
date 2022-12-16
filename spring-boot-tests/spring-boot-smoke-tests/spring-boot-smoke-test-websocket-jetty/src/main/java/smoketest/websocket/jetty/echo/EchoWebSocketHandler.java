@@ -30,7 +30,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
  */
 public class EchoWebSocketHandler extends TextWebSocketHandler {
 
-	private static Log logger = LogFactory.getLog(EchoWebSocketHandler.class);
+	private static final Log logger = LogFactory.getLog(EchoWebSocketHandler.class);
 
 	private final EchoService echoService;
 

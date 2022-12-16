@@ -29,7 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class FileDescriptorTests {
 
-	private int sourceHandle = 123;
+	private final int sourceHandle = 123;
 
 	private int closedHandle = 0;
 

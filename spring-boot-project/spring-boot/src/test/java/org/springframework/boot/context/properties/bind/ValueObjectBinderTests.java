@@ -775,7 +775,7 @@ class ValueObjectBinderTests {
 
 	static class NestedConstructorBeanWithEmptyDefaultValueForEnumTypes {
 
-		private Foo foo;
+		private final Foo foo;
 
 		NestedConstructorBeanWithEmptyDefaultValueForEnumTypes(@DefaultValue Foo foo) {
 			this.foo = foo;
@@ -795,7 +795,7 @@ class ValueObjectBinderTests {
 
 	static class NestedConstructorBeanWithEmptyDefaultValueForPrimitiveTypes {
 
-		private int intValue;
+		private final int intValue;
 
 		NestedConstructorBeanWithEmptyDefaultValueForPrimitiveTypes(@DefaultValue int intValue) {
 			this.intValue = intValue;

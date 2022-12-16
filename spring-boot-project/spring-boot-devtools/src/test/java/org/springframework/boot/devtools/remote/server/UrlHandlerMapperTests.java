@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
  */
 class UrlHandlerMapperTests {
 
-	private Handler handler = mock(Handler.class);
+	private final Handler handler = mock(Handler.class);
 
 	@Test
 	void requestUriMustNotBeNull() {

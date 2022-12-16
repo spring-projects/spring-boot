@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
  */
 class PropertyMappingContextCustomizerFactoryTests {
 
-	private PropertyMappingContextCustomizerFactory factory = new PropertyMappingContextCustomizerFactory();
+	private final PropertyMappingContextCustomizerFactory factory = new PropertyMappingContextCustomizerFactory();
 
 	@Test
 	void getContextCustomizerWhenHasNoMappingShouldNotAddPropertySource() {

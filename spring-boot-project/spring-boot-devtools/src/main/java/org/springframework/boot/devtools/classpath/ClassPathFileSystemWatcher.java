@@ -39,7 +39,7 @@ public class ClassPathFileSystemWatcher implements InitializingBean, DisposableB
 
 	private final FileSystemWatcher fileSystemWatcher;
 
-	private ClassPathRestartStrategy restartStrategy;
+	private final ClassPathRestartStrategy restartStrategy;
 
 	private ApplicationContext applicationContext;
 

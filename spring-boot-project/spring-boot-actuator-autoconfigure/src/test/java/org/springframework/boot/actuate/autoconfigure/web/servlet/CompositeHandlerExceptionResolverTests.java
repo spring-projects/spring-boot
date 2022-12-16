@@ -43,9 +43,9 @@ class CompositeHandlerExceptionResolverTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	private MockHttpServletRequest request = new MockHttpServletRequest();
+	private final MockHttpServletRequest request = new MockHttpServletRequest();
 
-	private MockHttpServletResponse response = new MockHttpServletResponse();
+	private final MockHttpServletResponse response = new MockHttpServletResponse();
 
 	@Test
 	void resolverShouldDelegateToOtherResolversInContext() {

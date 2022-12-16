@@ -29,9 +29,9 @@ import org.springframework.util.MultiValueMap;
  */
 class TestPropertyMapper implements PropertyMapper {
 
-	private MultiValueMap<ConfigurationPropertyName, String> fromConfig = new LinkedMultiValueMap<>();
+	private final MultiValueMap<ConfigurationPropertyName, String> fromConfig = new LinkedMultiValueMap<>();
 
-	private Map<String, ConfigurationPropertyName> fromSource = new LinkedHashMap<>();
+	private final Map<String, ConfigurationPropertyName> fromSource = new LinkedHashMap<>();
 
 	void addFromPropertySource(String from, String to) {
 		this.fromSource.put(from, ConfigurationPropertyName.of(to));

@@ -58,7 +58,7 @@ public class EmbeddedLdapProperties {
 	/**
 	 * Schema validation.
 	 */
-	private Validation validation = new Validation();
+	private final Validation validation = new Validation();
 
 	public int getPort() {
 		return this.port;

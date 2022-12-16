@@ -34,15 +34,15 @@ class ObservationWebClientCustomizerTests {
 
 	private static final String TEST_METRIC_NAME = "http.test.metric.name";
 
-	private TestObservationRegistry observationRegistry = TestObservationRegistry.create();
+	private final TestObservationRegistry observationRegistry = TestObservationRegistry.create();
 
-	private ClientRequestObservationConvention observationConvention = new DefaultClientRequestObservationConvention(
+	private final ClientRequestObservationConvention observationConvention = new DefaultClientRequestObservationConvention(
 			TEST_METRIC_NAME);
 
-	private ObservationWebClientCustomizer customizer = new ObservationWebClientCustomizer(this.observationRegistry,
-			this.observationConvention);
+	private final ObservationWebClientCustomizer customizer = new ObservationWebClientCustomizer(
+			this.observationRegistry, this.observationConvention);
 
-	private WebClient.Builder clientBuilder = WebClient.builder();
+	private final WebClient.Builder clientBuilder = WebClient.builder();
 
 	@Test
 	void shouldCustomizeObservationConfiguration() {

@@ -44,7 +44,7 @@ import static org.mockito.BDDMockito.given;
 @ExtendWith(MockitoExtension.class)
 class ConfigDataImporterTests {
 
-	private DeferredLogFactory logFactory = Supplier::get;
+	private final DeferredLogFactory logFactory = Supplier::get;
 
 	@Mock
 	private ConfigDataLocationResolvers resolvers;

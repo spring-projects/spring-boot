@@ -50,7 +50,7 @@ import static org.mockito.BDDMockito.then;
  */
 class ReactiveWebServerApplicationContextTests {
 
-	private ReactiveWebServerApplicationContext context = new ReactiveWebServerApplicationContext();
+	private final ReactiveWebServerApplicationContext context = new ReactiveWebServerApplicationContext();
 
 	@AfterEach
 	void cleanUp() {
@@ -183,7 +183,7 @@ class ReactiveWebServerApplicationContextTests {
 
 	static class TestApplicationListener implements ApplicationListener<ApplicationEvent> {
 
-		private Deque<ApplicationEvent> events = new ArrayDeque<>();
+		private final Deque<ApplicationEvent> events = new ArrayDeque<>();
 
 		@Override
 		public void onApplicationEvent(ApplicationEvent event) {

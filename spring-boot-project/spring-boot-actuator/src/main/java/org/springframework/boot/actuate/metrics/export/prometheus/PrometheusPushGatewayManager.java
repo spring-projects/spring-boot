@@ -56,7 +56,7 @@ public class PrometheusPushGatewayManager {
 
 	private final TaskScheduler scheduler;
 
-	private ScheduledFuture<?> scheduled;
+	private final ScheduledFuture<?> scheduled;
 
 	/**
 	 * Create a new {@link PrometheusPushGatewayManager} instance using a single threaded

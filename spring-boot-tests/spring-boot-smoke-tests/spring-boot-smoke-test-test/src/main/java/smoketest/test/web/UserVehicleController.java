@@ -36,7 +36,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UserVehicleController {
 
-	private UserVehicleService userVehicleService;
+	private final UserVehicleService userVehicleService;
 
 	public UserVehicleController(UserVehicleService userVehicleService) {
 		this.userVehicleService = userVehicleService;

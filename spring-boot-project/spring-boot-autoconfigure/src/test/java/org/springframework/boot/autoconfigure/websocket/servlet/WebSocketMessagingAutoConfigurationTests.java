@@ -78,7 +78,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 class WebSocketMessagingAutoConfigurationTests {
 
-	private AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
+	private final AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
 
 	private SockJsClient sockJsClient;
 
@@ -255,9 +255,9 @@ class WebSocketMessagingAutoConfigurationTests {
 
 	public static class Data {
 
-		private int foo;
+		private final int foo;
 
-		private String bar;
+		private final String bar;
 
 		Data(int foo, String bar) {
 			this.foo = foo;

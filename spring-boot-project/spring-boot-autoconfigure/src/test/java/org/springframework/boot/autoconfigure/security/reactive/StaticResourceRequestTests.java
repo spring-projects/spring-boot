@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
  */
 class StaticResourceRequestTests {
 
-	private StaticResourceRequest resourceRequest = StaticResourceRequest.INSTANCE;
+	private final StaticResourceRequest resourceRequest = StaticResourceRequest.INSTANCE;
 
 	@Test
 	void atCommonLocationsShouldMatchCommonLocations() {

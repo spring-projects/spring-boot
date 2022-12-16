@@ -318,7 +318,7 @@ class OutputCapture implements CapturedOutput {
 	 */
 	private static class AnsiOutputState {
 
-		private Enabled saved;
+		private final Enabled saved;
 
 		AnsiOutputState() {
 			this.saved = AnsiOutput.getEnabled();

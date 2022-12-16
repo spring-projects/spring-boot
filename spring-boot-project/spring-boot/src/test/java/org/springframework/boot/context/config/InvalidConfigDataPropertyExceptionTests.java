@@ -37,13 +37,14 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
  */
 class InvalidConfigDataPropertyExceptionTests {
 
-	private ConfigDataResource resource = new TestConfigDataResource();
+	private final ConfigDataResource resource = new TestConfigDataResource();
 
-	private ConfigurationPropertyName replacement = ConfigurationPropertyName.of("replacement");
+	private final ConfigurationPropertyName replacement = ConfigurationPropertyName.of("replacement");
 
-	private ConfigurationPropertyName invalid = ConfigurationPropertyName.of("invalid");
+	private final ConfigurationPropertyName invalid = ConfigurationPropertyName.of("invalid");
 
-	private ConfigurationProperty property = new ConfigurationProperty(this.invalid, "bad", MockOrigin.of("origin"));
+	private final ConfigurationProperty property = new ConfigurationProperty(this.invalid, "bad",
+			MockOrigin.of("origin"));
 
 	@Test
 	void createHasCorrectMessage() {

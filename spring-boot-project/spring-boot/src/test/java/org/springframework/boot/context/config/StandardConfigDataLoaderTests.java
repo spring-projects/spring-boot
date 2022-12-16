@@ -36,9 +36,9 @@ import static org.mockito.Mockito.mock;
  */
 class StandardConfigDataLoaderTests {
 
-	private StandardConfigDataLoader loader = new StandardConfigDataLoader();
+	private final StandardConfigDataLoader loader = new StandardConfigDataLoader();
 
-	private ConfigDataLoaderContext loaderContext = mock(ConfigDataLoaderContext.class);
+	private final ConfigDataLoaderContext loaderContext = mock(ConfigDataLoaderContext.class);
 
 	@Test
 	void loadWhenLocationResultsInMultiplePropertySourcesAddsAllToConfigData() throws IOException {

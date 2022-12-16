@@ -71,7 +71,7 @@ public class ImagePackager extends Packager {
 	 */
 	private static class DelegatingJarWriter extends AbstractJarWriter {
 
-		private BiConsumer<ZipEntry, EntryWriter> exporter;
+		private final BiConsumer<ZipEntry, EntryWriter> exporter;
 
 		DelegatingJarWriter(BiConsumer<ZipEntry, EntryWriter> exporter) {
 			this.exporter = exporter;

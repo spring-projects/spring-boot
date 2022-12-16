@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class JacksonEndpointAutoConfigurationTests {
 
-	private ApplicationContextRunner runner = new ApplicationContextRunner()
+	private final ApplicationContextRunner runner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(JacksonEndpointAutoConfiguration.class));
 
 	@Test

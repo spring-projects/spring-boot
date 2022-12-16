@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 class DefinitionsParserTests {
 
-	private DefinitionsParser parser = new DefinitionsParser();
+	private final DefinitionsParser parser = new DefinitionsParser();
 
 	@Test
 	void parseSingleMockBean() {

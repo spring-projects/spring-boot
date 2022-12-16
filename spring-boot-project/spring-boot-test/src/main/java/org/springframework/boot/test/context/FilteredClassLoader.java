@@ -146,7 +146,7 @@ public class FilteredClassLoader extends URLClassLoader implements SmartClassLoa
 	 */
 	public static final class ClassFilter implements Predicate<String> {
 
-		private Class<?>[] hiddenClasses;
+		private final Class<?>[] hiddenClasses;
 
 		private ClassFilter(Class<?>[] hiddenClasses) {
 			this.hiddenClasses = hiddenClasses;

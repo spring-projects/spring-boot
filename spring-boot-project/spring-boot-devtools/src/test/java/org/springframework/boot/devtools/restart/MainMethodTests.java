@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 class MainMethodTests {
 
-	private static ThreadLocal<MainMethod> mainMethod = new ThreadLocal<>();
+	private static final ThreadLocal<MainMethod> mainMethod = new ThreadLocal<>();
 
 	private Method actualMain;
 

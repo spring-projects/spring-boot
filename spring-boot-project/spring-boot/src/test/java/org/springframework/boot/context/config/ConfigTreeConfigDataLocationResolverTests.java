@@ -36,10 +36,10 @@ import static org.mockito.Mockito.mock;
  */
 class ConfigTreeConfigDataLocationResolverTests {
 
-	private ConfigTreeConfigDataLocationResolver resolver = new ConfigTreeConfigDataLocationResolver(
+	private final ConfigTreeConfigDataLocationResolver resolver = new ConfigTreeConfigDataLocationResolver(
 			new DefaultResourceLoader());
 
-	private ConfigDataLocationResolverContext context = mock(ConfigDataLocationResolverContext.class);
+	private final ConfigDataLocationResolverContext context = mock(ConfigDataLocationResolverContext.class);
 
 	@TempDir
 	File temp;

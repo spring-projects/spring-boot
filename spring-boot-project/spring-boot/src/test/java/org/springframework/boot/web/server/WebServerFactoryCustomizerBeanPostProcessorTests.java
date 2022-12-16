@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class WebServerFactoryCustomizerBeanPostProcessorTests {
 
-	private WebServerFactoryCustomizerBeanPostProcessor processor = new WebServerFactoryCustomizerBeanPostProcessor();
+	private final WebServerFactoryCustomizerBeanPostProcessor processor = new WebServerFactoryCustomizerBeanPostProcessor();
 
 	@Mock
 	private ListableBeanFactory beanFactory;

@@ -31,7 +31,7 @@ import static org.mockito.Mockito.mock;
  */
 class ConfigDataLocationNotFoundExceptionTests {
 
-	private Origin origin = mock(Origin.class);
+	private final Origin origin = mock(Origin.class);
 
 	private final ConfigDataLocation location = ConfigDataLocation.of("optional:test").withOrigin(this.origin);
 

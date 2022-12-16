@@ -58,7 +58,7 @@ import org.springframework.util.StringUtils;
  */
 public class UpgradeBom extends DefaultTask {
 
-	private Set<String> repositoryUrls;
+	private final Set<String> repositoryUrls;
 
 	private final BomExtension bom;
 

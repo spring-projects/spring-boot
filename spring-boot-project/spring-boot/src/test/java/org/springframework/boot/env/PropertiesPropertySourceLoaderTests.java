@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class PropertiesPropertySourceLoaderTests {
 
-	private PropertiesPropertySourceLoader loader = new PropertiesPropertySourceLoader();
+	private final PropertiesPropertySourceLoader loader = new PropertiesPropertySourceLoader();
 
 	@Test
 	void getFileExtensions() {

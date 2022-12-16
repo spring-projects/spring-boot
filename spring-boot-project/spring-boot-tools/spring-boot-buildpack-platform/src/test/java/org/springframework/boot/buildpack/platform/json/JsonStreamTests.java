@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class JsonStreamTests extends AbstractJsonTests {
 
-	private JsonStream jsonStream;
+	private final JsonStream jsonStream;
 
 	JsonStreamTests() {
 		this.jsonStream = new JsonStream(getObjectMapper());

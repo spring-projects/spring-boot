@@ -52,7 +52,7 @@ class DefaultSourceDirectoryUrlFilterTests {
 		COMMON_POSTFIXES = Collections.unmodifiableList(postfixes);
 	}
 
-	private DefaultSourceDirectoryUrlFilter filter = new DefaultSourceDirectoryUrlFilter();
+	private final DefaultSourceDirectoryUrlFilter filter = new DefaultSourceDirectoryUrlFilter();
 
 	@Test
 	void mavenSourceDirectory() throws Exception {

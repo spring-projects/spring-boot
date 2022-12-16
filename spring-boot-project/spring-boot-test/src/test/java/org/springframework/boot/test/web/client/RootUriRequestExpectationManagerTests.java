@@ -53,7 +53,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @ExtendWith(MockitoExtension.class)
 class RootUriRequestExpectationManagerTests {
 
-	private String uri = "https://example.com";
+	private final String uri = "https://example.com";
 
 	@Mock
 	private RequestExpectationManager delegate;

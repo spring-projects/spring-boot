@@ -40,7 +40,7 @@ class BasicJsonTesterTests {
 
 	private static final String JSON = "{\"spring\":[\"boot\",\"framework\"]}";
 
-	private BasicJsonTester json = new BasicJsonTester(getClass());
+	private final BasicJsonTester json = new BasicJsonTester(getClass());
 
 	@Test
 	void createWhenResourceLoadClassIsNullShouldThrowException() {

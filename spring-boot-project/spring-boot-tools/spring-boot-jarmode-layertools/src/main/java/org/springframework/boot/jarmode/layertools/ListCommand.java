@@ -27,7 +27,7 @@ import java.util.Map;
  */
 class ListCommand extends Command {
 
-	private Context context;
+	private final Context context;
 
 	ListCommand(Context context) {
 		super("list", "List layers from the jar that can be extracted", Options.none(), Parameters.none());

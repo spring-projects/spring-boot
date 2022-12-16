@@ -62,7 +62,7 @@ class ArtifactsLibrariesTests {
 
 	private Set<Artifact> artifacts;
 
-	private File file = new File(".");
+	private final File file = new File(".");
 
 	private ArtifactsLibraries libs;
 

@@ -31,9 +31,9 @@ import static org.mockito.Mockito.mock;
  */
 class ConfigDataLoaderTests {
 
-	private TestConfigDataLoader loader = new TestConfigDataLoader();
+	private final TestConfigDataLoader loader = new TestConfigDataLoader();
 
-	private ConfigDataLoaderContext context = mock(ConfigDataLoaderContext.class);
+	private final ConfigDataLoaderContext context = mock(ConfigDataLoaderContext.class);
 
 	@Test
 	void isLoadableAlwaysReturnsTrue() {

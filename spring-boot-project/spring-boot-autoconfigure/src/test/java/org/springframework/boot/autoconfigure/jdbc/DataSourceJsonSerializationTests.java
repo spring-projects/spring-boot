@@ -80,7 +80,7 @@ class DataSourceJsonSerializationTests {
 
 	static class TomcatDataSourceSerializer extends JsonSerializer<DataSource> {
 
-		private ConversionService conversionService = new DefaultConversionService();
+		private final ConversionService conversionService = new DefaultConversionService();
 
 		@Override
 		public void serialize(DataSource value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
@@ -99,7 +99,7 @@ class DataSourceJsonSerializationTests {
 
 	static class GenericSerializerModifier extends BeanSerializerModifier {
 
-		private ConversionService conversionService = new DefaultConversionService();
+		private final ConversionService conversionService = new DefaultConversionService();
 
 		@Override
 		public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc,

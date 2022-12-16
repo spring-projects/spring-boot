@@ -636,7 +636,7 @@ class JacksonAutoConfigurationTests {
 
 	static class CustomModule extends SimpleModule {
 
-		private Set<ObjectCodec> owners = new HashSet<>();
+		private final Set<ObjectCodec> owners = new HashSet<>();
 
 		@Override
 		public void setupModule(SetupContext context) {

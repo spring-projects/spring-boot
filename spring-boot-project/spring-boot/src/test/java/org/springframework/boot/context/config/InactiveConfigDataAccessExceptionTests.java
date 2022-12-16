@@ -38,13 +38,13 @@ import static org.mockito.Mockito.mock;
  */
 class InactiveConfigDataAccessExceptionTests {
 
-	private MockPropertySource propertySource = new MockPropertySource();
+	private final MockPropertySource propertySource = new MockPropertySource();
 
-	private ConfigDataResource resource = new TestConfigDataResource();
+	private final ConfigDataResource resource = new TestConfigDataResource();
 
-	private String propertyName = "spring";
+	private final String propertyName = "spring";
 
-	private Origin origin = new PropertySourceOrigin(this.propertySource, this.propertyName);
+	private final Origin origin = new PropertySourceOrigin(this.propertySource, this.propertyName);
 
 	@Test
 	void createHasCorrectMessage() {

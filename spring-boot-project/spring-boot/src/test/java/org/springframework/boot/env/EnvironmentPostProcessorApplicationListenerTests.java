@@ -48,11 +48,11 @@ import static org.mockito.Mockito.spy;
  */
 class EnvironmentPostProcessorApplicationListenerTests {
 
-	private DeferredLogs deferredLogs = spy(new DeferredLogs());
+	private final DeferredLogs deferredLogs = spy(new DeferredLogs());
 
-	private DefaultBootstrapContext bootstrapContext = spy(new DefaultBootstrapContext());
+	private final DefaultBootstrapContext bootstrapContext = spy(new DefaultBootstrapContext());
 
-	private EnvironmentPostProcessorApplicationListener listener = new EnvironmentPostProcessorApplicationListener();
+	private final EnvironmentPostProcessorApplicationListener listener = new EnvironmentPostProcessorApplicationListener();
 
 	@BeforeEach
 	void setup() {

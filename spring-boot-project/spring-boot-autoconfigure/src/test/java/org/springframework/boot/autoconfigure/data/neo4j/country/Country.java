@@ -31,7 +31,7 @@ public class Country implements Serializable {
 	@GeneratedValue
 	private Long id;
 
-	private String name;
+	private final String name;
 
 	public Country(String name) {
 		this.name = name;

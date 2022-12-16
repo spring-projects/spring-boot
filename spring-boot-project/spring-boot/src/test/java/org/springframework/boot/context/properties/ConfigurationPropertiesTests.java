@@ -1703,7 +1703,7 @@ class ConfigurationPropertiesTests {
 	static class ValidatedValidNestedJsr303Properties {
 
 		@Valid
-		private List<Jsr303Properties> properties = Collections.singletonList(new Jsr303Properties());
+		private final List<Jsr303Properties> properties = Collections.singletonList(new Jsr303Properties());
 
 		List<Jsr303Properties> getProperties() {
 			return this.properties;
@@ -1997,7 +1997,7 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties(prefix = "sample")
 	static class MapWithNumericKeyProperties {
 
-		private Map<String, BasicProperties> properties = new LinkedHashMap<>();
+		private final Map<String, BasicProperties> properties = new LinkedHashMap<>();
 
 		Map<String, BasicProperties> getProperties() {
 			return this.properties;
@@ -2575,7 +2575,7 @@ class ConfigurationPropertiesTests {
 
 		static class Nested {
 
-			private int age;
+			private final int age;
 
 			@Autowired
 			Nested(int age) {
@@ -2592,7 +2592,7 @@ class ConfigurationPropertiesTests {
 
 	static class Outer {
 
-		private int age;
+		private final int age;
 
 		Outer(int age) {
 			this.age = age;
@@ -2617,7 +2617,7 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class MultiConstructorConfigurationListProperties {
 
-		private List<MultiConstructorConfigurationProperties> nested = new ArrayList<>();
+		private final List<MultiConstructorConfigurationProperties> nested = new ArrayList<>();
 
 		List<MultiConstructorConfigurationProperties> getNested() {
 			return this.nested;

@@ -48,7 +48,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 
 	private Set<NettyServerCustomizer> serverCustomizers = new LinkedHashSet<>();
 
-	private List<NettyRouteProvider> routeProviders = new ArrayList<>();
+	private final List<NettyRouteProvider> routeProviders = new ArrayList<>();
 
 	private Duration lifecycleTimeout;
 

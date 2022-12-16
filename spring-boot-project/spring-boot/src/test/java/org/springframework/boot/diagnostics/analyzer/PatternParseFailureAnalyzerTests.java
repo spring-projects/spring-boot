@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class PatternParseFailureAnalyzerTests {
 
-	private PathPatternParser parser = new PathPatternParser();
+	private final PathPatternParser parser = new PathPatternParser();
 
 	@Test
 	void patternParseFailureQuotesPattern() {

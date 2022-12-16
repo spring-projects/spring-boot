@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
  */
 class ClassLoaderFilesTests {
 
-	private ClassLoaderFiles files = new ClassLoaderFiles();
+	private final ClassLoaderFiles files = new ClassLoaderFiles();
 
 	@Test
 	void addFileNameMustNotBeNull() {

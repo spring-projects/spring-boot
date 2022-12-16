@@ -51,7 +51,7 @@ public class ResourceBanner implements Banner {
 
 	private static final Log logger = LogFactory.getLog(ResourceBanner.class);
 
-	private Resource resource;
+	private final Resource resource;
 
 	public ResourceBanner(Resource resource) {
 		Assert.notNull(resource, "Resource must not be null");

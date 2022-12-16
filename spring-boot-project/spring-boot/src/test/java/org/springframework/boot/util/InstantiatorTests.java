@@ -166,7 +166,7 @@ class InstantiatorTests {
 
 	static class WithFactory {
 
-		private ParamC paramC;
+		private final ParamC paramC;
 
 		WithFactory(ParamC paramC) {
 			this.paramC = paramC;

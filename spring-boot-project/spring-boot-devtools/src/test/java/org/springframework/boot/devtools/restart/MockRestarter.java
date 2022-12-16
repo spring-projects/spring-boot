@@ -40,9 +40,9 @@ import static org.mockito.Mockito.mock;
  */
 public class MockRestarter implements BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
-	private Map<String, Object> attributes = new HashMap<>();
+	private final Map<String, Object> attributes = new HashMap<>();
 
-	private Restarter mock = mock(Restarter.class);
+	private final Restarter mock = mock(Restarter.class);
 
 	public Restarter getMock() {
 		return this.mock;

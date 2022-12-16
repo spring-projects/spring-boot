@@ -47,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class SqlInitializationAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SqlInitializationAutoConfiguration.class)).withPropertyValues(
 					"spring.datasource.generate-unique-name:true", "spring.r2dbc.generate-unique-name:true");
 

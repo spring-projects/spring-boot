@@ -241,7 +241,7 @@ class GsonAutoConfigurationTests {
 		private Long data = 1L;
 
 		@SuppressWarnings("unused")
-		private String owner = null;
+		private final String owner = null;
 
 		public void setData(Long data) {
 			this.data = data;
@@ -254,7 +254,7 @@ class GsonAutoConfigurationTests {
 		@SuppressWarnings("unused")
 		class NestedObject {
 
-			private String data = "nested";
+			private final String data = "nested";
 
 		}
 

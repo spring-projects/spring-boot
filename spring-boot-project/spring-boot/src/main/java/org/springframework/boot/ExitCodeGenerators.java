@@ -39,7 +39,7 @@ import org.springframework.util.Assert;
  */
 class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 
-	private List<ExitCodeGenerator> generators = new ArrayList<>();
+	private final List<ExitCodeGenerator> generators = new ArrayList<>();
 
 	void addAll(Throwable exception, ExitCodeExceptionMapper... mappers) {
 		Assert.notNull(exception, "Exception must not be null");

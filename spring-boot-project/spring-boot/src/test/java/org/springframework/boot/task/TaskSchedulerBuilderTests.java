@@ -37,7 +37,7 @@ import static org.mockito.Mockito.spy;
  */
 class TaskSchedulerBuilderTests {
 
-	private TaskSchedulerBuilder builder = new TaskSchedulerBuilder();
+	private final TaskSchedulerBuilder builder = new TaskSchedulerBuilder();
 
 	@Test
 	void poolSettingsShouldApply() {

@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class AbstractDependsOnBeanFactoryPostProcessorTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(FooBarConfiguration.class);
 
 	@Test

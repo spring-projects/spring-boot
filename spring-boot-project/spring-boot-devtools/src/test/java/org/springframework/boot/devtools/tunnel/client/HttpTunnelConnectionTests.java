@@ -61,7 +61,7 @@ class HttpTunnelConnectionTests {
 	@Mock
 	private Closeable closeable;
 
-	private MockClientHttpRequestFactory requestFactory = new MockClientHttpRequestFactory();
+	private final MockClientHttpRequestFactory requestFactory = new MockClientHttpRequestFactory();
 
 	@BeforeEach
 	void setup() {

@@ -38,11 +38,11 @@ import static org.mockito.Mockito.mock;
  */
 class TypeExcludeFiltersContextCustomizerFactoryTests {
 
-	private TypeExcludeFiltersContextCustomizerFactory factory = new TypeExcludeFiltersContextCustomizerFactory();
+	private final TypeExcludeFiltersContextCustomizerFactory factory = new TypeExcludeFiltersContextCustomizerFactory();
 
-	private MergedContextConfiguration mergedContextConfiguration = mock(MergedContextConfiguration.class);
+	private final MergedContextConfiguration mergedContextConfiguration = mock(MergedContextConfiguration.class);
 
-	private ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
+	private final ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
 	void getContextCustomizerWhenHasNoAnnotationShouldReturnNull() {

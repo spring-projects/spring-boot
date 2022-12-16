@@ -186,7 +186,7 @@ public class SpringApplication {
 
 	private static final ThreadLocal<SpringApplicationHook> applicationHook = new ThreadLocal<>();
 
-	private Set<Class<?>> primarySources;
+	private final Set<Class<?>> primarySources;
 
 	private Set<String> sources = new LinkedHashSet<>();
 
@@ -220,7 +220,7 @@ public class SpringApplication {
 
 	private Map<String, Object> defaultProperties;
 
-	private List<BootstrapRegistryInitializer> bootstrapRegistryInitializers;
+	private final List<BootstrapRegistryInitializer> bootstrapRegistryInitializers;
 
 	private Set<String> additionalProfiles = Collections.emptySet();
 

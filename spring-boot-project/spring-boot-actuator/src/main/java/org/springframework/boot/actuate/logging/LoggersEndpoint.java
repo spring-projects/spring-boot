@@ -161,7 +161,7 @@ public class LoggersEndpoint {
 	 */
 	public static class LoggerLevelsDescriptor implements OperationResponseBody {
 
-		private String configuredLevel;
+		private final String configuredLevel;
 
 		public LoggerLevelsDescriptor(LogLevel configuredLevel) {
 			this.configuredLevel = getName(configuredLevel);
@@ -182,7 +182,7 @@ public class LoggersEndpoint {
 	 */
 	public static class GroupLoggerLevelsDescriptor extends LoggerLevelsDescriptor {
 
-		private List<String> members;
+		private final List<String> members;
 
 		public GroupLoggerLevelsDescriptor(LogLevel configuredLevel, List<String> members) {
 			super(configuredLevel);
@@ -200,7 +200,7 @@ public class LoggersEndpoint {
 	 */
 	public static class SingleLoggerLevelsDescriptor extends LoggerLevelsDescriptor {
 
-		private String effectiveLevel;
+		private final String effectiveLevel;
 
 		public SingleLoggerLevelsDescriptor(LoggerConfiguration configuration) {
 			super(configuration.getConfiguredLevel());

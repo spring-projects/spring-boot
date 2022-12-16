@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 class TunnelClientTests {
 
-	private MockTunnelConnection tunnelConnection = new MockTunnelConnection();
+	private final MockTunnelConnection tunnelConnection = new MockTunnelConnection();
 
 	@Test
 	void listenPortMustNotBeNegative() {

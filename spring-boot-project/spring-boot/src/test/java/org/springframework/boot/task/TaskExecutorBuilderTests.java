@@ -39,7 +39,7 @@ import static org.mockito.Mockito.spy;
  */
 class TaskExecutorBuilderTests {
 
-	private TaskExecutorBuilder builder = new TaskExecutorBuilder();
+	private final TaskExecutorBuilder builder = new TaskExecutorBuilder();
 
 	@Test
 	void poolSettingsShouldApply() {

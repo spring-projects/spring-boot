@@ -35,9 +35,9 @@ import static org.mockito.Mockito.mock;
  */
 class OnClassConditionAutoConfigurationImportFilterTests {
 
-	private OnClassCondition filter = new OnClassCondition();
+	private final OnClassCondition filter = new OnClassCondition();
 
-	private DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+	private final DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
 	@BeforeEach
 	void setup() {

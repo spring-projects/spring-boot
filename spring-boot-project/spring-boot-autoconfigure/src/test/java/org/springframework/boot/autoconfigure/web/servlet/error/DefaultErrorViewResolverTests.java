@@ -65,9 +65,9 @@ class DefaultErrorViewResolverTests {
 
 	private Resources resourcesProperties;
 
-	private Map<String, Object> model = new HashMap<>();
+	private final Map<String, Object> model = new HashMap<>();
 
-	private HttpServletRequest request = new MockHttpServletRequest();
+	private final HttpServletRequest request = new MockHttpServletRequest();
 
 	@BeforeEach
 	void setup() {

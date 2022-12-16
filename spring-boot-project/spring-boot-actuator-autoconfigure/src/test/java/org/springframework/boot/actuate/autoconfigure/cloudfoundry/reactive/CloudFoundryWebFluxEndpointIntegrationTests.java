@@ -71,9 +71,9 @@ import static org.mockito.Mockito.mock;
  */
 class CloudFoundryWebFluxEndpointIntegrationTests {
 
-	private static ReactiveTokenValidator tokenValidator = mock(ReactiveTokenValidator.class);
+	private static final ReactiveTokenValidator tokenValidator = mock(ReactiveTokenValidator.class);
 
-	private static ReactiveCloudFoundrySecurityService securityService = mock(
+	private static final ReactiveCloudFoundrySecurityService securityService = mock(
 			ReactiveCloudFoundrySecurityService.class);
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner(

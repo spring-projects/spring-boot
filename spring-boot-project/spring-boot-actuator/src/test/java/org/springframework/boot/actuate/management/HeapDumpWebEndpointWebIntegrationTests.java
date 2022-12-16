@@ -83,7 +83,7 @@ class HeapDumpWebEndpointWebIntegrationTests {
 
 		private boolean available;
 
-		private String heapDump = "HEAPDUMP";
+		private final String heapDump = "HEAPDUMP";
 
 		private File file;
 

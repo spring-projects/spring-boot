@@ -18,7 +18,7 @@ package smoketest.tomcat.jsp;
 
 public class MyRestResponse {
 
-	private String message;
+	private final String message;
 
 	public MyRestResponse(String message) {
 		this.message = message;

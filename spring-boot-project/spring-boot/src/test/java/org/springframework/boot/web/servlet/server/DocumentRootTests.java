@@ -37,7 +37,7 @@ class DocumentRootTests {
 	@TempDir
 	File tempDir;
 
-	private DocumentRoot documentRoot = new DocumentRoot(LogFactory.getLog(getClass()));
+	private final DocumentRoot documentRoot = new DocumentRoot(LogFactory.getLog(getClass()));
 
 	@Test
 	void explodedWarFileDocumentRootWhenRunningFromExplodedWar() throws Exception {

@@ -35,9 +35,9 @@ import org.springframework.util.FileCopyUtils;
  */
 class PomCondition extends Condition<File> {
 
-	private Set<String> expectedContents;
+	private final Set<String> expectedContents;
 
-	private Set<String> notExpectedContents;
+	private final Set<String> notExpectedContents;
 
 	PomCondition() {
 		this(new HashSet<>(), new HashSet<>());

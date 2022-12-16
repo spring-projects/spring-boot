@@ -33,11 +33,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class SecurityPropertiesTests {
 
-	private SecurityProperties security = new SecurityProperties();
+	private final SecurityProperties security = new SecurityProperties();
 
 	private Binder binder;
 
-	private MapConfigurationPropertySource source = new MapConfigurationPropertySource();
+	private final MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 
 	@BeforeEach
 	void setUp() {

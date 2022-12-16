@@ -76,7 +76,7 @@ import org.springframework.util.function.SingletonSupplier;
  */
 class SpringBootJoranConfigurator extends JoranConfigurator {
 
-	private LoggingInitializationContext initializationContext;
+	private final LoggingInitializationContext initializationContext;
 
 	SpringBootJoranConfigurator(LoggingInitializationContext initializationContext) {
 		this.initializationContext = initializationContext;

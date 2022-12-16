@@ -51,7 +51,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @ExtendWith(OutputCaptureExtension.class)
 class ConditionEvaluationReportLoggingListenerTests {
 
-	private ConditionEvaluationReportLoggingListener initializer = new ConditionEvaluationReportLoggingListener();
+	private final ConditionEvaluationReportLoggingListener initializer = new ConditionEvaluationReportLoggingListener();
 
 	@Test
 	void logsDebugOnContextRefresh(CapturedOutput output) {

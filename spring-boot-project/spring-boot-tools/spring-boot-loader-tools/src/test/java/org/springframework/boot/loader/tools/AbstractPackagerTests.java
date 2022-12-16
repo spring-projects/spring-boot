@@ -722,9 +722,9 @@ abstract class AbstractPackagerTests<P extends Packager> {
 
 		private static final Layer DEFAULT_LAYER = new Layer("default");
 
-		private Set<Layer> layers = new LinkedHashSet<>();
+		private final Set<Layer> layers = new LinkedHashSet<>();
 
-		private Map<String, Layer> libraries = new HashMap<>();
+		private final Map<String, Layer> libraries = new HashMap<>();
 
 		TestLayers() {
 			this.layers.add(DEFAULT_LAYER);

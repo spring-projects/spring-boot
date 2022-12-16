@@ -36,7 +36,7 @@ import org.springframework.http.server.reactive.UndertowHttpHandlerAdapter;
 public class UndertowReactiveWebServerFactory extends AbstractReactiveWebServerFactory
 		implements ConfigurableUndertowWebServerFactory {
 
-	private UndertowWebServerFactoryDelegate delegate = new UndertowWebServerFactoryDelegate();
+	private final UndertowWebServerFactoryDelegate delegate = new UndertowWebServerFactoryDelegate();
 
 	/**
 	 * Create a new {@link UndertowReactiveWebServerFactory} instance.

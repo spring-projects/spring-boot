@@ -214,7 +214,7 @@ public class HttpTunnelServer {
 
 		private boolean closed;
 
-		private AtomicLong responseSeq = new AtomicLong();
+		private final AtomicLong responseSeq = new AtomicLong();
 
 		private long lastHttpRequestTime;
 
@@ -364,7 +364,7 @@ public class HttpTunnelServer {
 
 		private final ServerHttpResponse response;
 
-		private ServerHttpAsyncRequestControl async;
+		private final ServerHttpAsyncRequestControl async;
 
 		private volatile boolean complete = false;
 

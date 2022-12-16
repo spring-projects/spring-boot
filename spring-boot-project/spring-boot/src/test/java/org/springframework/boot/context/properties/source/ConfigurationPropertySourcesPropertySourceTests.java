@@ -31,9 +31,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ConfigurationPropertySourcesPropertySourceTests {
 
-	private List<ConfigurationPropertySource> configurationSources = new ArrayList<>();
+	private final List<ConfigurationPropertySource> configurationSources = new ArrayList<>();
 
-	private ConfigurationPropertySourcesPropertySource propertySource = new ConfigurationPropertySourcesPropertySource(
+	private final ConfigurationPropertySourcesPropertySource propertySource = new ConfigurationPropertySourcesPropertySource(
 			"test", this.configurationSources);
 
 	@Test

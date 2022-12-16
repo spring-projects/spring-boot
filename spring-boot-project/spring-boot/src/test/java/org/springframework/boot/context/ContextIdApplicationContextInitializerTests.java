@@ -38,7 +38,7 @@ class ContextIdApplicationContextInitializerTests {
 
 	private final ContextIdApplicationContextInitializer initializer = new ContextIdApplicationContextInitializer();
 
-	private List<ConfigurableApplicationContext> contexts = new ArrayList<>();
+	private final List<ConfigurableApplicationContext> contexts = new ArrayList<>();
 
 	@AfterEach
 	void closeContexts() {

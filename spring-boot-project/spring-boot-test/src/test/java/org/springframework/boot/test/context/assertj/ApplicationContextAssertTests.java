@@ -44,7 +44,7 @@ class ApplicationContextAssertTests {
 
 	private StaticApplicationContext context;
 
-	private RuntimeException failure = new RuntimeException();
+	private final RuntimeException failure = new RuntimeException();
 
 	@BeforeEach
 	void setup() {

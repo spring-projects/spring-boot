@@ -48,7 +48,7 @@ class WelcomePageIntegrationTests {
 	@LocalServerPort
 	private int port;
 
-	private TestRestTemplate template = new TestRestTemplate();
+	private final TestRestTemplate template = new TestRestTemplate();
 
 	@Test
 	void contentStrategyWithWelcomePage() throws Exception {

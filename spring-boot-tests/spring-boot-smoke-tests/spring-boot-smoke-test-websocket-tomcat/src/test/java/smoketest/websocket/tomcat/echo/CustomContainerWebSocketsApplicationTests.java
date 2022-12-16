@@ -50,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 		webEnvironment = WebEnvironment.RANDOM_PORT)
 class CustomContainerWebSocketsApplicationTests {
 
-	private static Log logger = LogFactory.getLog(CustomContainerWebSocketsApplicationTests.class);
+	private static final Log logger = LogFactory.getLog(CustomContainerWebSocketsApplicationTests.class);
 
 	@LocalServerPort
 	private int port;

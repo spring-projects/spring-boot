@@ -60,7 +60,7 @@ class SizeCalculatingEntryWriterTests {
 
 	private static class TestEntryWriter implements EntryWriter {
 
-		private byte[] bytes;
+		private final byte[] bytes;
 
 		TestEntryWriter(int size) {
 			this.bytes = new byte[size];

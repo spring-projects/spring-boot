@@ -83,11 +83,11 @@ public class GradleBuild {
 
 	private GradleVersion expectDeprecationWarnings;
 
-	private List<String> expectedDeprecationMessages = new ArrayList<>();
+	private final List<String> expectedDeprecationMessages = new ArrayList<>();
 
 	private boolean configurationCache = false;
 
-	private Map<String, String> scriptProperties = new HashMap<>();
+	private final Map<String, String> scriptProperties = new HashMap<>();
 
 	public GradleBuild() {
 		this(Dsl.GROOVY);

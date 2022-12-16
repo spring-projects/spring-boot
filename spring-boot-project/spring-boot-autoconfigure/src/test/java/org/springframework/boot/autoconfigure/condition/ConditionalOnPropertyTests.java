@@ -50,7 +50,7 @@ class ConditionalOnPropertyTests {
 
 	private ConfigurableApplicationContext context;
 
-	private ConfigurableEnvironment environment = new StandardEnvironment();
+	private final ConfigurableEnvironment environment = new StandardEnvironment();
 
 	@AfterEach
 	void tearDown() {

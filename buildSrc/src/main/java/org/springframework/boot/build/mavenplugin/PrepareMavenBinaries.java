@@ -35,7 +35,7 @@ import org.gradle.api.tasks.TaskAction;
  */
 public class PrepareMavenBinaries extends DefaultTask {
 
-	private Set<String> versions = new LinkedHashSet<>();
+	private final Set<String> versions = new LinkedHashSet<>();
 
 	private File outputDir;
 

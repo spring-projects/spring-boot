@@ -435,7 +435,7 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		private Duration duration = Duration.ofSeconds(10);
 
-		private String ignored = "dummy";
+		private final String ignored = "dummy";
 
 		public String getDbPassword() {
 			return this.dbPassword;
@@ -803,7 +803,7 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		private URI noPasswordUri = URI.create("http://user:@localhost:8080");
 
-		private List<String> simpleList = new ArrayList<>();
+		private final List<String> simpleList = new ArrayList<>();
 
 		private String rawSensitiveAddresses = "http://user:password@localhost:8080,http://user2:password2@localhost:8082";
 

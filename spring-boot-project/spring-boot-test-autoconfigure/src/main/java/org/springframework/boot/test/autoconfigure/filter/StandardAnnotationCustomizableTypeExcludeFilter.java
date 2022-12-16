@@ -49,7 +49,7 @@ public abstract class StandardAnnotationCustomizableTypeExcludeFilter<A extends 
 		}
 	}
 
-	private MergedAnnotation<A> annotation;
+	private final MergedAnnotation<A> annotation;
 
 	protected StandardAnnotationCustomizableTypeExcludeFilter(Class<?> testClass) {
 		this.annotation = MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)

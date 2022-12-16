@@ -55,7 +55,7 @@ class GroovyTemplateAutoConfigurationTests {
 
 	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
-	private AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
+	private final AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 
 	@BeforeEach
 	void setupContext() {

@@ -45,7 +45,7 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class MockitoTestExecutionListenerTests {
 
-	private MockitoTestExecutionListener listener = new MockitoTestExecutionListener();
+	private final MockitoTestExecutionListener listener = new MockitoTestExecutionListener();
 
 	@Mock
 	private ApplicationContext applicationContext;

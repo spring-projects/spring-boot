@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
  */
 class DefaultRepositoryTagsProviderTests {
 
-	private DefaultRepositoryTagsProvider provider = new DefaultRepositoryTagsProvider();
+	private final DefaultRepositoryTagsProvider provider = new DefaultRepositoryTagsProvider();
 
 	@Test
 	void repositoryTagsIncludesRepository() {

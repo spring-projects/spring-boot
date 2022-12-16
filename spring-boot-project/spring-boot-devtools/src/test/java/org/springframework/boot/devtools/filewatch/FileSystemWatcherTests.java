@@ -50,7 +50,7 @@ class FileSystemWatcherTests {
 
 	private FileSystemWatcher watcher;
 
-	private List<Set<ChangedFiles>> changes = Collections.synchronizedList(new ArrayList<>());
+	private final List<Set<ChangedFiles>> changes = Collections.synchronizedList(new ArrayList<>());
 
 	@TempDir
 	File tempDir;

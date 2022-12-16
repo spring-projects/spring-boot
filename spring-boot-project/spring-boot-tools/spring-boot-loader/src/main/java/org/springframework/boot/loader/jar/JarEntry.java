@@ -40,7 +40,7 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 
 	private final JarFile jarFile;
 
-	private long localHeaderOffset;
+	private final long localHeaderOffset;
 
 	private volatile JarEntryCertification certification;
 

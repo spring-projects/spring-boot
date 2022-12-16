@@ -412,7 +412,7 @@ class BindableRuntimeHintsRegistrarTests {
 	public static class ImmutableWithRecursive {
 
 		@NestedConfigurationProperty
-		private ImmutableRecursive recursive;
+		private final ImmutableRecursive recursive;
 
 		ImmutableWithRecursive(ImmutableRecursive recursive) {
 			this.recursive = recursive;
@@ -500,7 +500,7 @@ class BindableRuntimeHintsRegistrarTests {
 	public static class ImmutableRecursive {
 
 		@SuppressWarnings("unused")
-		private ImmutableRecursive recursive;
+		private final ImmutableRecursive recursive;
 
 		ImmutableRecursive(ImmutableRecursive recursive) {
 			this.recursive = recursive;

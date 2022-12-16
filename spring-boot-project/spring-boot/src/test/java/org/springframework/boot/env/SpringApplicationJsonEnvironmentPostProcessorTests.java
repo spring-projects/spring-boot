@@ -44,9 +44,9 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 class SpringApplicationJsonEnvironmentPostProcessorTests {
 
-	private SpringApplicationJsonEnvironmentPostProcessor processor = new SpringApplicationJsonEnvironmentPostProcessor();
+	private final SpringApplicationJsonEnvironmentPostProcessor processor = new SpringApplicationJsonEnvironmentPostProcessor();
 
-	private ConfigurableEnvironment environment = new StandardEnvironment();
+	private final ConfigurableEnvironment environment = new StandardEnvironment();
 
 	@Test
 	void error() {

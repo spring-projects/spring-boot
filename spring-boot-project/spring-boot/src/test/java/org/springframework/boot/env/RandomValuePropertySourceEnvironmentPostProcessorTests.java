@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
  */
 class RandomValuePropertySourceEnvironmentPostProcessorTests {
 
-	private RandomValuePropertySourceEnvironmentPostProcessor postProcessor = new RandomValuePropertySourceEnvironmentPostProcessor(
+	private final RandomValuePropertySourceEnvironmentPostProcessor postProcessor = new RandomValuePropertySourceEnvironmentPostProcessor(
 			Supplier::get);
 
 	@Test

@@ -95,7 +95,7 @@ import static org.mockito.Mockito.withSettings;
 @ExtendWith({ OutputCaptureExtension.class, MockitoExtension.class })
 class ServletWebServerApplicationContextTests {
 
-	private ServletWebServerApplicationContext context = new ServletWebServerApplicationContext();
+	private final ServletWebServerApplicationContext context = new ServletWebServerApplicationContext();
 
 	@Captor
 	private ArgumentCaptor<Filter> filterCaptor;
@@ -495,7 +495,7 @@ class ServletWebServerApplicationContextTests {
 
 	static class TestApplicationListener implements ApplicationListener<ApplicationEvent> {
 
-		private Deque<ApplicationEvent> events = new ArrayDeque<>();
+		private final Deque<ApplicationEvent> events = new ArrayDeque<>();
 
 		@Override
 		public void onApplicationEvent(ApplicationEvent event) {

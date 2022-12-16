@@ -42,7 +42,7 @@ class RequestPredicateFactoryTests {
 	private final RequestPredicateFactory factory = new RequestPredicateFactory(
 			new EndpointMediaTypes(Collections.emptyList(), Collections.emptyList()));
 
-	private String rootPath = "/root";
+	private final String rootPath = "/root";
 
 	@Test
 	void getRequestPredicateWhenHasMoreThanOneMatchAllThrowsException() {

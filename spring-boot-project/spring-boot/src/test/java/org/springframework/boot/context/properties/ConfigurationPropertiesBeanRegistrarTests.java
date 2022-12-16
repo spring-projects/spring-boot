@@ -39,9 +39,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 class ConfigurationPropertiesBeanRegistrarTests {
 
-	private BeanDefinitionRegistry registry = new DefaultListableBeanFactory();
+	private final BeanDefinitionRegistry registry = new DefaultListableBeanFactory();
 
-	private ConfigurationPropertiesBeanRegistrar registrar = new ConfigurationPropertiesBeanRegistrar(this.registry);
+	private final ConfigurationPropertiesBeanRegistrar registrar = new ConfigurationPropertiesBeanRegistrar(
+			this.registry);
 
 	@Test
 	void registerWhenNotAlreadyRegisteredAddBeanDefinition() {

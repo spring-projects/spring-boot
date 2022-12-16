@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ConfigurationPropertiesBindHandlerAdvisorTests {
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@AfterEach
 	void cleanup() {
@@ -151,7 +151,7 @@ class ConfigurationPropertiesBindHandlerAdvisorTests {
 	@ConfigurationProperties("foo.bar")
 	static class BindingServiceProperties {
 
-		private Map<String, BindingProperties> bindings = new TreeMap<>();
+		private final Map<String, BindingProperties> bindings = new TreeMap<>();
 
 		Map<String, BindingProperties> getBindings() {
 			return this.bindings;

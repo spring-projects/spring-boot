@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
  */
 class AvailabilityProbesHealthEndpointGroupsPostProcessorTests {
 
-	private AvailabilityProbesHealthEndpointGroupsPostProcessor postProcessor = new AvailabilityProbesHealthEndpointGroupsPostProcessor(
+	private final AvailabilityProbesHealthEndpointGroupsPostProcessor postProcessor = new AvailabilityProbesHealthEndpointGroupsPostProcessor(
 			new MockEnvironment());
 
 	@Test

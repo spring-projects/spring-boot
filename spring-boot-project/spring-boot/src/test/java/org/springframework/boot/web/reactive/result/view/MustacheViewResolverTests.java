@@ -34,7 +34,7 @@ class MustacheViewResolverTests {
 
 	private final String prefix = "classpath:/" + getClass().getPackage().getName().replace(".", "/") + "/";
 
-	private MustacheViewResolver resolver = new MustacheViewResolver();
+	private final MustacheViewResolver resolver = new MustacheViewResolver();
 
 	@BeforeEach
 	void init() {

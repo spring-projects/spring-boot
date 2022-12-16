@@ -90,7 +90,7 @@ class CentralDirectoryParserTests {
 
 	static class Collector implements CentralDirectoryVisitor {
 
-		private List<CentralDirectoryFileHeader> headers = new ArrayList<>();
+		private final List<CentralDirectoryFileHeader> headers = new ArrayList<>();
 
 		@Override
 		public void visitStart(CentralDirectoryEndRecord endRecord, RandomAccessData centralDirectoryData) {

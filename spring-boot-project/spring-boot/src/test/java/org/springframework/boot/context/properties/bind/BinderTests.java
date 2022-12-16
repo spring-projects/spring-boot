@@ -372,7 +372,7 @@ class BinderTests {
 
 		private String value;
 
-		private List<String> items = Collections.emptyList();
+		private final List<String> items = Collections.emptyList();
 
 		String getValue() {
 			return this.value;
@@ -406,7 +406,7 @@ class BinderTests {
 
 		private String value = "hello";
 
-		private List<String> items = Collections.emptyList();
+		private final List<String> items = Collections.emptyList();
 
 		String getValue() {
 			return this.value;

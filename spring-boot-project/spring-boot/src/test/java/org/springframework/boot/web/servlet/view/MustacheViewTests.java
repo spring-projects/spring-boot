@@ -40,11 +40,11 @@ class MustacheViewTests {
 	private final String templateUrl = "classpath:/" + getClass().getPackage().getName().replace(".", "/")
 			+ "/template.html";
 
-	private MockHttpServletRequest request = new MockHttpServletRequest();
+	private final MockHttpServletRequest request = new MockHttpServletRequest();
 
-	private MockHttpServletResponse response = new MockHttpServletResponse();
+	private final MockHttpServletResponse response = new MockHttpServletResponse();
 
-	private AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
+	private final AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 
 	@BeforeEach
 	void init() {

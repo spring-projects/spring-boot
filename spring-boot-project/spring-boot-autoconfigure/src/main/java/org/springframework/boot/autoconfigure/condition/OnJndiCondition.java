@@ -81,7 +81,7 @@ class OnJndiCondition extends SpringBootCondition {
 
 	protected static class JndiLocator extends JndiLocatorSupport {
 
-		private String[] locations;
+		private final String[] locations;
 
 		public JndiLocator(String[] locations) {
 			this.locations = locations;

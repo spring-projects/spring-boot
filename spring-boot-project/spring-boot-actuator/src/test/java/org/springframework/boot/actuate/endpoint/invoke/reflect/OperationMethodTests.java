@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 class OperationMethodTests {
 
-	private Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example", String.class);
+	private final Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example", String.class);
 
 	@Test
 	void createWhenMethodIsNullShouldThrowException() {

@@ -89,7 +89,7 @@ public class GraphQlWebMvcAutoConfiguration {
 	private static final Log logger = LogFactory.getLog(GraphQlWebMvcAutoConfiguration.class);
 
 	@SuppressWarnings("removal")
-	private static MediaType[] SUPPORTED_MEDIA_TYPES = new MediaType[] { MediaType.APPLICATION_GRAPHQL_RESPONSE,
+	private static final MediaType[] SUPPORTED_MEDIA_TYPES = new MediaType[] { MediaType.APPLICATION_GRAPHQL_RESPONSE,
 			MediaType.APPLICATION_JSON, MediaType.APPLICATION_GRAPHQL };
 
 	@Bean

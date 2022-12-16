@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 @ClassPathExclusions("snakeyaml-*.jar")
 class NoSnakeYamlPropertySourceLoaderTests {
 
-	private YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
+	private final YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
 
 	@Test
 	void load() {

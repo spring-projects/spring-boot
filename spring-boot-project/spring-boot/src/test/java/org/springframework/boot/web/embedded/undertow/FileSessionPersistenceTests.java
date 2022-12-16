@@ -39,9 +39,9 @@ class FileSessionPersistenceTests {
 
 	private FileSessionPersistence persistence;
 
-	private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+	private final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-	private Date expiration = new Date(System.currentTimeMillis() + 10000);
+	private final Date expiration = new Date(System.currentTimeMillis() + 10000);
 
 	@BeforeEach
 	void setup(@TempDir File tempDir) {

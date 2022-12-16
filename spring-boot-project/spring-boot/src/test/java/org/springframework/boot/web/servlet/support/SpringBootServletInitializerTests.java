@@ -68,7 +68,7 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(OutputCaptureExtension.class)
 class SpringBootServletInitializerTests {
 
-	private ServletContext servletContext = new MockServletContext();
+	private final ServletContext servletContext = new MockServletContext();
 
 	private SpringApplication application;
 

@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(OutputCaptureExtension.class)
 class SampleWsApplicationTests {
 
-	private WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
+	private final WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
 
 	@LocalServerPort
 	private int serverPort;

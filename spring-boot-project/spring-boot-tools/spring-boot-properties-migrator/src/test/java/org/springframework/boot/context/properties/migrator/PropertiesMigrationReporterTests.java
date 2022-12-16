@@ -49,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class PropertiesMigrationReporterTests {
 
-	private ConfigurableEnvironment environment = new MockEnvironment();
+	private final ConfigurableEnvironment environment = new MockEnvironment();
 
 	@Test
 	void reportIsNullWithNoMatchingKeys() {

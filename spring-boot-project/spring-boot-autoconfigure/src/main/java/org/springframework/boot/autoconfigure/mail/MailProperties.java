@@ -69,7 +69,7 @@ public class MailProperties {
 	/**
 	 * Additional JavaMail Session properties.
 	 */
-	private Map<String, String> properties = new HashMap<>();
+	private final Map<String, String> properties = new HashMap<>();
 
 	/**
 	 * Session JNDI name. When set, takes precedence over other Session settings.

@@ -39,9 +39,9 @@ import static org.mockito.Mockito.mock;
  */
 class ConfigTreeConfigDataLoaderTests {
 
-	private ConfigTreeConfigDataLoader loader = new ConfigTreeConfigDataLoader();
+	private final ConfigTreeConfigDataLoader loader = new ConfigTreeConfigDataLoader();
 
-	private ConfigDataLoaderContext loaderContext = mock(ConfigDataLoaderContext.class);
+	private final ConfigDataLoaderContext loaderContext = mock(ConfigDataLoaderContext.class);
 
 	@TempDir
 	Path directory;

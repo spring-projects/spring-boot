@@ -134,7 +134,7 @@ class ValidatorAdapterTests {
 	static class SampleData {
 
 		@Min(42)
-		private int counter;
+		private final int counter;
 
 		SampleData(int counter) {
 			this.counter = counter;

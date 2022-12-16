@@ -886,7 +886,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 
 		private final ConfigDataLocation location;
 
-		private boolean profileSpecific;
+		private final boolean profileSpecific;
 
 		TestConfigDataResource(ConfigDataLocation location, boolean profileSpecific) {
 			super(location.toString().contains("optionalresult"));

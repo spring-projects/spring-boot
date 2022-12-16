@@ -42,11 +42,11 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 class DefaultBootstrapContextTests {
 
-	private DefaultBootstrapContext context = new DefaultBootstrapContext();
+	private final DefaultBootstrapContext context = new DefaultBootstrapContext();
 
-	private AtomicInteger counter = new AtomicInteger();
+	private final AtomicInteger counter = new AtomicInteger();
 
-	private StaticApplicationContext applicationContext = new StaticApplicationContext();
+	private final StaticApplicationContext applicationContext = new StaticApplicationContext();
 
 	@Test
 	void registerWhenTypeIsNullThrowsException() {

@@ -43,11 +43,11 @@ public class MockClientHttpRequestFactory implements ClientHttpRequestFactory {
 
 	private static final byte[] NO_DATA = {};
 
-	private AtomicLong seq = new AtomicLong();
+	private final AtomicLong seq = new AtomicLong();
 
-	private Deque<Object> responses = new ArrayDeque<>();
+	private final Deque<Object> responses = new ArrayDeque<>();
 
-	private List<MockClientHttpRequest> executedRequests = new ArrayList<>();
+	private final List<MockClientHttpRequest> executedRequests = new ArrayList<>();
 
 	@Override
 	public ClientHttpRequest createRequest(URI uri, HttpMethod httpMethod) throws IOException {

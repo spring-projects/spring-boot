@@ -75,7 +75,7 @@ class ExtractCommandTests {
 
 	private File extract;
 
-	private Layers layers = new TestLayers();
+	private final Layers layers = new TestLayers();
 
 	private ExtractCommand command;
 

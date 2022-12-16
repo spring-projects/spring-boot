@@ -51,9 +51,9 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @ExtendWith(MockitoExtension.class)
 class ConfigDataLocationResolversTests {
 
-	private DeferredLogFactory logFactory = Supplier::get;
+	private final DeferredLogFactory logFactory = Supplier::get;
 
-	private DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
+	private final DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
 
 	@Mock
 	private Binder binder;

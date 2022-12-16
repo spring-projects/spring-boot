@@ -237,7 +237,7 @@ public class FileSystemWatcher {
 
 		private Map<File, DirectorySnapshot> directories;
 
-		private SnapshotStateRepository snapshotStateRepository;
+		private final SnapshotStateRepository snapshotStateRepository;
 
 		private Watcher(AtomicInteger remainingScans, List<FileChangeListener> listeners, FileFilter triggerFilter,
 				long pollInterval, long quietPeriod, Map<File, DirectorySnapshot> directories,

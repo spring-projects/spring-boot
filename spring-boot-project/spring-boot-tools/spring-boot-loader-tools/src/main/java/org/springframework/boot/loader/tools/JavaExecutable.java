@@ -31,7 +31,7 @@ import org.springframework.util.StringUtils;
  */
 public class JavaExecutable {
 
-	private File file;
+	private final File file;
 
 	public JavaExecutable() {
 		String javaHome = System.getProperty("java.home");

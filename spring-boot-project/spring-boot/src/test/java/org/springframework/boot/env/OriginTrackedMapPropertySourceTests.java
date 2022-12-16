@@ -35,11 +35,11 @@ import static org.mockito.Mockito.mock;
  */
 class OriginTrackedMapPropertySourceTests {
 
-	private Map<String, Object> map = new LinkedHashMap<>();
+	private final Map<String, Object> map = new LinkedHashMap<>();
 
-	private OriginTrackedMapPropertySource source = new OriginTrackedMapPropertySource("test", this.map);
+	private final OriginTrackedMapPropertySource source = new OriginTrackedMapPropertySource("test", this.map);
 
-	private Origin origin = mock(Origin.class);
+	private final Origin origin = mock(Origin.class);
 
 	@Test
 	void getPropertyWhenMissingShouldReturnNull() {

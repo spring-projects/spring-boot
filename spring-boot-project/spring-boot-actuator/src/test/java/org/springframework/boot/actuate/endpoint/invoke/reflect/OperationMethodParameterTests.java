@@ -38,15 +38,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class OperationMethodParameterTests {
 
-	private Method example = ReflectionUtils.findMethod(getClass(), "example", String.class, String.class);
+	private final Method example = ReflectionUtils.findMethod(getClass(), "example", String.class, String.class);
 
-	private Method exampleJsr305 = ReflectionUtils.findMethod(getClass(), "exampleJsr305", String.class, String.class);
-
-	private Method exampleMetaJsr305 = ReflectionUtils.findMethod(getClass(), "exampleMetaJsr305", String.class,
+	private final Method exampleJsr305 = ReflectionUtils.findMethod(getClass(), "exampleJsr305", String.class,
 			String.class);
 
-	private Method exampleJsr305NonNull = ReflectionUtils.findMethod(getClass(), "exampleJsr305NonNull", String.class,
+	private final Method exampleMetaJsr305 = ReflectionUtils.findMethod(getClass(), "exampleMetaJsr305", String.class,
 			String.class);
+
+	private final Method exampleJsr305NonNull = ReflectionUtils.findMethod(getClass(), "exampleJsr305NonNull",
+			String.class, String.class);
 
 	@Test
 	void getNameShouldReturnName() {

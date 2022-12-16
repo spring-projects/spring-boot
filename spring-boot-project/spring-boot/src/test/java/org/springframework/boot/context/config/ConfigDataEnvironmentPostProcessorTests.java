@@ -50,9 +50,9 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class ConfigDataEnvironmentPostProcessorTests {
 
-	private StandardEnvironment environment = new StandardEnvironment();
+	private final StandardEnvironment environment = new StandardEnvironment();
 
-	private SpringApplication application = new SpringApplication();
+	private final SpringApplication application = new SpringApplication();
 
 	@Mock
 	private ConfigDataEnvironment configDataEnvironment;

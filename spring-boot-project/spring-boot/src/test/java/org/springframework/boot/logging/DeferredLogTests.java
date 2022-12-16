@@ -33,13 +33,13 @@ import static org.mockito.Mockito.mock;
  */
 class DeferredLogTests {
 
-	private DeferredLog deferredLog = new DeferredLog();
+	private final DeferredLog deferredLog = new DeferredLog();
 
-	private Object message = "Message";
+	private final Object message = "Message";
 
-	private Throwable throwable = new IllegalStateException();
+	private final Throwable throwable = new IllegalStateException();
 
-	private Log log = mock(Log.class);
+	private final Log log = mock(Log.class);
 
 	@Test
 	void isTraceEnabled() {

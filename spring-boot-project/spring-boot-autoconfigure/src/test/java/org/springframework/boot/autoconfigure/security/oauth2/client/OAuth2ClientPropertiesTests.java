@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 class OAuth2ClientPropertiesTests {
 
-	private OAuth2ClientProperties properties = new OAuth2ClientProperties();
+	private final OAuth2ClientProperties properties = new OAuth2ClientProperties();
 
 	@Test
 	void clientIdAbsentThrowsException() {

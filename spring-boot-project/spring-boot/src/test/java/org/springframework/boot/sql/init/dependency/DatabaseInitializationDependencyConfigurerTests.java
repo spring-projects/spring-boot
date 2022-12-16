@@ -248,7 +248,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	static class MockDatabaseInitializerDetector implements DatabaseInitializerDetector {
 
-		private static DatabaseInitializerDetector instance = mock(DatabaseInitializerDetector.class);
+		private static final DatabaseInitializerDetector instance = mock(DatabaseInitializerDetector.class);
 
 		@Override
 		public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
@@ -265,7 +265,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	static class OrderedLowestMockDatabaseInitializerDetector implements DatabaseInitializerDetector {
 
-		private static DatabaseInitializerDetector instance = mock(DatabaseInitializerDetector.class);
+		private static final DatabaseInitializerDetector instance = mock(DatabaseInitializerDetector.class);
 
 		@Override
 		public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
@@ -281,7 +281,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	static class OrderedNearLowestMockDatabaseInitializerDetector implements DatabaseInitializerDetector {
 
-		private static DatabaseInitializerDetector instance = mock(DatabaseInitializerDetector.class);
+		private static final DatabaseInitializerDetector instance = mock(DatabaseInitializerDetector.class);
 
 		@Override
 		public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
@@ -297,7 +297,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	static class MockedDependsOnDatabaseInitializationDetector implements DependsOnDatabaseInitializationDetector {
 
-		private static DependsOnDatabaseInitializationDetector instance = mock(
+		private static final DependsOnDatabaseInitializationDetector instance = mock(
 				DependsOnDatabaseInitializationDetector.class);
 
 		@Override

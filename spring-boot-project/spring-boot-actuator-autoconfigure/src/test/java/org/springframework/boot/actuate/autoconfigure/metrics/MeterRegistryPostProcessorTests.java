@@ -50,11 +50,11 @@ class MeterRegistryPostProcessorTests {
 
 	private final MetricsProperties properties = new MetricsProperties();
 
-	private List<MeterRegistryCustomizer<?>> customizers = new ArrayList<>();
+	private final List<MeterRegistryCustomizer<?>> customizers = new ArrayList<>();
 
-	private List<MeterFilter> filters = new ArrayList<>();
+	private final List<MeterFilter> filters = new ArrayList<>();
 
-	private List<MeterBinder> binders = new ArrayList<>();
+	private final List<MeterBinder> binders = new ArrayList<>();
 
 	@Mock
 	private MeterRegistryCustomizer<MeterRegistry> mockCustomizer;

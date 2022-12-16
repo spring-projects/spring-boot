@@ -61,9 +61,9 @@ class PrometheusPushGatewayManagerTests {
 	@Mock
 	private TaskScheduler scheduler;
 
-	private Duration pushRate = Duration.ofSeconds(1);
+	private final Duration pushRate = Duration.ofSeconds(1);
 
-	private Map<String, String> groupingKey = Collections.singletonMap("foo", "bar");
+	private final Map<String, String> groupingKey = Collections.singletonMap("foo", "bar");
 
 	@Captor
 	private ArgumentCaptor<Runnable> task;

@@ -43,13 +43,14 @@ class ClientObservationConventionAdapterTests {
 
 	private static final String TEST_METRIC_NAME = "test.metric.name";
 
-	private ClientObservationConventionAdapter convention = new ClientObservationConventionAdapter(TEST_METRIC_NAME,
-			new DefaultWebClientExchangeTagsProvider());
+	private final ClientObservationConventionAdapter convention = new ClientObservationConventionAdapter(
+			TEST_METRIC_NAME, new DefaultWebClientExchangeTagsProvider());
 
-	private ClientRequest.Builder requestBuilder = ClientRequest.create(HttpMethod.GET, URI.create("/resource/test"))
+	private final ClientRequest.Builder requestBuilder = ClientRequest
+			.create(HttpMethod.GET, URI.create("/resource/test"))
 			.attribute(WebClient.class.getName() + ".uriTemplate", "/resource/{name}");
 
-	private ClientResponse response = ClientResponse.create(HttpStatus.OK).body("foo").build();
+	private final ClientResponse response = ClientResponse.create(HttpStatus.OK).body("foo").build();
 
 	private ClientRequestObservationContext context;
 

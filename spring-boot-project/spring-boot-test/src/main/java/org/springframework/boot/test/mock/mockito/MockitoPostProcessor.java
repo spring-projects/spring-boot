@@ -95,11 +95,11 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 
 	private final MockitoBeans mockitoBeans = new MockitoBeans();
 
-	private Map<Definition, String> beanNameRegistry = new HashMap<>();
+	private final Map<Definition, String> beanNameRegistry = new HashMap<>();
 
-	private Map<Field, String> fieldRegistry = new HashMap<>();
+	private final Map<Field, String> fieldRegistry = new HashMap<>();
 
-	private Map<String, SpyDefinition> spies = new HashMap<>();
+	private final Map<String, SpyDefinition> spies = new HashMap<>();
 
 	/**
 	 * Create a new {@link MockitoPostProcessor} instance with the given initial

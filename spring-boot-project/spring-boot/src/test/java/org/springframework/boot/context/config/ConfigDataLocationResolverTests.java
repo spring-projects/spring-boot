@@ -31,9 +31,9 @@ import static org.mockito.Mockito.mock;
  */
 class ConfigDataLocationResolverTests {
 
-	private ConfigDataLocationResolver<?> resolver = new TestConfigDataLocationResolver();
+	private final ConfigDataLocationResolver<?> resolver = new TestConfigDataLocationResolver();
 
-	private ConfigDataLocationResolverContext context = mock(ConfigDataLocationResolverContext.class);
+	private final ConfigDataLocationResolverContext context = mock(ConfigDataLocationResolverContext.class);
 
 	@Test
 	void resolveProfileSpecificReturnsEmptyList() {

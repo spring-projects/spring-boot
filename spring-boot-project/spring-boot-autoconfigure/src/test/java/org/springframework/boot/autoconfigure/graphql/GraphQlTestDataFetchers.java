@@ -31,7 +31,8 @@ import org.springframework.lang.Nullable;
  */
 public final class GraphQlTestDataFetchers {
 
-	private static List<Book> books = Arrays.asList(new Book("book-1", "GraphQL for beginners", 100, "John GraphQL"),
+	private static final List<Book> books = Arrays.asList(
+			new Book("book-1", "GraphQL for beginners", 100, "John GraphQL"),
 			new Book("book-2", "Harry Potter and the Philosopher's Stone", 223, "Joanne Rowling"),
 			new Book("book-3", "Moby Dick", 635, "Moby Dick"), new Book("book-3", "Moby Dick", 635, "Moby Dick"));
 

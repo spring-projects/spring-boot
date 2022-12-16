@@ -46,9 +46,9 @@ public class RemoteDevToolsProperties {
 	 */
 	private String secretHeaderName = DEFAULT_SECRET_HEADER_NAME;
 
-	private Restart restart = new Restart();
+	private final Restart restart = new Restart();
 
-	private Proxy proxy = new Proxy();
+	private final Proxy proxy = new Proxy();
 
 	public String getContextPath() {
 		return this.contextPath;

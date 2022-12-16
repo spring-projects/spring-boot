@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mock;
  */
 class ImportsContextCustomizerFactoryTests {
 
-	private ImportsContextCustomizerFactory factory = new ImportsContextCustomizerFactory();
+	private final ImportsContextCustomizerFactory factory = new ImportsContextCustomizerFactory();
 
 	@Test
 	void getContextCustomizerWhenHasNoImportAnnotationShouldReturnNull() {

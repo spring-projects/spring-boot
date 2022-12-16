@@ -462,7 +462,7 @@ class LiquibaseAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class CustomDataSourceConfiguration {
 
-		private String name = UUID.randomUUID().toString();
+		private final String name = UUID.randomUUID().toString();
 
 		@Bean(destroyMethod = "shutdown")
 		EmbeddedDatabase dataSource() throws SQLException {
@@ -484,7 +484,7 @@ class LiquibaseAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class CustomDriverConfiguration {
 
-		private String name = UUID.randomUUID().toString();
+		private final String name = UUID.randomUUID().toString();
 
 		@Bean
 		SimpleDriverDataSource dataSource() {

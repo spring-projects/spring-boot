@@ -430,7 +430,7 @@ class CollectionBinderTests {
 
 	static class ExampleCollectionBean {
 
-		private List<String> items = new ArrayList<>();
+		private final List<String> items = new ArrayList<>();
 
 		private Set<String> itemsSet = new LinkedHashSet<>();
 
@@ -477,7 +477,7 @@ class CollectionBinderTests {
 
 	static class ExampleCustomWithDefaultConstructorBean {
 
-		private MyCustomWithDefaultConstructorList items = new MyCustomWithDefaultConstructorList();
+		private final MyCustomWithDefaultConstructorList items = new MyCustomWithDefaultConstructorList();
 
 		MyCustomWithDefaultConstructorList getItems() {
 			return this.items;

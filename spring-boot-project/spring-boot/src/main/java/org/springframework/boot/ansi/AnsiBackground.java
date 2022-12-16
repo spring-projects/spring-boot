@@ -59,7 +59,7 @@ public enum AnsiBackground implements AnsiElement {
 
 	BRIGHT_WHITE("107");
 
-	private String code;
+	private final String code;
 
 	AnsiBackground(String code) {
 		this.code = code;
