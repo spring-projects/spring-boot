@@ -32,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class UndertowWebServerRuntimeHintsTests {
+class UndertowWebServerRuntimeHintsTests {
 
 	@Test
 	void registersHints() throws ClassNotFoundException {

@@ -51,7 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers(disabledWithoutDocker = true)
-public class SampleSessionRedisApplicationTests {
+class SampleSessionRedisApplicationTests {
 
 	@Container
 	static RedisContainer redis = new RedisContainer();

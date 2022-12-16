@@ -54,7 +54,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers(disabledWithoutDocker = true)
-public class SampleSessionMongoApplicationTests {
+class SampleSessionMongoApplicationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;

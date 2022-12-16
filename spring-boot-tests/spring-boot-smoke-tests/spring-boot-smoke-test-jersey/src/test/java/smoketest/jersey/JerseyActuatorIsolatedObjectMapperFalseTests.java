@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
 		properties = "management.endpoints.jackson.isolated-object-mapper=false")
 @ContextConfiguration(loader = ApplicationStartupSpringBootContextLoader.class)
-public class JerseyActuatorIsolatedObjectMapperFalseTests {
+class JerseyActuatorIsolatedObjectMapperFalseTests {
 
 	@LocalServerPort
 	private int port;
