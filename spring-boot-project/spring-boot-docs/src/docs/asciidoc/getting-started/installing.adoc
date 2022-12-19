@@ -199,7 +199,22 @@ In that case, run `scoop update` and try again.
 
 [[getting-started.installing.cli.quick-start]]
 ==== Quick-start Spring CLI Example
-You can use the following web application to test your installation.
+Mentioned below command are removed in spring version 3.0.0.
+----
+grab
+----
+----
+jar
+----
+----
+run
+----
+----
+war
+----
+You can use the following web application to test your installation. 
+But Spring version should be < 3.0.0.
+
 To start, create a file called `app.groovy`, as follows:
 
 [source,groovy,indent=0,pending-extract=true,subs="verbatim"]
