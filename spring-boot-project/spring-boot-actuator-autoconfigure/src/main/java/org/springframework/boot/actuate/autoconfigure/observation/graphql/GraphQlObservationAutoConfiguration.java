@@ -70,7 +70,7 @@ public class GraphQlObservationAutoConfiguration {
 		@ConditionalOnBean(Propagator.class)
 		@ConditionalOnMissingBean
 		@Order(Ordered.HIGHEST_PRECEDENCE + 1)
-		public PropagationWebGraphQlInterceptor propagationWebGraphQlInterceptor(Propagator propagator) {
+		PropagationWebGraphQlInterceptor propagationWebGraphQlInterceptor(Propagator propagator) {
 			return new PropagationWebGraphQlInterceptor(propagator);
 		}
 

@@ -134,6 +134,7 @@ class GraphQlObservationAutoConfigurationTests {
 		WebGraphQlHandler webGraphQlHandler() {
 			return mock(WebGraphQlHandler.class);
 		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -143,6 +144,7 @@ class GraphQlObservationAutoConfigurationTests {
 		Propagator propagator() {
 			return mock(Propagator.class);
 		}
+
 	}
 
 }
