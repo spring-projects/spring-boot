@@ -16,11 +16,14 @@
 
 package org.springframework.boot.actuate.autoconfigure.observation.web.reactive;
 
+import java.util.List;
+
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
@@ -37,10 +40,14 @@ import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.server.reactive.observation.DefaultServerRequestObservationConvention;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.filter.reactive.ServerHttpObservationFilter;
 import org.springframework.web.server.ServerWebExchange;
+import org.springframework.web.server.WebFilter;
+import org.springframework.web.server.WebFilterChain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -62,6 +69,16 @@ class WebFluxObservationAutoConfigurationTests {
 	@Test
 	void shouldProvideWebFluxObservationFilter() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ServerHttpObservationFilter.class));
+	}
+
+	@Test
+	void shouldProvideWebFluxObservationFilterOrdered() {
+		this.contextRunner.withBean(FirstWebFilter.class).withBean(ThirdWebFilter.class).run((context) -> {
+			List<WebFilter> webFilters = context.getBeanProvider(WebFilter.class).orderedStream().toList();
+			assertThat(webFilters.get(0)).isInstanceOf(FirstWebFilter.class);
+			assertThat(webFilters.get(1)).isInstanceOf(ServerHttpObservationFilter.class);
+			assertThat(webFilters.get(2)).isInstanceOf(ThirdWebFilter.class);
+		});
 	}
 
 	@Test
@@ -204,6 +221,26 @@ class WebFluxObservationAutoConfigurationTests {
 	}
 
 	static class CustomConvention extends DefaultServerRequestObservationConvention {
+
+	}
+
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	static class FirstWebFilter implements WebFilter {
+
+		@Override
+		public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+			return chain.filter(exchange);
+		}
+
+	}
+
+	@Order(Ordered.HIGHEST_PRECEDENCE + 2)
+	static class ThirdWebFilter implements WebFilter {
+
+		@Override
+		public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
+			return chain.filter(exchange);
+		}
 
 	}
 

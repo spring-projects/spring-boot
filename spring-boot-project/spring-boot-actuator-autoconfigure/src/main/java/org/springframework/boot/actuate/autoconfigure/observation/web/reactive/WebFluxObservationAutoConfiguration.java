@@ -42,6 +42,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.server.reactive.observation.DefaultServerRequestObservationConvention;
 import org.springframework.http.server.reactive.observation.ServerRequestObservationConvention;
@@ -77,6 +78,7 @@ public class WebFluxObservationAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
+	@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 	public ServerHttpObservationFilter webfluxObservationFilter(ObservationRegistry registry,
 			ObjectProvider<ServerRequestObservationConvention> customConvention,
 			ObjectProvider<WebFluxTagsProvider> tagConfigurer,

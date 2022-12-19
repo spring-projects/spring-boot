@@ -207,6 +207,9 @@ When it does so, the orders shown in the following table will be used:
 |===
 | Web Filter | Order
 
+| `ServerHttpObservationFilter` (Micrometer Observability)
+| `Ordered.HIGHEST_PRECEDENCE + 1`
+
 | `WebFilterChainProxy` (Spring Security)
 | `-100`
 
