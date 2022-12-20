@@ -490,6 +490,11 @@ public class ServerProperties {
 		 */
 		private final Remoteip remoteip = new Remoteip();
 
+		/**
+		 * Maximum size of the HTTP response header.
+		 */
+		private DataSize maxHttpResponseHeaderSize = DataSize.ofKilobytes(8);
+
 		public DataSize getMaxHttpFormPostSize() {
 			return this.maxHttpFormPostSize;
 		}
@@ -644,6 +649,14 @@ public class ServerProperties {
 
 		public Remoteip getRemoteip() {
 			return this.remoteip;
+		}
+
+		public DataSize getMaxHttpResponseHeaderSize() {
+			return maxHttpResponseHeaderSize;
+		}
+
+		public void setMaxHttpResponseHeaderSize(DataSize maxHttpResponseHeaderSize) {
+			this.maxHttpResponseHeaderSize = maxHttpResponseHeaderSize;
 		}
 
 		/**
@@ -1096,6 +1109,11 @@ public class ServerProperties {
 		 */
 		private Duration connectionIdleTimeout;
 
+		/**
+		 * Maximum size of the HTTP response header.
+		 */
+		private DataSize maxHttpResponseHeaderSize = DataSize.ofKilobytes(8);
+
 		public Accesslog getAccesslog() {
 			return this.accesslog;
 		}
@@ -1118,6 +1136,14 @@ public class ServerProperties {
 
 		public void setConnectionIdleTimeout(Duration connectionIdleTimeout) {
 			this.connectionIdleTimeout = connectionIdleTimeout;
+		}
+
+		public DataSize getMaxHttpResponseHeaderSize() {
+			return maxHttpResponseHeaderSize;
+		}
+
+		public void setMaxHttpResponseHeaderSize(DataSize maxHttpResponseHeaderSize) {
+			this.maxHttpResponseHeaderSize = maxHttpResponseHeaderSize;
 		}
 
 		/**

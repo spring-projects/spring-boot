@@ -16,12 +16,14 @@
 
 package smoketest.tomcat.web;
 
+import jakarta.servlet.http.HttpServletResponse;
 import smoketest.tomcat.service.HelloWorldService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import smoketest.tomcat.service.HttpHeaderService;
 
 @Controller
 public class SampleController {
@@ -29,10 +31,20 @@ public class SampleController {
 	@Autowired
 	private HelloWorldService helloWorldService;
 
+	@Autowired
+	private HttpHeaderService httpHeaderService;
+
 	@GetMapping("/")
 	@ResponseBody
 	public String helloWorld() {
 		return this.helloWorldService.getHelloMessage();
 	}
 
+	@GetMapping("/max-http-response-header")
+	@ResponseBody
+	public String maxHttpResponseHeader(HttpServletResponse response) {
+		String headerValue = httpHeaderService.getHeaderValue();
+		response.addHeader("x-max-header", headerValue);
+		return this.helloWorldService.getHelloMessage();
+	}
 }

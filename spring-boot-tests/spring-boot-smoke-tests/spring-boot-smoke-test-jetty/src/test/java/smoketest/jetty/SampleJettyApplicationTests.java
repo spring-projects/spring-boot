@@ -22,9 +22,13 @@ import java.util.zip.GZIPInputStream;
 
 import org.junit.jupiter.api.Test;
 
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -32,20 +36,19 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
+import smoketest.jetty.util.RandomStringUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Basic integration tests for demo application.
- *
- * @author Dave Syer
- * @author Andy Wilkinson
- */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@ExtendWith(OutputCaptureExtension.class)
 class SampleJettyApplicationTests {
 
 	@Autowired
 	private TestRestTemplate restTemplate;
+
+	@Value("${server.max-http-request-header-size}")
+	private int maxHttpRequestHeaderSize;
 
 	@Test
 	void testHome() {
@@ -66,4 +69,21 @@ class SampleJettyApplicationTests {
 		}
 	}
 
+	@Test
+	void testMaxHttpResponseHeaderSize(CapturedOutput output) {
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/max-http-response-header", String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+		assertThat(output).contains(
+				"org.eclipse.jetty.server.HttpChannel     : handleException /max-http-response-header org.eclipse.jetty.http.BadMessageException: 500: Response header too large");
+	}
+
+	@Test
+	void testMaxHttpRequestHeaderSize() {
+		String headerValue = RandomStringUtil.getRandomBase64EncodedString(maxHttpRequestHeaderSize + 1);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("x-max-request-header", headerValue);
+		HttpEntity<?> httpEntity = new HttpEntity<>(headers);
+		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET, httpEntity, String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.REQUEST_HEADER_FIELDS_TOO_LARGE);
+	}
 }

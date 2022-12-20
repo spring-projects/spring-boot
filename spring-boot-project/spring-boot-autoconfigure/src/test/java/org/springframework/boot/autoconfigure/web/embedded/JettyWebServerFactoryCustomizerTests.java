@@ -16,15 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web.embedded;
 
-import java.io.File;
-import java.io.IOException;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.SynchronousQueue;
-
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.CustomRequestLog;
@@ -38,7 +29,6 @@ import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.util.thread.ThreadPool;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties.ForwardHeadersStrategy;
 import org.springframework.boot.autoconfigure.web.ServerProperties.Jetty;
@@ -53,6 +43,17 @@ import org.springframework.boot.web.embedded.jetty.JettyWebServer;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.unit.DataSize;
+
+import java.io.File;
+import java.io.IOException;
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.SynchronousQueue;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
@@ -287,6 +288,61 @@ class JettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void customizeMaxRequestHttpHeaderSize() {
+		bind("server.max-http-request-header-size=2048");
+		JettyWebServer server = customizeAndGetServer();
+		List<Integer> requestHeaderSizes = getRequestHeaderSizes(server);
+		assertThat(requestHeaderSizes).containsOnly(2048);
+	}
+
+	@Test
+	void customMaxHttpRequestHeaderSizeIgnoredIfNegative() {
+		bind("server.max-http-request-header-size=-1");
+		JettyWebServer server = customizeAndGetServer();
+		List<Integer> requestHeaderSizes = getRequestHeaderSizes(server);
+		assertThat(requestHeaderSizes).containsOnly(8192);
+	}
+
+	@Test
+	void customMaxHttpRequestHeaderSizeIgnoredIfZero() {
+		bind("server.max-http-request-header-size=0");
+		JettyWebServer server = customizeAndGetServer();
+		List<Integer> requestHeaderSizes = getRequestHeaderSizes(server);
+		assertThat(requestHeaderSizes).containsOnly(8192);
+	}
+
+	@Test
+	void defaultMaxHttpResponseHeaderSize() {
+		JettyWebServer server = customizeAndGetServer();
+		List<Integer> responseHeaderSizes = getResponseHeaderSizes(server);
+		assertThat(responseHeaderSizes).containsOnly(8192);
+	}
+
+	@Test
+	void customizeMaxHttpResponseHeaderSize() {
+		bind("server.jetty.max-http-response-header-size=2KB");
+		JettyWebServer server = customizeAndGetServer();
+		List<Integer> responseHeaderSizes = getResponseHeaderSizes(server);
+		assertThat(responseHeaderSizes).containsOnly(2048);
+	}
+
+	@Test
+	void customMaxHttpResponseHeaderSizeIgnoredIfNegative() {
+		bind("server.jetty.max-http-response-header-size=-1");
+		JettyWebServer server = customizeAndGetServer();
+		List<Integer> responseHeaderSizes = getResponseHeaderSizes(server);
+		assertThat(responseHeaderSizes).containsOnly(8192);
+	}
+
+	@Test
+	void customMaxHttpResponseHeaderSizeIgnoredIfZero() {
+		bind("server.jetty.max-http-response-header-size=0");
+		JettyWebServer server = customizeAndGetServer();
+		List<Integer> responseHeaderSizes = getResponseHeaderSizes(server);
+		assertThat(responseHeaderSizes).containsOnly(8192);
+	}
+
+	@Test
 	void customIdleTimeout() {
 		bind("server.jetty.connection-idle-timeout=60s");
 		JettyWebServer server = customizeAndGetServer();
@@ -303,6 +359,14 @@ class JettyWebServerFactoryCustomizerTests {
 	}
 
 	private List<Integer> getRequestHeaderSizes(JettyWebServer server) {
+		return getHeaderSizes(server, HttpConfiguration::getRequestHeaderSize);
+	}
+
+	private List<Integer> getResponseHeaderSizes(JettyWebServer server) {
+		return getHeaderSizes(server, HttpConfiguration::getResponseHeaderSize);
+	}
+
+	private List<Integer> getHeaderSizes(JettyWebServer server, Function<HttpConfiguration, Integer> provider) {
 		List<Integer> requestHeaderSizes = new ArrayList<>();
 		// Start (and directly stop) server to have connectors available
 		server.start();
@@ -313,7 +377,7 @@ class JettyWebServerFactoryCustomizerTests {
 					.forEach((cf) -> {
 						ConnectionFactory factory = (ConnectionFactory) cf;
 						HttpConfiguration configuration = factory.getHttpConfiguration();
-						requestHeaderSizes.add(configuration.getRequestHeaderSize());
+						requestHeaderSizes.add(provider.apply(configuration));
 					});
 		}
 		return requestHeaderSizes;
