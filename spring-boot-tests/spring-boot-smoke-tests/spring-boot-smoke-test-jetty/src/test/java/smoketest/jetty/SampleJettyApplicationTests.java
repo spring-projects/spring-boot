@@ -40,6 +40,14 @@ import smoketest.jetty.util.RandomStringUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Basic integration tests for demo application.
+ *
+ * @author Dave Syer
+ * @author Andy Wilkinson
+ * @author Florian Storz
+ * @author Michael Weidmann
+ */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ExtendWith(OutputCaptureExtension.class)
 class SampleJettyApplicationTests {

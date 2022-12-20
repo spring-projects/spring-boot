@@ -50,6 +50,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Florian Storz
+ * @author Michael Weidmann
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ExtendWith(OutputCaptureExtension.class)

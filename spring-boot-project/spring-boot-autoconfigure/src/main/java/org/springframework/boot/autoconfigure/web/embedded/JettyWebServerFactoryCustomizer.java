@@ -53,6 +53,8 @@ import org.springframework.util.unit.DataSize;
  * @author Phillip Webb
  * @author HaiTao Zhang
  * @author Rafiullah Hamedy
+ * @author Florian Storz
+ * @author Michael Weidmann
  * @since 2.0.0
  */
 public class JettyWebServerFactoryCustomizer

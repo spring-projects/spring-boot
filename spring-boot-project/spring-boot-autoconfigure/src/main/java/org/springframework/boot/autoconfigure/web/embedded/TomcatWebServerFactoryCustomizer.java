@@ -59,6 +59,8 @@ import java.util.stream.Collectors;
  * @author Rafiullah Hamedy
  * @author Victor Mandujano
  * @author Parviz Rozikov
+ * @author Florian Storz
+ * @author Michael Weidmann
  * @since 2.0.0
  */
 public class TomcatWebServerFactoryCustomizer
