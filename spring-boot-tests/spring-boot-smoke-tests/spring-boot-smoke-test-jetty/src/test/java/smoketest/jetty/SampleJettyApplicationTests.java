@@ -86,4 +86,5 @@ class SampleJettyApplicationTests {
 		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET, httpEntity, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.REQUEST_HEADER_FIELDS_TOO_LARGE);
 	}
+
 }

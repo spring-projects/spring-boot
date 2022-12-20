@@ -6,14 +6,16 @@ import smoketest.jetty.util.RandomStringUtil;
 
 @Component
 public class HttpHeaderService {
+
 	@Value("${server.jetty.max-http-response-header-size}")
 	private int maxHttpResponseHeaderSize;
 
 	/**
 	 * generate a random byte array that
 	 * <ol>
-	 * 	 <li>is longer than configured <code>server.jetty.max-http-response-header-size</code></li>
-	 * 	 <li>is url encoded by base 64 encode the random value</li>
+	 * <li>is longer than configured
+	 * <code>server.jetty.max-http-response-header-size</code></li>
+	 * <li>is url encoded by base 64 encode the random value</li>
 	 * </ol>
 	 * @return a base64 encoded string of random bytes
 	 */

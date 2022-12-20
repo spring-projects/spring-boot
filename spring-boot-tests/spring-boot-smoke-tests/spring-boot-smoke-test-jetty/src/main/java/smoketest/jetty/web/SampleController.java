@@ -47,4 +47,5 @@ public class SampleController {
 		response.addHeader("x-max-header", headerValue);
 		return this.helloWorldService.getHelloMessage();
 	}
+
 }

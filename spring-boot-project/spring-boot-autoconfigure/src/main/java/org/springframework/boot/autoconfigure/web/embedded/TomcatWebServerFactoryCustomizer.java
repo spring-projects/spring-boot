@@ -96,8 +96,8 @@ public class TomcatWebServerFactoryCustomizer
 				.when(this::isPositive)
 				.to((maxHttpRequestHeaderSize) -> customizeMaxHttpRequestHeaderSize(factory, maxHttpRequestHeaderSize));
 		propertyMapper.from(tomcatProperties::getMaxHttpResponseHeaderSize).whenNonNull().asInt(DataSize::toBytes)
-				.when(this::isPositive)
-				.to((maxHttpResponseHeaderSize) -> customizeMaxHttpResponseHeaderSize(factory, maxHttpResponseHeaderSize));
+				.when(this::isPositive).to((maxHttpResponseHeaderSize) -> customizeMaxHttpResponseHeaderSize(factory,
+						maxHttpResponseHeaderSize));
 		propertyMapper.from(tomcatProperties::getMaxSwallowSize).whenNonNull().asInt(DataSize::toBytes)
 				.to((maxSwallowSize) -> customizeMaxSwallowSize(factory, maxSwallowSize));
 		propertyMapper.from(tomcatProperties::getMaxHttpFormPostSize).asInt(DataSize::toBytes)
@@ -156,7 +156,8 @@ public class TomcatWebServerFactoryCustomizer
 	}
 
 	private void customizeMaxKeepAliveRequests(ConfigurableTomcatWebServerFactory factory, int maxKeepAliveRequests) {
-		customizeHandler(factory, maxKeepAliveRequests, AbstractHttp11Protocol.class, AbstractHttp11Protocol::setMaxKeepAliveRequests);
+		customizeHandler(factory, maxKeepAliveRequests, AbstractHttp11Protocol.class,
+				AbstractHttp11Protocol::setMaxKeepAliveRequests);
 	}
 
 	private void customizeMaxConnections(ConfigurableTomcatWebServerFactory factory, int maxConnections) {
@@ -164,7 +165,8 @@ public class TomcatWebServerFactoryCustomizer
 	}
 
 	private void customizeConnectionTimeout(ConfigurableTomcatWebServerFactory factory, Duration connectionTimeout) {
-		customizeHandler(factory, (int) connectionTimeout.toMillis(), AbstractProtocol.class, AbstractProtocol::setConnectionTimeout);
+		customizeHandler(factory, (int) connectionTimeout.toMillis(), AbstractProtocol.class,
+				AbstractProtocol::setConnectionTimeout);
 	}
 
 	private void customizeRelaxedPathChars(ConfigurableTomcatWebServerFactory factory, String relaxedChars) {
@@ -236,19 +238,23 @@ public class TomcatWebServerFactoryCustomizer
 
 	private void customizeMaxHttpRequestHeaderSize(ConfigurableTomcatWebServerFactory factory,
 			int maxHttpRequestHeaderSize) {
-		customizeHandler(factory, maxHttpRequestHeaderSize, AbstractHttp11Protocol.class, AbstractHttp11Protocol::setMaxHttpRequestHeaderSize);
+		customizeHandler(factory, maxHttpRequestHeaderSize, AbstractHttp11Protocol.class,
+				AbstractHttp11Protocol::setMaxHttpRequestHeaderSize);
 	}
 
 	private void customizeMaxHttpResponseHeaderSize(ConfigurableTomcatWebServerFactory factory,
 			int maxHttpResponseHeaderSize) {
-		customizeHandler(factory, maxHttpResponseHeaderSize, AbstractHttp11Protocol.class, AbstractHttp11Protocol::setMaxHttpResponseHeaderSize);
+		customizeHandler(factory, maxHttpResponseHeaderSize, AbstractHttp11Protocol.class,
+				AbstractHttp11Protocol::setMaxHttpResponseHeaderSize);
 	}
 
 	private void customizeMaxSwallowSize(ConfigurableTomcatWebServerFactory factory, int maxSwallowSize) {
-		customizeHandler(factory, maxSwallowSize, AbstractHttp11Protocol.class, AbstractHttp11Protocol::setMaxSwallowSize);
+		customizeHandler(factory, maxSwallowSize, AbstractHttp11Protocol.class,
+				AbstractHttp11Protocol::setMaxSwallowSize);
 	}
 
-	private <T extends ProtocolHandler> void customizeHandler(ConfigurableTomcatWebServerFactory factory, int value, Class<T> type, ObjIntConsumer<T> consumer) {
+	private <T extends ProtocolHandler> void customizeHandler(ConfigurableTomcatWebServerFactory factory, int value,
+			Class<T> type, ObjIntConsumer<T> consumer) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
 			if (type.isAssignableFrom(handler.getClass())) {
