@@ -16,10 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web.embedded;
 
-import java.time.Duration;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.apache.catalina.Lifecycle;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.ErrorReportValve;
@@ -29,7 +25,6 @@ import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.UpgradeProtocol;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.coyote.http2.Http2Protocol;
-
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeAttribute;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -43,6 +38,11 @@ import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 import org.springframework.util.unit.DataSize;
+
+import java.time.Duration;
+import java.util.List;
+import java.util.function.ObjIntConsumer;
+import java.util.stream.Collectors;
 
 /**
  * Customization for Tomcat-specific features common for both Servlet and Reactive
@@ -59,6 +59,8 @@ import org.springframework.util.unit.DataSize;
  * @author Rafiullah Hamedy
  * @author Victor Mandujano
  * @author Parviz Rozikov
+ * @author Florian Storz
+ * @author Michael Weidmann
  * @since 2.0.0
  */
 public class TomcatWebServerFactoryCustomizer
@@ -95,6 +97,9 @@ public class TomcatWebServerFactoryCustomizer
 		propertyMapper.from(this.serverProperties.getMaxHttpRequestHeaderSize()).whenNonNull().asInt(DataSize::toBytes)
 				.when(this::isPositive)
 				.to((maxHttpRequestHeaderSize) -> customizeMaxHttpRequestHeaderSize(factory, maxHttpRequestHeaderSize));
+		propertyMapper.from(tomcatProperties::getMaxHttpResponseHeaderSize).whenNonNull().asInt(DataSize::toBytes)
+				.when(this::isPositive).to((maxHttpResponseHeaderSize) -> customizeMaxHttpResponseHeaderSize(factory,
+						maxHttpResponseHeaderSize));
 		propertyMapper.from(tomcatProperties::getMaxSwallowSize).whenNonNull().asInt(DataSize::toBytes)
 				.to((maxSwallowSize) -> customizeMaxSwallowSize(factory, maxSwallowSize));
 		propertyMapper.from(tomcatProperties::getMaxHttpFormPostSize).asInt(DataSize::toBytes)
@@ -129,22 +134,14 @@ public class TomcatWebServerFactoryCustomizer
 		return value > 0;
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void customizeAcceptCount(ConfigurableTomcatWebServerFactory factory, int acceptCount) {
-		factory.addConnectorCustomizers((connector) -> {
-			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractProtocol<?> protocol) {
-				protocol.setAcceptCount(acceptCount);
-			}
-		});
+		customizeHandler(factory, acceptCount, AbstractProtocol.class, AbstractProtocol::setAcceptCount);
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void customizeProcessorCache(ConfigurableTomcatWebServerFactory factory, int processorCache) {
-		factory.addConnectorCustomizers((connector) -> {
-			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractProtocol) {
-				((AbstractProtocol<?>) handler).setProcessorCache(processorCache);
-			}
-		});
+		customizeHandler(factory, processorCache, AbstractProtocol.class, AbstractProtocol::setProcessorCache);
 	}
 
 	private void customizeKeepAliveTimeout(ConfigurableTomcatWebServerFactory factory, Duration keepAliveTimeout) {
@@ -161,31 +158,21 @@ public class TomcatWebServerFactoryCustomizer
 		});
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void customizeMaxKeepAliveRequests(ConfigurableTomcatWebServerFactory factory, int maxKeepAliveRequests) {
-		factory.addConnectorCustomizers((connector) -> {
-			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractHttp11Protocol<?> protocol) {
-				protocol.setMaxKeepAliveRequests(maxKeepAliveRequests);
-			}
-		});
+		customizeHandler(factory, maxKeepAliveRequests, AbstractHttp11Protocol.class,
+				AbstractHttp11Protocol::setMaxKeepAliveRequests);
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void customizeMaxConnections(ConfigurableTomcatWebServerFactory factory, int maxConnections) {
-		factory.addConnectorCustomizers((connector) -> {
-			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractProtocol<?> protocol) {
-				protocol.setMaxConnections(maxConnections);
-			}
-		});
+		customizeHandler(factory, maxConnections, AbstractProtocol.class, AbstractProtocol::setMaxConnections);
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void customizeConnectionTimeout(ConfigurableTomcatWebServerFactory factory, Duration connectionTimeout) {
-		factory.addConnectorCustomizers((connector) -> {
-			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractProtocol<?> protocol) {
-				protocol.setConnectionTimeout((int) connectionTimeout.toMillis());
-			}
-		});
+		customizeHandler(factory, (int) connectionTimeout.toMillis(), AbstractProtocol.class,
+				AbstractProtocol::setConnectionTimeout);
 	}
 
 	private void customizeRelaxedPathChars(ConfigurableTomcatWebServerFactory factory, String relaxedChars) {
@@ -248,40 +235,40 @@ public class TomcatWebServerFactoryCustomizer
 
 	@SuppressWarnings("rawtypes")
 	private void customizeMaxThreads(ConfigurableTomcatWebServerFactory factory, int maxThreads) {
-		factory.addConnectorCustomizers((connector) -> {
-			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractProtocol protocol) {
-				protocol.setMaxThreads(maxThreads);
-			}
-		});
+		customizeHandler(factory, maxThreads, AbstractProtocol.class, AbstractProtocol::setMaxThreads);
 	}
 
 	@SuppressWarnings("rawtypes")
 	private void customizeMinThreads(ConfigurableTomcatWebServerFactory factory, int minSpareThreads) {
-		factory.addConnectorCustomizers((connector) -> {
-			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractProtocol protocol) {
-				protocol.setMinSpareThreads(minSpareThreads);
-			}
-		});
+		customizeHandler(factory, minSpareThreads, AbstractProtocol.class, AbstractProtocol::setMinSpareThreads);
 	}
 
 	@SuppressWarnings("rawtypes")
 	private void customizeMaxHttpRequestHeaderSize(ConfigurableTomcatWebServerFactory factory,
 			int maxHttpRequestHeaderSize) {
-		factory.addConnectorCustomizers((connector) -> {
-			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractHttp11Protocol protocol) {
-				protocol.setMaxHttpRequestHeaderSize(maxHttpRequestHeaderSize);
-			}
-		});
+		customizeHandler(factory, maxHttpRequestHeaderSize, AbstractHttp11Protocol.class,
+				AbstractHttp11Protocol::setMaxHttpRequestHeaderSize);
 	}
 
+	@SuppressWarnings("rawtypes")
+	private void customizeMaxHttpResponseHeaderSize(ConfigurableTomcatWebServerFactory factory,
+			int maxHttpResponseHeaderSize) {
+		customizeHandler(factory, maxHttpResponseHeaderSize, AbstractHttp11Protocol.class,
+				AbstractHttp11Protocol::setMaxHttpResponseHeaderSize);
+	}
+
+	@SuppressWarnings("rawtypes")
 	private void customizeMaxSwallowSize(ConfigurableTomcatWebServerFactory factory, int maxSwallowSize) {
+		customizeHandler(factory, maxSwallowSize, AbstractHttp11Protocol.class,
+				AbstractHttp11Protocol::setMaxSwallowSize);
+	}
+
+	private <T extends ProtocolHandler> void customizeHandler(ConfigurableTomcatWebServerFactory factory, int value,
+			Class<T> type, ObjIntConsumer<T> consumer) {
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
-			if (handler instanceof AbstractHttp11Protocol<?> protocol) {
-				protocol.setMaxSwallowSize(maxSwallowSize);
+			if (type.isAssignableFrom(handler.getClass())) {
+				consumer.accept(type.cast(handler), value);
 			}
 		});
 	}
