@@ -209,7 +209,7 @@ public class LocalDevToolsAutoConfiguration {
 		public void onApplicationEvent(ClassPathChangedEvent event) {
 			if (event.isRestartRequired()) {
 				logger.info(LogMessage.format("Restarting due to %s", event.overview()));
-				logger.debug(LogMessage.of(() -> "Change set: %s" + event.getChangeSet()));
+				logger.debug(LogMessage.of(() -> "Change set: " + event.getChangeSet()));
 				Restarter.getInstance().restart(new FileWatchingFailureHandler(this.fileSystemWatcherFactory));
 			}
 		}
