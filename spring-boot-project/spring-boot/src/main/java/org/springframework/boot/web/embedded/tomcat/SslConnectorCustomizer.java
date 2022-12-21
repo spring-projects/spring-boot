@@ -143,10 +143,8 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 		String keystoreType = (ssl.getKeyStoreType() != null) ? ssl.getKeyStoreType() : "JKS";
 		String keystoreLocation = ssl.getKeyStore();
 		if (keystoreType.equalsIgnoreCase("PKCS11")) {
-			if (keystoreLocation != null && !keystoreLocation.isEmpty()) {
-				throw new IllegalArgumentException("Input keystore location is not valid for keystore type 'PKCS11': '"
-						+ keystoreLocation + "'. Must be undefined / null.");
-			}
+			Assert.state(!StringUtils.hasText(keystoreLocation),
+					() -> "Keystore location '" + keystoreLocation + "' must be empty or null for PKCS11 key stores");
 		}
 		else {
 			try {

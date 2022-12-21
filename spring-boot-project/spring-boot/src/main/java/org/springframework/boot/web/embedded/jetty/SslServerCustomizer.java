@@ -44,6 +44,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link JettyServerCustomizer} that configures SSL on the given Jetty server instance.
@@ -224,10 +225,8 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		String keystoreType = (ssl.getKeyStoreType() != null) ? ssl.getKeyStoreType() : "JKS";
 		String keystoreLocation = ssl.getKeyStore();
 		if (keystoreType.equalsIgnoreCase("PKCS11")) {
-			if (keystoreLocation != null && !keystoreLocation.isEmpty()) {
-				throw new IllegalArgumentException("Input keystore location is not valid for keystore type 'PKCS11': '"
-						+ keystoreLocation + "'. Must be undefined / null.");
-			}
+			Assert.state(!StringUtils.hasText(keystoreLocation),
+					() -> "Keystore location '" + keystoreLocation + "' must be empty or null for PKCS11 key stores");
 		}
 		else {
 			try {
@@ -240,7 +239,7 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		}
 		factory.setKeyStoreType(keystoreType);
 		if (ssl.getKeyStoreProvider() != null) {
-			factory.setKeyStoreProvider(ssl.getKeyStoreProvider());
+			factory.setKeyStoreProvider(this.ssl.getKeyStoreProvider());
 		}
 	}
 
