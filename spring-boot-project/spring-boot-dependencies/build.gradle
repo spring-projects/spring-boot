@@ -173,7 +173,7 @@ bom {
 			]
 		}
 	}
-	library("Couchbase Client", "3.4.0") {
+	library("Couchbase Client", "3.4.1") {
 		group("com.couchbase.client") {
 			modules = [
 				"java-client"
