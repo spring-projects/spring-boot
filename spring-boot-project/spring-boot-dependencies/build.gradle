@@ -47,7 +47,7 @@ bom {
 			]
 		}
 	}
-	library("AspectJ", "1.9.9.1") {
+	library("AspectJ", "1.9.19") {
 		group("org.aspectj") {
 			modules = [
 				"aspectjrt",
