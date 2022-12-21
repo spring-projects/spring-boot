@@ -501,7 +501,8 @@ class IntegrationAutoConfigurationTests {
 				.withBean(ObservationRegistry.class, ObservationRegistry::create)
 				.withBean(BridgeHandler.class, BridgeHandler::new).run((context) -> {
 					assertThat(context).getBean("testHandler").extracting("observationRegistry").isNotNull();
-					assertThat(context).getBean(BridgeHandler.class).extracting("observationRegistry").isNull();
+					assertThat(context).getBean(BridgeHandler.class).extracting("observationRegistry")
+							.isEqualTo(ObservationRegistry.NOOP);
 				});
 	}
 
