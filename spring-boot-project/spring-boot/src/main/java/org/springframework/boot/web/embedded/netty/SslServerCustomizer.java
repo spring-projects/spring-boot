@@ -48,7 +48,9 @@ import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslConfigurationValidator;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.boot.web.server.WebServerException;
+import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link NettyServerCustomizer} that configures SSL for the given Reactor Netty server
@@ -169,25 +171,26 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 		return loadStore(type, provider, resource, password);
 	}
 
-	private KeyStore loadStore(String type, String provider, String resource, String password) throws Exception {
-		type = (type != null) ? type : "JKS";
-		KeyStore store = (provider != null) ? KeyStore.getInstance(type, provider) : KeyStore.getInstance(type);
-		if (type.equalsIgnoreCase("PKCS11")) {
-			if (resource != null && !resource.isEmpty()) {
-				throw new IllegalArgumentException("Input keystore location is not valid for keystore type 'PKCS11': '"
-						+ resource + "'. Must be undefined / null.");
-			}
-			store.load(null, (password != null) ? password.toCharArray() : null);
+	private KeyStore loadStore(String keystoreType, String provider, String keystoreLocation, String password)
+			throws Exception {
+		keystoreType = (keystoreType != null) ? keystoreType : "JKS";
+		char[] passwordChars = (password != null) ? password.toCharArray() : null;
+		KeyStore store = (provider != null) ? KeyStore.getInstance(keystoreType, provider)
+				: KeyStore.getInstance(keystoreType);
+		if (keystoreType.equalsIgnoreCase("PKCS11")) {
+			Assert.state(!StringUtils.hasText(keystoreLocation),
+					() -> "Keystore location '" + keystoreLocation + "' must be empty or null for PKCS11 key stores");
+			store.load(null, passwordChars);
 		}
 		else {
 			try {
-				URL url = ResourceUtils.getURL(resource);
+				URL url = ResourceUtils.getURL(keystoreLocation);
 				try (InputStream stream = url.openStream()) {
-					store.load(stream, (password != null) ? password.toCharArray() : null);
+					store.load(stream, passwordChars);
 				}
 			}
 			catch (Exception ex) {
-				throw new WebServerException("Could not load key store '" + resource + "'", ex);
+				throw new WebServerException("Could not load key store '" + keystoreLocation + "'", ex);
 			}
 		}
 		return store;

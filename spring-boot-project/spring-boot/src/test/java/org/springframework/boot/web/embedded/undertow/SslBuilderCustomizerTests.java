@@ -18,16 +18,13 @@ package org.springframework.boot.web.embedded.undertow;
 
 import java.net.InetAddress;
 import java.security.NoSuchProviderException;
-import java.security.Provider;
-import java.security.Security;
 
 import javax.net.ssl.KeyManager;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.web.embedded.netty.MockPkcs11SecurityProvider;
+import org.springframework.boot.web.embedded.test.MockPkcs11Security;
+import org.springframework.boot.web.embedded.test.MockPkcs11SecurityProvider;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -43,24 +40,8 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
  * @author Raheela Aslam
  * @author Cyril Dangerville
  */
+@MockPkcs11Security
 class SslBuilderCustomizerTests {
-
-	private static final Provider PKCS11_PROVIDER = new MockPkcs11SecurityProvider();
-
-	@BeforeAll
-	static void beforeAllTests() {
-		/*
-		 * Add the mock Java security provider for PKCS#11-related unit tests.
-		 *
-		 */
-		Security.addProvider(PKCS11_PROVIDER);
-	}
-
-	@AfterAll
-	static void afterAllTests() {
-		// Remove the provider previously added in setup()
-		Security.removeProvider(PKCS11_PROVIDER.getName());
-	}
 
 	@Test
 	void getKeyManagersWhenAliasIsNullShouldNotDecorate() throws Exception {
@@ -100,11 +81,8 @@ class SslBuilderCustomizerTests {
 				.withMessageContaining("com.example.TrustStoreProvider");
 	}
 
-	/**
-	 * Null/undefined keystore is invalid unless keystore type is PKCS11.
-	 */
 	@Test
-	void getKeyManagersWhenSslIsEnabledWithNoKeyStoreAndNotPkcs11ThrowsWebServerException() throws Exception {
+	void getKeyManagersWhenSslIsEnabledWithNoKeyStoreAndNotPkcs11ThrowsException() throws Exception {
 		Ssl ssl = new Ssl();
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
 		assertThatIllegalStateException()
@@ -112,14 +90,11 @@ class SslBuilderCustomizerTests {
 				.withCauseInstanceOf(WebServerException.class).withMessageContaining("Could not load key store 'null'");
 	}
 
-	/**
-	 * No keystore path should be defined if keystore type is PKCS#11.
-	 */
 	@Test
-	void configureSslWhenSslIsEnabledWithPkcs11AndKeyStoreThrowsIllegalArgumentException() throws Exception {
+	void configureSslWhenSslIsEnabledWithPkcs11AndKeyStoreThrowsException() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setKeyStoreType("PKCS11");
-		ssl.setKeyStoreProvider(PKCS11_PROVIDER.getName());
+		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
 		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setKeyPassword("password");
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
@@ -133,10 +108,9 @@ class SslBuilderCustomizerTests {
 	void customizeWhenSslIsEnabledWithPkcs11AndKeyStoreProvider() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setKeyStoreType("PKCS11");
-		ssl.setKeyStoreProvider(PKCS11_PROVIDER.getName());
+		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
 		ssl.setKeyStorePassword("1234");
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
-		// Loading the KeyManagerFactory should be successful
 		assertThatNoException()
 				.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null));
 	}

@@ -21,8 +21,6 @@ import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.Provider;
-import java.security.Security;
 import java.security.cert.CertificateException;
 import java.util.Set;
 
@@ -31,9 +29,7 @@ import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.tomcat.util.net.SSLHostConfig;
 import org.apache.tomcat.util.net.SSLHostConfigCertificate;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,7 +37,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
-import org.springframework.boot.web.embedded.netty.MockPkcs11SecurityProvider;
+import org.springframework.boot.web.embedded.test.MockPkcs11Security;
+import org.springframework.boot.web.embedded.test.MockPkcs11SecurityProvider;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.boot.web.server.WebServerException;
@@ -50,7 +47,7 @@ import org.springframework.core.io.Resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -65,28 +62,12 @@ import static org.mockito.Mockito.mock;
  */
 @ExtendWith(OutputCaptureExtension.class)
 @DirtiesUrlFactories
+@MockPkcs11Security
 class SslConnectorCustomizerTests {
-
-	private static final Provider PKCS11_PROVIDER = new MockPkcs11SecurityProvider();
 
 	private Tomcat tomcat;
 
 	private Connector connector;
-
-	@BeforeAll
-	static void beforeAllTests() {
-		/*
-		 * Add the mock Java security provider for PKCS#11-related unit tests.
-		 *
-		 */
-		Security.addProvider(PKCS11_PROVIDER);
-	}
-
-	@AfterAll
-	static void afterAllTests() {
-		// Remove the provider previously added in setup()
-		Security.removeProvider(PKCS11_PROVIDER.getName());
-	}
 
 	@BeforeEach
 	void setup() {
@@ -201,39 +182,32 @@ class SslConnectorCustomizerTests {
 		assertThat(output).doesNotContain("Password verification failed");
 	}
 
-	/**
-	 * Null/undefined keystore is invalid unless keystore type is PKCS11.
-	 */
 	@Test
-	void customizeWhenSslIsEnabledWithNoKeyStoreAndNotPkcs11ThrowsWebServerException() {
+	void customizeWhenSslIsEnabledWithNoKeyStoreAndNotPkcs11ThrowsException() {
 		assertThatExceptionOfType(WebServerException.class)
 				.isThrownBy(() -> new SslConnectorCustomizer(new Ssl(), null).customize(this.tomcat.getConnector()))
 				.withMessageContaining("Could not load key store 'null'");
 	}
 
-	/**
-	 * No keystore path should be defined if keystore type is PKCS#11.
-	 */
 	@Test
-	void customizeWhenSslIsEnabledWithPkcs11AndKeyStoreThrowsIllegalArgumentException() {
+	void customizeWhenSslIsEnabledWithPkcs11AndKeyStoreThrowsException() {
 		Ssl ssl = new Ssl();
 		ssl.setKeyStoreType("PKCS11");
-		ssl.setKeyStoreProvider(PKCS11_PROVIDER.getName());
+		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
 		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setKeyPassword("password");
 		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl, null);
-		assertThatIllegalArgumentException().isThrownBy(() -> customizer.customize(this.tomcat.getConnector()))
-				.withMessageContaining("Input keystore location is not valid for keystore type 'PKCS11'");
+		assertThatIllegalStateException().isThrownBy(() -> customizer.customize(this.tomcat.getConnector()))
+				.withMessageContaining("must be empty or null for PKCS11 key stores");
 	}
 
 	@Test
 	void customizeWhenSslIsEnabledWithPkcs11AndKeyStoreProvider() {
 		Ssl ssl = new Ssl();
 		ssl.setKeyStoreType("PKCS11");
-		ssl.setKeyStoreProvider(PKCS11_PROVIDER.getName());
+		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
 		ssl.setKeyStorePassword("1234");
 		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl, null);
-		// Loading the KeyManagerFactory should be successful
 		assertThatNoException().isThrownBy(() -> customizer.customize(this.tomcat.getConnector()));
 	}
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.embedded.netty;
+package org.springframework.boot.web.embedded.test;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Mock Security Provider for testing purposes only (e.g. SslServerCustomizerTests class)
+ * Mock Security Provider for testing purposes.
  *
  * @author Cyril Dangerville
  */
@@ -45,7 +45,7 @@ public class MockKeyStoreSpi extends KeyStoreSpi {
 			KEYGEN.initialize(2048);
 		}
 		catch (NoSuchAlgorithmException ex) {
-			throw new RuntimeException(ex);
+			throw new IllegalStateException(ex);
 		}
 	}
 
@@ -99,8 +99,6 @@ public class MockKeyStoreSpi extends KeyStoreSpi {
 
 	@Override
 	public boolean engineContainsAlias(String alias) {
-		// contains any required alias, for testing purposes
-		// Add alias to aliases list on the fly
 		this.aliases.put(alias, KEYGEN.generateKeyPair());
 		return true;
 	}
@@ -112,7 +110,6 @@ public class MockKeyStoreSpi extends KeyStoreSpi {
 
 	@Override
 	public boolean engineIsKeyEntry(String alias) {
-		// Handle all keystore entries as key entries
 		return this.aliases.containsKey(alias);
 	}
 
@@ -133,7 +130,6 @@ public class MockKeyStoreSpi extends KeyStoreSpi {
 
 	@Override
 	public void engineLoad(InputStream stream, char[] password) {
-		// Nothing to do, this is a mock keystore implementation, for testing only.
 	}
 
 }
