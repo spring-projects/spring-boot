@@ -132,7 +132,7 @@ public class ApplicationRunner extends DefaultTask {
 	}
 
 	private void awaitLogging(Process process) {
-		long end = System.currentTimeMillis() + 30000;
+		long end = System.currentTimeMillis() + 60000;
 		String expectedLogging = this.expectedLogging.get();
 		List<String> outputLines = Collections.emptyList();
 		while (System.currentTimeMillis() < end) {
@@ -147,7 +147,7 @@ public class ApplicationRunner extends DefaultTask {
 			}
 		}
 		StringBuilder message = new StringBuilder(
-				"After 30 seconds '" + expectedLogging + "' had not be logged in the following output:\n\n");
+				"After 60 seconds '" + expectedLogging + "' had not be logged in the following output:\n\n");
 		outputLines.forEach((line) -> message.append(line).append("\n"));
 		throw new IllegalStateException(message.toString());
 	}
