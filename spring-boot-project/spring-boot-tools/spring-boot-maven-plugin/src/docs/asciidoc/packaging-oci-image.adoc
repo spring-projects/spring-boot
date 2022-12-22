@@ -185,7 +185,8 @@ The value supplied will be passed unvalidated to Docker when creating the builde
 | `false`
 
 | `tags`
-|One or more additional tags to apply to the generated image. The values provided to the `tags` option should be full image references in the form of `[image name]:[tag]` or `[repository]/[image name]:[tag]`.
+| One or more additional tags to apply to the generated image.
+The values provided to the `tags` option should be full image references in the form of `[image name]:[tag]` or `[repository]/[image name]:[tag]`.
 |
 
 | `caches`
