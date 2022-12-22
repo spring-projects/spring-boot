@@ -38,6 +38,7 @@ import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
+import ch.qos.logback.core.util.StatusPrinter;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -110,6 +111,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		ConversionService conversionService = ApplicationConversionService.getSharedInstance();
 		this.environment.setConversionService((ConfigurableConversionService) conversionService);
 		this.initializationContext = new LoggingInitializationContext(this.environment);
+		StatusPrinter.setPrintStream(System.out);
 	}
 
 	@AfterEach
@@ -663,6 +665,14 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		BeanFactoryInitializationAotContribution contribution = this.loggingSystem.processAheadOfTime(null);
 		assertThat(context.getObject(BeanFactoryInitializationAotContribution.class.getName())).isNull();
 		assertThat(contribution).isNotNull();
+	}
+
+	@Test // gh-33610
+	void springProfileIfNestedWithinSecondPhaseElementSanityChecker(CapturedOutput output) {
+		this.loggingSystem.beforeInitialize();
+		initialize(this.initializationContext, "classpath:logback-springprofile-in-root.xml", null);
+		this.logger.info("Hello world");
+		assertThat(output).contains("<springProfile> elements cannot be nested within an");
 	}
 
 	private void initialize(LoggingInitializationContext context, String configLocation, LogFile logFile) {

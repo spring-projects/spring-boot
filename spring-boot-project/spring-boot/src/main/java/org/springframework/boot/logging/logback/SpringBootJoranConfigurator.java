@@ -83,6 +83,12 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 	}
 
 	@Override
+	protected void sanityCheck(Model topModel) {
+		super.sanityCheck(topModel);
+		performCheck(new SpringProfileIfNestedWithinSecondPhaseElementSanityChecker(), topModel);
+	}
+
+	@Override
 	protected void addModelHandlerAssociations(DefaultProcessor defaultProcessor) {
 		defaultProcessor.addHandler(SpringPropertyModel.class,
 				(handlerContext, handlerMic) -> new SpringPropertyModelHandler(this.context,
