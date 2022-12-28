@@ -51,6 +51,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
+import org.xml.sax.Attributes;
 
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -72,8 +73,6 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
-
-import org.xml.sax.Attributes;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
