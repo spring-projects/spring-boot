@@ -188,7 +188,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		if (isAlreadyInitialized(loggerContext)) {
 			return;
 		}
-		if (!initializeFromAotGeneratedArtifactsIfPossible(initializationContext, configurators, logFile)) {
+		if (!initializeFromAotGeneratedArtifactsIfPossible(initializationContext, this.configurators, logFile)) {
 			super.initialize(initializationContext, configLocation, logFile);
 		}
 		loggerContext.getTurboFilterList().remove(FILTER);
@@ -265,7 +265,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	private void configureByResourceUrl(LoggingInitializationContext initializationContext, LoggerContext loggerContext,
 			URL url) throws JoranException {
 		if (url.toString().endsWith("xml")) {
-			JoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext, configurators);
+			JoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext, this.configurators);
 			configurator.setContext(loggerContext);
 			configurator.doConfigure(url);
 		}
@@ -421,7 +421,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 				.getObject(key);
 		context.removeObject(key);
 		this.configurators = beanFactory.getBeansOfType(JoranConfigurator.class).values();
-		this.configurators.forEach(configurator -> configurator.setContext(context));
+		this.configurators.forEach((configurator) -> configurator.setContext(context));
 		return contribution;
 	}
 
