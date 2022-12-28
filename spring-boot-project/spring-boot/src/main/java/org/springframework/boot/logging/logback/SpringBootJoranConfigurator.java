@@ -114,7 +114,7 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		ruleStore.addRule(new ElementSelector("configuration/springProperty"), SpringPropertyAction::new);
 		ruleStore.addRule(new ElementSelector("*/springProfile"), SpringProfileAction::new);
 		ruleStore.addTransparentPathPart("springProfile");
-		thi.configurators.forEach((configurator) -> configurator.addElementSelectorAndActionAssociations(ruleStore));
+		this.configurators.forEach((configurator) -> configurator.addElementSelectorAndActionAssociations(ruleStore));
 	}
 
 	boolean configureUsingAotGeneratedArtifacts() {
