@@ -663,9 +663,8 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void whenContextHasNoAotContributionThenProcessAheadOfTimeReturnsNull() {
-		BeanFactoryInitializationAotContribution contribution = this.loggingSystem.processAheadOfTime(
-				new DefaultListableBeanFactory()
-		);
+		BeanFactoryInitializationAotContribution contribution = this.loggingSystem
+				.processAheadOfTime(new DefaultListableBeanFactory());
 		assertThat(contribution).isNull();
 	}
 
@@ -674,9 +673,8 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		LoggerContext context = ((LoggerContext) LoggerFactory.getILoggerFactory());
 		context.putObject(BeanFactoryInitializationAotContribution.class.getName(),
 				mock(BeanFactoryInitializationAotContribution.class));
-		BeanFactoryInitializationAotContribution contribution = this.loggingSystem.processAheadOfTime(
-				new DefaultListableBeanFactory()
-		);
+		BeanFactoryInitializationAotContribution contribution = this.loggingSystem
+				.processAheadOfTime(new DefaultListableBeanFactory());
 		assertThat(context.getObject(BeanFactoryInitializationAotContribution.class.getName())).isNull();
 		assertThat(contribution).isNotNull();
 	}
@@ -687,7 +685,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		context.putObject(BeanFactoryInitializationAotContribution.class.getName(),
 				mock(BeanFactoryInitializationAotContribution.class));
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		beanFactory.registerSingleton("joranConfigurator1", new JoranConfigurator(){
+		beanFactory.registerSingleton("joranConfigurator1", new JoranConfigurator() {
 			@Override
 			public void addElementSelectorAndActionAssociations(RuleStore ruleStore) {
 				ruleStore.addRule(new ElementSelector("*/rule1"), () -> new Action() {
@@ -710,9 +708,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 				});
 			}
 		});
-		this.loggingSystem.processAheadOfTime(
-				beanFactory
-		);
+		this.loggingSystem.processAheadOfTime(beanFactory);
 		this.loggingSystem.beforeInitialize();
 		initialize(this.initializationContext, "classpath:logback-custom-rules.xml", null);
 		assertThat(output).doesNotContain("Ignoring unknown property [rule1] in [ch.qos.logback.classic.LoggerContext]")

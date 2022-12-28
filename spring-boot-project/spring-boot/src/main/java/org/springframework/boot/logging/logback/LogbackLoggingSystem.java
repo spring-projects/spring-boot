@@ -200,7 +200,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	private boolean initializeFromAotGeneratedArtifactsIfPossible(LoggingInitializationContext initializationContext,
-																  Collection<JoranConfigurator> configurators, LogFile logFile) {
+			Collection<JoranConfigurator> configurators, LogFile logFile) {
 		if (!AotDetector.useGeneratedArtifacts()) {
 			return false;
 		}
@@ -209,7 +209,8 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		}
 		LoggerContext loggerContext = getLoggerContext();
 		stopAndReset(loggerContext);
-		SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext, configurators);
+		SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext,
+				configurators);
 		configurator.setContext(loggerContext);
 		return configurator.configureUsingAotGeneratedArtifacts();
 	}

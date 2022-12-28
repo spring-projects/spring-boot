@@ -78,13 +78,15 @@ import org.springframework.util.function.SingletonSupplier;
 class SpringBootJoranConfigurator extends JoranConfigurator {
 
 	private final LoggingInitializationContext initializationContext;
+
 	private final Collection<JoranConfigurator> configurators;
 
 	SpringBootJoranConfigurator(LoggingInitializationContext initializationContext) {
 		this(initializationContext, Collections.emptyList());
 	}
 
-	SpringBootJoranConfigurator(LoggingInitializationContext initializationContext, Collection<JoranConfigurator> configurators) {
+	SpringBootJoranConfigurator(LoggingInitializationContext initializationContext,
+			Collection<JoranConfigurator> configurators) {
 		this.initializationContext = initializationContext;
 		this.configurators = configurators;
 	}
