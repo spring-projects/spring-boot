@@ -114,7 +114,7 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		ruleStore.addRule(new ElementSelector("configuration/springProperty"), SpringPropertyAction::new);
 		ruleStore.addRule(new ElementSelector("*/springProfile"), SpringProfileAction::new);
 		ruleStore.addTransparentPathPart("springProfile");
-		configurators.forEach(configurator -> configurator.addElementSelectorAndActionAssociations(ruleStore));
+		thi.configurators.forEach((configurator) -> configurator.addElementSelectorAndActionAssociations(ruleStore));
 	}
 
 	boolean configureUsingAotGeneratedArtifacts() {
@@ -134,7 +134,7 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 			getContext().putObject(BeanFactoryInitializationAotContribution.class.getName(),
 					new LogbackConfigurationAotContribution(model, getModelInterpretationContext(), getContext()));
 		}
-		configurators.forEach(configurator -> configurator.processModel(model));
+		this.configurators.forEach((configurator) -> configurator.processModel(model));
 	}
 
 	private boolean isAotProcessingInProgress() {
