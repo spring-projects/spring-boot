@@ -273,6 +273,13 @@ public final class EndpointRequest {
 					.collect(Collectors.toCollection(ArrayList::new));
 		}
 
+		@Override
+		public String toString() {
+			return "Endpoint [includes='" + this.includes + "'" +
+					", excludes='" + this.excludes + "'" +
+					", includeLinks='" + this.includeLinks + "'" +
+					']';
+		}
 	}
 
 	/**
