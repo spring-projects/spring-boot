@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -27,6 +28,7 @@ import org.apache.logging.log4j.util.PropertySource;
  * Spring Boot {@link PropertySource} that disables Log4j2's shutdown hook.
  *
  * @author Andy Wilkinson
+ * @author Ivan Brusentsev
  * @since 2.5.2
  */
 public class SpringBootPropertySource implements PropertySource {
@@ -61,4 +63,8 @@ public class SpringBootPropertySource implements PropertySource {
 		return this.properties.containsKey(key);
 	}
 
+	@Override
+	public Collection<String> getPropertyNames() {
+		return this.properties.keySet();
+	}
 }
