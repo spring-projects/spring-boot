@@ -51,7 +51,17 @@ import org.springframework.boot.buildpack.platform.socket.NamedPipeSocket;
  */
 final class LocalHttpClientTransport extends HttpClientTransport {
 
-	private static final HttpHost LOCAL_DOCKER_HOST = HttpHost.create("docker://localhost");
+	private static final HttpHost LOCAL_DOCKER_HOST;
+
+	static {
+		HttpHost temp;
+		try {
+			temp = HttpHost.create("docker://localhost");
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
+		LOCAL_DOCKER_HOST = temp;
+	}
 
 	private LocalHttpClientTransport(CloseableHttpClient client) {
 		super(client, LOCAL_DOCKER_HOST);
@@ -93,6 +103,11 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 			return LOOPBACK;
 		}
 
+		@Override
+		public String resolveCanonicalHostname(String host) {
+			return LOOPBACK[0].getCanonicalHostName();
+		}
+
 	}
 
 	/**
@@ -116,7 +131,8 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 		}
 
 		@Override
-		public Socket connectSocket(int connectTimeout, Socket sock, HttpHost host, InetSocketAddress remoteAddress,
+		public Socket connectSocket(TimeValue connectTimeout, Socket sock, HttpHost host,
+				InetSocketAddress remoteAddress,
 				InetSocketAddress localAddress, HttpContext context) throws IOException {
 			return sock;
 		}
@@ -131,13 +147,13 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 		private static final int DEFAULT_DOCKER_PORT = 2376;
 
 		@Override
-		public int resolve(HttpHost host) throws UnsupportedSchemeException {
+		public int resolve(HttpHost host) {
 			Args.notNull(host, "HTTP host");
 			String name = host.getSchemeName();
 			if ("docker".equals(name)) {
 				return DEFAULT_DOCKER_PORT;
 			}
-			throw new UnsupportedSchemeException(name + " protocol is not supported");
+			throw new RuntimeException(name + " protocol is not supported");
 		}
 
 	}

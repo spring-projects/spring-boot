@@ -130,13 +130,13 @@ abstract class HttpClientTransport implements HttpTransport {
 		return execute(new HttpDelete(uri));
 	}
 
-	private Response execute(HttpEntityEnclosingRequestBase request, String contentType,
+	private Response execute(HttpUriRequestBase request, String contentType,
 			IOConsumer<OutputStream> writer) {
 		request.setEntity(new WritableHttpEntity(contentType, writer));
 		return execute(request);
 	}
 
-	private Response execute(HttpEntityEnclosingRequestBase request, String registryAuth) {
+	private Response execute(HttpUriRequestBase request, String registryAuth) {
 		if (StringUtils.hasText(registryAuth)) {
 			request.setHeader(REGISTRY_AUTH_HEADER, registryAuth);
 		}
@@ -146,19 +146,21 @@ abstract class HttpClientTransport implements HttpTransport {
 	private Response execute(HttpUriRequest request) {
 		try {
 			CloseableHttpResponse response = this.client.execute(this.host, request);
-			StatusLine statusLine = response.getStatusLine();
-			int statusCode = statusLine.getStatusCode();
+			int statusCode = response.getCode();
 			HttpEntity entity = response.getEntity();
 			if (statusCode >= 400 && statusCode <= 500) {
 				Errors errors = (statusCode != 500) ? getErrorsFromResponse(entity) : null;
 				Message message = getMessageFromResponse(entity);
-				throw new DockerEngineException(this.host.toHostString(), request.getURI(), statusCode,
-						statusLine.getReasonPhrase(), errors, message);
+				throw new DockerEngineException(this.host.toHostString(), request.getUri(), statusCode,
+						response.getReasonPhrase(), errors, message);
 			}
 			return new HttpClientResponse(response);
 		}
 		catch (IOException ex) {
 			throw new DockerConnectionException(this.host.toHostString(), ex);
+		}
+		catch (URISyntaxException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 
@@ -193,7 +195,7 @@ abstract class HttpClientTransport implements HttpTransport {
 		private final IOConsumer<OutputStream> writer;
 
 		WritableHttpEntity(String contentType, IOConsumer<OutputStream> writer) {
-			setContentType(contentType);
+			super(contentType, "UTF-8");
 			this.writer = writer;
 		}
 
@@ -204,7 +206,7 @@ abstract class HttpClientTransport implements HttpTransport {
 
 		@Override
 		public long getContentLength() {
-			if (this.contentType != null && this.contentType.getValue().equals("application/json")) {
+			if (this.getContentType() != null && this.getContentType().equals("application/json")) {
 				return calculateStringContentLength();
 			}
 			return -1;
@@ -236,6 +238,10 @@ abstract class HttpClientTransport implements HttpTransport {
 			}
 		}
 
+		@Override
+		public void close() throws IOException {
+			// nothing to do
+		}
 	}
 
 	/**
