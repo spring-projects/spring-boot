@@ -761,7 +761,7 @@ class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
 		assertThat(this.context).isNotNull();
-		assertThat(SpringApplication.exit(this.context)).isEqualTo(0);
+		assertThat(SpringApplication.exit(this.context)).isZero();
 	}
 
 	@Test
@@ -844,7 +844,7 @@ class SpringApplicationTests {
 		this.context = application.run("--bar=foo", "bucket", "crap");
 		assertThat(this.context).isInstanceOf(AnnotationConfigApplicationContext.class);
 		assertThat(getEnvironment().getProperty("bar")).isEqualTo("foo");
-		assertThat(getEnvironment().getProperty("baz")).isEqualTo("");
+		assertThat(getEnvironment().getProperty("baz")).isEmpty();
 	}
 
 	@Test

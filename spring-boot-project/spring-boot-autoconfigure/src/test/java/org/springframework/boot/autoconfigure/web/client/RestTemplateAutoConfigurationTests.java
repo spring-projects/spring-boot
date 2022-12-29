@@ -90,8 +90,7 @@ class RestTemplateAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(RestTemplateConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(RestTemplate.class);
 			RestTemplate restTemplate = context.getBean(RestTemplate.class);
-			assertThat(restTemplate.getMessageConverters().size())
-					.isEqualTo(new RestTemplate().getMessageConverters().size());
+			assertThat(restTemplate.getMessageConverters()).hasSameSizeAs(new RestTemplate().getMessageConverters());
 		});
 	}
 

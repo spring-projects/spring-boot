@@ -62,7 +62,7 @@ class PropertiesMergingResourceTransformerTests {
 		os.flush();
 		os.close();
 		byte[] bytes = out.toByteArray();
-		assertThat(bytes).hasSizeGreaterThan(0);
+		assertThat(bytes).isNotEmpty();
 		List<JarEntry> entries = new ArrayList<>();
 		try (JarInputStream is = new JarInputStream(new ByteArrayInputStream(bytes))) {
 			JarEntry entry;

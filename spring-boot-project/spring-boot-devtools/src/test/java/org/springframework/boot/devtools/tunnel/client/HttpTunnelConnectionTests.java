@@ -121,7 +121,7 @@ class HttpTunnelConnectionTests {
 		write(channel, "hello");
 		write(channel, "1+1");
 		write(channel, "1+2");
-		assertThat(this.incomingData.toString()).isEqualTo("hi=2=3");
+		assertThat(this.incomingData).hasToString("hi=2=3");
 	}
 
 	@Test
@@ -132,8 +132,8 @@ class HttpTunnelConnectionTests {
 		this.requestFactory.willRespond("hi");
 		TunnelChannel channel = openTunnel(true);
 		write(channel, "hello");
-		assertThat(this.incomingData.toString()).isEqualTo("hi");
-		assertThat(this.requestFactory.getExecutedRequests().size()).isGreaterThan(10);
+		assertThat(this.incomingData).hasToString("hi");
+		assertThat(this.requestFactory.getExecutedRequests()).hasSizeGreaterThan(10);
 	}
 
 	@Test

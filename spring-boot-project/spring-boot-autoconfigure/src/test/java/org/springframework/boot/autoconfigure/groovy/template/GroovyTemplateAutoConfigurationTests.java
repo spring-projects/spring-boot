@@ -152,7 +152,7 @@ class GroovyTemplateAutoConfigurationTests {
 	@Test
 	void disableCache() {
 		registerAndRefreshContext("spring.groovy.template.cache:false");
-		assertThat(this.context.getBean(GroovyMarkupViewResolver.class).getCacheLimit()).isEqualTo(0);
+		assertThat(this.context.getBean(GroovyMarkupViewResolver.class).getCacheLimit()).isZero();
 	}
 
 	@Test

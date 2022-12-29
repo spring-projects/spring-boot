@@ -117,7 +117,7 @@ class JacksonTesterIntegrationTests {
 		ObjectContent<ExampleObjectWithView> content = this.jsonWithView.forView(ExampleObjectWithView.TestView.class)
 				.read(resource);
 		assertThat(content.getObject().getName()).isEqualTo("Spring");
-		assertThat(content.getObject().getAge()).isEqualTo(0);
+		assertThat(content.getObject().getAge()).isZero();
 	}
 
 	@Test
@@ -127,7 +127,7 @@ class JacksonTesterIntegrationTests {
 		ObjectContent<ExampleObjectWithView> content = this.jsonWithView.forView(ExampleObjectWithView.TestView.class)
 				.read(reader);
 		assertThat(content.getObject().getName()).isEqualTo("Spring");
-		assertThat(content.getObject().getAge()).isEqualTo(0);
+		assertThat(content.getObject().getAge()).isZero();
 	}
 
 }

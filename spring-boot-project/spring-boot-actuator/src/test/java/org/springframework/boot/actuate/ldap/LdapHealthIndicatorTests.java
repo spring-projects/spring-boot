@@ -45,7 +45,7 @@ class LdapHealthIndicatorTests {
 		LdapHealthIndicator healthIndicator = new LdapHealthIndicator(ldapTemplate);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("version")).isEqualTo("3");
+		assertThat(health.getDetails()).containsEntry("version", "3");
 		then(ldapTemplate).should().executeReadOnly((ContextExecutor<String>) any());
 	}
 

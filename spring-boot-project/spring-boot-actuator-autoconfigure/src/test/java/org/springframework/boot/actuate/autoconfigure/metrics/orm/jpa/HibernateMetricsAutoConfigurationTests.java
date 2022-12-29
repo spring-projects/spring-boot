@@ -140,7 +140,7 @@ class HibernateMetricsAutoConfigurationTests {
 						() -> (builder) -> builder.setBootstrapExecutor(new SimpleAsyncTaskExecutor()))
 				.run((context) -> {
 					JdbcTemplate jdbcTemplate = new JdbcTemplate(context.getBean(DataSource.class));
-					assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) from CITY", Integer.class)).isEqualTo(1);
+					assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) from CITY", Integer.class)).isOne();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					registry.get("hibernate.statements").tags("entityManagerFactory", "entityManagerFactory").meter();
 				});

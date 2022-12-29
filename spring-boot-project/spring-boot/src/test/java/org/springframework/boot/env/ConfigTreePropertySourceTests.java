@@ -143,8 +143,8 @@ class ConfigTreePropertySourceTests {
 		ConfigTreePropertySource propertySource = getFlatPropertySource();
 		TextResourceOrigin origin = (TextResourceOrigin) propertySource.getOrigin("b");
 		assertThat(origin.getResource().getFile()).isEqualTo(this.directory.resolve("b").toFile());
-		assertThat(origin.getLocation().getLine()).isEqualTo(0);
-		assertThat(origin.getLocation().getColumn()).isEqualTo(0);
+		assertThat(origin.getLocation().getLine()).isZero();
+		assertThat(origin.getLocation().getColumn()).isZero();
 	}
 
 	@Test
@@ -163,7 +163,7 @@ class ConfigTreePropertySourceTests {
 		assertThat(environment.getProperty("b")).isEqualTo("B");
 		assertThat(environment.getProperty("c", InputStreamSource.class).getInputStream()).hasContent("C");
 		assertThat(environment.getProperty("c", byte[].class)).contains('C');
-		assertThat(environment.getProperty("one", Integer.class)).isEqualTo(1);
+		assertThat(environment.getProperty("one", Integer.class)).isOne();
 	}
 
 	@Test
@@ -214,7 +214,7 @@ class ConfigTreePropertySourceTests {
 		addProperty("a", "a\nb\n");
 		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", this.directory,
 				Option.AUTO_TRIM_TRAILING_NEW_LINE);
-		assertThat(propertySource.getProperty("a").toString()).isEqualTo("a\nb\n");
+		assertThat(propertySource.getProperty("a")).hasToString("a\nb\n");
 	}
 
 	@Test
@@ -222,7 +222,7 @@ class ConfigTreePropertySourceTests {
 		addProperty("a", "a\n");
 		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", this.directory,
 				Option.AUTO_TRIM_TRAILING_NEW_LINE);
-		assertThat(propertySource.getProperty("a").toString()).isEqualTo("a");
+		assertThat(propertySource.getProperty("a")).hasToString("a");
 	}
 
 	@Test
@@ -230,7 +230,7 @@ class ConfigTreePropertySourceTests {
 		addProperty("a", "a\r\n");
 		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", this.directory,
 				Option.AUTO_TRIM_TRAILING_NEW_LINE);
-		assertThat(propertySource.getProperty("a").toString()).isEqualTo("a");
+		assertThat(propertySource.getProperty("a")).hasToString("a");
 	}
 
 	private ConfigTreePropertySource getFlatPropertySource() throws IOException {

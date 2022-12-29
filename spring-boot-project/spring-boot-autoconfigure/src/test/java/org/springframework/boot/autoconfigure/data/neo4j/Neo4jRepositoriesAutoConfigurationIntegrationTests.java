@@ -61,7 +61,7 @@ class Neo4jRepositoriesAutoConfigurationIntegrationTests {
 
 	@Test
 	void ensureRepositoryIsReady() {
-		assertThat(this.countryRepository.count()).isEqualTo(0);
+		assertThat(this.countryRepository.count()).isZero();
 	}
 
 	@Configuration

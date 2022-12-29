@@ -55,7 +55,7 @@ class CertificateParserTests {
 		Path certPath = this.fileWriter.writeFile("cert.pem", PemFileWriter.CERTIFICATE);
 		X509Certificate[] certificates = CertificateParser.parse(caPath, certPath);
 		assertThat(certificates).isNotNull();
-		assertThat(certificates.length).isEqualTo(2);
+		assertThat(certificates).hasSize(2);
 		assertThat(certificates[0].getType()).isEqualTo("X.509");
 		assertThat(certificates[1].getType()).isEqualTo("X.509");
 	}
@@ -65,7 +65,7 @@ class CertificateParserTests {
 		Path path = this.fileWriter.writeFile("ca.pem", PemFileWriter.CA_CERTIFICATE, PemFileWriter.CERTIFICATE);
 		X509Certificate[] certificates = CertificateParser.parse(path);
 		assertThat(certificates).isNotNull();
-		assertThat(certificates.length).isEqualTo(2);
+		assertThat(certificates).hasSize(2);
 		assertThat(certificates[0].getType()).isEqualTo("X.509");
 		assertThat(certificates[1].getType()).isEqualTo("X.509");
 	}

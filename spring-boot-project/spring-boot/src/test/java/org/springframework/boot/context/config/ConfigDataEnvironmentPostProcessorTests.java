@@ -115,7 +115,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 				listener);
 		assertThat(this.environment.getPropertySources().size()).isGreaterThan(before);
 		assertThat(this.environment.getActiveProfiles()).containsExactly("dev");
-		assertThat(listener.getAddedPropertySources()).hasSizeGreaterThan(0);
+		assertThat(listener.getAddedPropertySources()).isNotEmpty();
 		assertThat(listener.getProfiles().getActive()).containsExactly("dev");
 		assertThat(listener.getAddedPropertySources().stream().anyMatch((added) -> hasDevProfile(added.getResource())))
 				.isTrue();

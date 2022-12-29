@@ -34,7 +34,7 @@ class SnakeTimerTests {
 		SnakeTimer.addSnake(snake);
 
 		SnakeTimer.broadcast("");
-		assertThat(SnakeTimer.getSnakes()).hasSize(0);
+		assertThat(SnakeTimer.getSnakes()).isEmpty();
 	}
 
 }

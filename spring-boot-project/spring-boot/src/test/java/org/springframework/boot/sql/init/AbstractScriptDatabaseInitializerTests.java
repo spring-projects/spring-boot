@@ -41,7 +41,7 @@ public abstract class AbstractScriptDatabaseInitializerTests<T extends AbstractS
 		settings.setDataLocations(Arrays.asList("data.sql"));
 		T initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isTrue();
-		assertThat(numberOfEmbeddedRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
+		assertThat(numberOfEmbeddedRows("SELECT COUNT(*) FROM EXAMPLE")).isOne();
 	}
 
 	@Test
@@ -131,7 +131,7 @@ public abstract class AbstractScriptDatabaseInitializerTests<T extends AbstractS
 		settings.setMode(DatabaseInitializationMode.EMBEDDED);
 		T initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isTrue();
-		assertThat(numberOfEmbeddedRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
+		assertThat(numberOfEmbeddedRows("SELECT COUNT(*) FROM EXAMPLE")).isOne();
 	}
 
 	@Test
@@ -153,7 +153,7 @@ public abstract class AbstractScriptDatabaseInitializerTests<T extends AbstractS
 		settings.setMode(DatabaseInitializationMode.ALWAYS);
 		T initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isTrue();
-		assertThat(numberOfEmbeddedRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
+		assertThat(numberOfEmbeddedRows("SELECT COUNT(*) FROM EXAMPLE")).isOne();
 	}
 
 	@Test
@@ -164,7 +164,7 @@ public abstract class AbstractScriptDatabaseInitializerTests<T extends AbstractS
 		settings.setMode(DatabaseInitializationMode.ALWAYS);
 		T initializer = createStandaloneDatabaseInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isTrue();
-		assertThat(numberOfStandaloneRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
+		assertThat(numberOfStandaloneRows("SELECT COUNT(*) FROM EXAMPLE")).isOne();
 	}
 
 	protected abstract T createStandaloneDatabaseInitializer(DatabaseInitializationSettings settings);

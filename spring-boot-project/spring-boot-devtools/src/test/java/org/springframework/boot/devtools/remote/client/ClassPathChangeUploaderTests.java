@@ -114,7 +114,7 @@ class ClassPathChangeUploaderTests {
 			throws IOException, ClassNotFoundException {
 		ClassLoaderFiles classLoaderFiles = deserialize(request.getBodyAsBytes());
 		Collection<SourceDirectory> sourceDirectories = classLoaderFiles.getSourceDirectories();
-		assertThat(sourceDirectories.size()).isEqualTo(1);
+		assertThat(sourceDirectories).hasSize(1);
 		SourceDirectory classSourceDirectory = sourceDirectories.iterator().next();
 		assertThat(classSourceDirectory.getName()).isEqualTo(sourceDirectory.getAbsolutePath());
 		Iterator<ClassLoaderFile> classFiles = classSourceDirectory.getFiles().iterator();

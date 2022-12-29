@@ -29,12 +29,12 @@ class EndpointMappingTests {
 
 	@Test
 	void normalizationTurnsASlashIntoAnEmptyString() {
-		assertThat(new EndpointMapping("/").getPath()).isEqualTo("");
+		assertThat(new EndpointMapping("/").getPath()).isEmpty();
 	}
 
 	@Test
 	void normalizationLeavesAnEmptyStringAsIs() {
-		assertThat(new EndpointMapping("").getPath()).isEqualTo("");
+		assertThat(new EndpointMapping("").getPath()).isEmpty();
 	}
 
 	@Test

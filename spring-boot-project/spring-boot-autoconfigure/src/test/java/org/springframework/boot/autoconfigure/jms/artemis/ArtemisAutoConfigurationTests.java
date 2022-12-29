@@ -77,7 +77,7 @@ class ArtemisAutoConfigurationTests {
 			assertThat(connectionFactory.getTargetConnectionFactory()).isInstanceOf(ActiveMQConnectionFactory.class);
 			assertThat(connectionFactory.isCacheConsumers()).isFalse();
 			assertThat(connectionFactory.isCacheProducers()).isTrue();
-			assertThat(connectionFactory.getSessionCacheSize()).isEqualTo(1);
+			assertThat(connectionFactory.getSessionCacheSize()).isOne();
 		});
 	}
 
@@ -374,7 +374,7 @@ class ArtemisAutoConfigurationTests {
 			String host, int port) {
 		TransportConfiguration transportConfig = getSingleTransportConfiguration(connectionFactory);
 		assertThat(transportConfig.getFactoryClassName()).isEqualTo(NettyConnectorFactory.class.getName());
-		assertThat(transportConfig.getParams().get("host")).isEqualTo(host);
+		assertThat(transportConfig.getParams()).containsEntry("host", host);
 		Object transportConfigPort = transportConfig.getParams().get("port");
 		if (transportConfigPort instanceof String portString) {
 			transportConfigPort = Integer.parseInt(portString);

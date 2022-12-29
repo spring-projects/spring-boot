@@ -35,7 +35,7 @@ class CouchbasePropertiesTests {
 	@Test
 	void ioHaveConsistentDefaults() {
 		Io io = new CouchbaseProperties().getEnv().getIo();
-		assertThat(io.getMinEndpoints()).isEqualTo(IoConfig.DEFAULT_NUM_KV_CONNECTIONS);
+		assertThat(io.getMinEndpoints()).isOne();
 		assertThat(io.getMaxEndpoints()).isEqualTo(IoConfig.DEFAULT_MAX_HTTP_CONNECTIONS);
 		assertThat(io.getIdleHttpConnectionTimeout()).isEqualTo(IoConfig.DEFAULT_IDLE_HTTP_CONNECTION_TIMEOUT);
 	}

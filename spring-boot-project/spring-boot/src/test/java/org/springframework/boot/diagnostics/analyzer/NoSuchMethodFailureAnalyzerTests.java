@@ -48,7 +48,7 @@ class NoSuchMethodFailureAnalyzerTests {
 		assertThat(descriptor.getErrorMessage()).isEqualTo(
 				"'boolean org.springframework.util.MimeType.isMoreSpecific(org.springframework.util.MimeType)'");
 		assertThat(descriptor.getClassName()).isEqualTo("org.springframework.util.MimeType");
-		assertThat(descriptor.getCandidateLocations().size()).isGreaterThan(1);
+		assertThat(descriptor.getCandidateLocations()).hasSizeGreaterThan(1);
 		List<ClassDescriptor> typeHierarchy = descriptor.getTypeHierarchy();
 		assertThat(typeHierarchy).hasSize(1);
 		assertThat(typeHierarchy.get(0).getLocation()).asString().contains("spring-core-5.3.12.jar");
@@ -66,7 +66,7 @@ class NoSuchMethodFailureAnalyzerTests {
 		assertThat(descriptor.getErrorMessage())
 				.isEqualTo("org/springframework/util/MimeType.isMoreSpecific(Lorg/springframework/util/MimeType;)Z");
 		assertThat(descriptor.getClassName()).isEqualTo("org.springframework.util.MimeType");
-		assertThat(descriptor.getCandidateLocations().size()).isGreaterThan(1);
+		assertThat(descriptor.getCandidateLocations()).hasSizeGreaterThan(1);
 		List<ClassDescriptor> typeHierarchy = descriptor.getTypeHierarchy();
 		assertThat(typeHierarchy).hasSize(1);
 		assertThat(typeHierarchy.get(0).getLocation()).asString().contains("spring-core-5.3.12.jar");

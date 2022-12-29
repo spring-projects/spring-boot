@@ -66,7 +66,7 @@ class StaticResourceJarsTests {
 	void excludeJarWithoutStaticResources() throws Exception {
 		File jarFile = createJar("dependency.jar");
 		List<URL> staticResourceJarUrls = new StaticResourceJars().getUrlsFrom(jarFile.toURI().toURL());
-		assertThat(staticResourceJarUrls).hasSize(0);
+		assertThat(staticResourceJarUrls).isEmpty();
 	}
 
 	@Test

@@ -53,7 +53,7 @@ class ValidatorAdapterTests {
 			assertThat(wrapper.supports(SampleData.class)).isTrue();
 			MapBindingResult errors = new MapBindingResult(new HashMap<String, Object>(), "test");
 			wrapper.validate(new SampleData(40), errors);
-			assertThat(errors.getErrorCount()).isEqualTo(1);
+			assertThat(errors.getErrorCount()).isOne();
 		});
 	}
 

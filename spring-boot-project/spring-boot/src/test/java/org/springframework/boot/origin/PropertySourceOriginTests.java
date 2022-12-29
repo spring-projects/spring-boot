@@ -73,7 +73,7 @@ class PropertySourceOriginTests {
 	void toStringShouldShowDetails() {
 		MapPropertySource propertySource = new MapPropertySource("test", new HashMap<>());
 		PropertySourceOrigin origin = new PropertySourceOrigin(propertySource, "foo");
-		assertThat(origin.toString()).isEqualTo("\"foo\" from property source \"test\"");
+		assertThat(origin).hasToString("\"foo\" from property source \"test\"");
 	}
 
 	@Test

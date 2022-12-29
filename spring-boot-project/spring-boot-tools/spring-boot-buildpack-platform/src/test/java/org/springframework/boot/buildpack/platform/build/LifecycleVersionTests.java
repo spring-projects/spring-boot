@@ -49,9 +49,9 @@ class LifecycleVersionTests {
 	@Test
 	void compareTo() {
 		LifecycleVersion v4 = LifecycleVersion.parse("0.0.4");
-		assertThat(LifecycleVersion.parse("0.0.3").compareTo(v4)).isNegative();
-		assertThat(LifecycleVersion.parse("0.0.4").compareTo(v4)).isZero();
-		assertThat(LifecycleVersion.parse("0.0.5").compareTo(v4)).isPositive();
+		assertThat(LifecycleVersion.parse("0.0.3")).isLessThan(v4);
+		assertThat(LifecycleVersion.parse("0.0.4")).isEqualByComparingTo(v4);
+		assertThat(LifecycleVersion.parse("0.0.5")).isGreaterThan(v4);
 	}
 
 	@Test
@@ -64,9 +64,9 @@ class LifecycleVersionTests {
 
 	@Test
 	void parseReturnsVersion() {
-		assertThat(LifecycleVersion.parse("1.2.3").toString()).isEqualTo("v1.2.3");
-		assertThat(LifecycleVersion.parse("1.2").toString()).isEqualTo("v1.2.0");
-		assertThat(LifecycleVersion.parse("1").toString()).isEqualTo("v1.0.0");
+		assertThat(LifecycleVersion.parse("1.2.3")).hasToString("v1.2.3");
+		assertThat(LifecycleVersion.parse("1.2")).hasToString("v1.2.0");
+		assertThat(LifecycleVersion.parse("1")).hasToString("v1.0.0");
 	}
 
 }

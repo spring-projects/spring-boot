@@ -55,7 +55,6 @@ public abstract class AbstractFieldValuesProcessorTests {
 		compiler.compile((compiled) -> {
 		});
 		Map<String, Object> values = processor.getValues();
-		assertThat(values.get("string")).isEqualTo("1");
 		assertThat(values.get("stringNone")).isNull();
 		assertThat(values.get("stringConst")).isEqualTo("c");
 		assertThat(values.get("bool")).isEqualTo(true);

@@ -37,7 +37,7 @@ class WhitespaceThrowableProxyConverterTests {
 	@Test
 	void noStackTrace() {
 		String s = this.converter.convert(this.event);
-		assertThat(s).isEqualTo("");
+		assertThat(s).isEmpty();
 	}
 
 	@Test

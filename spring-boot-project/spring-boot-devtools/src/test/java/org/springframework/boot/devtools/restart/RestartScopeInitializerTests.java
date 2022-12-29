@@ -49,7 +49,7 @@ class RestartScopeInitializerTests {
 		context.close();
 		context = runApplication();
 		context.close();
-		assertThat(createCount.get()).isEqualTo(1);
+		assertThat(createCount.get()).isOne();
 		assertThat(refreshCount.get()).isEqualTo(2);
 	}
 

@@ -151,7 +151,7 @@ class CloudFoundrySecurityServiceTests {
 				.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 		Map<String, String> tokenKeys = this.securityService.fetchTokenKeys();
 		this.server.verify();
-		assertThat(tokenKeys.get("test-key")).isEqualTo(tokenKeyValue);
+		assertThat(tokenKeys).containsEntry("test-key", tokenKeyValue);
 	}
 
 	@Test
@@ -163,7 +163,7 @@ class CloudFoundrySecurityServiceTests {
 				.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 		Map<String, String> tokenKeys = this.securityService.fetchTokenKeys();
 		this.server.verify();
-		assertThat(tokenKeys).hasSize(0);
+		assertThat(tokenKeys).isEmpty();
 	}
 
 	@Test

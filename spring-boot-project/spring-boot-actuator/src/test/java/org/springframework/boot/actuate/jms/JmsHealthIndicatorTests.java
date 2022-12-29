@@ -52,7 +52,7 @@ class JmsHealthIndicatorTests {
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("provider")).isEqualTo("JMS test provider");
+		assertThat(health.getDetails()).containsEntry("provider", "JMS test provider");
 		then(connection).should().close();
 	}
 
@@ -63,7 +63,7 @@ class JmsHealthIndicatorTests {
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("provider")).isNull();
+		assertThat(health.getDetails()).doesNotContainKey("provider");
 	}
 
 	@Test
@@ -77,7 +77,7 @@ class JmsHealthIndicatorTests {
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("provider")).isNull();
+		assertThat(health.getDetails()).doesNotContainKey("provider");
 		then(connection).should().close();
 	}
 
@@ -93,7 +93,7 @@ class JmsHealthIndicatorTests {
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("provider")).isNull();
+		assertThat(health.getDetails()).doesNotContainKey("provider");
 	}
 
 	@Test

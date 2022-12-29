@@ -412,7 +412,7 @@ class WebFluxAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomRequestMappingHandlerMapping.class).run((context) -> {
 			assertThat(context).getBean(RequestMappingHandlerMapping.class)
 					.isInstanceOf(MyRequestMappingHandlerMapping.class);
-			assertThat(context.getBean(CustomRequestMappingHandlerMapping.class).handlerMappings).isEqualTo(1);
+			assertThat(context.getBean(CustomRequestMappingHandlerMapping.class).handlerMappings).isOne();
 		});
 	}
 
@@ -421,7 +421,7 @@ class WebFluxAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomRequestMappingHandlerAdapter.class).run((context) -> {
 			assertThat(context).getBean(RequestMappingHandlerAdapter.class)
 					.isInstanceOf(MyRequestMappingHandlerAdapter.class);
-			assertThat(context.getBean(CustomRequestMappingHandlerAdapter.class).handlerAdapters).isEqualTo(1);
+			assertThat(context.getBean(CustomRequestMappingHandlerAdapter.class).handlerAdapters).isOne();
 		});
 	}
 

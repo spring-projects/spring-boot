@@ -52,7 +52,7 @@ class BeansEndpointTests {
 			ContextBeansDescriptor descriptor = result.getContexts().get(context.getId());
 			assertThat(descriptor.getParentId()).isNull();
 			Map<String, BeanDescriptor> beans = descriptor.getBeans();
-			assertThat(beans.size()).isLessThanOrEqualTo(context.getBeanDefinitionCount());
+			assertThat(beans).hasSizeLessThanOrEqualTo(context.getBeanDefinitionCount());
 			assertThat(beans).containsKey("endpoint");
 		});
 	}

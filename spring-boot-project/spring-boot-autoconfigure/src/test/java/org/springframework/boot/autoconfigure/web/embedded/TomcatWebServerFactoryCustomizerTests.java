@@ -287,7 +287,7 @@ class TomcatWebServerFactoryCustomizerTests {
 	@Test
 	void defaultUseForwardHeaders() {
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
-		assertThat(factory.getEngineValves()).hasSize(0);
+		assertThat(factory.getEngineValves()).isEmpty();
 	}
 
 	@Test
@@ -301,7 +301,7 @@ class TomcatWebServerFactoryCustomizerTests {
 		this.environment.setProperty("DYNO", "-");
 		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NONE);
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
-		assertThat(factory.getEngineValves()).hasSize(0);
+		assertThat(factory.getEngineValves()).isEmpty();
 	}
 
 	@Test

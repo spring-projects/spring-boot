@@ -35,7 +35,7 @@ class LibraryCoordinatesTests {
 		assertThat(coordinates.getGroupId()).isEqualTo("g");
 		assertThat(coordinates.getArtifactId()).isEqualTo("a");
 		assertThat(coordinates.getVersion()).isEqualTo("v");
-		assertThat(coordinates.toString()).isEqualTo("g:a:v");
+		assertThat(coordinates).hasToString("g:a:v");
 	}
 
 	@Test

@@ -75,7 +75,7 @@ class DirectorySnapshotTests {
 	void equalsWhenNothingHasChanged() {
 		DirectorySnapshot updatedSnapshot = new DirectorySnapshot(this.directory);
 		assertThat(this.initialSnapshot).isEqualTo(updatedSnapshot);
-		assertThat(this.initialSnapshot.hashCode()).isEqualTo(updatedSnapshot.hashCode());
+		assertThat(this.initialSnapshot).hasSameHashCodeAs(updatedSnapshot);
 	}
 
 	@Test

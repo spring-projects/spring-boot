@@ -696,7 +696,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 					Cache foo = manager.getCache("foo");
 					foo.get("1");
 					// See next tests: no spec given so stats should be disabled
-					assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount()).isEqualTo(0L);
+					assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount()).isZero();
 				});
 	}
 
@@ -750,7 +750,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 		assertThat(manager.getCacheNames()).containsOnly("foo", "bar");
 		Cache foo = manager.getCache("foo");
 		foo.get("1");
-		assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount()).isEqualTo(1L);
+		assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount()).isOne();
 	}
 
 	private CouchbaseCacheConfiguration getDefaultCouchbaseCacheConfiguration(CouchbaseCacheManager cacheManager) {

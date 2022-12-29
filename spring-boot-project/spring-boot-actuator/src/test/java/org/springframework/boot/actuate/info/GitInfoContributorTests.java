@@ -64,7 +64,7 @@ class GitInfoContributorTests {
 		Map<String, Object> content = contributor.generateContent();
 		assertThat(content.get("commit")).isInstanceOf(Map.class);
 		Map<String, Object> commit = (Map<String, Object>) content.get("commit");
-		assertThat(commit.get("id")).isEqualTo("8e29a0b");
+		assertThat(commit).containsEntry("id", "8e29a0b");
 	}
 
 	@Test
@@ -80,8 +80,8 @@ class GitInfoContributorTests {
 		Map<String, Object> commit = (Map<String, Object>) content.get("commit");
 		assertThat(commit.get("id")).isInstanceOf(Map.class);
 		Map<String, Object> id = (Map<String, Object>) commit.get("id");
-		assertThat(id.get("full")).isEqualTo("1b3cec34f7ca0a021244452f2cae07a80497a7c7");
-		assertThat(id.get("abbrev")).isEqualTo("1b3cec3");
+		assertThat(id).containsEntry("full", "1b3cec34f7ca0a021244452f2cae07a80497a7c7");
+		assertThat(id).containsEntry("abbrev", "1b3cec3");
 	}
 
 	@Test

@@ -50,8 +50,7 @@ class SpyBeanOnTestFieldForMultipleExistingBeansWithOnePrimaryIntegrationTests {
 	@Test
 	void testSpying() {
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say two");
-		assertThat(Mockito.mockingDetails(this.spy).getMockCreationSettings().getMockName().toString())
-				.isEqualTo("two");
+		assertThat(Mockito.mockingDetails(this.spy).getMockCreationSettings().getMockName()).hasToString("two");
 		then(this.spy).should().greeting();
 	}
 

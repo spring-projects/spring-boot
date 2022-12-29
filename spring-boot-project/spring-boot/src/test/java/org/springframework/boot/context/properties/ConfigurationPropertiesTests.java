@@ -198,7 +198,7 @@ class ConfigurationPropertiesTests {
 	void loadWhenHasIgnoreInvalidFieldsTrueAndInvalidFieldsShouldBind() {
 		load(IgnoreInvalidFieldsFalseProperties.class, "com.example.bar=spam");
 		IgnoreInvalidFieldsFalseProperties bean = this.context.getBean(IgnoreInvalidFieldsFalseProperties.class);
-		assertThat(bean.getBar()).isEqualTo(0);
+		assertThat(bean.getBar()).isZero();
 	}
 
 	@Test
@@ -804,9 +804,9 @@ class ConfigurationPropertiesTests {
 		WithIntegerMapProperties bean = this.context.getBean(WithIntegerMapProperties.class);
 		Map<Integer, Foo> x = bean.getMap().get("x");
 		assertThat(x.get(-1).getA()).isEqualTo("baz");
-		assertThat(x.get(-1).getB()).isEqualTo(0);
+		assertThat(x.get(-1).getB()).isZero();
 		assertThat(x.get(1).getA()).isEqualTo("bar");
-		assertThat(x.get(1).getB()).isEqualTo(1);
+		assertThat(x.get(1).getB()).isOne();
 	}
 
 	@Test
@@ -851,7 +851,7 @@ class ConfigurationPropertiesTests {
 		load(ConstructorParameterConfiguration.class);
 		ConstructorParameterProperties bean = this.context.getBean(ConstructorParameterProperties.class);
 		assertThat(bean.getFoo()).isEqualTo("hello");
-		assertThat(bean.getBar()).isEqualTo(0);
+		assertThat(bean.getBar()).isZero();
 	}
 
 	@Test
@@ -979,7 +979,7 @@ class ConfigurationPropertiesTests {
 				.getBean(MultiConstructorConfigurationListProperties.class);
 		MultiConstructorConfigurationProperties nested = bean.getNested().get(0);
 		assertThat(nested.getName()).isEqualTo("spring");
-		assertThat(nested.getAge()).isEqualTo(0);
+		assertThat(nested.getAge()).isZero();
 	}
 
 	@Test // gh-18481

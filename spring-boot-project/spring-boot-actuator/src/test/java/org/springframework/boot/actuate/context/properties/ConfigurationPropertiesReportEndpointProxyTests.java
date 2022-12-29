@@ -76,7 +76,7 @@ class ConfigurationPropertiesReportEndpointProxyTests {
 					.getBean(ConfigurationPropertiesReportEndpoint.class).configurationProperties();
 			Map<String, Object> properties = applicationProperties.getContexts().get(context.getId()).getBeans()
 					.values().stream().map(ConfigurationPropertiesBeanDescriptor::getProperties).findFirst().get();
-			assertThat(properties.get("name")).isEqualTo("baz");
+			assertThat(properties).containsEntry("name", "baz");
 		});
 	}
 

@@ -40,7 +40,7 @@ abstract class ProgressUpdateEventTests<E extends ProgressUpdateEvent> {
 	@Test
 	void getProgressDetailsReturnsProgressDetails() {
 		ProgressUpdateEvent event = createEvent();
-		assertThat(event.getProgressDetail().getCurrent()).isEqualTo(1);
+		assertThat(event.getProgressDetail().getCurrent()).isOne();
 		assertThat(event.getProgressDetail().getTotal()).isEqualTo(2);
 	}
 

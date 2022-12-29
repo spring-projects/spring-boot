@@ -47,7 +47,7 @@ class SystemEnvironmentOriginTests {
 	@Test
 	void toStringShouldReturnStringWithDetails() {
 		SystemEnvironmentOrigin origin = new SystemEnvironmentOrigin("FOO_BAR");
-		assertThat(origin.toString()).isEqualTo("System Environment Property \"FOO_BAR\"");
+		assertThat(origin).hasToString("System Environment Property \"FOO_BAR\"");
 	}
 
 }

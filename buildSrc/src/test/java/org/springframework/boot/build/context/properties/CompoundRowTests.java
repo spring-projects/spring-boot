@@ -39,8 +39,8 @@ class CompoundRowTests {
 		row.addProperty(new ConfigurationProperty("spring.test.third", "java.lang.String"));
 		Asciidoc asciidoc = new Asciidoc();
 		row.write(asciidoc);
-		assertThat(asciidoc.toString()).isEqualTo("|[[my.spring.test]]<<my.spring.test,`+spring.test.first+` +"
-				+ NEWLINE + "`+spring.test.second+` +" + NEWLINE + "`+spring.test.third+` +" + NEWLINE + ">>" + NEWLINE
+		assertThat(asciidoc).hasToString("|[[my.spring.test]]<<my.spring.test,`+spring.test.first+` +" + NEWLINE
+				+ "`+spring.test.second+` +" + NEWLINE + "`+spring.test.third+` +" + NEWLINE + ">>" + NEWLINE
 				+ "|+++This is a description.+++" + NEWLINE + "|" + NEWLINE);
 	}
 

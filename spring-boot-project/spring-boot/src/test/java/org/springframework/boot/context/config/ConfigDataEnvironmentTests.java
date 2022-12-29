@@ -301,7 +301,7 @@ class ConfigDataEnvironmentTests {
 		assertThat(listener.getAddedPropertySources()).hasSize(1);
 		AddedPropertySource addedPropertySource = listener.getAddedPropertySources().get(0);
 		assertThat(addedPropertySource.getPropertySource().getProperty("spring")).isEqualTo("boot");
-		assertThat(addedPropertySource.getLocation().toString()).isEqualTo(getConfigLocation(info));
+		assertThat(addedPropertySource.getLocation()).hasToString(getConfigLocation(info));
 		assertThat(addedPropertySource.getResource().toString()).contains("class path resource")
 				.contains(info.getTestMethod().get().getName());
 	}

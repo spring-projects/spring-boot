@@ -255,7 +255,7 @@ class BatchAutoConfigurationTests {
 					PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 					// It's a lazy proxy, but it does render its target if you ask for
 					// toString():
-					assertThat(transactionManager.toString().contains("JpaTransactionManager")).isTrue();
+					assertThat(transactionManager.toString()).contains("JpaTransactionManager");
 					assertThat(context).hasSingleBean(EntityManagerFactory.class);
 					// Ensure the JobRepository can be used (no problem with isolation
 					// level)

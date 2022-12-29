@@ -185,7 +185,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 					reactiveJwtDecoderSupplier.block(TIMEOUT);
 				});
 		// The last request is to the JWK Set endpoint to look up the algorithm
-		assertThat(this.server.getRequestCount()).isEqualTo(1);
+		assertThat(this.server.getRequestCount()).isOne();
 	}
 
 	@Test

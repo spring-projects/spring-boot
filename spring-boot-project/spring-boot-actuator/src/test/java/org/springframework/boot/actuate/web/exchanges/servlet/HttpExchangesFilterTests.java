@@ -115,7 +115,7 @@ class HttpExchangesFilterTests {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setServerName("<script>alert(document.domain)</script>");
 		this.filter.doFilter(request, new MockHttpServletResponse(), new MockFilterChain());
-		assertThat(this.repository.findAll()).hasSize(0);
+		assertThat(this.repository.findAll()).isEmpty();
 	}
 
 }

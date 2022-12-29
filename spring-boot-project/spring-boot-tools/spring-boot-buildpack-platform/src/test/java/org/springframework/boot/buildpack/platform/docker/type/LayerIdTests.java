@@ -37,7 +37,7 @@ class LayerIdTests {
 		LayerId id = LayerId.of("sha256:9a183e56c86d376b408bdf922746d0a657f62b0e18c7c8f82a496b87710c576f");
 		assertThat(id.getAlgorithm()).isEqualTo("sha256");
 		assertThat(id.getHash()).isEqualTo("9a183e56c86d376b408bdf922746d0a657f62b0e18c7c8f82a496b87710c576f");
-		assertThat(id.toString()).isEqualTo("sha256:9a183e56c86d376b408bdf922746d0a657f62b0e18c7c8f82a496b87710c576f");
+		assertThat(id).hasToString("sha256:9a183e56c86d376b408bdf922746d0a657f62b0e18c7c8f82a496b87710c576f");
 	}
 
 	@Test
@@ -45,7 +45,7 @@ class LayerIdTests {
 		LayerId id1 = LayerId.of("sha256:9a183e56c86d376b408bdf922746d0a657f62b0e18c7c8f82a496b87710c576f");
 		LayerId id2 = LayerId.of("sha256:9a183e56c86d376b408bdf922746d0a657f62b0e18c7c8f82a496b87710c576f");
 		LayerId id3 = LayerId.of("sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-		assertThat(id1.hashCode()).isEqualTo(id2.hashCode());
+		assertThat(id1).hasSameHashCodeAs(id2);
 		assertThat(id1).isEqualTo(id1).isEqualTo(id2).isNotEqualTo(id3);
 	}
 
@@ -65,7 +65,7 @@ class LayerIdTests {
 		MessageDigest digest = MessageDigest.getInstance("SHA-256");
 		digest.update("test".getBytes(StandardCharsets.UTF_8));
 		LayerId id = LayerId.ofSha256Digest(digest.digest());
-		assertThat(id.toString()).isEqualTo("sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08");
+		assertThat(id).hasToString("sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08");
 	}
 
 	@Test
@@ -74,7 +74,7 @@ class LayerIdTests {
 		Arrays.fill(digest, (byte) 127);
 		digest[0] = 1;
 		LayerId id = LayerId.ofSha256Digest(digest);
-		assertThat(id.toString()).isEqualTo("sha256:017f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f");
+		assertThat(id).hasToString("sha256:017f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f");
 	}
 
 	@Test

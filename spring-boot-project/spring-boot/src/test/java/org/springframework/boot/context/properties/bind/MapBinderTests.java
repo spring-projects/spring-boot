@@ -185,9 +185,9 @@ class MapBinderTests {
 		source.put("foo", "bar");
 		this.sources.add(source);
 		Map<String, Object> result = this.binder.bind("", Bindable.mapOf(String.class, Object.class)).get();
-		assertThat(result.get("commit")).isEqualTo(Collections.singletonMap("id", "abcdefg"));
-		assertThat(result.get("branch")).isEqualTo("master");
-		assertThat(result.get("foo")).isEqualTo("bar");
+		assertThat(result).containsEntry("commit", Collections.singletonMap("id", "abcdefg"));
+		assertThat(result).containsEntry("branch", "master");
+		assertThat(result).containsEntry("foo", "bar");
 	}
 
 	@Test
@@ -503,8 +503,8 @@ class MapBinderTests {
 		source.put("foo", "a,b");
 		this.sources.add(source);
 		Map<String, String> map = binder.bind("foo", STRING_STRING_MAP).get();
-		assertThat(map.get("a")).isNotNull();
-		assertThat(map.get("b")).isNotNull();
+		assertThat(map).containsKey("a");
+		assertThat(map).containsKey("b");
 	}
 
 	@Test
@@ -519,8 +519,8 @@ class MapBinderTests {
 		source.put("foo.b", "b");
 		this.sources.add(source);
 		Map<String, String> map = binder.bind("foo", STRING_STRING_MAP).get();
-		assertThat(map.get("a")).isEqualTo("a");
-		assertThat(map.get("b")).isEqualTo("b");
+		assertThat(map).containsEntry("a", "a");
+		assertThat(map).containsEntry("b", "b");
 	}
 
 	@Test

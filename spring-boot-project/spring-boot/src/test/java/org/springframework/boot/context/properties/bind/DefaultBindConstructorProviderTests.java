@@ -55,7 +55,7 @@ class DefaultBindConstructorProviderTests {
 		Constructor<?> constructor = this.provider.getBindConstructor(TwoConstructorsWithOneConstructorBinding.class,
 				false);
 		assertThat(constructor).isNotNull();
-		assertThat(constructor.getParameterCount()).isEqualTo(1);
+		assertThat(constructor.getParameterCount()).isOne();
 	}
 
 	@Test

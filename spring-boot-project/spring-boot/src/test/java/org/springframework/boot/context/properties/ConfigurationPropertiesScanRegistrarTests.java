@@ -100,7 +100,7 @@ class ConfigurationPropertiesScanRegistrarTests {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.setAllowBeanDefinitionOverriding(false);
 		this.registrar.registerBeanDefinitions(getAnnotationMetadata(CombinedScanConfiguration.class), beanFactory);
-		assertThat(beanFactory.getBeanDefinitionCount()).isEqualTo(0);
+		assertThat(beanFactory.getBeanDefinitionCount()).isZero();
 	}
 
 	@Test
@@ -109,7 +109,7 @@ class ConfigurationPropertiesScanRegistrarTests {
 		beanFactory.setAllowBeanDefinitionOverriding(false);
 		this.registrar.registerBeanDefinitions(getAnnotationMetadata(OtherCombinedScanConfiguration.class),
 				beanFactory);
-		assertThat(beanFactory.getBeanDefinitionCount()).isEqualTo(0);
+		assertThat(beanFactory.getBeanDefinitionCount()).isZero();
 	}
 
 	private Consumer<BeanDefinition> configurationPropertiesBeanDefinition(BindMethod bindMethod) {

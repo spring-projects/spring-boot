@@ -109,10 +109,10 @@ class ReleaseTrainDependencyVersionTests {
 
 	@Test
 	void whenComparedWithADifferentDependencyVersionTypeThenTheResultsAreNonZero() {
-		ReleaseTrainDependencyVersion dysprosium = ReleaseTrainDependencyVersion.parse("Dysprosium-SR16");
-		ArtifactVersionDependencyVersion twentyTwenty = ArtifactVersionDependencyVersion.parse("2020.0.0");
-		assertThat(dysprosium.compareTo(twentyTwenty)).isLessThan(0);
-		assertThat(twentyTwenty.compareTo(dysprosium)).isGreaterThan(0);
+		DependencyVersion dysprosium = ReleaseTrainDependencyVersion.parse("Dysprosium-SR16");
+		DependencyVersion twentyTwenty = ArtifactVersionDependencyVersion.parse("2020.0.0");
+		assertThat(dysprosium).isLessThan(twentyTwenty);
+		assertThat(twentyTwenty).isGreaterThan(dysprosium);
 	}
 
 	private static ReleaseTrainDependencyVersion version(String input) {

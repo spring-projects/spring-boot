@@ -174,8 +174,8 @@ class RandomAccessDataFileTests {
 		byte[] b = new byte[] { 0x0F };
 		int amountRead = this.inputStream.read(b, 0, 0);
 		assertThat(b).isEqualTo(new byte[] { 0x0F });
-		assertThat(amountRead).isEqualTo(0);
-		assertThat(this.inputStream.read()).isEqualTo(0);
+		assertThat(amountRead).isZero();
+		assertThat(this.inputStream.read()).isZero();
 	}
 
 	@Test
@@ -196,7 +196,7 @@ class RandomAccessDataFileTests {
 	void inputStreamSkipPastEnd() throws Exception {
 		this.inputStream.skip(256);
 		long amountSkipped = this.inputStream.skip(1);
-		assertThat(amountSkipped).isEqualTo(0L);
+		assertThat(amountSkipped).isZero();
 	}
 
 	@Test
@@ -205,7 +205,7 @@ class RandomAccessDataFileTests {
 		this.inputStream.skip(56);
 		assertThat(this.inputStream.available()).isEqualTo(200);
 		this.inputStream.skip(200);
-		assertThat(this.inputStream.available()).isEqualTo(0);
+		assertThat(this.inputStream.available()).isZero();
 	}
 
 	@Test
@@ -239,14 +239,14 @@ class RandomAccessDataFileTests {
 	@Test
 	void subsection() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(1, 1);
-		assertThat(subsection.getInputStream().read()).isEqualTo(1);
+		assertThat(subsection.getInputStream().read()).isOne();
 	}
 
 	@Test
 	void inputStreamReadPastSubsection() throws Exception {
 		RandomAccessData subsection = this.file.getSubsection(1, 2);
 		InputStream inputStream = subsection.getInputStream();
-		assertThat(inputStream.read()).isEqualTo(1);
+		assertThat(inputStream.read()).isOne();
 		assertThat(inputStream.read()).isEqualTo(2);
 		assertThat(inputStream.read()).isEqualTo(-1);
 	}
@@ -271,7 +271,7 @@ class RandomAccessDataFileTests {
 
 	@Test
 	void inputStreamSkipNegative() throws Exception {
-		assertThat(this.inputStream.skip(-1)).isEqualTo(0L);
+		assertThat(this.inputStream.skip(-1)).isZero();
 	}
 
 	@Test

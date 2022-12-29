@@ -54,7 +54,7 @@ class BuildpackReferenceTests {
 		BuildpackReference b = BuildpackReference.of("test1");
 		BuildpackReference c = BuildpackReference.of("test2");
 		assertThat(a).isEqualTo(a).isEqualTo(b).isNotEqualTo(c);
-		assertThat(a.hashCode()).isEqualTo(b.hashCode());
+		assertThat(a).hasSameHashCodeAs(b);
 	}
 
 	@Test

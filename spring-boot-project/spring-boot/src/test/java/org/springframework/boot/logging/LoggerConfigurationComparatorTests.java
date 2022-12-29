@@ -75,7 +75,7 @@ class LoggerConfigurationComparatorTests {
 	void lexicalEqual() {
 		LoggerConfiguration first = new LoggerConfiguration("alpha", null, LogLevel.OFF);
 		LoggerConfiguration second = new LoggerConfiguration("alpha", null, LogLevel.OFF);
-		assertThat(this.comparator.compare(first, second)).isEqualTo(0);
+		assertThat(this.comparator.compare(first, second)).isZero();
 	}
 
 }
