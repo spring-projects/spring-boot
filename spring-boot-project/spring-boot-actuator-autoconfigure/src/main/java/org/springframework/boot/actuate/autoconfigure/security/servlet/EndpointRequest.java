@@ -275,11 +275,10 @@ public final class EndpointRequest {
 
 		@Override
 		public String toString() {
-			return "Endpoint [includes='" + this.includes + "'" +
-					", excludes='" + this.excludes + "'" +
-					", includeLinks='" + this.includeLinks + "'" +
-					']';
+			return "Endpoint [includes='" + this.includes + "'" + ", excludes='" + this.excludes + "'"
+					+ ", includeLinks='" + this.includeLinks + "'" + ']';
 		}
+
 	}
 
 	/**
