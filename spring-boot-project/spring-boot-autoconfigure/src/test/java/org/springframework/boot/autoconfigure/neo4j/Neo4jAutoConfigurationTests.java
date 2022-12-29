@@ -275,8 +275,7 @@ class Neo4jAutoConfigurationTests {
 
 	@Test
 	void driverConfigShouldBeConfiguredToUseUseSpringJclLogging() {
-		assertThat(mapDriverConfig(new Neo4jProperties()).logging()).isNotNull()
-				.isInstanceOf(Neo4jSpringJclLogging.class);
+		assertThat(mapDriverConfig(new Neo4jProperties()).logging()).isInstanceOf(Neo4jSpringJclLogging.class);
 	}
 
 	private URI determineServerUri(Neo4jProperties properties, Environment environment) {

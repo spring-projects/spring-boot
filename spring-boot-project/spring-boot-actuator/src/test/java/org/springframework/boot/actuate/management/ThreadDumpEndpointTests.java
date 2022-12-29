@@ -36,7 +36,7 @@ class ThreadDumpEndpointTests {
 
 	@Test
 	void dumpThreads() {
-		assertThat(new ThreadDumpEndpoint().threadDump().getThreads().size()).isGreaterThan(0);
+		assertThat(new ThreadDumpEndpoint().threadDump().getThreads()).isNotEmpty();
 	}
 
 	@Test

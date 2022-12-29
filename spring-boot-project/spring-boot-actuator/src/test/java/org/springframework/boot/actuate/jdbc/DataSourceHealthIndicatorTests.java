@@ -105,7 +105,7 @@ class DataSourceHealthIndicatorTests {
 		given(dataSource.getConnection()).willReturn(connection);
 		this.indicator.setDataSource(dataSource);
 		Health health = this.indicator.health();
-		assertThat(health.getDetails().get("database")).isNotNull();
+		assertThat(health.getDetails()).containsKey("database");
 		then(connection).should(times(2)).close();
 	}
 

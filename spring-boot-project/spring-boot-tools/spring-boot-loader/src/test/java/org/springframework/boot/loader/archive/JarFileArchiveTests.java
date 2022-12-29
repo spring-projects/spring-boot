@@ -87,20 +87,20 @@ class JarFileArchiveTests {
 	@Test
 	void getEntries() {
 		Map<String, Archive.Entry> entries = getEntriesMap(this.archive);
-		assertThat(entries.size()).isEqualTo(12);
+		assertThat(entries).hasSize(12);
 	}
 
 	@Test
 	void getUrl() throws Exception {
 		URL url = this.archive.getUrl();
-		assertThat(url.toString()).isEqualTo(this.rootJarFileUrl);
+		assertThat(url).hasToString(this.rootJarFileUrl);
 	}
 
 	@Test
 	void getNestedArchive() throws Exception {
 		Entry entry = getEntriesMap(this.archive).get("nested.jar");
 		try (Archive nested = this.archive.getNestedArchive(entry)) {
-			assertThat(nested.getUrl().toString()).isEqualTo("jar:" + this.rootJarFileUrl + "!/nested.jar!/");
+			assertThat(nested.getUrl()).hasToString("jar:" + this.rootJarFileUrl + "!/nested.jar!/");
 		}
 	}
 
@@ -139,7 +139,7 @@ class JarFileArchiveTests {
 						.getNestedArchive(getEntriesMap(this.archive).get("another-nested.jar"))) {
 			File nested = new File(nestedArchive.getUrl().toURI());
 			File anotherNested = new File(anotherNestedArchive.getUrl().toURI());
-			assertThat(nested.getParent()).isEqualTo(anotherNested.getParent());
+			assertThat(nested).hasParent(anotherNested.getParent());
 		}
 	}
 

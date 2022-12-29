@@ -45,7 +45,7 @@ class NoManagementSampleActuatorApplicationTests {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(
 				this.restTemplate.withBasicAuth("user", "password").getForEntity("/", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody().get("message")).isEqualTo("Hello Phil");
+		assertThat(entity.getBody()).containsEntry("message", "Hello Phil");
 	}
 
 	@Test

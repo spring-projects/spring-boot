@@ -261,7 +261,7 @@ class JmsAutoConfigurationTests {
 					assertThat(jmsTemplate.isPubSubDomain()).isFalse();
 					assertThat(jmsTemplate.getDefaultDestinationName()).isEqualTo("testQueue");
 					assertThat(jmsTemplate.getDeliveryDelay()).isEqualTo(500);
-					assertThat(jmsTemplate.getDeliveryMode()).isEqualTo(1);
+					assertThat(jmsTemplate.getDeliveryMode()).isOne();
 					assertThat(jmsTemplate.getPriority()).isEqualTo(6);
 					assertThat(jmsTemplate.getTimeToLive()).isEqualTo(6000);
 					assertThat(jmsTemplate.isExplicitQosEnabled()).isTrue();

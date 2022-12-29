@@ -66,7 +66,7 @@ class MockBeanContextCachingTests {
 	@Test
 	void whenThereIsANormalBeanAndAMockBeanThenTwoContextsAreCreated() {
 		bootstrapContext(TestClass.class);
-		assertThat(this.contextCache.size()).isEqualTo(1);
+		assertThat(this.contextCache.size()).isOne();
 		bootstrapContext(MockedBeanTestClass.class);
 		assertThat(this.contextCache.size()).isEqualTo(2);
 	}
@@ -74,9 +74,9 @@ class MockBeanContextCachingTests {
 	@Test
 	void whenThereIsTheSameMockedBeanInEachTestClassThenOneContextIsCreated() {
 		bootstrapContext(MockedBeanTestClass.class);
-		assertThat(this.contextCache.size()).isEqualTo(1);
+		assertThat(this.contextCache.size()).isOne();
 		bootstrapContext(AnotherMockedBeanTestClass.class);
-		assertThat(this.contextCache.size()).isEqualTo(1);
+		assertThat(this.contextCache.size()).isOne();
 	}
 
 	@SuppressWarnings("rawtypes")

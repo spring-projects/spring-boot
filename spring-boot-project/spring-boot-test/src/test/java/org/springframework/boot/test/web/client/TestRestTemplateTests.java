@@ -120,7 +120,7 @@ class TestRestTemplateTests {
 
 	@Test
 	void getRootUriRootUriNotSet() {
-		assertThat(new TestRestTemplate().getRootUri()).isEqualTo("");
+		assertThat(new TestRestTemplate().getRootUri()).isEmpty();
 	}
 
 	@Test

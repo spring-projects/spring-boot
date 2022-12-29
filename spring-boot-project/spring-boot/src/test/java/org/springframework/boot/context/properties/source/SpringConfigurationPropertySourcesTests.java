@@ -139,7 +139,7 @@ class SpringConfigurationPropertySourcesTests {
 	void shouldTrackChanges() {
 		MutablePropertySources sources = new MutablePropertySources();
 		SpringConfigurationPropertySources configurationSources = new SpringConfigurationPropertySources(sources);
-		assertThat(configurationSources.iterator()).toIterable().hasSize(0);
+		assertThat(configurationSources.iterator()).toIterable().isEmpty();
 		MapPropertySource source1 = new MapPropertySource("test1", Collections.singletonMap("a", "b"));
 		sources.addLast(source1);
 		assertThat(configurationSources.iterator()).toIterable().hasSize(1);

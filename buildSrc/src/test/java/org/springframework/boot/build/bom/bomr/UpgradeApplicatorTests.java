@@ -55,7 +55,7 @@ class UpgradeApplicatorTests {
 				new Library("ActiveMQ", new LibraryVersion(DependencyVersion.parse("5.15.11"), null), null, null, null),
 				DependencyVersion.parse("5.16")));
 		String bomContents = Files.readString(bom.toPath());
-		assertThat(bomContents.length()).isEqualTo(originalContents.length() - 3);
+		assertThat(bomContents).hasSize(originalContents.length() - 3);
 	}
 
 	@Test
@@ -69,7 +69,7 @@ class UpgradeApplicatorTests {
 				new Upgrade(new Library("OAuth2 OIDC SDK", new LibraryVersion(DependencyVersion.parse("8.36.1"), null),
 						null, null, null), DependencyVersion.parse("8.36.2")));
 		String bomContents = Files.readString(bom.toPath());
-		assertThat(bomContents.length()).isEqualTo(originalContents.length());
+		assertThat(bomContents).hasSameSizeAs(originalContents);
 		assertThat(bomContents).contains("version(\"8.36.2\")");
 	}
 

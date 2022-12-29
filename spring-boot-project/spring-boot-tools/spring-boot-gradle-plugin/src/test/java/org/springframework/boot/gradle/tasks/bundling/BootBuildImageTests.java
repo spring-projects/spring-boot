@@ -96,7 +96,7 @@ class BootBuildImageTests {
 	void springBootVersionDefaultValueIsUsed() {
 		BuildRequest request = this.buildImage.createRequest();
 		assertThat(request.getCreator().getName()).isEqualTo("Spring Boot");
-		assertThat(request.getCreator().getVersion()).isEqualTo("");
+		assertThat(request.getCreator().getVersion()).isEmpty();
 	}
 
 	@Test

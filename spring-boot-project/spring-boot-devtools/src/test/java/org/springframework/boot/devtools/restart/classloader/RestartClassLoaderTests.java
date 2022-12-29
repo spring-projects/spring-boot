@@ -129,7 +129,7 @@ class RestartClassLoaderTests {
 	@Test
 	void getResourcesFiltersDuplicates() throws Exception {
 		List<URL> resources = toList(this.reloadClassLoader.getResources(PACKAGE_PATH + "/Sample.txt"));
-		assertThat(resources.size()).isEqualTo(1);
+		assertThat(resources).hasSize(1);
 	}
 
 	@Test

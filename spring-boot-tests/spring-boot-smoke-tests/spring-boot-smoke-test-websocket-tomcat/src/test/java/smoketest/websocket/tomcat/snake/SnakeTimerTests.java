@@ -33,7 +33,7 @@ class SnakeTimerTests {
 		willThrow(new IOException()).given(snake).sendMessage(anyString());
 		SnakeTimer.addSnake(snake);
 		SnakeTimer.broadcast("");
-		assertThat(SnakeTimer.getSnakes()).hasSize(0);
+		assertThat(SnakeTimer.getSnakes()).isEmpty();
 	}
 
 }

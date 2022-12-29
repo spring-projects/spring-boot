@@ -52,7 +52,7 @@ class ExitCodeGeneratorsTests {
 
 	@Test
 	void getExitCodeWhenNoGeneratorsShouldReturnZero() {
-		assertThat(new ExitCodeGenerators().getExitCode()).isEqualTo(0);
+		assertThat(new ExitCodeGenerators().getExitCode()).isZero();
 	}
 
 	@Test
@@ -61,7 +61,7 @@ class ExitCodeGeneratorsTests {
 		given(generator.getExitCode()).willThrow(new IllegalStateException());
 		ExitCodeGenerators generators = new ExitCodeGenerators();
 		generators.add(generator);
-		assertThat(generators.getExitCode()).isEqualTo(1);
+		assertThat(generators.getExitCode()).isOne();
 	}
 
 	@Test

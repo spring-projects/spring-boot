@@ -60,7 +60,7 @@ class IgnoreErrorsBindHandlerTests {
 	@Test
 	void bindWhenIgnoringErrorsShouldBind() {
 		Example bound = this.binder.bind("example", Bindable.of(Example.class), new IgnoreErrorsBindHandler()).get();
-		assertThat(bound.getFoo()).isEqualTo(0);
+		assertThat(bound.getFoo()).isZero();
 	}
 
 	static class Example {

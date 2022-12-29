@@ -256,8 +256,8 @@ class SpringBootContextLoaderTests {
 	}
 
 	private void assertKey(Map<String, Object> actual, String key, Object value) {
-		assertThat(actual.containsKey(key)).as("Key '" + key + "' not found").isTrue();
-		assertThat(actual.get(key)).isEqualTo(value);
+		assertThat(actual).as("Key '" + key + "' not found").containsKey(key);
+		assertThat(actual).containsEntry(key, value);
 	}
 
 	@SpringBootTest(properties = { "key=myValue", "anotherKey:anotherValue" }, classes = Config.class)

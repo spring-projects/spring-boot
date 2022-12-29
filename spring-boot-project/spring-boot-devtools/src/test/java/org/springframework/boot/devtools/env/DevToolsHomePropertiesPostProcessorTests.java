@@ -152,7 +152,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 		out2.close();
 		ConfigurableEnvironment environment = getPostProcessedEnvironment();
 		assertThat(environment.getProperty("abc")).isEqualTo("jkl");
-		assertThat(environment.getProperty("bar")).isEqualTo(null);
+		assertThat(environment.getProperty("bar")).isNull();
 	}
 
 	@Test
@@ -168,7 +168,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 		out2.close();
 		ConfigurableEnvironment environment = getPostProcessedEnvironment();
 		assertThat(environment.getProperty("abc.xyz")).isEqualTo("def");
-		assertThat(environment.getProperty("bar")).isEqualTo(null);
+		assertThat(environment.getProperty("bar")).isNull();
 	}
 
 	@Test

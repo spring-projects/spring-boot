@@ -119,7 +119,7 @@ class FreeMarkerAutoConfigurationServletIntegrationTests {
 	@Test
 	void disableCache() {
 		load("spring.freemarker.cache:false");
-		assertThat(this.context.getBean(FreeMarkerViewResolver.class).getCacheLimit()).isEqualTo(0);
+		assertThat(this.context.getBean(FreeMarkerViewResolver.class).getCacheLimit()).isZero();
 	}
 
 	@Test

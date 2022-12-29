@@ -42,7 +42,7 @@ class EnvironmentInfoContributorTests {
 		Info actual = contributeFrom(this.environment);
 		assertThat(actual.get("app", String.class)).isEqualTo("my app");
 		assertThat(actual.get("version", String.class)).isEqualTo("1.0.0");
-		assertThat(actual.getDetails().size()).isEqualTo(2);
+		assertThat(actual.getDetails()).hasSize(2);
 	}
 
 	@Test

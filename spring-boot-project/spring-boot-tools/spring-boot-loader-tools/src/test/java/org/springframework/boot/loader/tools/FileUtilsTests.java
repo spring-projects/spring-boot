@@ -56,7 +56,7 @@ class FileUtilsTests {
 		file.createNewFile();
 		new File(this.originDirectory, "logback.xml").createNewFile();
 		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory, this.originDirectory);
-		assertThat(file.exists()).isFalse();
+		assertThat(file).doesNotExist();
 	}
 
 	@Test
@@ -67,7 +67,7 @@ class FileUtilsTests {
 		file.createNewFile();
 		new File(this.originDirectory, "sub/logback.xml").createNewFile();
 		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory, this.originDirectory);
-		assertThat(file.exists()).isFalse();
+		assertThat(file).doesNotExist();
 	}
 
 	@Test
@@ -78,7 +78,7 @@ class FileUtilsTests {
 		file.createNewFile();
 		new File(this.originDirectory, "sub/different.xml").createNewFile();
 		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory, this.originDirectory);
-		assertThat(file.exists()).isTrue();
+		assertThat(file).exists();
 	}
 
 	@Test
@@ -87,7 +87,7 @@ class FileUtilsTests {
 		file.createNewFile();
 		new File(this.originDirectory, "different.xml").createNewFile();
 		FileUtils.removeDuplicatesFromOutputDirectory(this.outputDirectory, this.originDirectory);
-		assertThat(file.exists()).isTrue();
+		assertThat(file).exists();
 	}
 
 	@Test

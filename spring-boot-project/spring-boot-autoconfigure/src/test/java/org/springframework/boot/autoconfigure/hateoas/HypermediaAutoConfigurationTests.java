@@ -93,7 +93,7 @@ class HypermediaAutoConfigurationTests {
 			RequestMappingHandlerAdapter handlerAdapter = context.getBean(RequestMappingHandlerAdapter.class);
 			Optional<HttpMessageConverter<?>> mappingJacksonConverter = handlerAdapter.getMessageConverters().stream()
 					.filter(MappingJackson2HttpMessageConverter.class::isInstance).findFirst();
-			assertThat(mappingJacksonConverter).isPresent().hasValueSatisfying(
+			assertThat(mappingJacksonConverter).hasValueSatisfying(
 					(converter) -> assertThat(converter.canWrite(RepresentationModel.class, MediaType.APPLICATION_JSON))
 							.isTrue());
 		});
@@ -106,10 +106,8 @@ class HypermediaAutoConfigurationTests {
 					RequestMappingHandlerAdapter handlerAdapter = context.getBean(RequestMappingHandlerAdapter.class);
 					Optional<HttpMessageConverter<?>> mappingJacksonConverter = handlerAdapter.getMessageConverters()
 							.stream().filter(MappingJackson2HttpMessageConverter.class::isInstance).findFirst();
-					assertThat(mappingJacksonConverter).isPresent()
-							.hasValueSatisfying((converter) -> assertThat(
-									converter.canWrite(RepresentationModel.class, MediaType.APPLICATION_JSON))
-											.isFalse());
+					assertThat(mappingJacksonConverter).hasValueSatisfying((converter) -> assertThat(
+							converter.canWrite(RepresentationModel.class, MediaType.APPLICATION_JSON)).isFalse());
 				});
 	}
 

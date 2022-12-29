@@ -65,7 +65,7 @@ class FileSnapshotTests {
 		FileSnapshot snapshot1 = new FileSnapshot(file);
 		FileSnapshot snapshot2 = new FileSnapshot(fileCopy);
 		assertThat(snapshot1).isEqualTo(snapshot2);
-		assertThat(snapshot1.hashCode()).isEqualTo(snapshot2.hashCode());
+		assertThat(snapshot1).hasSameHashCodeAs(snapshot2);
 	}
 
 	@Test

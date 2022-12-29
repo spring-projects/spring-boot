@@ -232,7 +232,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	@Test
 	void runWhenHaslocalFileLoadsWithLocalFileTakingPrecedenceOverClasspath() throws Exception {
 		File localFile = new File(new File("."), "application.properties");
-		assertThat(localFile.exists()).isFalse();
+		assertThat(localFile).doesNotExist();
 		try {
 			Properties properties = new Properties();
 			properties.put("my.property", "fromlocalfile");

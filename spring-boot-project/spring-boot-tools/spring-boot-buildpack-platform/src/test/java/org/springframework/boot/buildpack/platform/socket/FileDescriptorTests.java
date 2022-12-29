@@ -76,7 +76,7 @@ class FileDescriptorTests {
 		FileDescriptor descriptor = new FileDescriptor(this.sourceHandle, this::close);
 		try (Handle handle = descriptor.acquire()) {
 			descriptor.close();
-			assertThat(this.closedHandle).isEqualTo(0);
+			assertThat(this.closedHandle).isZero();
 		}
 		assertThat(this.closedHandle).isEqualTo(this.sourceHandle);
 	}

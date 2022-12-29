@@ -48,7 +48,7 @@ class TransactionManagerCustomizersTests {
 		customizers.customize(mock(PlatformTransactionManager.class));
 		customizers.customize(mock(JtaTransactionManager.class));
 		assertThat(list.get(0).getCount()).isEqualTo(2);
-		assertThat(list.get(1).getCount()).isEqualTo(1);
+		assertThat(list.get(1).getCount()).isOne();
 	}
 
 	static class TestCustomizer<T extends PlatformTransactionManager>

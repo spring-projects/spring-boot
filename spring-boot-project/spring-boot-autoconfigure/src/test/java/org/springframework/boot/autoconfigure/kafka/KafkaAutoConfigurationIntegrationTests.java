@@ -91,7 +91,7 @@ class KafkaAutoConfigurationIntegrationTests {
 
 		DefaultKafkaProducerFactory producerFactory = this.context.getBean(DefaultKafkaProducerFactory.class);
 		Producer producer = producerFactory.createProducer();
-		assertThat(producer.partitionsFor(ADMIN_CREATED_TOPIC).size()).isEqualTo(10);
+		assertThat(producer.partitionsFor(ADMIN_CREATED_TOPIC)).hasSize(10);
 		producer.close();
 	}
 

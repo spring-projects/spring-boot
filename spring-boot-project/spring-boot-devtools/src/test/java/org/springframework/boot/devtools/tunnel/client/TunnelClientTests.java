@@ -78,7 +78,7 @@ class TunnelClientTests {
 		channel.close();
 		client.getServerThread().stopAcceptingConnections();
 		client.getServerThread().join(2000);
-		assertThat(this.tunnelConnection.getOpenedTimes()).isEqualTo(1);
+		assertThat(this.tunnelConnection.getOpenedTimes()).isOne();
 		assertThat(this.tunnelConnection.isOpen()).isFalse();
 	}
 

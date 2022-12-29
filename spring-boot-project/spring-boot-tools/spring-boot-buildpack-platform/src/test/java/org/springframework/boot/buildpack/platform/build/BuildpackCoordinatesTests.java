@@ -152,7 +152,7 @@ class BuildpackCoordinatesTests extends AbstractJsonTests {
 		BuildpackCoordinates c1b = BuildpackCoordinates.of("id", "1");
 		BuildpackCoordinates c2 = BuildpackCoordinates.of("id", "2");
 		assertThat(c1a).isEqualTo(c1a).isEqualTo(c1b).isNotEqualTo(c2);
-		assertThat(c1a.hashCode()).isEqualTo(c1b.hashCode());
+		assertThat(c1a).hasSameHashCodeAs(c1b);
 	}
 
 	private InputStream createTomlStream(String id, String version, boolean includeStacks, boolean includeOrder) {

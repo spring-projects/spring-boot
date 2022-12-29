@@ -70,7 +70,7 @@ abstract class AbstractSpringBootTestWebServerWebEnvironmentTests {
 
 	@Test
 	void runAndTestHttpEndpoint() {
-		assertThat(this.port).isNotEqualTo(8080).isNotEqualTo(0);
+		assertThat(this.port).isNotEqualTo(8080).isNotZero();
 		String body = new RestTemplate().getForObject("http://localhost:" + this.port + "/", String.class);
 		assertThat(body).isEqualTo("Hello World");
 	}

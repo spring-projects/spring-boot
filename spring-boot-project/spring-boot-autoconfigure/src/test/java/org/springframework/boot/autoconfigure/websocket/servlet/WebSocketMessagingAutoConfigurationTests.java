@@ -121,7 +121,7 @@ class WebSocketMessagingAutoConfigurationTests {
 	void customizedConverterTypesMatchDefaultConverterTypes() {
 		List<MessageConverter> customizedConverters = getCustomizedConverters();
 		List<MessageConverter> defaultConverters = getDefaultConverters();
-		assertThat(customizedConverters.size()).isEqualTo(defaultConverters.size());
+		assertThat(customizedConverters).hasSameSizeAs(defaultConverters);
 		Iterator<MessageConverter> customizedIterator = customizedConverters.iterator();
 		Iterator<MessageConverter> defaultIterator = defaultConverters.iterator();
 		while (customizedIterator.hasNext()) {

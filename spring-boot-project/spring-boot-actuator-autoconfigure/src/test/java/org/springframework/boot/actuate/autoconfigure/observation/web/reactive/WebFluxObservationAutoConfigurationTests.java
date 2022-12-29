@@ -117,7 +117,7 @@ class WebFluxObservationAutoConfigurationTests {
 						ObservationAutoConfiguration.class, WebFluxAutoConfiguration.class))
 				.withPropertyValues("management.metrics.web.server.max-uri-tags=2").run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
-					assertThat(registry.get("http.server.requests").meters().size()).isLessThanOrEqualTo(2);
+					assertThat(registry.get("http.server.requests").meters()).hasSizeLessThanOrEqualTo(2);
 					assertThat(output).contains("Reached the maximum number of URI tags for 'http.server.requests'");
 				});
 	}
@@ -132,7 +132,7 @@ class WebFluxObservationAutoConfigurationTests {
 						"management.metrics.web.server.request.metric-name=my.http.server.requests")
 				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
-					assertThat(registry.get("my.http.server.requests").meters().size()).isLessThanOrEqualTo(2);
+					assertThat(registry.get("my.http.server.requests").meters()).hasSizeLessThanOrEqualTo(2);
 					assertThat(output).contains("Reached the maximum number of URI tags for 'my.http.server.requests'");
 				});
 	}
@@ -146,7 +146,7 @@ class WebFluxObservationAutoConfigurationTests {
 						"management.observations.http.server.requests.name=my.http.server.requests")
 				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
-					assertThat(registry.get("my.http.server.requests").meters().size()).isLessThanOrEqualTo(2);
+					assertThat(registry.get("my.http.server.requests").meters()).hasSizeLessThanOrEqualTo(2);
 					assertThat(output).contains("Reached the maximum number of URI tags for 'my.http.server.requests'");
 				});
 	}

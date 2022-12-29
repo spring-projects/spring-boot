@@ -155,7 +155,7 @@ class LoggingApplicationListenerTests {
 		assertThat(this.output).contains("Hello world");
 		assertThat(this.output).doesNotContain("???");
 		assertThat(this.output).contains("[junit-");
-		assertThat(new File(this.tempDir + "/spring.log").exists()).isFalse();
+		assertThat(new File(this.tempDir + "/spring.log")).doesNotExist();
 	}
 
 	@Test
@@ -191,7 +191,7 @@ class LoggingApplicationListenerTests {
 		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.info("Hello world");
 		assertThat(this.output).contains("Hello world").doesNotContain("???");
-		assertThat(new File(this.tempDir.toFile(), "/spring.log").exists()).isFalse();
+		assertThat(new File(this.tempDir.toFile(), "/spring.log")).doesNotExist();
 	}
 
 	@Test
@@ -200,7 +200,7 @@ class LoggingApplicationListenerTests {
 		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.info("Hello world");
 		assertThat(this.output).contains("Hello world").doesNotContain("???");
-		assertThat(new File(this.tempDir.toFile(), "/spring.log").exists()).isFalse();
+		assertThat(new File(this.tempDir.toFile(), "/spring.log")).doesNotExist();
 	}
 
 	@Test

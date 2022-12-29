@@ -118,7 +118,7 @@ class MetricsAutoConfigurationIntegrationTests {
 		new ApplicationContextRunner().with(MetricsRun.limitedTo(GraphiteMetricsExportAutoConfiguration.class,
 				JmxMetricsExportAutoConfiguration.class)).run((context) -> {
 					MeterRegistry composite = context.getBean(MeterRegistry.class);
-					assertThat(composite).extracting("filters", InstanceOfAssertFactories.ARRAY).hasSize(0);
+					assertThat(composite).extracting("filters", InstanceOfAssertFactories.ARRAY).isEmpty();
 					assertThat(composite).isInstanceOf(CompositeMeterRegistry.class);
 					Set<MeterRegistry> registries = ((CompositeMeterRegistry) composite).getRegistries();
 					assertThat(registries).hasSize(2);

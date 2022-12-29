@@ -61,7 +61,7 @@ class ConfigTreeConfigDataResourceTests {
 	@Test
 	void toStringReturnsDescriptiveString() {
 		ConfigTreeConfigDataResource location = new ConfigTreeConfigDataResource("/etc/config");
-		assertThat(location.toString()).isEqualTo("config tree [" + new File("/etc/config").getAbsolutePath() + "]");
+		assertThat(location).hasToString("config tree [" + new File("/etc/config").getAbsolutePath() + "]");
 	}
 
 }

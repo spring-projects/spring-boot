@@ -85,7 +85,7 @@ class FilePermissionsTests {
 	@Test
 	void posixPermissionsToUmaskWithEmptyPermissions() {
 		Set<PosixFilePermission> permissions = Collections.emptySet();
-		assertThat(FilePermissions.posixPermissionsToUmask(permissions)).isEqualTo(0);
+		assertThat(FilePermissions.posixPermissionsToUmask(permissions)).isZero();
 	}
 
 	@Test

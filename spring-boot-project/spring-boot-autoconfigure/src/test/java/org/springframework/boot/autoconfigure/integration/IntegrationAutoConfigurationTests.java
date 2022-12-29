@@ -423,7 +423,7 @@ class IntegrationAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(PollerMetadata.class);
 					PollerMetadata metadata = context.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class);
-					assertThat(metadata.getMaxMessagesPerPoll()).isEqualTo(1L);
+					assertThat(metadata.getMaxMessagesPerPoll()).isOne();
 					assertThat(metadata.getReceiveTimeout()).isEqualTo(10000L);
 					assertThat(metadata.getTrigger()).asInstanceOf(InstanceOfAssertFactories.type(CronTrigger.class))
 							.satisfies((trigger) -> assertThat(trigger.getExpression()).isEqualTo("* * * ? * *"));

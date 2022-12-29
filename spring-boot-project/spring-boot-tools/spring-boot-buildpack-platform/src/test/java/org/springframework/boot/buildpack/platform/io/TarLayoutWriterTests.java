@@ -51,13 +51,13 @@ class TarLayoutWriterTests {
 			assertThat(tarInputStream.getNextEntry()).isNull();
 			assertThat(directoryEntry.getName()).isEqualTo("/foo/");
 			assertThat(directoryEntry.getMode()).isEqualTo(0755);
-			assertThat(directoryEntry.getLongUserId()).isEqualTo(0);
-			assertThat(directoryEntry.getLongGroupId()).isEqualTo(0);
+			assertThat(directoryEntry.getLongUserId()).isZero();
+			assertThat(directoryEntry.getLongGroupId()).isZero();
 			assertThat(directoryEntry.getModTime()).isEqualTo(new Date(TarLayoutWriter.NORMALIZED_MOD_TIME));
 			assertThat(fileEntry.getName()).isEqualTo("/foo/bar.txt");
 			assertThat(fileEntry.getMode()).isEqualTo(0777);
-			assertThat(fileEntry.getLongUserId()).isEqualTo(1);
-			assertThat(fileEntry.getLongGroupId()).isEqualTo(1);
+			assertThat(fileEntry.getLongUserId()).isOne();
+			assertThat(fileEntry.getLongGroupId()).isOne();
 			assertThat(fileEntry.getModTime()).isEqualTo(new Date(TarLayoutWriter.NORMALIZED_MOD_TIME));
 			assertThat(fileContent).isEqualTo("test".getBytes(StandardCharsets.UTF_8));
 		}

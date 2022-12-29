@@ -32,7 +32,7 @@ class ContainerReferenceTests {
 	void ofCreatesInstance() {
 		ContainerReference reference = ContainerReference
 				.of("92691aec176333f7ae890de9aaeeafef11166efcaa3908edf83eb44a5c943781");
-		assertThat(reference.toString()).isEqualTo("92691aec176333f7ae890de9aaeeafef11166efcaa3908edf83eb44a5c943781");
+		assertThat(reference).hasToString("92691aec176333f7ae890de9aaeeafef11166efcaa3908edf83eb44a5c943781");
 	}
 
 	@Test
@@ -55,7 +55,7 @@ class ContainerReferenceTests {
 				.of("92691aec176333f7ae890de9aaeeafef11166efcaa3908edf83eb44a5c943781");
 		ContainerReference r3 = ContainerReference
 				.of("02691aec176333f7ae890de9aaeeafef11166efcaa3908edf83eb44a5c943781");
-		assertThat(r1.hashCode()).isEqualTo(r2.hashCode());
+		assertThat(r1).hasSameHashCodeAs(r2);
 		assertThat(r1).isEqualTo(r1).isEqualTo(r2).isNotEqualTo(r3);
 	}
 

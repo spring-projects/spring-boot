@@ -93,7 +93,7 @@ class ScheduledTasksEndpointTests {
 			assertThat(tasks.getFixedDelay()).hasSize(1);
 			FixedDelayTaskDescriptor description = (FixedDelayTaskDescriptor) tasks.getFixedDelay().get(0);
 			assertThat(description.getInitialDelay()).isEqualTo(2);
-			assertThat(description.getInterval()).isEqualTo(1);
+			assertThat(description.getInterval()).isOne();
 			assertThat(description.getRunnable().getTarget())
 					.isEqualTo(FixedDelayScheduledMethod.class.getName() + ".fixedDelay");
 		});

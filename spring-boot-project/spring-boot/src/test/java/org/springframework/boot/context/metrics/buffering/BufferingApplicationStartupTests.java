@@ -57,11 +57,11 @@ class BufferingApplicationStartupTests {
 		List<TimelineEvent> events = applicationStartup.getBufferedTimeline().getEvents();
 		assertThat(events).hasSize(2);
 		StartupTimeline.TimelineEvent firstEvent = events.get(0);
-		assertThat(firstEvent.getStartupStep().getId()).isEqualTo(0);
+		assertThat(firstEvent.getStartupStep().getId()).isZero();
 		assertThat(firstEvent.getStartupStep().getParentId()).isNull();
 		StartupTimeline.TimelineEvent secondEvent = events.get(1);
 		assertThat(secondEvent.getStartupStep().getId()).isEqualTo(2);
-		assertThat(secondEvent.getStartupStep().getParentId()).isEqualTo(1);
+		assertThat(secondEvent.getStartupStep().getParentId()).isOne();
 	}
 
 	@Test

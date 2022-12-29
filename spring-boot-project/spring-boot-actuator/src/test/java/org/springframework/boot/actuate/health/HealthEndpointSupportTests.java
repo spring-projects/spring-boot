@@ -351,7 +351,7 @@ abstract class HealthEndpointSupportTests<S extends HealthEndpointSupport<C, T>,
 				Collections.singletonMap("testGroup", testGroup));
 		HealthResult<T> result = create(this.registry, groups).getHealth(ApiVersion.V3, WebServerNamespace.SERVER,
 				SecurityContext.NONE, false, "healthz", "test");
-		assertThat(result).isEqualTo(null);
+		assertThat(result).isNull();
 	}
 
 	protected final S create(R registry, HealthEndpointGroups groups) {

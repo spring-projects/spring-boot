@@ -48,7 +48,7 @@ class ErrorsTests extends AbstractJsonTests {
 	@Test
 	void toStringHasErrorDetails() throws Exception {
 		Errors errors = getObjectMapper().readValue(getContent("errors.json"), Errors.class);
-		assertThat(errors.toString()).isEqualTo("[TEST1: Test One, TEST2: Test Two]");
+		assertThat(errors).hasToString("[TEST1: Test One, TEST2: Test Two]");
 	}
 
 }

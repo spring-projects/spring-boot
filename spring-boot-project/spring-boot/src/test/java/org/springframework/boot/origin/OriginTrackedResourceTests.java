@@ -171,7 +171,7 @@ class OriginTrackedResourceTests {
 		OriginTrackedResource r2o1 = OriginTrackedResource.of(r2, o1);
 		OriginTrackedResource r2o2 = OriginTrackedResource.of(r2, o2);
 		assertThat(r1o1a).isEqualTo(r1o1a).isEqualTo(r1o1a).isNotEqualTo(r1o2).isNotEqualTo(r2o1).isNotEqualTo(r2o2);
-		assertThat(r1o1a.hashCode()).isEqualTo(r1o1b.hashCode());
+		assertThat(r1o1a).hasSameHashCodeAs(r1o1b);
 	}
 
 	@Test

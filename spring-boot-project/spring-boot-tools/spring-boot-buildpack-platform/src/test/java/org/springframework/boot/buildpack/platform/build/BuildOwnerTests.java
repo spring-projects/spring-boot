@@ -41,7 +41,7 @@ class BuildOwnerTests {
 		BuildOwner owner = BuildOwner.fromEnv(env);
 		assertThat(owner.getUid()).isEqualTo(123);
 		assertThat(owner.getGid()).isEqualTo(456);
-		assertThat(owner.toString()).isEqualTo("123/456");
+		assertThat(owner).hasToString("123/456");
 	}
 
 	@Test

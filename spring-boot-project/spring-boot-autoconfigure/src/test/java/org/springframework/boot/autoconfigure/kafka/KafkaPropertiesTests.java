@@ -51,7 +51,7 @@ class KafkaPropertiesTests {
 				IsolationLevel.READ_COMMITTED.name());
 		assertThat(original).extracting("id").containsExactly(IsolationLevel.READ_UNCOMMITTED.id(),
 				IsolationLevel.READ_COMMITTED.id());
-		assertThat(original).hasSize(IsolationLevel.values().length);
+		assertThat(original).hasSameSizeAs(IsolationLevel.values());
 	}
 
 	@Test
@@ -76,10 +76,10 @@ class KafkaPropertiesTests {
 		properties.getSsl().setTrustStoreCertificates("-----BEGINtrust");
 		properties.getSsl().setKeyStoreCertificateChain("-----BEGINchain");
 		Map<String, Object> consumerProperties = properties.buildConsumerProperties();
-		assertThat(consumerProperties.get(SslConfigs.SSL_KEYSTORE_KEY_CONFIG)).isEqualTo("-----BEGINkey");
-		assertThat(consumerProperties.get(SslConfigs.SSL_TRUSTSTORE_CERTIFICATES_CONFIG)).isEqualTo("-----BEGINtrust");
-		assertThat(consumerProperties.get(SslConfigs.SSL_KEYSTORE_CERTIFICATE_CHAIN_CONFIG))
-				.isEqualTo("-----BEGINchain");
+		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_KEYSTORE_KEY_CONFIG, "-----BEGINkey");
+		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_TRUSTSTORE_CERTIFICATES_CONFIG, "-----BEGINtrust");
+		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_KEYSTORE_CERTIFICATE_CHAIN_CONFIG,
+				"-----BEGINchain");
 	}
 
 	@Test

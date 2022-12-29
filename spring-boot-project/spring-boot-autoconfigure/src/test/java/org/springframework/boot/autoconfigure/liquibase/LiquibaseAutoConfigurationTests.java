@@ -183,9 +183,9 @@ class LiquibaseAutoConfigurationTests {
 					assertThat(liquibase.getDatabaseChangeLogLockTable()).isEqualTo("LIQUI_LOCK");
 					JdbcTemplate jdbcTemplate = new JdbcTemplate(context.getBean(DataSource.class));
 					assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM public.LIQUI_LOG", Integer.class))
-							.isEqualTo(1);
+							.isOne();
 					assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM public.LIQUI_LOCK", Integer.class))
-							.isEqualTo(1);
+							.isOne();
 				});
 	}
 
@@ -321,7 +321,7 @@ class LiquibaseAutoConfigurationTests {
 					Map<String, String> parameters = (Map<String, String>) ReflectionTestUtils.getField(liquibase,
 							"parameters");
 					assertThat(parameters).containsKey("foo");
-					assertThat(parameters.get("foo")).isEqualTo("bar");
+					assertThat(parameters).containsEntry("foo", "bar");
 				}));
 	}
 

@@ -62,7 +62,7 @@ class RecordableServletHttpRequestTests {
 
 	private void validate(String expectedUri) {
 		RecordableServletHttpRequest sourceRequest = new RecordableServletHttpRequest(this.request);
-		assertThat(sourceRequest.getUri().toString()).isEqualTo(expectedUri);
+		assertThat(sourceRequest.getUri()).hasToString(expectedUri);
 	}
 
 }

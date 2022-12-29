@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.cluster.ClusterClientOptions;
-import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions.RefreshTrigger;
 import io.lettuce.core.resource.DefaultClientResources;
 import io.lettuce.core.tracing.Tracing;
@@ -94,7 +93,7 @@ class RedisAutoConfigurationTests {
 				"spring.data.redis.lettuce.shutdown-timeout:500").run((context) -> {
 					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
-					assertThat(cf.getDatabase()).isEqualTo(1);
+					assertThat(cf.getDatabase()).isOne();
 					assertThat(getUserName(cf)).isNull();
 					assertThat(cf.getPassword()).isNull();
 					assertThat(cf.isUseSsl()).isFalse();
@@ -153,7 +152,7 @@ class RedisAutoConfigurationTests {
 			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 			assertThat(cf.getHostName()).isEqualTo("example");
 			assertThat(cf.getPort()).isEqualTo(33);
-			assertThat(getUserName(cf)).isEqualTo("");
+			assertThat(getUserName(cf)).isEmpty();
 			assertThat(cf.getPassword()).isEqualTo("pass:word");
 		});
 	}
@@ -194,7 +193,7 @@ class RedisAutoConfigurationTests {
 					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
 					GenericObjectPoolConfig<?> poolConfig = getPoolingClientConfiguration(cf).getPoolConfig();
-					assertThat(poolConfig.getMinIdle()).isEqualTo(1);
+					assertThat(poolConfig.getMinIdle()).isOne();
 					assertThat(poolConfig.getMaxIdle()).isEqualTo(4);
 					assertThat(poolConfig.getMaxTotal()).isEqualTo(16);
 					assertThat(poolConfig.getMaxWaitDuration()).isEqualTo(Duration.ofSeconds(2));
@@ -298,7 +297,7 @@ class RedisAutoConfigurationTests {
 						"spring.data.redis.sentinel.nodes:127.0.0.1:26379, 127.0.0.1:26380")
 				.run((context) -> {
 					LettuceConnectionFactory connectionFactory = context.getBean(LettuceConnectionFactory.class);
-					assertThat(connectionFactory.getDatabase()).isEqualTo(1);
+					assertThat(connectionFactory.getDatabase()).isOne();
 					assertThat(connectionFactory.isRedisSentinelAware()).isTrue();
 				});
 	}
@@ -467,7 +466,7 @@ class RedisAutoConfigurationTests {
 						"spring.data.redis.lettuce.cluster.refresh.dynamic-sources=")
 				.run(assertClientOptions(ClusterClientOptions.class,
 						(options) -> assertThat(options.getTopologyRefreshOptions().useDynamicRefreshSources())
-								.isEqualTo(ClusterTopologyRefreshOptions.DEFAULT_DYNAMIC_REFRESH_SOURCES)));
+								.isTrue()));
 	}
 
 	private <T extends ClientOptions> ContextConsumer<AssertableApplicationContext> assertClientOptions(

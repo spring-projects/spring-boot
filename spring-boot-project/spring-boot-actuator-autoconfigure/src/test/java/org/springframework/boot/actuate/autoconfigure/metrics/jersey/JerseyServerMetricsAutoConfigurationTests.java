@@ -91,7 +91,7 @@ class JerseyServerMetricsAutoConfigurationTests {
 			doRequest(context);
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			Timer timer = registry.get("http.server.requests").tag("uri", "/users/{id}").timer();
-			assertThat(timer.count()).isEqualTo(1);
+			assertThat(timer.count()).isOne();
 		});
 	}
 

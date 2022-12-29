@@ -283,7 +283,7 @@ class HttpTunnelServerTests {
 		connection.waitForResponse();
 		connection.respond(HttpStatus.I_AM_A_TEAPOT);
 		assertThat(this.servletResponse.getStatus()).isEqualTo(418);
-		assertThat(this.servletResponse.getContentLength()).isEqualTo(0);
+		assertThat(this.servletResponse.getContentLength()).isZero();
 	}
 
 	@Test

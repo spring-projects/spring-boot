@@ -49,7 +49,7 @@ class ConfigurationPropertySourcesPropertyResolverTests {
 		ResolverEnvironment environment = new ResolverEnvironment();
 		CountingMockPropertySource propertySource = createMockPropertySource(environment, true);
 		environment.getProperty("missing");
-		assertThat(propertySource.getCount("missing")).isEqualTo(1);
+		assertThat(propertySource.getCount("missing")).isOne();
 	}
 
 	@Test
@@ -58,8 +58,8 @@ class ConfigurationPropertySourcesPropertyResolverTests {
 		CountingMockPropertySource propertySource = createMockPropertySource(environment, true);
 		assertThat(environment.containsProperty("spring")).isTrue();
 		assertThat(environment.containsProperty("sprong")).isFalse();
-		assertThat(propertySource.getCount("spring")).isEqualTo(1);
-		assertThat(propertySource.getCount("sprong")).isEqualTo(1);
+		assertThat(propertySource.getCount("spring")).isOne();
+		assertThat(propertySource.getCount("sprong")).isOne();
 	}
 
 	@Test
@@ -68,8 +68,8 @@ class ConfigurationPropertySourcesPropertyResolverTests {
 		CountingMockPropertySource propertySource = createMockPropertySource(environment, true);
 		assertThat(environment.containsProperty("spr!ng")).isTrue();
 		assertThat(environment.containsProperty("spr*ng")).isFalse();
-		assertThat(propertySource.getCount("spr!ng")).isEqualTo(1);
-		assertThat(propertySource.getCount("spr*ng")).isEqualTo(1);
+		assertThat(propertySource.getCount("spr!ng")).isOne();
+		assertThat(propertySource.getCount("spr*ng")).isOne();
 	}
 
 	@Test
@@ -78,8 +78,8 @@ class ConfigurationPropertySourcesPropertyResolverTests {
 		CountingMockPropertySource propertySource = createMockPropertySource(environment, true);
 		assertThat(environment.getProperty("spring")).isEqualTo("boot");
 		assertThat(environment.getProperty("sprong")).isNull();
-		assertThat(propertySource.getCount("spring")).isEqualTo(1);
-		assertThat(propertySource.getCount("sprong")).isEqualTo(1);
+		assertThat(propertySource.getCount("spring")).isOne();
+		assertThat(propertySource.getCount("sprong")).isOne();
 	}
 
 	@Test
@@ -88,8 +88,8 @@ class ConfigurationPropertySourcesPropertyResolverTests {
 		CountingMockPropertySource propertySource = createMockPropertySource(environment, true);
 		assertThat(environment.getProperty("spr!ng")).isEqualTo("boot");
 		assertThat(environment.getProperty("spr*ng")).isNull();
-		assertThat(propertySource.getCount("spr!ng")).isEqualTo(1);
-		assertThat(propertySource.getCount("spr*ng")).isEqualTo(1);
+		assertThat(propertySource.getCount("spr!ng")).isOne();
+		assertThat(propertySource.getCount("spr*ng")).isOne();
 	}
 
 	@Test
@@ -98,8 +98,8 @@ class ConfigurationPropertySourcesPropertyResolverTests {
 		CountingMockPropertySource propertySource = createMockPropertySource(environment, false);
 		assertThat(environment.getProperty("spring")).isEqualTo("boot");
 		assertThat(environment.getProperty("sprong")).isNull();
-		assertThat(propertySource.getCount("spring")).isEqualTo(1);
-		assertThat(propertySource.getCount("sprong")).isEqualTo(1);
+		assertThat(propertySource.getCount("spring")).isOne();
+		assertThat(propertySource.getCount("sprong")).isOne();
 	}
 
 	@Test // gh-26732
@@ -110,7 +110,7 @@ class ConfigurationPropertySourcesPropertyResolverTests {
 		propertySource.withProperty("v2", "${v1}");
 		environment.getPropertySources().addFirst(propertySource);
 		assertThat(environment.getProperty("v2")).isEqualTo("1");
-		assertThat(environment.getProperty("v2", Integer.class)).isEqualTo(1);
+		assertThat(environment.getProperty("v2", Integer.class)).isOne();
 	}
 
 	private CountingMockPropertySource createMockPropertySource(StandardEnvironment environment, boolean attach) {

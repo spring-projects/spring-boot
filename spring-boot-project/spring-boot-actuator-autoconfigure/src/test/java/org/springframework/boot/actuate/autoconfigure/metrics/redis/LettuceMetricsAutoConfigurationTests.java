@@ -57,10 +57,9 @@ class LettuceMetricsAutoConfigurationTests {
 		this.contextRunner.with(MetricsRun.simple())
 				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class)).run((context) -> {
 					MicrometerOptions micrometerOptions = context.getBean(MicrometerOptions.class);
-					assertThat(micrometerOptions.isEnabled()).isEqualTo(MicrometerOptions.DEFAULT_ENABLED);
-					assertThat(micrometerOptions.isHistogram()).isEqualTo(MicrometerOptions.DEFAULT_HISTOGRAM);
-					assertThat(micrometerOptions.localDistinction())
-							.isEqualTo(MicrometerOptions.DEFAULT_LOCAL_DISTINCTION);
+					assertThat(micrometerOptions.isEnabled()).isTrue();
+					assertThat(micrometerOptions.isHistogram()).isFalse();
+					assertThat(micrometerOptions.localDistinction()).isFalse();
 					assertThat(micrometerOptions.maxLatency()).isEqualTo(MicrometerOptions.DEFAULT_MAX_LATENCY);
 					assertThat(micrometerOptions.minLatency()).isEqualTo(MicrometerOptions.DEFAULT_MIN_LATENCY);
 				});

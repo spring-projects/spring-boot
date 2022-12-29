@@ -96,7 +96,7 @@ class QuartzEndpointAutoConfigurationTests {
 					assertThat(context).hasSingleBean(QuartzEndpointWebExtension.class);
 					QuartzEndpointWebExtension endpoint = context.getBean(QuartzEndpointWebExtension.class);
 					Set<String> roles = (Set<String>) ReflectionTestUtils.getField(endpoint, "roles");
-					assertThat(roles.contains("test")).isTrue();
+					assertThat(roles).contains("test");
 				});
 	}
 

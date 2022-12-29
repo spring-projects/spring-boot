@@ -171,7 +171,7 @@ class JooqAutoConfigurationTests {
 
 		@Override
 		public void run(org.jooq.Configuration configuration) {
-			assertThat(this.dsl.fetch(this.sql).getValue(0, 0).toString()).isEqualTo(this.expected);
+			assertThat(this.dsl.fetch(this.sql).getValue(0, 0)).hasToString(this.expected);
 		}
 
 	}

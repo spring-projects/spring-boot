@@ -86,7 +86,7 @@ class MetricsRepositoryMethodInvocationListenerTests {
 	}
 
 	private void assertMetricsContainsTag(String tagKey, String tagValue) {
-		assertThat(this.registry.get(REQUEST_METRICS_NAME).tag(tagKey, tagValue).timer().count()).isEqualTo(1);
+		assertThat(this.registry.get(REQUEST_METRICS_NAME).tag(tagKey, tagValue).timer().count()).isOne();
 	}
 
 	private RepositoryMethodInvocation createInvocation(Class<?> repositoryInterface) {

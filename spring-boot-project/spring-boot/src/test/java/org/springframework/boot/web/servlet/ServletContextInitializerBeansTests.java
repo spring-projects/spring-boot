@@ -48,7 +48,7 @@ class ServletContextInitializerBeansTests {
 		load(ServletConfiguration.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
 				this.context.getBeanFactory());
-		assertThat(initializerBeans.size()).isEqualTo(1);
+		assertThat(initializerBeans).hasSize(1);
 		assertThat(initializerBeans.iterator()).toIterable().hasOnlyElementsOfType(TestServlet.class);
 	}
 
@@ -57,7 +57,7 @@ class ServletContextInitializerBeansTests {
 		load(FilterConfiguration.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
 				this.context.getBeanFactory());
-		assertThat(initializerBeans.size()).isEqualTo(1);
+		assertThat(initializerBeans).hasSize(1);
 		assertThat(initializerBeans.iterator()).toIterable().hasOnlyElementsOfType(TestFilter.class);
 	}
 
@@ -66,7 +66,7 @@ class ServletContextInitializerBeansTests {
 		load(TestConfiguration.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
 				this.context.getBeanFactory(), TestServletContextInitializer.class);
-		assertThat(initializerBeans.size()).isEqualTo(1);
+		assertThat(initializerBeans).hasSize(1);
 		assertThat(initializerBeans.iterator()).toIterable().hasOnlyElementsOfType(TestServletContextInitializer.class);
 	}
 

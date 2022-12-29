@@ -155,7 +155,7 @@ class BindableTests {
 		Bindable<String> bindable1 = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation);
 		Bindable<String> bindable2 = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation);
 		Bindable<String> bindable3 = Bindable.of(String.class).withExistingValue("fof").withAnnotations(annotation);
-		assertThat(bindable1.hashCode()).isEqualTo(bindable2.hashCode());
+		assertThat(bindable1).hasSameHashCodeAs(bindable2);
 		assertThat(bindable1).isEqualTo(bindable1).isEqualTo(bindable2);
 		assertThat(bindable1).isEqualTo(bindable3);
 	}

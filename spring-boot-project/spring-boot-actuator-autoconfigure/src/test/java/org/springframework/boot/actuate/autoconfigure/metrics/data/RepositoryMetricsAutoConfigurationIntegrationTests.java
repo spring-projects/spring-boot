@@ -54,7 +54,7 @@ class RepositoryMetricsAutoConfigurationIntegrationTests {
 			context.getBean(CityRepository.class).count();
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			assertThat(registry.get("spring.data.repository.invocations").tag("repository", "CityRepository").timer()
-					.count()).isEqualTo(1);
+					.count()).isOne();
 		});
 	}
 

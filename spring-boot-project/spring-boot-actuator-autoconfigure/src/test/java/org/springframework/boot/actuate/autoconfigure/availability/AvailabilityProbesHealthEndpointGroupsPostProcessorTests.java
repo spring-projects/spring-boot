@@ -80,8 +80,8 @@ class AvailabilityProbesHealthEndpointGroupsPostProcessorTests {
 		HealthEndpointGroups postProcessed = getPostProcessed("true");
 		HealthEndpointGroup liveness = postProcessed.get("liveness");
 		HealthEndpointGroup readiness = postProcessed.get("readiness");
-		assertThat(liveness.getAdditionalPath().toString()).isEqualTo("server:/livez");
-		assertThat(readiness.getAdditionalPath().toString()).isEqualTo("server:/readyz");
+		assertThat(liveness.getAdditionalPath()).hasToString("server:/livez");
+		assertThat(readiness.getAdditionalPath()).hasToString("server:/readyz");
 	}
 
 	@Test
@@ -99,8 +99,8 @@ class AvailabilityProbesHealthEndpointGroupsPostProcessorTests {
 		HealthEndpointGroups postProcessed = postProcessor.postProcessHealthEndpointGroups(groups);
 		HealthEndpointGroup liveness = postProcessed.get("liveness");
 		HealthEndpointGroup readiness = postProcessed.get("readiness");
-		assertThat(liveness.getAdditionalPath().toString()).isEqualTo("server:/livez");
-		assertThat(readiness.getAdditionalPath().toString()).isEqualTo("server:/readyz");
+		assertThat(liveness.getAdditionalPath()).hasToString("server:/livez");
+		assertThat(readiness.getAdditionalPath()).hasToString("server:/readyz");
 	}
 
 	private HealthEndpointGroups getPostProcessed(String value) {

@@ -64,7 +64,7 @@ class TestPrintStream extends PrintStream implements AssertProvider<PrintStreamA
 			try {
 				InputStream stream = this.actual.testClass.getResourceAsStream(resource);
 				String content = FileCopyUtils.copyToString(new InputStreamReader(stream, StandardCharsets.UTF_8));
-				Assertions.assertThat(this.actual.toString()).isEqualTo(content);
+				Assertions.assertThat(this.actual).hasToString(content);
 			}
 			catch (IOException ex) {
 				throw new IllegalStateException(ex);
