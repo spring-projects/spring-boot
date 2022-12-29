@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHost;
@@ -195,7 +196,7 @@ abstract class HttpClientTransport implements HttpTransport {
 		private final IOConsumer<OutputStream> writer;
 
 		WritableHttpEntity(String contentType, IOConsumer<OutputStream> writer) {
-			super(contentType, "UTF-8");
+			super(contentType, StandardCharsets.UTF_8.name());
 			this.writer = writer;
 		}
 
