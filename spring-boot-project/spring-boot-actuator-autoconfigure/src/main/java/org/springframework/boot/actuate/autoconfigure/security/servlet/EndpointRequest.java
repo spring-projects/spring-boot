@@ -277,8 +277,8 @@ public final class EndpointRequest {
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
 			sb.append("EndpointRequest [includes='").append(this.includes).append("'");
-			sb.append(", [Excludes='").append(this.excludes).append("'");
-			sb.append(", [IncludeLinks=]").append(this.includeLinks).append("'");
+			sb.append(", Excludes='").append(this.excludes).append("'");
+			sb.append(", IncludeLinks=").append(this.includeLinks).append("'");
 			sb.append("]");
 			return sb.toString();
 		}
