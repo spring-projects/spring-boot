@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -45,9 +46,8 @@ class LayersIndex extends ArrayList<Map<String, List<String>>> {
 		String indexPath = (archiveFile.getName().endsWith(".war") ? "WEB-INF/layers.idx" : "BOOT-INF/layers.idx");
 		try (JarFile jarFile = new JarFile(archiveFile)) {
 			ZipEntry indexEntry = jarFile.getEntry(indexPath);
-			Yaml yaml = new Yaml(new Constructor(LayersIndex.class));
+			Yaml yaml = new Yaml(new Constructor(LayersIndex.class, new LoaderOptions()));
 			return yaml.load(jarFile.getInputStream(indexEntry));
 		}
 	}
-
 }
