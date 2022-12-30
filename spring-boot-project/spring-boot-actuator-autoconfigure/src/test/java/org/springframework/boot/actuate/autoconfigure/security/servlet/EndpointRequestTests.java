@@ -24,6 +24,7 @@ import org.assertj.core.api.AssertDelegateTarget;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest.EndpointRequestMatcher;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.Operation;
@@ -213,6 +214,13 @@ class EndpointRequestTests {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
 		assertMatcher(matcher, (PathMappedEndpoints) null).doesNotMatch("/actuator/foo");
 		assertMatcher(matcher, (PathMappedEndpoints) null).doesNotMatch("/actuator/bar");
+	}
+
+	@Test
+	void toStringEndpoint() {
+		RequestMatcher matcher = EndpointRequest.to("/foo", "/bar");
+		assertThat(matcher.toString())
+				.isEqualTo("EndpointRequest [includes='[/foo, /bar]', Excludes='[]', IncludeLinks='false']");
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher) {
