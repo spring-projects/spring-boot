@@ -216,11 +216,18 @@ class EndpointRequestTests {
 	}
 
 	@Test
-	void toStringEndpoint() {
+	void toStringIncludedEndpoints() {
 		RequestMatcher matcher = EndpointRequest.to("/foo", "/bar");
 		assertThat(matcher.toString())
 				.isEqualTo("EndpointRequest [includes='[/foo, /bar]', Excludes='[]', IncludeLinks='false']");
 	}
+
+    @Test
+    void toStringIncludedExcludedEndpoints() {
+        RequestMatcher matcher = EndpointRequest.to("/foo").excluding("/bar");
+        assertThat(matcher.toString())
+                .isEqualTo("EndpointRequest [includes='[/foo]', Excludes='[/bar]', IncludeLinks='false']");
+    }
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher) {
 		return assertMatcher(matcher, mockPathMappedEndpoints("/actuator"));
