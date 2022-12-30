@@ -46,8 +46,13 @@ class LayersIndex extends ArrayList<Map<String, List<String>>> {
 		String indexPath = (archiveFile.getName().endsWith(".war") ? "WEB-INF/layers.idx" : "BOOT-INF/layers.idx");
 		try (JarFile jarFile = new JarFile(archiveFile)) {
 			ZipEntry indexEntry = jarFile.getEntry(indexPath);
-			Yaml yaml = new Yaml(new Constructor(LayersIndex.class, new LoaderOptions()));
+			LoaderOptions loaderOptions = new LoaderOptions();
+			loaderOptions.setAllowDuplicateKeys(false);
+			loaderOptions.setMaxAliasesForCollections(Integer.MAX_VALUE);
+			loaderOptions.setAllowRecursiveKeys(true);
+			Yaml yaml = new Yaml(new Constructor(LayersIndex.class, loaderOptions));
 			return yaml.load(jarFile.getInputStream(indexEntry));
 		}
 	}
+
 }
