@@ -217,16 +217,30 @@ class EndpointRequestTests {
 
 	@Test
 	void toStringIncludedEndpoints() {
-		RequestMatcher matcher = EndpointRequest.to("/foo", "/bar");
+		RequestMatcher matcher = EndpointRequest.to("foo", "bar");
 		assertThat(matcher.toString())
-				.isEqualTo("EndpointRequest [includes='[/foo, /bar]', Excludes='[]', IncludeLinks='false']");
+				.isEqualTo("EndpointRequest [includes='[foo, bar]', Excludes='[]', IncludeLinks='false']");
+	}
+
+	@Test
+	void toStringEmptyIncludedEndpoints() {
+		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
+		assertThat(matcher.toString())
+				.isEqualTo("EndpointRequest [includes='[*]', Excludes='[]', IncludeLinks='true']");
+	}
+
+	@Test
+	void toStringIncludedEndpointsClasses() {
+		RequestMatcher matcher = EndpointRequest.to(FooEndpoint.class).excluding("bar");
+		assertThat(matcher.toString())
+				.isEqualTo("EndpointRequest [includes='[foo]', Excludes='[bar]', IncludeLinks='false']");
 	}
 
 	@Test
 	void toStringIncludedExcludedEndpoints() {
-		RequestMatcher matcher = EndpointRequest.to("/foo").excluding("/bar");
+		RequestMatcher matcher = EndpointRequest.toAnyEndpoint().excluding("bar").excludingLinks();
 		assertThat(matcher.toString())
-				.isEqualTo("EndpointRequest [includes='[/foo]', Excludes='[/bar]', IncludeLinks='false']");
+				.isEqualTo("EndpointRequest [includes='[*]', Excludes='[bar]', IncludeLinks='false']");
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher) {
