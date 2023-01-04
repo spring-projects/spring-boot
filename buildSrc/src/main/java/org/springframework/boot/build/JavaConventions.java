@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import com.gradle.enterprise.gradleplugin.testretry.TestRetryExtension;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import io.spring.javaformat.gradle.tasks.CheckFormat;
 import io.spring.javaformat.gradle.tasks.Format;
@@ -46,8 +47,6 @@ import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.external.javadoc.CoreJavadocOptions;
-import org.gradle.testretry.TestRetryPlugin;
-import org.gradle.testretry.TestRetryTaskExtension;
 
 import org.springframework.boot.build.architecture.ArchitecturePlugin;
 import org.springframework.boot.build.classpath.CheckClasspathForProhibitedDependencies;
@@ -164,16 +163,12 @@ class JavaConventions {
 			test.setMaxHeapSize("1024M");
 			project.getTasks().withType(Checkstyle.class, test::mustRunAfter);
 			project.getTasks().withType(CheckFormat.class, test::mustRunAfter);
+			TestRetryExtension testRetry = test.getExtensions().getByType(TestRetryExtension.class);
+			testRetry.getFailOnPassedAfterRetry().set(true);
+			testRetry.getMaxRetries().set(isCi() ? 3 : 0);
 		});
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> project.getDependencies()
 				.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, "org.junit.platform:junit-platform-launcher"));
-		project.getPlugins().apply(TestRetryPlugin.class);
-		project.getTasks().withType(Test.class,
-				(test) -> project.getPlugins().withType(TestRetryPlugin.class, (testRetryPlugin) -> {
-					TestRetryTaskExtension testRetry = test.getExtensions().getByType(TestRetryTaskExtension.class);
-					testRetry.getFailOnPassedAfterRetry().set(true);
-					testRetry.getMaxRetries().set(isCi() ? 3 : 0);
-				}));
 	}
 
 	private boolean isCi() {
