@@ -22,8 +22,8 @@ pluginManagement {
 }
 
 plugins {
-	id "com.gradle.enterprise" version "3.11.2"
-	id "io.spring.ge.conventions" version "0.0.11"
+	id "com.gradle.enterprise" version "3.12.1"
+	id "io.spring.ge.conventions" version "0.0.12"
 }
 
 rootProject.name="spring-boot-build"
