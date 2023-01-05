@@ -3,7 +3,7 @@
   "version": "${scoopVersion}",
   "license": "Apache 2.0",
   "hash": "${hash}",
-  "url": "https://repo.spring.io/${repo}/org/springframework/boot/spring-boot-cli/${project.version}/spring-boot-cli-${project.version}-bin.zip",
+  "url": "${repo}/org/springframework/boot/spring-boot-cli/${project.version}/spring-boot-cli-${project.version}-bin.zip",
   "extract_dir": "spring-${project.version}",
   "bin": "bin\\\\spring.bat",
   "suggest": {
