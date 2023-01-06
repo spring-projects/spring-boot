@@ -25,6 +25,12 @@ import org.gradle.api.Project;
  */
 public final class ArtifactoryRepository {
 
+	private static final String SNAPSHOT = "snapshot";
+
+	private static final String MILESTONE = "milestone";
+
+	private static final String RELEASE = "release";
+
 	private final String name;
 
 	private ArtifactoryRepository(String name) {
@@ -33,6 +39,10 @@ public final class ArtifactoryRepository {
 
 	public String getName() {
 		return this.name;
+	}
+
+	public boolean isRelease() {
+		return RELEASE.equals(this.name);
 	}
 
 	@Override
@@ -48,13 +58,13 @@ public final class ArtifactoryRepository {
 		String version = project.getVersion().toString();
 		int modifierIndex = version.lastIndexOf('-');
 		if (modifierIndex == -1) {
-			return "release";
+			return RELEASE;
 		}
 		String type = version.substring(modifierIndex + 1);
 		if (type.startsWith("M") || type.startsWith("RC")) {
-			return "milestone";
+			return MILESTONE;
 		}
-		return "snapshot";
+		return SNAPSHOT;
 	}
 
 }
