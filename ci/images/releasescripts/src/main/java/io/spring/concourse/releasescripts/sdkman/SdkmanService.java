@@ -40,7 +40,7 @@ public class SdkmanService {
 
 	private static final String SDKMAN_URL = "https://vendors.sdkman.io/";
  
-	private static final String DOWNLOAD_URL = "https://repo.spring.io/simple/libs-release-local/org/springframework/boot/spring-boot-cli/"
+	private static final String DOWNLOAD_URL = "https://repo1.maven.org/maven2/org/springframework/boot/spring-boot-cli/"
 			+ "%s/spring-boot-cli-%s-bin.zip";
 
 	private static final String CHANGELOG_URL = "https://github.com/spring-projects/spring-boot/releases/tag/v%s";
