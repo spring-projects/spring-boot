@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1111,6 +1111,14 @@ class ConfigurationPropertiesTests {
 		WithCustomConverterAndObjectToObjectMethodProperties bean = this.context
 				.getBean(WithCustomConverterAndObjectToObjectMethodProperties.class);
 		assertThat(bean.getItem().getValue()).isEqualTo("foo");
+	}
+
+	@Test // gh-33710
+	void loadWhenConstructorUsedInBeanMethodAndNotAsConstructorBinding() {
+		load(ConstructorUsedInBeanMethodConfiguration.class, "test.two=bound-2");
+		ConstructorUsedInBeanMethod bean = this.context.getBean(ConstructorUsedInBeanMethod.class);
+		assertThat(bean.getOne()).isEqualTo("bean-method-1");
+		assertThat(bean.getTwo()).isEqualTo("bound-2");
 	}
 
 	private AnnotationConfigApplicationContext load(Class<?> configuration, String... inlinedProperties) {
@@ -2843,6 +2851,47 @@ class ConfigurationPropertiesTests {
 		@Override
 		public WithPublicObjectToObjectMethod convert(String source) {
 			return new WithPublicObjectToObjectMethod(source);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties
+	static class ConstructorUsedInBeanMethodConfiguration {
+
+		@Bean
+		@ConfigurationProperties("test")
+		ConstructorUsedInBeanMethod constructorUsedInBeanMethod() {
+			return new ConstructorUsedInBeanMethod("bean-method-1", "bean-method-2");
+		}
+
+	}
+
+	static class ConstructorUsedInBeanMethod {
+
+		private String one;
+
+		private String two;
+
+		ConstructorUsedInBeanMethod(String one, String two) {
+			this.one = one;
+			this.two = two;
+		}
+
+		String getOne() {
+			return this.one;
+		}
+
+		void setOne(String one) {
+			this.one = one;
+		}
+
+		String getTwo() {
+			return this.two;
+		}
+
+		void setTwo(String two) {
+			this.two = two;
 		}
 
 	}

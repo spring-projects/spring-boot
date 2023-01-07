@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,12 +39,18 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 
 	@Override
 	public Constructor<?> getBindConstructor(Bindable<?> bindable, boolean isNestedConstructorBinding) {
-		return getBindConstructor(bindable.getType().resolve(), isNestedConstructorBinding);
+		return getBindConstructor(bindable.getType().resolve(), bindable.hasExistingValue(),
+				isNestedConstructorBinding);
 	}
 
 	@Override
 	public Constructor<?> getBindConstructor(Class<?> type, boolean isNestedConstructorBinding) {
-		if (type == null) {
+		return getBindConstructor(type, false, isNestedConstructorBinding);
+	}
+
+	private Constructor<?> getBindConstructor(Class<?> type, boolean hasExistingValue,
+			boolean isNestedConstructorBinding) {
+		if (type == null || hasExistingValue) {
 			return null;
 		}
 		Constructors constructors = Constructors.getConstructors(type);

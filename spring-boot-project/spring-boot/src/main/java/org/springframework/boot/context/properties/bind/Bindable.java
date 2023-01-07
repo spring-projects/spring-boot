@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,6 +88,18 @@ public final class Bindable<T> {
 	 */
 	public Supplier<T> getValue() {
 		return this.value;
+	}
+
+	/**
+	 * Return if the bindable is for an existing non-null value. If this method return
+	 * true then {@link #getValue()} will return a {@link Supplier} that never returns
+	 * {@code null}.
+	 * @return if the {@link Bindable} is for an existing value
+	 * @since 3.0.2
+	 * @see #withExistingValue(Object)
+	 */
+	public boolean hasExistingValue() {
+		return this.value instanceof ExistingValueSupplier;
 	}
 
 	/**
@@ -182,7 +194,7 @@ public final class Bindable<T> {
 		Assert.isTrue(
 				existingValue == null || this.type.isArray() || this.boxedType.resolve().isInstance(existingValue),
 				() -> "ExistingValue must be an instance of " + this.type);
-		Supplier<T> value = (existingValue != null) ? () -> existingValue : null;
+		Supplier<T> value = (existingValue != null) ? new ExistingValueSupplier(existingValue) : null;
 		return new Bindable<>(this.type, this.boxedType, value, this.annotations, this.bindRestrictions);
 	}
 
@@ -304,6 +316,22 @@ public final class Bindable<T> {
 		 * Do not bind direct {@link ConfigurationProperty} matches.
 		 */
 		NO_DIRECT_PROPERTY
+
+	}
+
+	private class ExistingValueSupplier implements Supplier<T> {
+
+		private final T value;
+
+		ExistingValueSupplier(T value) {
+			Assert.notNull(value, "Value must not be null");
+			this.value = value;
+		}
+
+		@Override
+		public T get() {
+			return this.value;
+		}
 
 	}
 

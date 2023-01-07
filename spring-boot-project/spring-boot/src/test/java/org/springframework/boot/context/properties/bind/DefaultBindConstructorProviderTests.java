@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,6 +108,14 @@ class DefaultBindConstructorProviderTests {
 			Constructor<?> bindConstructor = this.provider.getBindConstructor(bean.getClass(), false);
 			assertThat(bindConstructor).isNull();
 		}
+	}
+
+	@Test
+	void getBindConstructorWhenHasExistingValueReturnsNull() {
+		OneConstructorWithConstructorBinding existingValue = new OneConstructorWithConstructorBinding("name", 123);
+		Bindable<?> bindable = Bindable.of(OneConstructorWithConstructorBinding.class).withExistingValue(existingValue);
+		Constructor<?> bindConstructor = this.provider.getBindConstructor(bindable, false);
+		assertThat(bindConstructor).isNull();
 	}
 
 	static class OnlyDefaultConstructor {
