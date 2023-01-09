@@ -273,6 +273,24 @@ public final class EndpointRequest {
 					.collect(Collectors.toCollection(ArrayList::new));
 		}
 
+		@Override
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			if (this.includes.isEmpty()) {
+				sb.append("EndpointRequest [includes='[").append("*").append("]'");
+			}
+			else {
+				sb.append("EndpointRequest [includes='")
+						.append(this.includes.stream().map(this::getEndpointId).collect(Collectors.toList()))
+						.append("'");
+			}
+			sb.append(", Excludes='")
+					.append(this.excludes.stream().map(this::getEndpointId).collect(Collectors.toList())).append("'");
+			sb.append(", IncludeLinks='").append(this.includeLinks).append("'");
+			sb.append("]");
+			return sb.toString();
+		}
+
 	}
 
 	/**
