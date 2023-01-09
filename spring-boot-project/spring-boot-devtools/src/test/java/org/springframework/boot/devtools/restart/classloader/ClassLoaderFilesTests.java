@@ -85,8 +85,8 @@ class ClassLoaderFilesTests {
 		this.files.addFile("a", "myfile", file1);
 		this.files.addFile("b", "myfile", file2);
 		assertThat(this.files.getFile("myfile")).isEqualTo(file2);
-		assertThat(this.files.getOrCreateSourceDirectory("a").getFiles().size()).isEqualTo(0);
-		assertThat(this.files.getOrCreateSourceDirectory("b").getFiles().size()).isEqualTo(1);
+		assertThat(this.files.getOrCreateSourceDirectory("a").getFiles()).isEmpty();
+		assertThat(this.files.getOrCreateSourceDirectory("b").getFiles()).hasSize(1);
 	}
 
 	@Test

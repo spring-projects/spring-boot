@@ -69,7 +69,7 @@ class DataNeo4jTestIntegrationTests {
 		assertThat(exampleGraph.getId()).isNull();
 		ExampleGraph savedGraph = this.exampleRepository.save(exampleGraph);
 		assertThat(savedGraph.getId()).isNotNull();
-		assertThat(this.neo4jTemplate.count(ExampleGraph.class)).isEqualTo(1);
+		assertThat(this.neo4jTemplate.count(ExampleGraph.class)).isOne();
 	}
 
 	@Test

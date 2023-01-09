@@ -66,7 +66,7 @@ class ConfigurationPropertySourcesPropertySourceTests {
 	@Test
 	void getPropertyOriginShouldReturnOrigin() {
 		this.configurationSources.add(new MockConfigurationPropertySource("foo.bar", "baz", "line1"));
-		assertThat(this.propertySource.getOrigin("foo.bar").toString()).isEqualTo("line1");
+		assertThat(this.propertySource.getOrigin("foo.bar")).hasToString("line1");
 	}
 
 	@Test

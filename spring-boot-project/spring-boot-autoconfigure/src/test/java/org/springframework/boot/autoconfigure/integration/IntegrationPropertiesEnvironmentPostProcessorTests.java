@@ -102,7 +102,7 @@ class IntegrationPropertiesEnvironmentPostProcessorTests {
 		new IntegrationPropertiesEnvironmentPostProcessor().registerIntegrationPropertiesPropertySource(environment,
 				resource);
 		PropertySource<?> ps = environment.getPropertySources().get("META-INF/spring.integration.properties");
-		assertThat(ps).isNotNull().isInstanceOf(OriginLookup.class);
+		assertThat(ps).isInstanceOf(OriginLookup.class);
 		OriginLookup<String> originLookup = (OriginLookup<String>) ps;
 		assertThat(originLookup.getOrigin("spring.integration.channel.auto-create"))
 				.satisfies(textOrigin(resource, 0, 39));

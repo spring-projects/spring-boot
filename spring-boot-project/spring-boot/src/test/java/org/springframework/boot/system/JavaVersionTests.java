@@ -36,17 +36,17 @@ class JavaVersionTests {
 
 	@Test
 	void compareToWhenComparingSmallerToGreaterShouldBeLessThanZero() {
-		assertThat(JavaVersion.SEVENTEEN.compareTo(JavaVersion.EIGHTEEN)).isLessThan(0);
+		assertThat(JavaVersion.SEVENTEEN).isLessThan(JavaVersion.EIGHTEEN);
 	}
 
 	@Test
 	void compareToWhenComparingGreaterToSmallerShouldBeGreaterThanZero() {
-		assertThat(JavaVersion.EIGHTEEN.compareTo(JavaVersion.SEVENTEEN)).isGreaterThan(0);
+		assertThat(JavaVersion.EIGHTEEN).isGreaterThan(JavaVersion.SEVENTEEN);
 	}
 
 	@Test
 	void compareToWhenComparingSameShouldBeZero() {
-		assertThat(JavaVersion.SEVENTEEN.compareTo(JavaVersion.SEVENTEEN)).isEqualTo(0);
+		assertThat(JavaVersion.SEVENTEEN).isEqualByComparingTo(JavaVersion.SEVENTEEN);
 	}
 
 	@Test

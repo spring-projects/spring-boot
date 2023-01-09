@@ -51,11 +51,9 @@ class MockitoContextCustomizerFactoryTests {
 		assertThat(customizer).isNotNull();
 		ContextCustomizer different = this.factory.createContextCustomizer(WithDifferentMockBeanAnnotation.class, null);
 		assertThat(different).isNotNull();
-		assertThat(customizer.hashCode()).isEqualTo(same.hashCode());
+		assertThat(customizer).hasSameHashCodeAs(same);
 		assertThat(customizer.hashCode()).isNotEqualTo(different.hashCode());
-		assertThat(customizer).isEqualTo(customizer);
-		assertThat(customizer).isEqualTo(same);
-		assertThat(customizer).isNotEqualTo(different);
+		assertThat(customizer).isEqualTo(customizer).isEqualTo(same).isNotEqualTo(different);
 	}
 
 	static class NoMockBeanAnnotation {

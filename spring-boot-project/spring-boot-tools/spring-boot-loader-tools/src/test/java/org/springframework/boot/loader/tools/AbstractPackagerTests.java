@@ -407,8 +407,8 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		this.testJarFile.addClass("A.class", ClassWithMainMethod.class);
 		P packager = createPackager();
 		execute(packager, (callback) -> callback.library(newLibrary(nestedFile, LibraryScope.COMPILE, false)));
-		assertThat(getPackagedEntry("BOOT-INF/lib/" + nestedFile.getName()).getMethod()).isEqualTo(ZipEntry.STORED);
-		assertThat(getPackagedEntry("BOOT-INF/classes/test/nested.jar").getMethod()).isEqualTo(ZipEntry.STORED);
+		assertThat(getPackagedEntry("BOOT-INF/lib/" + nestedFile.getName()).getMethod()).isZero();
+		assertThat(getPackagedEntry("BOOT-INF/classes/test/nested.jar").getMethod()).isZero();
 	}
 
 	@Test

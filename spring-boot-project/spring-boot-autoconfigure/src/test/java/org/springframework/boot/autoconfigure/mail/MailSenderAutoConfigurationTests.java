@@ -112,7 +112,7 @@ class MailSenderAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
 					JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
-					assertThat(mailSender.getJavaMailProperties().get("mail.smtp.auth")).isEqualTo("true");
+					assertThat(mailSender.getJavaMailProperties()).containsEntry("mail.smtp.auth", "true");
 				});
 	}
 

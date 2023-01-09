@@ -56,7 +56,7 @@ class MockBeanWithAopProxyTests {
 	void verifyShouldUseProxyTarget() {
 		given(this.dateService.getDate(false)).willReturn(1L);
 		Long d1 = this.dateService.getDate(false);
-		assertThat(d1).isEqualTo(1L);
+		assertThat(d1).isOne();
 		given(this.dateService.getDate(false)).willReturn(2L);
 		Long d2 = this.dateService.getDate(false);
 		assertThat(d2).isEqualTo(2L);

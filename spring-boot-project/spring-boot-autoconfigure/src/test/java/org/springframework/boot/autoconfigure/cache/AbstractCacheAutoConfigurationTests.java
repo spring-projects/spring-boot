@@ -72,7 +72,7 @@ abstract class AbstractCacheAutoConfigurationTests {
 					assertThat(value.cacheManager).isNull();
 				}
 			});
-			assertThat(expected).hasSize(0);
+			assertThat(expected).isEmpty();
 		};
 	}
 

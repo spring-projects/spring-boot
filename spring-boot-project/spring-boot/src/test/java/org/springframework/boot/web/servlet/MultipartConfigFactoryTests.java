@@ -35,10 +35,10 @@ class MultipartConfigFactoryTests {
 	void sensibleDefaults() {
 		MultipartConfigFactory factory = new MultipartConfigFactory();
 		MultipartConfigElement config = factory.createMultipartConfig();
-		assertThat(config.getLocation()).isEqualTo("");
+		assertThat(config.getLocation()).isEmpty();
 		assertThat(config.getMaxFileSize()).isEqualTo(-1L);
 		assertThat(config.getMaxRequestSize()).isEqualTo(-1L);
-		assertThat(config.getFileSizeThreshold()).isEqualTo(0);
+		assertThat(config.getFileSizeThreshold()).isZero();
 	}
 
 	@Test
@@ -48,7 +48,7 @@ class MultipartConfigFactoryTests {
 		factory.setMaxRequestSize(DataSize.ofKilobytes(2));
 		factory.setFileSizeThreshold(DataSize.ofMegabytes(3));
 		MultipartConfigElement config = factory.createMultipartConfig();
-		assertThat(config.getMaxFileSize()).isEqualTo(1L);
+		assertThat(config.getMaxFileSize()).isOne();
 		assertThat(config.getMaxRequestSize()).isEqualTo(2 * 1024L);
 		assertThat(config.getFileSizeThreshold()).isEqualTo(3 * 1024 * 1024);
 	}
@@ -62,7 +62,7 @@ class MultipartConfigFactoryTests {
 		MultipartConfigElement config = factory.createMultipartConfig();
 		assertThat(config.getMaxFileSize()).isEqualTo(-1L);
 		assertThat(config.getMaxRequestSize()).isEqualTo(-1);
-		assertThat(config.getFileSizeThreshold()).isEqualTo(0);
+		assertThat(config.getFileSizeThreshold()).isZero();
 	}
 
 }

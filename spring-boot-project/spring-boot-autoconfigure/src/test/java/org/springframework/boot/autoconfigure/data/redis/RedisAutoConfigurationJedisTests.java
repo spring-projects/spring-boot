@@ -64,7 +64,7 @@ class RedisAutoConfigurationJedisTests {
 				.run((context) -> {
 					JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
-					assertThat(cf.getDatabase()).isEqualTo(1);
+					assertThat(cf.getDatabase()).isOne();
 					assertThat(getUserName(cf)).isNull();
 					assertThat(cf.getPassword()).isNull();
 					assertThat(cf.isUseSsl()).isFalse();
@@ -112,7 +112,7 @@ class RedisAutoConfigurationJedisTests {
 			JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 			assertThat(cf.getHostName()).isEqualTo("example");
 			assertThat(cf.getPort()).isEqualTo(33);
-			assertThat(getUserName(cf)).isEqualTo("");
+			assertThat(getUserName(cf)).isEmpty();
 			assertThat(cf.getPassword()).isEqualTo("pass:word");
 		});
 	}
@@ -137,7 +137,7 @@ class RedisAutoConfigurationJedisTests {
 				"spring.data.redis.jedis.pool.time-between-eviction-runs:30000").run((context) -> {
 					JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
-					assertThat(cf.getPoolConfig().getMinIdle()).isEqualTo(1);
+					assertThat(cf.getPoolConfig().getMinIdle()).isOne();
 					assertThat(cf.getPoolConfig().getMaxIdle()).isEqualTo(4);
 					assertThat(cf.getPoolConfig().getMaxTotal()).isEqualTo(16);
 					assertThat(cf.getPoolConfig().getMaxWaitDuration()).isEqualTo(Duration.ofSeconds(2));
@@ -152,7 +152,7 @@ class RedisAutoConfigurationJedisTests {
 				.run((context) -> {
 					JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
-					assertThat(cf.getClientConfiguration().isUsePooling()).isEqualTo(false);
+					assertThat(cf.getClientConfiguration().isUsePooling()).isFalse();
 				});
 	}
 

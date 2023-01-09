@@ -29,7 +29,7 @@ class SystemPropertyFormatterTests {
 
 	@Test
 	void parseEmpty() {
-		assertThat(SystemPropertyFormatter.format(null, null)).isEqualTo("");
+		assertThat(SystemPropertyFormatter.format(null, null)).isEmpty();
 	}
 
 	@Test

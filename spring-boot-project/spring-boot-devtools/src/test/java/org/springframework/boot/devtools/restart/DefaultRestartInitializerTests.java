@@ -107,7 +107,7 @@ class DefaultRestartInitializerTests {
 		StackTraceElement element = new StackTraceElement(s, "someMethod", "someFile", 123);
 		given(thread.getStackTrace()).willReturn(new StackTraceElement[] { element });
 		given(thread.getContextClassLoader()).willReturn(classLoader);
-		assertThat(initializer.getInitialUrls(thread)).isEqualTo(null);
+		assertThat(initializer.getInitialUrls(thread)).isNull();
 	}
 
 	static class MockAppClassLoader extends ClassLoader {

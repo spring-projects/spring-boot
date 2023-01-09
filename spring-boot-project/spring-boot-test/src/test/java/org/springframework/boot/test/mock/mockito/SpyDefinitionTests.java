@@ -72,7 +72,7 @@ class SpyDefinitionTests {
 		RealExampleService spy = definition.createSpy(new RealExampleService("hello"));
 		MockCreationSettings<?> settings = Mockito.mockingDetails(spy).getMockCreationSettings();
 		assertThat(spy).isInstanceOf(ExampleService.class);
-		assertThat(settings.getMockName().toString()).isEqualTo("name");
+		assertThat(settings.getMockName()).hasToString("name");
 		assertThat(settings.getDefaultAnswer()).isEqualTo(Answers.CALLS_REAL_METHODS);
 		assertThat(MockReset.get(spy)).isEqualTo(MockReset.BEFORE);
 	}

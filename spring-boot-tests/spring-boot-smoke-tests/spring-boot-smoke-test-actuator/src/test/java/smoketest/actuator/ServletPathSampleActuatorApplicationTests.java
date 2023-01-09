@@ -45,8 +45,8 @@ class ServletPathSampleActuatorApplicationTests {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(
 				this.restTemplate.withBasicAuth("user", "password").getForEntity("/spring/error", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-		assertThat(entity.getBody().get("error")).isEqualTo("None");
-		assertThat(entity.getBody().get("status")).isEqualTo(999);
+		assertThat(entity.getBody()).containsEntry("error", "None");
+		assertThat(entity.getBody()).containsEntry("status", 999);
 	}
 
 	@Test

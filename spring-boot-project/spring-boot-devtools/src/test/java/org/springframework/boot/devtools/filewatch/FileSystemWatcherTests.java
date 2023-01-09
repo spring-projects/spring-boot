@@ -104,7 +104,7 @@ class FileSystemWatcherTests {
 	void sourceDirectoryMustNotBeAFile() throws IOException {
 		File file = new File(this.tempDir, "file");
 		assertThat(file.createNewFile()).isTrue();
-		assertThat(file.isFile()).isTrue();
+		assertThat(file).isFile();
 		assertThatIllegalArgumentException().isThrownBy(() -> this.watcher.addSourceDirectory(file))
 				.withMessageContaining("Directory '" + file + "' must not be a file");
 	}
@@ -137,7 +137,7 @@ class FileSystemWatcherTests {
 	@Test
 	void createSourceDirectoryAndAddFile() throws IOException {
 		File directory = new File(this.tempDir, "does/not/exist");
-		assertThat(directory.exists()).isFalse();
+		assertThat(directory).doesNotExist();
 		this.watcher.addSourceDirectory(directory);
 		this.watcher.start();
 		directory.mkdirs();
@@ -157,7 +157,7 @@ class FileSystemWatcherTests {
 		}
 		touch(new File(directory, "test2.txt"));
 		this.watcher.stopAfter(1);
-		assertThat(this.changes.size()).isEqualTo(2);
+		assertThat(this.changes).hasSize(2);
 	}
 
 	@Test
@@ -198,7 +198,7 @@ class FileSystemWatcherTests {
 		File file2 = touch(new File(directory2, "test.txt"));
 		this.watcher.stopAfter(1);
 		Set<ChangedFiles> change = this.changes.stream().flatMap(Set<ChangedFiles>::stream).collect(Collectors.toSet());
-		assertThat(change.size()).isEqualTo(2);
+		assertThat(change).hasSize(2);
 		for (ChangedFiles changedFiles : change) {
 			if (changedFiles.getSourceDirectory().equals(directory1)) {
 				ChangedFile file = new ChangedFile(directory1, file1, Type.ADD);

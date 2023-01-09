@@ -63,7 +63,7 @@ class HttpTunnelPayloadTests {
 	@Test
 	void getSequence() {
 		HttpTunnelPayload payload = new HttpTunnelPayload(1, ByteBuffer.allocate(1));
-		assertThat(payload.getSequence()).isEqualTo(1L);
+		assertThat(payload.getSequence()).isOne();
 	}
 
 	@Test

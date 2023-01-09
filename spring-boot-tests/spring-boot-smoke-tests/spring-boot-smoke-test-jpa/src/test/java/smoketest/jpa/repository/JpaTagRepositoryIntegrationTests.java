@@ -44,7 +44,7 @@ class JpaTagRepositoryIntegrationTests {
 		List<Tag> tags = this.repository.findAll();
 		assertThat(tags).hasSize(3);
 		for (Tag tag : tags) {
-			assertThat(tag.getNotes().size()).isGreaterThan(0);
+			assertThat(tag.getNotes()).isNotEmpty();
 		}
 	}
 

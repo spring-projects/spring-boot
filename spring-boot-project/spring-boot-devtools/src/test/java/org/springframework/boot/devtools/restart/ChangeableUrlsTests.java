@@ -48,7 +48,7 @@ class ChangeableUrlsTests {
 	@Test
 	void directoryUrl() throws Exception {
 		URL url = makeUrl("myproject");
-		assertThat(ChangeableUrls.fromUrls(url).size()).isEqualTo(1);
+		assertThat(ChangeableUrls.fromUrls(url).size()).isOne();
 	}
 
 	@Test

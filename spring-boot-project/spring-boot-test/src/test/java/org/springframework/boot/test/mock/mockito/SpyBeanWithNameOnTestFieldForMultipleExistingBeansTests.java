@@ -45,7 +45,7 @@ class SpyBeanWithNameOnTestFieldForMultipleExistingBeansTests {
 	void testSpying() {
 		MockingDetails mockingDetails = Mockito.mockingDetails(this.spy);
 		assertThat(mockingDetails.isSpy()).isTrue();
-		assertThat(mockingDetails.getMockCreationSettings().getMockName().toString()).isEqualTo("two");
+		assertThat(mockingDetails.getMockCreationSettings().getMockName()).hasToString("two");
 	}
 
 	@Configuration(proxyBeanMethods = false)

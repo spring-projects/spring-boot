@@ -118,7 +118,7 @@ class CollectionBinderTests {
 							.getUnboundProperties();
 					assertThat(unbound).hasSize(1);
 					ConfigurationProperty property = unbound.iterator().next();
-					assertThat(property.getName().toString()).isEqualTo("foo[3]");
+					assertThat(property.getName()).hasToString("foo[3]");
 					assertThat(property.getValue()).isEqualTo("3");
 				});
 	}
@@ -137,7 +137,7 @@ class CollectionBinderTests {
 							.getUnboundProperties();
 					assertThat(unbound).hasSize(1);
 					ConfigurationProperty property = unbound.iterator().next();
-					assertThat(property.getName().toString()).isEqualTo("foo[4].value");
+					assertThat(property.getName()).hasToString("foo[4].value");
 					assertThat(property.getValue()).isEqualTo("4");
 				});
 	}
@@ -265,7 +265,7 @@ class CollectionBinderTests {
 		source.put("foo", "");
 		this.sources.add(source);
 		List<String> result = this.binder.bind("foo", STRING_LIST).get();
-		assertThat(result).isNotNull().isEmpty();
+		assertThat(result).isEmpty();
 	}
 
 	@Test

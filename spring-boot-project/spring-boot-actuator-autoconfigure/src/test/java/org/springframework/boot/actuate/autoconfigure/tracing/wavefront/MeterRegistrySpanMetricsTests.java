@@ -47,7 +47,7 @@ class MeterRegistrySpanMetricsTests {
 	@Test
 	void reportDroppedShouldIncreaseCounter() {
 		this.sut.reportDropped();
-		assertThat(getCounterValue("wavefront.reporter.spans.dropped")).isEqualTo(1);
+		assertThat(getCounterValue("wavefront.reporter.spans.dropped")).isOne();
 		this.sut.reportDropped();
 		assertThat(getCounterValue("wavefront.reporter.spans.dropped")).isEqualTo(2);
 	}
@@ -55,7 +55,7 @@ class MeterRegistrySpanMetricsTests {
 	@Test
 	void reportReceivedShouldIncreaseCounter() {
 		this.sut.reportReceived();
-		assertThat(getCounterValue("wavefront.reporter.spans.received")).isEqualTo(1);
+		assertThat(getCounterValue("wavefront.reporter.spans.received")).isOne();
 		this.sut.reportReceived();
 		assertThat(getCounterValue("wavefront.reporter.spans.received")).isEqualTo(2);
 	}
@@ -63,7 +63,7 @@ class MeterRegistrySpanMetricsTests {
 	@Test
 	void reportErrorsShouldIncreaseCounter() {
 		this.sut.reportErrors();
-		assertThat(getCounterValue("wavefront.reporter.errors")).isEqualTo(1);
+		assertThat(getCounterValue("wavefront.reporter.errors")).isOne();
 		this.sut.reportErrors();
 		assertThat(getCounterValue("wavefront.reporter.errors")).isEqualTo(2);
 	}
@@ -72,9 +72,9 @@ class MeterRegistrySpanMetricsTests {
 	void registerQueueSizeShouldCreateGauge() {
 		BlockingQueue<Integer> queue = new ArrayBlockingQueue<Integer>(2);
 		this.sut.registerQueueSize(queue);
-		assertThat(getGaugeValue("wavefront.reporter.queue.size")).isEqualTo(0);
+		assertThat(getGaugeValue("wavefront.reporter.queue.size")).isZero();
 		queue.offer(1);
-		assertThat(getGaugeValue("wavefront.reporter.queue.size")).isEqualTo(1);
+		assertThat(getGaugeValue("wavefront.reporter.queue.size")).isOne();
 	}
 
 	@Test
@@ -83,7 +83,7 @@ class MeterRegistrySpanMetricsTests {
 		this.sut.registerQueueRemainingCapacity(queue);
 		assertThat(getGaugeValue("wavefront.reporter.queue.remaining_capacity")).isEqualTo(2);
 		queue.offer(1);
-		assertThat(getGaugeValue("wavefront.reporter.queue.remaining_capacity")).isEqualTo(1);
+		assertThat(getGaugeValue("wavefront.reporter.queue.remaining_capacity")).isOne();
 	}
 
 	private double getGaugeValue(String name) {

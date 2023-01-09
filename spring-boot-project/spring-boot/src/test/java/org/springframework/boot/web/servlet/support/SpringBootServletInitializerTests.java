@@ -125,7 +125,7 @@ class SpringBootServletInitializerTests {
 		WebServer webServer = new UndertowServletWebServerFactory(0).getWebServer((servletContext) -> {
 			try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilterNotRegistered()
 					.createRootApplicationContext(servletContext)) {
-				assertThat(context.getBeansOfType(ErrorPageFilter.class)).hasSize(0);
+				assertThat(context.getBeansOfType(ErrorPageFilter.class)).isEmpty();
 			}
 		});
 		try {
@@ -182,7 +182,7 @@ class SpringBootServletInitializerTests {
 	@Test
 	void executableWarThatUsesServletInitializerDoesNotHaveErrorPageFilterConfigured() {
 		try (ConfigurableApplicationContext context = new SpringApplication(ExecutableWar.class).run()) {
-			assertThat(context.getBeansOfType(ErrorPageFilter.class)).hasSize(0);
+			assertThat(context.getBeansOfType(ErrorPageFilter.class)).isEmpty();
 		}
 	}
 

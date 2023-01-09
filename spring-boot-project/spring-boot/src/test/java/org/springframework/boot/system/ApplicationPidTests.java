@@ -37,12 +37,12 @@ class ApplicationPidTests {
 
 	@Test
 	void toStringWithPid() {
-		assertThat(new ApplicationPid("123").toString()).isEqualTo("123");
+		assertThat(new ApplicationPid("123")).hasToString("123");
 	}
 
 	@Test
 	void toStringWithoutPid() {
-		assertThat(new ApplicationPid(null).toString()).isEqualTo("???");
+		assertThat(new ApplicationPid(null)).hasToString("???");
 	}
 
 	@Test

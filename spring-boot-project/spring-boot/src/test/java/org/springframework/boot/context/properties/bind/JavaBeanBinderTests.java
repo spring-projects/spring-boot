@@ -395,7 +395,7 @@ class JavaBeanBinderTests {
 		IgnoreErrorsBindHandler handler = new IgnoreErrorsBindHandler();
 		ExampleValueBean bean = this.binder.bind("foo", Bindable.of(ExampleValueBean.class), handler).get();
 		assertThat(bean.getIntValue()).isEqualTo(12);
-		assertThat(bean.getLongValue()).isEqualTo(0);
+		assertThat(bean.getLongValue()).isZero();
 		assertThat(bean.getStringValue()).isEqualTo("foo");
 		assertThat(bean.getEnumValue()).isEqualTo(ExampleEnum.FOO_BAR);
 	}
@@ -445,7 +445,7 @@ class JavaBeanBinderTests {
 		this.sources.add(source);
 		ConverterAnnotatedExampleBean bean = this.binder.bind("foo", Bindable.of(ConverterAnnotatedExampleBean.class))
 				.get();
-		assertThat(bean.getDate().toString()).isEqualTo("2014-04-01");
+		assertThat(bean.getDate()).hasToString("2014-04-01");
 	}
 
 	@Test
@@ -488,8 +488,8 @@ class JavaBeanBinderTests {
 		source.put("foo.booleans[b].value", "true");
 		this.sources.add(source);
 		ExampleWithGenericMap bean = this.binder.bind("foo", Bindable.of(ExampleWithGenericMap.class)).get();
-		assertThat(bean.getIntegers().get("a").getValue()).isEqualTo(1);
-		assertThat(bean.getBooleans().get("b").getValue()).isEqualTo(true);
+		assertThat(bean.getIntegers().get("a").getValue()).isOne();
+		assertThat(bean.getBooleans().get("b").getValue()).isTrue();
 	}
 
 	@Test
@@ -563,8 +563,8 @@ class JavaBeanBinderTests {
 		source.put("foo.beta", "0");
 		this.sources.add(source);
 		PropertyOrderBean bean = this.binder.bind("foo", Bindable.of(PropertyOrderBean.class)).get();
-		assertThat(bean.getAlpha()).isEqualTo(0);
-		assertThat(bean.getBeta()).isEqualTo(1);
+		assertThat(bean.getAlpha()).isZero();
+		assertThat(bean.getBeta()).isOne();
 		assertThat(bean.getGamma()).isEqualTo(2);
 	}
 

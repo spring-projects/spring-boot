@@ -33,9 +33,9 @@ class PrefixedConfigurationPropertySourceTests {
 		source.put("my.foo.bar", "bing");
 		source.put("my.foo.baz", "biff");
 		ConfigurationPropertySource prefixed = source.nonIterable().withPrefix("my");
-		assertThat(getName(prefixed, "foo.bar").toString()).isEqualTo("foo.bar");
+		assertThat(getName(prefixed, "foo.bar")).hasToString("foo.bar");
 		assertThat(getValue(prefixed, "foo.bar")).isEqualTo("bing");
-		assertThat(getName(prefixed, "foo.baz").toString()).isEqualTo("foo.baz");
+		assertThat(getName(prefixed, "foo.baz")).hasToString("foo.baz");
 		assertThat(getValue(prefixed, "foo.baz")).isEqualTo("biff");
 	}
 

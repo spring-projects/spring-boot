@@ -35,7 +35,7 @@ class JobExecutionExitCodeGeneratorTests {
 	@Test
 	void testExitCodeForRunning() {
 		this.generator.onApplicationEvent(new JobExecutionEvent(new JobExecution(0L)));
-		assertThat(this.generator.getExitCode()).isEqualTo(1);
+		assertThat(this.generator.getExitCode()).isOne();
 	}
 
 	@Test
@@ -43,7 +43,7 @@ class JobExecutionExitCodeGeneratorTests {
 		JobExecution execution = new JobExecution(0L);
 		execution.setStatus(BatchStatus.COMPLETED);
 		this.generator.onApplicationEvent(new JobExecutionEvent(execution));
-		assertThat(this.generator.getExitCode()).isEqualTo(0);
+		assertThat(this.generator.getExitCode()).isZero();
 	}
 
 	@Test

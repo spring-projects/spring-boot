@@ -46,7 +46,7 @@ class MongoHealthIndicatorTests {
 		MongoHealthIndicator healthIndicator = new MongoHealthIndicator(mongoTemplate);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("maxWireVersion")).isEqualTo(10);
+		assertThat(health.getDetails()).containsEntry("maxWireVersion", 10);
 		then(commandResult).should().getInteger("maxWireVersion");
 		then(mongoTemplate).should().executeCommand("{ isMaster: 1 }");
 	}

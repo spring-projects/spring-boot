@@ -102,7 +102,7 @@ class CloudFoundryVcapEnvironmentPostProcessorTests {
 		assertThat(getProperty("vcap.services.mysql.name")).isEqualTo("mysql");
 		assertThat(getProperty("vcap.services.mysql.credentials.port")).isEqualTo("3306");
 		assertThat(getProperty("vcap.services.mysql.credentials.ssl")).isEqualTo("true");
-		assertThat(getProperty("vcap.services.mysql.credentials.location")).isEqualTo("");
+		assertThat(getProperty("vcap.services.mysql.credentials.location")).isEmpty();
 	}
 
 	@Test

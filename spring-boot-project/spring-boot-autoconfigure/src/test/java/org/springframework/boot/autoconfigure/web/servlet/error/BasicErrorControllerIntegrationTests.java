@@ -333,7 +333,7 @@ class BasicErrorControllerIntegrationTests {
 
 	private void assertErrorAttributes(Map<?, ?> content, String status, String error, Class<?> exception,
 			String message, String path) {
-		assertThat(content.get("status").toString()).as("Wrong status").isEqualTo(status);
+		assertThat(content.get("status")).as("Wrong status").hasToString(status);
 		assertThat(content.get("error")).as("Wrong error").isEqualTo(error);
 		if (exception != null) {
 			assertThat(content.get("exception")).as("Wrong exception").isEqualTo(exception.getName());

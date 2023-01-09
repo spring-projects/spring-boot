@@ -67,7 +67,7 @@ class FileSessionPersistenceTests {
 		Map<String, PersistentSession> restored = this.persistence.loadSessionAttributes("test", this.classLoader);
 		assertThat(restored).isNotNull();
 		assertThat(restored.get("abc").getExpiration()).isEqualTo(this.expiration);
-		assertThat(restored.get("abc").getSessionData().get("spring")).isEqualTo("boot");
+		assertThat(restored.get("abc").getSessionData()).containsEntry("spring", "boot");
 	}
 
 	@Test
@@ -89,9 +89,9 @@ class FileSessionPersistenceTests {
 		File sessionFile = new File(this.dir, "test.session");
 		Map<String, PersistentSession> sessionData = new LinkedHashMap<>();
 		this.persistence.persistSessions("test", sessionData);
-		assertThat(sessionFile.exists()).isTrue();
+		assertThat(sessionFile).exists();
 		this.persistence.clear("test");
-		assertThat(sessionFile.exists()).isFalse();
+		assertThat(sessionFile).doesNotExist();
 	}
 
 }

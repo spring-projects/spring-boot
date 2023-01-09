@@ -30,7 +30,7 @@ class TotalProgressEventTests {
 
 	@Test
 	void create() {
-		assertThat(new TotalProgressEvent(0).getPercent()).isEqualTo(0);
+		assertThat(new TotalProgressEvent(0).getPercent()).isZero();
 		assertThat(new TotalProgressEvent(10).getPercent()).isEqualTo(10);
 		assertThat(new TotalProgressEvent(100).getPercent()).isEqualTo(100);
 	}

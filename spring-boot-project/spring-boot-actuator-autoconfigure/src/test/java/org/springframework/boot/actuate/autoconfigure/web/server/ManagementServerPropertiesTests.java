@@ -44,7 +44,7 @@ class ManagementServerPropertiesTests {
 	@Test
 	void defaultBasePathIsEmptyString() {
 		ManagementServerProperties properties = new ManagementServerProperties();
-		assertThat(properties.getBasePath()).isEqualTo("");
+		assertThat(properties.getBasePath()).isEmpty();
 	}
 
 	@Test
@@ -65,7 +65,7 @@ class ManagementServerPropertiesTests {
 	void slashOfBasePathIsDefaultValue() {
 		ManagementServerProperties properties = new ManagementServerProperties();
 		properties.setBasePath("/");
-		assertThat(properties.getBasePath()).isEqualTo("");
+		assertThat(properties.getBasePath()).isEmpty();
 	}
 
 }

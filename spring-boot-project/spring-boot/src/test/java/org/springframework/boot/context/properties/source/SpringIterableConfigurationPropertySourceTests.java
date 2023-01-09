@@ -115,8 +115,8 @@ class SpringIterableConfigurationPropertySourceTests {
 		mapper.addFromConfigurationProperty(name, "key");
 		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
 				propertySource, mapper);
-		assertThat(adapter.getConfigurationProperty(name).getOrigin().toString())
-				.isEqualTo("\"key\" from property source \"test\"");
+		assertThat(adapter.getConfigurationProperty(name).getOrigin())
+				.hasToString("\"key\" from property source \"test\"");
 	}
 
 	@Test
@@ -130,7 +130,7 @@ class SpringIterableConfigurationPropertySourceTests {
 		mapper.addFromConfigurationProperty(name, "key");
 		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
 				propertySource, mapper);
-		assertThat(adapter.getConfigurationProperty(name).getOrigin().toString()).isEqualTo("TestOrigin key");
+		assertThat(adapter.getConfigurationProperty(name).getOrigin()).hasToString("TestOrigin key");
 	}
 
 	@Test

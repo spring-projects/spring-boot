@@ -92,7 +92,7 @@ class SecurityAutoConfigurationTests {
 	void securityConfigurerBacksOffWhenOtherSecurityFilterChainBeanPresent() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebMvcAutoConfiguration.class))
 				.withUserConfiguration(TestSecurityFilterChainConfig.class).run((context) -> {
-					assertThat(context.getBeansOfType(SecurityFilterChain.class).size()).isEqualTo(1);
+					assertThat(context.getBeansOfType(SecurityFilterChain.class)).hasSize(1);
 					assertThat(context.containsBean("testSecurityFilterChain")).isTrue();
 				});
 	}

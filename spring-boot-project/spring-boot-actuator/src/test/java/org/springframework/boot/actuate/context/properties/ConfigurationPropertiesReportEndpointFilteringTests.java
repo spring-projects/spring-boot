@@ -109,7 +109,7 @@ class ConfigurationPropertiesReportEndpointFilteringTests {
 					.filter((id) -> findIdFromPrefix("only.bar", id)).findAny();
 			ConfigurationPropertiesBeanDescriptor descriptor = contextProperties.getBeans().get(key.get());
 			assertThat(descriptor.getPrefix()).isEqualTo("only.bar");
-			assertThat(descriptor.getProperties().get("name")).isEqualTo(value);
+			assertThat(descriptor.getProperties()).containsEntry("name", value);
 		});
 	}
 

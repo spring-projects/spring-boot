@@ -68,8 +68,8 @@ class TarArchiveTests {
 			assertThat(entries.get(0).getLongUserId()).isEqualTo(123);
 			assertThat(entries.get(0).getLongGroupId()).isEqualTo(456);
 			assertThat(entries.get(2).getName()).isEqualTo("/cnb/");
-			assertThat(entries.get(2).getLongUserId()).isEqualTo(0);
-			assertThat(entries.get(2).getLongGroupId()).isEqualTo(0);
+			assertThat(entries.get(2).getLongUserId()).isZero();
+			assertThat(entries.get(2).getLongGroupId()).isZero();
 		}
 	}
 

@@ -335,7 +335,7 @@ class QuartzAutoConfigurationTests {
 			assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM QRTZ_JOB_DETAILS", Integer.class))
 					.isEqualTo(2);
 			assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) FROM QRTZ_SIMPLE_TRIGGERS", Integer.class))
-					.isEqualTo(0);
+					.isZero();
 		};
 	}
 

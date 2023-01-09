@@ -108,7 +108,7 @@ class InfoContributorAutoConfigurationTests {
 					assertThat(git).isInstanceOf(Map.class);
 					Map<String, Object> gitInfo = (Map<String, Object>) git;
 					assertThat(gitInfo).containsOnlyKeys("branch", "commit", "foo");
-					assertThat(gitInfo.get("foo")).isEqualTo("bar");
+					assertThat(gitInfo).containsEntry("foo", "bar");
 				});
 	}
 
@@ -130,7 +130,7 @@ class InfoContributorAutoConfigurationTests {
 			assertThat(build).isInstanceOf(Map.class);
 			Map<String, Object> buildInfo = (Map<String, Object>) build;
 			assertThat(buildInfo).containsOnlyKeys("group", "artifact", "foo");
-			assertThat(buildInfo.get("foo")).isEqualTo("bar");
+			assertThat(buildInfo).containsEntry("foo", "bar");
 		});
 	}
 

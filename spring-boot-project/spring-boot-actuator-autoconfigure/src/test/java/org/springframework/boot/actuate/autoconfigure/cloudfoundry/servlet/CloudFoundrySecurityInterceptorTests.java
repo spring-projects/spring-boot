@@ -117,7 +117,7 @@ class CloudFoundrySecurityInterceptorTests {
 		ArgumentCaptor<Token> tokenArgumentCaptor = ArgumentCaptor.forClass(Token.class);
 		then(this.tokenValidator).should().validate(tokenArgumentCaptor.capture());
 		Token token = tokenArgumentCaptor.getValue();
-		assertThat(token.toString()).isEqualTo(accessToken);
+		assertThat(token).hasToString(accessToken);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
 		assertThat(this.request.getAttribute("cloudFoundryAccessLevel")).isEqualTo(AccessLevel.FULL);
 	}
@@ -131,7 +131,7 @@ class CloudFoundrySecurityInterceptorTests {
 		ArgumentCaptor<Token> tokenArgumentCaptor = ArgumentCaptor.forClass(Token.class);
 		then(this.tokenValidator).should().validate(tokenArgumentCaptor.capture());
 		Token token = tokenArgumentCaptor.getValue();
-		assertThat(token.toString()).isEqualTo(accessToken);
+		assertThat(token).hasToString(accessToken);
 		assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
 		assertThat(this.request.getAttribute("cloudFoundryAccessLevel")).isEqualTo(AccessLevel.RESTRICTED);
 	}

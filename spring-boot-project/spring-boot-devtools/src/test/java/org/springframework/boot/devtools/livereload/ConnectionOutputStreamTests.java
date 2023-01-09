@@ -54,7 +54,7 @@ class ConnectionOutputStreamTests {
 		expected += "Content-Length: 2\r\n";
 		expected += "Connection: close\r\n\r\n";
 		expected += "hi";
-		assertThat(out.toString()).isEqualTo(expected);
+		assertThat(out).hasToString(expected);
 	}
 
 	@Test
@@ -66,7 +66,7 @@ class ConnectionOutputStreamTests {
 		String expected = "";
 		expected += "A: a\r\n";
 		expected += "B: b\r\n\r\n";
-		assertThat(out.toString()).isEqualTo(expected);
+		assertThat(out).hasToString(expected);
 	}
 
 }

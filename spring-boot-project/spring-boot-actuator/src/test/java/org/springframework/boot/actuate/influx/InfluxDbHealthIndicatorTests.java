@@ -47,7 +47,7 @@ class InfluxDbHealthIndicatorTests {
 		InfluxDbHealthIndicator healthIndicator = new InfluxDbHealthIndicator(influxDb);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("version")).isEqualTo("0.9");
+		assertThat(health.getDetails()).containsEntry("version", "0.9");
 		then(influxDb).should().ping();
 	}
 

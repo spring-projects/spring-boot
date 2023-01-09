@@ -163,7 +163,7 @@ class BindResultTests {
 		BindResult<?> result2 = BindResult.of("foo");
 		BindResult<?> result3 = BindResult.of("bar");
 		BindResult<?> result4 = BindResult.of(null);
-		assertThat(result1.hashCode()).isEqualTo(result2.hashCode());
+		assertThat(result1).hasSameHashCodeAs(result2);
 		assertThat(result1).isEqualTo(result1).isEqualTo(result2).isNotEqualTo(result3).isNotEqualTo(result4);
 	}
 

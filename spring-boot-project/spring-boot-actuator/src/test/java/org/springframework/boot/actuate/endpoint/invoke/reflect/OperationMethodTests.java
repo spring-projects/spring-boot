@@ -64,7 +64,7 @@ class OperationMethodTests {
 	void getParametersShouldReturnParameters() {
 		OperationMethod operationMethod = new OperationMethod(this.exampleMethod, OperationType.READ);
 		OperationParameters parameters = operationMethod.getParameters();
-		assertThat(parameters.getParameterCount()).isEqualTo(1);
+		assertThat(parameters.getParameterCount()).isOne();
 		assertThat(parameters.iterator().next().getName()).isEqualTo("name");
 	}
 

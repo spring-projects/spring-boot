@@ -231,7 +231,7 @@ class ValidationAutoConfigurationTests {
 		this.contextRunner.run((parent) -> new ApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.withUserConfiguration(SampleService.class).withParent(parent).run((context) -> {
-					assertThat(context.getBeansOfType(Validator.class)).hasSize(0);
+					assertThat(context.getBeansOfType(Validator.class)).isEmpty();
 					assertThat(parent.getBeansOfType(Validator.class)).hasSize(1);
 					SampleService service = context.getBean(SampleService.class);
 					service.doSomething("Valid");

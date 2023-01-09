@@ -141,7 +141,7 @@ class LiveReloadServerTests {
 		LiveReloadWebSocketHandler handler = connect();
 		handler.close();
 		awaitClosedException();
-		assertThat(this.server.getClosedExceptions().size()).isGreaterThan(0);
+		assertThat(this.server.getClosedExceptions()).isNotEmpty();
 	}
 
 	private void awaitClosedException() {

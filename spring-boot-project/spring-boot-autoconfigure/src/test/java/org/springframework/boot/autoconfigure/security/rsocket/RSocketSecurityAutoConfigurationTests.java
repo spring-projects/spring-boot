@@ -76,7 +76,7 @@ class RSocketSecurityAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(RSocketMessageHandler.class);
 			RSocketMessageHandler handler = context.getBean(RSocketMessageHandler.class);
-			assertThat(handler.getArgumentResolverConfigurer().getCustomResolvers()).isNotEmpty()
+			assertThat(handler.getArgumentResolverConfigurer().getCustomResolvers())
 					.anyMatch((customResolver) -> customResolver instanceof AuthenticationPrincipalArgumentResolver);
 		});
 	}

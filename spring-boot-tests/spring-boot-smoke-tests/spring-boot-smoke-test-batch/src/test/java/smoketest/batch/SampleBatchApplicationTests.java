@@ -30,7 +30,7 @@ class SampleBatchApplicationTests {
 
 	@Test
 	void testDefaultSettings(CapturedOutput output) {
-		assertThat(SpringApplication.exit(SpringApplication.run(SampleBatchApplication.class))).isEqualTo(0);
+		assertThat(SpringApplication.exit(SpringApplication.run(SampleBatchApplication.class))).isZero();
 		assertThat(output).contains("completed with the following parameters");
 	}
 

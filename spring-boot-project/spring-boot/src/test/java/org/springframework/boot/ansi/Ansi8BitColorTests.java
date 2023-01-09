@@ -31,12 +31,12 @@ class Ansi8BitColorTests {
 
 	@Test
 	void toStringWhenForegroundAddsCorrectPrefix() {
-		assertThat(Ansi8BitColor.foreground(208).toString()).isEqualTo("38;5;208");
+		assertThat(Ansi8BitColor.foreground(208)).hasToString("38;5;208");
 	}
 
 	@Test
 	void toStringWhenBackgroundAddsCorrectPrefix() {
-		assertThat(Ansi8BitColor.background(208).toString()).isEqualTo("48;5;208");
+		assertThat(Ansi8BitColor.background(208)).hasToString("48;5;208");
 	}
 
 	@Test
@@ -60,8 +60,8 @@ class Ansi8BitColorTests {
 		Ansi8BitColor one = Ansi8BitColor.foreground(123);
 		Ansi8BitColor two = Ansi8BitColor.foreground(123);
 		Ansi8BitColor three = Ansi8BitColor.background(123);
-		assertThat(one.hashCode()).isEqualTo(two.hashCode());
-		assertThat(one).isEqualTo(one).isEqualTo(two).isNotEqualTo(three).isNotEqualTo(null).isNotEqualTo("foo");
+		assertThat(one).hasSameHashCodeAs(two);
+		assertThat(one).isEqualTo(one).isEqualTo(two).isNotEqualTo(three).isNotNull().isNotEqualTo("foo");
 	}
 
 }

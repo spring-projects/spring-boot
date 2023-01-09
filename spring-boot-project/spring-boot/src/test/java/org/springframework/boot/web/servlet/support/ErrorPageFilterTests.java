@@ -208,7 +208,7 @@ class ErrorPageFilterTests {
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)).isEqualTo(500);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE)).isEqualTo("BAD");
 		Map<String, Object> requestAttributes = getAttributesForDispatch("/500");
-		assertThat(requestAttributes.get(RequestDispatcher.ERROR_EXCEPTION_TYPE)).isEqualTo(RuntimeException.class);
+		assertThat(requestAttributes).containsEntry(RequestDispatcher.ERROR_EXCEPTION_TYPE, RuntimeException.class);
 		assertThat(requestAttributes.get(RequestDispatcher.ERROR_EXCEPTION)).isInstanceOf(RuntimeException.class);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE)).isNull();
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION)).isNull();
@@ -248,8 +248,8 @@ class ErrorPageFilterTests {
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)).isEqualTo(500);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE)).isEqualTo("BAD");
 		Map<String, Object> requestAttributes = getAttributesForDispatch("/500");
-		assertThat(requestAttributes.get(RequestDispatcher.ERROR_EXCEPTION_TYPE))
-				.isEqualTo(IllegalStateException.class);
+		assertThat(requestAttributes).containsEntry(RequestDispatcher.ERROR_EXCEPTION_TYPE,
+				IllegalStateException.class);
 		assertThat(requestAttributes.get(RequestDispatcher.ERROR_EXCEPTION)).isInstanceOf(IllegalStateException.class);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE)).isNull();
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION)).isNull();
@@ -377,7 +377,7 @@ class ErrorPageFilterTests {
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)).isEqualTo(500);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE)).isEqualTo("BAD");
 		Map<String, Object> requestAttributes = getAttributesForDispatch("/500");
-		assertThat(requestAttributes.get(RequestDispatcher.ERROR_EXCEPTION_TYPE)).isEqualTo(RuntimeException.class);
+		assertThat(requestAttributes).containsEntry(RequestDispatcher.ERROR_EXCEPTION_TYPE, RuntimeException.class);
 		assertThat(requestAttributes.get(RequestDispatcher.ERROR_EXCEPTION)).isInstanceOf(RuntimeException.class);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE)).isNull();
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION)).isNull();
@@ -399,8 +399,8 @@ class ErrorPageFilterTests {
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE))
 				.isEqualTo("Required request parameter 'test' for method parameter type string is not present");
 		Map<String, Object> requestAttributes = getAttributesForDispatch("/500");
-		assertThat(requestAttributes.get(RequestDispatcher.ERROR_EXCEPTION_TYPE))
-				.isEqualTo(MissingServletRequestParameterException.class);
+		assertThat(requestAttributes).containsEntry(RequestDispatcher.ERROR_EXCEPTION_TYPE,
+				MissingServletRequestParameterException.class);
 		assertThat(requestAttributes.get(RequestDispatcher.ERROR_EXCEPTION))
 				.isInstanceOf(MissingServletRequestParameterException.class);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE)).isNull();

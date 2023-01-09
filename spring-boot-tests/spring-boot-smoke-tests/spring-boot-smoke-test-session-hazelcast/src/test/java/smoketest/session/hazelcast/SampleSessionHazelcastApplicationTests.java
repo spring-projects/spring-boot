@@ -60,7 +60,7 @@ class SampleSessionHazelcastApplicationTests {
 		assertThat(entity).isNotNull();
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		List<Map<String, Object>> sessions = (List<Map<String, Object>>) entity.getBody().get("sessions");
-		assertThat(sessions.size()).isEqualTo(1);
+		assertThat(sessions).hasSize(1);
 	}
 
 	private String performLogin() {
