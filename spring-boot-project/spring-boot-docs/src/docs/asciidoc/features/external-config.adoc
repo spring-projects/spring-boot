@@ -724,7 +724,7 @@ In this setup, the presence of a single parameterized constructor implies that c
 This means that the binder will find a constructor with the parameters that you wish to have bound.
 If your class has multiple constructors, the `@ConstructorBinding` annotation can be used to specify which constructor to use for constructor binding.
 To opt out of constructor binding for a class with a single parameterized constructor, the constructor must be annotated with `@Autowired`.
-If you are using Java 16 or later, constructor binding can be used with records.
+Constructor binding can be used with records.
 Unless your record has multiple constructors, there is no need to use `@ConstructorBinding`.
 
 Nested members of a constructor bound class (such as `Security` in the example above) will also be bound through their constructor.

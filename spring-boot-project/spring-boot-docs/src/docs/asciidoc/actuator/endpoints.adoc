@@ -1077,8 +1077,8 @@ For example, you could add the following settings to your `application.propertie
 	  app:
 	    encoding: "UTF-8"
 	    java:
-	      source: "11"
-	      target: "11"
+	      source: "17"
+	      target: "17"
 ----
 
 [TIP]
