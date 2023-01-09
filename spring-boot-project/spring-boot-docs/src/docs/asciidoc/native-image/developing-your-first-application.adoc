@@ -221,7 +221,7 @@ The native image executable can be found in the `build/native/nativeCompile` dir
 
 [[native-image.developing-your-first-application.native-build-tools.running]]
 ==== Running the Example
-At this point, your application should worK. You can now start the application by running it directly:
+At this point, your application should work. You can now start the application by running it directly:
 
 [source,shell,indent=0,subs="verbatim",role="primary"]
 .Maven
