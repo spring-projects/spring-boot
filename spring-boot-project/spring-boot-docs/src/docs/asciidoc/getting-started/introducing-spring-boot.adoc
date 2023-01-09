@@ -5,7 +5,6 @@ We take an opinionated view of the Spring platform and third-party libraries, so
 Most Spring Boot applications need very little Spring configuration.
 
 You can use Spring Boot to create Java applications that can be started by using `java -jar` or more traditional war deployments.
-We also provide a command line tool that runs "`spring scripts`".
 
 Our primary goals are:
 
