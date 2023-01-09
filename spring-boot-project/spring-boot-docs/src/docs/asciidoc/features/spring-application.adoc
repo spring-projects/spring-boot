@@ -335,7 +335,7 @@ include::code:MyApplication[]
 Also, the `ExitCodeGenerator` interface may be implemented by exceptions.
 When such an exception is encountered, Spring Boot returns the exit code provided by the implemented `getExitCode()` method.
 
-If there is more than `ExitCodeGenerator`, the first non-zero exit code that is generated is used.
+If there is more than one `ExitCodeGenerator`, the first non-zero exit code that is generated is used.
 To control the order in which the generators are called, additionally implement the `org.springframework.core.Ordered` interface or use the `org.springframework.core.annotation.Order` annotation.
 
 
