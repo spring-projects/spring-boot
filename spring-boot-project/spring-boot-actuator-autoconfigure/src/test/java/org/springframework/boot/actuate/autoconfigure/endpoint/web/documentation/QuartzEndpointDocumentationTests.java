@@ -265,8 +265,8 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 								"Whether the job should be re-executed if a 'recovery' or 'fail-over' situation is encountered."),
 						fieldWithPath("data.*").description("Job data map as key/value pairs, if any."),
 						fieldWithPath("triggers").description("An array of triggers associated to the job, if any."),
-						fieldWithPath("triggers.[].group").description("Name of the the trigger group."),
-						fieldWithPath("triggers.[].name").description("Name of the the trigger."),
+						fieldWithPath("triggers.[].group").description("Name of the trigger group."),
+						fieldWithPath("triggers.[].name").description("Name of the trigger."),
 						previousFireTime("triggers.[]."), nextFireTime("triggers.[]."), priority("triggers.[]."))));
 	}
 
