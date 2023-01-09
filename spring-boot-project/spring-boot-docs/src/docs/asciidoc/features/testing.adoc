@@ -547,7 +547,7 @@ You can use the `@DataJpaTest` annotation to test JPA applications.
 By default, it scans for `@Entity` classes and configures Spring Data JPA repositories.
 If an embedded database is available on the classpath, it configures one as well.
 SQL queries are logged by default by setting the `spring.jpa.show-sql` property to `true`.
-This can be disabled using the `showSql()` attribute of the annotation.
+This can be disabled using the `showSql` attribute of the annotation.
 
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataJpaTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
@@ -933,7 +933,7 @@ include::code:MyEnvironmentTests[]
 [[features.testing.utilities.output-capture]]
 ==== OutputCapture
 `OutputCapture` is a JUnit `Extension` that you can use to capture `System.out` and `System.err` output.
-To use add `@ExtendWith(OutputCaptureExtension.class)` and inject `CapturedOutput` as an argument to your test class constructor or test method as follows:
+To use it, add `@ExtendWith(OutputCaptureExtension.class)` and inject `CapturedOutput` as an argument to your test class constructor or test method as follows:
 
 include::code:MyOutputCaptureTests[]
 
@@ -950,7 +950,7 @@ Instead, such errors can be detected through the returned `ResponseEntity` and i
 TIP: Spring Framework 5.0 provides a new `WebTestClient` that works for <<features#features.testing.spring-boot-applications.spring-webflux-tests, WebFlux integration tests>> and both <<features#features.testing.spring-boot-applications.with-running-server, WebFlux and MVC end-to-end testing>>.
 It provides a fluent API for assertions, unlike `TestRestTemplate`.
 
-It is recommended, but not mandatory, to use the Apache HTTP Client (version 4.3.2 or better).
+It is recommended, but not mandatory, to use the Apache HTTP Client (version 5.1 or better).
 If you have that on your classpath, the `TestRestTemplate` responds by configuring the client appropriately.
 If you do use Apache's HTTP client, some additional test-friendly features are enabled:
 

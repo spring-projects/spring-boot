@@ -64,7 +64,7 @@ The `spring.profiles.include` property can be used to add active profiles on top
 The `SpringApplication` entry point also has a Java API for setting additional profiles.
 See the `setAdditionalProfiles()` method in {spring-boot-module-api}/SpringApplication.html[SpringApplication].
 
-For example, when an application with the following properties is run, the common and local profiles will be activated even when it runs using the --spring.profiles.active switch:
+For example, when an application with the following properties is run, the common and local profiles will be activated even when it runs using the `--spring.profiles.active` switch:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----

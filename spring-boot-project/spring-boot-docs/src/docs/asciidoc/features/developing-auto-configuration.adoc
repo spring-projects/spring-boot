@@ -1,7 +1,7 @@
 [[features.developing-auto-configuration]]
 == Creating Your Own Auto-configuration
 If you work in a company that develops shared libraries, or if you work on an open-source or commercial library, you might want to develop your own auto-configuration.
-Auto-configuration classes can be bundled in external jars and still be picked-up by Spring Boot.
+Auto-configuration classes can be bundled in external jars and still be picked up by Spring Boot.
 
 Auto-configuration can be associated to a "`starter`" that provides the auto-configuration code as well as the typical libraries that you would use with it.
 We first cover what you need to know to build your own auto-configuration and then we move on to the <<features#features.developing-auto-configuration.custom-starter,typical steps required to create a custom starter>>.
@@ -37,7 +37,7 @@ TIP: You can add comments to the imports file using the `#` character.
 NOTE: Auto-configurations must be loaded _only_ by being named in the imports file.
 Make sure that they are defined in a specific package space and that they are never the target of component scanning.
 Furthermore, auto-configuration classes should not enable component scanning to find additional components.
-Specific ``@Import``s should be used instead.
+Specific `@Import` annotations should be used instead.
 
 If your configuration needs to be applied in a specific order, you can use the `before`, `beforeName`, `after` and `afterName` attributes on the {spring-boot-autoconfigure-module-code}/AutoConfiguration.java[`@AutoConfiguration`] annotation or the dedicated {spring-boot-autoconfigure-module-code}/AutoConfigureBefore.java[`@AutoConfigureBefore`] and {spring-boot-autoconfigure-module-code}/AutoConfigureAfter.java[`@AutoConfigureAfter`] annotations.
 For example, if you provide web-specific configuration, your class may need to be applied after `WebMvcAutoConfiguration`.
@@ -207,7 +207,7 @@ If "acme" has several flavors, options or optional features, then it is better t
 Besides, you have the ability to craft a starter that provides an opinion about those optional dependencies.
 At the same time, others can rely only on the `autoconfigure` module and craft their own starter with different opinions.
 
-If the auto-configuration is relatively straightforward and does not have optional feature, merging the two modules in the starter is definitely an option.
+If the auto-configuration is relatively straightforward and does not have optional features, merging the two modules in the starter is definitely an option.
 
 
 

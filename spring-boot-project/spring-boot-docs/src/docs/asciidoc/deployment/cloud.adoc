@@ -97,7 +97,7 @@ include::code:MyBean[]
 
 All Cloud Foundry properties are prefixed with `vcap`.
 You can use `vcap` properties to access application information (such as the public URL of the application) and service information (such as database credentials).
-See the {spring-boot-module-api}/cloud/CloudFoundryVcapEnvironmentPostProcessor.html['`CloudFoundryVcapEnvironmentPostProcessor`'] Javadoc for complete details.
+See the {spring-boot-module-api}/cloud/CloudFoundryVcapEnvironmentPostProcessor.html[`CloudFoundryVcapEnvironmentPostProcessor`] Javadoc for complete details.
 
 TIP: The https://github.com/pivotal-cf/java-cfenv/[Java CFEnv] project is a better fit for tasks such as configuring a DataSource.
 
@@ -412,4 +412,4 @@ You can deploy the app (for example, with a Maven plugin) by adding the project 
 	</plugin>
 ----
 
-Then deploy with `mvn appengine:deploy` (if you need to authenticate first, the build fails).
+Then deploy with `mvn appengine:deploy` (you need to authenticate first, otherwise the build fails).

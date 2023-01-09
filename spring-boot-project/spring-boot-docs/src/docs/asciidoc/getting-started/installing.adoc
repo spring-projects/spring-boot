@@ -35,7 +35,7 @@ If you use OSX Homebrew, try `brew install maven`.
 Ubuntu users can run `sudo apt-get install maven`.
 Windows users with https://chocolatey.org/[Chocolatey] can run `choco install maven` from an elevated (administrator) prompt.
 
-Spring Boot dependencies use the `org.springframework.boot` `groupId`.
+Spring Boot dependencies use the `org.springframework.boot` group id.
 Typically, your Maven POM file inherits from the `spring-boot-starter-parent` project and declares dependencies to one or more <<using#using.build-systems.starters,"`Starters`">>.
 Spring Boot also provides an optional <<build-tool-plugins#build-tool-plugins.maven, Maven plugin>> to create executable jars.
 

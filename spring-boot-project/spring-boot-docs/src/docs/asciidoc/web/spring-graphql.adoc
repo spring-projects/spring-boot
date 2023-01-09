@@ -52,7 +52,7 @@ If you wish to not expose information about the schema, you can disable introspe
 
 [[web.graphql.runtimewiring]]
 === GraphQL RuntimeWiring
-The GraphQL Java `RuntimeWiring.Builder` can be used to register custom scalar types, directives, type resolvers, ``DataFetcher``s, and more.
+The GraphQL Java `RuntimeWiring.Builder` can be used to register custom scalar types, directives, type resolvers, `DataFetcher`, and more.
 You can declare `RuntimeWiringConfigurer` beans in your Spring config to get access to the `RuntimeWiring.Builder`.
 Spring Boot detects such beans and adds them to the {spring-graphql-docs}#execution-graphqlsource[GraphQlSource builder].
 
