@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -216,31 +216,27 @@ class EndpointRequestTests {
 	}
 
 	@Test
-	void toStringIncludedEndpoints() {
+	void toStringWhenIncludedEndpoints() {
 		RequestMatcher matcher = EndpointRequest.to("foo", "bar");
-		assertThat(matcher.toString())
-				.isEqualTo("EndpointRequest [includes='[foo, bar]', Excludes='[]', IncludeLinks='false']");
+		assertThat(matcher).hasToString("EndpointRequestMatcher includes=[foo, bar], excludes=[], includeLinks=false");
 	}
 
 	@Test
-	void toStringEmptyIncludedEndpoints() {
+	void toStringWhenEmptyIncludedEndpoints() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
-		assertThat(matcher.toString())
-				.isEqualTo("EndpointRequest [includes='[*]', Excludes='[]', IncludeLinks='true']");
+		assertThat(matcher).hasToString("EndpointRequestMatcher includes=[*], excludes=[], includeLinks=true");
 	}
 
 	@Test
-	void toStringIncludedEndpointsClasses() {
+	void toStringWhenIncludedEndpointsClasses() {
 		RequestMatcher matcher = EndpointRequest.to(FooEndpoint.class).excluding("bar");
-		assertThat(matcher.toString())
-				.isEqualTo("EndpointRequest [includes='[foo]', Excludes='[bar]', IncludeLinks='false']");
+		assertThat(matcher).hasToString("EndpointRequestMatcher includes=[foo], excludes=[bar], includeLinks=false");
 	}
 
 	@Test
-	void toStringIncludedExcludedEndpoints() {
+	void toStringWhenIncludedExcludedEndpoints() {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint().excluding("bar").excludingLinks();
-		assertThat(matcher.toString())
-				.isEqualTo("EndpointRequest [includes='[*]', Excludes='[bar]', IncludeLinks='false']");
+		assertThat(matcher).hasToString("EndpointRequestMatcher includes=[*], excludes=[bar], includeLinks=false");
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher) {
