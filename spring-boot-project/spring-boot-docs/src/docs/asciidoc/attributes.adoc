@@ -93,7 +93,7 @@
 :spring-restdocs: https://spring.io/projects/spring-restdocs
 :spring-security: https://spring.io/projects/spring-security
 :spring-security-docs: https://docs.spring.io/spring-security/reference/{spring-security-version}
-:spring-security-oauth2: https://spring.io/projects/spring-security-oauth
+:spring-authorization-server: https://spring.io/projects/spring-authorization-server
 :spring-session: https://spring.io/projects/spring-session
 :spring-webservices-docs: https://docs.spring.io/spring-ws/docs/{spring-webservices-version}/reference/html/
 :ant-docs: https://ant.apache.org/manual
