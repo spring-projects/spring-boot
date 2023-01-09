@@ -1137,7 +1137,7 @@ Doing so gives a transparent upgrade path while supporting a much richer format.
 [[features.external-config.typesafe-configuration-properties.validation]]
 ==== @ConfigurationProperties Validation
 Spring Boot attempts to validate `@ConfigurationProperties` classes whenever they are annotated with Spring's `@Validated` annotation.
-You can use JSR-303 `javax.validation` constraint annotations directly on your configuration class.
+You can use JSR-303 `jakarta.validation` constraint annotations directly on your configuration class.
 To do so, ensure that a compliant JSR-303 implementation is on your classpath and then add constraint annotations to your fields, as shown in the following example:
 
 include::code:MyProperties[]
