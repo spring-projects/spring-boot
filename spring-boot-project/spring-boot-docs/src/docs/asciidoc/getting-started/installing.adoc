@@ -165,7 +165,7 @@ If you are on a Mac and use https://www.macports.org/[MacPorts], you can install
 ==== Command-line Completion
 The Spring Boot CLI includes scripts that provide command completion for the https://en.wikipedia.org/wiki/Bash_%28Unix_shell%29[BASH] and https://en.wikipedia.org/wiki/Z_shell[zsh] shells.
 You can `source` the script (also named `spring`) in any shell or put it in your personal or system-wide bash completion initialization.
-On a Debian system, the system-wide scripts are in `/shell-completion/bash` and all scripts in that directory are executed when a new shell starts.
+On a Debian system, the system-wide scripts are in `<installation location>/shell-completion/bash` and all scripts in that directory are executed when a new shell starts.
 For example, to run the script manually if you have installed by using SDKMAN!, use the following commands:
 
 [source,shell,indent=0,subs="verbatim"]
