@@ -36,8 +36,8 @@ public class DatadogProperties extends StepRegistryProperties {
 	private String apiKey;
 
 	/**
-	 * Datadog application key. Not strictly required, but improves the Datadog experience
-	 * by sending meter descriptions, types, and base units to Datadog.
+	 * Datadog's application key. Not strictly required, but improves the Datadog
+	 * experience by sending meter descriptions, types, and base units to Datadog.
 	 */
 	private String applicationKey;
 
