@@ -1116,9 +1116,17 @@ class ConfigurationPropertiesTests {
 	@Test // gh-33710
 	void loadWhenConstructorUsedInBeanMethodAndNotAsConstructorBinding() {
 		load(ConstructorUsedInBeanMethodConfiguration.class, "test.two=bound-2");
-		ConstructorUsedInBeanMethod bean = this.context.getBean(ConstructorUsedInBeanMethod.class);
+		ConstructorUsedDirectly bean = this.context.getBean(ConstructorUsedDirectly.class);
 		assertThat(bean.getOne()).isEqualTo("bean-method-1");
 		assertThat(bean.getTwo()).isEqualTo("bound-2");
+	}
+
+	@Test // gh-33409
+	void loadWhenConstructorUsedInNestedPropertyAndNotAsConstructorBinding() {
+		load(ConstructorUsedInNestedPropertyConfiguration.class, "test.nested.two=bound-2");
+		ConstructorUsedInNestedProperty bean = this.context.getBean(ConstructorUsedInNestedProperty.class);
+		assertThat(bean.getNested().getOne()).isEqualTo("nested-1");
+		assertThat(bean.getNested().getTwo()).isEqualTo("bound-2");
 	}
 
 	private AnnotationConfigApplicationContext load(Class<?> configuration, String... inlinedProperties) {
@@ -2861,19 +2869,41 @@ class ConfigurationPropertiesTests {
 
 		@Bean
 		@ConfigurationProperties("test")
-		ConstructorUsedInBeanMethod constructorUsedInBeanMethod() {
-			return new ConstructorUsedInBeanMethod("bean-method-1", "bean-method-2");
+		ConstructorUsedDirectly constructorUsedInBeanMethod() {
+			return new ConstructorUsedDirectly("bean-method-1", "bean-method-2");
 		}
 
 	}
 
-	static class ConstructorUsedInBeanMethod {
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(ConstructorUsedInNestedProperty.class)
+	static class ConstructorUsedInNestedPropertyConfiguration {
+
+	}
+
+	@ConfigurationProperties("test")
+	static class ConstructorUsedInNestedProperty {
+
+		@NestedConfigurationProperty
+		private ConstructorUsedDirectly nested = new ConstructorUsedDirectly("nested-1", "nested-2");
+
+		ConstructorUsedDirectly getNested() {
+			return this.nested;
+		}
+
+		void setNested(ConstructorUsedDirectly nested) {
+			this.nested = nested;
+		}
+
+	}
+
+	static class ConstructorUsedDirectly {
 
 		private String one;
 
 		private String two;
 
-		ConstructorUsedInBeanMethod(String one, String two) {
+		ConstructorUsedDirectly(String one, String two) {
 			this.one = one;
 			this.two = two;
 		}

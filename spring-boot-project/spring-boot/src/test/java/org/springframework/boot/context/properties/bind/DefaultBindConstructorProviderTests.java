@@ -111,11 +111,19 @@ class DefaultBindConstructorProviderTests {
 	}
 
 	@Test
-	void getBindConstructorWhenHasExistingValueReturnsNull() {
+	void getBindConstructorWhenHasExistingValueAndOneConstructorWithoutAnnotationsReturnsNull() {
+		OneConstructorWithoutAnnotations existingValue = new OneConstructorWithoutAnnotations("name", 123);
+		Bindable<?> bindable = Bindable.of(OneConstructorWithoutAnnotations.class).withExistingValue(existingValue);
+		Constructor<?> bindConstructor = this.provider.getBindConstructor(bindable, false);
+		assertThat(bindConstructor).isNull();
+	}
+
+	@Test
+	void getBindConstructorWhenHasExistingValueAndOneConstructorWithConstructorBindingReturnsConstructor() {
 		OneConstructorWithConstructorBinding existingValue = new OneConstructorWithConstructorBinding("name", 123);
 		Bindable<?> bindable = Bindable.of(OneConstructorWithConstructorBinding.class).withExistingValue(existingValue);
 		Constructor<?> bindConstructor = this.provider.getBindConstructor(bindable, false);
-		assertThat(bindConstructor).isNull();
+		assertThat(bindConstructor).isNotNull();
 	}
 
 	static class OnlyDefaultConstructor {
@@ -181,6 +189,13 @@ class DefaultBindConstructorProviderTests {
 
 		@ConstructorBinding
 		OneConstructorWithConstructorBinding(String name, int age) {
+		}
+
+	}
+
+	static class OneConstructorWithoutAnnotations {
+
+		OneConstructorWithoutAnnotations(String name, int age) {
 		}
 
 	}
