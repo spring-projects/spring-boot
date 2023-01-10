@@ -533,7 +533,7 @@ In yaml files, you can use the yaml list notation. In properties files, you must
 ----
 	spring.ldap.embedded.base-dn:
 	  - "dc=spring,dc=io"
-	  - "dc=pivotal,dc=io"
+	  - "dc=vmware,dc=com"
 ----
 ====
 
