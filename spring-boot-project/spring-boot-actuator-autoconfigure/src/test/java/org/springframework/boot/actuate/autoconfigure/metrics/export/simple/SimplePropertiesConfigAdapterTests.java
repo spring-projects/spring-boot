@@ -19,11 +19,13 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.simple;
 import java.time.Duration;
 
 import io.micrometer.core.instrument.simple.CountingMode;
+import io.micrometer.core.instrument.simple.SimpleConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx.SignalFxPropertiesConfigAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter;
 
 /**
  * Tests for {@link SignalFxPropertiesConfigAdapter}.
@@ -44,6 +46,12 @@ class SimplePropertiesConfigAdapterTests {
 		SimpleProperties properties = new SimpleProperties();
 		properties.setMode(CountingMode.STEP);
 		assertThat(new SimplePropertiesConfigAdapter(properties).mode()).isEqualTo(CountingMode.STEP);
+	}
+
+	@Test
+	void allConfigDefaultMethodsAreOverriddenByAdapter() {
+		assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(SimpleConfig.class,
+				SimplePropertiesConfigAdapter.class);
 	}
 
 }

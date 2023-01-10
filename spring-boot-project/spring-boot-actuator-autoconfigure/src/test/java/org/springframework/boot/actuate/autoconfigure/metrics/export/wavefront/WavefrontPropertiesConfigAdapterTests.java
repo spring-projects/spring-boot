@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 
 import java.net.URI;
 
+import io.micrometer.wavefront.WavefrontConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PushRegistryPropertiesConfigAdapterTests;
@@ -25,6 +26,7 @@ import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontPropert
 import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties.Metrics.Export;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter;
 
 /**
  * Tests for {@link WavefrontPropertiesConfigAdapter}.
@@ -82,4 +84,12 @@ class WavefrontPropertiesConfigAdapterTests extends
 		assertThat(new WavefrontPropertiesConfigAdapter(properties).source()).isEqualTo("DESKTOP-GA5");
 	}
 
+	@Test
+	void allConfigDefaultMethodsAreOverriddenByAdapter() {
+		assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(WavefrontConfig.class, WavefrontPropertiesConfigAdapter.class,
+				"distributionPort",
+				"reportMinuteDistribution",
+				"reportHourDistribution",
+				"reportDayDistribution");
+	}
 }

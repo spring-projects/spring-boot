@@ -19,9 +19,11 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus
 import java.time.Duration;
 
 import io.micrometer.prometheus.HistogramFlavor;
+import io.micrometer.prometheus.PrometheusConfig;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter;
 
 /**
  * Tests for {@link PrometheusPropertiesConfigAdapter}.
@@ -50,6 +52,12 @@ class PrometheusPropertiesConfigAdapterTests {
 		PrometheusProperties properties = new PrometheusProperties();
 		properties.setStep(Duration.ofSeconds(30));
 		assertThat(new PrometheusPropertiesConfigAdapter(properties).step()).isEqualTo(Duration.ofSeconds(30));
+	}
+
+	@Test
+	void allConfigDefaultMethodsAreOverriddenByAdapter() {
+		assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(PrometheusConfig.class,
+				PrometheusPropertiesConfigAdapter.class);
 	}
 
 }

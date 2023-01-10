@@ -18,9 +18,11 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.jmx;
 
 import java.time.Duration;
 
+import io.micrometer.jmx.JmxConfig;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter;
 
 /**
  * Tests for {@link JmxPropertiesConfigAdapter}.
@@ -41,6 +43,11 @@ class JmxPropertiesConfigAdapterTests {
 		JmxProperties properties = new JmxProperties();
 		properties.setDomain("abc");
 		assertThat(new JmxPropertiesConfigAdapter(properties).domain()).isEqualTo("abc");
+	}
+
+	@Test
+	void allConfigDefaultMethodsAreOverriddenByAdapter() {
+		assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(JmxConfig.class, JmxPropertiesConfigAdapter.class);
 	}
 
 }

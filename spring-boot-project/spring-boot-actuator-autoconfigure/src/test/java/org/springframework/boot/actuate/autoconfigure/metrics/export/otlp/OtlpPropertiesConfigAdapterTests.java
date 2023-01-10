@@ -18,9 +18,11 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
 import java.util.Map;
 
+import io.micrometer.registry.otlp.OtlpConfig;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter;
 
 /**
  * Tests for {@link OtlpPropertiesConfigAdapter}.
@@ -51,4 +53,8 @@ class OtlpPropertiesConfigAdapterTests {
 		assertThat(new OtlpPropertiesConfigAdapter(properties).headers()).containsEntry("header", "value");
 	}
 
+	@Test
+	void allConfigDefaultMethodsAreOverriddenByAdapter() {
+		assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(OtlpConfig.class, OtlpPropertiesConfigAdapter.class);
+	}
 }

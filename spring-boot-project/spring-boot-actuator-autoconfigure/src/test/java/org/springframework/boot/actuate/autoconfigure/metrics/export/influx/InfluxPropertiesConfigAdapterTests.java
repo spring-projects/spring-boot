@@ -17,9 +17,11 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.influx;
 
 import io.micrometer.influx.InfluxApiVersion;
+import io.micrometer.influx.InfluxConfig;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter;
 
 /**
  * Tests for {@link InfluxPropertiesConfigAdapter}.
@@ -58,4 +60,8 @@ class InfluxPropertiesConfigAdapterTests {
 		assertThat(adapter.token()).isEqualTo("token");
 	}
 
+	@Test
+	void allConfigDefaultMethodsAreOverriddenByAdapter() {
+		assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(InfluxConfig.class, InfluxPropertiesConfigAdapter.class);
+	}
 }

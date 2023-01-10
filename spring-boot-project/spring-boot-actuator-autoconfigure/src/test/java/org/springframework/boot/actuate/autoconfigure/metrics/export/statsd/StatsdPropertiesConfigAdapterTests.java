@@ -18,11 +18,13 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.statsd;
 
 import java.time.Duration;
 
+import io.micrometer.statsd.StatsdConfig;
 import io.micrometer.statsd.StatsdFlavor;
 import io.micrometer.statsd.StatsdProtocol;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter;
 
 /**
  * Tests for {@link StatsdPropertiesConfigAdapter}.
@@ -104,4 +106,9 @@ class StatsdPropertiesConfigAdapterTests {
 		assertThat(new StatsdPropertiesConfigAdapter(properties).buffered()).isEqualTo(properties.isBuffered());
 	}
 
+	@Test
+	void allConfigDefaultMethodsAreOverriddenByAdapter() {
+		assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(StatsdConfig.class, StatsdPropertiesConfigAdapter.class,
+				"queueSize");
+	}
 }
