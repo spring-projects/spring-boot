@@ -223,27 +223,17 @@ Both `h2` (HTTP/2 over TLS) and `h2c` (HTTP/2 over TCP) are supported.
 To use `h2`, SSL must also be enabled.
 When SSL is not enabled, `h2c` will be used.
 You may, for example, want to use `h2c` when your application is <<howto.webserver.use-behind-a-proxy-server,running behind a proxy server>> that is performing TLS termination.
-The details of the `h2` support depend on the chosen web server and the application environment, since that protocol is not supported out-of-the-box by all JDK 8 releases.
 
 
 
 [[howto.webserver.configure-http2.tomcat]]
 ==== HTTP/2 With Tomcat
-Spring Boot ships by default with Tomcat 9.0.x which supports `h2c` out of the box and `h2` out of the box when using JDK 9 or later.
-Alternatively, `h2` can be used on JDK 8 if the `libtcnative` library and its dependencies are installed on the host operating system.
+Spring Boot ships by default with Tomcat 10.1.x which supports `h2c` and `h2` out of the box.
+Alternatively, you can use `libtcnative` for `h2` support if the library and its dependencies are installed on the host operating system.
 
 The library directory must be made available, if not already, to the JVM library path.
 You can do so with a JVM argument such as `-Djava.library.path=/usr/local/opt/tomcat-native/lib`.
-More on this in the https://tomcat.apache.org/tomcat-9.0-doc/apr.html[official Tomcat documentation].
-
-Starting Tomcat 9.0.x on JDK 8 with HTTP/2 and SSL enabled but without that native support logs the following error:
-
-[indent=0,subs="verbatim"]
-----
-	ERROR 8787 --- [           main] o.a.coyote.http11.Http11NioProtocol      : The upgrade handler [org.apache.coyote.http2.Http2Protocol] for [h2] only supports upgrade via ALPN but has been configured for the ["https-jsse-nio-8443"] connector that does not support ALPN.
-----
-
-This error is not fatal, and the application still starts with HTTP/1.1 SSL support.
+More on this in the {tomcat-docs}/apr.html[official Tomcat documentation].
 
 
 
@@ -253,18 +243,16 @@ For HTTP/2 support, Jetty requires the additional `org.eclipse.jetty.http2:http2
 To use `h2c` no other dependencies are required.
 To use `h2`, you also need to choose one of the following dependencies, depending on your deployment:
 
-* `org.eclipse.jetty:jetty-alpn-java-server` for applications running on JDK9+
-* `org.eclipse.jetty:jetty-alpn-openjdk8-server` for applications running on JDK8u252+
-* `org.eclipse.jetty:jetty-alpn-conscrypt-server` and the https://www.conscrypt.org/[Conscrypt library] with no JDK requirement
+* `org.eclipse.jetty:jetty-alpn-java-server` to use the JDK built-in support
+* `org.eclipse.jetty:jetty-alpn-conscrypt-server` and the https://www.conscrypt.org/[Conscrypt library]
 
 
 
 [[howto.webserver.configure-http2.netty]]
 ==== HTTP/2 With Reactor Netty
 The `spring-boot-webflux-starter` is using by default Reactor Netty as a server.
-Reactor Netty supports `h2c` using JDK 8 or later with no additional dependencies.
-Reactor Netty supports `h2` using the JDK support with JDK 9 or later.
-For JDK 8 environments, or for optimal runtime performance, this server also supports `h2` with native libraries.
+Reactor Netty supports `h2c` and `h2` out of the box.
+For optimal runtime performance, this server also supports `h2` with native libraries.
 To enable that, your application needs to have an additional dependency.
 
 Spring Boot manages the version for the `io.netty:netty-tcnative-boringssl-static` "uber jar", containing native libraries for all platforms.
@@ -274,7 +262,7 @@ Developers can choose to import only the required dependencies using a classifie
 
 [[howto.webserver.configure-http2.undertow]]
 ==== HTTP/2 With Undertow
-As of Undertow 1.4.0+, both `h2` and `h2c` are supported on JDK 8 without any additional dependencies.
+Undertow supports `h2c` and `h2` out of the box.
 
 
 
