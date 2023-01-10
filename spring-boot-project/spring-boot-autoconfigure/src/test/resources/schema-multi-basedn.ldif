@@ -84,24 +84,24 @@ sn: Person
 description: Sweden, Company1, Some Person
 telephoneNumber: +46 555-456321
 
-dn: dc=pivotal,dc=io
+dn: dc=vmware,dc=com
 objectclass: top
 objectclass: domain
 objectclass: extensibleObject
-dc: pivotal
+dc: vmware
 
-dn: ou=groups,dc=pivotal,dc=io
+dn: ou=groups,dc=vmware,dc=com
 objectclass: top
 objectclass: organizationalUnit
 ou: groups
 
-dn: c=Sweden,dc=pivotal,dc=io
+dn: c=Sweden,dc=vmware,dc=com
 objectclass: top
 objectclass: country
 c: Sweden
 description:The country of Sweden
 
-dn: cn=Some Random Person,c=Sweden,dc=pivotal,dc=io
+dn: cn=Some Random Person,c=Sweden,dc=vmware,dc=com
 objectclass: top
 objectclass: person
 objectclass: organizationalPerson
@@ -110,5 +110,5 @@ uid: some.random.person
 userPassword: password
 cn: Some Random Person
 sn: Person
-description: Sweden, Pivotal, Some Random Person
+description: Sweden, VMware, Some Random Person
 telephoneNumber: +46 555-123456

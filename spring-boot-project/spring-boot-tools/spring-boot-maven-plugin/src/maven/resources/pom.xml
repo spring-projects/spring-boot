@@ -27,7 +27,7 @@
 		<url>https://github.com/spring-projects/spring-boot/issues</url>
 	</issueManagement>
 	<organization>
-		<name>Pivotal Software, Inc.</name>
+		<name>Spring</name>
 		<url>https://spring.io</url>
 	</organization>
 	<build>

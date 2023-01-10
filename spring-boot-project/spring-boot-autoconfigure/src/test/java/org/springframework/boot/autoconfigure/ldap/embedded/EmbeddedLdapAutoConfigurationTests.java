@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,11 +141,11 @@ class EmbeddedLdapAutoConfigurationTests {
 	@Test
 	void testMultiBaseDn() {
 		this.contextRunner.withPropertyValues("spring.ldap.embedded.ldif:classpath:schema-multi-basedn.ldif",
-				"spring.ldap.embedded.base-dn[0]:dc=spring,dc=org", "spring.ldap.embedded.base-dn[1]:dc=pivotal,dc=io")
+				"spring.ldap.embedded.base-dn[0]:dc=spring,dc=org", "spring.ldap.embedded.base-dn[1]:dc=vmware,dc=com")
 				.run((context) -> {
 					InMemoryDirectoryServer server = context.getBean(InMemoryDirectoryServer.class);
 					assertThat(server.countEntriesBelow("ou=company1,c=Sweden,dc=spring,dc=org")).isEqualTo(5);
-					assertThat(server.countEntriesBelow("c=Sweden,dc=pivotal,dc=io")).isEqualTo(2);
+					assertThat(server.countEntriesBelow("c=Sweden,dc=vmware,dc=com")).isEqualTo(2);
 				});
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -129,7 +129,7 @@ class MavenPublishingConventions {
 	}
 
 	private void customizeOrganization(MavenPomOrganization organization) {
-		organization.getName().set("Pivotal Software, Inc.");
+		organization.getName().set("VMware, Inc.");
 		organization.getUrl().set("https://spring.io");
 	}
 
@@ -142,9 +142,9 @@ class MavenPublishingConventions {
 
 	private void customizeDevelopers(MavenPomDeveloperSpec developers) {
 		developers.developer((developer) -> {
-			developer.getName().set("Pivotal");
-			developer.getEmail().set("info@pivotal.io");
-			developer.getOrganization().set("Pivotal Software, Inc.");
+			developer.getName().set("Spring");
+			developer.getEmail().set("ask@spring.io");
+			developer.getOrganization().set("VMware, Inc.");
 			developer.getOrganizationUrl().set("https://www.spring.io");
 		});
 	}
