@@ -19,7 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.stackdrive
 import java.util.HashMap;
 import java.util.Map;
 
+import io.micrometer.stackdriver.StackdriverConfig;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -60,6 +63,12 @@ class StackdriverPropertiesConfigAdapterTests {
 		StackdriverProperties properties = new StackdriverProperties();
 		properties.setUseSemanticMetricTypes(true);
 		assertThat(new StackdriverPropertiesConfigAdapter(properties).useSemanticMetricTypes()).isTrue();
+	}
+
+	@Test
+	void allConfigDefaultMethodsAreOverriddenByAdapter() {
+		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(StackdriverConfig.class,
+				StackdriverPropertiesConfigAdapter.class, "metricTypePrefix");
 	}
 
 }

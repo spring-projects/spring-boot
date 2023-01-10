@@ -20,7 +20,10 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import info.ganglia.gmetric4j.gmetric.GMetric.UDPAddressingMode;
+import io.micrometer.ganglia.GangliaConfig;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -79,6 +82,12 @@ class GangliaPropertiesConfigAdapterTests {
 		GangliaProperties properties = new GangliaProperties();
 		properties.setPort(4242);
 		assertThat(new GangliaPropertiesConfigAdapter(properties).port()).isEqualTo(4242);
+	}
+
+	@Test
+	void allConfigDefaultMethodsAreOverriddenByAdapter() {
+		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(GangliaConfig.class,
+				GangliaPropertiesConfigAdapter.class, "protocolVersion");
 	}
 
 }

@@ -17,7 +17,10 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.influx;
 
 import io.micrometer.influx.InfluxApiVersion;
+import io.micrometer.influx.InfluxConfig;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -56,6 +59,12 @@ class InfluxPropertiesConfigAdapterTests {
 		assertThat(adapter.bucket()).isEqualTo("test-bucket");
 		assertThat(adapter.uri()).isEqualTo("https://influx.example.com:8086");
 		assertThat(adapter.token()).isEqualTo("token");
+	}
+
+	@Test
+	void allConfigDefaultMethodsAreOverriddenByAdapter() {
+		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(InfluxConfig.class,
+				InfluxPropertiesConfigAdapter.class);
 	}
 
 }

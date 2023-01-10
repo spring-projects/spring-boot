@@ -18,8 +18,10 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 
 import java.net.URI;
 
+import io.micrometer.wavefront.WavefrontConfig;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PushRegistryPropertiesConfigAdapterTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -89,6 +91,13 @@ class WavefrontPropertiesConfigAdapterTests
 		WavefrontProperties properties = createProperties();
 		properties.setReportDayDistribution(true);
 		assertThat(createConfigAdapter(properties).reportDayDistribution()).isTrue();
+	}
+
+	@Test
+	void allConfigDefaultMethodsAreOverriddenByAdapter() {
+		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(WavefrontConfig.class,
+				WavefrontPropertiesConfigAdapter.class, "distributionPort", "reportMinuteDistribution",
+				"reportHourDistribution", "reportDayDistribution");
 	}
 
 }
