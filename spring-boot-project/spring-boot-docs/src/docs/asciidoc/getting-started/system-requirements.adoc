@@ -43,7 +43,7 @@ You can also deploy Spring Boot applications to any servlet 5.0+ compatible cont
 Spring Boot applications can be <<native-image#native-image.introducing-graalvm-native-images,converted into a Native Image>> using GraalVM {graal-version} or above.
 
 Images can be created using the https://github.com/graalvm/native-build-tools[native build tools] Gradle/Maven plugins or `native-image` tool provided by GraalVM.
-You can also create native images using the the https://github.com/paketo-buildpacks/native-image[native-image Paketo buildpack].
+You can also create native images using the https://github.com/paketo-buildpacks/native-image[native-image Paketo buildpack].
 
 The following versions are supported:
 
