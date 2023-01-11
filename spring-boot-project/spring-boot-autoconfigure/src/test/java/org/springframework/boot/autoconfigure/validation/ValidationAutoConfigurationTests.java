@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.validation;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -207,6 +208,7 @@ class ValidationAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void userDefinedMethodValidationPostProcessorTakesPrecedence() {
 		this.contextRunner.withUserConfiguration(SampleConfiguration.class).run((context) -> {
 			assertThat(context.getBeansOfType(Validator.class)).hasSize(1);
@@ -214,8 +216,9 @@ class ValidationAutoConfigurationTests {
 			assertThat(context.getBean(MethodValidationPostProcessor.class))
 					.isSameAs(userMethodValidationPostProcessor);
 			assertThat(context.getBeansOfType(MethodValidationPostProcessor.class)).hasSize(1);
-			assertThat(context.getBean(Validator.class))
-					.isNotSameAs(ReflectionTestUtils.getField(userMethodValidationPostProcessor, "validator"));
+			Object validator = ReflectionTestUtils.getField(userMethodValidationPostProcessor, "validator");
+			assertThat(validator).isNotNull().isInstanceOf(Supplier.class);
+			assertThat(context.getBean(Validator.class)).isNotSameAs(((Supplier<Validator>) validator).get());
 		});
 	}
 
