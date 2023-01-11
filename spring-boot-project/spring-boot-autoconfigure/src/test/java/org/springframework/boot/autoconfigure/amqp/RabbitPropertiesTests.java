@@ -331,4 +331,11 @@ class RabbitPropertiesTests {
 		assertThat(container).hasFieldOrPropertyWithValue("deBatchingEnabled", direct.isDeBatchingEnabled());
 	}
 
+	@Test
+	void determineUsernameWithoutPassword() {
+		this.properties.setAddresses("user@rabbit1.example.com:1234/alpha");
+		assertThat(this.properties.determineUsername()).isEqualTo("user");
+		assertThat(this.properties.determinePassword()).isEqualTo("guest");
+	}
+
 }
