@@ -107,19 +107,6 @@ task tar(type: Tar) {
 	configureArchive it
 }
 
-task scoopManifest(type: org.springframework.boot.build.cli.ScoopManifest) {
-	dependsOn zip
-	outputDir = file("${buildDir}/scoop")
-	template = file("src/main/scoop/springboot.json")
-	archive = zip.archiveFile
-}
-
-def scoopManifestArtifact = artifacts.add("archives", file("${buildDir}/scoop/springboot.json")) {
-	type "json"
-	classifier "scoop"
-	builtBy "scoopManifest"
-}
-
 task homebrewFormula(type: org.springframework.boot.build.cli.HomebrewFormula) {
 	dependsOn tar
 	outputDir = file("${buildDir}/homebrew")
@@ -139,7 +126,6 @@ publishing {
 			artifact fullJar
 			artifact tar
 			artifact zip
-			artifact scoopManifestArtifact
 			artifact homebrewFormulaArtifact
 		}
 	}
