@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -248,8 +249,8 @@ public class BomExtension {
 		public void prohibit(Action<ProhibitedHandler> action) {
 			ProhibitedHandler handler = new ProhibitedHandler();
 			action.execute(handler);
-			this.prohibitedVersions.add(
-					new ProhibitedVersion(handler.versionRange, handler.endsWith, handler.contains, handler.reason));
+			this.prohibitedVersions.add(new ProhibitedVersion(handler.versionRange, handler.startsWith,
+					handler.endsWith, handler.contains, handler.reason));
 		}
 
 		public void dependencyVersions(Action<DependencyVersionsHandler> action) {
@@ -273,9 +274,11 @@ public class BomExtension {
 
 			private String reason;
 
-			private String endsWith;
+			private final List<String> startsWith = new ArrayList<>();
 
-			private String contains;
+			private final List<String> endsWith = new ArrayList<>();
+
+			private final List<String> contains = new ArrayList<>();
 
 			private VersionRange versionRange;
 
@@ -288,12 +291,28 @@ public class BomExtension {
 				}
 			}
 
+			public void startsWith(String startsWith) {
+				this.startsWith.add(startsWith);
+			}
+
+			public void startsWith(Collection<String> startsWith) {
+				this.startsWith.addAll(startsWith);
+			}
+
 			public void endsWith(String endsWith) {
-				this.endsWith = endsWith;
+				this.endsWith.add(endsWith);
+			}
+
+			public void endsWith(Collection<String> endsWith) {
+				this.endsWith.addAll(endsWith);
 			}
 
 			public void contains(String contains) {
-				this.contains = contains;
+				this.contains.add(contains);
+			}
+
+			public void contains(List<String> contains) {
+				this.contains.addAll(contains);
 			}
 
 			public void because(String because) {

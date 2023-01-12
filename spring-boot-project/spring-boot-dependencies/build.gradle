@@ -1362,13 +1362,7 @@ bom {
 			endsWith ".jre8-preview"
 		}
 		prohibit {
-			contains ".jre11"
-		}
-		prohibit {
-			contains ".jre16"
-		}
-		prohibit {
-			contains ".jre17"
+			contains([".jre11", ".jre16", ".jre17"])
 		}
 		group("com.microsoft.sqlserver") {
 			modules = [
