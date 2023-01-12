@@ -17,8 +17,8 @@
 package org.springframework.boot.build.bom.bomr;
 
 import java.io.StringReader;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
@@ -52,7 +52,7 @@ final class MavenMetadataVersionResolver implements VersionResolver {
 	private final Collection<String> repositoryUrls;
 
 	MavenMetadataVersionResolver(Collection<String> repositoryUrls) {
-		this(new RestTemplate(Arrays.asList(new StringHttpMessageConverter())), repositoryUrls);
+		this(new RestTemplate(Collections.singletonList(new StringHttpMessageConverter())), repositoryUrls);
 	}
 
 	MavenMetadataVersionResolver(RestTemplate restTemplate, Collection<String> repositoryUrls) {
@@ -66,7 +66,7 @@ final class MavenMetadataVersionResolver implements VersionResolver {
 		for (String repositoryUrl : this.repositoryUrls) {
 			versions.addAll(resolveVersions(groupId, artifactId, repositoryUrl));
 		}
-		return new TreeSet<>(versions.stream().map(DependencyVersion::parse).collect(Collectors.toSet()));
+		return versions.stream().map(DependencyVersion::parse).collect(Collectors.toCollection(TreeSet::new));
 	}
 
 	private Set<String> resolveVersions(String groupId, String artifactId, String repositoryUrl) {
