@@ -74,6 +74,16 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		}
 	}
 
+	/**
+	 *
+	 * @param source the source
+	 * @param root the root value
+	 * @param target the target
+	 * @param elementBinder
+	 * @param collection
+	 * @param aggregateType
+	 * @param elementType
+	 */
 	private void bindIndexed(ConfigurationPropertySource source, ConfigurationPropertyName root, Bindable<?> target,
 			AggregateElementBinder elementBinder, IndexedCollectionSupplier collection, ResolvableType aggregateType,
 			ResolvableType elementType) {
@@ -87,6 +97,14 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		}
 	}
 
+	/**
+	 *
+	 * @param target
+	 * @param collection
+	 * @param aggregateType
+	 * @param elementType
+	 * @param value
+	 */
 	private void bindValue(Bindable<?> target, Collection<Object> collection, ResolvableType aggregateType,
 			ResolvableType elementType, Object value) {
 		if (value == null || (value instanceof CharSequence charSequence && charSequence.isEmpty())) {
@@ -98,6 +116,14 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		collection.addAll(elements);
 	}
 
+	/**
+	 *
+	 * @param source
+	 * @param root
+	 * @param elementBinder
+	 * @param collection
+	 * @param elementType
+	 */
 	private void bindIndexed(ConfigurationPropertySource source, ConfigurationPropertyName root,
 			AggregateElementBinder elementBinder, IndexedCollectionSupplier collection, ResolvableType elementType) {
 		MultiValueMap<String, ConfigurationPropertyName> knownIndexedChildren = getKnownIndexedChildren(source, root);
@@ -113,6 +139,12 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		assertNoUnboundChildren(source, knownIndexedChildren);
 	}
 
+	/**
+	 *
+	 * @param source
+	 * @param root
+	 * @return children
+	 */
 	private MultiValueMap<String, ConfigurationPropertyName> getKnownIndexedChildren(ConfigurationPropertySource source,
 			ConfigurationPropertyName root) {
 		MultiValueMap<String, ConfigurationPropertyName> children = new LinkedMultiValueMap<>();
@@ -129,6 +161,11 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		return children;
 	}
 
+	/**
+	 *
+	 * @param source
+	 * @param children
+	 */
 	private void assertNoUnboundChildren(ConfigurationPropertySource source,
 			MultiValueMap<String, ConfigurationPropertyName> children) {
 		if (!children.isEmpty()) {
@@ -137,6 +174,14 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 		}
 	}
 
+	/**
+	 *
+	 * @param value
+	 * @param type
+	 * @param annotations
+	 * @return value
+	 * @param <C>
+	 */
 	private <C> C convert(Object value, ResolvableType type, Annotation... annotations) {
 		value = getContext().getPlaceholdersResolver().resolvePlaceholders(value);
 		return getContext().getConverter().convert(value, type, annotations);
