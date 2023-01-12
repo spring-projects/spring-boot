@@ -1350,7 +1350,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2022.0.0") {
+	library("Spring Data Bom", "2022.0.1-SNAPSHOT") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"
@@ -1435,12 +1435,8 @@ bom {
 	}
 	library("Spring WS", "4.0.1-SNAPSHOT") {
 		group("org.springframework.ws") {
-			modules = [
-				"spring-ws-core",
-				"spring-ws-security",
-				"spring-ws-support",
-				"spring-ws-test",
-				"spring-xml"
+			imports = [
+				"spring-ws-bom"
 			]
 		}
 	}
