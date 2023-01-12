@@ -21,6 +21,7 @@ import javax.sql.DataSource;
 import org.jooq.ConnectionProvider;
 import org.jooq.DSLContext;
 import org.jooq.ExecuteListenerProvider;
+import org.jooq.TransactionProvider;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultConfiguration;
 import org.jooq.impl.DefaultDSLContext;
@@ -62,6 +63,7 @@ public class JooqAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(PlatformTransactionManager.class)
+	@ConditionalOnMissingBean(TransactionProvider.class)
 	public SpringTransactionProvider transactionProvider(PlatformTransactionManager txManager) {
 		return new SpringTransactionProvider(txManager);
 	}

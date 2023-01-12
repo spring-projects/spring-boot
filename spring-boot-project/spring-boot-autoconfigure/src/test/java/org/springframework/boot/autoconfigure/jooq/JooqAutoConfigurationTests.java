@@ -25,6 +25,8 @@ import org.jooq.DSLContext;
 import org.jooq.ExecuteListener;
 import org.jooq.ExecuteListenerProvider;
 import org.jooq.SQLDialect;
+import org.jooq.TransactionContext;
+import org.jooq.TransactionProvider;
 import org.jooq.TransactionalRunnable;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultExecuteListenerProvider;
@@ -155,6 +157,16 @@ class JooqAutoConfigurationTests {
 						.isEqualTo(SQLDialect.POSTGRES));
 	}
 
+	@Test
+	void transactionProviderBacksOffOnExistingTransactionProvider() {
+		this.contextRunner
+				.withUserConfiguration(JooqDataSourceConfiguration.class, CustomTransactionProviderConfiguration.class)
+				.run((context) -> {
+					TransactionProvider transactionProvider = context.getBean(TransactionProvider.class);
+					assertThat(transactionProvider).isInstanceOf(CustomTransactionProvider.class);
+				});
+	}
+
 	static class AssertFetch implements TransactionalRunnable {
 
 		private final DSLContext dsl;
@@ -207,6 +219,16 @@ class JooqAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class CustomTransactionProviderConfiguration {
+
+		@Bean
+		TransactionProvider transactionProvider() {
+			return new CustomTransactionProvider();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class TxManagerConfiguration {
 
 		@Bean
@@ -222,6 +244,25 @@ class JooqAutoConfigurationTests {
 		@Override
 		public ExecuteListener provide() {
 			return null;
+		}
+
+	}
+
+	static class CustomTransactionProvider implements TransactionProvider {
+
+		@Override
+		public void begin(TransactionContext ctx) {
+
+		}
+
+		@Override
+		public void commit(TransactionContext ctx) {
+
+		}
+
+		@Override
+		public void rollback(TransactionContext ctx) {
+
 		}
 
 	}
