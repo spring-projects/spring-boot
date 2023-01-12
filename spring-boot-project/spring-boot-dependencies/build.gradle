@@ -984,6 +984,10 @@ bom {
 		}
 	}
 	library("MSSQL JDBC", "11.2.2.jre17") {
+		prohibit {
+			endsWith ".jre18"
+			because "it needs Java 18"
+		}
 		group("com.microsoft.sqlserver") {
 			modules = [
 				"mssql-jdbc"
