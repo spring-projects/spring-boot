@@ -55,7 +55,7 @@ public interface DependencyVersion extends Comparable<DependencyVersion> {
 	static DependencyVersion parse(String version) {
 		List<Function<String, DependencyVersion>> parsers = Arrays.asList(CalendarVersionDependencyVersion::parse,
 				ArtifactVersionDependencyVersion::parse, ReleaseTrainDependencyVersion::parse,
-				NumericQualifierDependencyVersion::parse, CombinedPatchAndQualifierDependencyVersion::parse,
+				MultipleComponentsDependencyVersion::parse, CombinedPatchAndQualifierDependencyVersion::parse,
 				LeadingZeroesDependencyVersion::parse, UnstructuredDependencyVersion::parse);
 		for (Function<String, DependencyVersion> parser : parsers) {
 			DependencyVersion result = parser.apply(version);
