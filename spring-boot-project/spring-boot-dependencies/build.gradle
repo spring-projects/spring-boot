@@ -15,7 +15,8 @@ bom {
 		}
 	}
 	library("ActiveMQ", "5.16.5") {
-		prohibit("[5.17.0,)") {
+		prohibit {
+			versionRange "[5.17.0,)"
 			because "it requires Java 11"
 		}
 		group("org.apache.activemq") {
@@ -57,7 +58,8 @@ bom {
 		}
 	}
 	library("ANTLR2", "2.7.7") {
-		prohibit("20030911") {
+		prohibit {
+			versionRange "20030911"
 			because "it is old version that used a different versioning scheme"
 		}
 		group("antlr") {
@@ -74,7 +76,8 @@ bom {
 		}
 	}
 	library("Artemis", "2.19.1") {
-		prohibit("[2.20.0,)") {
+		prohibit {
+			versionRange "[2.20.0,)"
 			because "it requires Java 11"
 		}
 		group("org.apache.activemq") {
@@ -105,7 +108,8 @@ bom {
 		}
 	}
 	library("AspectJ", "1.9.7") {
-		prohibit("[1.9.8.M1,)") {
+		prohibit {
+			versionRange "[1.9.8.M1,)"
 			because "it requires Java 11"
 		}
 		group("org.aspectj") {
@@ -124,7 +128,8 @@ bom {
 		}
 	}
 	library("Atomikos", "4.0.6") {
-		prohibit("[5,)") {
+		prohibit {
+			versionRange "[5,)"
 			because "our support is deprecated"
 		}
 		group("com.atomikos") {
@@ -173,7 +178,8 @@ bom {
 		}
 	}
 	library("Caffeine", "2.9.3") {
-		prohibit("[3.0.0,)") {
+		prohibit {
+			versionRange "[3.0.0,)"
 			because "it requires Java 11"
 		}
 		group("com.github.ben-manes.caffeine") {
@@ -263,7 +269,8 @@ bom {
 		}
 	}
 	library("Derby", "10.14.2.0") {
-		prohibit("[10.15,)") {
+		prohibit {
+			versionRange "[10.15,)"
 			because "it requires Java 9"
 		}
 		group("org.apache.derby") {
@@ -358,7 +365,8 @@ bom {
 		}
 	}
 	library("Git Commit ID Plugin", "4.9.10") {
-		prohibit("[5.0.0,)") {
+		prohibit {
+			versionRange "[5.0.0,)"
 			because "it requires Java 11"
 		}
 		group("pl.project13.maven") {
@@ -368,7 +376,8 @@ bom {
 		}
 	}
 	library("Glassfish EL", "3.0.4") {
-		prohibit("[4.0.0-RC1,)") {
+		prohibit {
+			versionRange "[4.0.0-RC1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("org.glassfish") {
@@ -378,7 +387,8 @@ bom {
 		}
 	}
 	library("Glassfish JAXB", "2.3.7") {
-		prohibit("[3.0.0-M1,)") {
+		prohibit {
+			versionRange "[3.0.0-M1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("org.glassfish.jaxb") {
@@ -395,7 +405,8 @@ bom {
 		}
 	}
 	library("Glassfish JSTL", "1.2.6") {
-		prohibit("[2.0.0-M1,)") {
+		prohibit {
+			versionRange "[2.0.0-M1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("org.glassfish.web") {
@@ -458,7 +469,8 @@ bom {
 		}
 	}
 	library("Hibernate", "5.6.14.Final") {
-		prohibit("[6.0.0.Alpha2,)") {
+		prohibit {
+			versionRange "[6.0.0.Alpha2,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("org.hibernate") {
@@ -481,7 +493,8 @@ bom {
 		}
 	}
 	library("Hibernate Validator", "6.2.5.Final") {
-		prohibit("[7.0.0.Alpha1,)") {
+		prohibit {
+			versionRange "[7.0.0.Alpha1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("org.hibernate.validator") {
@@ -492,7 +505,8 @@ bom {
 		}
 	}
 	library("HikariCP", "4.0.3") {
-		prohibit("[5.0.0,)") {
+		prohibit {
+			versionRange "[5.0.0,)"
 			because "it requires Java 11"
 		}
 		group("com.zaxxer") {
@@ -502,7 +516,8 @@ bom {
 		}
 	}
 	library("HSQLDB", "2.5.2") {
-		prohibit("[2.6.0,)") {
+		prohibit {
+			versionRange "[2.6.0,)"
 			because "it requires Java 11"
 		}
 		group("org.hsqldb") {
@@ -592,7 +607,8 @@ bom {
 		}
 	}
 	library("Jakarta Activation", "1.2.2") {
-		prohibit("[2.0.0-rc1,)") {
+		prohibit {
+			versionRange "[2.0.0-rc1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("com.sun.activation") {
@@ -607,7 +623,8 @@ bom {
 		}
 	}
 	library("Jakarta Annotation", "1.3.5") {
-		prohibit("[2.0.0-RC1,)") {
+		prohibit {
+			versionRange "[2.0.0-RC1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("jakarta.annotation") {
@@ -617,7 +634,8 @@ bom {
 		}
 	}
 	library("Jakarta JMS", "2.0.3") {
-		prohibit("[3.0.0-RC1,)") {
+		prohibit {
+			versionRange "[3.0.0-RC1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("jakarta.jms") {
@@ -627,7 +645,8 @@ bom {
 		}
 	}
 	library("Jakarta Json", "1.1.6") {
-		prohibit("[2.0.0-RC1,)") {
+		prohibit {
+			versionRange "[2.0.0-RC1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("jakarta.json") {
@@ -637,7 +656,8 @@ bom {
 		}
 	}
 	library("Jakarta Json Bind", "1.0.2") {
-		prohibit("[2.0.0-RC1,)") {
+		prohibit {
+			versionRange "[2.0.0-RC1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("jakarta.json.bind") {
@@ -647,7 +667,8 @@ bom {
 		}
 	}
 	library("Jakarta Mail", "1.6.7") {
-		prohibit("[2.0.0-RC1,)") {
+		prohibit {
+			versionRange "[2.0.0-RC1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("jakarta.mail") {
@@ -664,7 +685,8 @@ bom {
 		}
 	}
 	library("Jakarta Persistence", "2.2.3") {
-		prohibit("[3.0.0-RC1,)") {
+		prohibit {
+			versionRange "[3.0.0-RC1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("jakarta.persistence") {
@@ -674,7 +696,8 @@ bom {
 		}
 	}
 	library("Jakarta Servlet", "4.0.4") {
-		prohibit("[5.0.0-M1,)") {
+		prohibit {
+			versionRange "[5.0.0-M1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("jakarta.servlet") {
@@ -684,7 +707,8 @@ bom {
 		}
 	}
 	library("Jakarta Servlet JSP JSTL", "1.2.7") {
-		prohibit("[2.0.0-RC1,)") {
+		prohibit {
+			versionRange "[2.0.0-RC1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("jakarta.servlet.jsp.jstl") {
@@ -694,7 +718,8 @@ bom {
 		}
 	}
 	library("Jakarta Transaction", "1.3.3") {
-		prohibit("[2.0.0-RC1,)") {
+		prohibit {
+			versionRange "[2.0.0-RC1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("jakarta.transaction") {
@@ -704,7 +729,8 @@ bom {
 		}
 	}
 	library("Jakarta Validation", "2.0.2") {
-		prohibit("[3.0.0-M1,)") {
+		prohibit {
+			versionRange "[3.0.0-M1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("jakarta.validation") {
@@ -714,7 +740,8 @@ bom {
 		}
 	}
 	library("Jakarta WebSocket", "1.1.2") {
-		prohibit("[2.0.0-M1,)") {
+		prohibit {
+			versionRange "[2.0.0-M1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("jakarta.websocket") {
@@ -724,7 +751,8 @@ bom {
 		}
 	}
 	library("Jakarta WS RS", "2.1.6") {
-		prohibit("[3.0.0-M1,)") {
+		prohibit {
+			versionRange "[3.0.0-M1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("jakarta.ws.rs") {
@@ -734,7 +762,8 @@ bom {
 		}
 	}
 	library("Jakarta XML Bind", "2.3.3") {
-		prohibit("[3.0.0-RC1,)") {
+		prohibit {
+			versionRange "[3.0.0-RC1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("jakarta.xml.bind") {
@@ -744,7 +773,8 @@ bom {
 		}
 	}
 	library("Jakarta XML SOAP", "1.4.2") {
-		prohibit("[2.0.0-RC1,)") {
+		prohibit {
+			versionRange "[2.0.0-RC1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("jakarta.xml.soap") {
@@ -754,7 +784,8 @@ bom {
 		}
 	}
 	library("Jakarta XML WS", "2.3.3") {
-		prohibit("[3.0.0-RC1,)") {
+		prohibit {
+			versionRange "[3.0.0-RC1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("jakarta.xml.ws") {
@@ -878,6 +909,9 @@ bom {
 		}
 	}
 	library("Jaybird", "4.0.8.java8") {
+		prohibit {
+			endsWith ".java11"
+		}
 		group("org.firebirdsql.jdbc") {
 			modules = [
 				"jaybird",
@@ -907,7 +941,8 @@ bom {
 		}
 	}
 	library("Jersey", "2.35") {
-		prohibit("[3.0.0-M1,)") {
+		prohibit {
+			versionRange "[3.0.0-M1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("org.glassfish.jersey") {
@@ -917,7 +952,8 @@ bom {
 		}
 	}
 	library("Jetty EL", "9.0.52") {
-		prohibit("[10.0.0-M1,)") {
+		prohibit {
+			versionRange "[10.0.0-M1,)"
 			because "it requires Java 11"
 		}
 		group("org.mortbay.jasper") {
@@ -934,7 +970,8 @@ bom {
 		}
 	}
 	library("Jetty Reactive HTTPClient", "1.1.13") {
-		prohibit("[2,)") {
+		prohibit {
+			versionRange "[2,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("org.eclipse.jetty") {
@@ -944,10 +981,12 @@ bom {
 		}
 	}
 	library("Jetty", "9.4.50.v20221201") {
-		prohibit("[10.0.0-alpha0,)") {
+		prohibit {
+			versionRange "[10.0.0-alpha0,)"
 			because "it requires Java 11"
 		}
-		prohibit("[11.0.0-alpha0,)") {
+		prohibit {
+			versionRange "[11.0.0-alpha0,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("org.eclipse.jetty") {
@@ -987,7 +1026,8 @@ bom {
 		}
 	}
 	library("jOOQ", "3.14.16") {
-		prohibit("[3.15.0,)") {
+		prohibit {
+			versionRange "[3.15.0,)"
 			because "it requires Java 11"
 		}
 		group("org.jooq") {
@@ -1104,6 +1144,9 @@ bom {
 		}
 	}
 	library("Kotlin Coroutines", "1.6.4") {
+		prohibit {
+			endsWith "-native-mt"
+		}
 		group("org.jetbrains.kotlinx") {
 			imports = [
 				"kotlinx-coroutines-bom"
@@ -1315,6 +1358,18 @@ bom {
 		}
 	}
 	library("MSSQL JDBC", "10.2.2.jre8") {
+		prohibit {
+			endsWith ".jre8-preview"
+		}
+		prohibit {
+			contains ".jre11"
+		}
+		prohibit {
+			contains ".jre16"
+		}
+		prohibit {
+			contains ".jre17"
+		}
 		group("com.microsoft.sqlserver") {
 			modules = [
 				"mssql-jdbc"
@@ -1373,7 +1428,8 @@ bom {
 		}
 	}
 	library("Pooled JMS", "1.2.4") {
-		prohibit("[2.0.0,)") {
+		prohibit {
+			versionRange "[2.0.0,)"
 			because "it requires Java 11"
 		}
 		group("org.messaginghub") {
@@ -1562,7 +1618,8 @@ bom {
 		}
 	}
 	library("SAAJ Impl", "1.5.3") {
-		prohibit("[2.0.0-M1,)") {
+		prohibit {
+			versionRange "[2.0.0-M1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("com.sun.xml.messaging.saaj") {
@@ -1666,7 +1723,8 @@ bom {
 		}
 	}
 	library("Spring AMQP", "2.4.9-SNAPSHOT") {
-		prohibit("[3.0.0-M1,)") {
+		prohibit {
+			versionRange "[3.0.0-M1,)"
 			because "it uses Spring Framework 6"
 		}
 		group("org.springframework.amqp") {
@@ -1680,7 +1738,8 @@ bom {
 		}
 	}
 	library("Spring Batch", "4.3.7") {
-		prohibit("[5.0.0-M1,)") {
+		prohibit {
+			versionRange "[5.0.0-M1,)"
 			because "it uses Spring Framework 6"
 		}
 		group("org.springframework.batch") {
@@ -1693,7 +1752,8 @@ bom {
 		}
 	}
 	library("Spring Data Bom", "2021.2.7-SNAPSHOT") {
-		prohibit("[2022.0.0-M1,)") {
+		prohibit {
+			versionRange "[2022.0.0-M1,)"
 			because "it uses Spring Framework 6"
 		}
 		group("org.springframework.data") {
@@ -1703,7 +1763,8 @@ bom {
 		}
 	}
 	library("Spring Framework", "5.3.25") {
-		prohibit("[6.0.0-M1,)") {
+		prohibit {
+			versionRange "[6.0.0-M1,)"
 			because "we upgrade in Spring Boot 3.x"
 		}
 		group("org.springframework") {
@@ -1721,7 +1782,8 @@ bom {
 		}
 	}
 	library("Spring HATEOAS", "1.5.2") {
-		prohibit("[2.0.0-M1,)") {
+		prohibit {
+			versionRange "[2.0.0-M1,)"
 			because "it uses Spring Framework 6"
 		}
 		group("org.springframework.hateoas") {
@@ -1731,7 +1793,8 @@ bom {
 		}
 	}
 	library("Spring Integration", "5.5.16") {
-		prohibit("[6.0.0-M1,)") {
+		prohibit {
+			versionRange "[6.0.0-M1,)"
 			because "it uses Spring Framework 6"
 		}
 		group("org.springframework.integration") {
@@ -1749,7 +1812,8 @@ bom {
 		}
 	}
 	library("Spring LDAP", "2.4.1") {
-		prohibit("[3.0.0-M1,)") {
+		prohibit {
+			versionRange "[3.0.0-M1,)"
 			because "it uses Spring Framework 6"
 		}
 		group("org.springframework.ldap") {
@@ -1781,7 +1845,8 @@ bom {
 		}
 	}
 	library("Spring Security", "5.7.6") {
-		prohibit("[6.0.0-M1,)") {
+		prohibit {
+			versionRange "[6.0.0-M1,)"
 			because "it uses Spring Framework 6"
 		}
 		group("org.springframework.security") {
@@ -1791,7 +1856,8 @@ bom {
 		}
 	}
 	library("Spring Session Bom", "2021.2.0") {
-		prohibit("[2022.0.0-M1,)") {
+		prohibit {
+			versionRange "[2022.0.0-M1,)"
 			because "it uses Spring Framework 6"
 		}
 		group("org.springframework.session") {
@@ -1801,7 +1867,8 @@ bom {
 		}
 	}
 	library("Spring WS", "3.1.5-SNAPSHOT") {
-		prohibit("[4.0.0-M1,)") {
+		prohibit {
+			versionRange "[4.0.0-M1,)"
 			because "it uses Spring Framework 6"
 		}
 		group("org.springframework.ws") {
@@ -1822,7 +1889,8 @@ bom {
 		}
 	}
 	library("Sun Mail", "1.6.7") {
-		prohibit("[2.0.0-RC1,)") {
+		prohibit {
+			versionRange "[2.0.0-RC1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("com.sun.mail") {
@@ -1861,7 +1929,8 @@ bom {
 		}
 	}
 	library("Thymeleaf Layout Dialect", "3.0.0") {
-		prohibit("[3.1.0,)") {
+		prohibit {
+			versionRange "[3.1.0,)"
 			because "it requires Groovy 4"
 		}
 		group("nz.net.ultraq.thymeleaf") {
@@ -1871,7 +1940,8 @@ bom {
 		}
 	}
 	library("Tomcat", "${tomcatVersion}") {
-		prohibit("[10.0.0-M1,)") {
+		prohibit {
+			versionRange "[10.0.0-M1,)"
 			because "it uses the jakarta.* namespace"
 		}
 		group("org.apache.tomcat") {
