@@ -71,6 +71,7 @@ public class JooqAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(PlatformTransactionManager.class)
+	@ConditionalOnMissingBean(TransactionProvider.class)
 	public SpringTransactionProvider transactionProvider(PlatformTransactionManager txManager) {
 		return new SpringTransactionProvider(txManager);
 	}
