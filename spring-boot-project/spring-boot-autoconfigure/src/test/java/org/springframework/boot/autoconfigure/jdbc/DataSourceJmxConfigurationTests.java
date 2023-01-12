@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,8 +88,8 @@ class DataSourceJmxConfigurationTests {
 					hikariDataSource.getConnection().close();
 					// We can't rely on the number of MBeans so we're checking that the
 					// pool and pool config MBeans were registered
-					assertThat(mBeanServer.queryMBeans(new ObjectName("com.zaxxer.hikari:type=*"), null).size())
-							.isEqualTo(existingInstances.size() + 2);
+					assertThat(mBeanServer.queryMBeans(new ObjectName("com.zaxxer.hikari:type=*"), null))
+							.hasSize(existingInstances.size() + 2);
 				});
 	}
 

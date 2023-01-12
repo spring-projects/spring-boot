@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,7 +92,7 @@ class SecurityAutoConfigurationTests {
 	void securityConfigurerBacksOffWhenOtherSecurityFilterChainBeanPresent() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebMvcAutoConfiguration.class))
 				.withUserConfiguration(TestSecurityFilterChainConfig.class).run((context) -> {
-					assertThat(context.getBeansOfType(SecurityFilterChain.class).size()).isEqualTo(1);
+					assertThat(context.getBeansOfType(SecurityFilterChain.class)).hasSize(1);
 					assertThat(context.containsBean("testSecurityFilterChain")).isTrue();
 				});
 	}

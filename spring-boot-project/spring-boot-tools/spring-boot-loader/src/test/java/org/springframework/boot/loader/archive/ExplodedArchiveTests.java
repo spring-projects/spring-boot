@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,7 +119,7 @@ class ExplodedArchiveTests {
 	void getNestedArchive() throws Exception {
 		Entry entry = getEntriesMap(this.archive).get("nested.jar");
 		Archive nested = this.archive.getNestedArchive(entry);
-		assertThat(nested.getUrl().toString()).isEqualTo(this.rootDirectory.toURI() + "nested.jar");
+		assertThat(nested.getUrl()).hasToString(this.rootDirectory.toURI() + "nested.jar");
 		nested.close();
 	}
 
@@ -128,15 +128,15 @@ class ExplodedArchiveTests {
 		Entry entry = getEntriesMap(this.archive).get("d/");
 		Archive nested = this.archive.getNestedArchive(entry);
 		Map<String, Entry> nestedEntries = getEntriesMap(nested);
-		assertThat(nestedEntries.size()).isEqualTo(1);
-		assertThat(nested.getUrl().toString()).isEqualTo("file:" + this.rootDirectory.toURI().getPath() + "d/");
+		assertThat(nestedEntries).hasSize(1);
+		assertThat(nested.getUrl()).hasToString("file:" + this.rootDirectory.toURI().getPath() + "d/");
 	}
 
 	@Test
 	void getNonRecursiveEntriesForRoot() throws Exception {
 		try (ExplodedArchive explodedArchive = new ExplodedArchive(new File("/"), false)) {
 			Map<String, Archive.Entry> entries = getEntriesMap(explodedArchive);
-			assertThat(entries.size()).isGreaterThan(1);
+			assertThat(entries).hasSizeGreaterThan(1);
 		}
 	}
 
@@ -145,7 +145,7 @@ class ExplodedArchiveTests {
 		try (ExplodedArchive explodedArchive = new ExplodedArchive(new File("src/test/resources/root"))) {
 			assertThat(explodedArchive.getManifest()).isNotNull();
 			Map<String, Archive.Entry> entries = getEntriesMap(explodedArchive);
-			assertThat(entries.size()).isEqualTo(4);
+			assertThat(entries).hasSize(4);
 		}
 	}
 
@@ -154,7 +154,7 @@ class ExplodedArchiveTests {
 		try (ExplodedArchive explodedArchive = new ExplodedArchive(new File("src/test/resources/root"), false)) {
 			assertThat(explodedArchive.getManifest()).isNotNull();
 			Map<String, Archive.Entry> entries = getEntriesMap(explodedArchive);
-			assertThat(entries.size()).isEqualTo(3);
+			assertThat(entries).hasSize(3);
 		}
 	}
 

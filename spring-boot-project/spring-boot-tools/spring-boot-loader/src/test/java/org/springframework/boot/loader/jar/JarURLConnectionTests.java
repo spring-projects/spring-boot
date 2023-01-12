@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -182,7 +182,7 @@ class JarURLConnectionTests {
 		URL url = new URL("jar:" + this.rootJarFile.toURI().toURL() + "!/nested.jar!/3.dat");
 		try (JarFile nested = this.jarFile.getNestedJarFile(this.jarFile.getEntry("nested.jar"))) {
 			JarURLConnection connection = JarURLConnection.get(url, nested);
-			assertThat(connection.getContentLength()).isEqualTo(1);
+			assertThat(connection.getContentLength()).isOne();
 		}
 	}
 
@@ -191,7 +191,7 @@ class JarURLConnectionTests {
 		URL url = new URL("jar:" + this.rootJarFile.toURI().toURL() + "!/nested.jar!/3.dat");
 		try (JarFile nested = this.jarFile.getNestedJarFile(this.jarFile.getEntry("nested.jar"))) {
 			JarURLConnection connection = JarURLConnection.get(url, nested);
-			assertThat(connection.getContentLengthLong()).isEqualTo(1);
+			assertThat(connection.getContentLengthLong()).isOne();
 		}
 	}
 
@@ -212,23 +212,22 @@ class JarURLConnectionTests {
 
 	@Test
 	void jarEntryBasicName() {
-		assertThat(new JarEntryName(new StringSequence("a/b/C.class")).toString()).isEqualTo("a/b/C.class");
+		assertThat(new JarEntryName(new StringSequence("a/b/C.class"))).hasToString("a/b/C.class");
 	}
 
 	@Test
 	void jarEntryNameWithSingleByteEncodedCharacters() {
-		assertThat(new JarEntryName(new StringSequence("%61/%62/%43.class")).toString()).isEqualTo("a/b/C.class");
+		assertThat(new JarEntryName(new StringSequence("%61/%62/%43.class"))).hasToString("a/b/C.class");
 	}
 
 	@Test
 	void jarEntryNameWithDoubleByteEncodedCharacters() {
-		assertThat(new JarEntryName(new StringSequence("%c3%a1/b/C.class")).toString()).isEqualTo("\u00e1/b/C.class");
+		assertThat(new JarEntryName(new StringSequence("%c3%a1/b/C.class"))).hasToString("\u00e1/b/C.class");
 	}
 
 	@Test
 	void jarEntryNameWithMixtureOfEncodedAndUnencodedDoubleByteCharacters() {
-		assertThat(new JarEntryName(new StringSequence("%c3%a1/b/\u00c7.class")).toString())
-				.isEqualTo("\u00e1/b/\u00c7.class");
+		assertThat(new JarEntryName(new StringSequence("%c3%a1/b/\u00c7.class"))).hasToString("\u00e1/b/\u00c7.class");
 	}
 
 	@Test

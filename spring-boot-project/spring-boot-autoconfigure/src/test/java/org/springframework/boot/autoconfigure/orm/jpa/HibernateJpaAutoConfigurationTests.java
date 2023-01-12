@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -374,7 +374,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	void vendorPropertiesWithEmbeddedDatabaseAndNoDdlProperty() {
 		contextRunner().run(vendorProperties((vendorProperties) -> {
 			assertThat(vendorProperties).doesNotContainKeys(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION);
-			assertThat(vendorProperties.get(AvailableSettings.HBM2DDL_AUTO)).isEqualTo("create-drop");
+			assertThat(vendorProperties).containsEntry(AvailableSettings.HBM2DDL_AUTO, "create-drop");
 		}));
 	}
 
@@ -383,7 +383,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 		contextRunner().withPropertyValues("spring.jpa.hibernate.ddl-auto=update")
 				.run(vendorProperties((vendorProperties) -> {
 					assertThat(vendorProperties).doesNotContainKeys(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION);
-					assertThat(vendorProperties.get(AvailableSettings.HBM2DDL_AUTO)).isEqualTo("update");
+					assertThat(vendorProperties).containsEntry(AvailableSettings.HBM2DDL_AUTO, "update");
 				}));
 	}
 
@@ -394,7 +394,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 						"spring.jpa.properties.hibernate.hbm2ddl.auto=create-drop")
 				.run(vendorProperties((vendorProperties) -> {
 					assertThat(vendorProperties).doesNotContainKeys(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION);
-					assertThat(vendorProperties.get(AvailableSettings.HBM2DDL_AUTO)).isEqualTo("create-drop");
+					assertThat(vendorProperties).containsEntry(AvailableSettings.HBM2DDL_AUTO, "create-drop");
 				}));
 	}
 
@@ -411,8 +411,8 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 				.withPropertyValues(
 						"spring.jpa.properties.jakarta.persistence.schema-generation.database.action=create")
 				.run(vendorProperties((vendorProperties) -> {
-					assertThat(vendorProperties.get(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION))
-							.isEqualTo("create");
+					assertThat(vendorProperties).containsEntry(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION,
+							"create");
 					assertThat(vendorProperties).doesNotContainKeys(AvailableSettings.HBM2DDL_AUTO);
 				}));
 	}
@@ -422,9 +422,9 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 		contextRunner().withPropertyValues(
 				"spring.jpa.properties.jakarta.persistence.schema-generation.database.action=create",
 				"spring.jpa.hibernate.ddl-auto=create-only").run(vendorProperties((vendorProperties) -> {
-					assertThat(vendorProperties.get(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION))
-							.isEqualTo("create");
-					assertThat(vendorProperties.get(AvailableSettings.HBM2DDL_AUTO)).isEqualTo("create-only");
+					assertThat(vendorProperties).containsEntry(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION,
+							"create");
+					assertThat(vendorProperties).containsEntry(AvailableSettings.HBM2DDL_AUTO, "create-only");
 				}));
 	}
 
@@ -467,7 +467,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 				.run((context) -> {
 					EntityManagerFactory factoryBean = context.getBean(EntityManagerFactory.class);
 					Map<String, Object> map = factoryBean.getProperties();
-					assertThat(map.get("configured")).isEqualTo("manually");
+					assertThat(map).containsEntry("configured", "manually");
 				});
 	}
 

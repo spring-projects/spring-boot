@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ class LayerTests {
 		Layer layer1 = new Layer("testa");
 		Layer layer2 = new Layer("testa");
 		Layer layer3 = new Layer("testb");
-		assertThat(layer1.hashCode()).isEqualTo(layer2.hashCode());
+		assertThat(layer1).hasSameHashCodeAs(layer2);
 		assertThat(layer1).isEqualTo(layer1).isEqualTo(layer2).isNotEqualTo(layer3);
 	}
 

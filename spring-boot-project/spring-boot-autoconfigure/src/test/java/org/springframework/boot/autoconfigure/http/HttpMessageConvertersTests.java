@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,8 +64,8 @@ class HttpMessageConvertersTests {
 		MappingJackson2HttpMessageConverter converter1 = new MappingJackson2HttpMessageConverter();
 		MappingJackson2HttpMessageConverter converter2 = new MappingJackson2HttpMessageConverter();
 		HttpMessageConverters converters = new HttpMessageConverters(converter1, converter2);
-		assertThat(converters.getConverters().contains(converter1)).isTrue();
-		assertThat(converters.getConverters().contains(converter2)).isTrue();
+		assertThat(converters.getConverters()).contains(converter1);
+		assertThat(converters.getConverters()).contains(converter2);
 		List<MappingJackson2HttpMessageConverter> httpConverters = new ArrayList<>();
 		for (HttpMessageConverter<?> candidate : converters) {
 			if (candidate instanceof MappingJackson2HttpMessageConverter) {
@@ -74,9 +74,9 @@ class HttpMessageConvertersTests {
 		}
 		// The existing converter is still there, but with a lower priority
 		assertThat(httpConverters).hasSize(3);
-		assertThat(httpConverters.indexOf(converter1)).isEqualTo(0);
-		assertThat(httpConverters.indexOf(converter2)).isEqualTo(1);
-		assertThat(converters.getConverters().indexOf(converter1)).isNotEqualTo(0);
+		assertThat(httpConverters.indexOf(converter1)).isZero();
+		assertThat(httpConverters.indexOf(converter2)).isOne();
+		assertThat(converters.getConverters().indexOf(converter1)).isNotZero();
 	}
 
 	@Test

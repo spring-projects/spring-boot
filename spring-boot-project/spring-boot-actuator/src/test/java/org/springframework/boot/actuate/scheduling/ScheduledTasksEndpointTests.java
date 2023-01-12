@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ class ScheduledTasksEndpointTests {
 			assertThat(tasks.getFixedDelay()).hasSize(1);
 			FixedDelayTaskDescriptor description = (FixedDelayTaskDescriptor) tasks.getFixedDelay().get(0);
 			assertThat(description.getInitialDelay()).isEqualTo(2);
-			assertThat(description.getInterval()).isEqualTo(1);
+			assertThat(description.getInterval()).isOne();
 			assertThat(description.getRunnable().getTarget())
 					.isEqualTo(FixedDelayScheduledMethod.class.getName() + ".fixedDelay");
 		});

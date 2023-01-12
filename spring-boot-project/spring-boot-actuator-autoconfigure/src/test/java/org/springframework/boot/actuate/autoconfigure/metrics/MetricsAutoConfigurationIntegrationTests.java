@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,7 +118,7 @@ class MetricsAutoConfigurationIntegrationTests {
 		new ApplicationContextRunner().with(MetricsRun.limitedTo(GraphiteMetricsExportAutoConfiguration.class,
 				JmxMetricsExportAutoConfiguration.class)).run((context) -> {
 					MeterRegistry composite = context.getBean(MeterRegistry.class);
-					assertThat(composite).extracting("filters", InstanceOfAssertFactories.ARRAY).hasSize(0);
+					assertThat(composite).extracting("filters", InstanceOfAssertFactories.ARRAY).isEmpty();
 					assertThat(composite).isInstanceOf(CompositeMeterRegistry.class);
 					Set<MeterRegistry> registries = ((CompositeMeterRegistry) composite).getRegistries();
 					assertThat(registries).hasSize(2);

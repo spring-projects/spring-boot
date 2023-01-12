@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class SampleAntApplicationIT {
 		Process process = new JavaExecutable().processBuilder("-jar", "spring-boot-smoke-test-ant.jar").directory(libs)
 				.start();
 		process.waitFor(5, TimeUnit.MINUTES);
-		assertThat(process.exitValue()).isEqualTo(0);
+		assertThat(process.exitValue()).isZero();
 		String output = FileCopyUtils.copyToString(new InputStreamReader(process.getInputStream()));
 		assertThat(output).contains("Spring Boot Ant Example");
 	}

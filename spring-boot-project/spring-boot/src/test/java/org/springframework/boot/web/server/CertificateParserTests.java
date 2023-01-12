@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ class CertificateParserTests {
 	void parseCertificate() {
 		X509Certificate[] certificates = CertificateParser.parse("classpath:test-cert.pem");
 		assertThat(certificates).isNotNull();
-		assertThat(certificates.length).isEqualTo(1);
+		assertThat(certificates).hasSize(1);
 		assertThat(certificates[0].getType()).isEqualTo("X.509");
 	}
 
@@ -42,7 +42,7 @@ class CertificateParserTests {
 	void parseCertificateChain() {
 		X509Certificate[] certificates = CertificateParser.parse("classpath:test-cert-chain.pem");
 		assertThat(certificates).isNotNull();
-		assertThat(certificates.length).isEqualTo(2);
+		assertThat(certificates).hasSize(2);
 		assertThat(certificates[0].getType()).isEqualTo("X.509");
 		assertThat(certificates[1].getType()).isEqualTo("X.509");
 	}

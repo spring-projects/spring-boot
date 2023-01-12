@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ class VehicleIdentificationNumberTests {
 	@Test
 	void toStringShouldReturnVin() {
 		VehicleIdentificationNumber vin = new VehicleIdentificationNumber(SAMPLE_VIN);
-		assertThat(vin.toString()).isEqualTo(SAMPLE_VIN);
+		assertThat(vin).hasToString(SAMPLE_VIN);
 	}
 
 	@Test
@@ -62,7 +62,7 @@ class VehicleIdentificationNumberTests {
 		VehicleIdentificationNumber vin1 = new VehicleIdentificationNumber(SAMPLE_VIN);
 		VehicleIdentificationNumber vin2 = new VehicleIdentificationNumber(SAMPLE_VIN);
 		VehicleIdentificationNumber vin3 = new VehicleIdentificationNumber("00000000000000000");
-		assertThat(vin1.hashCode()).isEqualTo(vin2.hashCode());
+		assertThat(vin1).hasSameHashCodeAs(vin2);
 		assertThat(vin1).isEqualTo(vin1).isEqualTo(vin2).isNotEqualTo(vin3);
 	}
 

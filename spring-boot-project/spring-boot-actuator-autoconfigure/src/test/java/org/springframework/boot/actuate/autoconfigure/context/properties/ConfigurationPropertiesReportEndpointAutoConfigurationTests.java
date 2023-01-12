@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 					ConfigurationPropertiesReportEndpointWebExtension endpoint = context
 							.getBean(ConfigurationPropertiesReportEndpointWebExtension.class);
 					Set<String> roles = (Set<String>) ReflectionTestUtils.getField(endpoint, "roles");
-					assertThat(roles.contains("test")).isTrue();
+					assertThat(roles).contains("test");
 				});
 	}
 
@@ -119,8 +119,8 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 			Map<String, Object> nestedProperties = properties.getContexts().get(context.getId()).getBeans()
 					.get("testProperties").getProperties();
 			assertThat(nestedProperties).isNotNull();
-			assertThat(nestedProperties.get("dbPassword")).isEqualTo(dbPassword);
-			assertThat(nestedProperties.get("myTestProperty")).isEqualTo(myTestProperty);
+			assertThat(nestedProperties).containsEntry("dbPassword", dbPassword);
+			assertThat(nestedProperties).containsEntry("myTestProperty", myTestProperty);
 		};
 	}
 

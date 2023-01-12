@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,13 +65,13 @@ class SampleSecureApplicationTests {
 	void authenticated() {
 		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("user", "N/A",
 				AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER")));
-		assertThat("Hello Security").isEqualTo(this.service.secure());
+		assertThat(this.service.secure()).isEqualTo("Hello Security");
 	}
 
 	@Test
 	void preauth() {
 		SecurityContextHolder.getContext().setAuthentication(this.authentication);
-		assertThat("Hello World").isEqualTo(this.service.authorized());
+		assertThat(this.service.authorized()).isEqualTo("Hello World");
 	}
 
 	@Test

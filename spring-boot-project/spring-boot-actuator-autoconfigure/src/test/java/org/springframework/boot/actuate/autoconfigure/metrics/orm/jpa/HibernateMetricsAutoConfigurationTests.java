@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,7 +140,7 @@ class HibernateMetricsAutoConfigurationTests {
 						() -> (builder) -> builder.setBootstrapExecutor(new SimpleAsyncTaskExecutor()))
 				.run((context) -> {
 					JdbcTemplate jdbcTemplate = new JdbcTemplate(context.getBean(DataSource.class));
-					assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) from CITY", Integer.class)).isEqualTo(1);
+					assertThat(jdbcTemplate.queryForObject("SELECT COUNT(*) from CITY", Integer.class)).isOne();
 					MeterRegistry registry = context.getBean(MeterRegistry.class);
 					registry.get("hibernate.statements").tags("entityManagerFactory", "entityManagerFactory").meter();
 				});

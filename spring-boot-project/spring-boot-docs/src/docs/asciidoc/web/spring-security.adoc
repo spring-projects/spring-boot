@@ -119,8 +119,8 @@ You can register multiple OAuth2 clients and providers under the `spring.securit
 
 For OpenID Connect providers that support https://openid.net/specs/openid-connect-discovery-1_0.html[OpenID Connect discovery], the configuration can be further simplified.
 The provider needs to be configured with an `issuer-uri` which is the URI that it asserts as its Issuer Identifier.
-For example, if the `issuer-uri` provided is "https://example.com", then an `OpenID Provider Configuration Request` will be made to "https://example.com/.well-known/openid-configuration".
-The result is expected to be an `OpenID Provider Configuration Response`.
+For example, if the `issuer-uri` provided is "https://example.com", then an "OpenID Provider Configuration Request" will be made to "https://example.com/.well-known/openid-configuration".
+The result is expected to be an "OpenID Provider Configuration Response".
 The following example shows how an OpenID Connect Provider can be configured with the `issuer-uri`:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -227,9 +227,7 @@ Alternatively, you can define your own `OpaqueTokenIntrospector` bean for servle
 
 [[web.security.oauth2.authorization-server]]
 ==== Authorization Server
-Currently, Spring Security does not provide support for implementing an OAuth 2.0 Authorization Server.
-However, this functionality is available from the {spring-security-oauth2}[Spring Security OAuth] project, which will eventually be superseded by Spring Security completely.
-Until then, you can use the `spring-security-oauth2-autoconfigure` module to easily set up an OAuth 2.0 authorization server; see its https://docs.spring.io/spring-security-oauth2-boot/[documentation] for instructions.
+You can use the {spring-authorization-server}[Spring Authorization Server] project to implement an OAuth 2.0 Authorization Server.
 
 
 

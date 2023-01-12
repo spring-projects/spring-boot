@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ class MongoReactiveHealthIndicatorTests {
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
 			assertThat(h.getDetails()).containsOnlyKeys("maxWireVersion");
-			assertThat(h.getDetails().get("maxWireVersion")).isEqualTo(10);
+			assertThat(h.getDetails()).containsEntry("maxWireVersion", 10);
 		}).verifyComplete();
 	}
 
@@ -65,7 +65,7 @@ class MongoReactiveHealthIndicatorTests {
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
 			assertThat(h.getDetails()).containsOnlyKeys("error");
-			assertThat(h.getDetails().get("error")).isEqualTo(MongoException.class.getName() + ": Connection failed");
+			assertThat(h.getDetails()).containsEntry("error", MongoException.class.getName() + ": Connection failed");
 		}).verifyComplete();
 	}
 

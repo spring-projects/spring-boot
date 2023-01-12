@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.core.NestedCheckedException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assumptions.assumeThat;
 
 @ExtendWith(OutputCaptureExtension.class)
 class SampleLiquibaseApplicationTests {
@@ -52,9 +53,7 @@ class SampleLiquibaseApplicationTests {
 			SampleLiquibaseApplication.main(new String[] { "--server.port=0" });
 		}
 		catch (IllegalStateException ex) {
-			if (serverNotRunning(ex)) {
-				return;
-			}
+			assumeThat(serverNotRunning(ex)).isFalse();
 		}
 		assertThat(output).contains("Successfully acquired change log lock")
 				.contains("Creating database history table with name: PUBLIC.DATABASECHANGELOG")

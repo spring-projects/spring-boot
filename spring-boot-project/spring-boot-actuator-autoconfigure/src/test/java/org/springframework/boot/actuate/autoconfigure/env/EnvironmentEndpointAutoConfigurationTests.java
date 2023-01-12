@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,7 +92,7 @@ class EnvironmentEndpointAutoConfigurationTests {
 					assertThat(context).hasSingleBean(EnvironmentEndpointWebExtension.class);
 					EnvironmentEndpointWebExtension endpoint = context.getBean(EnvironmentEndpointWebExtension.class);
 					Set<String> roles = (Set<String>) ReflectionTestUtils.getField(endpoint, "roles");
-					assertThat(roles.contains("test")).isTrue();
+					assertThat(roles).contains("test");
 				});
 	}
 

@@ -46,7 +46,7 @@ class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 	@Autowired
 	private ListableBeanFactory beanFactory;
 
-	private transient List<HandlerExceptionResolver> resolvers;
+	private volatile List<HandlerExceptionResolver> resolvers;
 
 	@Override
 	public ModelAndView resolveException(HttpServletRequest request, HttpServletResponse response, Object handler,

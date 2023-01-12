@@ -542,7 +542,7 @@ Log4j2 supports a number of https://logging.apache.org/log4j/2.x/manual/configur
 For example, the `log4j2.skipJansi` system property can be used to configure if the `ConsoleAppender` will try to use a https://github.com/fusesource/jansi[Jansi] output stream on Windows.
 
 All system properties that are loaded after the Log4j2 initialization can be obtained from the Spring `Environment`.
-For example, you could add `log4j2.skipJansi=false` to your `application.properties` file to have the `ConsoleAppender` use a Jansi on Windows.
+For example, you could add `log4j2.skipJansi=false` to your `application.properties` file to have the `ConsoleAppender` use Jansi on Windows.
 
 NOTE: The Spring `Environment` is only considered when system properties and OS environment variables do not contain the value being loaded.
 

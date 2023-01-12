@@ -3,7 +3,7 @@ open_source_licenses.txt
 Spring Boot CLI
 ==================================================================
 
-Pivotal makes available all content in this download ("Content").
+VMware makes available all content in this download ("Content").
 Unless otherwise indicated below, the Content is provided to you under
 the terms and conditions of the Apache License 2.0 (the "License"). A
 copy of the license is available in the file called LICENSE.txt or you
@@ -249,11 +249,11 @@ components and modifications thereto, if any, (the "Source Files"), by
 downloading the Source Files from https://github.com/spring-projects/spring-boot,
 or by sending a request, with your name and address to:
 
-    Pivotal, Inc., 875 Howard St,
+    VMware, Inc., 875 Howard St,
     San Francisco, CA 94103
     United States of America
 
-or email info@pivotal.io.  All such requests should clearly specify:
+or email ask@spring.io.  All such requests should clearly specify:
 
     OPEN SOURCE FILES REQUEST
     Attention General Counsel

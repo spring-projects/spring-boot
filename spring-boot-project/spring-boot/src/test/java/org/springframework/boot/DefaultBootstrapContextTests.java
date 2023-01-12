@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,8 @@ class DefaultBootstrapContextTests {
 	@Test
 	void registerWhenNotAlreadyRegisteredRegistersInstance() {
 		this.context.register(Integer.class, InstanceSupplier.from(this.counter::getAndIncrement));
-		assertThat(this.context.get(Integer.class)).isEqualTo(0);
-		assertThat(this.context.get(Integer.class)).isEqualTo(0);
+		assertThat(this.context.get(Integer.class)).isZero();
+		assertThat(this.context.get(Integer.class)).isZero();
 	}
 
 	@Test
@@ -123,7 +123,7 @@ class DefaultBootstrapContextTests {
 	void registerIfAbsentWhenPresentDoesNotRegister() {
 		this.context.registerIfAbsent(Long.class, InstanceSupplier.of(1L));
 		this.context.registerIfAbsent(Long.class, InstanceSupplier.of(100L));
-		assertThat(this.context.get(Long.class)).isEqualTo(1L);
+		assertThat(this.context.get(Long.class)).isOne();
 	}
 
 	@Test
@@ -167,16 +167,16 @@ class DefaultBootstrapContextTests {
 	@Test
 	void getWhenSingletonCreatesOnlyOneInstance() {
 		this.context.register(Integer.class, InstanceSupplier.from(this.counter::getAndIncrement));
-		assertThat(this.context.get(Integer.class)).isEqualTo(0);
-		assertThat(this.context.get(Integer.class)).isEqualTo(0);
+		assertThat(this.context.get(Integer.class)).isZero();
+		assertThat(this.context.get(Integer.class)).isZero();
 	}
 
 	@Test
 	void getWhenPrototypeCreatesOnlyNewInstances() {
 		this.context.register(Integer.class,
 				InstanceSupplier.from(this.counter::getAndIncrement).withScope(Scope.PROTOTYPE));
-		assertThat(this.context.get(Integer.class)).isEqualTo(0);
-		assertThat(this.context.get(Integer.class)).isEqualTo(1);
+		assertThat(this.context.get(Integer.class)).isZero();
+		assertThat(this.context.get(Integer.class)).isOne();
 	}
 
 	@Test
@@ -199,8 +199,8 @@ class DefaultBootstrapContextTests {
 	@Test
 	void getOrElseCreatesReturnsOnlyOneInstance() {
 		this.context.register(Integer.class, InstanceSupplier.from(this.counter::getAndIncrement));
-		assertThat(this.context.getOrElse(Integer.class, -1)).isEqualTo(0);
-		assertThat(this.context.getOrElse(Integer.class, -1)).isEqualTo(0);
+		assertThat(this.context.getOrElse(Integer.class, -1)).isZero();
+		assertThat(this.context.getOrElse(Integer.class, -1)).isZero();
 	}
 
 	@Test
@@ -218,8 +218,8 @@ class DefaultBootstrapContextTests {
 	@Test
 	void getOrElseSupplyCreatesOnlyOneInstance() {
 		this.context.register(Integer.class, InstanceSupplier.from(this.counter::getAndIncrement));
-		assertThat(this.context.getOrElseSupply(Integer.class, () -> -1)).isEqualTo(0);
-		assertThat(this.context.getOrElseSupply(Integer.class, () -> -1)).isEqualTo(0);
+		assertThat(this.context.getOrElseSupply(Integer.class, () -> -1)).isZero();
+		assertThat(this.context.getOrElseSupply(Integer.class, () -> -1)).isZero();
 	}
 
 	@Test
@@ -237,8 +237,8 @@ class DefaultBootstrapContextTests {
 	@Test
 	void getOrElseThrowCreatesOnlyOneInstance() {
 		this.context.register(Integer.class, InstanceSupplier.from(this.counter::getAndIncrement));
-		assertThat(this.context.getOrElseThrow(Integer.class, RuntimeException::new)).isEqualTo(0);
-		assertThat(this.context.getOrElseThrow(Integer.class, RuntimeException::new)).isEqualTo(0);
+		assertThat(this.context.getOrElseThrow(Integer.class, RuntimeException::new)).isZero();
+		assertThat(this.context.getOrElseThrow(Integer.class, RuntimeException::new)).isZero();
 	}
 
 	@Test
@@ -304,12 +304,12 @@ class DefaultBootstrapContextTests {
 		}
 
 		CloseListenerAssert wasCalledOnlyOnce() {
-			assertThat(this.actual.called).as("action calls").isEqualTo(1);
+			assertThat(this.actual.called).as("action calls").isOne();
 			return this;
 		}
 
 		CloseListenerAssert wasNotCalled() {
-			assertThat(this.actual.called).as("action calls").isEqualTo(0);
+			assertThat(this.actual.called).as("action calls").isZero();
 			return this;
 		}
 

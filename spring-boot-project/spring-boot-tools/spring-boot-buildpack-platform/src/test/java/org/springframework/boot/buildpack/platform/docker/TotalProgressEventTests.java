@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ class TotalProgressEventTests {
 
 	@Test
 	void create() {
-		assertThat(new TotalProgressEvent(0).getPercent()).isEqualTo(0);
+		assertThat(new TotalProgressEvent(0).getPercent()).isZero();
 		assertThat(new TotalProgressEvent(10).getPercent()).isEqualTo(10);
 		assertThat(new TotalProgressEvent(100).getPercent()).isEqualTo(100);
 	}

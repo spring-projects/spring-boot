@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ class ClassLoaderFilesResourcePatternResolverTests {
 	@Test
 	void getResourceShouldReturnResource() {
 		Resource resource = this.resolver.getResource("index.html");
-		assertThat(resource).isNotNull().isInstanceOf(ClassPathResource.class);
+		assertThat(resource).isInstanceOf(ClassPathResource.class);
 	}
 
 	@Test
@@ -79,7 +79,7 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		GenericWebApplicationContext context = new GenericWebApplicationContext(new MockServletContext());
 		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
 		Resource resource = this.resolver.getResource("index.html");
-		assertThat(resource).isNotNull().isInstanceOf(ServletContextResource.class);
+		assertThat(resource).isInstanceOf(ServletContextResource.class);
 	}
 
 	@Test
@@ -87,7 +87,7 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		File file = createFile(directory, "name.class");
 		this.files.addFile(directory.getName(), "name.class", new ClassLoaderFile(Kind.DELETED, null));
 		Resource resource = this.resolver.getResource("file:" + file.getAbsolutePath());
-		assertThat(resource).isNotNull().isInstanceOf(DeletedClassLoaderFileResource.class);
+		assertThat(resource).isInstanceOf(DeletedClassLoaderFileResource.class);
 	}
 
 	@Test

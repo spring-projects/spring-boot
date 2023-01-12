@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,7 @@ class PackageTangleCheckTests {
 	@Test
 	void whenPackagesAreTangledTaskFailsAndWritesAReport() throws Exception {
 		prepareTask("tangled", (packageTangleCheck) -> {
-			assertThatExceptionOfType(GradleException.class)
-					.isThrownBy(() -> packageTangleCheck.checkForPackageTangles());
+			assertThatExceptionOfType(GradleException.class).isThrownBy(packageTangleCheck::checkForPackageTangles);
 			assertThat(
 					new File(packageTangleCheck.getProject().getBuildDir(), "checkForPackageTangles/failure-report.txt")
 							.length()).isGreaterThan(0);

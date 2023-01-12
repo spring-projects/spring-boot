@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,12 +84,12 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 	void generateProject() throws Exception {
 		String fileName = UUID.randomUUID().toString() + ".zip";
 		File file = new File(fileName);
-		assertThat(file.exists()).as("file should not exist").isFalse();
+		assertThat(file).as("file should not exist").doesNotExist();
 		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest("application/zip", fileName);
 		mockSuccessfulProjectGeneration(request);
 		try {
 			assertThat(this.command.run()).isEqualTo(ExitStatus.OK);
-			assertThat(file.exists()).as("file should have been created").isTrue();
+			assertThat(file).as("file should have been created").exists();
 		}
 		finally {
 			assertThat(file.delete()).as("failed to delete test file").isTrue();
@@ -139,7 +139,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 	@Test
 	void generateProjectArchiveExtractedByDefault() throws Exception {
 		String fileName = UUID.randomUUID().toString();
-		assertThat(fileName.contains(".")).as("No dot in filename").isFalse();
+		assertThat(fileName).as("No dot in filename").doesNotContain(".");
 		byte[] archive = createFakeZipArchive("test.txt", "Fake content");
 		MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest("application/zip", "demo.zip",
 				archive);
@@ -167,8 +167,8 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 		File file = new File(fileName);
 		try {
 			assertThat(this.command.run(fileName)).isEqualTo(ExitStatus.OK);
-			assertThat(file.exists()).as("File not saved properly").isTrue();
-			assertThat(file.isFile()).as("Should not be a directory").isTrue();
+			assertThat(file).as("File not saved properly").exists();
+			assertThat(file).as("Should not be a directory").isFile();
 		}
 		finally {
 			file.delete();
@@ -179,14 +179,14 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 	void generateProjectAndExtractUnsupportedArchive(@TempDir File tempDir) throws Exception {
 		String fileName = UUID.randomUUID().toString() + ".zip";
 		File file = new File(fileName);
-		assertThat(file.exists()).as("file should not exist").isFalse();
+		assertThat(file).as("file should not exist").doesNotExist();
 		try {
 			byte[] archive = createFakeZipArchive("test.txt", "Fake content");
 			MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest("application/foobar",
 					fileName, archive);
 			mockSuccessfulProjectGeneration(request);
 			assertThat(this.command.run("--extract", tempDir.getAbsolutePath())).isEqualTo(ExitStatus.OK);
-			assertThat(file.exists()).as("file should have been saved instead").isTrue();
+			assertThat(file).as("file should have been saved instead").exists();
 		}
 		finally {
 			assertThat(file.delete()).as("failed to delete test file").isTrue();
@@ -197,13 +197,13 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 	void generateProjectAndExtractUnknownContentType(@TempDir File tempDir) throws Exception {
 		String fileName = UUID.randomUUID().toString() + ".zip";
 		File file = new File(fileName);
-		assertThat(file.exists()).as("file should not exist").isFalse();
+		assertThat(file).as("file should not exist").doesNotExist();
 		try {
 			byte[] archive = createFakeZipArchive("test.txt", "Fake content");
 			MockHttpProjectGenerationRequest request = new MockHttpProjectGenerationRequest(null, fileName, archive);
 			mockSuccessfulProjectGeneration(request);
 			assertThat(this.command.run("--extract", tempDir.getAbsolutePath())).isEqualTo(ExitStatus.OK);
-			assertThat(file.exists()).as("file should have been saved instead").isTrue();
+			assertThat(file).as("file should have been saved instead").exists();
 		}
 		finally {
 			assertThat(file.delete()).as("failed to delete test file").isTrue();
@@ -231,7 +231,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 				file.getAbsolutePath());
 		mockSuccessfulProjectGeneration(request);
 		assertThat(this.command.run("--force")).isEqualTo(ExitStatus.OK);
-		assertThat(fileLength != file.length()).as("File should have changed").isTrue();
+		assertThat(fileLength).as("File should have changed").isNotEqualTo(file.length());
 	}
 
 	@Test
@@ -269,8 +269,8 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 		assertThat(this.handler.lastRequest.getBootVersion()).isEqualTo("1.2.0.RELEASE");
 		List<String> dependencies = this.handler.lastRequest.getDependencies();
 		assertThat(dependencies).hasSize(2);
-		assertThat(dependencies.contains("web")).isTrue();
-		assertThat(dependencies.contains("data-jpa")).isTrue();
+		assertThat(dependencies).contains("web");
+		assertThat(dependencies).contains("data-jpa");
 	}
 
 	@Test
@@ -295,8 +295,8 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 		assertThat(this.handler.lastRequest.getBootVersion()).isEqualTo("1.2.0.RELEASE");
 		List<String> dependencies = this.handler.lastRequest.getDependencies();
 		assertThat(dependencies).hasSize(2);
-		assertThat(dependencies.contains("web")).isTrue();
-		assertThat(dependencies.contains("data-jpa")).isTrue();
+		assertThat(dependencies).contains("web");
+		assertThat(dependencies).contains("data-jpa");
 	}
 
 	@Test
@@ -321,8 +321,8 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 		assertThat(this.handler.lastRequest.getBootVersion()).isEqualTo("1.2.0.RELEASE");
 		List<String> dependencies = this.handler.lastRequest.getDependencies();
 		assertThat(dependencies).hasSize(2);
-		assertThat(dependencies.contains("web")).isTrue();
-		assertThat(dependencies.contains("data-jpa")).isTrue();
+		assertThat(dependencies).contains("web");
+		assertThat(dependencies).contains("data-jpa");
 	}
 
 	@Test
@@ -336,7 +336,7 @@ class InitCommandTests extends AbstractHttpClientMockTests {
 				archive);
 		mockSuccessfulProjectGeneration(request);
 		assertThat(this.command.run("--force", "--extract", tempDir.getAbsolutePath())).isEqualTo(ExitStatus.OK);
-		assertThat(fileLength != conflict.length()).as("File should have changed").isTrue();
+		assertThat(fileLength).as("File should have changed").isNotEqualTo(conflict.length());
 	}
 
 	@Test

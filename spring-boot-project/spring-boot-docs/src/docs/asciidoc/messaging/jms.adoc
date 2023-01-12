@@ -1,6 +1,6 @@
 [[messaging.jms]]
 == JMS
-The `javax.jms.ConnectionFactory` interface provides a standard method of creating a `javax.jms.Connection` for interacting with a JMS broker.
+The `jakarta.jms.ConnectionFactory` interface provides a standard method of creating a `jakarta.jms.Connection` for interacting with a JMS broker.
 Although Spring needs a `ConnectionFactory` to work with JMS, you generally need not use it directly yourself and can instead rely on higher level messaging abstractions.
 (See the {spring-framework-docs}/integration.html#jms[relevant section] of the Spring Framework reference documentation for details.)
 Spring Boot also auto-configures the necessary infrastructure to send and receive messages.
@@ -88,9 +88,10 @@ If a `DestinationResolver` or a `MessageConverter` bean is defined, it is associ
 
 [[messaging.jms.receiving]]
 === Receiving a Message
+
 When the JMS infrastructure is present, any bean can be annotated with `@JmsListener` to create a listener endpoint.
 If no `JmsListenerContainerFactory` has been defined, a default one is configured automatically.
-If a `DestinationResolver`, a `MessageConverter`, or a `javax.jms.ExceptionListener` beans are defined, they are associated automatically with the default factory.
+If a `DestinationResolver`, a `MessageConverter`, or a `jakarta.jms.ExceptionListener` beans are defined, they are associated automatically with the default factory.
 
 By default, the default factory is transactional.
 If you run in an infrastructure where a `JtaTransactionManager` is present, it is associated to the listener container by default.

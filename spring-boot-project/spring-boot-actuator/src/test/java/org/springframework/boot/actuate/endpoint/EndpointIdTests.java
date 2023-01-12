@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ class EndpointIdTests {
 		// Ideally we wouldn't support this but there are existing endpoints using the
 		// pattern. See gh-14773
 		EndpointId endpointId = EndpointId.of("foo.bar");
-		assertThat(endpointId.toString()).isEqualTo("foo.bar");
+		assertThat(endpointId).hasToString("foo.bar");
 	}
 
 	@Test
@@ -88,7 +88,7 @@ class EndpointIdTests {
 		// Ideally we wouldn't support this but there are existing endpoints using the
 		// pattern. See gh-14773
 		EndpointId endpointId = EndpointId.of("foo-bar");
-		assertThat(endpointId.toString()).isEqualTo("foo-bar");
+		assertThat(endpointId).hasToString("foo-bar");
 	}
 
 	@Test
@@ -102,21 +102,21 @@ class EndpointIdTests {
 	@Test
 	void ofWhenMigratingLegacyNameRemovesDots(CapturedOutput output) {
 		EndpointId endpointId = migrateLegacyName("one.two.three");
-		assertThat(endpointId.toString()).isEqualTo("onetwothree");
+		assertThat(endpointId).hasToString("onetwothree");
 		assertThat(output).doesNotContain("contains invalid characters");
 	}
 
 	@Test
 	void ofWhenMigratingLegacyNameRemovesHyphens(CapturedOutput output) {
 		EndpointId endpointId = migrateLegacyName("one-two-three");
-		assertThat(endpointId.toString()).isEqualTo("onetwothree");
+		assertThat(endpointId).hasToString("onetwothree");
 		assertThat(output).doesNotContain("contains invalid characters");
 	}
 
 	@Test
 	void ofWhenMigratingLegacyNameRemovesMixOfDashAndDot(CapturedOutput output) {
 		EndpointId endpointId = migrateLegacyName("one.two-three");
-		assertThat(endpointId.toString()).isEqualTo("onetwothree");
+		assertThat(endpointId).hasToString("onetwothree");
 		assertThat(output).doesNotContain("contains invalid characters");
 	}
 
@@ -135,7 +135,7 @@ class EndpointIdTests {
 		EndpointId four = EndpointId.of("foo.bar1");
 		EndpointId five = EndpointId.of("barfoo1");
 		EndpointId six = EndpointId.of("foobar2");
-		assertThat(one.hashCode()).isEqualTo(two.hashCode());
+		assertThat(one).hasSameHashCodeAs(two);
 		assertThat(one).isEqualTo(one).isEqualTo(two).isEqualTo(three).isEqualTo(four).isNotEqualTo(five)
 				.isNotEqualTo(six);
 	}
@@ -147,7 +147,7 @@ class EndpointIdTests {
 
 	@Test
 	void toStringReturnsString() {
-		assertThat(EndpointId.of("fooBar").toString()).isEqualTo("fooBar");
+		assertThat(EndpointId.of("fooBar")).hasToString("fooBar");
 	}
 
 	@Test

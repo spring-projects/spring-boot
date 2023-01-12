@@ -1,7 +1,7 @@
 [[features.external-config]]
 == Externalized Configuration
 Spring Boot lets you externalize your configuration so that you can work with the same application code in different environments.
-You can use a variety of external configuration sources, include Java properties files, YAML files, environment variables, and command-line arguments.
+You can use a variety of external configuration sources including Java properties files, YAML files, environment variables, and command-line arguments.
 
 Property values can be injected directly into your beans by using the `@Value` annotation, accessed through Spring's `Environment` abstraction, or be <<features#features.external-config.typesafe-configuration-properties,bound to structured objects>> through `@ConfigurationProperties`.
 
@@ -724,7 +724,7 @@ In this setup, the presence of a single parameterized constructor implies that c
 This means that the binder will find a constructor with the parameters that you wish to have bound.
 If your class has multiple constructors, the `@ConstructorBinding` annotation can be used to specify which constructor to use for constructor binding.
 To opt out of constructor binding for a class with a single parameterized constructor, the constructor must be annotated with `@Autowired`.
-If you are using Java 16 or later, constructor binding can be used with records.
+Constructor binding can be used with records.
 Unless your record has multiple constructors, there is no need to use `@ConstructorBinding`.
 
 Nested members of a constructor bound class (such as `Security` in the example above) will also be bound through their constructor.
@@ -1137,7 +1137,7 @@ Doing so gives a transparent upgrade path while supporting a much richer format.
 [[features.external-config.typesafe-configuration-properties.validation]]
 ==== @ConfigurationProperties Validation
 Spring Boot attempts to validate `@ConfigurationProperties` classes whenever they are annotated with Spring's `@Validated` annotation.
-You can use JSR-303 `javax.validation` constraint annotations directly on your configuration class.
+You can use JSR-303 `jakarta.validation` constraint annotations directly on your configuration class.
 To do so, ensure that a compliant JSR-303 implementation is on your classpath and then add constraint annotations to your fields, as shown in the following example:
 
 include::code:MyProperties[]

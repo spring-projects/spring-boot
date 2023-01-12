@@ -101,7 +101,7 @@ public final class HttpExchange {
 
 	/**
 	 * Returns the principal.
-	 * @return the the request
+	 * @return the request
 	 */
 	public Principal getPrincipal() {
 		return this.principal;

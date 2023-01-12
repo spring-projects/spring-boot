@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,28 +39,28 @@ class SpringBootApplicationTests {
 	void proxyBeanMethodsIsEnabledByDefault() {
 		AnnotationAttributes attributes = AnnotatedElementUtils
 				.getMergedAnnotationAttributes(DefaultSpringBootApplication.class, Configuration.class);
-		assertThat(attributes.get("proxyBeanMethods")).isEqualTo(true);
+		assertThat(attributes).containsEntry("proxyBeanMethods", true);
 	}
 
 	@Test
 	void proxyBeanMethodsCanBeDisabled() {
 		AnnotationAttributes attributes = AnnotatedElementUtils
 				.getMergedAnnotationAttributes(NoBeanMethodProxyingSpringBootApplication.class, Configuration.class);
-		assertThat(attributes.get("proxyBeanMethods")).isEqualTo(false);
+		assertThat(attributes).containsEntry("proxyBeanMethods", false);
 	}
 
 	@Test
 	void nameGeneratorDefaultToBeanNameGenerator() {
 		AnnotationAttributes attributes = AnnotatedElementUtils
 				.getMergedAnnotationAttributes(DefaultSpringBootApplication.class, ComponentScan.class);
-		assertThat(attributes.get("nameGenerator")).isEqualTo(BeanNameGenerator.class);
+		assertThat(attributes).containsEntry("nameGenerator", BeanNameGenerator.class);
 	}
 
 	@Test
 	void nameGeneratorCanBeSpecified() {
 		AnnotationAttributes attributes = AnnotatedElementUtils
 				.getMergedAnnotationAttributes(CustomNameGeneratorConfiguration.class, ComponentScan.class);
-		assertThat(attributes.get("nameGenerator")).isEqualTo(TestBeanNameGenerator.class);
+		assertThat(attributes).containsEntry("nameGenerator", TestBeanNameGenerator.class);
 	}
 
 	@SpringBootApplication

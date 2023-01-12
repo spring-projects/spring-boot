@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -275,8 +275,7 @@ class Neo4jAutoConfigurationTests {
 
 	@Test
 	void driverConfigShouldBeConfiguredToUseUseSpringJclLogging() {
-		assertThat(mapDriverConfig(new Neo4jProperties()).logging()).isNotNull()
-				.isInstanceOf(Neo4jSpringJclLogging.class);
+		assertThat(mapDriverConfig(new Neo4jProperties()).logging()).isInstanceOf(Neo4jSpringJclLogging.class);
 	}
 
 	private URI determineServerUri(Neo4jProperties properties, Environment environment) {

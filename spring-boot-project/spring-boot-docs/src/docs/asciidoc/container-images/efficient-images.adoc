@@ -22,7 +22,7 @@ One way to run an unpacked archive is by starting the appropriate launcher, as f
 ----
 
 This is actually slightly faster on startup (depending on the size of the jar) than running from an unexploded archive.
-At runtime you should not expect any differences.
+After startup you should not expect any differences.
 
 Once you have unpacked the jar file, you can also get an extra boost to startup time by running the app with its "natural" main method instead of the `JarLauncher`. For example:
 

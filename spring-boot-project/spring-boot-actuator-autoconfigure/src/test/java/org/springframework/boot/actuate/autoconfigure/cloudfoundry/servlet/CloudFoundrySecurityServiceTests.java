@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -151,7 +151,7 @@ class CloudFoundrySecurityServiceTests {
 				.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 		Map<String, String> tokenKeys = this.securityService.fetchTokenKeys();
 		this.server.verify();
-		assertThat(tokenKeys.get("test-key")).isEqualTo(tokenKeyValue);
+		assertThat(tokenKeys).containsEntry("test-key", tokenKeyValue);
 	}
 
 	@Test
@@ -163,7 +163,7 @@ class CloudFoundrySecurityServiceTests {
 				.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 		Map<String, String> tokenKeys = this.securityService.fetchTokenKeys();
 		this.server.verify();
-		assertThat(tokenKeys).hasSize(0);
+		assertThat(tokenKeys).isEmpty();
 	}
 
 	@Test

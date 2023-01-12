@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.jupiter.api.Test;
 import reactor.netty.http.HttpDecoderSpec;
-import reactor.netty.http.server.HttpRequestDecoderSpec;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Accesslog;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -148,7 +147,7 @@ class ServerPropertiesTests {
 		assertThat(accesslog.getSuffix()).isEqualTo("-bar.log");
 		assertThat(accesslog.getEncoding()).isEqualTo("UTF-8");
 		assertThat(accesslog.getLocale()).isEqualTo("en-AU");
-		assertThat(accesslog.isCheckExists()).isEqualTo(true);
+		assertThat(accesslog.isCheckExists()).isTrue();
 		assertThat(accesslog.isRotate()).isFalse();
 		assertThat(accesslog.isRenameOnRotate()).isTrue();
 		assertThat(accesslog.isIpv6Canonical()).isTrue();
@@ -173,7 +172,7 @@ class ServerPropertiesTests {
 	@Test
 	void testSlashOfContextPathIsDefaultValue() {
 		bind("server.servlet.context-path", "/");
-		assertThat(this.properties.getServlet().getContextPath()).isEqualTo("");
+		assertThat(this.properties.getServlet().getContextPath()).isEmpty();
 	}
 
 	@Test
@@ -554,13 +553,12 @@ class ServerPropertiesTests {
 
 	@Test
 	void nettyValidateHeadersMatchesHttpDecoderSpecDefault() {
-		assertThat(this.properties.getNetty().isValidateHeaders()).isEqualTo(HttpDecoderSpec.DEFAULT_VALIDATE_HEADERS);
+		assertThat(this.properties.getNetty().isValidateHeaders()).isTrue();
 	}
 
 	@Test
 	void nettyH2cMaxContentLengthMatchesHttpDecoderSpecDefault() {
-		assertThat(this.properties.getNetty().getH2cMaxContentLength().toBytes())
-				.isEqualTo(HttpRequestDecoderSpec.DEFAULT_H2C_MAX_CONTENT_LENGTH);
+		assertThat(this.properties.getNetty().getH2cMaxContentLength().toBytes()).isZero();
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.InputFile;
@@ -38,8 +39,13 @@ import org.springframework.boot.build.artifactory.ArtifactoryRepository;
  * a Homebrew formula.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 public abstract class AbstractPackageManagerDefinitionTask extends DefaultTask {
+
+	private static final String SPRING_REPO = "https://repo.spring.io/%s";
+
+	private static final String MAVEN_REPO = "https://repo1.maven.org/maven2";
 
 	private Provider<RegularFile> archive;
 
@@ -84,12 +90,17 @@ public abstract class AbstractPackageManagerDefinitionTask extends DefaultTask {
 		getProject().copy((copy) -> {
 			copy.from(this.template);
 			copy.into(this.outputDir);
-			Map<String, Object> properties = new HashMap<>(additionalProperties);
-			properties.put("hash", sha256(this.archive.get().getAsFile()));
-			properties.put("repo", ArtifactoryRepository.forProject(getProject()));
-			properties.put("project", getProject());
-			copy.expand(properties);
+			copy.expand(getProperties(additionalProperties));
 		});
+	}
+
+	private Map<String, Object> getProperties(Map<String, Object> additionalProperties) {
+		Map<String, Object> properties = new HashMap<>(additionalProperties);
+		Project project = getProject();
+		properties.put("hash", sha256(this.archive.get().getAsFile()));
+		properties.put("repo", getRepo(project));
+		properties.put("project", project);
+		return properties;
 	}
 
 	private String sha256(File file) {
@@ -100,6 +111,11 @@ public abstract class AbstractPackageManagerDefinitionTask extends DefaultTask {
 		catch (Exception ex) {
 			throw new TaskExecutionException(this, ex);
 		}
+	}
+
+	private String getRepo(Project project) {
+		ArtifactoryRepository artifactoryRepo = ArtifactoryRepository.forProject(project);
+		return (!artifactoryRepo.isRelease()) ? String.format(SPRING_REPO, artifactoryRepo.getName()) : MAVEN_REPO;
 	}
 
 }

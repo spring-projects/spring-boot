@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,8 +69,8 @@ class RandomValuePropertySourceTests {
 	void getPropertyWhenIntRangeReturnsValue() {
 		Integer value = (Integer) this.source.getProperty("random.int[4,10]");
 		assertThat(value).isNotNull();
-		assertThat(value >= 4).isTrue();
-		assertThat(value < 10).isTrue();
+		assertThat(value).isGreaterThanOrEqualTo(4);
+		assertThat(value).isLessThan(10);
 	}
 
 	@Test
@@ -82,8 +82,8 @@ class RandomValuePropertySourceTests {
 	@Test
 	void intRangeWhenLowerBoundNegative() {
 		Integer value = (Integer) this.source.getProperty("random.int[-4,4]");
-		assertThat(value >= -4).isTrue();
-		assertThat(value < 4).isTrue();
+		assertThat(value).isGreaterThanOrEqualTo(-4);
+		assertThat(value).isLessThan(4);
 	}
 
 	@Test
@@ -125,8 +125,8 @@ class RandomValuePropertySourceTests {
 	@Test
 	void longRangeWhenLowerBoundNegative() {
 		Long value = (Long) this.source.getProperty("random.long[-4,4]");
-		assertThat(value >= -4).isTrue();
-		assertThat(value < 4).isTrue();
+		assertThat(value).isGreaterThanOrEqualTo(-4);
+		assertThat(value).isLessThan(4);
 	}
 
 	@Test

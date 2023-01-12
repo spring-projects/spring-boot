@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,7 +140,7 @@ class ServletWebServerApplicationContextTests {
 		assertThat(events).hasSize(2).extracting("class").containsExactly(ServletWebServerInitializedEvent.class,
 				ContextRefreshedEvent.class);
 		ServletWebServerInitializedEvent initializedEvent = (ServletWebServerInitializedEvent) events.get(0);
-		assertThat(initializedEvent.getSource().getPort() >= 0).isTrue();
+		assertThat(initializedEvent.getSource().getPort()).isGreaterThanOrEqualTo(0);
 		assertThat(initializedEvent.getApplicationContext()).isEqualTo(this.context);
 	}
 

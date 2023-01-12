@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ class ConfigTreeConfigDataLocationResolverTests {
 	void resolveReturnsConfigVolumeMountLocation() {
 		List<ConfigTreeConfigDataResource> locations = this.resolver.resolve(this.context,
 				ConfigDataLocation.of("configtree:/etc/config/"));
-		assertThat(locations.size()).isEqualTo(1);
+		assertThat(locations).hasSize(1);
 		assertThat(locations).extracting(Object::toString)
 				.containsExactly("config tree [" + new File("/etc/config").getAbsolutePath() + "]");
 	}
@@ -74,7 +74,7 @@ class ConfigTreeConfigDataLocationResolverTests {
 		FileCopyUtils.copy("test".getBytes(), new File(directoryB, "boot"));
 		List<ConfigTreeConfigDataResource> locations = this.resolver.resolve(this.context,
 				ConfigDataLocation.of("configtree:" + this.temp.getAbsolutePath() + "/*/"));
-		assertThat(locations.size()).isEqualTo(2);
+		assertThat(locations).hasSize(2);
 		assertThat(locations).extracting(Object::toString).containsExactly(
 				"config tree [" + directoryA.getAbsolutePath() + "]",
 				"config tree [" + directoryB.getAbsolutePath() + "]");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.validation;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
@@ -207,6 +208,7 @@ class ValidationAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void userDefinedMethodValidationPostProcessorTakesPrecedence() {
 		this.contextRunner.withUserConfiguration(SampleConfiguration.class).run((context) -> {
 			assertThat(context.getBeansOfType(Validator.class)).hasSize(1);
@@ -214,8 +216,9 @@ class ValidationAutoConfigurationTests {
 			assertThat(context.getBean(MethodValidationPostProcessor.class))
 					.isSameAs(userMethodValidationPostProcessor);
 			assertThat(context.getBeansOfType(MethodValidationPostProcessor.class)).hasSize(1);
-			assertThat(context.getBean(Validator.class))
-					.isNotSameAs(ReflectionTestUtils.getField(userMethodValidationPostProcessor, "validator"));
+			Object validator = ReflectionTestUtils.getField(userMethodValidationPostProcessor, "validator");
+			assertThat(validator).isNotNull().isInstanceOf(Supplier.class);
+			assertThat(context.getBean(Validator.class)).isNotSameAs(((Supplier<Validator>) validator).get());
 		});
 	}
 
@@ -231,7 +234,7 @@ class ValidationAutoConfigurationTests {
 		this.contextRunner.run((parent) -> new ApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
 				.withUserConfiguration(SampleService.class).withParent(parent).run((context) -> {
-					assertThat(context.getBeansOfType(Validator.class)).hasSize(0);
+					assertThat(context.getBeansOfType(Validator.class)).isEmpty();
 					assertThat(parent.getBeansOfType(Validator.class)).hasSize(1);
 					SampleService service = context.getBean(SampleService.class);
 					service.doSomething("Valid");

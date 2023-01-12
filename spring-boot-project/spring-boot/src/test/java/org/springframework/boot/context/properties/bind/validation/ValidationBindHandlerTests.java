@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,7 +106,7 @@ class ValidationBindHandlerTests {
 		BindValidationException cause = bindAndExpectValidationError(() -> this.binder
 				.bind(ConfigurationPropertyName.of("foo"), Bindable.of(ExampleValidatedBean.class), this.handler));
 		ObjectError objectError = cause.getValidationErrors().getAllErrors().get(0);
-		assertThat(Origin.from(objectError).toString()).isEqualTo("file");
+		assertThat(Origin.from(objectError)).hasToString("file");
 	}
 
 	@Test
@@ -128,7 +128,7 @@ class ValidationBindHandlerTests {
 		this.sources.add(new MockConfigurationPropertySource("foo.nested.age", "4"));
 		BindValidationException cause = bindAndExpectValidationError(() -> this.binder.bind(
 				ConfigurationPropertyName.of("foo"), Bindable.of(ExampleValidatedWithNestedBean.class), this.handler));
-		assertThat(cause.getValidationErrors().getName().toString()).isEqualTo("foo.nested");
+		assertThat(cause.getValidationErrors().getName()).hasToString("foo.nested");
 		assertThat(cause.getMessage()).contains("nested.age");
 		assertThat(cause.getMessage()).contains("rejected value [4]");
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,7 +108,7 @@ class InfoContributorAutoConfigurationTests {
 					assertThat(git).isInstanceOf(Map.class);
 					Map<String, Object> gitInfo = (Map<String, Object>) git;
 					assertThat(gitInfo).containsOnlyKeys("branch", "commit", "foo");
-					assertThat(gitInfo.get("foo")).isEqualTo("bar");
+					assertThat(gitInfo).containsEntry("foo", "bar");
 				});
 	}
 
@@ -130,7 +130,7 @@ class InfoContributorAutoConfigurationTests {
 			assertThat(build).isInstanceOf(Map.class);
 			Map<String, Object> buildInfo = (Map<String, Object>) build;
 			assertThat(buildInfo).containsOnlyKeys("group", "artifact", "foo");
-			assertThat(buildInfo.get("foo")).isEqualTo("bar");
+			assertThat(buildInfo).containsEntry("foo", "bar");
 		});
 	}
 

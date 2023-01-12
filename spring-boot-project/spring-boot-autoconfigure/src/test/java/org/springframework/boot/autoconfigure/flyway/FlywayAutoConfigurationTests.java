@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -272,7 +272,7 @@ class FlywayAutoConfigurationTests {
 				.withPropertyValues("spring.flyway.schemas:public").run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
 					Flyway flyway = context.getBean(Flyway.class);
-					assertThat(Arrays.asList(flyway.getConfiguration().getSchemas()).toString()).isEqualTo("[public]");
+					assertThat(Arrays.asList(flyway.getConfiguration().getSchemas())).hasToString("[public]");
 				});
 	}
 

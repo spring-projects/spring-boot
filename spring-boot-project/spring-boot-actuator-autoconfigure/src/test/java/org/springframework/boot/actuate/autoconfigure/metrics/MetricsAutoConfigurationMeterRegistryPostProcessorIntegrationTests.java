@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ class MetricsAutoConfigurationMeterRegistryPostProcessorIntegrationTests {
 					Map<String, MeterRegistry> registriesByName = context.getBeansOfType(MeterRegistry.class);
 					assertThat(registriesByName).hasSize(1);
 					MeterRegistry registry = registriesByName.values().iterator().next();
-					assertThat(registry.get("logback.events").tag("level", "error").counter().count()).isEqualTo(1);
+					assertThat(registry.get("logback.events").tag("level", "error").counter().count()).isOne();
 				});
 	}
 
@@ -95,10 +95,11 @@ class MetricsAutoConfigurationMeterRegistryPostProcessorIntegrationTests {
 					logger.error("Error.");
 					Map<String, MeterRegistry> registriesByName = context.getBeansOfType(MeterRegistry.class);
 					assertThat(registriesByName).hasSize(3);
-					registriesByName.forEach((name,
-							registry) -> assertThat(
-									registry.get("logback.events").tag("level", "error").counter().count())
-											.isEqualTo(1));
+					registriesByName
+							.forEach((name,
+									registry) -> assertThat(
+											registry.get("logback.events").tag("level", "error").counter().count())
+													.isOne());
 				});
 	}
 

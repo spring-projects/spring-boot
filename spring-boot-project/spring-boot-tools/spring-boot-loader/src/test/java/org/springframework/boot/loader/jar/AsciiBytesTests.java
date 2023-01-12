@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,19 +34,19 @@ class AsciiBytesTests {
 	@Test
 	void createFromBytes() {
 		AsciiBytes bytes = new AsciiBytes(new byte[] { 65, 66 });
-		assertThat(bytes.toString()).isEqualTo("AB");
+		assertThat(bytes).hasToString("AB");
 	}
 
 	@Test
 	void createFromBytesWithOffset() {
 		AsciiBytes bytes = new AsciiBytes(new byte[] { 65, 66, 67, 68 }, 1, 2);
-		assertThat(bytes.toString()).isEqualTo("BC");
+		assertThat(bytes).hasToString("BC");
 	}
 
 	@Test
 	void createFromString() {
 		AsciiBytes bytes = new AsciiBytes("AB");
-		assertThat(bytes.toString()).isEqualTo("AB");
+		assertThat(bytes).hasToString("AB");
 	}
 
 	@Test
@@ -84,21 +84,21 @@ class AsciiBytesTests {
 	@Test
 	void substringFromBeingIndex() {
 		AsciiBytes abcd = new AsciiBytes(new byte[] { 65, 66, 67, 68 });
-		assertThat(abcd.substring(0).toString()).isEqualTo("ABCD");
-		assertThat(abcd.substring(1).toString()).isEqualTo("BCD");
-		assertThat(abcd.substring(2).toString()).isEqualTo("CD");
-		assertThat(abcd.substring(3).toString()).isEqualTo("D");
-		assertThat(abcd.substring(4).toString()).isEqualTo("");
+		assertThat(abcd.substring(0)).hasToString("ABCD");
+		assertThat(abcd.substring(1)).hasToString("BCD");
+		assertThat(abcd.substring(2)).hasToString("CD");
+		assertThat(abcd.substring(3)).hasToString("D");
+		assertThat(abcd.substring(4).toString()).isEmpty();
 		assertThatExceptionOfType(IndexOutOfBoundsException.class).isThrownBy(() -> abcd.substring(5));
 	}
 
 	@Test
 	void substring() {
 		AsciiBytes abcd = new AsciiBytes(new byte[] { 65, 66, 67, 68 });
-		assertThat(abcd.substring(0, 4).toString()).isEqualTo("ABCD");
-		assertThat(abcd.substring(1, 3).toString()).isEqualTo("BC");
-		assertThat(abcd.substring(3, 4).toString()).isEqualTo("D");
-		assertThat(abcd.substring(3, 3).toString()).isEqualTo("");
+		assertThat(abcd.substring(0, 4)).hasToString("ABCD");
+		assertThat(abcd.substring(1, 3)).hasToString("BC");
+		assertThat(abcd.substring(3, 4)).hasToString("D");
+		assertThat(abcd.substring(3, 3).toString()).isEmpty();
 		assertThatExceptionOfType(IndexOutOfBoundsException.class).isThrownBy(() -> abcd.substring(3, 5));
 	}
 
@@ -108,9 +108,9 @@ class AsciiBytesTests {
 		AsciiBytes bc = new AsciiBytes(new byte[] { 66, 67 });
 		AsciiBytes bc_substring = new AsciiBytes(new byte[] { 65, 66, 67, 68 }).substring(1, 3);
 		AsciiBytes bc_string = new AsciiBytes("BC");
-		assertThat(bc.hashCode()).isEqualTo(bc.hashCode());
-		assertThat(bc.hashCode()).isEqualTo(bc_substring.hashCode());
-		assertThat(bc.hashCode()).isEqualTo(bc_string.hashCode());
+		assertThat(bc).hasSameHashCodeAs(bc);
+		assertThat(bc).hasSameHashCodeAs(bc_substring);
+		assertThat(bc).hasSameHashCodeAs(bc_string);
 		assertThat(bc).isEqualTo(bc);
 		assertThat(bc).isEqualTo(bc_substring);
 		assertThat(bc).isEqualTo(bc_string);
@@ -139,7 +139,7 @@ class AsciiBytesTests {
 	}
 
 	private void hashCodeSameAsString(String input) {
-		assertThat(new AsciiBytes(input).hashCode()).isEqualTo(input.hashCode());
+		assertThat(new AsciiBytes(input)).hasSameHashCodeAs(input);
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,7 +97,7 @@ class ConfigDataLocationTests {
 		ConfigDataLocation l2 = ConfigDataLocation.of("a");
 		ConfigDataLocation l3 = ConfigDataLocation.of("optional:a");
 		ConfigDataLocation l4 = ConfigDataLocation.of("b");
-		assertThat(l1.hashCode()).isEqualTo(l2.hashCode()).isEqualTo(l3.hashCode());
+		assertThat(l1).hasSameHashCodeAs(l2).hasSameHashCodeAs(l3);
 		assertThat(l1).isEqualTo(l2).isEqualTo(l3).isNotEqualTo(l4);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class DefaultBindConstructorProviderTests {
 		Constructor<?> constructor = this.provider.getBindConstructor(TwoConstructorsWithOneConstructorBinding.class,
 				false);
 		assertThat(constructor).isNotNull();
-		assertThat(constructor.getParameterCount()).isEqualTo(1);
+		assertThat(constructor.getParameterCount()).isOne();
 	}
 
 	@Test
@@ -108,6 +108,22 @@ class DefaultBindConstructorProviderTests {
 			Constructor<?> bindConstructor = this.provider.getBindConstructor(bean.getClass(), false);
 			assertThat(bindConstructor).isNull();
 		}
+	}
+
+	@Test
+	void getBindConstructorWhenHasExistingValueAndOneConstructorWithoutAnnotationsReturnsNull() {
+		OneConstructorWithoutAnnotations existingValue = new OneConstructorWithoutAnnotations("name", 123);
+		Bindable<?> bindable = Bindable.of(OneConstructorWithoutAnnotations.class).withExistingValue(existingValue);
+		Constructor<?> bindConstructor = this.provider.getBindConstructor(bindable, false);
+		assertThat(bindConstructor).isNull();
+	}
+
+	@Test
+	void getBindConstructorWhenHasExistingValueAndOneConstructorWithConstructorBindingReturnsConstructor() {
+		OneConstructorWithConstructorBinding existingValue = new OneConstructorWithConstructorBinding("name", 123);
+		Bindable<?> bindable = Bindable.of(OneConstructorWithConstructorBinding.class).withExistingValue(existingValue);
+		Constructor<?> bindConstructor = this.provider.getBindConstructor(bindable, false);
+		assertThat(bindConstructor).isNotNull();
 	}
 
 	static class OnlyDefaultConstructor {
@@ -173,6 +189,13 @@ class DefaultBindConstructorProviderTests {
 
 		@ConstructorBinding
 		OneConstructorWithConstructorBinding(String name, int age) {
+		}
+
+	}
+
+	static class OneConstructorWithoutAnnotations {
+
+		OneConstructorWithoutAnnotations(String name, int age) {
 		}
 
 	}

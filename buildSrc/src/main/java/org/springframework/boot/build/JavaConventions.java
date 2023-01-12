@@ -62,8 +62,8 @@ import org.springframework.util.StringUtils;
  * <ul>
  * <li>The project is configured with source and target compatibility of 17
  * <li>{@link SpringJavaFormatPlugin Spring Java Format}, {@link CheckstylePlugin
- * Checkstyle}, {@link TestFailuresPlugin Test Failures}, {@link TestRetryPlugin Test
- * Retry}, and {@link ArchitecturePlugin Architecture} plugins are applied
+ * Checkstyle}, {@link TestFailuresPlugin Test Failures}, and {@link ArchitecturePlugin
+ * Architecture} plugins are applied
  * <li>{@link Test} tasks are configured:
  * <ul>
  * <li>to use JUnit Platform

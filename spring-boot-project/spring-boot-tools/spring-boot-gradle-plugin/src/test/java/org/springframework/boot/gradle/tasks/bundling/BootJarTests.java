@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.gradle.tasks.bundling;
 import java.io.File;
 import java.io.IOException;
 import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
 
 import org.gradle.api.Action;
 import org.gradle.api.JavaVersion;
@@ -77,14 +76,11 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	@Test
 	void jarsInLibAreStored() throws IOException {
 		try (JarFile jarFile = new JarFile(createLayeredJar())) {
-			assertThat(jarFile.getEntry("BOOT-INF/lib/first-library.jar").getMethod()).isEqualTo(ZipEntry.STORED);
-			assertThat(jarFile.getEntry("BOOT-INF/lib/second-library.jar").getMethod()).isEqualTo(ZipEntry.STORED);
-			assertThat(jarFile.getEntry("BOOT-INF/lib/third-library-SNAPSHOT.jar").getMethod())
-					.isEqualTo(ZipEntry.STORED);
-			assertThat(jarFile.getEntry("BOOT-INF/lib/first-project-library.jar").getMethod())
-					.isEqualTo(ZipEntry.STORED);
-			assertThat(jarFile.getEntry("BOOT-INF/lib/second-project-library-SNAPSHOT.jar").getMethod())
-					.isEqualTo(ZipEntry.STORED);
+			assertThat(jarFile.getEntry("BOOT-INF/lib/first-library.jar").getMethod()).isZero();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/second-library.jar").getMethod()).isZero();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/third-library-SNAPSHOT.jar").getMethod()).isZero();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/first-project-library.jar").getMethod()).isZero();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/second-project-library-SNAPSHOT.jar").getMethod()).isZero();
 		}
 	}
 

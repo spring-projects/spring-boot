@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ class OverrideAutoConfigurationContextCustomizerFactoryTests {
 	void hashCodeAndEquals() {
 		ContextCustomizer customizer1 = this.factory.createContextCustomizer(WithAnnotationEnabledFalse.class, null);
 		ContextCustomizer customizer2 = this.factory.createContextCustomizer(WithSameAnnotation.class, null);
-		assertThat(customizer1.hashCode()).isEqualTo(customizer2.hashCode());
+		assertThat(customizer1).hasSameHashCodeAs(customizer2);
 		assertThat(customizer1).isEqualTo(customizer1).isEqualTo(customizer2);
 	}
 

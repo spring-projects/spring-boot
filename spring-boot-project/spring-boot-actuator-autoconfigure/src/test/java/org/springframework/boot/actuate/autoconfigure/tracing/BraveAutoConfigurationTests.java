@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -137,7 +137,7 @@ class BraveAutoConfigurationTests {
 	void shouldSupplyB3PropagationFactoryViaProperty() {
 		this.contextRunner.withPropertyValues("management.tracing.propagation.type=B3").run((context) -> {
 			assertThat(context).hasBean("propagationFactory");
-			assertThat(context.getBean(Factory.class).toString()).isEqualTo("B3Propagation");
+			assertThat(context.getBean(Factory.class)).hasToString("B3Propagation");
 			assertThat(context).hasSingleBean(BaggagePropagation.FactoryBuilder.class);
 		});
 	}
@@ -168,7 +168,7 @@ class BraveAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false",
 				"management.tracing.propagation.type=B3").run((context) -> {
 					assertThat(context).hasBean("propagationFactory");
-					assertThat(context.getBean(Factory.class).toString()).isEqualTo("B3Propagation");
+					assertThat(context.getBean(Factory.class)).hasToString("B3Propagation");
 					assertThat(context).doesNotHaveBean(BaggagePropagation.FactoryBuilder.class);
 				});
 	}

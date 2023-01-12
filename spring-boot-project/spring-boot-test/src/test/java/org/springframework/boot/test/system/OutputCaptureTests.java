@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,28 +90,28 @@ class OutputCaptureTests {
 		System.out.print("A");
 		this.output.pop();
 		System.out.print("B");
-		assertThat(this.systemOut.toString()).isEqualTo("AB");
+		assertThat(this.systemOut).hasToString("AB");
 	}
 
 	@Test
 	void captureAlsoWritesToSystemOut() {
 		this.output.push();
 		System.out.print("A");
-		assertThat(this.systemOut.toString()).isEqualTo("A");
+		assertThat(this.systemOut).hasToString("A");
 	}
 
 	@Test
 	void captureAlsoWritesToSystemErr() {
 		this.output.push();
 		System.err.print("A");
-		assertThat(this.systemErr.toString()).isEqualTo("A");
+		assertThat(this.systemErr).hasToString("A");
 	}
 
 	@Test
 	void lengthReturnsCapturedLength() {
 		this.output.push();
 		System.out.print("ABC");
-		assertThat(this.output.length()).isEqualTo(3);
+		assertThat(this.output).hasSize(3);
 	}
 
 	@Test
@@ -137,7 +137,7 @@ class OutputCaptureTests {
 	@Test
 	void toStringReturnsAllCapturedOutput() {
 		pushAndPrint();
-		assertThat(this.output.toString()).isEqualTo("ABC");
+		assertThat(this.output).hasToString("ABC");
 	}
 
 	@Test
@@ -158,7 +158,7 @@ class OutputCaptureTests {
 		for (int i = 0; i < 10; i++) {
 			assertThat(this.output.getAll()).isEqualTo("ABC");
 		}
-		assertThat(this.output.buildCount).isEqualTo(1);
+		assertThat(this.output.buildCount).isOne();
 		System.out.print("X");
 		assertThat(this.output.getAll()).isEqualTo("ABCX");
 		assertThat(this.output.buildCount).isEqualTo(2);
@@ -170,7 +170,7 @@ class OutputCaptureTests {
 		for (int i = 0; i < 10; i++) {
 			assertThat(this.output.getOut()).isEqualTo("AC");
 		}
-		assertThat(this.output.buildCount).isEqualTo(1);
+		assertThat(this.output.buildCount).isOne();
 		System.out.print("X");
 		assertThat(this.output.getOut()).isEqualTo("ACX");
 		assertThat(this.output.buildCount).isEqualTo(2);
@@ -182,7 +182,7 @@ class OutputCaptureTests {
 		for (int i = 0; i < 10; i++) {
 			assertThat(this.output.getErr()).isEqualTo("B");
 		}
-		assertThat(this.output.buildCount).isEqualTo(1);
+		assertThat(this.output.buildCount).isOne();
 		System.err.print("X");
 		assertThat(this.output.getErr()).isEqualTo("BX");
 		assertThat(this.output.buildCount).isEqualTo(2);

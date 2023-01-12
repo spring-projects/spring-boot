@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,7 +86,7 @@ class MetricsRepositoryMethodInvocationListenerTests {
 	}
 
 	private void assertMetricsContainsTag(String tagKey, String tagValue) {
-		assertThat(this.registry.get(REQUEST_METRICS_NAME).tag(tagKey, tagValue).timer().count()).isEqualTo(1);
+		assertThat(this.registry.get(REQUEST_METRICS_NAME).tag(tagKey, tagValue).timer().count()).isOne();
 	}
 
 	private RepositoryMethodInvocation createInvocation(Class<?> repositoryInterface) {

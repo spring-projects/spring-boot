@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ class MockBeanContextCachingTests {
 	@Test
 	void whenThereIsANormalBeanAndAMockBeanThenTwoContextsAreCreated() {
 		bootstrapContext(TestClass.class);
-		assertThat(this.contextCache.size()).isEqualTo(1);
+		assertThat(this.contextCache.size()).isOne();
 		bootstrapContext(MockedBeanTestClass.class);
 		assertThat(this.contextCache.size()).isEqualTo(2);
 	}
@@ -74,9 +74,9 @@ class MockBeanContextCachingTests {
 	@Test
 	void whenThereIsTheSameMockedBeanInEachTestClassThenOneContextIsCreated() {
 		bootstrapContext(MockedBeanTestClass.class);
-		assertThat(this.contextCache.size()).isEqualTo(1);
+		assertThat(this.contextCache.size()).isOne();
 		bootstrapContext(AnotherMockedBeanTestClass.class);
-		assertThat(this.contextCache.size()).isEqualTo(1);
+		assertThat(this.contextCache.size()).isOne();
 	}
 
 	@SuppressWarnings("rawtypes")

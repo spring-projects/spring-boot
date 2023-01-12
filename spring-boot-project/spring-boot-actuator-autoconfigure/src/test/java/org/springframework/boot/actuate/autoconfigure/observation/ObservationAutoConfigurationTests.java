@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -149,7 +149,7 @@ class ObservationAutoConfigurationTests {
 			// When a DefaultMeterObservationHandler is registered, every stopped
 			// Observation leads to a timer
 			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
-			assertThat(meterRegistry.get("test-observation").timer().count()).isEqualTo(1);
+			assertThat(meterRegistry.get("test-observation").timer().count()).isOne();
 			assertThat(context).hasSingleBean(DefaultMeterObservationHandler.class);
 			assertThat(context).hasSingleBean(ObservationHandler.class);
 		});
@@ -170,7 +170,7 @@ class ObservationAutoConfigurationTests {
 			// This isn't allowed by ObservationPredicates.customPredicate
 			Observation.start("observation2", observationRegistry).stop();
 			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
-			assertThat(meterRegistry.get("observation1").timer().count()).isEqualTo(1);
+			assertThat(meterRegistry.get("observation1").timer().count()).isOne();
 			assertThatThrownBy(() -> meterRegistry.get("observation2").timer())
 					.isInstanceOf(MeterNotFoundException.class);
 		});

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -141,7 +141,7 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(Metadata.withProperty("simple.type.my-primitive-double", Double.class));
 		assertThat(metadata).has(Metadata.withProperty("simple.type.my-float", Float.class));
 		assertThat(metadata).has(Metadata.withProperty("simple.type.my-primitive-float", Float.class));
-		assertThat(metadata.getItems().size()).isEqualTo(18);
+		assertThat(metadata.getItems()).hasSize(18);
 	}
 
 	@Test

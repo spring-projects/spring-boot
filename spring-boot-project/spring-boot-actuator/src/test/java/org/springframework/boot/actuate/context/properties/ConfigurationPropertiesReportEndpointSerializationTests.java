@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 			Map<String, Object> map = foo.getProperties();
 			assertThat(map).isNotNull();
 			assertThat(map).hasSize(2);
-			assertThat(map.get("name")).isEqualTo("foo");
+			assertThat(map).containsEntry("name", "foo");
 		});
 	}
 
@@ -90,7 +90,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 			Map<String, Object> map = foo.getProperties();
 			assertThat(map).isNotNull();
 			assertThat(map).hasSize(2);
-			assertThat(((Map<String, Object>) map.get("bar")).get("name")).isEqualTo("foo");
+			assertThat(((Map<String, Object>) map.get("bar"))).containsEntry("name", "foo");
 		});
 	}
 
@@ -150,7 +150,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 			Map<String, Object> map = fooProperties.getProperties();
 			assertThat(map).isNotNull();
 			assertThat(map).hasSize(3);
-			assertThat(((Map<String, Object>) map.get("map")).get("name")).isEqualTo("foo");
+			assertThat(((Map<String, Object>) map.get("map"))).containsEntry("name", "foo");
 		});
 	}
 
@@ -207,7 +207,7 @@ class ConfigurationPropertiesReportEndpointSerializationTests {
 			Map<String, Object> map = foo.getProperties();
 			assertThat(map).isNotNull();
 			assertThat(map).hasSize(3);
-			assertThat(map.get("address")).isEqualTo("192.168.1.10");
+			assertThat(map).containsEntry("address", "192.168.1.10");
 		});
 	}
 

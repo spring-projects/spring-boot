@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,7 +146,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.info("Hello world");
 		assertThat(output).contains("Hello world").doesNotContain("Hidden");
 		assertThat(getLineWithText(output, "Hello world")).contains("INFO");
-		assertThat(new File(tmpDir() + "/spring.log").exists()).isFalse();
+		assertThat(new File(tmpDir() + "/spring.log")).doesNotExist();
 	}
 
 	@Test
@@ -159,9 +159,9 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(output).doesNotContain("LOGBACK:");
 		assertThat(output).contains("Hello world").doesNotContain("Hidden");
 		assertThat(getLineWithText(output, "Hello world")).contains("INFO");
-		assertThat(file.exists()).isTrue();
+		assertThat(file).exists();
 		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
-		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "maxFileSize").toString()).isEqualTo("10 MB");
+		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "maxFileSize")).hasToString("10 MB");
 		assertThat(getRollingPolicy().getMaxHistory()).isEqualTo(7);
 	}
 
@@ -180,7 +180,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.info("Hello world");
 		assertThat(output).doesNotContain("DEBUG").contains("Hello world").contains(tmpDir() + "/tmp.log")
 				.endsWith("BOOTBOOT");
-		assertThat(new File(tmpDir() + "/tmp.log").exists()).isFalse();
+		assertThat(new File(tmpDir() + "/tmp.log")).doesNotExist();
 	}
 
 	@Test
@@ -217,7 +217,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.debug("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
 		this.logger.debug("Hello");
-		assertThat(StringUtils.countOccurrencesOf(output.toString(), "Hello")).isEqualTo(1);
+		assertThat(StringUtils.countOccurrencesOf(output.toString(), "Hello")).isOne();
 	}
 
 	@Test
@@ -229,7 +229,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.debug("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", null);
 		this.logger.debug("Hello");
-		assertThat(StringUtils.countOccurrencesOf(output.toString(), "Hello")).isEqualTo(1);
+		assertThat(StringUtils.countOccurrencesOf(output.toString(), "Hello")).isOne();
 	}
 
 	@Test
@@ -411,8 +411,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		initialize(loggingInitializationContext, null, logFile);
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
-		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "maxFileSize").toString())
-				.isEqualTo(expectedFileSize);
+		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "maxFileSize")).hasToString(expectedFileSize);
 	}
 
 	@Test
@@ -424,7 +423,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		initialize(loggingInitializationContext, "classpath:logback-include-base.xml", logFile);
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
-		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "maxFileSize").toString()).isEqualTo("100 MB");
+		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "maxFileSize")).hasToString("100 MB");
 	}
 
 	@Test
@@ -474,8 +473,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		initialize(loggingInitializationContext, null, logFile);
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
-		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "totalSizeCap").toString())
-				.isEqualTo(expectedFileSize);
+		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "totalSizeCap")).hasToString(expectedFileSize);
 	}
 
 	@Test
@@ -488,7 +486,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		initialize(loggingInitializationContext, "classpath:logback-include-base.xml", logFile);
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
-		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "totalSizeCap").toString()).isEqualTo(expectedSize);
+		assertThat(ReflectionTestUtils.getField(getRollingPolicy(), "totalSizeCap")).hasToString(expectedSize);
 	}
 
 	@Test

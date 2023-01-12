@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,17 +40,17 @@ class InitializrServiceMetadataTests {
 	@Test
 	void parseDefaults() throws Exception {
 		InitializrServiceMetadata metadata = createInstance("2.0.0");
-		assertThat(metadata.getDefaults().get("bootVersion")).isEqualTo("1.1.8.RELEASE");
-		assertThat(metadata.getDefaults().get("javaVersion")).isEqualTo("1.7");
-		assertThat(metadata.getDefaults().get("groupId")).isEqualTo("org.test");
-		assertThat(metadata.getDefaults().get("name")).isEqualTo("demo");
-		assertThat(metadata.getDefaults().get("description")).isEqualTo("Demo project for Spring Boot");
-		assertThat(metadata.getDefaults().get("packaging")).isEqualTo("jar");
-		assertThat(metadata.getDefaults().get("language")).isEqualTo("java");
-		assertThat(metadata.getDefaults().get("artifactId")).isEqualTo("demo");
-		assertThat(metadata.getDefaults().get("packageName")).isEqualTo("demo");
-		assertThat(metadata.getDefaults().get("type")).isEqualTo("maven-project");
-		assertThat(metadata.getDefaults().get("version")).isEqualTo("0.0.1-SNAPSHOT");
+		assertThat(metadata.getDefaults()).containsEntry("bootVersion", "1.1.8.RELEASE");
+		assertThat(metadata.getDefaults()).containsEntry("javaVersion", "1.7");
+		assertThat(metadata.getDefaults()).containsEntry("groupId", "org.test");
+		assertThat(metadata.getDefaults()).containsEntry("name", "demo");
+		assertThat(metadata.getDefaults()).containsEntry("description", "Demo project for Spring Boot");
+		assertThat(metadata.getDefaults()).containsEntry("packaging", "jar");
+		assertThat(metadata.getDefaults()).containsEntry("language", "java");
+		assertThat(metadata.getDefaults()).containsEntry("artifactId", "demo");
+		assertThat(metadata.getDefaults()).containsEntry("packageName", "demo");
+		assertThat(metadata.getDefaults()).containsEntry("type", "maven-project");
+		assertThat(metadata.getDefaults()).containsEntry("version", "0.0.1-SNAPSHOT");
 		assertThat(metadata.getDefaults()).as("Wrong number of defaults").hasSize(11);
 	}
 
@@ -73,8 +73,8 @@ class InitializrServiceMetadataTests {
 		InitializrServiceMetadata metadata = createInstance("2.0.0");
 		ProjectType projectType = metadata.getProjectTypes().get("maven-project");
 		assertThat(projectType).isNotNull();
-		assertThat(projectType.getTags().get("build")).isEqualTo("maven");
-		assertThat(projectType.getTags().get("format")).isEqualTo("project");
+		assertThat(projectType.getTags()).containsEntry("build", "maven");
+		assertThat(projectType.getTags()).containsEntry("format", "project");
 	}
 
 	private static InitializrServiceMetadata createInstance(String version) throws JSONException {

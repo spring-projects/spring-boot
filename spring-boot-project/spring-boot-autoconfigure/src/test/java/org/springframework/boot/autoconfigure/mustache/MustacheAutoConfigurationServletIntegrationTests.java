@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,13 +82,13 @@ class MustacheAutoConfigurationServletIntegrationTests {
 	@Test
 	void testHomePage() {
 		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port, String.class);
-		assertThat(body.contains("Hello World")).isTrue();
+		assertThat(body).contains("Hello World");
 	}
 
 	@Test
 	void testPartialPage() {
 		String body = new TestRestTemplate().getForObject("http://localhost:" + this.port + "/partial", String.class);
-		assertThat(body.contains("Hello World")).isTrue();
+		assertThat(body).contains("Hello World");
 	}
 
 	@Configuration(proxyBeanMethods = false)

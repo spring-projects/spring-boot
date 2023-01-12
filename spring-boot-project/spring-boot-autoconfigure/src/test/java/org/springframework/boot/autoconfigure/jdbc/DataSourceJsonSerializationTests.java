@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ class DataSourceJsonSerializationTests {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializerFactory(factory);
 		String value = mapper.writeValueAsString(dataSource);
-		assertThat(value.contains("\"url\":")).isTrue();
+		assertThat(value).contains("\"url\":");
 	}
 
 	@Test
@@ -69,8 +69,8 @@ class DataSourceJsonSerializationTests {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.addMixIn(DataSource.class, DataSourceJson.class);
 		String value = mapper.writeValueAsString(dataSource);
-		assertThat(value.contains("\"url\":")).isTrue();
-		assertThat(StringUtils.countOccurrencesOf(value, "\"url\"")).isEqualTo(1);
+		assertThat(value).contains("\"url\":");
+		assertThat(StringUtils.countOccurrencesOf(value, "\"url\"")).isOne();
 	}
 
 	@JsonSerialize(using = TomcatDataSourceSerializer.class)

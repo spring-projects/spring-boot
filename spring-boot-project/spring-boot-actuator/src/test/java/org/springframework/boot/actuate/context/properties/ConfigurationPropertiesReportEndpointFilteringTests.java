@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,7 +109,7 @@ class ConfigurationPropertiesReportEndpointFilteringTests {
 					.filter((id) -> findIdFromPrefix("only.bar", id)).findAny();
 			ConfigurationPropertiesBeanDescriptor descriptor = contextProperties.getBeans().get(key.get());
 			assertThat(descriptor.getPrefix()).isEqualTo("only.bar");
-			assertThat(descriptor.getProperties().get("name")).isEqualTo(value);
+			assertThat(descriptor.getProperties()).containsEntry("name", value);
 		});
 	}
 

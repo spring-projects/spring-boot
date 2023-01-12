@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -188,9 +188,9 @@ class JarFileTests {
 	@Test
 	void getInputStream() throws Exception {
 		InputStream inputStream = this.jarFile.getInputStream(this.jarFile.getEntry("1.dat"));
-		assertThat(inputStream.available()).isEqualTo(1);
-		assertThat(inputStream.read()).isEqualTo(1);
-		assertThat(inputStream.available()).isEqualTo(0);
+		assertThat(inputStream.available()).isOne();
+		assertThat(inputStream.read()).isOne();
+		assertThat(inputStream.available()).isZero();
 		assertThat(inputStream.read()).isEqualTo(-1);
 	}
 
@@ -249,7 +249,7 @@ class JarFileTests {
 	@Test
 	void getUrl() throws Exception {
 		URL url = this.jarFile.getUrl();
-		assertThat(url.toString()).isEqualTo("jar:" + this.rootJarFile.toURI() + "!/");
+		assertThat(url).hasToString("jar:" + this.rootJarFile.toURI() + "!/");
 		JarURLConnection jarURLConnection = (JarURLConnection) url.openConnection();
 		assertThat(JarFileWrapper.unwrap(jarURLConnection.getJarFile())).isSameAs(this.jarFile);
 		assertThat(jarURLConnection.getJarEntry()).isNull();
@@ -262,11 +262,11 @@ class JarFileTests {
 	@Test
 	void createEntryUrl() throws Exception {
 		URL url = new URL(this.jarFile.getUrl(), "1.dat");
-		assertThat(url.toString()).isEqualTo("jar:" + this.rootJarFile.toURI() + "!/1.dat");
+		assertThat(url).hasToString("jar:" + this.rootJarFile.toURI() + "!/1.dat");
 		JarURLConnection jarURLConnection = (JarURLConnection) url.openConnection();
 		assertThat(JarFileWrapper.unwrap(jarURLConnection.getJarFile())).isSameAs(this.jarFile);
 		assertThat(jarURLConnection.getJarEntry()).isSameAs(this.jarFile.getJarEntry("1.dat"));
-		assertThat(jarURLConnection.getContentLength()).isEqualTo(1);
+		assertThat(jarURLConnection.getContentLength()).isOne();
 		assertThat(jarURLConnection.getContent()).isInstanceOf(InputStream.class);
 		assertThat(jarURLConnection.getContentType()).isEqualTo("content/unknown");
 		assertThat(jarURLConnection.getPermission()).isInstanceOf(FilePermission.class);
@@ -278,7 +278,7 @@ class JarFileTests {
 	@Test
 	void getMissingEntryUrl() throws Exception {
 		URL url = new URL(this.jarFile.getUrl(), "missing.dat");
-		assertThat(url.toString()).isEqualTo("jar:" + this.rootJarFile.toURI() + "!/missing.dat");
+		assertThat(url).hasToString("jar:" + this.rootJarFile.toURI() + "!/missing.dat");
 		assertThatExceptionOfType(FileNotFoundException.class)
 				.isThrownBy(((JarURLConnection) url.openConnection())::getJarEntry);
 	}
@@ -295,7 +295,7 @@ class JarFileTests {
 		URL url = new URL(this.jarFile.getUrl(), "1.dat");
 		url.openConnection();
 		try (InputStream stream = url.openStream()) {
-			assertThat(stream.read()).isEqualTo(1);
+			assertThat(stream.read()).isOne();
 			assertThat(stream.read()).isEqualTo(-1);
 		}
 	}
@@ -317,10 +317,10 @@ class JarFileTests {
 			assertThat(inputStream.read()).isEqualTo(-1);
 
 			URL url = nestedJarFile.getUrl();
-			assertThat(url.toString()).isEqualTo("jar:" + this.rootJarFile.toURI() + "!/nested.jar!/");
+			assertThat(url).hasToString("jar:" + this.rootJarFile.toURI() + "!/nested.jar!/");
 			JarURLConnection conn = (JarURLConnection) url.openConnection();
 			assertThat(JarFileWrapper.unwrap(conn.getJarFile())).isSameAs(nestedJarFile);
-			assertThat(conn.getJarFileURL().toString()).isEqualTo("jar:" + this.rootJarFile.toURI() + "!/nested.jar");
+			assertThat(conn.getJarFileURL()).hasToString("jar:" + this.rootJarFile.toURI() + "!/nested.jar");
 			assertThat(conn.getInputStream()).isNotNull();
 			JarInputStream jarInputStream = new JarInputStream(conn.getInputStream());
 			assertThat(jarInputStream.getNextJarEntry().getName()).isEqualTo("3.dat");
@@ -347,7 +347,7 @@ class JarFileTests {
 			}
 
 			URL url = nestedJarFile.getUrl();
-			assertThat(url.toString()).isEqualTo("jar:" + this.rootJarFile.toURI() + "!/d!/");
+			assertThat(url).hasToString("jar:" + this.rootJarFile.toURI() + "!/d!/");
 			JarURLConnection connection = (JarURLConnection) url.openConnection();
 			assertThat(JarFileWrapper.unwrap(connection.getJarFile())).isSameAs(nestedJarFile);
 		}
@@ -357,7 +357,7 @@ class JarFileTests {
 	void getNestedJarEntryUrl() throws Exception {
 		try (JarFile nestedJarFile = this.jarFile.getNestedJarFile(this.jarFile.getEntry("nested.jar"))) {
 			URL url = nestedJarFile.getJarEntry("3.dat").getUrl();
-			assertThat(url.toString()).isEqualTo("jar:" + this.rootJarFile.toURI() + "!/nested.jar!/3.dat");
+			assertThat(url).hasToString("jar:" + this.rootJarFile.toURI() + "!/nested.jar!/3.dat");
 			try (InputStream inputStream = url.openStream()) {
 				assertThat(inputStream).isNotNull();
 				assertThat(inputStream.read()).isEqualTo(3);
@@ -369,14 +369,13 @@ class JarFileTests {
 	void createUrlFromString() throws Exception {
 		String spec = "jar:" + this.rootJarFile.toURI() + "!/nested.jar!/3.dat";
 		URL url = new URL(spec);
-		assertThat(url.toString()).isEqualTo(spec);
+		assertThat(url).hasToString(spec);
 		JarURLConnection connection = (JarURLConnection) url.openConnection();
 		try (InputStream inputStream = connection.getInputStream()) {
 			assertThat(inputStream).isNotNull();
 			assertThat(inputStream.read()).isEqualTo(3);
-			assertThat(connection.getURL().toString()).isEqualTo(spec);
-			assertThat(connection.getJarFileURL().toString())
-					.isEqualTo("jar:" + this.rootJarFile.toURI() + "!/nested.jar");
+			assertThat(connection.getURL()).hasToString(spec);
+			assertThat(connection.getJarFileURL()).hasToString("jar:" + this.rootJarFile.toURI() + "!/nested.jar");
 			assertThat(connection.getEntryName()).isEqualTo("3.dat");
 			connection.getJarFile().close();
 		}
@@ -395,12 +394,12 @@ class JarFileTests {
 	private void nonNestedJarFileFromString(String spec) throws Exception {
 		JarFile.registerUrlProtocolHandler();
 		URL url = new URL(spec);
-		assertThat(url.toString()).isEqualTo(spec);
+		assertThat(url).hasToString(spec);
 		JarURLConnection connection = (JarURLConnection) url.openConnection();
 		try (InputStream inputStream = connection.getInputStream()) {
 			assertThat(inputStream).isNotNull();
 			assertThat(inputStream.read()).isEqualTo(2);
-			assertThat(connection.getURL().toString()).isEqualTo(spec);
+			assertThat(connection.getURL()).hasToString(spec);
 			assertThat(connection.getJarFileURL().toURI()).isEqualTo(this.rootJarFile.toURI());
 			assertThat(connection.getEntryName()).isEqualTo("2.dat");
 		}
@@ -423,9 +422,9 @@ class JarFileTests {
 
 	@Test
 	void sensibleToString() throws Exception {
-		assertThat(this.jarFile.toString()).isEqualTo(this.rootJarFile.getPath());
+		assertThat(this.jarFile).hasToString(this.rootJarFile.getPath());
 		try (JarFile nested = this.jarFile.getNestedJarFile(this.jarFile.getEntry("nested.jar"))) {
-			assertThat(nested.toString()).isEqualTo(this.rootJarFile.getPath() + "!/nested.jar");
+			assertThat(nested).hasToString(this.rootJarFile.getPath() + "!/nested.jar");
 		}
 	}
 
@@ -560,7 +559,7 @@ class JarFileTests {
 			ZipEntry entry = multiRelease.getEntry("multi-release.dat");
 			assertThat(entry.getName()).isEqualTo("multi-release.dat");
 			InputStream inputStream = multiRelease.getInputStream(entry);
-			assertThat(inputStream.available()).isEqualTo(1);
+			assertThat(inputStream.available()).isOne();
 			assertThat(inputStream.read()).isEqualTo(Runtime.version().feature());
 		}
 	}

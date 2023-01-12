@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,12 +105,12 @@ class ConfigurationPropertiesReportEndpointTests {
 					Map<String, Object> nested = (Map<String, Object>) inputs.get("nested");
 					Map<String, Object> name = (Map<String, Object>) nested.get("name");
 					Map<String, Object> counter = (Map<String, Object>) nested.get("counter");
-					assertThat(name.get("value")).isEqualTo("nested");
-					assertThat(name.get("origin"))
-							.isEqualTo("\"immutablenested.nested.name\" from property source \"test\"");
-					assertThat(counter.get("origin"))
-							.isEqualTo("\"immutablenested.nested.counter\" from property source \"test\"");
-					assertThat(counter.get("value")).isEqualTo("42");
+					assertThat(name).containsEntry("value", "nested");
+					assertThat(name).containsEntry("origin",
+							"\"immutablenested.nested.name\" from property source \"test\"");
+					assertThat(counter).containsEntry("origin",
+							"\"immutablenested.nested.counter\" from property source \"test\"");
+					assertThat(counter).containsEntry("value", "42");
 				}));
 	}
 
@@ -184,8 +184,8 @@ class ConfigurationPropertiesReportEndpointTests {
 				.withPropertyValues(String.format("data.size=%s", configSize)).run(assertProperties("data",
 						(properties) -> assertThat(properties.get("size")).isEqualTo(stringifySize), (inputs) -> {
 							Map<String, Object> size = (Map<String, Object>) inputs.get("size");
-							assertThat(size.get("value")).isEqualTo(configSize);
-							assertThat(size.get("origin")).isEqualTo("\"data.size\" from property source \"test\"");
+							assertThat(size).containsEntry("value", configSize);
+							assertThat(size).containsEntry("origin", "\"data.size\" from property source \"test\"");
 						}));
 	}
 
@@ -199,15 +199,15 @@ class ConfigurationPropertiesReportEndpointTests {
 					List<Object> list = (List<Object>) properties.get("listItems");
 					assertThat(list).hasSize(1);
 					Map<String, Object> item = (Map<String, Object>) list.get(0);
-					assertThat(item.get("somePassword")).isEqualTo("******");
+					assertThat(item).containsEntry("somePassword", "******");
 				}, (inputs) -> {
 					List<Object> list = (List<Object>) inputs.get("listItems");
 					assertThat(list).hasSize(1);
 					Map<String, Object> item = (Map<String, Object>) list.get(0);
 					Map<String, Object> somePassword = (Map<String, Object>) item.get("somePassword");
-					assertThat(somePassword.get("value")).isEqualTo("******");
-					assertThat(somePassword.get("origin"))
-							.isEqualTo("\"sensible.listItems[0].some-password\" from property source \"test\"");
+					assertThat(somePassword).containsEntry("value", "******");
+					assertThat(somePassword).containsEntry("origin",
+							"\"sensible.listItems[0].some-password\" from property source \"test\"");
 				}));
 	}
 
@@ -223,7 +223,7 @@ class ConfigurationPropertiesReportEndpointTests {
 					List<Object> list = listOfLists.get(0);
 					assertThat(list).hasSize(1);
 					Map<String, Object> item = (Map<String, Object>) list.get(0);
-					assertThat(item.get("somePassword")).isEqualTo("******");
+					assertThat(item).containsEntry("somePassword", "******");
 				}, (inputs) -> {
 					assertThat(inputs.get("listOfListItems")).isInstanceOf(List.class);
 					List<List<Object>> listOfLists = (List<List<Object>>) inputs.get("listOfListItems");
@@ -232,8 +232,8 @@ class ConfigurationPropertiesReportEndpointTests {
 					assertThat(list).hasSize(1);
 					Map<String, Object> item = (Map<String, Object>) list.get(0);
 					Map<String, Object> somePassword = (Map<String, Object>) item.get("somePassword");
-					assertThat(somePassword.get("value")).isEqualTo("******");
-					assertThat(somePassword.get("origin")).isEqualTo(
+					assertThat(somePassword).containsEntry("value", "******");
+					assertThat(somePassword).containsEntry("origin",
 							"\"sensible.listOfListItems[0][0].some-password\" from property source \"test\"");
 				}));
 	}
@@ -243,8 +243,8 @@ class ConfigurationPropertiesReportEndpointTests {
 		new ApplicationContextRunner().withUserConfiguration(CustomSanitizingEndpointConfig.class,
 				SanitizingFunctionConfiguration.class, TestPropertiesConfiguration.class)
 				.run(assertProperties("test", (properties) -> {
-					assertThat(properties.get("dbPassword")).isEqualTo("$$$");
-					assertThat(properties.get("myTestProperty")).isEqualTo("$$$");
+					assertThat(properties).containsEntry("dbPassword", "$$$");
+					assertThat(properties).containsEntry("myTestProperty", "$$$");
 				}));
 	}
 
@@ -254,8 +254,8 @@ class ConfigurationPropertiesReportEndpointTests {
 				.withUserConfiguration(CustomSanitizingEndpointConfig.class,
 						PropertySourceBasedSanitizingFunctionConfiguration.class, TestPropertiesConfiguration.class)
 				.withPropertyValues("test.my-test-property=abcde").run(assertProperties("test", (properties) -> {
-					assertThat(properties.get("dbPassword")).isEqualTo("123456");
-					assertThat(properties.get("myTestProperty")).isEqualTo("$$$");
+					assertThat(properties).containsEntry("dbPassword", "123456");
+					assertThat(properties).containsEntry("myTestProperty", "$$$");
 				}));
 	}
 
@@ -270,15 +270,15 @@ class ConfigurationPropertiesReportEndpointTests {
 					List<Object> list = (List<Object>) properties.get("listItems");
 					assertThat(list).hasSize(1);
 					Map<String, Object> item = (Map<String, Object>) list.get(0);
-					assertThat(item.get("custom")).isEqualTo("$$$");
+					assertThat(item).containsEntry("custom", "$$$");
 				}, (inputs) -> {
 					List<Object> list = (List<Object>) inputs.get("listItems");
 					assertThat(list).hasSize(1);
 					Map<String, Object> item = (Map<String, Object>) list.get(0);
 					Map<String, Object> somePassword = (Map<String, Object>) item.get("custom");
-					assertThat(somePassword.get("value")).isEqualTo("$$$");
-					assertThat(somePassword.get("origin"))
-							.isEqualTo("\"sensible.listItems[0].custom\" from property source \"test\"");
+					assertThat(somePassword).containsEntry("value", "$$$");
+					assertThat(somePassword).containsEntry("origin",
+							"\"sensible.listItems[0].custom\" from property source \"test\"");
 				}));
 	}
 
@@ -287,8 +287,8 @@ class ConfigurationPropertiesReportEndpointTests {
 		new ApplicationContextRunner()
 				.withUserConfiguration(EndpointConfigWithShowAlways.class, TestPropertiesConfiguration.class)
 				.run(assertProperties("test", (properties) -> {
-					assertThat(properties.get("dbPassword")).isEqualTo("123456");
-					assertThat(properties.get("myTestProperty")).isEqualTo("654321");
+					assertThat(properties).containsEntry("dbPassword", "123456");
+					assertThat(properties).containsEntry("myTestProperty", "654321");
 				}));
 	}
 
@@ -297,8 +297,8 @@ class ConfigurationPropertiesReportEndpointTests {
 		new ApplicationContextRunner()
 				.withUserConfiguration(EndpointConfigWithShowNever.class, TestPropertiesConfiguration.class)
 				.run(assertProperties("test", (properties) -> {
-					assertThat(properties.get("dbPassword")).isEqualTo("******");
-					assertThat(properties.get("myTestProperty")).isEqualTo("******");
+					assertThat(properties).containsEntry("dbPassword", "******");
+					assertThat(properties).containsEntry("myTestProperty", "******");
 				}));
 	}
 

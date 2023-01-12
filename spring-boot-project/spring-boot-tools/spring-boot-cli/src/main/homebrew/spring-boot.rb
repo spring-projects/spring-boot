@@ -2,19 +2,16 @@ require 'formula'
 
 class SpringBoot < Formula
   homepage 'https://spring.io/projects/spring-boot'
-  url 'https://repo.spring.io/${repo}/org/springframework/boot/spring-boot-cli/${project.version}/spring-boot-cli-${project.version}-bin.tar.gz'
+  url '${repo}/org/springframework/boot/spring-boot-cli/${project.version}/spring-boot-cli-${project.version}-bin.tar.gz'
   version '${project.version}'
   sha256 '${hash}'
-  head 'https://github.com/spring-projects/spring-boot.git'
-
-  if build.head?
-    depends_on 'maven' => :build
-  end
+  head 'https://github.com/spring-projects/spring-boot.git', :branch => "main"
 
   def install
     if build.head?
-      Dir.chdir('spring-boot-cli') { system 'mvn -U -DskipTests=true package' }
-      root = 'spring-boot-cli/target/spring-boot-cli-*-bin/spring-*'
+      system './gradlew spring-boot-project:spring-boot-tools:spring-boot-cli:tar'
+      system 'tar -xzf spring-boot-project/spring-boot-tools/spring-boot-cli/build/distributions/spring-* -C spring-boot-project/spring-boot-tools/spring-boot-cli/build/distributions'
+      root = 'spring-boot-project/spring-boot-tools/spring-boot-cli/build/distributions/spring-*'
     else
       root = '.'
     end

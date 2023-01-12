@@ -31,7 +31,7 @@ org.springframework.boot.autoconfigure.jdbc.HikariDriverConfigurationFailureAnal
 org.springframework.boot.autoconfigure.jooq.NoDslContextBeanFailureAnalyzer,\
 org.springframework.boot.autoconfigure.r2dbc.ConnectionFactoryBeanCreationFailureAnalyzer,\
 org.springframework.boot.autoconfigure.r2dbc.MissingR2dbcPoolDependencyFailureAnalyzer,\
-org.springframework.boot.autoconfigure.r2dbc.MultipleConnectionPoolConfigurationsFailureAnalzyer,\
+org.springframework.boot.autoconfigure.r2dbc.MultipleConnectionPoolConfigurationsFailureAnalyzer,\
 org.springframework.boot.autoconfigure.r2dbc.NoConnectionFactoryBeanFailureAnalyzer
 
 # Template availability providers

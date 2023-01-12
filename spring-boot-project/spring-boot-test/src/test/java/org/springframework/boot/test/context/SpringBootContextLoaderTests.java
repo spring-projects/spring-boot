@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -256,8 +256,8 @@ class SpringBootContextLoaderTests {
 	}
 
 	private void assertKey(Map<String, Object> actual, String key, Object value) {
-		assertThat(actual.containsKey(key)).as("Key '" + key + "' not found").isTrue();
-		assertThat(actual.get(key)).isEqualTo(value);
+		assertThat(actual).as("Key '" + key + "' not found").containsKey(key);
+		assertThat(actual).containsEntry(key, value);
 	}
 
 	@SpringBootTest(properties = { "key=myValue", "anotherKey:anotherValue" }, classes = Config.class)

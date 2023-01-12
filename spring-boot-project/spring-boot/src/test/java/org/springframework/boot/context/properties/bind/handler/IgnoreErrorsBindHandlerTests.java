@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ class IgnoreErrorsBindHandlerTests {
 	@Test
 	void bindWhenIgnoringErrorsShouldBind() {
 		Example bound = this.binder.bind("example", Bindable.of(Example.class), new IgnoreErrorsBindHandler()).get();
-		assertThat(bound.getFoo()).isEqualTo(0);
+		assertThat(bound.getFoo()).isZero();
 	}
 
 	static class Example {
