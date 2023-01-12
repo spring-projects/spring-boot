@@ -304,13 +304,9 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		void addGetter(Method getter) {
-			if (this.getter == null || isBetterGetter(getter)) {
+			if (this.getter == null || this.getter.getName().startsWith("is")) {
 				this.getter = getter;
 			}
-		}
-
-		private boolean isBetterGetter(Method getter) {
-			return this.getter != null && this.getter.getName().startsWith("is");
 		}
 
 		void addSetter(Method setter) {
