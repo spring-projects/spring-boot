@@ -21,11 +21,12 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link NumericQualifierDependencyVersion}.
+ * Tests for {@link MultipleComponentsDependencyVersion}.
  *
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  */
-class NumericQualifierDependencyVersionTests {
+class MultipleComponentsDependencyVersionTests {
 
 	@Test
 	void isNewerThanOnVersionWithNumericQualifierWhenInputHasNoQualifierShouldReturnTrue() {
@@ -47,8 +48,28 @@ class NumericQualifierDependencyVersionTests {
 		assertThat(version("2.9.9.20190806").isNewerThan(version("2.9.9.20190806"))).isFalse();
 	}
 
-	private NumericQualifierDependencyVersion version(String version) {
-		return NumericQualifierDependencyVersion.parse(version);
+	@Test
+	void isNewerThanWorksWith5Components() {
+		assertThat(version("21.4.0.0.1").isNewerThan(version("21.1.0.0"))).isTrue();
+	}
+
+	@Test
+	void isNewerThanWorksWith5ComponentsAndLastComponentIsConsidered() {
+		assertThat(version("21.1.0.0.1").isNewerThan(version("21.1.0.0"))).isTrue();
+	}
+
+	@Test
+	void isSameMajorAndNewerThanWorksWith5Components() {
+		assertThat(version("21.4.0.0.1").isSameMajorAndNewerThan(version("21.1.0.0"))).isTrue();
+	}
+
+	@Test
+	void isSameMinorAndNewerThanWorksWith5Components() {
+		assertThat(version("21.4.0.0.1").isSameMinorAndNewerThan(version("21.1.0.0"))).isFalse();
+	}
+
+	private MultipleComponentsDependencyVersion version(String version) {
+		return MultipleComponentsDependencyVersion.parse(version);
 	}
 
 }
