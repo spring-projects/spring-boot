@@ -171,8 +171,16 @@ public final class InteractiveUpgradeResolver implements UpgradeResolver {
 			return true;
 		}
 		for (ProhibitedVersion prohibitedVersion : prohibitedVersions) {
-			if (prohibitedVersion.getRange()
+			if (prohibitedVersion.getRange() != null && prohibitedVersion.getRange()
 					.containsVersion(new DefaultArtifactVersion(dependencyVersion.toString()))) {
+				return false;
+			}
+			if (prohibitedVersion.getEndsWith() != null
+					&& dependencyVersion.toString().endsWith(prohibitedVersion.getEndsWith())) {
+				return false;
+			}
+			if (prohibitedVersion.getContains() != null
+					&& dependencyVersion.toString().contains(prohibitedVersion.getContains())) {
 				return false;
 			}
 		}
