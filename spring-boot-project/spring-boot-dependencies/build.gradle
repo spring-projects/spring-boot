@@ -985,8 +985,8 @@ bom {
 	}
 	library("MSSQL JDBC", "11.2.2.jre17") {
 		prohibit {
-			endsWith ".jre18"
-			because "it needs Java 18"
+			endsWith([".jre8", ".jre11", ".jre18"])
+			because "we use the .jre17 version"
 		}
 		group("com.microsoft.sqlserver") {
 			modules = [
@@ -1431,6 +1431,10 @@ bom {
 		}
 	}
 	library("Spring Session", "3.0.0") {
+		prohibit {
+			startsWith(["Apple-", "Bean-", "Corn-", "Dragonfruit-"])
+			because "Spring Session switched to numeric version numbers"
+		}
 		group("org.springframework.session") {
 			imports = [
 				"spring-session-bom"
