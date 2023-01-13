@@ -67,7 +67,7 @@ public class UpgradeBom extends DefaultTask {
 
 	private String libraries;
 
-	private int threads = 8;
+	private int threads = 2;
 
 	@Inject
 	public UpgradeBom(BomExtension bom) {
