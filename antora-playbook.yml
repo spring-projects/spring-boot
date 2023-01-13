@@ -1,0 +1,69 @@
+antora:
+  extensions:
+  - require: '@antora/atlas-extension'
+  - require: '@springio/antora-extensions/latest-version-extension'
+  - require: '@springio/antora-extensions/partial-build-extension'
+  - require: '@springio/antora-extensions/publish-docsearch-config-extension'
+  - require: '@springio/antora-extensions/static-page-extension'
+  - require: '@springio/antora-xref-extension'
+  - require: '@springio/antora-zip-contents-collector-extension'
+    version_file: gradle.properties
+    username: ${env.ARTIFACTORY_USERNAME}"
+    password: ${env.ARTIFACTORY_PASSWORD}"
+    locations:
+    - url: https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-docs/${version}/spring-boot-docs-${version}-${name}-${classifier}.zip
+      for-version-type: [snapshot]
+    - url: https://repo.spring.io/milestone/org/springframework/boot/spring-boot-docs/${version}/spring-boot-docs-${version}-${name}-${classifier}.zip
+      for-version-type: [milestone, rc]
+    - url: https://repo.spring.io/release/org/springframework/boot/spring-boot-docs/${version}/spring-boot-docs-${version}-${name}-${classifier}.zip
+      for-version-type: [release]
+    # The root component extension must be last!
+  - require: '@springio/antora-extensions/root-component-extension'
+    root_component_name: spring-boot
+site:
+  title: Spring Boot
+  url: https://docs.spring.io/spring-boot
+  robots: allow
+content:
+  sources:
+  - url: https://github.com/spring-projects/spring-boot
+    branches:
+    - 'main'
+    - '*({0..9}).*({0..9}).x'
+    - '!{0..2}.*'
+    - '!3.{0..2}.*'
+    tags:
+    - 'v*.*.*'
+    - '!v{0..2}*'
+    - '!v3.{0..2}.*'
+    - '!v3.3.0-M1'
+    - '!v3.3.0-M2'
+    start_paths:
+    - spring-boot-project/spring-boot-docs/src/docs/antora
+    - spring-boot-project/spring-boot-actuator-autoconfigure/src/docs/antora
+    - spring-boot-project/spring-boot-tools/spring-boot-gradle-plugin/src/docs/antora
+    - spring-boot-project/spring-boot-tools/spring-boot-maven-plugin/src/docs/antora
+    version: unspecified
+asciidoc:
+  sourcemap: true
+  attributes:
+    chomp: all
+    hide-uri-scheme: '@'
+    page-pagination: ''
+    page-stackoverflow-url: https://stackoverflow.com/tags/spring-boot
+    tabs-sync-option: '@'
+  extensions:
+  - '@asciidoctor/tabs'
+  - '@springio/asciidoctor-extensions'
+  - '@springio/asciidoctor-extensions/configuration-properties-extension'
+  - '@springio/asciidoctor-extensions/section-ids-extension'
+urls:
+  latest_version_segment: ''
+  latest_version_segment_strategy: redirect:to
+  redirect_facility: httpd
+runtime:
+  log:
+    failure_level: warn
+ui:
+  bundle:
+    url: https://github.com/spring-io/antora-ui-spring/releases/download/v0.4.11/ui-bundle.zip

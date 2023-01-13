@@ -1,0 +1,52 @@
+name: Deploy Documentation
+run-name: ${{ format('{0} ({1})', github.workflow, github.event.inputs.build-refname || 'all') }}
+on:
+  workflow_dispatch:
+    inputs:
+      build-refname:
+        description: Enter git refname to build (e.g., 1.0.x).
+        required: false
+      build-version:
+        description: Enter the version being build (e.g. 1.0.3-SNAPSHOT)
+        required: false
+  push:
+    branches: docs-build
+permissions: read-all
+jobs:
+  build:
+    if: github.repository_owner == 'spring-projects'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+    - name: Setup NPM
+      run: npm ci
+    - name: Run Antora
+      env:
+        ALGOLIA_APP_ID: 244V8V9FGG
+        ALGOLIA_API_KEY: 82c7ead946afbac3cf98c32446154691
+        ALGOLIA_INDEX_NAME': spring-boot-docs
+        ARTIFACTORY_USERNAME: ${{ secrets.ARTIFACTORY_USERNAME }}
+        ARTIFACTORY_PASSWORD: ${{ secrets.ARTIFACTORY_PASSWORD }}
+        REFERENCE: ${{ github.event.inputs.build-refname }}
+        BUILD_VERSION: ${{ github.event.inputs.build-refname }}
+      run: npx antora antora-playbook.yml --stacktrace --fetch
+    - name: Sync Documentation
+      uses: spring-io/spring-doc-actions/rsync-antora-reference@v0.0.15
+      with:
+        dry-run: true
+        docs-username: ${{ secrets.DOCS_USERNAME }}
+        docs-host: ${{ secrets.DOCS_HOST }}
+        docs-ssh-key: ${{ secrets.DOCS_SSH_KEY }}
+        docs-ssh-host-key: ${{ secrets.DOCS_SSH_HOST_KEY }}
+        httpdocs-path: /spring-boot/antora/reference
+    - name: Bust Cloudflare Cache
+      uses: spring-io/spring-doc-actions/bust-cloudflare-antora-cache@v0.0.15
+      with:
+        context-root: spring-boot
+        cloudflare-zone-id: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+        cloudflare-cache-token: ${{ secrets.CLOUDFLARE_CACHE_TOKEN }}
