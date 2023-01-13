@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@
 package org.springframework.boot.build.bom.bomr.github;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -71,8 +73,8 @@ final class StandardGitHubRepository implements GitHubRepository {
 	}
 
 	@Override
-	public List<String> getLabels() {
-		return get("labels?per_page=100", (label) -> (String) label.get("name"));
+	public Set<String> getLabels() {
+		return new HashSet<>(get("labels?per_page=100", (label) -> (String) label.get("name")));
 	}
 
 	@Override
