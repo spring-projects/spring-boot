@@ -166,21 +166,26 @@ public final class InteractiveUpgradeResolver implements UpgradeResolver {
 	}
 
 	private boolean isPermitted(DependencyVersion dependencyVersion, List<ProhibitedVersion> prohibitedVersions) {
-		if (prohibitedVersions.isEmpty()) {
-			return true;
-		}
 		for (ProhibitedVersion prohibitedVersion : prohibitedVersions) {
+			String dependencyVersionToString = dependencyVersion.toString();
 			if (prohibitedVersion.getRange() != null && prohibitedVersion.getRange()
-					.containsVersion(new DefaultArtifactVersion(dependencyVersion.toString()))) {
+					.containsVersion(new DefaultArtifactVersion(dependencyVersionToString))) {
 				return false;
 			}
-			if (prohibitedVersion.getEndsWith() != null
-					&& dependencyVersion.toString().endsWith(prohibitedVersion.getEndsWith())) {
-				return false;
+			for (String startsWith : prohibitedVersion.getStartsWith()) {
+				if (dependencyVersionToString.startsWith(startsWith)) {
+					return false;
+				}
 			}
-			if (prohibitedVersion.getContains() != null
-					&& dependencyVersion.toString().contains(prohibitedVersion.getContains())) {
-				return false;
+			for (String endsWith : prohibitedVersion.getEndsWith()) {
+				if (dependencyVersionToString.endsWith(endsWith)) {
+					return false;
+				}
+			}
+			for (String contains : prohibitedVersion.getContains()) {
+				if (dependencyVersionToString.contains(contains)) {
+					return false;
+				}
 			}
 		}
 		return true;
