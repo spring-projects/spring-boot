@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,9 +99,10 @@ class PluginXmlParser {
 
 	private Parameter parseParameter(Node parameterNode, Map<String, String> defaultValues,
 			Map<String, String> userProperties) throws XPathExpressionException {
+		String description = textAt("description", parameterNode);
 		return new Parameter(textAt("name", parameterNode), textAt("type", parameterNode),
 				booleanAt("required", parameterNode), booleanAt("editable", parameterNode),
-				format(textAt("description", parameterNode)), defaultValues.get(textAt("name", parameterNode)),
+				(description != null) ? format(description) : "", defaultValues.get(textAt("name", parameterNode)),
 				userProperties.get(textAt("name", parameterNode)), textAt("since", parameterNode));
 	}
 
