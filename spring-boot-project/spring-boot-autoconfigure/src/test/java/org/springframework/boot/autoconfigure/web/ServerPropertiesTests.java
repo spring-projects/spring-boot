@@ -16,21 +16,14 @@
 
 package org.springframework.boot.autoconfigure.web;
 
-import java.io.IOException;
 import java.net.InetAddress;
-import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 import io.undertow.UndertowOptions;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.core.StandardContext;
 import org.apache.catalina.core.StandardEngine;
@@ -38,8 +31,7 @@ import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.tomcat.util.net.AbstractEndpoint;
-import org.eclipse.jetty.server.HttpChannel;
-import org.eclipse.jetty.server.Request;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.jupiter.api.Test;
@@ -51,21 +43,11 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
-import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyWebServer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.servlet.ServletContextInitializer;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.util.unit.DataSize;
-import org.springframework.web.client.ResponseErrorHandler;
-import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -444,7 +426,6 @@ class ServerPropertiesTests {
 	}
 
 	@Test
-	@Servlet5ClassPathOverrides
 	void jettyThreadPoolPropertyDefaultsShouldMatchServerDefault() {
 		JettyServletWebServerFactory jettyFactory = new JettyServletWebServerFactory(0);
 		JettyWebServer jetty = (JettyWebServer) jettyFactory.getWebServer();
@@ -459,61 +440,12 @@ class ServerPropertiesTests {
 	}
 
 	@Test
-	@Servlet5ClassPathOverrides
 	void jettyMaxHttpFormPostSizeMatchesDefault() {
 		JettyServletWebServerFactory jettyFactory = new JettyServletWebServerFactory(0);
-		JettyWebServer jetty = (JettyWebServer) jettyFactory
-			.getWebServer((ServletContextInitializer) (servletContext) -> servletContext
-				.addServlet("formPost", new HttpServlet() {
-
-					@Override
-					protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-							throws ServletException, IOException {
-						req.getParameterMap();
-					}
-
-				})
-				.addMapping("/form"));
-		jetty.start();
-		org.eclipse.jetty.server.Connector connector = jetty.getServer().getConnectors()[0];
-		final AtomicReference<Throwable> failure = new AtomicReference<>();
-		connector.addBean(new HttpChannel.Listener() {
-
-			@Override
-			public void onDispatchFailure(Request request, Throwable ex) {
-				failure.set(ex);
-			}
-
-		});
-		try {
-			RestTemplate template = new RestTemplate();
-			template.setErrorHandler(new ResponseErrorHandler() {
-
-				@Override
-				public boolean hasError(ClientHttpResponse response) throws IOException {
-					return false;
-				}
-
-				@Override
-				public void handleError(ClientHttpResponse response) throws IOException {
-
-				}
-
-			});
-			HttpHeaders headers = new HttpHeaders();
-			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-			body.add("data", "a".repeat(250000));
-			HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(body, headers);
-			template.postForEntity(URI.create("http://localhost:" + jetty.getPort() + "/form"), entity, Void.class);
-			assertThat(failure.get()).isNotNull();
-			String message = failure.get().getCause().getMessage();
-			int defaultMaxPostSize = Integer.parseInt(message.substring(message.lastIndexOf(' ')).trim());
-			assertThat(this.properties.getJetty().getMaxHttpFormPostSize().toBytes()).isEqualTo(defaultMaxPostSize);
-		}
-		finally {
-			jetty.stop();
-		}
+		JettyWebServer jetty = (JettyWebServer) jettyFactory.getWebServer();
+		Server server = jetty.getServer();
+		assertThat(this.properties.getJetty().getMaxHttpFormPostSize().toBytes())
+			.isEqualTo(((ServletContextHandler) server.getHandler()).getMaxFormContentSize());
 	}
 
 	@Test

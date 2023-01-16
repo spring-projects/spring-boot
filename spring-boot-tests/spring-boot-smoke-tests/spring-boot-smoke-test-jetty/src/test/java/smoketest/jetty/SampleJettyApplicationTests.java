@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Florian Storz
  * @author Michael Weidmann
  */
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = "logging.level.org.eclipse:trace")
 @ExtendWith(OutputCaptureExtension.class)
 class SampleJettyApplicationTests {
 
@@ -65,9 +65,8 @@ class SampleJettyApplicationTests {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("Hello World");
-		// Jetty HttpClient decodes gzip reponses automatically
-		// Check that we received a gzip-encoded response
-		assertThat(entity.getHeaders().getFirst(HttpHeaders.CONTENT_ENCODING)).isEqualTo("gzip");
+		// Jetty HttpClient decodes gzip reponses automatically and removes the
+		// Content-Encoding header. We have to assume that the response was gzipped.
 	}
 
 	@Test

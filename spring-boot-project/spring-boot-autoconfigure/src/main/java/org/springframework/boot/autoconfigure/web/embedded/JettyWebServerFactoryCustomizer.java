@@ -18,7 +18,9 @@ package org.springframework.boot.autoconfigure.web.embedded;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.List;
 
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.CustomRequestLog;
@@ -26,9 +28,6 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.RequestLogWriter;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.handler.HandlerWrapper;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
@@ -131,17 +130,21 @@ public class JettyWebServerFactoryCustomizer
 				setHandlerMaxHttpFormPostSize(server.getHandlers());
 			}
 
-			private void setHandlerMaxHttpFormPostSize(Handler... handlers) {
+			private void setHandlerMaxHttpFormPostSize(List<Handler> handlers) {
 				for (Handler handler : handlers) {
-					if (handler instanceof ContextHandler contextHandler) {
-						contextHandler.setMaxFormContentSize(maxHttpFormPostSize);
-					}
-					else if (handler instanceof HandlerWrapper wrapper) {
-						setHandlerMaxHttpFormPostSize(wrapper.getHandler());
-					}
-					else if (handler instanceof HandlerCollection collection) {
-						setHandlerMaxHttpFormPostSize(collection.getHandlers());
-					}
+					setHandlerMaxHttpFormPostSize(handler);
+				}
+			}
+
+			private void setHandlerMaxHttpFormPostSize(Handler handler) {
+				if (handler instanceof ServletContextHandler contextHandler) {
+					contextHandler.setMaxFormContentSize(maxHttpFormPostSize);
+				}
+				else if (handler instanceof Handler.Wrapper wrapper) {
+					setHandlerMaxHttpFormPostSize(wrapper.getHandler());
+				}
+				else if (handler instanceof Handler.Collection collection) {
+					setHandlerMaxHttpFormPostSize(collection.getHandlers());
 				}
 			}
 

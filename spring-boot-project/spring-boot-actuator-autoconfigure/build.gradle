@@ -161,9 +161,7 @@ dependencies {
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.cache2k:cache2k-api")
-	testImplementation("org.eclipse.jetty:jetty-webapp") {
-		exclude group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api"
-	}
+	testImplementation("org.eclipse.jetty.ee10:jetty-ee10-webapp")
 	testImplementation("org.glassfish.jersey.ext:jersey-spring6")
 	testImplementation("org.glassfish.jersey.media:jersey-media-json-jackson")
 	testImplementation("org.hamcrest:hamcrest")

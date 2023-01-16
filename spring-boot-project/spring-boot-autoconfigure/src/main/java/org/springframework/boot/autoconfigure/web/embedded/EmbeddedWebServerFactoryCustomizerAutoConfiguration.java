@@ -19,9 +19,9 @@ package org.springframework.boot.autoconfigure.web.embedded;
 import io.undertow.Undertow;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.UpgradeProtocol;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.Loader;
-import org.eclipse.jetty.webapp.WebAppContext;
 import org.xnio.SslClientAuthMode;
 import reactor.netty.http.server.HttpServer;
 

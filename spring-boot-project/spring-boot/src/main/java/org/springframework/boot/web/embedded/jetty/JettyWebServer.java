@@ -17,7 +17,6 @@
 package org.springframework.boot.web.embedded.jetty;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -29,8 +28,6 @@ import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
 
 import org.springframework.boot.web.server.GracefulShutdownCallback;
@@ -106,7 +103,7 @@ public class JettyWebServer implements WebServer {
 		if (handler instanceof StatisticsHandler statisticsHandler) {
 			return statisticsHandler;
 		}
-		if (handler instanceof HandlerWrapper handlerWrapper) {
+		if (handler instanceof Handler.Wrapper handlerWrapper) {
 			return findStatisticsHandler(handlerWrapper.getHandler());
 		}
 		return null;
@@ -208,7 +205,8 @@ public class JettyWebServer implements WebServer {
 	}
 
 	private String getContextPath() {
-		return Arrays.stream(this.server.getHandlers())
+		return this.server.getHandlers()
+			.stream()
 			.map(this::findContextHandler)
 			.filter(Objects::nonNull)
 			.map(ContextHandler::getContextPath)
@@ -216,7 +214,7 @@ public class JettyWebServer implements WebServer {
 	}
 
 	private ContextHandler findContextHandler(Handler handler) {
-		while (handler instanceof HandlerWrapper handlerWrapper) {
+		while (handler instanceof Handler.Wrapper handlerWrapper) {
 			if (handler instanceof ContextHandler contextHandler) {
 				return contextHandler;
 			}
@@ -225,17 +223,21 @@ public class JettyWebServer implements WebServer {
 		return null;
 	}
 
-	private void handleDeferredInitialize(Handler... handlers) throws Exception {
+	private void handleDeferredInitialize(List<Handler> handlers) throws Exception {
 		for (Handler handler : handlers) {
-			if (handler instanceof JettyEmbeddedWebAppContext jettyEmbeddedWebAppContext) {
-				jettyEmbeddedWebAppContext.deferredInitialize();
-			}
-			else if (handler instanceof HandlerWrapper handlerWrapper) {
-				handleDeferredInitialize(handlerWrapper.getHandler());
-			}
-			else if (handler instanceof HandlerCollection handlerCollection) {
-				handleDeferredInitialize(handlerCollection.getHandlers());
-			}
+			handleDeferredInitialize(handler);
+		}
+	}
+
+	private void handleDeferredInitialize(Handler handler) throws Exception {
+		if (handler instanceof JettyEmbeddedWebAppContext jettyEmbeddedWebAppContext) {
+			jettyEmbeddedWebAppContext.deferredInitialize();
+		}
+		else if (handler instanceof Handler.Wrapper handlerWrapper) {
+			handleDeferredInitialize(handlerWrapper.getHandler());
+		}
+		else if (handler instanceof Handler.Collection handlerCollection) {
+			handleDeferredInitialize(handlerCollection.getHandlers());
 		}
 	}
 

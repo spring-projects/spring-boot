@@ -9,16 +9,8 @@ dependencies {
 	api("jakarta.websocket:jakarta.websocket-api")
 	api("jakarta.websocket:jakarta.websocket-client-api")
 	api("org.apache.tomcat.embed:tomcat-embed-el")
-	api("org.eclipse.jetty:jetty-servlets")
-	api("org.eclipse.jetty:jetty-webapp") {
-		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
-	}
-	api("org.eclipse.jetty.websocket:websocket-jakarta-server") {
-		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
-		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-websocket-api")
-	}
-	api("org.eclipse.jetty.websocket:websocket-jetty-server") {
-		exclude group: "org.eclipse.jetty", module: "jetty-jndi"
-		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
-	}
+	api("org.eclipse.jetty.ee10:jetty-ee10-servlets")
+	api("org.eclipse.jetty.ee10:jetty-ee10-webapp")
+	api("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jakarta-server")
+	api("org.eclipse.jetty.ee10.websocket:jetty-ee10-websocket-jetty-server")
 }

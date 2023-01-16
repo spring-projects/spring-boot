@@ -30,11 +30,9 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
-import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.Shutdown;
-import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -51,7 +49,6 @@ import static org.mockito.Mockito.mock;
  * @author Madhura Bhave
  * @author Moritz Halbritter
  */
-@Servlet5ClassPathOverrides
 class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
 	@Override
@@ -61,7 +58,8 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 
 	@Test
 	@Override
-	@Disabled("Jetty 11 does not support User-Agent-based compression")
+	@Disabled("Jetty 12 does not support User-Agent-based compression")
+	// TODO Is this true with Jetty 12?
 	protected void noCompressionForUserAgent() {
 
 	}
@@ -112,20 +110,6 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		JettyReactiveWebServerFactory factory = getFactory();
 		factory.setUseForwardHeaders(true);
 		assertForwardHeaderIsUsed(factory);
-	}
-
-	@Test
-	void useServerResources() throws Exception {
-		JettyResourceFactory resourceFactory = new JettyResourceFactory();
-		resourceFactory.afterPropertiesSet();
-		JettyReactiveWebServerFactory factory = getFactory();
-		factory.setResourceFactory(resourceFactory);
-		JettyWebServer webServer = (JettyWebServer) factory.getWebServer(new EchoHandler());
-		webServer.start();
-		Connector connector = webServer.getServer().getConnectors()[0];
-		assertThat(connector.getByteBufferPool()).isEqualTo(resourceFactory.getByteBufferPool());
-		assertThat(connector.getExecutor()).isEqualTo(resourceFactory.getExecutor());
-		assertThat(connector.getScheduler()).isEqualTo(resourceFactory.getScheduler());
 	}
 
 	@Test

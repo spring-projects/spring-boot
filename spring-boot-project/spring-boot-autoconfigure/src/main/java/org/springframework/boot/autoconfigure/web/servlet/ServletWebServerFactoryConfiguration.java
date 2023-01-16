@@ -20,9 +20,9 @@ import io.undertow.Undertow;
 import jakarta.servlet.Servlet;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.UpgradeProtocol;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.Loader;
-import org.eclipse.jetty.webapp.WebAppContext;
 import org.xnio.SslClientAuthMode;
 
 import org.springframework.beans.factory.ObjectProvider;

@@ -46,7 +46,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 @ConditionalOnClass(WebClient.class)
 @AutoConfigureAfter(SslAutoConfiguration.class)
 @Import({ ClientHttpConnectorFactoryConfiguration.ReactorNetty.class,
-		ClientHttpConnectorFactoryConfiguration.JettyClient.class,
 		ClientHttpConnectorFactoryConfiguration.HttpClient5.class,
 		ClientHttpConnectorFactoryConfiguration.JdkClient.class })
 public class ClientHttpConnectorAutoConfiguration {
