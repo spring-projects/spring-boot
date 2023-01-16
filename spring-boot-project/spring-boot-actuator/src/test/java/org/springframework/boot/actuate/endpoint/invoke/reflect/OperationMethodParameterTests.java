@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,8 @@ import javax.annotation.meta.When;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.endpoint.annotation.Selector;
+import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
 
@@ -35,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link OperationMethodParameter}.
  *
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class OperationMethodParameterTests {
 
@@ -47,6 +50,8 @@ class OperationMethodParameterTests {
 
 	private Method exampleJsr305NonNull = ReflectionUtils.findMethod(getClass(), "exampleJsr305NonNull", String.class,
 			String.class);
+
+	private Method exampleAnnotation = ReflectionUtils.findMethod(getClass(), "exampleAnnotation", String.class);
 
 	@Test
 	void getNameShouldReturnName() {
@@ -93,6 +98,15 @@ class OperationMethodParameterTests {
 		assertThat(parameter.isMandatory()).isTrue();
 	}
 
+	@Test
+	void getAnnotationShouldReturnAnnotation() {
+		OperationMethodParameter parameter = new OperationMethodParameter("name",
+				this.exampleAnnotation.getParameters()[0]);
+		Selector annotation = parameter.getAnnotation(Selector.class);
+		assertThat(annotation).isNotNull();
+		assertThat(annotation.match()).isEqualTo(Match.ALL_REMAINING);
+	}
+
 	void example(String one, @Nullable String two) {
 	}
 
@@ -103,6 +117,9 @@ class OperationMethodParameterTests {
 	}
 
 	void exampleJsr305NonNull(String one, @javax.annotation.Nonnull String two) {
+	}
+
+	void exampleAnnotation(@Selector(match = Match.ALL_REMAINING) String allRemaining) {
 	}
 
 	@TypeQualifier
