@@ -2,7 +2,7 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for building WebSocket applications using Spring Framework's WebSocket support"
+description = "Starter for building WebSocket applications using Spring Framework's MVC WebSocket support"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
