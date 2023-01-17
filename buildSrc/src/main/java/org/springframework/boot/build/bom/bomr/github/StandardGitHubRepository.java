@@ -16,6 +16,7 @@
 
 package org.springframework.boot.build.bom.bomr.github;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -54,13 +55,9 @@ final class StandardGitHubRepository implements GitHubRepository {
 		}
 		requestBody.put("body", body);
 		try {
-			Thread.sleep(1000);
-		}
-		catch (InterruptedException ex) {
-			Thread.currentThread().interrupt();
-		}
-		try {
 			ResponseEntity<Map> response = this.rest.postForEntity("issues", requestBody, Map.class);
+			// See gh-30304
+			sleep(Duration.ofSeconds(3));
 			return (Integer) response.getBody().get("number");
 		}
 		catch (RestClientException ex) {
@@ -94,6 +91,15 @@ final class StandardGitHubRepository implements GitHubRepository {
 	private <T> List<T> get(String name, Function<Map<String, Object>, T> mapper) {
 		ResponseEntity<List> response = this.rest.getForEntity(name, List.class);
 		return ((List<Map<String, Object>>) response.getBody()).stream().map(mapper).toList();
+	}
+
+	private static void sleep(Duration duration) {
+		try {
+			Thread.sleep(duration.toMillis());
+		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
 	}
 
 }
