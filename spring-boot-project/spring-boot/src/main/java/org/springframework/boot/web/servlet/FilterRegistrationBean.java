@@ -29,9 +29,9 @@ import org.springframework.util.Assert;
  * The {@link #setFilter(Filter) Filter} must be specified before calling
  * {@link #onStartup(ServletContext)}. Registrations can be associated with
  * {@link #setUrlPatterns URL patterns} and/or servlets (either by {@link #setServletNames
- * name} or via a {@link #setServletRegistrationBeans ServletRegistrationBean}s). When no
- * URL pattern or servlets are specified the filter will be associated to '/*'. The filter
- * name will be deduced if not specified.
+ * name} or through a {@link #setServletRegistrationBeans ServletRegistrationBean}s). When
+ * no URL pattern or servlets are specified the filter will be associated to '/*'. The
+ * filter name will be deduced if not specified.
  *
  * @param <T> the type of {@link Filter} to register
  * @author Phillip Webb

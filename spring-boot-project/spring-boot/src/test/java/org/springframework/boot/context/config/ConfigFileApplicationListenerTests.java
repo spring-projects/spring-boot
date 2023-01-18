@@ -440,7 +440,7 @@ class ConfigFileApplicationListenerTests {
 
 	@Test
 	void profilesAddedToEnvironmentAndViaProperty(CapturedOutput output) {
-		// External profile takes precedence over profile added via the environment
+		// External profile takes precedence over profile added through the environment
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "spring.profiles.active=other");
 		this.environment.addActiveProfile("dev");
 		this.initializer.postProcessEnvironment(this.environment, this.application);

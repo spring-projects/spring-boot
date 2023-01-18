@@ -35,7 +35,7 @@ import org.springframework.core.env.PropertySource;
  * {@link ApplicationContextInitializer} that sets {@link Environment} properties for the
  * ports that {@link RSocketServer} servers are actually listening on. The property
  * {@literal "local.rsocket.server.port"} can be injected directly into tests using
- * {@link Value @Value} or obtained via the {@link Environment}.
+ * {@link Value @Value} or obtained through the {@link Environment}.
  * <p>
  * Properties are automatically propagated up to any parent context.
  *

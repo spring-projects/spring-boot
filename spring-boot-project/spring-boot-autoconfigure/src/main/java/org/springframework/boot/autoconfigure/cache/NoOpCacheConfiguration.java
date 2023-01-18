@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * No-op cache configuration used to disable caching via configuration.
+ * No-op cache configuration used to disable caching through configuration.
  *
  * @author Stephane Nicoll
  */

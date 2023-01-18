@@ -21,7 +21,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceClientConfigurat
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link LettuceClientConfiguration} via a {@link LettuceClientConfigurationBuilder
+ * {@link LettuceClientConfiguration} through a {@link LettuceClientConfigurationBuilder
  * LettuceClientConfiguration.LettuceClientConfigurationBuilder} whilst retaining default
  * auto-configuration.
  *

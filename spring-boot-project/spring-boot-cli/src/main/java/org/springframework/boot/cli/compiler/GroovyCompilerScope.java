@@ -26,7 +26,7 @@ public enum GroovyCompilerScope {
 
 	/**
 	 * Default scope, exposes groovy.jar (loaded from the parent) and the shared cli
-	 * package (loaded via groovy classloader).
+	 * package (loaded through groovy classloader).
 	 */
 	DEFAULT,
 

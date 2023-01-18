@@ -185,7 +185,7 @@ public class StartMojo extends AbstractRunMojo {
 			}
 		}
 		catch (IOException ex) {
-			throw new MojoFailureException("Could not contact Spring Boot application via JMX on port " + this.jmxPort
+			throw new MojoFailureException("Could not contact Spring Boot application over JMX on port " + this.jmxPort
 					+ ". Please make sure that no other process is using that port", ex);
 		}
 		catch (Exception ex) {

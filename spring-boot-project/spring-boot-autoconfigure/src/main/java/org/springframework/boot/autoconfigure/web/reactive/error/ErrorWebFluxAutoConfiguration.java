@@ -40,7 +40,7 @@ import org.springframework.web.reactive.config.WebFluxConfigurer;
 import org.springframework.web.reactive.result.view.ViewResolver;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} to render errors via a WebFlux
+ * {@link EnableAutoConfiguration Auto-configuration} to render errors through a WebFlux
  * {@link org.springframework.web.server.WebExceptionHandler}.
  *
  * @author Brian Clozel

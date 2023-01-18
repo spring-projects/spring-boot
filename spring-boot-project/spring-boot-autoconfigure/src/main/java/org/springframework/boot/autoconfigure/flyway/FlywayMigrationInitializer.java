@@ -23,7 +23,7 @@ import org.springframework.core.Ordered;
 import org.springframework.util.Assert;
 
 /**
- * {@link InitializingBean} used to trigger {@link Flyway} migration via the
+ * {@link InitializingBean} used to trigger {@link Flyway} migration through the
  * {@link FlywayMigrationStrategy}.
  *
  * @author Phillip Webb

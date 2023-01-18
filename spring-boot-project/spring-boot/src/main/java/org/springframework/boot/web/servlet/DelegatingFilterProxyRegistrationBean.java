@@ -39,7 +39,7 @@ import org.springframework.web.filter.DelegatingFilterProxy;
  * marked {@code @Lazy} it won't be instantiated at all until the filter is called.
  * <p>
  * Registrations can be associated with {@link #setUrlPatterns URL patterns} and/or
- * servlets (either by {@link #setServletNames name} or via a
+ * servlets (either by {@link #setServletNames name} or through a
  * {@link #setServletRegistrationBeans ServletRegistrationBean}s). When no URL pattern or
  * servlets are specified the filter will be associated to '/*'. The targetBeanName will
  * be used as the filter name if not otherwise specified.

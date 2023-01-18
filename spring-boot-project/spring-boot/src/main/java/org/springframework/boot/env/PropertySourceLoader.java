@@ -24,7 +24,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
- * Strategy interface located via {@link SpringFactoriesLoader} and used to load a
+ * Strategy interface located through {@link SpringFactoriesLoader} and used to load a
  * {@link PropertySource}.
  *
  * @author Dave Syer

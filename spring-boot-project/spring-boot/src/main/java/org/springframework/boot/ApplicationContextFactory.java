@@ -77,7 +77,7 @@ public interface ApplicationContextFactory {
 
 	/**
 	 * Creates an {@code ApplicationContextFactory} that will create contexts by
-	 * instantiating the given {@code contextClass} via its primary constructor.
+	 * instantiating the given {@code contextClass} through its primary constructor.
 	 * @param contextClass the context class
 	 * @return the factory that will instantiate the context class
 	 * @see BeanUtils#instantiateClass(Class)

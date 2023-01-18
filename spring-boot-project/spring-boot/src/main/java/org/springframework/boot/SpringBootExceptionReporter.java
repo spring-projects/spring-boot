@@ -22,7 +22,7 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
  * Callback interface used to support custom reporting of {@link SpringApplication}
- * startup errors. {@link SpringBootExceptionReporter reporters} are loaded via the
+ * startup errors. {@link SpringBootExceptionReporter reporters} are loaded through the
  * {@link SpringFactoriesLoader} and must declare a public constructor with a single
  * {@link ConfigurableApplicationContext} parameter.
  *

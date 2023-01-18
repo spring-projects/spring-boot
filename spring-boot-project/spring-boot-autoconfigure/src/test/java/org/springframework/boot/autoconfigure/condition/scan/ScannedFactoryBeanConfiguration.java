@@ -22,7 +22,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Configuration for a factory bean produced by a bean method on a configuration class
- * found via component scanning.
+ * found through component scanning.
  *
  * @author Andy Wilkinson
  */

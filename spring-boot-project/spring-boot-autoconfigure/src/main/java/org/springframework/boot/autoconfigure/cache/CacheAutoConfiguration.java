@@ -49,7 +49,7 @@ import org.springframework.util.Assert;
  * {@link CacheManager} if necessary when caching is enabled via
  * {@link EnableCaching @EnableCaching}.
  * <p>
- * Cache store can be auto-detected or specified explicitly via configuration.
+ * Cache store can be auto-detected or specified explicitly through configuration.
  *
  * @author Stephane Nicoll
  * @since 1.3.0

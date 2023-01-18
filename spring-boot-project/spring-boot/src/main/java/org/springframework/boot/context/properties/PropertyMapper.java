@@ -181,7 +181,8 @@ public final class PropertyMapper {
 		}
 
 		/**
-		 * Return an adapted version of the source changed via the given adapter function.
+		 * Return an adapted version of the source changed through the given adapter
+		 * function.
 		 * @param <R> the resulting type
 		 * @param adapter the adapter to apply
 		 * @return a new adapted source instance

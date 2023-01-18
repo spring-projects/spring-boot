@@ -21,7 +21,8 @@ import org.neo4j.driver.Config.ConfigBuilder;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link Config} via a {@link ConfigBuilder} whilst retaining default auto-configuration.
+ * {@link Config} through a {@link ConfigBuilder} whilst retaining default
+ * auto-configuration.
  *
  * @author Stephane Nicoll
  * @since 2.4.0

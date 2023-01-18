@@ -35,8 +35,8 @@ import org.springframework.core.annotation.Order;
 /**
  * {@link ASTTransformation} to resolve beans declarations inside application source
  * files. Users only need to define a <code>beans{}</code> DSL element, and this
- * transformation will remove it and make it accessible to the Spring application via an
- * interface.
+ * transformation will remove it and make it accessible to the Spring application through
+ * an interface.
  *
  * @author Dave Syer
  * @since 1.0.0

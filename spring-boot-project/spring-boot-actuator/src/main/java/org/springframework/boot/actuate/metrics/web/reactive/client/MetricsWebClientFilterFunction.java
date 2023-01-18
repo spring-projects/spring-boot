@@ -35,7 +35,7 @@ import org.springframework.web.reactive.function.client.ExchangeFilterFunction;
 import org.springframework.web.reactive.function.client.ExchangeFunction;
 
 /**
- * {@link ExchangeFilterFunction} applied via a {@link MetricsWebClientCustomizer} to
+ * {@link ExchangeFilterFunction} applied through a {@link MetricsWebClientCustomizer} to
  * record metrics.
  *
  * @author Brian Clozel

@@ -337,8 +337,7 @@ class WebFluxAutoConfigurationTests {
 					assertThat(context.getBean("webFluxValidator"))
 							.isSameAs(context.getBean(ValidatorWebFluxConfigurer.class).validator);
 					// Primary Spring validator is the auto-configured one as the WebFlux
-					// one has been
-					// customized via a WebFluxConfigurer
+					// one has been customized through a WebFluxConfigurer
 					assertThat(context.getBean(Validator.class)).isEqualTo(context.getBean("defaultValidator"));
 				});
 	}

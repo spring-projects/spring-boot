@@ -34,7 +34,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Encapsulates a payload data sent via a HTTP tunnel.
+ * Encapsulates a payload data sent over a HTTP tunnel.
  *
  * @author Phillip Webb
  * @since 1.3.0

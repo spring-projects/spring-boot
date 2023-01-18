@@ -27,8 +27,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Base endpoint element condition. An element can be disabled globally via the
- * {@code defaults} name or individually via the name of the element.
+ * Base endpoint element condition. An element can be disabled globally through the
+ * {@code defaults} name or individually through the name of the element.
  *
  * @author Stephane Nicoll
  * @author Madhura Bhave

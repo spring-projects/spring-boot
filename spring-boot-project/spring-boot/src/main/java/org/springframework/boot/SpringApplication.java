@@ -513,7 +513,7 @@ public class SpringApplication {
 	/**
 	 * Configure which profiles are active (or active by default) for this application
 	 * environment. Additional profiles may be activated during configuration file
-	 * processing via the {@code spring.profiles.active} property.
+	 * processing through the {@code spring.profiles.active} property.
 	 * @param environment this application's environment
 	 * @param args arguments passed to the {@code run} method
 	 * @see #configureEnvironment(ConfigurableEnvironment, String[])
@@ -1305,8 +1305,8 @@ public class SpringApplication {
 
 	/**
 	 * A basic main that can be used to launch an application. This method is useful when
-	 * application sources are defined via a {@literal --spring.main.sources} command line
-	 * argument.
+	 * application sources are defined through a {@literal --spring.main.sources} command
+	 * line argument.
 	 * <p>
 	 * Most developers will want to define their own main method and call the
 	 * {@link #run(Class, String...) run} method instead.

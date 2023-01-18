@@ -357,7 +357,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			Set<Profile> includedViaProperty = getProfiles(binder, INCLUDE_PROFILES_PROPERTY);
 			List<Profile> otherActiveProfiles = getOtherActiveProfiles(activatedViaProperty, includedViaProperty);
 			this.profiles.addAll(otherActiveProfiles);
-			// Any pre-existing active profiles set via property sources (e.g.
+			// Any pre-existing active profiles set through property sources (e.g.
 			// System properties) take precedence over those added in config files.
 			this.profiles.addAll(includedViaProperty);
 			addActiveProfiles(activatedViaProperty);

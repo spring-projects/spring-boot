@@ -21,7 +21,7 @@ import io.r2dbc.spi.ConnectionFactoryOptions.Builder;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link ConnectionFactoryOptions} via a {@link Builder} whilst retaining default
+ * {@link ConnectionFactoryOptions} through a {@link Builder} whilst retaining default
  * auto-configuration.
  *
  * @author Mark Paluch

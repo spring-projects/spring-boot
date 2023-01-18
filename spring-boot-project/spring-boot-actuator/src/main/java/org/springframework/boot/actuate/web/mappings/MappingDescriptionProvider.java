@@ -22,7 +22,7 @@ import org.springframework.context.ApplicationContext;
 
 /**
  * A {@link MappingDescriptionProvider} provides a {@link List} of mapping descriptions
- * via implementation-specific introspection of an application context.
+ * through implementation-specific introspection of an application context.
  *
  * @author Andy Wilkinson
  * @since 2.0.0

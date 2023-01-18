@@ -312,7 +312,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	}
 
 	/**
-	 * Allows the DataSource to be managed by the container and obtained via JNDI. The
+	 * Allows the DataSource to be managed by the container and obtained through JNDI. The
 	 * {@code URL}, {@code driverClassName}, {@code username} and {@code password} fields
 	 * will be ignored when using JNDI lookups.
 	 * @param jndiName the JNDI name

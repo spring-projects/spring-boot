@@ -34,7 +34,8 @@ import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 
 /**
- * A collection of {@link ConfigDataLoader} instances loaded via {@code spring.factories}.
+ * A collection of {@link ConfigDataLoader} instances loaded through
+ * {@code spring.factories}.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
