@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
+import org.springframework.boot.configurationsample.record.RecordWithGetter;
 import org.springframework.boot.configurationsample.recursive.RecursiveProperties;
 import org.springframework.boot.configurationsample.simple.ClassWithNestedProperties;
 import org.springframework.boot.configurationsample.simple.DeprecatedFieldSingleProperty;
@@ -71,6 +72,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Jonas Keßler
  * @author Pavel Anisimov
  * @author Scott Frederick
+ * @author Moritz Halbritter
  */
 class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGenerationTests {
 
@@ -474,6 +476,13 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		ConfigurationMetadata metadata = compile(InnerClassWithPrivateConstructor.class);
 		assertThat(metadata).has(Metadata.withProperty("config.nested.name"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("config.nested.ignored"));
+	}
+
+	@Test
+	void recordWithGetter() {
+		ConfigurationMetadata metadata = compile(RecordWithGetter.class);
+		assertThat(metadata).has(Metadata.withProperty("record-with-getter.alpha"));
+		assertThat(metadata).doesNotHave(Metadata.withProperty("record-with-getter.bravo"));
 	}
 
 }
