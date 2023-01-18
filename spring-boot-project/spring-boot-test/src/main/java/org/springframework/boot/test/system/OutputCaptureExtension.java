@@ -31,7 +31,7 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 /**
  * JUnit Jupiter {@code @Extension} to capture {@link System#out System.out} and
  * {@link System#err System.err}. Can be registered for an entire test class or for an
- * individual test method via {@link ExtendWith @ExtendWith}. This extension provides
+ * individual test method through {@link ExtendWith @ExtendWith}. This extension provides
  * {@linkplain ParameterResolver parameter resolution} for a {@link CapturedOutput}
  * instance which can be used to assert that the correct output was written.
  * <p>

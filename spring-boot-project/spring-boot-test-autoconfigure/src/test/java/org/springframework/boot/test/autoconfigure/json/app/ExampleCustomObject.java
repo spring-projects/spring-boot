@@ -17,7 +17,7 @@
 package org.springframework.boot.test.autoconfigure.json.app;
 
 /**
- * Example object to read/write as JSON via {@link ExampleJsonComponent}.
+ * Example object to read/write as JSON through {@link ExampleJsonComponent}.
  *
  * @author Phillip Webb
  */

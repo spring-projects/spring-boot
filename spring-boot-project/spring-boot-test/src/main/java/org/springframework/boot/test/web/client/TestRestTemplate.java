@@ -70,8 +70,9 @@ import org.springframework.web.util.UriTemplateHandler;
 /**
  * Convenient alternative of {@link RestTemplate} that is suitable for integration tests.
  * {@code TestRestTemplate} is fault-tolerant. This means that 4xx and 5xx do not result
- * in an exception being thrown and can instead be detected via the {@link ResponseEntity
- * response entity} and its {@link ResponseEntity#getStatusCode() status code}.
+ * in an exception being thrown and can instead be detected through the
+ * {@link ResponseEntity response entity} and its {@link ResponseEntity#getStatusCode()
+ * status code}.
  * <p>
  * A {@code TestRestTemplate} can optionally carry Basic authentication headers. If Apache
  * Http Client 4.3.2 or better is available (recommended) it will be used as the client,

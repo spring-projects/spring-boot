@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Conditional;
 
 /**
  * {@link Conditional @Conditional} that only matches when a GraphQL schema is defined for
- * the application, via schema files or infrastructure beans.
+ * the application, through schema files or infrastructure beans.
  *
  * @author Brian Clozel
  * @since 2.7.0

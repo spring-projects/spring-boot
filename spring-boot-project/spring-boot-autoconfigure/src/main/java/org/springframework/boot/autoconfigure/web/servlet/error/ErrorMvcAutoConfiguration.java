@@ -72,8 +72,8 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.util.HtmlUtils;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} to render errors via an MVC error
- * controller.
+ * {@link EnableAutoConfiguration Auto-configuration} to render errors through an MVC
+ * error controller.
  *
  * @author Dave Syer
  * @author Andy Wilkinson

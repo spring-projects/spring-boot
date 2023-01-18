@@ -306,7 +306,7 @@ public class IntegrationProperties {
 		public static class Server {
 
 			/**
-			 * Whether to handle message mapping for RSocket via Spring Integration.
+			 * Whether to handle message mapping for RSocket through Spring Integration.
 			 */
 			private boolean messageMappingEnabled;
 

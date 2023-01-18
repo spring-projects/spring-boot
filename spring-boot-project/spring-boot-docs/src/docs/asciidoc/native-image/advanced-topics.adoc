@@ -49,7 +49,7 @@ NOTE: Your executable jar must include AOT generated assets such as generated cl
 
 [[native-image.advanced.converting-executable-jars.buildpacks]]
 ==== Using Buildpacks
-Spring Boot applications usually use Cloud Native Buildpacks via the Maven (`mvn spring-boot:build-image`), or Gradle (`gradle bootBuildImage`) integrations.
+Spring Boot applications usually use Cloud Native Buildpacks through the Maven (`mvn spring-boot:build-image`) or Gradle (`gradle bootBuildImage`) integrations.
 You can, however, also use https://buildpacks.io//docs/tools/pack/[`pack`] to turn an AOT processed Spring Boot executable jar into a native container image.
 
 

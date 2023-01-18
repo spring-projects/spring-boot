@@ -48,7 +48,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * <p>
  * By default, tests annotated with {@code JsonTest} will also initialize
  * {@link JacksonTester}, {@link JsonbTester} and {@link GsonTester} fields. More
- * fine-grained control can be provided via the
+ * fine-grained control can be provided through the
  * {@link AutoConfigureJsonTesters @AutoConfigureJsonTesters} annotation.
  * <p>
  * When using JUnit 4, this annotation should be used in combination with

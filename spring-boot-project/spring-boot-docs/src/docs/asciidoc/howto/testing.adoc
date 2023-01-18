@@ -42,7 +42,7 @@ The above configuration allows Neo4j-related beans in the application to communi
 [[howto.testing.slice-tests]]
 === Structure `@Configuration` classes for inclusion in slice tests
 Slice tests work by restricting Spring Framework's component scanning to a limited set of components based on their type.
-For any beans that are not created via component scanning, for example, beans that are created using the `@Bean` annotation, slice tests will not be able to include/exclude them from the application context.
+For any beans that are not created through component scanning, for example, beans that are created using the `@Bean` annotation, slice tests will not be able to include/exclude them from the application context.
 Consider this example:
 
 [source,java,indent=0,subs="verbatim"]

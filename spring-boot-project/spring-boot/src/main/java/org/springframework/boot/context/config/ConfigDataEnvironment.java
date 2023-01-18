@@ -51,7 +51,7 @@ import org.springframework.util.StringUtils;
  * {@link ConfigDataEnvironmentContributors} by wrapping property sources from the Spring
  * {@link Environment} and adding the initial set of locations.
  * <p>
- * The initial locations can be influenced via the {@link #LOCATION_PROPERTY},
+ * The initial locations can be influenced through the {@link #LOCATION_PROPERTY},
  * {@value #ADDITIONAL_LOCATION_PROPERTY} and {@value #IMPORT_PROPERTY} properties. If no
  * explicit properties are set, the {@link #DEFAULT_SEARCH_LOCATIONS} will be used.
  *

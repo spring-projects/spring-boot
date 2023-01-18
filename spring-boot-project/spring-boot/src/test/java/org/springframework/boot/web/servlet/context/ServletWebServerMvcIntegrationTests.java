@@ -189,7 +189,8 @@ class ServletWebServerMvcIntegrationTests {
 
 		@Bean
 		DispatcherServlet dispatcherServlet() {
-			// Can configure dispatcher servlet here as would usually do via init-params
+			// Can configure dispatcher servlet here as would usually do through
+			// init-params
 			return new DispatcherServlet();
 		}
 

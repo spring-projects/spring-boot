@@ -28,7 +28,7 @@ import org.springframework.r2dbc.connection.init.DatabasePopulator;
 import org.springframework.util.StringUtils;
 
 /**
- * Configuration for initializing an SQL database accessed via an R2DBC
+ * Configuration for initializing an SQL database accessed through an R2DBC
  * {@link ConnectionFactory}.
  *
  * @author Andy Wilkinson

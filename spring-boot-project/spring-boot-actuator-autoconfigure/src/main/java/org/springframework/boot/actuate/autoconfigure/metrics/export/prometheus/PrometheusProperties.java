@@ -105,7 +105,7 @@ public class PrometheusProperties {
 	public static class Pushgateway {
 
 		/**
-		 * Enable publishing via a Prometheus Pushgateway.
+		 * Enable publishing over a Prometheus Pushgateway.
 		 */
 		private Boolean enabled = false;
 

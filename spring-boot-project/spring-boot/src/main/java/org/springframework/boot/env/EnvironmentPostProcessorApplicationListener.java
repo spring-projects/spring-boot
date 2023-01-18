@@ -53,7 +53,7 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 
 	/**
 	 * Create a new {@link EnvironmentPostProcessorApplicationListener} with
-	 * {@link EnvironmentPostProcessor} classes loaded via {@code spring.factories}.
+	 * {@link EnvironmentPostProcessor} classes loaded through {@code spring.factories}.
 	 */
 	public EnvironmentPostProcessorApplicationListener() {
 		this(EnvironmentPostProcessorsFactory::fromSpringFactories);

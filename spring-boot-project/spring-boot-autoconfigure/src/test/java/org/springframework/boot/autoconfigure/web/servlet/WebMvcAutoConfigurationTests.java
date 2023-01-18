@@ -763,7 +763,7 @@ class WebMvcAutoConfigurationTests {
 					assertThat(context).getBeanNames(Validator.class).containsOnly("defaultValidator", "mvcValidator");
 					assertThat(context.getBean("mvcValidator")).isSameAs(context.getBean(MvcValidator.class).validator);
 					// Primary Spring validator is the auto-configured one as the MVC one
-					// has been customized via a WebMvcConfigurer
+					// has been customized through a WebMvcConfigurer
 					assertThat(context.getBean(Validator.class)).isEqualTo(context.getBean("defaultValidator"));
 				});
 	}

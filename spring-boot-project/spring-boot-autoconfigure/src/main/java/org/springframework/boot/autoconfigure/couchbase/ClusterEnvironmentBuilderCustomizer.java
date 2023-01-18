@@ -17,12 +17,12 @@
 package org.springframework.boot.autoconfigure.couchbase;
 
 import com.couchbase.client.java.env.ClusterEnvironment;
+import com.couchbase.client.java.env.ClusterEnvironment.Builder;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link ClusterEnvironment} via a
- * {@link com.couchbase.client.java.env.ClusterEnvironment.Builder
- * ClusterEnvironment.Builder} whilst retaining default auto-configuration.
+ * {@link ClusterEnvironment} through a {@link Builder ClusterEnvironment.Builder} whilst
+ * retaining default auto-configuration.
  *
  * @author Stephane Nicoll
  * @since 2.3.0
@@ -31,8 +31,7 @@ import com.couchbase.client.java.env.ClusterEnvironment;
 public interface ClusterEnvironmentBuilderCustomizer {
 
 	/**
-	 * Customize the {@link com.couchbase.client.java.env.ClusterEnvironment.Builder
-	 * ClusterEnvironment.Builder}.
+	 * Customize the {@link Builder ClusterEnvironment.Builder}.
 	 * @param builder the builder to customize
 	 */
 	void customize(ClusterEnvironment.Builder builder);

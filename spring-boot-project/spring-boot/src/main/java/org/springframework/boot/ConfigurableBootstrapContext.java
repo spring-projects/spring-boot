@@ -17,7 +17,7 @@
 package org.springframework.boot;
 
 /**
- * A {@link BootstrapContext} that also provides configuration methods via the
+ * A {@link BootstrapContext} that also provides configuration methods through the
  * {@link BootstrapRegistry} interface.
  *
  * @author Phillip Webb

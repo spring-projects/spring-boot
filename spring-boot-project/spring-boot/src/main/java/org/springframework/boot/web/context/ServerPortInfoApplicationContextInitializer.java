@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
  * {@link ApplicationContextInitializer} that sets {@link Environment} properties for the
  * ports that {@link WebServer} servers are actually listening on. The property
  * {@literal "local.server.port"} can be injected directly into tests using
- * {@link Value @Value} or obtained via the {@link Environment}.
+ * {@link Value @Value} or obtained through the {@link Environment}.
  * <p>
  * If the {@link WebServerInitializedEvent} has a
  * {@link WebServerApplicationContext#getServerNamespace() server namespace} , it will be

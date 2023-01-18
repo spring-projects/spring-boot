@@ -29,7 +29,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link WebMvcTest @WebMvcTest} when loading resources via the
+ * Tests for {@link WebMvcTest @WebMvcTest} when loading resources through the
  * {@link ServletContext} with {@link WebAppConfiguration @WebAppConfiguration}.
  *
  * @author Lorenzo Dee

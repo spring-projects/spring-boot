@@ -324,7 +324,7 @@ public class JmsProperties {
 	 *
 	 * <p>
 	 * {@link jakarta.jms.Session#SESSION_TRANSACTED} is not defined as we take care of
-	 * this already via a call to {@code setSessionTransacted}.
+	 * this already through a call to {@code setSessionTransacted}.
 	 */
 	public enum AcknowledgeMode {
 

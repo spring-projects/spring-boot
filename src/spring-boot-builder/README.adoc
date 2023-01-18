@@ -5,6 +5,6 @@ This directory contains a Cloud Native Buildpacks https://buildpacks.io/docs/con
 == Creating the builder
 
 * Install the https://buildpacks.io/docs/install-pack/[pack CLI]
-* Authenticate to projects.registry.vmware.com via `docker login`
+* Authenticate to projects.registry.vmware.com through `docker login`
 * Use the `build.sh` create the necessary images and push them to the registry
 

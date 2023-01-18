@@ -26,7 +26,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 
 /**
- * Resolves any message parameters via {@link MessageSource} and then interpolates a
+ * Resolves any message parameters through {@link MessageSource} and then interpolates a
  * message using the underlying {@link MessageInterpolator}.
  *
  * @author Dmytro Nosan

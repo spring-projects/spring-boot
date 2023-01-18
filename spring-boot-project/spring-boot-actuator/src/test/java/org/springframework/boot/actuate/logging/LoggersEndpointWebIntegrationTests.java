@@ -47,7 +47,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 /**
- * Integration tests for {@link LoggersEndpoint} when exposed via Jersey, Spring MVC, and
+ * Integration tests for {@link LoggersEndpoint} when exposed over Jersey, Spring MVC, and
  * WebFlux.
  *
  * @author Ben Hale

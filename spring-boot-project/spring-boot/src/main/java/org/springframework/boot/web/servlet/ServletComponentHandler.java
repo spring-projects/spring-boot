@@ -28,7 +28,7 @@ import org.springframework.core.type.filter.TypeFilter;
 import org.springframework.util.Assert;
 
 /**
- * Abstract base class for handlers of Servlet components discovered via classpath
+ * Abstract base class for handlers of Servlet components discovered through classpath
  * scanning.
  *
  * @author Andy Wilkinson

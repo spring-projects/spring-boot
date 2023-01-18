@@ -43,8 +43,8 @@ public class ImmutableSimpleProperties {
 	// An interface can still be injected because it might have a converter
 	private final Comparator<?> comparator;
 
-	// Even if it is not exposed, we're still offering a way to bind the value via the
-	// constructor so it should be present in the metadata
+	// Even if it is not exposed, we're still offering a way to bind the value through the
+	// constructor, so it should be present in the metadata
 	@SuppressWarnings("unused")
 	private final Long counter;
 

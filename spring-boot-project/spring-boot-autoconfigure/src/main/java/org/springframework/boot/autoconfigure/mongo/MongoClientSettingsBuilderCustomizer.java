@@ -20,7 +20,7 @@ import com.mongodb.MongoClientSettings.Builder;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link com.mongodb.MongoClientSettings} via a {@link Builder
+ * {@link com.mongodb.MongoClientSettings} through a {@link Builder
  * MongoClientSettings.Builder} whilst retaining default auto-configuration.
  *
  * @author Mark Paluch

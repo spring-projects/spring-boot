@@ -25,17 +25,17 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.expose;
 public enum EndpointExposure {
 
 	/**
-	 * Exposed via JMX endpoint.
+	 * Exposed over a JMX endpoint.
 	 */
 	JMX("health"),
 
 	/**
-	 * Exposed via a web endpoint.
+	 * Exposed over a web endpoint.
 	 */
 	WEB("health"),
 
 	/**
-	 * Exposed on Cloud Foundry via `/cloudfoundryapplication`.
+	 * Exposed on Cloud Foundry over `/cloudfoundryapplication`.
 	 * @since 2.6.4
 	 */
 	CLOUD_FOUNDRY("*");

@@ -27,7 +27,8 @@ public class MyApplication extends SpringBootServletInitializer {
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		// Customize the application or call application.sources(...) to add sources
-		// Since our example is itself a @Configuration class (via @SpringBootApplication)
+		// Since our example is itself a @Configuration class (through
+		// @SpringBootApplication)
 		// we actually do not need to override this method.
 		return application;
 	}

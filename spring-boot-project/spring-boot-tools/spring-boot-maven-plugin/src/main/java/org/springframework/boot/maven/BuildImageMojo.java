@@ -102,21 +102,23 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	private Image image;
 
 	/**
-	 * Alias for {@link Image#name} to support configuration via command-line property.
+	 * Alias for {@link Image#name} to support configuration through command-line
+	 * property.
 	 * @since 2.3.0
 	 */
 	@Parameter(property = "spring-boot.build-image.imageName", readonly = true)
 	String imageName;
 
 	/**
-	 * Alias for {@link Image#builder} to support configuration via command-line property.
+	 * Alias for {@link Image#builder} to support configuration through command-line
+	 * property.
 	 * @since 2.3.0
 	 */
 	@Parameter(property = "spring-boot.build-image.builder", readonly = true)
 	String imageBuilder;
 
 	/**
-	 * Alias for {@link Image#runImage} to support configuration via command-line
+	 * Alias for {@link Image#runImage} to support configuration through command-line
 	 * property.
 	 * @since 2.3.1
 	 */
@@ -124,7 +126,7 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	String runImage;
 
 	/**
-	 * Alias for {@link Image#cleanCache} to support configuration via command-line
+	 * Alias for {@link Image#cleanCache} to support configuration through command-line
 	 * property.
 	 * @since 2.4.0
 	 */
@@ -132,20 +134,22 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	Boolean cleanCache;
 
 	/**
-	 * Alias for {@link Image#pullPolicy} to support configuration via command-line
+	 * Alias for {@link Image#pullPolicy} to support configuration through command-line
 	 * property.
 	 */
 	@Parameter(property = "spring-boot.build-image.pullPolicy", readonly = true)
 	PullPolicy pullPolicy;
 
 	/**
-	 * Alias for {@link Image#publish} to support configuration via command-line property.
+	 * Alias for {@link Image#publish} to support configuration through command-line
+	 * property.
 	 */
 	@Parameter(property = "spring-boot.build-image.publish", readonly = true)
 	Boolean publish;
 
 	/**
-	 * Alias for {@link Image#network} to support configuration via command-line property.
+	 * Alias for {@link Image#network} to support configuration through command-line
+	 * property.
 	 * @since 2.6.0
 	 */
 	@Parameter(property = "spring-boot.build-image.network", readonly = true)

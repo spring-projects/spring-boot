@@ -46,7 +46,7 @@ import org.springframework.util.ReflectionUtils;
 
 /**
  * {@link RuntimeHintsRegistrar} that can be used to register {@link ReflectionHints} for
- * {@link Bindable} types, discovering any nested type it may expose via a property.
+ * {@link Bindable} types, discovering any nested type it may expose through a property.
  * <p>
  * This class can be used as a base-class, or instantiated using the {@code forTypes}
  * factory methods.

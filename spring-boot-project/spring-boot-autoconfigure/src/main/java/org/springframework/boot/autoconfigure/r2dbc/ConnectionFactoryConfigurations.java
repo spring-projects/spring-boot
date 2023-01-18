@@ -125,7 +125,7 @@ abstract class ConnectionFactoryConfigurations {
 
 	/**
 	 * {@link Condition} that checks that a {@link ConnectionPool} is requested. The
-	 * condition matches if pooling was opt-in via configuration. If any of the
+	 * condition matches if pooling was opt-in through configuration. If any of the
 	 * spring.r2dbc.pool.* properties have been configured, an exception is thrown if the
 	 * URL also contains pooling-related options or io.r2dbc.pool.ConnectionPool is not on
 	 * the class path.

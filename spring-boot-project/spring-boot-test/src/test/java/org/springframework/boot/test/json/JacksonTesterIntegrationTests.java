@@ -88,9 +88,9 @@ class JacksonTesterIntegrationTests {
 	void parseSpecialCharactersTest() throws Exception {
 		JacksonTester.initFields(this, new ObjectMapper());
 		// Confirms that the handling of special characters is symmetrical between
-		// the serialization (via the JacksonTester) and the parsing (via json-path). By
-		// default json-path uses SimpleJson as its parser, which has a slightly different
-		// behavior to Jackson and breaks the symmetry. JacksonTester
+		// the serialization (through the JacksonTester) and the parsing (through
+		// json-path). By default json-path uses SimpleJson as its parser, which has a
+		// slightly different behavior to Jackson and breaks the symmetry. JacksonTester
 		// configures json-path to use Jackson for evaluating the path expressions and
 		// restores the symmetry. See gh-15727
 		String stringWithSpecialCharacters = "\u0006\u007F";

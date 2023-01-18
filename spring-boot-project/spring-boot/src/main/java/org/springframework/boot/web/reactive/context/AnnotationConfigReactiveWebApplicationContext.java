@@ -33,7 +33,7 @@ import org.springframework.stereotype.Component;
  * <p>
  * Note: In case of multiple {@code @Configuration} classes, later {@code @Bean}
  * definitions will override ones defined in earlier loaded files. This can be leveraged
- * to deliberately override certain bean definitions via an extra Configuration class.
+ * to deliberately override certain bean definitions through an extra Configuration class.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll

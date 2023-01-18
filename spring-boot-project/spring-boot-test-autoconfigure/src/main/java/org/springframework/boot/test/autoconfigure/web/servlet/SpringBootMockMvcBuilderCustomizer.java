@@ -47,8 +47,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 /**
  * {@link MockMvcBuilderCustomizer} for a typical Spring Boot application. Usually applied
- * automatically via {@link AutoConfigureMockMvc @AutoConfigureMockMvc}, but may also be
- * used directly.
+ * automatically through {@link AutoConfigureMockMvc @AutoConfigureMockMvc}, but may also
+ * be used directly.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
