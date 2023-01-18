@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,8 @@ import org.springframework.util.Assert;
  */
 public class ImageBanner implements Banner {
 
+	private static final String SYSTEM_PROPERTY_JAVA_AWT_HEADLESS = "java.awt.headless";
+
 	private static final String PROPERTY_PREFIX = "spring.banner.image.";
 
 	private static final Log logger = LogFactory.getLog(ImageBanner.class);
@@ -73,23 +75,16 @@ public class ImageBanner implements Banner {
 
 	@Override
 	public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
-		String headless = System.getProperty("java.awt.headless");
 		try {
-			System.setProperty("java.awt.headless", "true");
+			if (System.getProperty(SYSTEM_PROPERTY_JAVA_AWT_HEADLESS) == null) {
+				System.setProperty(SYSTEM_PROPERTY_JAVA_AWT_HEADLESS, "true");
+			}
 			printBanner(environment, out);
 		}
 		catch (Throwable ex) {
 			logger.warn(LogMessage.format("Image banner not printable: %s (%s: '%s')", this.image, ex.getClass(),
 					ex.getMessage()));
 			logger.debug("Image banner printing failure", ex);
-		}
-		finally {
-			if (headless == null) {
-				System.clearProperty("java.awt.headless");
-			}
-			else {
-				System.setProperty("java.awt.headless", headless);
-			}
 		}
 	}
 
