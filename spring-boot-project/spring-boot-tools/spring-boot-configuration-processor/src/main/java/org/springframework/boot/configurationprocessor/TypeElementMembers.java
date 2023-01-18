@@ -168,7 +168,7 @@ class TypeElementMembers {
 	}
 
 	private String getAccessorName(String methodName) {
-		if (this.isRecord) {
+		if (this.isRecord && this.fields.containsKey(methodName)) {
 			return methodName;
 		}
 		String name;

@@ -74,6 +74,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Andy Wilkinson
  * @author Kris De Volder
  * @author Jonas Keßler
+ * @author Moritz Halbritter
  */
 class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGenerationTests {
 
@@ -502,6 +503,23 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		ConfigurationMetadata metadata = compile(exampleRecord);
 		assertThat(metadata).has(Metadata.withProperty("multi.some-string"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("multi.some-integer"));
+	}
+
+	@Test
+	@EnabledForJreRange(min = JRE.JAVA_16)
+	void recordWithGetter(@TempDir File temp) throws IOException {
+		File exampleRecord = new File(temp, "ExampleRecord.java");
+		try (PrintWriter writer = new PrintWriter(new FileWriter(exampleRecord))) {
+			writer.println(
+					"@org.springframework.boot.configurationsample.ConfigurationProperties(\"record-with-getter\")");
+			writer.println("@org.springframework.boot.configurationsample.ConstructorBinding");
+			writer.println("public record ExampleRecord(String alpha) {");
+			writer.println("    public String getBravo() { return alpha; }");
+			writer.println("}");
+		}
+		ConfigurationMetadata metadata = compile(exampleRecord);
+		assertThat(metadata).has(Metadata.withProperty("record-with-getter.alpha"));
+		assertThat(metadata).doesNotHave(Metadata.withProperty("record-with-getter.bravo"));
 	}
 
 }
