@@ -224,6 +224,28 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	}
 
 	@Test
+	@EnabledForJreRange(min = JRE.JAVA_16)
+	void deprecatedPropertyOnRecord(@TempDir File temp) throws IOException {
+		File exampleRecord = new File(temp, "DeprecatedRecord.java");
+		try (PrintWriter writer = new PrintWriter(new FileWriter(exampleRecord))) {
+			writer.println("@org.springframework.boot.configurationsample.ConstructorBinding");
+			writer.println(
+					"@org.springframework.boot.configurationsample.ConfigurationProperties(\"deprecated-record\")");
+			writer.println("public record DeprecatedRecord(String alpha, String bravo) {");
+			writer.println("@java.lang.Deprecated");
+			writer.println(
+					"@org.springframework.boot.configurationsample.DeprecatedConfigurationProperty(reason = \"some-reason\")");
+			writer.println("public String alpha() { return this.alpha; }");
+			writer.println("}");
+		}
+		ConfigurationMetadata metadata = compile(exampleRecord);
+		assertThat(metadata).has(Metadata.withGroup("deprecated-record"));
+		assertThat(metadata).has(
+				Metadata.withProperty("deprecated-record.alpha", String.class).withDeprecation("some-reason", null));
+		assertThat(metadata).has(Metadata.withProperty("deprecated-record.bravo", String.class));
+	}
+
+	@Test
 	void typBoxing() {
 		Class<?> type = BoxingPojo.class;
 		ConfigurationMetadata metadata = compile(type);

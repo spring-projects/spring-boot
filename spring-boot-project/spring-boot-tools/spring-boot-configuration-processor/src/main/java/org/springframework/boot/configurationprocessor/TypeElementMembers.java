@@ -38,14 +38,19 @@ import javax.lang.model.util.ElementFilter;
  *
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class TypeElementMembers {
 
 	private static final String OBJECT_CLASS_NAME = Object.class.getName();
 
+	private static final String RECORD_CLASS_NAME = "java.lang.Record";
+
 	private final MetadataGenerationEnvironment env;
 
 	private final TypeElement targetType;
+
+	private final boolean isRecord;
 
 	private final Map<String, VariableElement> fields = new LinkedHashMap<>();
 
@@ -56,18 +61,20 @@ class TypeElementMembers {
 	TypeElementMembers(MetadataGenerationEnvironment env, TypeElement targetType) {
 		this.env = env;
 		this.targetType = targetType;
+		this.isRecord = RECORD_CLASS_NAME.equals(targetType.getSuperclass().toString());
 		process(targetType);
 	}
 
 	private void process(TypeElement element) {
-		for (ExecutableElement method : ElementFilter.methodsIn(element.getEnclosedElements())) {
-			processMethod(method);
-		}
 		for (VariableElement field : ElementFilter.fieldsIn(element.getEnclosedElements())) {
 			processField(field);
 		}
+		for (ExecutableElement method : ElementFilter.methodsIn(element.getEnclosedElements())) {
+			processMethod(method);
+		}
 		Element superType = this.env.getTypeUtils().asElement(element.getSuperclass());
-		if (superType instanceof TypeElement && !OBJECT_CLASS_NAME.equals(superType.toString())) {
+		if (superType instanceof TypeElement && !OBJECT_CLASS_NAME.equals(superType.toString())
+				&& !RECORD_CLASS_NAME.equals(superType.toString())) {
 			process((TypeElement) superType);
 		}
 	}
@@ -122,12 +129,22 @@ class TypeElementMembers {
 	}
 
 	private boolean isGetter(ExecutableElement method) {
+		boolean hasParameters = !method.getParameters().isEmpty();
+		boolean returnsVoid = TypeKind.VOID == method.getReturnType().getKind();
+		if (hasParameters || returnsVoid) {
+			return false;
+		}
 		String name = method.getSimpleName().toString();
-		return ((name.startsWith("get") && name.length() > 3) || (name.startsWith("is") && name.length() > 2))
-				&& method.getParameters().isEmpty() && (TypeKind.VOID != method.getReturnType().getKind());
+		if (this.isRecord && this.fields.containsKey(name)) {
+			return true;
+		}
+		return (name.startsWith("get") && name.length() > 3) || (name.startsWith("is") && name.length() > 2);
 	}
 
 	private boolean isSetter(ExecutableElement method) {
+		if (this.isRecord) {
+			return false;
+		}
 		final String name = method.getSimpleName().toString();
 		return (name.startsWith("set") && name.length() > 3 && method.getParameters().size() == 1
 				&& isSetterReturnType(method));
@@ -151,16 +168,29 @@ class TypeElementMembers {
 	}
 
 	private String getAccessorName(String methodName) {
-		String name = methodName.startsWith("is") ? methodName.substring(2) : methodName.substring(3);
+		if (this.isRecord) {
+			return methodName;
+		}
+		String name;
+		if (methodName.startsWith("is")) {
+			name = methodName.substring(2);
+		}
+		else if (methodName.startsWith("get")) {
+			name = methodName.substring(3);
+		}
+		else if (methodName.startsWith("set")) {
+			name = methodName.substring(3);
+		}
+		else {
+			throw new AssertionError("methodName must start with 'is', 'get' or 'set', was '" + methodName + "'");
+		}
 		name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
 		return name;
 	}
 
 	private void processField(VariableElement field) {
 		String name = field.getSimpleName().toString();
-		if (!this.fields.containsKey(name)) {
-			this.fields.put(name, field);
-		}
+		this.fields.putIfAbsent(name, field);
 	}
 
 	Map<String, VariableElement> getFields() {
