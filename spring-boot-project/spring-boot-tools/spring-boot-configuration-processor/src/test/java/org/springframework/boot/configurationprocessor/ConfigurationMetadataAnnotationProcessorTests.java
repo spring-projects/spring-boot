@@ -24,6 +24,7 @@ import org.springframework.boot.configurationprocessor.metadata.Metadata;
 import org.springframework.boot.configurationsample.recursive.RecursiveProperties;
 import org.springframework.boot.configurationsample.simple.ClassWithNestedProperties;
 import org.springframework.boot.configurationsample.simple.DeprecatedFieldSingleProperty;
+import org.springframework.boot.configurationsample.simple.DeprecatedRecord;
 import org.springframework.boot.configurationsample.simple.DeprecatedSingleProperty;
 import org.springframework.boot.configurationsample.simple.DescriptionProperties;
 import org.springframework.boot.configurationsample.simple.HierarchicalProperties;
@@ -217,6 +218,16 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(Metadata.withGroup("not.deprecated").fromSource(type));
 		assertThat(metadata).has(Metadata.withProperty("not.deprecated.flag", Boolean.class).withDefaultValue(false)
 				.withNoDeprecation().fromSource(type));
+	}
+
+	@Test
+	void deprecatedPropertyOnRecord() {
+		Class<?> type = DeprecatedRecord.class;
+		ConfigurationMetadata metadata = compile(type);
+		assertThat(metadata).has(Metadata.withGroup("deprecated-record").fromSource(type));
+		assertThat(metadata).has(Metadata.withProperty("deprecated-record.alpha", String.class).fromSource(type)
+				.withDeprecation("some-reason", null));
+		assertThat(metadata).has(Metadata.withProperty("deprecated-record.bravo", String.class).fromSource(type));
 	}
 
 	@Test

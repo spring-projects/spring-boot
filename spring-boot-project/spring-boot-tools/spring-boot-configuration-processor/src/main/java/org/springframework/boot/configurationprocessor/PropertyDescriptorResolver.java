@@ -59,23 +59,22 @@ class PropertyDescriptorResolver {
 		if (factoryMethod != null) {
 			return resolveJavaBeanProperties(type, factoryMethod, members);
 		}
-		return resolve(ConfigurationPropertiesTypeElement.of(type, this.environment), factoryMethod, members);
+		return resolve(ConfigurationPropertiesTypeElement.of(type, this.environment), members);
 	}
 
-	private Stream<PropertyDescriptor<?>> resolve(ConfigurationPropertiesTypeElement type,
-			ExecutableElement factoryMethod, TypeElementMembers members) {
+	private Stream<PropertyDescriptor<?>> resolve(ConfigurationPropertiesTypeElement type, TypeElementMembers members) {
 		if (type.isConstructorBindingEnabled()) {
 			ExecutableElement constructor = type.getBindConstructor();
 			if (constructor != null) {
-				return resolveConstructorProperties(type.getType(), factoryMethod, members, constructor);
+				return resolveConstructorProperties(type.getType(), members, constructor);
 			}
 			return Stream.empty();
 		}
-		return resolveJavaBeanProperties(type.getType(), factoryMethod, members);
+		return resolveJavaBeanProperties(type.getType(), null, members);
 	}
 
-	Stream<PropertyDescriptor<?>> resolveConstructorProperties(TypeElement type, ExecutableElement factoryMethod,
-			TypeElementMembers members, ExecutableElement constructor) {
+	Stream<PropertyDescriptor<?>> resolveConstructorProperties(TypeElement type, TypeElementMembers members,
+			ExecutableElement constructor) {
 		Map<String, PropertyDescriptor<?>> candidates = new LinkedHashMap<>();
 		constructor.getParameters().forEach((parameter) -> {
 			String name = getParameterName(parameter);
@@ -83,8 +82,8 @@ class PropertyDescriptorResolver {
 			ExecutableElement getter = members.getPublicGetter(name, propertyType);
 			ExecutableElement setter = members.getPublicSetter(name, propertyType);
 			VariableElement field = members.getFields().get(name);
-			register(candidates, new ConstructorParameterPropertyDescriptor(type, factoryMethod, parameter, name,
-					propertyType, field, getter, setter));
+			register(candidates, new ConstructorParameterPropertyDescriptor(type, null, parameter, name, propertyType,
+					field, getter, setter));
 		});
 		return candidates.values().stream();
 	}
