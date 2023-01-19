@@ -983,7 +983,7 @@ bom {
 			]
 		}
 	}
-	library("MSSQL JDBC", "11.2.2.jre17") {
+	library("MSSQL JDBC", "11.2.3.jre17") {
 		prohibit {
 			endsWith([".jre8", ".jre11", ".jre18"])
 			because "we use the .jre17 version"
