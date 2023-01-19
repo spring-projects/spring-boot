@@ -5,6 +5,7 @@ org.springframework.boot.WebApplicationType.WebApplicationTypeRuntimeHints,\
 org.springframework.boot.context.config.ConfigDataLocationRuntimeHints,\
 org.springframework.boot.context.config.ConfigDataPropertiesRuntimeHints,\
 org.springframework.boot.env.PropertySourceRuntimeHints,\
+org.springframework.boot.jdbc.DataSourceBuilderRuntimeHints,\
 org.springframework.boot.json.JacksonRuntimeHints,\
 org.springframework.boot.logging.java.JavaLoggingSystemRuntimeHints,\
 org.springframework.boot.logging.logback.LogbackRuntimeHints,\
