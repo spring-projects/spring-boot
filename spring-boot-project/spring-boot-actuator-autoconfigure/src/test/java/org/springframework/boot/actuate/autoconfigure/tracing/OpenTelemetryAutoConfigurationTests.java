@@ -80,6 +80,15 @@ class OpenTelemetryAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void samplerIsParentBased() {
+		this.contextRunner.run((context) -> {
+			Sampler sampler = context.getBean(Sampler.class);
+			assertThat(sampler).isNotNull();
+			assertThat(sampler.getDescription()).startsWith("ParentBased{");
+		});
+	}
+
 	@ParameterizedTest
 	@ValueSource(strings = { "io.micrometer.tracing.otel", "io.opentelemetry.sdk", "io.opentelemetry.api" })
 	void shouldNotSupplyBeansIfDependencyIsMissing(String packageName) {

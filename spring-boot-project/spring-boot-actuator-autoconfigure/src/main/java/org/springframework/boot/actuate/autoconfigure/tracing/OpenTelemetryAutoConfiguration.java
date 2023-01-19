@@ -112,7 +112,8 @@ public class OpenTelemetryAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	Sampler otelSampler() {
-		return Sampler.traceIdRatioBased(this.tracingProperties.getSampling().getProbability());
+		Sampler rootSampler = Sampler.traceIdRatioBased(this.tracingProperties.getSampling().getProbability());
+		return Sampler.parentBased(rootSampler);
 	}
 
 	@Bean
