@@ -1182,7 +1182,7 @@ bom {
 			]
 		}
 	}
-	library("RxJava3", "3.1.5") {
+	library("RxJava3", "3.1.6") {
 		group("io.reactivex.rxjava3") {
 			modules = [
 				"rxjava"
