@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -171,21 +171,17 @@ class TypeElementMembers {
 		if (this.isRecord && this.fields.containsKey(methodName)) {
 			return methodName;
 		}
-		String name;
 		if (methodName.startsWith("is")) {
-			name = methodName.substring(2);
+			return lowerCaseFirstCharacter(methodName.substring(2));
 		}
-		else if (methodName.startsWith("get")) {
-			name = methodName.substring(3);
+		if (methodName.startsWith("get") || methodName.startsWith("set")) {
+			return lowerCaseFirstCharacter(methodName.substring(3));
 		}
-		else if (methodName.startsWith("set")) {
-			name = methodName.substring(3);
-		}
-		else {
-			throw new AssertionError("methodName must start with 'is', 'get' or 'set', was '" + methodName + "'");
-		}
-		name = Character.toLowerCase(name.charAt(0)) + name.substring(1);
-		return name;
+		throw new IllegalStateException("methodName must start with 'is', 'get' or 'set', was '" + methodName + "'");
+	}
+
+	private String lowerCaseFirstCharacter(String string) {
+		return Character.toLowerCase(string.charAt(0)) + string.substring(1);
 	}
 
 	private void processField(VariableElement field) {
