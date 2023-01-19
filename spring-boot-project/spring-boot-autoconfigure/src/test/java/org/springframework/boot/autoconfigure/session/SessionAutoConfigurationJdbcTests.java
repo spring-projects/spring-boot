@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -252,7 +252,6 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 				ON CONFLICT (SESSION_PRIMARY_ID, ATTRIBUTE_NAME)
 				DO UPDATE SET ATTRIBUTE_BYTES = EXCLUDED.ATTRIBUTE_BYTES
 				""";
-
 		this.contextRunner.withUserConfiguration(CustomJdbcIndexedSessionRepositoryCustomizerConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(JdbcSessionConfiguration.class)).run((context) -> {
 					JdbcIndexedSessionRepository repository = validateSessionRepository(context,
