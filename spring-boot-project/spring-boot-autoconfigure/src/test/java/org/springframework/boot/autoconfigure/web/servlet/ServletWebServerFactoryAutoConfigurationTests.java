@@ -501,7 +501,10 @@ class ServletWebServerFactoryAutoConfigurationTests {
 
 		@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
 		ServletRegistrationBean<DispatcherServlet> dispatcherRegistration(DispatcherServlet dispatcherServlet) {
-			return new ServletRegistrationBean<>(dispatcherServlet, "/app/*");
+			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(dispatcherServlet,
+					"/app/*");
+			registration.setName(DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
+			return registration;
 		}
 
 	}
