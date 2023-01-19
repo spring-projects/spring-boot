@@ -1370,17 +1370,10 @@ bom {
 			]
 		}
 	}
-	library("MySQL", "8.0.31") {
+	library("MySQL", "8.0.32") {
 		group("com.mysql") {
 			modules = [
 				"mysql-connector-j" {
-					exclude group: "com.google.protobuf", module: "protobuf-java"
-				}
-			]
-		}
-		group("mysql") {
-			modules = [
-				"mysql-connector-java" {
 					exclude group: "com.google.protobuf", module: "protobuf-java"
 				}
 			]
