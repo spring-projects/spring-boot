@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
 import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
+import org.springframework.session.jdbc.PostgreSqlJdbcIndexedSessionRepositoryCustomizer;
 import org.springframework.session.jdbc.config.annotation.SpringSessionDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -243,6 +244,23 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 						.hasBean("customInitializer"));
 	}
 
+	@Test
+	void whenTheUserDefinesTheirOwnJdbcIndexedSessionRepositoryCustomizerThenDefaultConfigurationIsOverwritten() {
+		String expectedCreateSessionAttributeQuery = """
+				INSERT INTO SPRING_SESSION_ATTRIBUTES (SESSION_PRIMARY_ID, ATTRIBUTE_NAME, ATTRIBUTE_BYTES)
+				VALUES (?, ?, ?)
+				ON CONFLICT (SESSION_PRIMARY_ID, ATTRIBUTE_NAME)
+				DO UPDATE SET ATTRIBUTE_BYTES = EXCLUDED.ATTRIBUTE_BYTES
+				""";
+		this.contextRunner.withUserConfiguration(CustomJdbcIndexedSessionRepositoryCustomizerConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(JdbcSessionConfiguration.class)).run((context) -> {
+					JdbcIndexedSessionRepository repository = validateSessionRepository(context,
+							JdbcIndexedSessionRepository.class);
+					assertThat(repository).hasFieldOrPropertyWithValue("createSessionAttributeQuery",
+							expectedCreateSessionAttributeQuery);
+				});
+	}
+
 	@Configuration
 	static class SessionDataSourceConfiguration {
 
@@ -285,6 +303,16 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 		@Bean
 		DataSourceScriptDatabaseInitializer customInitializer(DataSource dataSource) {
 			return new DataSourceScriptDatabaseInitializer(dataSource, new DatabaseInitializationSettings());
+		}
+
+	}
+
+	@Configuration
+	static class CustomJdbcIndexedSessionRepositoryCustomizerConfiguration {
+
+		@Bean
+		PostgreSqlJdbcIndexedSessionRepositoryCustomizer postgreSqlJdbcIndexedSessionRepositoryCustomizer() {
+			return new PostgreSqlJdbcIndexedSessionRepositoryCustomizer();
 		}
 
 	}
