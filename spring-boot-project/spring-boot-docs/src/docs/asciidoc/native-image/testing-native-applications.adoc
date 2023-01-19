@@ -46,7 +46,7 @@ Or you might consider using a project like Selenium to check your application's 
 [[native-image.testing.with-native-build-tools]]
 === Testing With Native Build Tools
 GraalVM Native Build Tools includes the ability to run tests inside a native image.
-This can be helpful when you want to deeply test that the internals of you application work in a GraalVM native image.
+This can be helpful when you want to deeply test that the internals of your application work in a GraalVM native image.
 
 Generating the native image that contains the tests to run can be a time-consuming operation, so most developers will probably prefer to use the JVM locally.
 They can, however, be very useful as part of a CI pipeline.
