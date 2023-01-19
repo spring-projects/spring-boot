@@ -1357,7 +1357,7 @@ bom {
 			]
 		}
 	}
-	library("MSSQL JDBC", "10.2.2.jre8") {
+	library("MSSQL JDBC", "10.2.3.jre8") {
 		prohibit {
 			endsWith ".jre8-preview"
 		}
