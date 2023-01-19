@@ -972,7 +972,7 @@ bom {
 			]
 		}
 	}
-	library("MongoDB", "4.8.1") {
+	library("MongoDB", "4.8.2") {
 		group("org.mongodb") {
 			modules = [
 				"bson",
