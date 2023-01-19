@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,13 +46,17 @@ class LayersIndex extends ArrayList<Map<String, List<String>>> {
 		String indexPath = (archiveFile.getName().endsWith(".war") ? "WEB-INF/layers.idx" : "BOOT-INF/layers.idx");
 		try (JarFile jarFile = new JarFile(archiveFile)) {
 			ZipEntry indexEntry = jarFile.getEntry(indexPath);
-			LoaderOptions loaderOptions = new LoaderOptions();
-			loaderOptions.setAllowDuplicateKeys(false);
-			loaderOptions.setMaxAliasesForCollections(Integer.MAX_VALUE);
-			loaderOptions.setAllowRecursiveKeys(true);
-			Yaml yaml = new Yaml(new Constructor(LayersIndex.class, loaderOptions));
+			Yaml yaml = new Yaml(new Constructor(LayersIndex.class, getLoaderOptions()));
 			return yaml.load(jarFile.getInputStream(indexEntry));
 		}
+	}
+
+	private static LoaderOptions getLoaderOptions() {
+		LoaderOptions loaderOptions = new LoaderOptions();
+		loaderOptions.setAllowDuplicateKeys(false);
+		loaderOptions.setMaxAliasesForCollections(Integer.MAX_VALUE);
+		loaderOptions.setAllowRecursiveKeys(true);
+		return loaderOptions;
 	}
 
 }
