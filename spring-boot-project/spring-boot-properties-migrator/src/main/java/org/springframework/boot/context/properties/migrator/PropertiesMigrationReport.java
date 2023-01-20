@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,12 +23,11 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
-
 /**
  * Provides a properties migration report.
  *
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  */
 class PropertiesMigrationReport {
 
@@ -87,8 +86,7 @@ class PropertiesMigrationReport {
 			report.append(String.format("Property source '%s':%n", name));
 			properties.sort(PropertyMigration.COMPARATOR);
 			properties.forEach((property) -> {
-				ConfigurationMetadataProperty metadata = property.getMetadata();
-				report.append(String.format("\tKey: %s%n", metadata.getId()));
+				report.append(String.format("\tKey: %s%n", property.getProperty().getName()));
 				if (property.getLineNumber() != null) {
 					report.append(String.format("\t\tLine: %d%n", property.getLineNumber()));
 				}

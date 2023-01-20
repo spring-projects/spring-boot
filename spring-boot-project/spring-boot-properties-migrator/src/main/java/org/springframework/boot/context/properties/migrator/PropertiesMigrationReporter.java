@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.boot.context.properties.source.IterableConfigurationPropertySource;
 import org.springframework.boot.env.OriginTrackedMapPropertySource;
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -41,6 +42,7 @@ import org.springframework.util.StringUtils;
  * Report on {@link PropertyMigration properties migration}.
  *
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  */
 class PropertiesMigrationReporter {
 
@@ -88,9 +90,14 @@ class PropertiesMigrationReporter {
 		for (PropertyMigration candidate : renamed) {
 			OriginTrackedValue value = OriginTrackedValue.of(candidate.getProperty().getValue(),
 					candidate.getProperty().getOrigin());
-			content.put(candidate.getMetadata().getDeprecation().getReplacement(), value);
+			content.put(candidate.getNewPropertyName(), value);
 		}
 		return new OriginTrackedMapPropertySource(target, content);
+	}
+
+	private boolean isMapType(ConfigurationMetadataProperty property) {
+		String type = property.getType();
+		return type != null && type.startsWith(Map.class.getName());
 	}
 
 	private Map<String, List<PropertyMigration>> getMatchingProperties(
@@ -98,14 +105,25 @@ class PropertiesMigrationReporter {
 		MultiValueMap<String, PropertyMigration> result = new LinkedMultiValueMap<>();
 		List<ConfigurationMetadataProperty> candidates = this.allProperties.values().stream().filter(filter)
 				.collect(Collectors.toList());
-		getPropertySourcesAsMap().forEach((name, source) -> candidates.forEach((metadata) -> {
+		getPropertySourcesAsMap().forEach((propertySourceName, propertySource) -> candidates.forEach((metadata) -> {
 			ConfigurationPropertyName metadataName = ConfigurationPropertyName.isValid(metadata.getId())
 					? ConfigurationPropertyName.of(metadata.getId())
 					: ConfigurationPropertyName.adapt(metadata.getId(), '.');
-			ConfigurationProperty configurationProperty = source.getConfigurationProperty(metadataName);
-			if (configurationProperty != null) {
-				result.add(name,
-						new PropertyMigration(configurationProperty, metadata, determineReplacementMetadata(metadata)));
+			// Direct match
+			ConfigurationProperty match = propertySource.getConfigurationProperty(metadataName);
+			if (match != null) {
+				result.add(propertySourceName,
+						new PropertyMigration(match, metadata, determineReplacementMetadata(metadata), false));
+			}
+			// Prefix match for maps
+			if (isMapType(metadata) && propertySource instanceof IterableConfigurationPropertySource) {
+				IterableConfigurationPropertySource iterableSource = (IterableConfigurationPropertySource) propertySource;
+				iterableSource.stream().filter(metadataName::isAncestorOf).map(propertySource::getConfigurationProperty)
+						.forEach((property) -> {
+							ConfigurationMetadataProperty replacement = determineReplacementMetadata(metadata);
+							result.add(propertySourceName,
+									new PropertyMigration(property, metadata, replacement, true));
+						});
 			}
 		}));
 		return result;
@@ -125,8 +143,12 @@ class PropertiesMigrationReporter {
 
 	private ConfigurationMetadataProperty detectMapValueReplacement(String fullId) {
 		int lastDot = fullId.lastIndexOf('.');
-		if (lastDot != -1) {
-			return this.allProperties.get(fullId.substring(0, lastDot));
+		if (lastDot == -1) {
+			return null;
+		}
+		ConfigurationMetadataProperty metadata = this.allProperties.get(fullId.substring(0, lastDot));
+		if (metadata != null && isMapType(metadata)) {
+			return metadata;
 		}
 		return null;
 	}

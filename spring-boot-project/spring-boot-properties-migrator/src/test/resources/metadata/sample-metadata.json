@@ -36,6 +36,24 @@
         "replacement": "test.four.test",
         "level": "error"
       }
+    },
+    {
+      "name": "custom.map-no-replacement",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "deprecation": {
+        "reason": "This is no longer supported."
+      }
+    },
+    {
+      "name": "custom.map-with-replacement",
+      "type": "java.util.Map<java.lang.String,java.lang.String>",
+      "deprecation": {
+        "replacement": "custom.the-map-replacement"
+      }
+    },
+    {
+      "name": "custom.the-map-replacement",
+      "type": "java.util.Map<java.lang.String,java.lang.String>"
     }
   ]
 }
