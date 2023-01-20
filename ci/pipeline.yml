@@ -7,11 +7,12 @@ anchors:
   registry-image-resource-source: &registry-image-resource-source
     username: ((docker-hub-username))
     password: ((docker-hub-password))
+  ci-registry-image-resource-source: &ci-registry-image-resource-source
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
     tag: ((milestone))
     registry_mirror:
       host: ((docker-hub-mirror))
-      username: ((docker-hub-mirror-username))
-      password: ((docker-hub-mirror-password))
   gradle-enterprise-task-params: &gradle-enterprise-task-params
     GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
     GRADLE_ENTERPRISE_CACHE_URL: ((gradle_enterprise_cache_url))
@@ -96,37 +97,41 @@ anchors:
     GRADLE_PUBLISH_SECRET: ((gradle-publish-secret))
   docker-hub-mirror-vars: &docker-hub-mirror-vars
     docker-hub-mirror: ((docker-hub-mirror))
-    docker-hub-mirror-username: ((docker-hub-mirror-username))
-    docker-hub-mirror-password: ((docker-hub-mirror-password))
 resource_types:
 - name: registry-image
   type: registry-image
   source:
+    <<: *registry-image-resource-source
     repository: concourse/registry-image-resource
     tag: 1.7.1
 - name: artifactory-resource
   type: registry-image
   source:
+    <<: *registry-image-resource-source
     repository: springio/artifactory-resource
     tag: 0.0.17
 - name: pull-request
   type: registry-image
   source:
+    <<: *registry-image-resource-source
     repository: teliaoss/github-pr-resource
     tag: v0.23.0
 - name: github-status-resource
   type: registry-image
   source:
+    <<: *registry-image-resource-source
     repository: dpb587/github-status-resource
     tag: master
 - name: slack-notification
   type: registry-image
   source:
+    <<: *registry-image-resource-source
     repository: cfcommunity/slack-notification-resource
     tag: latest
 - name: github-release
   type: registry-image
   source:
+    <<: *registry-image-resource-source
     repository: concourse/github-release-resource
     tag: 1.8.0
 resources:
@@ -179,13 +184,13 @@ resources:
   type: registry-image
   icon: docker
   source:
-    <<: *registry-image-resource-source
+    <<: *ci-registry-image-resource-source
     repository: ((docker-hub-organization))/spring-boot-ci
 - name: ci-image-jdk19
   type: registry-image
   icon: docker
   source:
-    <<: *registry-image-resource-source
+    <<: *ci-registry-image-resource-source
     repository: ((docker-hub-organization))/spring-boot-ci-jdk19
 - name: paketo-builder-base-image
   type: registry-image
