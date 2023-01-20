@@ -51,6 +51,7 @@ public interface OperationParameter {
 	 * @param annotation class of the annotation
 	 * @return annotation value
 	 * @param <T> type of the annotation
+	 * @since 2.7.8
 	 */
 	<T extends Annotation> T getAnnotation(Class<T> annotation);
 
