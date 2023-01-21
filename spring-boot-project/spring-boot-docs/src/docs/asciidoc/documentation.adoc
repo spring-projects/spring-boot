@@ -32,4 +32,6 @@ include::documentation/io.adoc[]
 
 include::documentation/container-images.adoc[]
 
+include::documentation/actuator.adoc[]
+
 include::documentation/advanced.adoc[]
