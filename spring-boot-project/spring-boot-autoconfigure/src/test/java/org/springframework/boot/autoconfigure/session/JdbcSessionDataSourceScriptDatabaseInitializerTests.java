@@ -20,9 +20,12 @@ import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
@@ -43,6 +46,31 @@ class JdbcSessionDataSourceScriptDatabaseInitializerTests {
 		assertThat(settings.getSchemaLocations())
 				.containsOnly("classpath:org/springframework/session/jdbc/schema-test.sql");
 		then(dataSource).shouldHaveNoInteractions();
+	}
+
+	@Test
+	void test_validateConfigurationThrowsForInvalidConfiguration() {
+		DataSource dataSource = mock(DataSource.class);
+		JdbcSessionProperties properties = new JdbcSessionProperties();
+		properties.setPlatform("mysql");
+		JdbcSessionDataSourceScriptDatabaseInitializer initializer =
+				new JdbcSessionDataSourceScriptDatabaseInitializer(dataSource, properties) {
+					@Override
+					protected boolean isEmbeddedDatabase() {
+						return false;
+					}
+				};
+
+		assertThatCode(initializer::validateConfiguration).doesNotThrowAnyException();
+
+		properties.setInitializeSchema(DatabaseInitializationMode.ALWAYS);
+		assertThatCode(initializer::validateConfiguration).doesNotThrowAnyException();
+
+		properties.setTableName(properties.getTableName() + "_CUSTOM");
+		assertThatThrownBy(initializer::validateConfiguration).message().isNotBlank();
+
+		properties.setSchema(properties.getSchema() + ".different.sql");
+		assertThatCode(initializer::validateConfiguration).doesNotThrowAnyException();
 	}
 
 }

@@ -88,7 +88,7 @@ public class JdbcSessionDataSourceScriptDatabaseInitializer extends DataSourceSc
 		super.runScripts(scripts);
 	}
 
-	private void validateConfiguration() {
+	void validateConfiguration() {
 		if (properties == null) return; // cannot validate without this
 		JdbcSessionProperties defaults = new JdbcSessionProperties();
 		boolean willHappen = switch (properties.getInitializeSchema()) {
