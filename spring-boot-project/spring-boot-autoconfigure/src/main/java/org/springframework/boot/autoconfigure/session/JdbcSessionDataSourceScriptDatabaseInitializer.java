@@ -17,10 +17,12 @@
 package org.springframework.boot.autoconfigure.session;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.sql.DataSource;
 
 import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.jdbc.init.PlatformPlaceholderDatabaseDriverResolver;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
@@ -38,6 +40,8 @@ import org.springframework.util.StringUtils;
  */
 public class JdbcSessionDataSourceScriptDatabaseInitializer extends DataSourceScriptDatabaseInitializer {
 
+	private JdbcSessionProperties properties;
+
 	/**
 	 * Create a new {@link JdbcSessionDataSourceScriptDatabaseInitializer} instance.
 	 * @param dataSource the Spring Session JDBC data source
@@ -46,6 +50,7 @@ public class JdbcSessionDataSourceScriptDatabaseInitializer extends DataSourceSc
 	 */
 	public JdbcSessionDataSourceScriptDatabaseInitializer(DataSource dataSource, JdbcSessionProperties properties) {
 		this(dataSource, getSettings(dataSource, properties));
+		this.properties = properties;
 	}
 
 	/**
@@ -75,6 +80,34 @@ public class JdbcSessionDataSourceScriptDatabaseInitializer extends DataSourceSc
 		settings.setMode(properties.getInitializeSchema());
 		settings.setContinueOnError(true);
 		return settings;
+	}
+
+	@Override
+	protected void runScripts(Scripts scripts) {
+		validateConfiguration();
+		super.runScripts(scripts);
+	}
+
+	private void validateConfiguration() {
+		if (properties == null) return; // cannot validate without this
+		JdbcSessionProperties defaults = new JdbcSessionProperties();
+		boolean willHappen = switch (properties.getInitializeSchema()) {
+			case ALWAYS -> true;
+			case NEVER -> false;
+			case EMBEDDED -> isEmbeddedDatabase();
+		};
+		boolean tableNameChanged = !Objects.equals(defaults.getTableName(), properties.getTableName());
+		boolean schemaUnchanged = Objects.equals(defaults.getSchema(), properties.getSchema());
+
+		if (willHappen && tableNameChanged && schemaUnchanged) {
+			String name = "spring.session.jdbc.schema";
+			String value = properties.getSchema();
+			String reason = "When JDBC Session database initialization will take place " +
+					"(spring.session.jdbc.initialize-schema = " + properties.getInitializeSchema() + "), " +
+					"and the table name is not the default value (" + properties.getTableName() + "), " +
+					"the schema must be a custom schema to match the specified table name.";
+			throw new InvalidConfigurationPropertyValueException(name, value, reason);
+		}
 	}
 
 	private static List<String> resolveSchemaLocations(DataSource dataSource, JdbcSessionProperties properties) {
