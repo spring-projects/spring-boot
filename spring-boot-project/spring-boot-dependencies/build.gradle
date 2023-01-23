@@ -14,7 +14,7 @@ bom {
 			issueLabels = ["type: dependency-upgrade"]
 		}
 	}
-	library("Angus Mail", "1.0.0") {
+	library("Angus Mail", "1.1.0") {
 		group("org.eclipse.angus") {
 			modules = [
 				"angus-core",
