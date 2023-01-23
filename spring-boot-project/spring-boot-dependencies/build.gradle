@@ -979,7 +979,8 @@ bom {
 				"mongodb-driver-core",
 				"mongodb-driver-legacy",
 				"mongodb-driver-reactivestreams",
-				"mongodb-driver-sync"
+				"mongodb-driver-sync",
+				"bson-record-codec",
 			]
 		}
 	}
