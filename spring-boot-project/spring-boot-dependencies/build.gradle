@@ -1350,6 +1350,7 @@ bom {
 		group("org.mongodb") {
 			modules = [
 				"bson",
+				"bson-record-codec",
 				"mongodb-driver-core",
 				"mongodb-driver-legacy",
 				"mongodb-driver-reactivestreams",
