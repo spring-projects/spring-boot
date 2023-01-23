@@ -19,9 +19,9 @@ bom {
 			modules = [
 				"angus-core",
 				"angus-mail",
-				"angus-dsn",
-				"angus-gimap",
-				"angus-imap",
+				"dsn",
+				"gimap",
+				"imap",
 				"jakarta.mail",
 				"logging-mailhandler",
 				"pop3",
