@@ -44,7 +44,7 @@ class DependencyVersionTests {
 	}
 
 	@Test
-	void parseWhe5ComponentsShouldReturnNumericQualifierDependencyVersion() {
+	void parseWhen5ComponentsShouldReturnNumericQualifierDependencyVersion() {
 		assertThat(DependencyVersion.parse("1.2.3.4.5")).isInstanceOf(MultipleComponentsDependencyVersion.class);
 	}
 
