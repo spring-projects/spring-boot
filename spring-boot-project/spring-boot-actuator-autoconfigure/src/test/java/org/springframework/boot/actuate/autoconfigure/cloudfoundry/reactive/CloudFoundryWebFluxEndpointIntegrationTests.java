@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -54,7 +55,6 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.cors.CorsConfiguration;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -160,7 +160,7 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 	private String mockAccessToken() {
 		return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0b3B0YWwu"
 				+ "Y29tIiwiZXhwIjoxNDI2NDIwODAwLCJhd2Vzb21lIjp0cnVlfQ."
-				+ Base64Utils.encodeToString("signature".getBytes());
+				+ Base64.getEncoder().encodeToString("signature".getBytes());
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -25,6 +25,7 @@ import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -42,7 +43,6 @@ import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryA
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.Token;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -247,11 +247,11 @@ class ReactiveTokenValidatorTests {
 		PrivateKey privateKey = getPrivateKey();
 		Signature signature = Signature.getInstance("SHA256WithRSA");
 		signature.initSign(privateKey);
-		byte[] content = dotConcat(Base64Utils.encodeUrlSafe(header), Base64Utils.encode(claims));
+		byte[] content = dotConcat(Base64.getUrlEncoder().encode(header), Base64.getEncoder().encode(claims));
 		signature.update(content);
 		byte[] crypto = signature.sign();
-		byte[] token = dotConcat(Base64Utils.encodeUrlSafe(header), Base64Utils.encodeUrlSafe(claims),
-				Base64Utils.encodeUrlSafe(crypto));
+		byte[] token = dotConcat(Base64.getUrlEncoder().encode(header), Base64.getUrlEncoder().encode(claims),
+				Base64.getUrlEncoder().encode(crypto));
 		return new String(token, StandardCharsets.UTF_8);
 	}
 
@@ -286,7 +286,7 @@ class ReactiveTokenValidatorTests {
 		String privateKey = signingKey.replace("-----BEGIN PRIVATE KEY-----\n", "");
 		privateKey = privateKey.replace("-----END PRIVATE KEY-----", "");
 		privateKey = privateKey.replace("\n", "");
-		byte[] pkcs8EncodedBytes = Base64Utils.decodeFromString(privateKey);
+		byte[] pkcs8EncodedBytes = Base64.getDecoder().decode(privateKey);
 		PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8EncodedBytes);
 		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 		return keyFactory.generatePrivate(keySpec);

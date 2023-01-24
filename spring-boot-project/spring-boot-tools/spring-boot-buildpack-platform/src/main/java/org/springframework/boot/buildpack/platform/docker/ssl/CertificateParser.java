@@ -24,12 +24,11 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.springframework.util.Base64Utils;
 
 /**
  * Parser for X.509 certificates in PEM format.
@@ -93,7 +92,7 @@ final class CertificateParser {
 
 	private static byte[] decodeBase64(String content) {
 		byte[] bytes = content.replaceAll("\r", "").replaceAll("\n", "").getBytes();
-		return Base64Utils.decode(bytes);
+		return Base64.getDecoder().decode(bytes);
 	}
 
 }

@@ -16,11 +16,12 @@
 
 package org.springframework.boot.maven;
 
+import java.util.Base64;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
-import org.springframework.util.Base64Utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -142,7 +143,7 @@ class DockerTests {
 	}
 
 	String decoded(String value) {
-		return new String(Base64Utils.decodeFromString(value));
+		return new String(Base64.getDecoder().decode(value));
 	}
 
 }
