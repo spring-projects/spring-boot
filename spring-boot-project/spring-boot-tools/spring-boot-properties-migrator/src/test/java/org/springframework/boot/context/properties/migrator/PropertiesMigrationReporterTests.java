@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link PropertiesMigrationReporter}.
  *
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  */
 class PropertiesMigrationReporterTests {
 
@@ -67,7 +68,11 @@ class PropertiesMigrationReporterTests {
 		assertThat(propertySources).hasSize(3);
 		createAnalyzer(loadRepository("metadata/sample-metadata.json")).getReport();
 		assertThat(mapToNames(propertySources)).containsExactly("one", "migrate-two", "two", "mockProperties");
-		assertMappedProperty(propertySources.get("migrate-two"), "test.two", "another", getOrigin(two, "wrong.two"));
+		PropertySource<?> migrateTwo = propertySources.get("migrate-two");
+		assertThat(migrateTwo).isNotNull();
+		assertMappedProperty(migrateTwo, "test.two", "another", getOrigin(two, "wrong.two"));
+		assertMappedProperty(migrateTwo, "custom.the-map-replacement.key", "value",
+				getOrigin(two, "custom.map-with-replacement.key"));
 	}
 
 	@Test
@@ -76,8 +81,9 @@ class PropertiesMigrationReporterTests {
 		this.environment.getPropertySources().addFirst(loadPropertySource("ignore", "config/config-error.properties"));
 		String report = createWarningReport(loadRepository("metadata/sample-metadata.json"));
 		assertThat(report).isNotNull();
-		assertThat(report).containsSubsequence("Property source 'test'", "wrong.four.test", "Line: 5", "test.four.test",
-				"wrong.two", "Line: 2", "test.two");
+		assertThat(report).containsSubsequence("Property source 'test'", "Key: custom.map-with-replacement.key",
+				"Line: 8", "Replacement: custom.the-map-replacement.key", "wrong.four.test", "Line: 5",
+				"test.four.test", "wrong.two", "Line: 2", "test.two");
 		assertThat(report).doesNotContain("wrong.one");
 	}
 
@@ -119,6 +125,7 @@ class PropertiesMigrationReporterTests {
 				"test.time-to-live-ms", "test.time-to-live", "test.ttl", "test.mapped.ttl");
 		assertThat(mapToNames(propertySources)).containsExactly("migrate-test", "test", "mockProperties");
 		PropertySource<?> propertySource = propertySources.get("migrate-test");
+		assertThat(propertySource).isNotNull();
 		assertMappedProperty(propertySource, "test.cache", 50, null);
 		assertMappedProperty(propertySource, "test.time-to-live", 1234L, null);
 		assertMappedProperty(propertySource, "test.mapped.ttl", 5678L, null);
@@ -151,7 +158,47 @@ class PropertiesMigrationReporterTests {
 				.addFirst(new MapPropertySource("first", Collections.singletonMap("invalid.property-name", "value")));
 		String report = createWarningReport(loadRepository("metadata/sample-metadata-invalid-name.json"));
 		assertThat(report).isNotNull();
-		assertThat(report).contains("Key: invalid.PropertyName").contains("Replacement: valid.property-name");
+		assertThat(report).contains("Key: invalid.propertyname").contains("Replacement: valid.property-name");
+	}
+
+	@Test
+	void mapPropertiesDeprecatedNoReplacement() throws IOException {
+		this.environment.getPropertySources().addFirst(
+				new MapPropertySource("first", Collections.singletonMap("custom.map-no-replacement.key", "value")));
+		String report = createErrorReport(loadRepository("metadata/sample-metadata.json"));
+		assertThat(report).isNotNull();
+		assertThat(report).contains("Key: custom.map-no-replacement.key")
+				.contains("Reason: This is no longer supported.");
+	}
+
+	@Test
+	void mapPropertiesDeprecatedWithReplacement() throws IOException {
+		this.environment.getPropertySources().addFirst(
+				new MapPropertySource("first", Collections.singletonMap("custom.map-with-replacement.key", "value")));
+		String report = createWarningReport(loadRepository("metadata/sample-metadata.json"));
+		assertThat(report).isNotNull();
+		assertThat(report).contains("Key: custom.map-with-replacement.key")
+				.contains("Replacement: custom.the-map-replacement.key");
+	}
+
+	@Test
+	void mapPropertiesDeprecatedWithReplacementRelaxedBindingUnderscore() {
+		this.environment.getPropertySources().addFirst(
+				new MapPropertySource("first", Collections.singletonMap("custom.map_with_replacement.key", "value")));
+		String report = createWarningReport(loadRepository("metadata/sample-metadata.json"));
+		assertThat(report).isNotNull();
+		assertThat(report).contains("Key: custom.mapwithreplacement.key")
+				.contains("Replacement: custom.the-map-replacement.key");
+	}
+
+	@Test
+	void mapPropertiesDeprecatedWithReplacementRelaxedBindingCamelCase() {
+		this.environment.getPropertySources().addFirst(
+				new MapPropertySource("first", Collections.singletonMap("custom.MapWithReplacement.key", "value")));
+		String report = createWarningReport(loadRepository("metadata/sample-metadata.json"));
+		assertThat(report).isNotNull();
+		assertThat(report).contains("Key: custom.mapwithreplacement.key")
+				.contains("Replacement: custom.the-map-replacement.key");
 	}
 
 	private List<String> mapToNames(PropertySources sources) {
