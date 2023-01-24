@@ -48,7 +48,20 @@ If you add your own `@Bean` of any of the auto-configured types, it replaces the
 
 By default, a pooled connection factory is auto-configured if `commons-pool2` is on the classpath.
 
+Alternatively, you can specify connection details using discrete properties.
+For example, you might declare the following settings in your `application.properties`:
 
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  data:
+	    redis:
+	      host: "localhost"
+	      port: 6379
+	      database: 0
+	      username: "user"
+	      password: "secret"
+----
 
 [[data.nosql.mongodb]]
 === MongoDB
