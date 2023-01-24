@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URI;
+import java.util.Base64;
 import java.util.stream.Stream;
 
 import org.apache.hc.client5.http.config.RequestConfig;
@@ -43,7 +44,6 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.MethodCallback;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -372,8 +372,8 @@ class TestRestTemplateTests {
 		}
 		else {
 			assertThat(request.getHeaders()).containsKeys(HttpHeaders.AUTHORIZATION);
-			assertThat(request.getHeaders().get(HttpHeaders.AUTHORIZATION)).containsExactly(
-					"Basic " + Base64Utils.encodeToString(String.format("%s:%s", username, password).getBytes()));
+			assertThat(request.getHeaders().get(HttpHeaders.AUTHORIZATION)).containsExactly("Basic "
+					+ Base64.getEncoder().encodeToString(String.format("%s:%s", username, password).getBytes()));
 		}
 
 	}
