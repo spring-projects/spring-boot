@@ -74,13 +74,16 @@ You do not need to use the CLI to work with Spring Boot, but it is a quick way t
 
 [[getting-started.installing.cli.manual-installation]]
 ==== Manual Installation
-You can download the Spring CLI distribution from the Spring software repository:
+ifeval::["{artifact-release-type}" == "snapshot"]
+You can download one of the `spring-boot-cli-\*-bin.zip` or `spring-boot-cli-*-bin.tar.gz` files from the {artifact-download-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/[Spring software repository].
+endif::[]
+ifeval::["{artifact-release-type}" != "snapshot"]
+You can download the Spring CLI distribution from one of the following locations:
 
-* https://repo.spring.io/{spring-boot-artifactory-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.zip[spring-boot-cli-{spring-boot-version}-bin.zip]
-* https://repo.spring.io/{spring-boot-artifactory-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.tar.gz[spring-boot-cli-{spring-boot-version}-bin.tar.gz]
+* {artifact-download-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.zip[spring-boot-cli-{spring-boot-version}-bin.zip]
+* {artifact-download-repo}/org/springframework/boot/spring-boot-cli/{spring-boot-version}/spring-boot-cli-{spring-boot-version}-bin.tar.gz[spring-boot-cli-{spring-boot-version}-bin.tar.gz]
+endif::[]
 
-Cutting edge
-https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/[snapshot distributions] are also available.
 
 Once downloaded, follow the {github-raw}/spring-boot-project/spring-boot-cli/src/main/content/INSTALL.txt[INSTALL.txt] instructions from the unpacked archive.
 In summary, there is a `spring` script (`spring.bat` for Windows) in a `bin/` directory in the `.zip` file.

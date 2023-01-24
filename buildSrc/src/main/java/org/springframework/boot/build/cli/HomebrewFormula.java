@@ -35,7 +35,7 @@ import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskExecutionException;
 
-import org.springframework.boot.build.artifactory.ArtifactoryRepository;
+import org.springframework.boot.build.artifacts.ArtifactRelease;
 
 /**
  * A {@link Task} for creating a Homebrew formula manifest.
@@ -43,10 +43,6 @@ import org.springframework.boot.build.artifactory.ArtifactoryRepository;
  * @author Andy Wilkinson
  */
 public class HomebrewFormula extends DefaultTask {
-
-	private static final String SPRING_REPO = "https://repo.spring.io/%s";
-
-	private static final String MAVEN_REPO = "https://repo.maven.apache.org/maven2";
 
 	private Provider<RegularFile> archive;
 
@@ -99,7 +95,7 @@ public class HomebrewFormula extends DefaultTask {
 		Map<String, Object> properties = new HashMap<>(additionalProperties);
 		Project project = getProject();
 		properties.put("hash", sha256(this.archive.get().getAsFile()));
-		properties.put("repo", getRepo(project));
+		properties.put("repo", ArtifactRelease.forProject(project).getDownloadRepo());
 		properties.put("project", project);
 		return properties;
 	}
@@ -112,11 +108,6 @@ public class HomebrewFormula extends DefaultTask {
 		catch (Exception ex) {
 			throw new TaskExecutionException(this, ex);
 		}
-	}
-
-	private String getRepo(Project project) {
-		ArtifactoryRepository artifactoryRepo = ArtifactoryRepository.forProject(project);
-		return (!artifactoryRepo.isRelease()) ? String.format(SPRING_REPO, artifactoryRepo.getName()) : MAVEN_REPO;
 	}
 
 	@TaskAction
