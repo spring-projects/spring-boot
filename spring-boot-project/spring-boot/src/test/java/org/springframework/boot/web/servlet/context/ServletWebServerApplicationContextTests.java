@@ -237,13 +237,14 @@ class ServletWebServerApplicationContextTests {
 		OrderedFilter filter = new OrderedFilter();
 		this.context.registerBeanDefinition("filterBean", beanDefinition(filter));
 		FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>();
+		registration.setName("filterBeanRegistration");
 		registration.setFilter(mock(Filter.class));
 		registration.setOrder(100);
 		this.context.registerBeanDefinition("filterRegistrationBean", beanDefinition(registration));
 		this.context.refresh();
 		MockServletWebServerFactory factory = getWebServerFactory();
 		then(factory.getServletContext()).should().addFilter("filterBean", filter);
-		then(factory.getServletContext()).should().addFilter("object", registration.getFilter());
+		then(factory.getServletContext()).should().addFilter("filterBeanRegistration", registration.getFilter());
 		assertThat(factory.getRegisteredFilter(0).getFilter()).isEqualTo(filter);
 	}
 

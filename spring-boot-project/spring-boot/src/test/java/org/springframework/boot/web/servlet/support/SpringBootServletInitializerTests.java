@@ -23,6 +23,8 @@ import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import jakarta.servlet.DispatcherType;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterRegistration.Dynamic;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
@@ -55,6 +57,7 @@ import org.springframework.web.context.support.StandardServletEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -189,6 +192,7 @@ class SpringBootServletInitializerTests {
 	@Test
 	void servletContextPropertySourceIsAvailablePriorToRefresh() {
 		ServletContext servletContext = mock(ServletContext.class);
+		given(servletContext.addFilter(any(), any(Filter.class))).willReturn(mock(Dynamic.class));
 		given(servletContext.getInitParameterNames())
 				.willReturn(Collections.enumeration(Collections.singletonList("spring.profiles.active")));
 		given(servletContext.getInitParameter("spring.profiles.active")).willReturn("from-servlet-context");
@@ -202,6 +206,7 @@ class SpringBootServletInitializerTests {
 	@Test
 	void whenServletContextIsDestroyedThenJdbcDriversAreDeregistered() throws ServletException {
 		ServletContext servletContext = mock(ServletContext.class);
+		given(servletContext.addFilter(any(), any(Filter.class))).willReturn(mock(Dynamic.class));
 		given(servletContext.getInitParameterNames()).willReturn(new Vector<String>().elements());
 		given(servletContext.getAttributeNames()).willReturn(new Vector<String>().elements());
 		AtomicBoolean driversDeregistered = new AtomicBoolean();
