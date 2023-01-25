@@ -16,6 +16,9 @@
 
 package org.springframework.boot.loader.util;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Properties;
@@ -33,6 +36,7 @@ import java.util.Set;
  * @author Juergen Hoeller
  * @author Rob Harrop
  * @author Dave Syer
+ * @author Samuele Facenda
  * @since 1.0.0
  * @see System#getProperty(String)
  */
@@ -161,6 +165,10 @@ public abstract class SystemPropertyUtils {
 	 * Search the System properties and environment variables for a value with the
 	 * provided key. Environment variables in {@code UPPER_CASE} style are allowed where
 	 * System properties would normally be {@code lower.case}.
+	 * It also resolve the value using the content of
+	 * a file, if there is a environment variable in
+	 * {@code PROPERTY_NAME_FILE} format and it contains a absolute valid path.
+	 * This can be useful when working with Docker secrets.
 	 * @param key the key to resolve
 	 * @param defaultValue the default value
 	 * @param text optional extra context for an error message if the key resolution fails
@@ -183,6 +191,11 @@ public abstract class SystemPropertyUtils {
 				// Try uppercase with underscores as well.
 				String name = key.toUpperCase(Locale.ENGLISH).replace('.', '_');
 				propVal = System.getenv(name);
+			}
+			if (propVal == null) {
+				// Try with file resolution.
+				String name = key.toUpperCase(Locale.ENGLISH).replace('.', '_') + "_FILE";
+				propVal = getPropertyValueFromFile(name);
 			}
 			if (propVal != null) {
 				return propVal;
@@ -227,6 +240,23 @@ public abstract class SystemPropertyUtils {
 			}
 		}
 		return true;
+	}
+
+	private static String getPropertyValueFromFile(String name) {
+		String propVal = System.getenv(name);
+		if (propVal != null) {
+			File file = new File(propVal);
+			if (file.exists()) {
+				try {
+					propVal = new String(Files.readAllBytes(file.toPath()));
+				}
+				catch (IOException ex) {
+					System.err.println("Could not read file '" + file +
+							"' for environment variable '" + name + "': " + ex);
+				}
+			}
+		}
+		return propVal;
 	}
 
 }
