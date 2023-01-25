@@ -114,6 +114,17 @@ class JooqAutoConfigurationTests {
 	}
 
 	@Test
+	void jooqWithDefaultTransactionProvider() {
+		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class, TxManagerConfiguration.class)
+				.run((context) -> {
+					DSLContext dsl = context.getBean(DSLContext.class);
+					TransactionProvider expectedTransactionProvider = context.getBean(TransactionProvider.class);
+					TransactionProvider transactionProvider = dsl.configuration().transactionProvider();
+					assertThat(transactionProvider).isSameAs(expectedTransactionProvider);
+				});
+	}
+
+	@Test
 	void jooqWithDefaultExecuteListenerProvider() {
 		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class).run((context) -> {
 			DSLContext dsl = context.getBean(DSLContext.class);
