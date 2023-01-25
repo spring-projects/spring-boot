@@ -53,7 +53,9 @@ public class Session {
 	}
 
 	public void setTimeout(Duration timeout) {
-		this.timeout = timeout;
+		if(timeout != null && !timeout.isNegative()) {
+			this.timeout = timeout;
+		}
 	}
 
 	/**
