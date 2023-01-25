@@ -87,11 +87,13 @@ public class JooqAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(org.jooq.Configuration.class)
 		public DefaultConfiguration jooqConfiguration(JooqProperties properties, ConnectionProvider connectionProvider,
-				DataSource dataSource, ObjectProvider<ExecuteListenerProvider> executeListenerProviders,
+				DataSource dataSource, ObjectProvider<TransactionProvider> transactionProvider,
+				ObjectProvider<ExecuteListenerProvider> executeListenerProviders,
 				ObjectProvider<DefaultConfigurationCustomizer> configurationCustomizers) {
 			DefaultConfiguration configuration = new DefaultConfiguration();
 			configuration.set(properties.determineSqlDialect(dataSource));
 			configuration.set(connectionProvider);
+			transactionProvider.ifAvailable(configuration::set);
 			configuration.set(executeListenerProviders.orderedStream().toArray(ExecuteListenerProvider[]::new));
 			configurationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(configuration));
 			return configuration;
