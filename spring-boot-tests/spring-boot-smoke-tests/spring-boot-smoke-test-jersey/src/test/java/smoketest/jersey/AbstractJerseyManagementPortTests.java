@@ -18,7 +18,6 @@ package smoketest.jersey;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
-import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.Test;
 import smoketest.jersey.AbstractJerseyManagementPortTests.ResourceConfigConfiguration;
 
@@ -89,12 +88,7 @@ class AbstractJerseyManagementPortTests {
 
 		@Bean
 		ResourceConfigCustomizer customizer() {
-			return new ResourceConfigCustomizer() {
-				@Override
-				public void customize(ResourceConfig config) {
-					config.register(TestEndpoint.class);
-				}
-			};
+			return (config) -> config.register(TestEndpoint.class);
 		}
 
 		@Path("/test")

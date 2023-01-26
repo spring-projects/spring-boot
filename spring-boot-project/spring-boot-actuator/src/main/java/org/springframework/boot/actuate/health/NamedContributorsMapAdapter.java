@@ -62,7 +62,7 @@ abstract class NamedContributorsMapAdapter<V, C> implements NamedContributors<C>
 	@Override
 	public Iterator<NamedContributor<C>> iterator() {
 		Iterator<Entry<String, C>> iterator = this.map.entrySet().iterator();
-		return new Iterator<NamedContributor<C>>() {
+		return new Iterator<>() {
 
 			@Override
 			public boolean hasNext() {

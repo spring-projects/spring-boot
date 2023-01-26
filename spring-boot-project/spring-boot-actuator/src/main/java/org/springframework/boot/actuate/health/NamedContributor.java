@@ -44,7 +44,7 @@ public interface NamedContributor<C> {
 	static <C> NamedContributor<C> of(String name, C contributor) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(contributor, "Contributor must not be null");
-		return new NamedContributor<C>() {
+		return new NamedContributor<>() {
 
 			@Override
 			public String getName() {

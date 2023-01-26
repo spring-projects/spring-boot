@@ -103,11 +103,8 @@ public class InspectedContent implements Content {
 	public static InspectedContent of(IOConsumer<OutputStream> writer, Inspector... inspectors) throws IOException {
 		Assert.notNull(writer, "Writer must not be null");
 		InspectingOutputStream outputStream = new InspectingOutputStream(inspectors);
-		try {
+		try (outputStream) {
 			writer.accept(outputStream);
-		}
-		finally {
-			outputStream.close();
 		}
 		return new InspectedContent(outputStream.getSize(), outputStream.getContent());
 	}

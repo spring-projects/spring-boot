@@ -68,7 +68,7 @@ abstract class AbstractLaunchScriptIntegrationTests {
 
 	protected Condition<String> coloredString(AnsiColor color, String string) {
 		String colorString = ESC + "[0;" + color + "m" + string + ESC + "[0m";
-		return new Condition<String>() {
+		return new Condition<>() {
 
 			@Override
 			public boolean matches(String value) {

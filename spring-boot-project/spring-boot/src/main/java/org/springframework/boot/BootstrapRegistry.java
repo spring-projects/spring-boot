@@ -123,7 +123,7 @@ public interface BootstrapRegistry {
 		default InstanceSupplier<T> withScope(Scope scope) {
 			Assert.notNull(scope, "Scope must not be null");
 			InstanceSupplier<T> parent = this;
-			return new InstanceSupplier<T>() {
+			return new InstanceSupplier<>() {
 
 				@Override
 				public T get(BootstrapContext context) {

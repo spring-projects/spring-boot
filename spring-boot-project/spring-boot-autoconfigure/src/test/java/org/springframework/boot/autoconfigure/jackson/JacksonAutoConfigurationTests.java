@@ -523,7 +523,7 @@ class JacksonAutoConfigurationTests {
 		@Bean
 		Module jacksonModule() {
 			SimpleModule module = new SimpleModule();
-			module.addSerializer(Foo.class, new JsonSerializer<Foo>() {
+			module.addSerializer(Foo.class, new JsonSerializer<>() {
 
 				@Override
 				public void serialize(Foo value, JsonGenerator jgen, SerializerProvider provider) throws IOException {

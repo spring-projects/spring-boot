@@ -513,11 +513,8 @@ class BootZipCopyAction implements CopyAction {
 		private long size;
 
 		CrcAndSize(InputStream inputStream) throws IOException {
-			try {
+			try (inputStream) {
 				load(inputStream);
-			}
-			finally {
-				inputStream.close();
 			}
 		}
 

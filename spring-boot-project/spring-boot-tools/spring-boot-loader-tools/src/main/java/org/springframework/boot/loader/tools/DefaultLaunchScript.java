@@ -44,8 +44,7 @@ public class DefaultLaunchScript implements LaunchScript {
 
 	private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{(\\w+)(:.*?)?\\}\\}(?!\\})");
 
-	private static final Set<String> FILE_PATH_KEYS = Collections
-			.unmodifiableSet(Collections.singleton("inlinedConfScript"));
+	private static final Set<String> FILE_PATH_KEYS = Collections.singleton("inlinedConfScript");
 
 	private final String content;
 
@@ -68,13 +67,10 @@ public class DefaultLaunchScript implements LaunchScript {
 	}
 
 	private String loadContent(InputStream inputStream) throws IOException {
-		try {
+		try (inputStream) {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			copy(inputStream, outputStream);
 			return outputStream.toString(StandardCharsets.UTF_8);
-		}
-		finally {
-			inputStream.close();
 		}
 	}
 

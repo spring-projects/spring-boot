@@ -113,7 +113,7 @@ public class NamedPipeSocket extends Socket {
 
 		@Override
 		public <A> void read(ByteBuffer dst, A attachment, CompletionHandler<Integer, ? super A> handler) {
-			this.fileChannel.read(dst, 0, attachment, new CompletionHandler<Integer, A>() {
+			this.fileChannel.read(dst, 0, attachment, new CompletionHandler<>() {
 
 				@Override
 				public void completed(Integer read, A attachment) {

@@ -240,10 +240,9 @@ public class JerseyEndpointResourceFactory {
 				Status status = isGet ? Status.NOT_FOUND : Status.NO_CONTENT;
 				return Response.status(status).build();
 			}
-			if (!(response instanceof WebEndpointResponse)) {
+			if (!(response instanceof WebEndpointResponse<?> webEndpointResponse)) {
 				return Response.status(Status.OK).entity(convertIfNecessary(response)).build();
 			}
-			WebEndpointResponse<?> webEndpointResponse = (WebEndpointResponse<?>) response;
 			return Response.status(webEndpointResponse.getStatus())
 					.header("Content-Type", webEndpointResponse.getContentType())
 					.entity(convertIfNecessary(webEndpointResponse.getBody())).build();

@@ -130,7 +130,7 @@ class MavenBuild {
 		try {
 			Path destination = this.temp.toPath();
 			Path source = this.projectDir.toPath();
-			Files.walkFileTree(source, new SimpleFileVisitor<Path>() {
+			Files.walkFileTree(source, new SimpleFileVisitor<>() {
 
 				@Override
 				public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {

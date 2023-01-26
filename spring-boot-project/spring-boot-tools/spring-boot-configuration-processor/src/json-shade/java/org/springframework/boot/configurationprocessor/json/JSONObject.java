@@ -311,8 +311,7 @@ public class JSONObject {
 			JSON.checkDouble(((Number) value).doubleValue());
 		}
 
-		if (current instanceof JSONArray) {
-			JSONArray array = (JSONArray) current;
+		if (current instanceof JSONArray array) {
 			array.put(value);
 		}
 		else {

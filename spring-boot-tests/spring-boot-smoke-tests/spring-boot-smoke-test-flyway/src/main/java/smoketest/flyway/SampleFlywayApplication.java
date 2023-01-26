@@ -30,14 +30,7 @@ public class SampleFlywayApplication {
 
 	@Bean
 	public CommandLineRunner runner(PersonRepository repository) {
-		return new CommandLineRunner() {
-
-			@Override
-			public void run(String... args) throws Exception {
-				System.err.println(repository.findAll());
-			}
-
-		};
+		return (args) -> System.err.println(repository.findAll());
 	}
 
 }

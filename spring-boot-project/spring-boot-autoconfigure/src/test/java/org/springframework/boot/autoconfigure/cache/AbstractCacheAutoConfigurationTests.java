@@ -102,7 +102,7 @@ abstract class AbstractCacheAutoConfigurationTests {
 
 		@Bean
 		CacheManagerCustomizer<CouchbaseCacheManager> couchbaseCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<CouchbaseCacheManager>() {
+			return new CacheManagerTestCustomizer<>() {
 
 			};
 		}
@@ -130,7 +130,7 @@ abstract class AbstractCacheAutoConfigurationTests {
 
 		@Bean
 		CacheManagerCustomizer<SpringCache2kCacheManager> cache2kCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<SpringCache2kCacheManager>() {
+			return new CacheManagerTestCustomizer<>() {
 
 			};
 		}

@@ -128,11 +128,8 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	 */
 	@Override
 	public void writeEntry(String entryName, InputStream inputStream) throws IOException {
-		try {
+		try (inputStream) {
 			writeEntry(entryName, new InputStreamEntryWriter(inputStream));
-		}
-		finally {
-			inputStream.close();
 		}
 	}
 

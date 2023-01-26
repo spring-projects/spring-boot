@@ -31,7 +31,7 @@ public class SampleWebUiApplication {
 
 	@Bean
 	public Converter<String, Message> messageConverter() {
-		return new Converter<String, Message>() {
+		return new Converter<>() {
 			@Override
 			public Message convert(String id) {
 				return messageRepository().findMessage(Long.valueOf(id));

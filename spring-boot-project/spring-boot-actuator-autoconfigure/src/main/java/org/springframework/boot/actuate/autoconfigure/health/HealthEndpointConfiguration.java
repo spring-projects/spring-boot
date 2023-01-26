@@ -174,7 +174,7 @@ class HealthEndpointConfiguration {
 				@Override
 				public Iterator<NamedContributor<HealthContributor>> iterator() {
 					Iterator<NamedContributor<ReactiveHealthContributor>> iterator = composite.iterator();
-					return new Iterator<NamedContributor<HealthContributor>>() {
+					return new Iterator<>() {
 
 						@Override
 						public boolean hasNext() {

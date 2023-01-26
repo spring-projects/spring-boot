@@ -131,11 +131,8 @@ class StaticResourceJars {
 	}
 
 	private boolean isResourcesJar(JarFile jar) throws IOException {
-		try {
+		try (jar) {
 			return jar.getName().endsWith(".jar") && (jar.getJarEntry("META-INF/resources") != null);
-		}
-		finally {
-			jar.close();
 		}
 	}
 
