@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -240,10 +240,9 @@ public class JerseyEndpointResourceFactory {
 				Status status = isGet ? Status.NOT_FOUND : Status.NO_CONTENT;
 				return Response.status(status).build();
 			}
-			if (!(response instanceof WebEndpointResponse)) {
+			if (!(response instanceof WebEndpointResponse<?> webEndpointResponse)) {
 				return Response.status(Status.OK).entity(convertIfNecessary(response)).build();
 			}
-			WebEndpointResponse<?> webEndpointResponse = (WebEndpointResponse<?>) response;
 			return Response.status(webEndpointResponse.getStatus())
 					.header("Content-Type", webEndpointResponse.getContentType())
 					.entity(convertIfNecessary(webEndpointResponse.getBody())).build();
