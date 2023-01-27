@@ -105,7 +105,7 @@ class SpringConfigurationPropertySourceTests {
 
 	@Test
 	void fromWhenNonEnumerableShouldReturnNonIterable() {
-		PropertySource<?> propertySource = new PropertySource<Object>("test", new Object()) {
+		PropertySource<?> propertySource = new PropertySource<>("test", new Object()) {
 
 			@Override
 			public Object getProperty(String name) {
@@ -120,7 +120,7 @@ class SpringConfigurationPropertySourceTests {
 
 	@Test
 	void fromWhenEnumerableButRestrictedShouldReturnNonIterable() {
-		Map<String, Object> source = new LinkedHashMap<String, Object>() {
+		Map<String, Object> source = new LinkedHashMap<>() {
 
 			@Override
 			public int size() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,7 @@ public class DefaultLaunchScript implements LaunchScript {
 
 	private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{(\\w+)(:.*?)?\\}\\}(?!\\})");
 
-	private static final Set<String> FILE_PATH_KEYS = Collections
-			.unmodifiableSet(Collections.singleton("inlinedConfScript"));
+	private static final Set<String> FILE_PATH_KEYS = Collections.singleton("inlinedConfScript");
 
 	private final String content;
 
@@ -68,13 +67,10 @@ public class DefaultLaunchScript implements LaunchScript {
 	}
 
 	private String loadContent(InputStream inputStream) throws IOException {
-		try {
+		try (inputStream) {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			copy(inputStream, outputStream);
 			return outputStream.toString(StandardCharsets.UTF_8);
-		}
-		finally {
-			inputStream.close();
 		}
 	}
 

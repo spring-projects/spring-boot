@@ -70,7 +70,7 @@ class MeterRegistrySpanMetricsTests {
 
 	@Test
 	void registerQueueSizeShouldCreateGauge() {
-		BlockingQueue<Integer> queue = new ArrayBlockingQueue<Integer>(2);
+		BlockingQueue<Integer> queue = new ArrayBlockingQueue<>(2);
 		this.sut.registerQueueSize(queue);
 		assertThat(getGaugeValue("wavefront.reporter.queue.size")).isZero();
 		queue.offer(1);
@@ -79,7 +79,7 @@ class MeterRegistrySpanMetricsTests {
 
 	@Test
 	void registerQueueRemainingCapacityShouldCreateGauge() {
-		BlockingQueue<Integer> queue = new ArrayBlockingQueue<Integer>(2);
+		BlockingQueue<Integer> queue = new ArrayBlockingQueue<>(2);
 		this.sut.registerQueueRemainingCapacity(queue);
 		assertThat(getGaugeValue("wavefront.reporter.queue.remaining_capacity")).isEqualTo(2);
 		queue.offer(1);

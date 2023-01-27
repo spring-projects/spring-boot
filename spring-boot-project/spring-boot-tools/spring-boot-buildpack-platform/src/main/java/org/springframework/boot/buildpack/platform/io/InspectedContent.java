@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,11 +103,8 @@ public class InspectedContent implements Content {
 	public static InspectedContent of(IOConsumer<OutputStream> writer, Inspector... inspectors) throws IOException {
 		Assert.notNull(writer, "Writer must not be null");
 		InspectingOutputStream outputStream = new InspectingOutputStream(inspectors);
-		try {
+		try (outputStream) {
 			writer.accept(outputStream);
-		}
-		finally {
-			outputStream.close();
 		}
 		return new InspectedContent(outputStream.getSize(), outputStream.getContent());
 	}

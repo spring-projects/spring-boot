@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ public class WebFluxEndpointManagementContextConfiguration {
 	private boolean shouldRegisterLinksMapping(WebEndpointProperties properties, Environment environment,
 			String basePath) {
 		return properties.getDiscovery().isEnabled() && (StringUtils.hasText(basePath)
-				|| ManagementPortType.get(environment).equals(ManagementPortType.DIFFERENT));
+				|| ManagementPortType.get(environment) == ManagementPortType.DIFFERENT);
 	}
 
 	@Bean
@@ -175,8 +175,7 @@ public class WebFluxEndpointManagementContextConfiguration {
 		}
 
 		private void process(Encoder<?> encoder) {
-			if (encoder instanceof Jackson2JsonEncoder) {
-				Jackson2JsonEncoder jackson2JsonEncoder = (Jackson2JsonEncoder) encoder;
+			if (encoder instanceof Jackson2JsonEncoder jackson2JsonEncoder) {
 				jackson2JsonEncoder.registerObjectMappersForType(OperationResponseBody.class, (associations) -> {
 					ObjectMapper objectMapper = this.endpointObjectMapper.get().get();
 					MEDIA_TYPES.forEach((mimeType) -> associations.put(mimeType, objectMapper));
