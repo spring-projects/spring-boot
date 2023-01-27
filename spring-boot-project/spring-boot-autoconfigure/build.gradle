@@ -180,6 +180,7 @@ dependencies {
 		exclude group: "javax.xml.bind", module: "jaxb-api"
 	}
 	optional("org.springframework.security:spring-security-messaging")
+	optional("org.springframework.security:spring-security-oauth2-authorization-server")
 	optional("org.springframework.security:spring-security-oauth2-client")
 	optional("org.springframework.security:spring-security-oauth2-jose")
 	optional("org.springframework.security:spring-security-oauth2-resource-server")

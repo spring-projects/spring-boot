@@ -227,7 +227,72 @@ Alternatively, you can define your own `OpaqueTokenIntrospector` bean for servle
 
 [[web.security.oauth2.authorization-server]]
 ==== Authorization Server
-You can use the {spring-authorization-server}[Spring Authorization Server] project to implement an OAuth 2.0 Authorization Server.
+If you have `spring-security-oauth2-authorization-server` on your classpath, you can take advantage of some auto-configuration to set up an OAuth2 Authorization Server.
+This configuration makes use of the properties under `OAuth2AuthorizationServerProperties`.
+The properties are only applicable for servlet applications.
+
+You can register multiple OAuth2 clients under the `spring.security.oauth2.authorizationserver.client` prefix, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  security:
+	    oauth2:
+	      authorizationserver:
+	        client:
+	          my-client-1:
+	            registration:
+	              client-id: "abcd"
+	              client-secret: "{noop}secret1"
+	              client-authentication-methods:
+	                - "client_secret_basic"
+	              authorization-grant-types:
+	                - "authorization_code"
+	                - "refresh_token"
+	              redirect-uris:
+	                - "https://my-client-1.com/login/oauth2/code/abcd"
+	                - "https://my-client-1.com/authorized"
+	              scopes:
+	                - "openid"
+	                - "profile"
+	                - "email"
+	                - "phone"
+	                - "address"
+	            require-authorization-consent: true
+	          my-client-2:
+	            registration:
+	              client-id: "efgh"
+	              client-secret: "{noop}secret2"
+	              client-authentication-methods:
+	                - "client_secret_jwt"
+	              authorization-grant-types:
+	                - "client_credentials"
+	              scopes:
+	                - "user.read"
+	                - "user.write"
+	            jwk-set-uri: "https://my-client-2.com/jwks"
+		        token-endpoint-authentication-signing-algorithm: "RS256"
+----
+
+NOTE: The `client-secret` property must be in a format that can be matched by the configured `PasswordEncoder`.
+The default instance of `PasswordEncoder` is created via `PasswordEncoderFactories.createDelegatingPasswordEncoder()`.
+
+The auto-configuration Spring Boot provides for Spring Authorization Server is designed for getting started quickly.
+Most applications will require customization and will want to define several beans to override auto-configuration.
+
+The following components can be defined as beans to override auto-configuration specific to Spring Authorization Server:
+
+* `RegisteredClientRepository`
+* `AuthorizationServerSettings`
+* `SecurityFilterChain`
+* `com.nimbusds.jose.jwk.source.JWKSource<com.nimbusds.jose.proc.SecurityContext>`
+* `JwtDecoder`
+
+TIP: Spring Boot auto-configures an `InMemoryRegisteredClientRepository` which is used by Spring Authorization Server for the management of registered clients.
+The `InMemoryRegisteredClientRepository` has limited capabilities and we recommend using it only for development environments.
+For production environments, consider using a `JdbcRegisteredClientRepository` or creating your own implementation of `RegisteredClientRepository`.
+
+Additional information can be found in the {spring-authorization-server-docs}/getting-started.html[Getting Started] chapter of the {spring-authorization-server-docs}/index.html[Spring Authorization Server Reference Guide].
 
 
 

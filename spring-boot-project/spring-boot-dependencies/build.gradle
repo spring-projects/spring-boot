@@ -1336,6 +1336,13 @@ bom {
 			]
 		}
 	}
+	library("Spring Authorization Server", "1.1.0-M1") {
+		group("org.springframework.security") {
+			modules = [
+					"spring-security-oauth2-authorization-server"
+			]
+		}
+	}
 	library("Spring Batch", "5.0.1") {
 		group("org.springframework.batch") {
 			imports = [
