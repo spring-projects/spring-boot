@@ -814,7 +814,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
-		return new Condition<ConfigurableEnvironment>("environment containing property source " + sourceName) {
+		return new Condition<>("environment containing property source " + sourceName) {
 
 			@Override
 			public boolean matches(ConfigurableEnvironment value) {
