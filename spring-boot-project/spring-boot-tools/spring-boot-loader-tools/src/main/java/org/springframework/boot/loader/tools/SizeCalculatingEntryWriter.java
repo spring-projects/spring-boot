@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,11 +43,8 @@ final class SizeCalculatingEntryWriter implements EntryWriter {
 
 	private SizeCalculatingEntryWriter(EntryWriter entryWriter) throws IOException {
 		SizeCalculatingOutputStream outputStream = new SizeCalculatingOutputStream();
-		try {
+		try (outputStream) {
 			entryWriter.write(outputStream);
-		}
-		finally {
-			outputStream.close();
 		}
 		this.content = outputStream.getContent();
 		this.size = outputStream.getSize();
@@ -67,11 +64,8 @@ final class SizeCalculatingEntryWriter implements EntryWriter {
 	}
 
 	private void copy(InputStream inputStream, OutputStream outputStream) throws IOException {
-		try {
+		try (inputStream) {
 			StreamUtils.copy(inputStream, outputStream);
-		}
-		finally {
-			inputStream.close();
 		}
 	}
 

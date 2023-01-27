@@ -406,7 +406,7 @@ class PropertiesLauncherTests {
 	}
 
 	private Condition<Archive> endingWith(String value) {
-		return new Condition<Archive>() {
+		return new Condition<>() {
 
 			@Override
 			public boolean matches(Archive archive) {

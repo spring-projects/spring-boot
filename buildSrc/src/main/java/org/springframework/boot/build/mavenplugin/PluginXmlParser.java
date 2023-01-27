@@ -132,7 +132,7 @@ class PluginXmlParser {
 		@Override
 		public Iterator<Node> iterator() {
 
-			return new Iterator<Node>() {
+			return new Iterator<>() {
 
 				private int index = 0;
 

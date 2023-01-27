@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ abstract class NamedContributorsMapAdapter<V, C> implements NamedContributors<C>
 	@Override
 	public Iterator<NamedContributor<C>> iterator() {
 		Iterator<Entry<String, C>> iterator = this.map.entrySet().iterator();
-		return new Iterator<NamedContributor<C>>() {
+		return new Iterator<>() {
 
 			@Override
 			public boolean hasNext() {
