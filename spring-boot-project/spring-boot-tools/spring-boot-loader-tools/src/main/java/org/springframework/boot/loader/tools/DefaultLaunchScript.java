@@ -44,8 +44,7 @@ public class DefaultLaunchScript implements LaunchScript {
 
 	private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{(\\w+)(:.*?)?\\}\\}(?!\\})");
 
-	private static final Set<String> FILE_PATH_KEYS = Collections
-			.unmodifiableSet(Collections.singleton("inlinedConfScript"));
+	private static final Set<String> FILE_PATH_KEYS = Collections.singleton("inlinedConfScript");
 
 	private final String content;
 
