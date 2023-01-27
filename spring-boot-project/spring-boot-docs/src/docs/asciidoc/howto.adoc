@@ -33,6 +33,8 @@ include::howto/data-access.adoc[]
 
 include::howto/data-initialization.adoc[]
 
+include::howto/nosql.adoc[]
+
 include::howto/messaging.adoc[]
 
 include::howto/batch.adoc[]
