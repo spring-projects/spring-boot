@@ -48,4 +48,9 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 		return get(OtlpProperties::getResourceAttributes, OtlpConfig.super::resourceAttributes);
 	}
 
+	@Override
+	public Map<String, String> headers() {
+		return get(OtlpProperties::getHeaders, OtlpConfig.super::headers);
+	}
+
 }

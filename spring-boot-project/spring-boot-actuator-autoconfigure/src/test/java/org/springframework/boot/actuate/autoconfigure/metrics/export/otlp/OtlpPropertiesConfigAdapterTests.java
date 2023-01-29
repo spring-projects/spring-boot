@@ -44,4 +44,12 @@ class OtlpPropertiesConfigAdapterTests {
 				"boot-service");
 	}
 
+	@Test
+	void whenPropertiesHeadersIsSetAdapterHeadersReturnsIt() {
+		OtlpProperties properties = new OtlpProperties();
+		properties.setHeaders(Map.of("header", "value"));
+		assertThat(new OtlpPropertiesConfigAdapter(properties).headers()).containsEntry("header",
+				"value");
+	}
+
 }

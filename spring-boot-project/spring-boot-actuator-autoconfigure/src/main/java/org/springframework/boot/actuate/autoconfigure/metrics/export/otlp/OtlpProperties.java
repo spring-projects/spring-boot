@@ -41,6 +41,11 @@ public class OtlpProperties extends StepRegistryProperties {
 	 */
 	private Map<String, String> resourceAttributes;
 
+	/**
+	 * Headers for the exported metrics.
+	 */
+	private Map<String, String> headers;
+
 	public String getUrl() {
 		return this.url;
 	}
@@ -57,4 +62,11 @@ public class OtlpProperties extends StepRegistryProperties {
 		this.resourceAttributes = resourceAttributes;
 	}
 
+	public Map<String, String> getHeaders() {
+		return this.headers;
+	}
+
+	public void setHeaders(Map<String, String> headers) {
+		this.headers = headers;
+	}
 }
