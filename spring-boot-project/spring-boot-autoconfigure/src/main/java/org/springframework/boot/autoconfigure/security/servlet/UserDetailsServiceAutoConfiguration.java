@@ -89,8 +89,11 @@ public class UserDetailsServiceAutoConfiguration {
 							+ "production.%n",
 					user.getPassword()));
 		}
-		if (encoder != null || PASSWORD_ALGORITHM_PATTERN.matcher(password).matches()) {
+		if (PASSWORD_ALGORITHM_PATTERN.matcher(password).matches()) {
 			return password;
+		}
+		if (encoder != null) {
+			return encoder.encode(password);
 		}
 		return NOOP_PASSWORD_PREFIX + password;
 	}

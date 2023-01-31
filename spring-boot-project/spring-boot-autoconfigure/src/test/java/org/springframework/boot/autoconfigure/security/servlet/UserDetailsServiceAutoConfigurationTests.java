@@ -16,11 +16,13 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
+import java.util.Base64;
 import java.util.Collections;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.mockito.stubbing.Answer;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -47,7 +49,9 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests for {@link UserDetailsServiceAutoConfiguration}.
@@ -146,7 +150,7 @@ class UserDetailsServiceAutoConfigurationTests {
 
 	@Test
 	void userDetailsServiceWhenPasswordEncoderBeanPresent() {
-		testPasswordEncoding(TestConfigWithPasswordEncoder.class, "secret", "secret");
+		testPasswordEncoding(TestConfigWithPasswordEncoder.class, "secret", "c2VjcmV0");
 	}
 
 	@Test
@@ -219,7 +223,9 @@ class UserDetailsServiceAutoConfigurationTests {
 
 		@Bean
 		PasswordEncoder passwordEncoder() {
-			return mock(PasswordEncoder.class);
+			PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
+			when(passwordEncoder.encode(any())).thenAnswer((Answer<String>) invocation -> Base64.getEncoder().encodeToString(invocation.getArgument(0).toString().getBytes()));
+			return passwordEncoder;
 		}
 
 	}
