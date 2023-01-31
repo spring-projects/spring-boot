@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.hazelcast;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 import com.hazelcast.config.Config;
@@ -76,7 +77,10 @@ class HazelcastServerConfiguration {
 
 		private Config loadConfig(Resource configLocation) throws IOException {
 			URL configUrl = configLocation.getURL();
-			Config config = Config.loadFromStream(configUrl.openStream());
+			Config config;
+			try (InputStream stream = configUrl.openStream()) {
+				config = Config.loadFromStream(stream);
+			}
 			if (ResourceUtils.isFileURL(configUrl)) {
 				config.setConfigurationFile(configLocation.getFile());
 			}
