@@ -1003,13 +1003,6 @@ bom {
 				}
 			]
 		}
-		group("mysql") {
-			modules = [
-				"mysql-connector-java" {
-					exclude group: "com.google.protobuf", module: "protobuf-java"
-				}
-			]
-		}
 	}
 	library("Native Build Tools Plugin", "${nativeBuildToolsVersion}") {
 		group("org.graalvm.buildtools") {
