@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -197,7 +197,13 @@ public class JettyWebServerFactoryCustomizer
 		return CustomRequestLog.NCSA_FORMAT;
 	}
 
-	private record MaxHttpRequestHeaderSizeCustomizer(int maxRequestHeaderSize) implements JettyServerCustomizer {
+	private static class MaxHttpRequestHeaderSizeCustomizer implements JettyServerCustomizer {
+
+		private final int maxRequestHeaderSize;
+
+		MaxHttpRequestHeaderSizeCustomizer(int maxRequestHeaderSize) {
+			this.maxRequestHeaderSize = maxRequestHeaderSize;
+		}
 
 		@Override
 		public void customize(Server server) {
@@ -214,9 +220,16 @@ public class JettyWebServerFactoryCustomizer
 						.setRequestHeaderSize(this.maxRequestHeaderSize);
 			}
 		}
+
 	}
 
-	private record MaxHttpResponseHeaderSizeCustomizer(int maxResponseHeaderSize) implements JettyServerCustomizer {
+	private static class MaxHttpResponseHeaderSizeCustomizer implements JettyServerCustomizer {
+
+		private final int maxResponseHeaderSize;
+
+		MaxHttpResponseHeaderSizeCustomizer(int maxResponseHeaderSize) {
+			this.maxResponseHeaderSize = maxResponseHeaderSize;
+		}
 
 		@Override
 		public void customize(Server server) {
@@ -233,6 +246,7 @@ public class JettyWebServerFactoryCustomizer
 						.setResponseHeaderSize(this.maxResponseHeaderSize);
 			}
 		}
+
 	}
 
 }

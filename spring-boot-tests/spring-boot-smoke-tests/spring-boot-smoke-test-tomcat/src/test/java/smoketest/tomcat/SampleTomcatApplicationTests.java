@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,9 @@ import java.util.zip.GZIPInputStream;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.junit.jupiter.api.Test;
-
 import org.junit.jupiter.api.extension.ExtendWith;
+import smoketest.tomcat.util.RandomStringUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,7 +42,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StreamUtils;
-import smoketest.tomcat.util.RandomStringUtil;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -104,7 +104,7 @@ class SampleTomcatApplicationTests {
 
 	@Test
 	void testMaxHttpRequestHeaderSize(CapturedOutput output) {
-		String headerValue = RandomStringUtil.getRandomBase64EncodedString(maxHttpRequestHeaderSize + 1);
+		String headerValue = RandomStringUtil.getRandomBase64EncodedString(this.maxHttpRequestHeaderSize + 1);
 		HttpHeaders headers = new HttpHeaders();
 		headers.add("x-max-request-header", headerValue);
 		HttpEntity<?> httpEntity = new HttpEntity<>(headers);
