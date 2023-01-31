@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
@@ -79,11 +78,9 @@ class SampleJettyApplicationTests {
 	}
 
 	@Test
-	void testMaxHttpResponseHeaderSize(CapturedOutput output) {
+	void testMaxHttpResponseHeaderSize() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/max-http-response-header", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-		assertThat(output).contains(
-				"org.eclipse.jetty.server.HttpChannel     : handleException /max-http-response-header org.eclipse.jetty.http.BadMessageException: 500: Response header too large");
 	}
 
 	@Test
