@@ -1012,6 +1012,11 @@ public class KafkaProperties {
 		 */
 		private boolean immediateStop = false;
 
+		/**
+		 * Whether to auto start the container.
+		 */
+		private boolean autoStartup = true;
+
 		public Type getType() {
 			return this.type;
 		}
@@ -1138,6 +1143,14 @@ public class KafkaProperties {
 
 		public void setImmediateStop(boolean immediateStop) {
 			this.immediateStop = immediateStop;
+		}
+
+		public boolean isAutoStartup() {
+			return this.autoStartup;
+		}
+
+		public void setAutoStartup(boolean autoStartup) {
+			this.autoStartup = autoStartup;
 		}
 
 	}
