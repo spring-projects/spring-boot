@@ -20,8 +20,6 @@ import java.io.IOException;
 import java.net.URL;
 
 import com.hazelcast.config.Config;
-import com.hazelcast.config.XmlConfigBuilder;
-import com.hazelcast.config.YamlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.spring.context.SpringManagedContext;
@@ -78,7 +76,7 @@ class HazelcastServerConfiguration {
 
 		private Config loadConfig(Resource configLocation) throws IOException {
 			URL configUrl = configLocation.getURL();
-			Config config = loadConfig(configUrl);
+			Config config = Config.loadFromStream(configUrl.openStream());
 			if (ResourceUtils.isFileURL(configUrl)) {
 				config.setConfigurationFile(configLocation.getFile());
 			}
@@ -86,14 +84,6 @@ class HazelcastServerConfiguration {
 				config.setConfigurationUrl(configUrl);
 			}
 			return config;
-		}
-
-		private static Config loadConfig(URL configUrl) throws IOException {
-			String configFileName = configUrl.getPath();
-			if (configFileName.endsWith(".yaml") || configFileName.endsWith(".yml")) {
-				return new YamlConfigBuilder(configUrl).build();
-			}
-			return new XmlConfigBuilder(configUrl).build();
 		}
 
 	}
