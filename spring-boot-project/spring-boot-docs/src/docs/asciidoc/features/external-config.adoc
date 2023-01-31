@@ -756,6 +756,7 @@ In these cases, specify the list of types to process using the `@EnableConfigura
 This can be done on any `@Configuration` class, as shown in the following example:
 
 include::code:MyConfiguration[]
+include::code:SomeProperties[]
 
 To use configuration property scanning, add the `@ConfigurationPropertiesScan` annotation to your application.
 Typically, it is added to the main application class that is annotated with `@SpringBootApplication` but it can be added to any `@Configuration` class.
@@ -769,7 +770,7 @@ include::code:MyApplication[]
 When the `@ConfigurationProperties` bean is registered using configuration property scanning or through `@EnableConfigurationProperties`, the bean has a conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix specified in the `@ConfigurationProperties` annotation and `<fqn>` is the fully qualified name of the bean.
 If the annotation does not provide any prefix, only the fully qualified name of the bean is used.
 
-The bean name in the example above is `com.example.app-com.example.app.SomeProperties`.
+The bean name in the example above is `some.properties-com.example.app.SomeProperties`.
 ====
 
 We recommend that `@ConfigurationProperties` only deal with the environment and, in particular, does not inject other beans from the context.
