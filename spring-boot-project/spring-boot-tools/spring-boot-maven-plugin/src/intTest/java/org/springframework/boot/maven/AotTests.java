@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.contentOf;
  * @author Scott Frederick
  */
 @ExtendWith(MavenBuildExtension.class)
-public class AotTests {
+class AotTests {
 
 	@TestTemplate
 	void whenAotRunsSourcesAreGenerated(MavenBuild mavenBuild) {
