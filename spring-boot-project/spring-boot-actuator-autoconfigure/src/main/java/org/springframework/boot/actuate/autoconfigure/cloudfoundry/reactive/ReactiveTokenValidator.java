@@ -23,6 +23,7 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -33,7 +34,6 @@ import reactor.core.publisher.Mono;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.Token;
-import org.springframework.util.Base64Utils;
 
 /**
  * Validator used to ensure that a signed {@link Token} has not been tampered with.
@@ -108,7 +108,7 @@ class ReactiveTokenValidator {
 		key = key.replace("-----BEGIN PUBLIC KEY-----\n", "");
 		key = key.replace("-----END PUBLIC KEY-----", "");
 		key = key.trim().replace("\n", "");
-		byte[] bytes = Base64Utils.decodeFromString(key);
+		byte[] bytes = Base64.getDecoder().decode(key);
 		X509EncodedKeySpec keySpec = new X509EncodedKeySpec(bytes);
 		return KeyFactory.getInstance("RSA").generatePublic(keySpec);
 	}

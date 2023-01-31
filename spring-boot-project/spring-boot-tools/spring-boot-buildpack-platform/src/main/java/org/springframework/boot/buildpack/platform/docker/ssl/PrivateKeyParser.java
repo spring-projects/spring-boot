@@ -25,13 +25,12 @@ import java.security.KeyFactory;
 import java.security.PrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.springframework.util.Base64Utils;
 
 /**
  * Parser for PKCS private key files in PEM format.
@@ -153,7 +152,7 @@ final class PrivateKeyParser {
 
 		private static byte[] decodeBase64(String content) {
 			byte[] contentBytes = content.replaceAll("\r", "").replaceAll("\n", "").getBytes();
-			return Base64Utils.decode(contentBytes);
+			return Base64.getDecoder().decode(contentBytes);
 		}
 
 		private PrivateKey parse(byte[] bytes) {
