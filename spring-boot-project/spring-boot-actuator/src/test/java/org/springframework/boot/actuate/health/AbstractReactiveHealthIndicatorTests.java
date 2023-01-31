@@ -49,7 +49,7 @@ class AbstractReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	void healthCheckWhenDownWithExceptionThrownDoesNotLogHealthCheckFailedMessage(CapturedOutput output) {
+	void healthCheckWhenDownWithExceptionThrownLogsHealthCheckFailedMessage(CapturedOutput output) {
 		Health health = new AbstractReactiveHealthIndicator("Test message") {
 			@Override
 			protected Mono<Health> doHealthCheck(Builder builder) {
@@ -62,7 +62,7 @@ class AbstractReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	void healthCheckWhenDownWithExceptionConfiguredDoesNotLogHealthCheckFailedMessage(CapturedOutput output) {
+	void healthCheckWhenDownWithExceptionConfiguredLogsHealthCheckFailedMessage(CapturedOutput output) {
 		Health health = new AbstractReactiveHealthIndicator("Test message") {
 			@Override
 			protected Mono<Health> doHealthCheck(Builder builder) {

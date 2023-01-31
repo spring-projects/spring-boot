@@ -25,7 +25,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class ApplicationContextRunnerTests extends
+class ApplicationContextRunnerTests extends
 		AbstractApplicationContextRunnerTests<ApplicationContextRunner, ConfigurableApplicationContext, AssertableApplicationContext> {
 
 	@Override
