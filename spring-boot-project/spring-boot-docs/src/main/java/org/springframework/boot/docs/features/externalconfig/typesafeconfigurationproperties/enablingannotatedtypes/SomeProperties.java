@@ -16,6 +16,9 @@
 
 package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.enablingannotatedtypes;
 
-class SomeProperties {
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+@ConfigurationProperties("some.properties")
+public class SomeProperties {
 
 }
