@@ -175,6 +175,19 @@ class JooqAutoConfigurationTests {
 				.run((context) -> {
 					TransactionProvider transactionProvider = context.getBean(TransactionProvider.class);
 					assertThat(transactionProvider).isInstanceOf(CustomTransactionProvider.class);
+					DSLContext dsl = context.getBean(DSLContext.class);
+					assertThat(dsl.configuration().transactionProvider()).isSameAs(transactionProvider);
+				});
+	}
+
+	@Test
+	void transactionProviderFromConfigurationCustomizerOverridesTransactionProviderBean() {
+		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class, TxManagerConfiguration.class,
+				CustomTransactionProviderFromCustomizerConfiguration.class).run((context) -> {
+					TransactionProvider transactionProvider = context.getBean(TransactionProvider.class);
+					assertThat(transactionProvider).isInstanceOf(SpringTransactionProvider.class);
+					DSLContext dsl = context.getBean(DSLContext.class);
+					assertThat(dsl.configuration().transactionProvider()).isInstanceOf(CustomTransactionProvider.class);
 				});
 	}
 
@@ -235,6 +248,16 @@ class JooqAutoConfigurationTests {
 		@Bean
 		TransactionProvider transactionProvider() {
 			return new CustomTransactionProvider();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomTransactionProviderFromCustomizerConfiguration {
+
+		@Bean
+		DefaultConfigurationCustomizer transactionProviderCustomizer() {
+			return (configuration) -> configuration.setTransactionProvider(new CustomTransactionProvider());
 		}
 
 	}
