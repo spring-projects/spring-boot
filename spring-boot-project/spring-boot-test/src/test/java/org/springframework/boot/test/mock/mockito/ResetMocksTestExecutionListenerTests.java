@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ class ResetMocksTestExecutionListenerTests {
 		given(getMock("none").greeting()).willReturn("none");
 		given(getMock("before").greeting()).willReturn("before");
 		given(getMock("after").greeting()).willReturn("after");
+		given(getMock("fromFactoryBean").greeting()).willReturn("fromFactoryBean");
 	}
 
 	@Test
@@ -59,6 +60,7 @@ class ResetMocksTestExecutionListenerTests {
 		assertThat(getMock("none").greeting()).isEqualTo("none");
 		assertThat(getMock("before").greeting()).isNull();
 		assertThat(getMock("after").greeting()).isNull();
+		assertThat(getMock("fromFactoryBean").greeting()).isNull();
 	}
 
 	ExampleService getMock(String name) {
@@ -102,6 +104,11 @@ class ResetMocksTestExecutionListenerTests {
 			return new BrokenFactoryBean();
 		}
 
+		@Bean
+		WorkingFactoryBean fromFactoryBean() {
+			return new WorkingFactoryBean();
+		}
+
 	}
 
 	static class BrokenFactoryBean implements FactoryBean<String> {
@@ -114,6 +121,25 @@ class ResetMocksTestExecutionListenerTests {
 		@Override
 		public Class<?> getObjectType() {
 			return String.class;
+		}
+
+		@Override
+		public boolean isSingleton() {
+			return true;
+		}
+
+	}
+
+	static class WorkingFactoryBean implements FactoryBean<ExampleService> {
+
+		@Override
+		public ExampleService getObject() {
+			return mock(ExampleService.class, MockReset.before());
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return ExampleService.class;
 		}
 
 		@Override
