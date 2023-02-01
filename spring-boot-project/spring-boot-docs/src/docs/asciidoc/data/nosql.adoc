@@ -34,10 +34,24 @@ TIP: We also provide a `spring-boot-starter-data-redis-reactive` "`Starter`" for
 [[data.nosql.redis.connecting]]
 ==== Connecting to Redis
 You can inject an auto-configured `RedisConnectionFactory`, `StringRedisTemplate`, or vanilla `RedisTemplate` instance as you would any other Spring Bean.
-By default, the instance tries to connect to a Redis server at `localhost:6379`.
 The following listing shows an example of such a bean:
 
 include::code:MyBean[]
+
+By default, the instance tries to connect to a Redis server at `localhost:6379`.
+You can specify custom connection details using `spring.data.redis.*` properties, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  data:
+	    redis:
+	      host: "localhost"
+	      port: 6379
+	      database: 0
+	      username: "user"
+	      password: "secret"
+----
 
 TIP: You can also register an arbitrary number of beans that implement `LettuceClientConfigurationBuilderCustomizer` for more advanced customizations.
 `ClientResources` can also be customized using `ClientResourcesBuilderCustomizer`.
