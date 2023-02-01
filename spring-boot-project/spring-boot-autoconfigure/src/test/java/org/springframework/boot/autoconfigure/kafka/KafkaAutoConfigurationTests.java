@@ -50,6 +50,7 @@ import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.AbstractKafkaListenerContainerFactory;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
+import org.springframework.kafka.config.ContainerCustomizer;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
@@ -61,6 +62,7 @@ import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.listener.AfterRollbackProcessor;
 import org.springframework.kafka.listener.CommonErrorHandler;
+import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
@@ -666,6 +668,17 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
+	void testConcurrentKafkaListenerContainerFactoryWithCustomContainerCustomizer() {
+		this.contextRunner.withUserConfiguration(ObservationEnabledContainerCustomizerConfiguration.class)
+				.run((context) -> {
+					ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+							.getBean(ConcurrentKafkaListenerContainerFactory.class);
+					ConcurrentMessageListenerContainer<?, ?> container = factory.createContainer("someTopic");
+					assertThat(container.getContainerProperties().isObservationEnabled()).isEqualTo(true);
+				});
+	}
+
+	@Test
 	void specificSecurityProtocolOverridesCommonSecurityProtocol() {
 		this.contextRunner.withPropertyValues("spring.kafka.security.protocol=SSL",
 				"spring.kafka.admin.security.protocol=PLAINTEXT").run((context) -> {
@@ -730,6 +743,16 @@ class KafkaAutoConfigurationTests {
 		@Bean
 		ConsumerFactory<String, Object> myConsumerFactory() {
 			return this.consumerFactory;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ObservationEnabledContainerCustomizerConfiguration {
+
+		@Bean
+		ContainerCustomizer<Object, Object, ConcurrentMessageListenerContainer<Object, Object>> myContainerCustomizer() {
+			return (container) -> container.getContainerProperties().setObservationEnabled(true);
 		}
 
 	}
