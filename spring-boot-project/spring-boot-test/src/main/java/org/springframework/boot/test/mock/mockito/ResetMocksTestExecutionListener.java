@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +79,7 @@ public class ResetMocksTestExecutionListener extends AbstractTestExecutionListen
 		for (String name : names) {
 			BeanDefinition definition = beanFactory.getBeanDefinition(name);
 			if (definition.isSingleton() && instantiatedSingletons.contains(name)) {
-				Object bean = beanFactory.getSingleton(name);
+				Object bean = getBean(beanFactory, name);
 				if (reset.equals(MockReset.get(bean))) {
 					Mockito.reset(bean);
 				}
@@ -98,6 +98,15 @@ public class ResetMocksTestExecutionListener extends AbstractTestExecutionListen
 		}
 		if (applicationContext.getParent() != null) {
 			resetMocks(applicationContext.getParent(), reset);
+		}
+	}
+
+	private Object getBean(ConfigurableListableBeanFactory beanFactory, String name) {
+		try {
+			return beanFactory.getBean(name);
+		}
+		catch (Exception ex) {
+			return beanFactory.getSingleton(name);
 		}
 	}
 
