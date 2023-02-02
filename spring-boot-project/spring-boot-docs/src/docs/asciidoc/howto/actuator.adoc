@@ -66,13 +66,10 @@ NOTE: When `show-values` is set to `ALWAYS` or `WHEN_AUTHORIZED` any sanitizatio
 
 [[howto.actuator.sanitize-sensitive-values.customizing-sanitization]]
 ==== Customizing Sanitization
-Sanitization can be customized in two different ways.
-
-To take more control over the sanitization, define a `SanitizingFunction` bean.
+To take control over the sanitization, define a `SanitizingFunction` bean.
 The `SanitizableData` with which the function is called provides access to the key and value as well as the `PropertySource` from which they came.
 This allows you to, for example, sanitize every value that comes from a particular property source.
 Each `SanitizingFunction` is called in order until a function changes the value of the sanitizable data.
-If no function changes its value, the built-in key-based sanitization is performed.
 
 
 
