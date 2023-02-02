@@ -379,10 +379,12 @@ class RabbitAutoConfigurationTests {
 				.run((context) -> {
 					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
 					Assertions.assertThatExceptionOfType(IllegalStateException.class)
-							.isThrownBy(() -> rabbitTemplate.setConfirmCallback(mock(RabbitTemplate.ConfirmCallback.class)))
+							.isThrownBy(
+									() -> rabbitTemplate.setConfirmCallback(mock(RabbitTemplate.ConfirmCallback.class)))
 							.withMessage("Only one ConfirmCallback is supported by each RabbitTemplate");
 					Assertions.assertThatExceptionOfType(IllegalStateException.class)
-							.isThrownBy(() -> rabbitTemplate.setReturnsCallback(mock(RabbitTemplate.ReturnsCallback.class)))
+							.isThrownBy(
+									() -> rabbitTemplate.setReturnsCallback(mock(RabbitTemplate.ReturnsCallback.class)))
 							.withMessage("Only one ReturnCallback is supported by each RabbitTemplate");
 				});
 	}
