@@ -159,8 +159,8 @@ public class RabbitAutoConfiguration {
 				ObjectProvider<RabbitTemplate.ReturnsCallback> returnsCallback) {
 			RabbitTemplate template = new RabbitTemplate();
 			configurer.configure(template, connectionFactory);
-			confirmCallback.ifAvailable(ccb -> template.setConfirmCallback(ccb));
-			returnsCallback.ifAvailable(rcb -> template.setReturnsCallback(rcb));
+			confirmCallback.ifAvailable((ccb) -> template.setConfirmCallback(ccb));
+			returnsCallback.ifAvailable((rcb) -> template.setReturnsCallback(rcb));
 			return template;
 		}
 

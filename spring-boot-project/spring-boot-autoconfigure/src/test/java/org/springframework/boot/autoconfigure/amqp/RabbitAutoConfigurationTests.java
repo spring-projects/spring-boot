@@ -29,7 +29,6 @@ import com.rabbitmq.client.impl.CredentialsProvider;
 import com.rabbitmq.client.impl.CredentialsRefreshService;
 import com.rabbitmq.client.impl.DefaultCredentialsProvider;
 import org.aopalliance.aop.Advice;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
@@ -80,6 +79,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -378,11 +378,11 @@ class RabbitAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(RabbitTemplateConfirmCallbackAndReturnsCallbackConfiguration.class)
 				.run((context) -> {
 					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
-					Assertions.assertThatExceptionOfType(IllegalStateException.class)
+					assertThatIllegalStateException()
 							.isThrownBy(
 									() -> rabbitTemplate.setConfirmCallback(mock(RabbitTemplate.ConfirmCallback.class)))
 							.withMessage("Only one ConfirmCallback is supported by each RabbitTemplate");
-					Assertions.assertThatExceptionOfType(IllegalStateException.class)
+					assertThatIllegalStateException()
 							.isThrownBy(
 									() -> rabbitTemplate.setReturnsCallback(mock(RabbitTemplate.ReturnsCallback.class)))
 							.withMessage("Only one ReturnCallback is supported by each RabbitTemplate");
@@ -1000,7 +1000,7 @@ class RabbitAutoConfigurationTests {
 
 		@Bean
 		RabbitTemplate.ReturnsCallback returnsCallback() {
-			return returned -> {
+			return (returned) -> {
 			};
 		}
 
