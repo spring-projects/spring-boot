@@ -16,9 +16,13 @@
 
 package org.springframework.boot.autoconfigure.task;
 
+import java.util.Arrays;
 import java.util.concurrent.Executor;
 
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -27,12 +31,13 @@ import org.springframework.boot.autoconfigure.task.TaskExecutionProperties.Shutd
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.task.TaskExecutorBuilder;
 import org.springframework.boot.task.TaskExecutorCustomizer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.*;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.TaskExecutor;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.scheduling.annotation.AsyncAnnotationBeanPostProcessor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.lang.Nullable;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link TaskExecutor}.
@@ -75,9 +80,42 @@ public class TaskExecutionAutoConfiguration {
 	@Lazy
 	@Bean(name = { APPLICATION_TASK_EXECUTOR_BEAN_NAME,
 			AsyncAnnotationBeanPostProcessor.DEFAULT_TASK_EXECUTOR_BEAN_NAME })
-	@ConditionalOnMissingBean(Executor.class)
+	@Conditional(OnTaskExecutorMissingCondition.class)
 	public ThreadPoolTaskExecutor applicationTaskExecutor(TaskExecutorBuilder builder) {
 		return builder.build();
+	}
+
+	/**
+	 * {@link Condition} that checks for the presence of task executor.
+	 */
+	private static final class OnTaskExecutorMissingCondition implements Condition {
+
+		@Override
+		public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
+			final ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+			return Arrays
+					.asList(APPLICATION_TASK_EXECUTOR_BEAN_NAME,
+							AsyncAnnotationBeanPostProcessor.DEFAULT_TASK_EXECUTOR_BEAN_NAME)
+					.stream().noneMatch(beanName -> this.containsBean(beanName, beanFactory));
+		}
+
+		private boolean containsBean(String beanName, @Nullable ConfigurableListableBeanFactory beanFactory) {
+			if (beanFactory == null) {
+				return false;
+			}
+
+			try {
+				beanFactory.getBean(beanName, Executor.class);
+				return true;
+			}
+			catch (NoUniqueBeanDefinitionException ex) {
+				return true;
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+				return false;
+			}
+		}
+
 	}
 
 }

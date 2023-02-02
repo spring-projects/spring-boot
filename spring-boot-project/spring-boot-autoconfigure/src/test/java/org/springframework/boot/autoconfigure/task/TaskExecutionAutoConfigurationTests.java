@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.task;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 
@@ -41,7 +42,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -110,7 +110,18 @@ class TaskExecutionAutoConfigurationTests {
 	void taskExecutorWhenHasCustomTaskExecutorShouldBackOff() {
 		this.contextRunner.withUserConfiguration(CustomTaskExecutorConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(Executor.class);
-			assertThat(context.getBean(Executor.class)).isSameAs(context.getBean("customTaskExecutor"));
+			assertThat(context.getBean(Executor.class)).isSameAs(context.getBean("taskExecutor"));
+		});
+	}
+
+	@Test
+	void taskExecutorWhenHasCustomExecutorShouldUseDefaultTaskExecutor() {
+		this.contextRunner.withUserConfiguration(CustomExecutorConfig.class).run((context) -> {
+			assertThat(context.getBean(ThreadPoolTaskExecutor.class)).isSameAs(context.getBean("taskExecutor"));
+			assertThat(context.getBean(ThreadPoolTaskExecutor.class))
+					.isSameAs(context.getBean("applicationTaskExecutor"));
+			assertThat(context.getBean(ThreadPoolTaskExecutor.class))
+					.isNotSameAs(context.getBean("executorNotForTaskExecutor", Executor.class));
 		});
 	}
 
@@ -190,9 +201,19 @@ class TaskExecutionAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class CustomTaskExecutorConfig {
 
-		@Bean
+		@Bean("taskExecutor")
 		Executor customTaskExecutor() {
 			return new SyncTaskExecutor();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomExecutorConfig {
+
+		@Bean
+		Executor executorNotForTaskExecutor() {
+			return Executors.newFixedThreadPool(1);
 		}
 
 	}

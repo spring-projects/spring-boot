@@ -552,7 +552,6 @@ class WebMvcAutoConfigurationTests {
 	void asyncTaskExecutorWithCustomNonApplicationTaskExecutor() {
 		this.contextRunner.withUserConfiguration(CustomAsyncTaskExecutorConfig.class)
 				.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class)).run((context) -> {
-					assertThat(context).hasSingleBean(AsyncTaskExecutor.class);
 					assertThat(context.getBean(RequestMappingHandlerAdapter.class)).extracting("taskExecutor")
 							.isNotSameAs(context.getBean("customTaskExecutor"));
 				});
