@@ -29,6 +29,7 @@ import com.rabbitmq.client.impl.CredentialsProvider;
 import com.rabbitmq.client.impl.CredentialsRefreshService;
 import com.rabbitmq.client.impl.DefaultCredentialsProvider;
 import org.aopalliance.aop.Advice;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
@@ -369,6 +370,20 @@ class RabbitAutoConfigurationTests {
 					then(template).should().setExchange("my-exchange");
 					then(template).should().setRoutingKey("my-routing-key");
 					then(template).should().setDefaultReceiveQueue("default-queue");
+				});
+	}
+
+	@Test
+	void testRabbitTemplateConfirmCallbackAndReturnsCallback() {
+		this.contextRunner.withUserConfiguration(RabbitTemplateConfirmCallbackAndReturnsCallbackConfiguration.class)
+				.run((context) -> {
+					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
+					Assertions.assertThatExceptionOfType(IllegalStateException.class)
+							.isThrownBy(() -> rabbitTemplate.setConfirmCallback(mock(RabbitTemplate.ConfirmCallback.class)))
+							.withMessage("Only one ConfirmCallback is supported by each RabbitTemplate");
+					Assertions.assertThatExceptionOfType(IllegalStateException.class)
+							.isThrownBy(() -> rabbitTemplate.setReturnsCallback(mock(RabbitTemplate.ReturnsCallback.class)))
+							.withMessage("Only one ReturnCallback is supported by each RabbitTemplate");
 				});
 	}
 
@@ -968,6 +983,23 @@ class RabbitAutoConfigurationTests {
 		@Bean
 		MessageRecoverer anotherMessageRecoverer() {
 			return mock(MessageRecoverer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class RabbitTemplateConfirmCallbackAndReturnsCallbackConfiguration {
+
+		@Bean
+		RabbitTemplate.ConfirmCallback confirmCallback() {
+			return (correlationData, ack, cause) -> {
+			};
+		}
+
+		@Bean
+		RabbitTemplate.ReturnsCallback returnsCallback() {
+			return returned -> {
+			};
 		}
 
 	}
