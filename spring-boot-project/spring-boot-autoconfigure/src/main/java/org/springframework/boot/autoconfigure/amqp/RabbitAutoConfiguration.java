@@ -155,12 +155,10 @@ public class RabbitAutoConfiguration {
 		@ConditionalOnSingleCandidate(ConnectionFactory.class)
 		@ConditionalOnMissingBean(RabbitOperations.class)
 		public RabbitTemplate rabbitTemplate(RabbitTemplateConfigurer configurer, ConnectionFactory connectionFactory,
-				ObjectProvider<RabbitTemplate.ConfirmCallback> confirmCallback,
-				ObjectProvider<RabbitTemplate.ReturnsCallback> returnsCallback) {
+				ObjectProvider<RabbitTemplateCustomizer> rabbitTemplateCustomizers) {
 			RabbitTemplate template = new RabbitTemplate();
 			configurer.configure(template, connectionFactory);
-			confirmCallback.ifAvailable((ccb) -> template.setConfirmCallback(ccb));
-			returnsCallback.ifAvailable((rcb) -> template.setReturnsCallback(rcb));
+			rabbitTemplateCustomizers.orderedStream().forEach((customizer) -> customizer.customize(template));
 			return template;
 		}
 

@@ -79,7 +79,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -374,18 +373,18 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	void testRabbitTemplateConfirmCallbackAndReturnsCallback() {
-		this.contextRunner.withUserConfiguration(RabbitTemplateConfirmCallbackAndReturnsCallbackConfiguration.class)
+	void whenMultipleRabbitTemplateCustomizersAreDefinedThenTheyAreCalledInOrder() {
+		this.contextRunner.withUserConfiguration(MultipleRabbitTemplateCustomizersConfiguration.class)
 				.run((context) -> {
-					RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
-					assertThatIllegalStateException()
-							.isThrownBy(
-									() -> rabbitTemplate.setConfirmCallback(mock(RabbitTemplate.ConfirmCallback.class)))
-							.withMessage("Only one ConfirmCallback is supported by each RabbitTemplate");
-					assertThatIllegalStateException()
-							.isThrownBy(
-									() -> rabbitTemplate.setReturnsCallback(mock(RabbitTemplate.ReturnsCallback.class)))
-							.withMessage("Only one ReturnCallback is supported by each RabbitTemplate");
+					RabbitTemplateCustomizer firstCustomizer = context.getBean("firstCustomizer",
+							RabbitTemplateCustomizer.class);
+					RabbitTemplateCustomizer secondCustomizer = context.getBean("secondCustomizer",
+							RabbitTemplateCustomizer.class);
+					InOrder inOrder = inOrder(firstCustomizer, secondCustomizer);
+					RabbitTemplate template = context.getBean(RabbitTemplate.class);
+					then(firstCustomizer).should(inOrder).customize(template);
+					then(secondCustomizer).should(inOrder).customize(template);
+					inOrder.verifyNoMoreInteractions();
 				});
 	}
 
@@ -990,18 +989,18 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class RabbitTemplateConfirmCallbackAndReturnsCallbackConfiguration {
+	static class MultipleRabbitTemplateCustomizersConfiguration {
 
 		@Bean
-		RabbitTemplate.ConfirmCallback confirmCallback() {
-			return (correlationData, ack, cause) -> {
-			};
+		@Order(Ordered.LOWEST_PRECEDENCE)
+		RabbitTemplateCustomizer secondCustomizer() {
+			return mock(RabbitTemplateCustomizer.class);
 		}
 
 		@Bean
-		RabbitTemplate.ReturnsCallback returnsCallback() {
-			return (returned) -> {
-			};
+		@Order(0)
+		RabbitTemplateCustomizer firstCustomizer() {
+			return mock(RabbitTemplateCustomizer.class);
 		}
 
 	}
