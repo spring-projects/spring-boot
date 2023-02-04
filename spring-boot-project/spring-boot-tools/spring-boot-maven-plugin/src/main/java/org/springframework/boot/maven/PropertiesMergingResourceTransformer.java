@@ -69,7 +69,6 @@ public class PropertiesMergingResourceTransformer implements ReproducibleResourc
 			throws IOException {
 		Properties properties = new Properties();
 		properties.load(inputStream);
-		inputStream.close();
 		properties.forEach((name, value) -> process((String) name, (String) value));
 		if (time > this.time) {
 			this.time = time;
