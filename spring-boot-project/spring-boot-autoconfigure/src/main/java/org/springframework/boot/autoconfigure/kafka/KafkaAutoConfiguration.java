@@ -160,8 +160,9 @@ public class KafkaAutoConfiguration {
 	public RetryTopicConfiguration kafkaRetryTopicConfiguration(KafkaTemplate<?, ?> kafkaTemplate) {
 		KafkaProperties.Retry.Topic retryTopic = this.properties.getRetry().getTopic();
 		RetryTopicConfigurationBuilder builder = RetryTopicConfigurationBuilder.newInstance()
-				.maxAttempts(retryTopic.getAttempts()).useSingleTopicForFixedDelays().suffixTopicsWithIndexValues()
-				.doNotAutoCreateRetryTopics();
+				.maxAttempts(retryTopic.getAttempts()).useSingleTopicForFixedDelays().suffixTopicsWithIndexValues();
+		PropertyMapper.get().from(retryTopic.isAutoCreateTopics()).whenFalse()
+				.toCall(builder::doNotAutoCreateRetryTopics);
 		setBackOffPolicy(builder, retryTopic);
 		return builder.create(kafkaTemplate);
 	}

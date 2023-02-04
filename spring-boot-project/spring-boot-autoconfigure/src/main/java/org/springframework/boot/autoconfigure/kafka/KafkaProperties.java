@@ -1471,6 +1471,11 @@ public class KafkaProperties {
 			 */
 			private boolean randomBackOff = false;
 
+			/**
+			 * Whether to create topics automatically.
+			 */
+			private boolean autoCreateTopics = false;
+
 			public boolean isEnabled() {
 				return this.enabled;
 			}
@@ -1517,6 +1522,14 @@ public class KafkaProperties {
 
 			public void setRandomBackOff(boolean randomBackOff) {
 				this.randomBackOff = randomBackOff;
+			}
+
+			public boolean isAutoCreateTopics() {
+				return this.autoCreateTopics;
+			}
+
+			public void setAutoCreateTopics(boolean autoCreateTopics) {
+				this.autoCreateTopics = autoCreateTopics;
 			}
 
 		}

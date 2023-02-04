@@ -356,6 +356,19 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
+	void retryTopicConfigurationWithAutoCreateTopics() {
+		this.contextRunner
+				.withPropertyValues("spring.application.name=my-test-app",
+						"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093",
+						"spring.kafka.retry.topic.enabled=true", "spring.kafka.retry.topic.auto-create-topics=true")
+				.run((context) -> {
+					RetryTopicConfiguration configuration = context.getBean(RetryTopicConfiguration.class);
+					assertThat(configuration.forKafkaTopicAutoCreation()).extracting("shouldCreateTopics")
+							.isEqualTo(true);
+				});
+	}
+
+	@Test
 	void retryTopicConfigurationWithDefaultProperties() {
 		this.contextRunner.withPropertyValues("spring.application.name=my-test-app",
 				"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093", "spring.kafka.retry.topic.enabled=true")
@@ -365,6 +378,8 @@ class KafkaAutoConfigurationTests {
 							.containsExactly(tuple(0L, ""), tuple(1000L, "-retry"), tuple(0L, "-dlt"));
 					assertThat(configuration.forKafkaTopicAutoCreation()).extracting("shouldCreateTopics")
 							.asInstanceOf(InstanceOfAssertFactories.BOOLEAN).isFalse();
+					assertThat(configuration.forKafkaTopicAutoCreation()).extracting("shouldCreateTopics")
+							.isEqualTo(false);
 				}));
 	}
 
