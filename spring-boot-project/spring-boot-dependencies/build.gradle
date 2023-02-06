@@ -1046,7 +1046,7 @@ bom {
 			]
 		}
 	}
-	library("Pooled JMS", "3.0.0") {
+	library("Pooled JMS", "3.1.0") {
 		group("org.messaginghub") {
 			modules = [
 				"pooled-jms"
