@@ -114,8 +114,7 @@ class Neo4jAutoConfigurationTests {
 	void maxTransactionRetryTime() {
 		Neo4jProperties properties = new Neo4jProperties();
 		properties.setMaxTransactionRetryTime(Duration.ofSeconds(2));
-		assertThat(mapDriverConfig(properties)).extracting("retrySettings")
-			.hasFieldOrPropertyWithValue("maxRetryTimeMs", 2000L);
+		assertThat(mapDriverConfig(properties).maxTransactionRetryTimeMillis()).isEqualTo(2000L);
 	}
 
 	@Test
