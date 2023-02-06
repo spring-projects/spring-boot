@@ -1251,16 +1251,16 @@ bom {
 			]
 		}
 	}
-	library("Selenium", "4.5.3") {
+	library("Selenium", "4.8.0") {
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"lift",
 				"selenium-api",
 				"selenium-chrome-driver",
 				"selenium-chromium-driver",
-				"selenium-devtools-v104",
-				"selenium-devtools-v105",
-				"selenium-devtools-v106",
+				"selenium-devtools-v107",
+				"selenium-devtools-v108",
+				"selenium-devtools-v109",
 				"selenium-devtools-v85",
 				"selenium-edge-driver",
 				"selenium-firefox-driver",
@@ -1270,6 +1270,7 @@ bom {
 				"selenium-ie-driver",
 				"selenium-java",
 				"selenium-json",
+				"selenium-manager",
 				"selenium-remote-driver",
 				"selenium-safari-driver",
 				"selenium-session-map-jdbc",
