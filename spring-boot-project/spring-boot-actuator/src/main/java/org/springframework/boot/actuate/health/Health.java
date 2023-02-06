@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -47,7 +46,6 @@ import org.springframework.util.Assert;
  * @author Christian Dupuis
  * @author Phillip Webb
  * @author Michael Pratt
- * @author Moritz Halbritter
  * @since 1.1.0
  */
 @JsonInclude(Include.NON_EMPTY)
@@ -57,8 +55,6 @@ public final class Health extends HealthComponent {
 
 	private final Map<String, Object> details;
 
-	private final Throwable exception;
-
 	/**
 	 * Create a new {@link Health} instance with the specified status and details.
 	 * @param builder the Builder to use
@@ -67,13 +63,11 @@ public final class Health extends HealthComponent {
 		Assert.notNull(builder, "Builder must not be null");
 		this.status = builder.status;
 		this.details = Collections.unmodifiableMap(builder.details);
-		this.exception = builder.exception;
 	}
 
 	Health(Status status, Map<String, Object> details) {
 		this.status = status;
 		this.details = details;
-		this.exception = null;
 	}
 
 	/**
@@ -105,11 +99,6 @@ public final class Health extends HealthComponent {
 			return this;
 		}
 		return status(getStatus()).build();
-	}
-
-	@JsonIgnore
-	Throwable getException() {
-		return this.exception;
 	}
 
 	@Override
