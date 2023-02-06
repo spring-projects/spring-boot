@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -184,7 +184,7 @@ class InitializrService {
 		try {
 			HttpHost host = HttpHost.create(url);
 			request.addHeader("User-Agent", "SpringBootCli/" + getClass().getPackage().getImplementationVersion());
-			return getHttp().execute(host, request);
+			return getHttp().executeOpen(host, request, null);
 		}
 		catch (IOException ex) {
 			throw new ReportableException(

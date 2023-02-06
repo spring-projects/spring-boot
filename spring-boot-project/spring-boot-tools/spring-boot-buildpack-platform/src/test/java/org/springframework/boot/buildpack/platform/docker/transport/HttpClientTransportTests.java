@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ import org.springframework.util.StreamUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -98,7 +99,7 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.get(this.uri);
-		then(this.client).should().execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		then(this.client).should().executeOpen(this.hostCaptor.capture(), this.requestCaptor.capture(), isNull());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		assertThat(request).isInstanceOf(HttpGet.class);
 		assertThat(request.getUri()).isEqualTo(this.uri);
@@ -112,7 +113,7 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.post(this.uri);
-		then(this.client).should().execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		then(this.client).should().executeOpen(this.hostCaptor.capture(), this.requestCaptor.capture(), isNull());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		assertThat(request).isInstanceOf(HttpPost.class);
 		assertThat(request.getUri()).isEqualTo(this.uri);
@@ -127,7 +128,7 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.post(this.uri, "auth token");
-		then(this.client).should().execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		then(this.client).should().executeOpen(this.hostCaptor.capture(), this.requestCaptor.capture(), isNull());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		assertThat(request).isInstanceOf(HttpPost.class);
 		assertThat(request.getUri()).isEqualTo(this.uri);
@@ -142,7 +143,7 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.post(this.uri, "");
-		then(this.client).should().execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		then(this.client).should().executeOpen(this.hostCaptor.capture(), this.requestCaptor.capture(), isNull());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		assertThat(request).isInstanceOf(HttpPost.class);
 		assertThat(request.getUri()).isEqualTo(this.uri);
@@ -159,7 +160,7 @@ class HttpClientTransportTests {
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.post(this.uri, APPLICATION_JSON,
 				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
-		then(this.client).should().execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		then(this.client).should().executeOpen(this.hostCaptor.capture(), this.requestCaptor.capture(), isNull());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		HttpEntity entity = request.getEntity();
 		assertThat(request).isInstanceOf(HttpPost.class);
@@ -181,7 +182,7 @@ class HttpClientTransportTests {
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.post(this.uri, APPLICATION_X_TAR,
 				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
-		then(this.client).should().execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		then(this.client).should().executeOpen(this.hostCaptor.capture(), this.requestCaptor.capture(), isNull());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		HttpEntity entity = request.getEntity();
 		assertThat(request).isInstanceOf(HttpPost.class);
@@ -203,7 +204,7 @@ class HttpClientTransportTests {
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.put(this.uri, APPLICATION_JSON,
 				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
-		then(this.client).should().execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		then(this.client).should().executeOpen(this.hostCaptor.capture(), this.requestCaptor.capture(), isNull());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		HttpEntity entity = request.getEntity();
 		assertThat(request).isInstanceOf(HttpPut.class);
@@ -225,7 +226,7 @@ class HttpClientTransportTests {
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.put(this.uri, APPLICATION_X_TAR,
 				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
-		then(this.client).should().execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		then(this.client).should().executeOpen(this.hostCaptor.capture(), this.requestCaptor.capture(), isNull());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		HttpEntity entity = request.getEntity();
 		assertThat(request).isInstanceOf(HttpPut.class);
@@ -245,7 +246,7 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.delete(this.uri);
-		then(this.client).should().execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		then(this.client).should().executeOpen(this.hostCaptor.capture(), this.requestCaptor.capture(), isNull());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		assertThat(request).isInstanceOf(HttpDelete.class);
 		assertThat(request.getUri()).isEqualTo(this.uri);
@@ -302,7 +303,7 @@ class HttpClientTransportTests {
 
 	@Test
 	void executeWhenClientThrowsIOExceptionRethrowsAsDockerException() throws IOException {
-		given(this.client.execute(any(HttpHost.class), any(HttpUriRequest.class)))
+		given(this.client.executeOpen(any(HttpHost.class), any(HttpUriRequest.class), isNull()))
 				.willThrow(new IOException("test IO exception"));
 		assertThatExceptionOfType(DockerConnectionException.class).isThrownBy(() -> this.http.get(this.uri))
 				.satisfies((ex) -> assertThat(ex.getMessage()).contains("test IO exception"));
@@ -315,7 +316,8 @@ class HttpClientTransportTests {
 	}
 
 	private void givenClientWillReturnResponse() throws IOException {
-		given(this.client.execute(any(HttpHost.class), any(HttpUriRequest.class))).willReturn(this.response);
+		given(this.client.executeOpen(any(HttpHost.class), any(HttpUriRequest.class), isNull()))
+				.willReturn(this.response);
 		given(this.response.getEntity()).willReturn(this.entity);
 	}
 
