@@ -124,7 +124,9 @@ dependencies {
 	}
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.junit.jupiter:junit-jupiter")
-	testImplementation("org.mariadb.jdbc:mariadb-java-client")
+	testImplementation("org.mariadb.jdbc:mariadb-java-client") {
+		exclude group: "org.slf4j", module: "jcl-over-slf4j"
+	}
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.springframework:spring-context-support")
