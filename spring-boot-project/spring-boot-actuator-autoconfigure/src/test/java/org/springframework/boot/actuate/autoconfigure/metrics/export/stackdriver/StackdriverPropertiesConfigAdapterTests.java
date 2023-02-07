@@ -22,8 +22,9 @@ import java.util.Map;
 import io.micrometer.stackdriver.StackdriverConfig;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter;
 
 /**
  * Tests for {@link StackdriverPropertiesConfigAdapter}.
@@ -66,7 +67,8 @@ class StackdriverPropertiesConfigAdapterTests {
 
 	@Test
 	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(StackdriverConfig.class, StackdriverPropertiesConfigAdapter.class,
-				"metricTypePrefix");
+		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(StackdriverConfig.class,
+				StackdriverPropertiesConfigAdapter.class, "metricTypePrefix");
 	}
+
 }

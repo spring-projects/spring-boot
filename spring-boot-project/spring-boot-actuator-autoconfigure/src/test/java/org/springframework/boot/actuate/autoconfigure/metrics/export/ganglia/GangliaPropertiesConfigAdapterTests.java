@@ -23,8 +23,9 @@ import info.ganglia.gmetric4j.gmetric.GMetric.UDPAddressingMode;
 import io.micrometer.ganglia.GangliaConfig;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter;
 
 /**
  * Tests for {@link GangliaPropertiesConfigAdapter}.
@@ -85,7 +86,7 @@ class GangliaPropertiesConfigAdapterTests {
 
 	@Test
 	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(GangliaConfig.class,
+		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(GangliaConfig.class,
 				GangliaPropertiesConfigAdapter.class, "protocolVersion");
 	}
 

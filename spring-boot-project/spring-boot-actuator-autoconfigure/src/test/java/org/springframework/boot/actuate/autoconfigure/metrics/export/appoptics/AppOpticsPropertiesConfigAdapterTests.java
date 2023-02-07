@@ -19,10 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.appoptics;
 import io.micrometer.appoptics.AppOpticsConfig;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapterTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter;
 
 /**
  * Tests for {@link AppOpticsPropertiesConfigAdapter}.
@@ -72,7 +72,8 @@ class AppOpticsPropertiesConfigAdapterTests
 
 	@Test
 	void allDefaultConfigMethodsAreOverriddenByAtlasPropertiesConfigAdapter() {
-		assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(AppOpticsConfig.class, AppOpticsPropertiesConfigAdapter.class,
-				"connectTimeout");
+		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(AppOpticsConfig.class,
+				AppOpticsPropertiesConfigAdapter.class, "connectTimeout");
 	}
+
 }

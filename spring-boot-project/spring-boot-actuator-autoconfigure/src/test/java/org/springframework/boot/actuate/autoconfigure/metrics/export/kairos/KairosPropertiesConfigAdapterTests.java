@@ -19,10 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.kairos;
 import io.micrometer.kairos.KairosConfig;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapterTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter;
 
 /**
  * Tests for {@link KairosPropertiesConfigAdapter}.
@@ -66,6 +66,8 @@ class KairosPropertiesConfigAdapterTests
 
 	@Test
 	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(KairosConfig.class, KairosPropertiesConfigAdapter.class);
+		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(KairosConfig.class,
+				KairosPropertiesConfigAdapter.class);
 	}
+
 }

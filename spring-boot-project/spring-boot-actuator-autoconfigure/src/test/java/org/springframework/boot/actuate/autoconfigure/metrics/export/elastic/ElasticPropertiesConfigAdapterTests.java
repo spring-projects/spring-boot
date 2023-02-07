@@ -19,8 +19,9 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.elastic;
 import io.micrometer.elastic.ElasticConfig;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter;
 
 /**
  * Tests for {@link ElasticPropertiesConfigAdapter}.
@@ -101,8 +102,8 @@ class ElasticPropertiesConfigAdapterTests {
 
 	@Test
 	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(ElasticConfig.class, ElasticPropertiesConfigAdapter.class,
-				"documentType"
-		);
+		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(ElasticConfig.class,
+				ElasticPropertiesConfigAdapter.class, "documentType");
 	}
+
 }

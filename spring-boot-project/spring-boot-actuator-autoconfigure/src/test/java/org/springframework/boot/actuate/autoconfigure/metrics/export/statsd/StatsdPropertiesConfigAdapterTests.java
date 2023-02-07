@@ -23,8 +23,9 @@ import io.micrometer.statsd.StatsdFlavor;
 import io.micrometer.statsd.StatsdProtocol;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter;
 
 /**
  * Tests for {@link StatsdPropertiesConfigAdapter}.
@@ -108,7 +109,8 @@ class StatsdPropertiesConfigAdapterTests {
 
 	@Test
 	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(StatsdConfig.class, StatsdPropertiesConfigAdapter.class,
-				"queueSize");
+		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(StatsdConfig.class,
+				StatsdPropertiesConfigAdapter.class, "queueSize");
 	}
+
 }

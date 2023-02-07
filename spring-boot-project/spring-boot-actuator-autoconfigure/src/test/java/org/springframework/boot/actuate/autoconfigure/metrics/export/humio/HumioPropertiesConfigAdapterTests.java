@@ -21,8 +21,9 @@ import java.util.Collections;
 import io.micrometer.humio.HumioConfig;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter;
 
 /**
  * Tests for {@link HumioPropertiesConfigAdapter}.
@@ -55,7 +56,8 @@ class HumioPropertiesConfigAdapterTests {
 
 	@Test
 	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(HumioConfig.class, HumioPropertiesConfigAdapter.class,
-				"connectTimeout");
+		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(HumioConfig.class,
+				HumioPropertiesConfigAdapter.class, "connectTimeout");
 	}
+
 }

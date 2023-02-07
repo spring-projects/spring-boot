@@ -19,10 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.datadog;
 import io.micrometer.datadog.DatadogConfig;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapterTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter;
 
 /**
  * Tests for {@link DatadogPropertiesConfigAdapter}.
@@ -80,7 +80,7 @@ class DatadogPropertiesConfigAdapterTests
 
 	@Test
 	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(DatadogConfig.class,
+		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(DatadogConfig.class,
 				DatadogPropertiesConfigAdapter.class);
 	}
 

@@ -19,10 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx;
 import io.micrometer.signalfx.SignalFxConfig;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapterTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter;
 
 /**
  * Tests for {@link SignalFxPropertiesConfigAdapter}.
@@ -66,7 +66,7 @@ class SignalFXPropertiesConfigAdapterTests
 
 	@Test
 	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(SignalFxConfig.class,
+		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(SignalFxConfig.class,
 				SignalFxPropertiesConfigAdapter.class, "publishDeltaHistogram", "publishCumulativeHistogram");
 	}
 
