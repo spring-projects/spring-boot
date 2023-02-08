@@ -46,7 +46,7 @@ public class HomebrewFormula extends DefaultTask {
 
 	private static final String SPRING_REPO = "https://repo.spring.io/%s";
 
-	private static final String MAVEN_REPO = "https://repo1.maven.org/maven2";
+	private static final String MAVEN_REPO = "https://repo.maven.apache.org/maven2";
 
 	private Provider<RegularFile> archive;
 
