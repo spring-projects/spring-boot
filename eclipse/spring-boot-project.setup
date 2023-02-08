@@ -105,7 +105,7 @@
     <repository
         url="https://repo.spring.io/javaformat-eclipse-update-site/"/>
     <repository
-        url="https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201405280027/"/>
+        url="https://repo.maven.apache.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201405280027/"/>
     <repository
         url="https://download.springsource.com/release/TOOLS/sts4/update/latest/"/>
     <repository
