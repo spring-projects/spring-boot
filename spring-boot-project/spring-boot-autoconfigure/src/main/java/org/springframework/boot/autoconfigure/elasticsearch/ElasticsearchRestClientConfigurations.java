@@ -16,10 +16,7 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.time.Duration;
-
+import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -28,11 +25,11 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.apache.http.impl.nio.reactor.IOReactorConfig;
+import org.apache.http.message.BasicHeader;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.sniff.Sniffer;
 import org.elasticsearch.client.sniff.SnifferBuilder;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -41,6 +38,10 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.time.Duration;
 
 /**
  * Elasticsearch rest client configurations.
@@ -88,8 +89,7 @@ class ElasticsearchRestClientConfigurations {
 		private HttpHost createHttpHost(String uri) {
 			try {
 				return createHttpHost(URI.create(uri));
-			}
-			catch (IllegalArgumentException ex) {
+			} catch (IllegalArgumentException ex) {
 				return HttpHost.create(uri);
 			}
 		}
@@ -101,8 +101,7 @@ class ElasticsearchRestClientConfigurations {
 			try {
 				return HttpHost.create(new URI(uri.getScheme(), null, uri.getHost(), uri.getPort(), uri.getPath(),
 						uri.getQuery(), uri.getFragment()).toString());
-			}
-			catch (URISyntaxException ex) {
+			} catch (URISyntaxException ex) {
 				throw new IllegalStateException(ex);
 			}
 		}
@@ -151,6 +150,14 @@ class ElasticsearchRestClientConfigurations {
 
 		@Override
 		public void customize(RestClientBuilder builder) {
+			map.from(this.properties::getDefaultHeaders).to(httpHeadersMap -> {
+				Header[] headers = httpHeadersMap
+						.entrySet()
+						.stream()
+						.map(httpHeaderEntry -> new BasicHeader(httpHeaderEntry.getKey(), httpHeaderEntry.getValue()))
+						.toArray(Header[]::new);
+				builder.setDefaultHeaders(headers);
+			});
 		}
 
 		@Override
@@ -185,8 +192,7 @@ class ElasticsearchRestClientConfigurations {
 		private URI toUri(String uri) {
 			try {
 				return URI.create(uri);
-			}
-			catch (IllegalArgumentException ex) {
+			} catch (IllegalArgumentException ex) {
 				return null;
 			}
 		}

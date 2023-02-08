@@ -17,13 +17,16 @@
 package org.springframework.boot.autoconfigure.elasticsearch;
 
 import java.time.Duration;
+import java.util.List;
 
+import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.message.BasicHeader;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.elasticsearch.client.Node;
 import org.elasticsearch.client.RestClient;
@@ -36,6 +39,7 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.then;
@@ -93,10 +97,26 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	void configureWithCustomTimeouts() {
 		this.contextRunner.withPropertyValues("spring.elasticsearch.connection-timeout=15s",
 				"spring.elasticsearch.socket-timeout=1m").run((context) -> {
-					assertThat(context).hasSingleBean(RestClient.class);
-					RestClient restClient = context.getBean(RestClient.class);
-					assertTimeouts(restClient, Duration.ofSeconds(15), Duration.ofMinutes(1));
-				});
+			assertThat(context).hasSingleBean(RestClient.class);
+			RestClient restClient = context.getBean(RestClient.class);
+			assertTimeouts(restClient, Duration.ofSeconds(15), Duration.ofMinutes(1));
+		});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void configureWithCustomDefaultHeaders() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.default-headers.test=test").run((context) -> {
+			assertThat(context).hasSingleBean(RestClient.class);
+			RestClient restClient = context.getBean(RestClient.class);
+			List<Header> defaultHeaders = (List<Header>) ReflectionTestUtils.getField(restClient, "defaultHeaders");
+			assertThat(defaultHeaders).hasSize(1);
+
+			assertThat(defaultHeaders.get(0)).satisfies(header -> {
+				assertThat(header.getName()).isEqualTo("test");
+				assertThat(header.getName()).isEqualTo("test");
+			});
+		});
 	}
 
 	private static void assertTimeouts(RestClient restClient, Duration connectTimeout, Duration readTimeout) {

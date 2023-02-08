@@ -16,12 +16,10 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch;
 
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.time.Duration;
+import java.util.*;
 
 /**
  * Configuration properties for Elasticsearch.
@@ -66,6 +64,8 @@ public class ElasticsearchProperties {
 	 * Prefix added to the path of every request sent to Elasticsearch.
 	 */
 	private String pathPrefix;
+
+	private Map<String, String> defaultHeaders = new HashMap<>();
 
 	private final Restclient restclient = new Restclient();
 
@@ -127,6 +127,14 @@ public class ElasticsearchProperties {
 
 	public Restclient getRestclient() {
 		return this.restclient;
+	}
+
+	public Map<String, String> getDefaultHeaders() {
+		return defaultHeaders;
+	}
+
+	public void setDefaultHeaders(Map<String, String> defaultHeaders) {
+		this.defaultHeaders = defaultHeaders;
 	}
 
 	public static class Restclient {
