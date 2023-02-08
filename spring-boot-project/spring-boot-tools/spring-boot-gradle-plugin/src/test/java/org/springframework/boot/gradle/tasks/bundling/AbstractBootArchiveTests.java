@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,6 +132,42 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 					.isEqualTo(this.classesPath);
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Lib")).isEqualTo(this.libPath);
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Version")).isNotNull();
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Implementation-Name"))
+					.isEqualTo(this.project.getName());
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Implementation-Version")).isNull();
+		}
+	}
+
+	@Test
+	void whenImplementationNameIsCustomizedItShouldAppearInArchiveManifest() throws IOException {
+		this.task.getMainClass().set("com.example.Main");
+		this.task.getManifest().getAttributes().put("Implementation-Name", "Customized");
+		executeTask();
+		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Implementation-Name"))
+					.isEqualTo("Customized");
+		}
+	}
+
+	@Test
+	void whenProjectVersionIsSetThenImplementationVersionShouldAppearInArchiveManifest() throws IOException {
+		this.project.setVersion("1.0.0");
+		this.task.getMainClass().set("com.example.Main");
+		executeTask();
+		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Implementation-Version")).isEqualTo("1.0.0");
+		}
+	}
+
+	@Test
+	void whenImplementationVersionIsCustomizedItShouldAppearInArchiveManifest() throws IOException {
+		this.project.setVersion("1.0.0");
+		this.task.getMainClass().set("com.example.Main");
+		this.task.getManifest().getAttributes().put("Implementation-Version", "Customized");
+		executeTask();
+		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Implementation-Version"))
+					.isEqualTo("Customized");
 		}
 	}
 
