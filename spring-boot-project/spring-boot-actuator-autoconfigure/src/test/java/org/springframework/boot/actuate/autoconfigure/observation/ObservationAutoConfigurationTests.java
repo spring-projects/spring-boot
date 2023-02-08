@@ -28,6 +28,7 @@ import io.micrometer.core.instrument.search.MeterNotFoundException;
 import io.micrometer.observation.GlobalObservationConvention;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.Observation.Context;
+import io.micrometer.observation.ObservationFilter;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationHandler.AllMatchingCompositeObservationHandler;
 import io.micrometer.observation.ObservationHandler.FirstMatchingCompositeObservationHandler;
@@ -177,6 +178,16 @@ class ObservationAutoConfigurationTests {
 	}
 
 	@Test
+	void autoConfiguresObservationFilters() {
+		this.contextRunner.withUserConfiguration(ObservationFilters.class).run((context) -> {
+			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
+			Observation.start("filtered", observationRegistry).stop();
+			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+			assertThat(meterRegistry.get("filtered").tag("filter", "one").timer().count()).isOne();
+		});
+	}
+
+	@Test
 	void autoConfiguresGlobalObservationConventions() {
 		this.contextRunner.withUserConfiguration(CustomGlobalObservationConvention.class).run((context) -> {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
@@ -269,6 +280,23 @@ class ObservationAutoConfigurationTests {
 		@Bean
 		ObservationPredicate customPredicate() {
 			return (s, context) -> s.equals("observation1");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ObservationFilters {
+
+		@Bean
+		@Order(1)
+		ObservationFilter observationFilterOne() {
+			return (context) -> context.addLowCardinalityKeyValue(KeyValue.of("filter", "one"));
+		}
+
+		@Bean
+		@Order(0)
+		ObservationFilter observationFilterTwo() {
+			return (context) -> context.addLowCardinalityKeyValue(KeyValue.of("filter", "two"));
 		}
 
 	}

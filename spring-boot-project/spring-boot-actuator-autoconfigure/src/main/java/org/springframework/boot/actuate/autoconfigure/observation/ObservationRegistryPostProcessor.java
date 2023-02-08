@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.observation;
 
 import io.micrometer.observation.GlobalObservationConvention;
+import io.micrometer.observation.ObservationFilter;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
@@ -44,18 +45,22 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 
 	private final ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping;
 
+	private final ObjectProvider<ObservationFilter> observationFilters;
+
 	private volatile ObservationRegistryConfigurer configurer;
 
 	ObservationRegistryPostProcessor(ObjectProvider<ObservationRegistryCustomizer<?>> observationRegistryCustomizers,
 			ObjectProvider<ObservationPredicate> observationPredicates,
 			ObjectProvider<GlobalObservationConvention<?>> observationConventions,
 			ObjectProvider<ObservationHandler<?>> observationHandlers,
-			ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping) {
+			ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping,
+			ObjectProvider<ObservationFilter> observationFilters) {
 		this.observationRegistryCustomizers = observationRegistryCustomizers;
 		this.observationPredicates = observationPredicates;
 		this.observationConventions = observationConventions;
 		this.observationHandlers = observationHandlers;
 		this.observationHandlerGrouping = observationHandlerGrouping;
+		this.observationFilters = observationFilters;
 	}
 
 	@Override
@@ -70,7 +75,7 @@ class ObservationRegistryPostProcessor implements BeanPostProcessor {
 		if (this.configurer == null) {
 			this.configurer = new ObservationRegistryConfigurer(this.observationRegistryCustomizers,
 					this.observationPredicates, this.observationConventions, this.observationHandlers,
-					this.observationHandlerGrouping);
+					this.observationHandlerGrouping, this.observationFilters);
 		}
 		return this.configurer;
 	}
