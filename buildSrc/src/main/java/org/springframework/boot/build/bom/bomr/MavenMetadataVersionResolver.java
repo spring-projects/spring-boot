@@ -17,6 +17,7 @@
 package org.springframework.boot.build.bom.bomr;
 
 import java.io.StringReader;
+import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -49,13 +50,13 @@ final class MavenMetadataVersionResolver implements VersionResolver {
 
 	private final RestTemplate rest;
 
-	private final Collection<String> repositoryUrls;
+	private final Collection<URI> repositoryUrls;
 
-	MavenMetadataVersionResolver(Collection<String> repositoryUrls) {
+	MavenMetadataVersionResolver(Collection<URI> repositoryUrls) {
 		this(new RestTemplate(Collections.singletonList(new StringHttpMessageConverter())), repositoryUrls);
 	}
 
-	MavenMetadataVersionResolver(RestTemplate restTemplate, Collection<String> repositoryUrls) {
+	MavenMetadataVersionResolver(RestTemplate restTemplate, Collection<URI> repositoryUrls) {
 		this.rest = restTemplate;
 		this.repositoryUrls = repositoryUrls;
 	}
@@ -63,15 +64,15 @@ final class MavenMetadataVersionResolver implements VersionResolver {
 	@Override
 	public SortedSet<DependencyVersion> resolveVersions(String groupId, String artifactId) {
 		Set<String> versions = new HashSet<>();
-		for (String repositoryUrl : this.repositoryUrls) {
+		for (URI repositoryUrl : this.repositoryUrls) {
 			versions.addAll(resolveVersions(groupId, artifactId, repositoryUrl));
 		}
 		return versions.stream().map(DependencyVersion::parse).collect(Collectors.toCollection(TreeSet::new));
 	}
 
-	private Set<String> resolveVersions(String groupId, String artifactId, String repositoryUrl) {
+	private Set<String> resolveVersions(String groupId, String artifactId, URI repositoryUrl) {
 		Set<String> versions = new HashSet<>();
-		String url = repositoryUrl + "/" + groupId.replace('.', '/') + "/" + artifactId + "/maven-metadata.xml";
+		URI url = repositoryUrl.resolve(groupId.replace('.', '/') + "/" + artifactId + "/maven-metadata.xml");
 		try {
 			String metadata = this.rest.getForObject(url, String.class);
 			Document metadataDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder()

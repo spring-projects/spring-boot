@@ -35,10 +35,13 @@ public class Issue {
 
 	private final String title;
 
-	Issue(RestTemplate rest, int number, String title) {
+	private final State state;
+
+	Issue(RestTemplate rest, int number, String title, State state) {
 		this.rest = rest;
 		this.number = number;
 		this.title = title;
+		this.state = state;
 	}
 
 	public int getNumber() {
@@ -49,6 +52,10 @@ public class Issue {
 		return this.title;
 	}
 
+	public State getState() {
+		return this.state;
+	}
+
 	/**
 	 * Labels the issue with the given {@code labels}. Any existing labels are removed.
 	 * @param labels the labels to apply to the issue
@@ -56,6 +63,32 @@ public class Issue {
 	public void label(List<String> labels) {
 		Map<String, List<String>> body = Collections.singletonMap("labels", labels);
 		this.rest.put("issues/" + this.number + "/labels", body);
+	}
+
+	public enum State {
+
+		/**
+		 * The issue is open.
+		 */
+		OPEN,
+
+		/**
+		 * The issue is closed.
+		 */
+		CLOSED;
+
+		static State of(String state) {
+			if ("open".equals(state)) {
+				return OPEN;
+			}
+			if ("closed".equals(state)) {
+				return CLOSED;
+			}
+			else {
+				throw new IllegalArgumentException("Unknown state '" + state + "'");
+			}
+		}
+
 	}
 
 }

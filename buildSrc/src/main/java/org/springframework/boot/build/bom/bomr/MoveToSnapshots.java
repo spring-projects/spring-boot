@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2021-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,37 +21,40 @@ import java.net.URI;
 import javax.inject.Inject;
 
 import org.gradle.api.Task;
-import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 
 import org.springframework.boot.build.bom.BomExtension;
 
 /**
- * {@link Task} to upgrade the libraries managed by a bom.
+ * A {@link Task} to move to snapshot dependencies.
  *
  * @author Andy Wilkinson
- * @author Moritz Halbritter
  */
-public abstract class UpgradeBom extends UpgradeDependencies {
+public abstract class MoveToSnapshots extends UpgradeDependencies {
+
+	private final URI REPOSITORY_URI = URI.create("https://repo.spring.io/snapshot/");
 
 	@Inject
-	public UpgradeBom(BomExtension bom) {
+	public MoveToSnapshots(BomExtension bom) {
 		super(bom);
-		getProject().getRepositories().withType(MavenArtifactRepository.class, (repository) -> {
-			URI repositoryUrl = repository.getUrl();
-			if (!repositoryUrl.toString().endsWith("snapshot")) {
-				getRepositoryUris().add(repositoryUrl);
-			}
-		});
+		getRepositoryUris().add(this.REPOSITORY_URI);
 	}
 
 	@Override
 	protected String issueTitle(Upgrade upgrade) {
-		return "Upgrade to " + upgrade.getLibrary().getName() + " " + upgrade.getVersion();
+		String snapshotVersion = upgrade.getVersion().toString();
+		String releaseVersion = snapshotVersion.substring(0, snapshotVersion.length() - "-SNAPSHOT".length());
+		return "Upgrade to " + upgrade.getLibrary().getName() + " " + releaseVersion;
 	}
 
 	@Override
 	protected String commitMessage(Upgrade upgrade, int issueNumber) {
-		return issueTitle(upgrade) + "\n\nCloses gh-" + issueNumber;
+		return "Start building against " + upgrade.getLibrary().getName() + " " + releaseVersion(upgrade) + " snapshots"
+				+ "\n\nSee gh-" + issueNumber;
+	}
+
+	private String releaseVersion(Upgrade upgrade) {
+		String snapshotVersion = upgrade.getVersion().toString();
+		return snapshotVersion.substring(0, snapshotVersion.length() - "-SNAPSHOT".length());
 	}
 
 }

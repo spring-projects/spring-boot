@@ -84,7 +84,8 @@ final class StandardGitHubRepository implements GitHubRepository {
 		return get(
 				"issues?per_page=100&state=all&labels=" + String.join(",", labels) + "&milestone="
 						+ milestone.getNumber(),
-				(issue) -> new Issue(this.rest, (Integer) issue.get("number"), (String) issue.get("title")));
+				(issue) -> new Issue(this.rest, (Integer) issue.get("number"), (String) issue.get("title"),
+						Issue.State.of((String) issue.get("state"))));
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
