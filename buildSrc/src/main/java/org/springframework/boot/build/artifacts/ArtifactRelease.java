@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.build.artifactory;
+package org.springframework.boot.build.artifacts;
 
 import org.gradle.api.Project;
 
 /**
- * An Artifactory repository to which a build of Spring Boot can be published.
+ * Information about artifacts produced by a build.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
-public final class ArtifactoryRepository {
+public final class ArtifactRelease {
 
 	private static final String SNAPSHOT = "snapshot";
 
@@ -31,30 +32,33 @@ public final class ArtifactoryRepository {
 
 	private static final String RELEASE = "release";
 
-	private final String name;
+	private static final String SPRING_REPO = "https://repo.spring.io/%s";
 
-	private ArtifactoryRepository(String name) {
-		this.name = name;
+	private static final String MAVEN_REPO = "https://repo.maven.apache.org/maven2";
+
+	private final String type;
+
+	private ArtifactRelease(String type) {
+		this.type = type;
 	}
 
-	public String getName() {
-		return this.name;
+	public String getType() {
+		return this.type;
+	}
+
+	public String getDownloadRepo() {
+		return (this.isRelease()) ? MAVEN_REPO : String.format(SPRING_REPO, this.getType());
 	}
 
 	public boolean isRelease() {
-		return RELEASE.equals(this.name);
+		return RELEASE.equals(this.type);
 	}
 
-	@Override
-	public String toString() {
-		return this.name;
+	public static ArtifactRelease forProject(Project project) {
+		return new ArtifactRelease(determineReleaseType(project));
 	}
 
-	public static ArtifactoryRepository forProject(Project project) {
-		return new ArtifactoryRepository(determineArtifactoryRepo(project));
-	}
-
-	private static String determineArtifactoryRepo(Project project) {
+	private static String determineReleaseType(Project project) {
 		String version = project.getVersion().toString();
 		int modifierIndex = version.lastIndexOf('-');
 		if (modifierIndex == -1) {

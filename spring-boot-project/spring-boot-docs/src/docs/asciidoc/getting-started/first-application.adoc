@@ -61,7 +61,7 @@ Open your favorite text editor and add the following:
 
 		<!-- Additional lines to be added here... -->
 
-ifeval::["{spring-boot-artifactory-repo}" != "release"]
+ifeval::["{artifact-release-type}" != "release"]
 		<!-- (you only need this if you are using a milestone or snapshot version) -->
 		<repositories>
 			<repository>
