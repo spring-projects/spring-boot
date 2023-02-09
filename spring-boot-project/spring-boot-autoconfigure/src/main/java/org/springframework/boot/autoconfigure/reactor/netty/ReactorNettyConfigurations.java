@@ -35,12 +35,12 @@ public final class ReactorNettyConfigurations {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(ReactorNettyConfigurationProperties.class)
+	@EnableConfigurationProperties(ReactorNettyProperties.class)
 	public static class ReactorResourceFactoryConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		ReactorResourceFactory reactorResourceFactory(ReactorNettyConfigurationProperties configurationProperties) {
+		ReactorResourceFactory reactorResourceFactory(ReactorNettyProperties configurationProperties) {
 			ReactorResourceFactory reactorResourceFactory = new ReactorResourceFactory();
 			if (configurationProperties.getShutdownQuietPeriod() != null) {
 				reactorResourceFactory.setShutdownQuietPeriod(configurationProperties.getShutdownQuietPeriod());
