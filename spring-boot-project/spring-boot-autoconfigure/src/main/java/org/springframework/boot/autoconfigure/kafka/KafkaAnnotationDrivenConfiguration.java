@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.kafka;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Listener.Type;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
@@ -35,7 +34,6 @@ import org.springframework.kafka.listener.RecordInterceptor;
 import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
 import org.springframework.kafka.support.converter.BatchMessageConverter;
 import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
-import org.springframework.kafka.support.converter.MessageConverter;
 import org.springframework.kafka.support.converter.RecordMessageConverter;
 import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
 
@@ -51,7 +49,7 @@ class KafkaAnnotationDrivenConfiguration {
 
 	private final KafkaProperties properties;
 
-	private final RecordMessageConverter messageConverter;
+	private final RecordMessageConverter recordMessageConverter;
 
 	private final RecordFilterStrategy<Object, Object> recordFilterStrategy;
 
@@ -70,7 +68,7 @@ class KafkaAnnotationDrivenConfiguration {
 	private final RecordInterceptor<Object, Object> recordInterceptor;
 
 	KafkaAnnotationDrivenConfiguration(KafkaProperties properties,
-			ObjectProvider<RecordMessageConverter> messageConverter,
+			ObjectProvider<RecordMessageConverter> recordMessageConverter,
 			ObjectProvider<RecordFilterStrategy<Object, Object>> recordFilterStrategy,
 			ObjectProvider<BatchMessageConverter> batchMessageConverter,
 			ObjectProvider<KafkaTemplate<Object, Object>> kafkaTemplate,
@@ -80,10 +78,10 @@ class KafkaAnnotationDrivenConfiguration {
 			ObjectProvider<AfterRollbackProcessor<Object, Object>> afterRollbackProcessor,
 			ObjectProvider<RecordInterceptor<Object, Object>> recordInterceptor) {
 		this.properties = properties;
-		this.messageConverter = messageConverter.getIfUnique();
+		this.recordMessageConverter = recordMessageConverter.getIfUnique();
 		this.recordFilterStrategy = recordFilterStrategy.getIfUnique();
 		this.batchMessageConverter = batchMessageConverter
-				.getIfUnique(() -> new BatchMessagingMessageConverter(this.messageConverter));
+				.getIfUnique(() -> new BatchMessagingMessageConverter(this.recordMessageConverter));
 		this.kafkaTemplate = kafkaTemplate.getIfUnique();
 		this.transactionManager = kafkaTransactionManager.getIfUnique();
 		this.rebalanceListener = rebalanceListener.getIfUnique();
@@ -97,9 +95,8 @@ class KafkaAnnotationDrivenConfiguration {
 	ConcurrentKafkaListenerContainerFactoryConfigurer kafkaListenerContainerFactoryConfigurer() {
 		ConcurrentKafkaListenerContainerFactoryConfigurer configurer = new ConcurrentKafkaListenerContainerFactoryConfigurer();
 		configurer.setKafkaProperties(this.properties);
-		MessageConverter messageConverterToUse = (this.properties.getListener().getType().equals(Type.BATCH))
-				? this.batchMessageConverter : this.messageConverter;
-		configurer.setMessageConverter(messageConverterToUse);
+		configurer.setBatchMessageConverter(this.batchMessageConverter);
+		configurer.setRecordMessageConverter(this.recordMessageConverter);
 		configurer.setRecordFilterStrategy(this.recordFilterStrategy);
 		configurer.setReplyTemplate(this.kafkaTemplate);
 		configurer.setTransactionManager(this.transactionManager);
