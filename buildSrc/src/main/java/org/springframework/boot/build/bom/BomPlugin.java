@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.MavenRepositoryPlugin;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.Module;
+import org.springframework.boot.build.bom.bomr.MoveToSnapshots;
 import org.springframework.boot.build.bom.bomr.UpgradeBom;
 
 /**
@@ -63,6 +64,7 @@ public class BomPlugin implements Plugin<Project> {
 				project);
 		project.getTasks().create("bomrCheck", CheckBom.class, bom);
 		project.getTasks().create("bomrUpgrade", UpgradeBom.class, bom);
+		project.getTasks().create("moveToSnapshots", MoveToSnapshots.class, bom);
 		new PublishingCustomizer(project, bom).customize();
 
 	}
