@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link SoftReferenceConfigurationPropertyCache}.
  *
  * @author Phillip Webb
+ * @author Zhuozhi Ji
  */
 class SoftReferenceConfigurationPropertyCacheTests {
 
@@ -42,13 +43,6 @@ class SoftReferenceConfigurationPropertyCacheTests {
 	private TestSoftReferenceConfigurationPropertyCache cache = new TestSoftReferenceConfigurationPropertyCache(false);
 
 	@Test
-	void getReturnsValueWithCorrectCounts() {
-		get(this.cache).assertCounts(0, 0);
-		get(this.cache).assertCounts(0, 1);
-		get(this.cache).assertCounts(0, 2);
-	}
-
-	@Test
 	void getWhenNeverExpireReturnsValueWithCorrectCounts() {
 		this.cache = new TestSoftReferenceConfigurationPropertyCache(true);
 		get(this.cache).assertCounts(0, 0);
@@ -57,11 +51,21 @@ class SoftReferenceConfigurationPropertyCacheTests {
 	}
 
 	@Test
-	void enableEnablesCachingWithUnlimitedTimeToLive() {
+	void enableEnablesCachingWithDefaultTimeToLive() {
 		this.cache.enable();
-		get(this.cache).assertCounts(0, 0);
-		tick(Duration.ofDays(300));
-		get(this.cache).assertCounts(0, 0);
+		assertThat(this.cache.getTimeToLive()).hasSeconds(30);
+	}
+
+	@Test
+	void neverExpireTrueWithNullTimeToLive(){
+		SoftReferenceConfigurationPropertyCache<?> cache = new SoftReferenceConfigurationPropertyCache<>(true);
+		assertThat(cache.getTimeToLive()).isNull();
+	}
+
+	@Test
+	void neverExpireFalseWithDefaultTimeToLive(){
+		SoftReferenceConfigurationPropertyCache<?> cache = new SoftReferenceConfigurationPropertyCache<>(false);
+		assertThat(cache.getTimeToLive()).hasSeconds(30);
 	}
 
 	@Test

@@ -28,10 +28,11 @@ import java.util.function.UnaryOperator;
  *
  * @param <T> the value type
  * @author Phillip Webb
+ * @author Zhuozhi Ji
  */
 class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropertyCaching {
 
-	private static final Duration UNLIMITED = Duration.ZERO;
+	private static final Duration DEFAULT = Duration.ofSeconds(30);
 
 	private final boolean neverExpire;
 
@@ -43,11 +44,14 @@ class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropert
 
 	SoftReferenceConfigurationPropertyCache(boolean neverExpire) {
 		this.neverExpire = neverExpire;
+		if (!neverExpire) {
+			enable();
+		}
 	}
 
 	@Override
 	public void enable() {
-		this.timeToLive = UNLIMITED;
+		this.timeToLive = DEFAULT;
 	}
 
 	@Override
@@ -96,11 +100,15 @@ class SoftReferenceConfigurationPropertyCache<T> implements ConfigurationPropert
 		if (timeToLive == null || lastAccessed == null) {
 			return true;
 		}
-		return !UNLIMITED.equals(timeToLive) && now().isAfter(lastAccessed.plus(timeToLive));
+		return now().isAfter(lastAccessed.plus(timeToLive));
 	}
 
 	protected Instant now() {
 		return Instant.now();
+	}
+
+	protected Duration getTimeToLive() {
+		return this.timeToLive;
 	}
 
 	protected T getValue() {
