@@ -27,7 +27,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.StreamSupport;
 
+import kotlin.jvm.JvmClassMappingKt;
+import kotlin.reflect.KClass;
+
 import org.springframework.aot.hint.ExecutableMode;
+import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
@@ -163,7 +167,12 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		private void handleConstructor(ReflectionHints hints) {
 			if (this.bindConstructor != null) {
 				verifyParameterNamesAreAvailable();
-				hints.registerConstructor(this.bindConstructor, ExecutableMode.INVOKE);
+				if (KotlinDetector.isKotlinType(this.bindConstructor.getDeclaringClass())) {
+					KotlinDelegate.handleConstructor(hints, this.bindConstructor);
+				}
+				else {
+					hints.registerConstructor(this.bindConstructor, ExecutableMode.INVOKE);
+				}
 				return;
 			}
 			Arrays.stream(this.type.getDeclaredConstructors()).filter(this::hasNoParameters).findFirst()
@@ -298,6 +307,23 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 
 		private boolean isJavaType(Class<?> candidate) {
 			return candidate.getPackageName().startsWith("java.");
+		}
+
+	}
+
+	/**
+	 * Inner class to avoid a hard dependency on Kotlin at runtime.
+	 */
+	private static class KotlinDelegate {
+
+		static void handleConstructor(ReflectionHints hints, Constructor<?> constructor) {
+			KClass<?> kClass = JvmClassMappingKt.getKotlinClass(constructor.getDeclaringClass());
+			if (kClass.isData()) {
+				hints.registerType(constructor.getDeclaringClass(), MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+			}
+			else {
+				hints.registerConstructor(constructor, ExecutableMode.INVOKE);
+			}
 		}
 
 	}
