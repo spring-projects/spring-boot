@@ -21,16 +21,16 @@ import java.time.Duration;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties for Reactor Netty configuration.
+ * Configuration properties for Reactor Netty.
  *
  * @author Moritz Halbritter
  * @since 2.7.9
  */
 @ConfigurationProperties(prefix = "spring.reactor.netty")
-public class ReactorNettyConfigurationProperties {
+public class ReactorNettyProperties {
 
 	/**
-	 * Configure the amount of time to wait before shutting down resources.
+	 * Amount of time to wait before shutting down resources.
 	 */
 	private Duration shutdownQuietPeriod;
 
