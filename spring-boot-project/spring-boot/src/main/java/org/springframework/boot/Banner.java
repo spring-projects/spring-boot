@@ -26,6 +26,7 @@ import org.springframework.core.env.Environment;
  * @author Phillip Webb
  * @author Michael Stummvoll
  * @author Jeremy Rickard
+ * @author Andrianina SOLOFOMANAMIHARY
  * @since 1.2.0
  */
 @FunctionalInterface
@@ -57,7 +58,12 @@ public interface Banner {
 		/**
 		 * Print the banner to the log file.
 		 */
-		LOG
+		LOG,
+
+		/**
+		 * Print both to System.out or to log file.
+		 */
+		BOTH
 
 	}
 

@@ -161,6 +161,7 @@ import org.springframework.util.function.ThrowingSupplier;
  * @author Brian Clozel
  * @author Ethan Rubinson
  * @author Chris Bono
+ * @author Andrianina SOLOFOMANAMIHARY
  * @since 1.0.0
  * @see #run(Class, String[])
  * @see #run(Class[], String[])
@@ -548,10 +549,14 @@ public class SpringApplication {
 		ResourceLoader resourceLoader = (this.resourceLoader != null) ? this.resourceLoader
 				: new DefaultResourceLoader(null);
 		SpringApplicationBannerPrinter bannerPrinter = new SpringApplicationBannerPrinter(resourceLoader, this.banner);
-		if (this.bannerMode == Mode.LOG) {
-			return bannerPrinter.print(environment, this.mainApplicationClass, logger);
+		Banner printedBanner = null;
+		if(this.bannerMode == Banner.Mode.CONSOLE){
+			printedBanner = bannerPrinter.print(environment, this.mainApplicationClass, System.out);
 		}
-		return bannerPrinter.print(environment, this.mainApplicationClass, System.out);
+		if (this.bannerMode == Mode.LOG || this.bannerMode == Banner.Mode.BOTH) {
+			printedBanner =  bannerPrinter.print(environment, this.mainApplicationClass, logger);
+		}
+		return printedBanner;
 	}
 
 	/**
