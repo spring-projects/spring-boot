@@ -3076,6 +3076,10 @@
       ]
     },
     {
+      "name": "spring.jmx.registration-policy",
+      "defaultValue": "fail-on-existing"
+    },
+    {
       "name": "spring.jmx.server",
       "providers": [
         {
