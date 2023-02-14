@@ -87,7 +87,7 @@ class BootArchiveSupport {
 	}
 
 	void configureManifest(Manifest manifest, String mainClass, String classes, String lib, String classPathIndex,
-			String layersIndex, String jdkVersion, String implementationName, Object implementationVersion) {
+			String layersIndex, String jdkVersion, String implementationTitle, Object implementationVersion) {
 		Attributes attributes = manifest.getAttributes();
 		attributes.putIfAbsent("Main-Class", this.loaderMainClass);
 		attributes.putIfAbsent("Start-Class", mainClass);
@@ -101,7 +101,7 @@ class BootArchiveSupport {
 			attributes.putIfAbsent("Spring-Boot-Layers-Index", layersIndex);
 		}
 		attributes.putIfAbsent("Build-Jdk-Spec", jdkVersion);
-		attributes.putIfAbsent("Implementation-Name", implementationName);
+		attributes.putIfAbsent("Implementation-Title", implementationTitle);
 		if (implementationVersion != null) {
 			String versionString = implementationVersion.toString();
 			if (!UNSPECIFIED_VERSION.equals(versionString)) {

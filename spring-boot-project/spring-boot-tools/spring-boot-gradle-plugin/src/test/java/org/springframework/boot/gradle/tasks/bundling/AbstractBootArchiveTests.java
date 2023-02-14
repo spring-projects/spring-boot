@@ -132,7 +132,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 					.isEqualTo(this.classesPath);
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Lib")).isEqualTo(this.libPath);
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Version")).isNotNull();
-			assertThat(jarFile.getManifest().getMainAttributes().getValue("Implementation-Name"))
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Implementation-Title"))
 					.isEqualTo(this.project.getName());
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Implementation-Version")).isNull();
 		}
@@ -141,10 +141,10 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 	@Test
 	void whenImplementationNameIsCustomizedItShouldAppearInArchiveManifest() throws IOException {
 		this.task.getMainClass().set("com.example.Main");
-		this.task.getManifest().getAttributes().put("Implementation-Name", "Customized");
+		this.task.getManifest().getAttributes().put("Implementation-Title", "Customized");
 		executeTask();
 		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getManifest().getMainAttributes().getValue("Implementation-Name"))
+			assertThat(jarFile.getManifest().getMainAttributes().getValue("Implementation-Title"))
 					.isEqualTo("Customized");
 		}
 	}
