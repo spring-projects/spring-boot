@@ -249,6 +249,11 @@ https://spring.io/blog/2020/06/30/url-matching-with-pathpattern-in-spring-mvc[de
 NOTE: `PathPatternParser` is an optimized implementation but restricts usage of {spring-framework-docs}/web.html#mvc-ann-requestmapping-uri-templates[some path patterns variants].
 It is incompatible with suffix pattern matching or mapping the `DispatcherServlet` with a servlet prefix (configprop:spring.mvc.servlet.path[]).
 
+By default, Spring MVC will send a 404 Not Found error response if a handler is not found for a request.
+To have a `NoHandlerFoundException` thrown instead, set configprop:spring.mvc.throw-exception-if-no-handler-found to `true`.
+Note that, by default, the <<web#web.servlet.spring-mvc.static-content, serving of static content>> is mapped to `+/**+` and will, therefore, provide a handler for all requests.
+For a `NoHandlerFoundException` to be thrown, you must also set configprop:spring.mvc.static-path-pattern[] to a more specific value such as `/resources/**` or set configprop:spring.web.resources.add-mappings[] to `false` to disable serving of static content entirely.
+
 
 
 [[web.servlet.spring-mvc.binding-initializer]]
