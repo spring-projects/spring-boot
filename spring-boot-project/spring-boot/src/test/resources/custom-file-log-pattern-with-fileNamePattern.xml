@@ -1,4 +1,0 @@
-<configuration>
-	<property name="LOGBACK_ROLLINGPOLICY_FILE_NAME_PATTERN" value="my.log.%d{yyyyMMdd}.%i.gz"/>
-	<include resource="org/springframework/boot/logging/logback/base.xml" />
-</configuration>

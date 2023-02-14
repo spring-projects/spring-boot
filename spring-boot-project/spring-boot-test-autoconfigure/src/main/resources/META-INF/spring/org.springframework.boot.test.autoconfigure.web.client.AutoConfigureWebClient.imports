@@ -1,9 +1,0 @@
-# AutoConfigureWebClient auto-configuration imports
-org.springframework.boot.test.autoconfigure.web.client.WebClientRestTemplateAutoConfiguration
-org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration
-org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration
-org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration
-org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
-org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration
-org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration
-org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration

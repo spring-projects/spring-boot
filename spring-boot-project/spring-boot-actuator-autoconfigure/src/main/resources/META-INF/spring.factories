@@ -1,2 +1,0 @@
-org.springframework.boot.diagnostics.FailureAnalyzer=\
-org.springframework.boot.actuate.autoconfigure.metrics.ValidationFailureAnalyzer

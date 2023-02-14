@@ -1,6 +1,0 @@
-[[documentation.data]]
-== Data
-If your application deals with a datastore, you can see how to configure that here:
-
-* *SQL:* <<data#data.sql, Configuring a SQL Datastore, Embedded Database support, Connection pools, and more.>>
-* *NOSQL:* <<data#data.nosql, Auto-configuration for NOSQL stores such as Redis, MongoDB, Neo4j, and others.>>

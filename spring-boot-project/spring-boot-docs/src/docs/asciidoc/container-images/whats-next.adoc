@@ -1,5 +1,0 @@
-[[container-images.whats-next]]
-== What to Read Next
-Once you've learned how to build efficient container images, you can read about <<deployment#deployment.cloud.kubernetes, deploying applications to a cloud platform>>, such as Kubernetes.
-
-

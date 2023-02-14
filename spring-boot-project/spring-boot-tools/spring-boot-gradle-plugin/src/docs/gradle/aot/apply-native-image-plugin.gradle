@@ -1,5 +1,0 @@
-plugins {
-	id 'org.springframework.boot' version '{gradle-project-version}'
-	id 'org.graalvm.buildtools.native' version '{native-build-tools-version}'
-	id 'java'
-}
