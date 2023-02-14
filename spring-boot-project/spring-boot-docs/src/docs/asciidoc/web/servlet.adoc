@@ -112,8 +112,6 @@ Any resources with a path in `+/webjars/**+` are served from jar files if they a
 TIP: Do not use the `src/main/webapp` directory if your application is packaged as a jar.
 Although this directory is a common standard, it works *only* with war packaging, and it is silently ignored by most build tools if you generate a jar.
 
-TIP: If you configure `spring.mvc.throw-exception-if-no-handler-found=true`, it will not work with default `+spring.mvc.static-path-pattern=/**+`, because each url matches `+/**+`. Url without handler must be excluded from _static-path-pattern_ to `NoHandlerFoundException` be thrown. Quite effective exclusion is  `spring.mvc.static-path-pattern=`
-
 Spring Boot also supports the advanced resource handling features provided by Spring MVC, allowing use cases such as cache-busting static resources or using version agnostic URLs for Webjars.
 
 To use version agnostic URLs for Webjars, add the `webjars-locator-core` dependency.
@@ -277,6 +275,11 @@ NOTE: `PathPatternParser` is an optimized implementation but restricts usage of
 and is incompatible with suffix pattern matching (configprop:spring.mvc.pathmatch.use-suffix-pattern[deprecated],
 configprop:spring.mvc.pathmatch.use-registered-suffix-pattern[deprecated]) or mapping the `DispatcherServlet`
 with a servlet prefix (configprop:spring.mvc.servlet.path[]).
+
+By default, Spring MVC will send a 404 Not Found error response if a handler is not found for a request.
+To have a `NoHandlerFoundException` thrown instead, set configprop:spring.mvc.throw-exception-if-no-handler-found to `true`.
+Note that, by default, the <<web#web.servlet.spring-mvc.static-content, serving of static content>> is mapped to `+/**+` and will, therefore, provide a handler for all requests.
+For a `NoHandlerFoundException` to be thrown, you must also set configprop:spring.mvc.static-path-pattern[] to a more specific value such as `/resources/**` or set configprop:spring.web.resources.add-mappings[] to `false` to disable serving of static content entirely.
 
 
 
