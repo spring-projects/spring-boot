@@ -146,7 +146,7 @@ class WebClientObservationConfigurationTests {
 		webClient.get().uri("https://example.org/projects/{project}", "spring-boot").retrieve().toBodilessEntity()
 				.block(Duration.ofSeconds(30));
 		TestObservationRegistryAssert.assertThat(registry).hasObservationWithNameEqualTo("http.client.requests").that()
-				.hasLowCardinalityKeyValue("uri", "https://example.org/projects/{project}");
+				.hasLowCardinalityKeyValue("uri", "/projects/{project}");
 	}
 
 	private WebClient mockWebClient(WebClient.Builder builder) {
