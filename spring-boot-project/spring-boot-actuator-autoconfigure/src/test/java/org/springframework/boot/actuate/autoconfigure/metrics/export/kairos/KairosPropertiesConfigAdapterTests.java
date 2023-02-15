@@ -16,10 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.kairos;
 
-import io.micrometer.kairos.KairosConfig;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapterTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,6 +29,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class KairosPropertiesConfigAdapterTests
 		extends StepRegistryPropertiesConfigAdapterTests<KairosProperties, KairosPropertiesConfigAdapter> {
+
+	KairosPropertiesConfigAdapterTests() {
+		super(KairosPropertiesConfigAdapter.class);
+	}
 
 	@Override
 	protected KairosProperties createProperties() {
@@ -62,12 +64,6 @@ class KairosPropertiesConfigAdapterTests
 		KairosProperties properties = createProperties();
 		properties.setPassword("secret");
 		assertThat(createConfigAdapter(properties).password()).isEqualTo("secret");
-	}
-
-	@Test
-	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(KairosConfig.class,
-				KairosPropertiesConfigAdapter.class);
 	}
 
 }

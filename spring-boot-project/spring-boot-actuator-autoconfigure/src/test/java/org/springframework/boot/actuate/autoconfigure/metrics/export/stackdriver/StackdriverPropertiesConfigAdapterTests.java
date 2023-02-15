@@ -19,10 +19,9 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.stackdrive
 import java.util.HashMap;
 import java.util.Map;
 
-import io.micrometer.stackdriver.StackdriverConfig;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.AbstractPropertiesConfigAdapterTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,7 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Johannes Graf
  */
-class StackdriverPropertiesConfigAdapterTests {
+class StackdriverPropertiesConfigAdapterTests
+		extends AbstractPropertiesConfigAdapterTests<StackdriverProperties, StackdriverPropertiesConfigAdapter> {
+
+	StackdriverPropertiesConfigAdapterTests() {
+		super(StackdriverPropertiesConfigAdapter.class);
+	}
 
 	@Test
 	void whenPropertiesProjectIdIsSetAdapterProjectIdReturnsIt() {
@@ -66,9 +70,9 @@ class StackdriverPropertiesConfigAdapterTests {
 	}
 
 	@Test
-	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(StackdriverConfig.class,
-				StackdriverPropertiesConfigAdapter.class, "metricTypePrefix");
+	@Override
+	protected void adapterOverridesAllConfigMethods() {
+		adapterOverridesAllConfigMethodsExcept("credentials");
 	}
 
 }

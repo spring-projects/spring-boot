@@ -18,10 +18,9 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.humio;
 
 import java.util.Collections;
 
-import io.micrometer.humio.HumioConfig;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.AbstractPropertiesConfigAdapterTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,7 +29,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-class HumioPropertiesConfigAdapterTests {
+class HumioPropertiesConfigAdapterTests
+		extends AbstractPropertiesConfigAdapterTests<HumioProperties, HumioPropertiesConfigAdapter> {
+
+	HumioPropertiesConfigAdapterTests() {
+		super(HumioPropertiesConfigAdapter.class);
+	}
 
 	@Test
 	void whenApiTokenIsSetAdapterApiTokenReturnsIt() {
@@ -52,12 +56,6 @@ class HumioPropertiesConfigAdapterTests {
 		HumioProperties properties = new HumioProperties();
 		properties.setUri("https://humio.example.com");
 		assertThat(new HumioPropertiesConfigAdapter(properties).uri()).isEqualTo("https://humio.example.com");
-	}
-
-	@Test
-	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(HumioConfig.class,
-				HumioPropertiesConfigAdapter.class, "connectTimeout");
 	}
 
 }

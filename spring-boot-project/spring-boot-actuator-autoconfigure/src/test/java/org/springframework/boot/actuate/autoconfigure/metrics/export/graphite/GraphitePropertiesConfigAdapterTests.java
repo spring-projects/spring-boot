@@ -19,11 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.graphite;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
-import io.micrometer.graphite.GraphiteConfig;
 import io.micrometer.graphite.GraphiteProtocol;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.AbstractPropertiesConfigAdapterTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,7 +31,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mirko Sobeck
  */
-class GraphitePropertiesConfigAdapterTests {
+class GraphitePropertiesConfigAdapterTests
+		extends AbstractPropertiesConfigAdapterTests<GraphiteProperties, GraphitePropertiesConfigAdapter> {
+
+	GraphitePropertiesConfigAdapterTests() {
+		super(GraphitePropertiesConfigAdapter.class);
+	}
 
 	@Test
 	void whenPropertiesEnabledIsSetAdapterEnabledReturnsIt() {
@@ -95,12 +99,6 @@ class GraphitePropertiesConfigAdapterTests {
 		GraphiteProperties properties = new GraphiteProperties();
 		properties.setTagsAsPrefix(new String[] { "worker" });
 		assertThat(new GraphitePropertiesConfigAdapter(properties).tagsAsPrefix()).isEqualTo(new String[] { "worker" });
-	}
-
-	@Test
-	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(GraphiteConfig.class,
-				GraphitePropertiesConfigAdapter.class);
 	}
 
 }

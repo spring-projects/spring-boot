@@ -18,12 +18,11 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.statsd;
 
 import java.time.Duration;
 
-import io.micrometer.statsd.StatsdConfig;
 import io.micrometer.statsd.StatsdFlavor;
 import io.micrometer.statsd.StatsdProtocol;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.AbstractPropertiesConfigAdapterTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,7 +31,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Johnny Lim
  */
-class StatsdPropertiesConfigAdapterTests {
+class StatsdPropertiesConfigAdapterTests
+		extends AbstractPropertiesConfigAdapterTests<StatsdProperties, StatsdPropertiesConfigAdapter> {
+
+	protected StatsdPropertiesConfigAdapterTests() {
+		super(StatsdPropertiesConfigAdapter.class);
+	}
 
 	@Test
 	void whenPropertiesEnabledIsSetAdapterEnabledReturnsIt() {
@@ -105,12 +109,6 @@ class StatsdPropertiesConfigAdapterTests {
 		StatsdProperties properties = new StatsdProperties();
 		properties.setBuffered(false);
 		assertThat(new StatsdPropertiesConfigAdapter(properties).buffered()).isEqualTo(properties.isBuffered());
-	}
-
-	@Test
-	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(StatsdConfig.class,
-				StatsdPropertiesConfigAdapter.class, "queueSize");
 	}
 
 }

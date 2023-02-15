@@ -18,10 +18,9 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.atlas;
 
 import java.time.Duration;
 
-import com.netflix.spectator.atlas.AtlasConfig;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.AbstractPropertiesConfigAdapterTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,7 +29,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mirko Sobeck
  */
-class AtlasPropertiesConfigAdapterTests {
+class AtlasPropertiesConfigAdapterTests
+		extends AbstractPropertiesConfigAdapterTests<AtlasProperties, AtlasPropertiesConfigAdapter> {
+
+	AtlasPropertiesConfigAdapterTests() {
+		super(AtlasPropertiesConfigAdapter.class);
+	}
 
 	@Test
 	void whenPropertiesStepIsSetAdapterStepReturnsIt() {
@@ -134,10 +138,10 @@ class AtlasPropertiesConfigAdapterTests {
 	}
 
 	@Test
-	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(AtlasConfig.class,
-				AtlasPropertiesConfigAdapter.class, "lwcIgnorePublishStep", "initialPollingDelay", "autoStart",
-				"lwcStep", "validTagCharacters");
+	@Override
+	protected void adapterOverridesAllConfigMethods() {
+		adapterOverridesAllConfigMethodsExcept("autoStart", "commonTags", "debugRegistry", "publisher", "rollupPolicy",
+				"validTagCharacters");
 	}
 
 }

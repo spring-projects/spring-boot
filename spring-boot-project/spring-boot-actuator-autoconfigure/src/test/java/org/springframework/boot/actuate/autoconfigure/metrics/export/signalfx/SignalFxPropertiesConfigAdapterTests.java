@@ -16,10 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx;
 
-import io.micrometer.signalfx.SignalFxConfig;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapterTests;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.signalfx.SignalFxProperties.HistogramType;
 
@@ -32,6 +30,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class SignalFxPropertiesConfigAdapterTests
 		extends StepRegistryPropertiesConfigAdapterTests<SignalFxProperties, SignalFxPropertiesConfigAdapter> {
+
+	protected SignalFxPropertiesConfigAdapterTests() {
+		super(SignalFxPropertiesConfigAdapter.class);
+	}
 
 	@Override
 	protected SignalFxProperties createProperties() {
@@ -70,11 +72,6 @@ class SignalFxPropertiesConfigAdapterTests
 		SignalFxProperties properties = createProperties();
 		properties.setPublishedHistogramType(HistogramType.CUMULATIVE);
 		assertThat(createConfigAdapter(properties).publishCumulativeHistogram()).isTrue();
-
-	@Test
-	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(SignalFxConfig.class,
-				SignalFxPropertiesConfigAdapter.class, "publishDeltaHistogram", "publishCumulativeHistogram");
 	}
 
 }

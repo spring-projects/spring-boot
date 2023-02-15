@@ -19,10 +19,9 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.dynatrace;
 import java.util.HashMap;
 
 import io.micrometer.dynatrace.DynatraceApiVersion;
-import io.micrometer.dynatrace.DynatraceConfig;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.AbstractPropertiesConfigAdapterTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,7 +31,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Georg Pirklbauer
  */
-class DynatracePropertiesConfigAdapterTests {
+class DynatracePropertiesConfigAdapterTests
+		extends AbstractPropertiesConfigAdapterTests<DynatraceProperties, DynatracePropertiesConfigAdapter> {
+
+	DynatracePropertiesConfigAdapterTests() {
+		super(DynatracePropertiesConfigAdapter.class);
+	}
 
 	@Test
 	void whenPropertiesUriIsSetAdapterUriReturnsIt() {
@@ -162,12 +166,6 @@ class DynatracePropertiesConfigAdapterTests {
 		assertThat(properties.getDeviceId()).isNull();
 		assertThat(properties.getTechnologyType()).isEqualTo("java");
 		assertThat(properties.getGroup()).isNull();
-	}
-
-	@Test
-	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(DynatraceConfig.class,
-				DynatracePropertiesConfigAdapter.class, "documentType");
 	}
 
 }

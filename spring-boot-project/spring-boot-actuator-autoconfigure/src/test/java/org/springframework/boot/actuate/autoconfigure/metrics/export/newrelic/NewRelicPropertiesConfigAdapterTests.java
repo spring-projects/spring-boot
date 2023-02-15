@@ -17,10 +17,8 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.newrelic;
 
 import io.micrometer.newrelic.ClientProviderType;
-import io.micrometer.newrelic.NewRelicConfig;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapterTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,6 +30,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class NewRelicPropertiesConfigAdapterTests
 		extends StepRegistryPropertiesConfigAdapterTests<NewRelicProperties, NewRelicPropertiesConfigAdapter> {
+
+	NewRelicPropertiesConfigAdapterTests() {
+		super(NewRelicPropertiesConfigAdapter.class);
+	}
 
 	@Override
 	protected NewRelicProperties createProperties() {
@@ -83,12 +85,6 @@ class NewRelicPropertiesConfigAdapterTests
 		NewRelicProperties properties = createProperties();
 		properties.setUri("https://example.newrelic.com");
 		assertThat(createConfigAdapter(properties).uri()).isEqualTo("https://example.newrelic.com");
-	}
-
-	@Test
-	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(NewRelicConfig.class,
-				NewRelicPropertiesConfigAdapter.class);
 	}
 
 }

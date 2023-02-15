@@ -16,10 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.elastic;
 
-import io.micrometer.elastic.ElasticConfig;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.TestConfigsToPropertiesExposure;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.AbstractPropertiesConfigAdapterTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,7 +27,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-class ElasticPropertiesConfigAdapterTests {
+class ElasticPropertiesConfigAdapterTests
+		extends AbstractPropertiesConfigAdapterTests<ElasticProperties, ElasticPropertiesConfigAdapter> {
+
+	ElasticPropertiesConfigAdapterTests() {
+		super(ElasticPropertiesConfigAdapter.class);
+	}
 
 	@Test
 	void whenPropertiesHostsIsSetAdapterHostsReturnsIt() {
@@ -98,12 +102,6 @@ class ElasticPropertiesConfigAdapterTests {
 		ElasticProperties properties = new ElasticProperties();
 		properties.setApiKeyCredentials("secret");
 		assertThat(new ElasticPropertiesConfigAdapter(properties).apiKeyCredentials()).isEqualTo("secret");
-	}
-
-	@Test
-	void allConfigDefaultMethodsAreOverriddenByAdapter() {
-		TestConfigsToPropertiesExposure.assertThatAllConfigDefaultMethodsAreOverriddenByAdapter(ElasticConfig.class,
-				ElasticPropertiesConfigAdapter.class, "documentType");
 	}
 
 }
