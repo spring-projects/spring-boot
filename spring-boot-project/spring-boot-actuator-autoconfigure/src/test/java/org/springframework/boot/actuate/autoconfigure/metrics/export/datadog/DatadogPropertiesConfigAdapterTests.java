@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,22 +18,62 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.datadog;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapterTests;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DatadogPropertiesConfigAdapter}.
  *
  * @author Stephane Nicoll
+ * @author Mirko Sobeck
  */
-class DatadogPropertiesConfigAdapterTests {
+class DatadogPropertiesConfigAdapterTests
+		extends StepRegistryPropertiesConfigAdapterTests<DatadogProperties, DatadogPropertiesConfigAdapter> {
+
+	@Override
+	protected DatadogProperties createProperties() {
+		return new DatadogProperties();
+	}
+
+	@Override
+	protected DatadogPropertiesConfigAdapter createConfigAdapter(DatadogProperties properties) {
+		return new DatadogPropertiesConfigAdapter(properties);
+	}
 
 	@Test
-	void uriCanBeSet() {
-		DatadogProperties properties = new DatadogProperties();
+	void whenPropertiesApiKeyIsSetAdapterApiKeyReturnsIt() {
+		DatadogProperties properties = createProperties();
+		properties.setApiKey("my-api-key");
+		assertThat(createConfigAdapter(properties).apiKey()).isEqualTo("my-api-key");
+	}
+
+	@Test
+	void whenPropertiesApplicationKeyIsSetAdapterApplicationKeyReturnsIt() {
+		DatadogProperties properties = createProperties();
+		properties.setApplicationKey("my-application-key");
+		assertThat(createConfigAdapter(properties).applicationKey()).isEqualTo("my-application-key");
+	}
+
+	@Test
+	void whenPropertiesDescriptionsIsSetAdapterDescriptionsReturnsIt() {
+		DatadogProperties properties = createProperties();
+		properties.setDescriptions(false);
+		assertThat(createConfigAdapter(properties).descriptions()).isEqualTo(false);
+	}
+
+	@Test
+	void whenPropertiesHostTagIsSetAdapterHostTagReturnsIt() {
+		DatadogProperties properties = createProperties();
+		properties.setHostTag("waldo");
+		assertThat(createConfigAdapter(properties).hostTag()).isEqualTo("waldo");
+	}
+
+	@Test
+	void whenPropertiesUriIsSetAdapterUriReturnsIt() {
+		DatadogProperties properties = createProperties();
 		properties.setUri("https://app.example.com/api/v1/series");
-		properties.setApiKey("my-key");
-		assertThat(new DatadogPropertiesConfigAdapter(properties).uri())
-				.isEqualTo("https://app.example.com/api/v1/series");
+		assertThat(createConfigAdapter(properties).uri()).isEqualTo("https://app.example.com/api/v1/series");
 	}
 
 }

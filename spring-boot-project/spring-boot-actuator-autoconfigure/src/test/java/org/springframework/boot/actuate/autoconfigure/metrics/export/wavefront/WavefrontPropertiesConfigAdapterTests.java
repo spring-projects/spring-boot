@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 
+import java.net.URI;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PushRegistryPropertiesConfigAdapterTests;
@@ -57,6 +59,27 @@ class WavefrontPropertiesConfigAdapterTests extends
 		WavefrontProperties properties = new WavefrontProperties();
 		properties.getSender().setBatchSize(10042);
 		assertThat(createConfigAdapter(properties.getMetrics().getExport()).batchSize()).isEqualTo(10042);
+	}
+
+	@Test
+	void whenPropertiesUriIsSetAdapterUriReturnsIt() {
+		WavefrontProperties properties = new WavefrontProperties();
+		properties.setUri(URI.create("https://example.wavefront.com"));
+		assertThat(new WavefrontPropertiesConfigAdapter(properties).uri()).isEqualTo("https://example.wavefront.com");
+	}
+
+	@Test
+	void whenPropertiesApiTokenIsSetAdapterApiTokenReturnsIt() {
+		WavefrontProperties properties = new WavefrontProperties();
+		properties.setApiToken("my-token");
+		assertThat(new WavefrontPropertiesConfigAdapter(properties).apiToken()).isEqualTo("my-token");
+	}
+
+	@Test
+	void whenPropertiesSourceIsSetAdapterSourceReturnsIt() {
+		WavefrontProperties properties = new WavefrontProperties();
+		properties.setSource("DESKTOP-GA5");
+		assertThat(new WavefrontPropertiesConfigAdapter(properties).source()).isEqualTo("DESKTOP-GA5");
 	}
 
 }
