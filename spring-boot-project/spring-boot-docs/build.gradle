@@ -284,10 +284,11 @@ task runLoggingFormatExample(type: org.springframework.boot.build.docs.Applicati
 }
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
+	outputs.doNotCacheIf("This task uses log files as inputs which contain changing data (timestamp, pid)") { true }
 	dependsOn dependencyVersions
-	inputs.files(runRemoteSpringApplicationExample).withPathSensitivity(PathSensitivity.RELATIVE)
-	inputs.files(runSpringApplicationExample).withPathSensitivity(PathSensitivity.RELATIVE)
-	inputs.files(runLoggingFormatExample).withPathSensitivity(PathSensitivity.RELATIVE)
+	inputs.files(runRemoteSpringApplicationExample).withPropertyName("runRemoteSpringApplicationExample").withPathSensitivity(PathSensitivity.RELATIVE)
+	inputs.files(runSpringApplicationExample).withPropertyName("runSpringApplicationExample").withPathSensitivity(PathSensitivity.RELATIVE)
+	inputs.files(runLoggingFormatExample).withPropertyName("runLoggingFormatExample").withPathSensitivity(PathSensitivity.RELATIVE)
 	asciidoctorj {
 		fatalWarnings = ['^((?!successfully validated).)*$']
 	}
