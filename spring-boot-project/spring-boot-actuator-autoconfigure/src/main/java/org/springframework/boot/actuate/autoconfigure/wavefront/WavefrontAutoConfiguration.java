@@ -54,6 +54,7 @@ public class WavefrontAutoConfiguration {
 		ApplicationTags.Builder builder = new ApplicationTags.Builder(application.getName(), serviceName);
 		map.from(application::getClusterName).to(builder::cluster);
 		map.from(application::getShardName).to(builder::shard);
+		map.from(application::getCustomTags).to(builder::customTags);
 		return builder.build();
 	}
 

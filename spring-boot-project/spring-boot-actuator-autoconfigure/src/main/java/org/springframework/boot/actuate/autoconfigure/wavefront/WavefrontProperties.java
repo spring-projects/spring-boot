@@ -20,6 +20,8 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.UnknownHostException;
 import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PushRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -173,6 +175,11 @@ public class WavefrontProperties {
 		 */
 		private String shardName;
 
+		/**
+		 * Wavefront custom tags used in ApplicationTags.
+		 */
+		private Map<String, String> customTags = new HashMap<>();
+
 		public String getServiceName() {
 			return this.serviceName;
 		}
@@ -203,6 +210,14 @@ public class WavefrontProperties {
 
 		public void setShardName(String shardName) {
 			this.shardName = shardName;
+		}
+
+		public Map<String, String> getCustomTags() {
+			return this.customTags;
+		}
+
+		public void setCustomTags(Map<String, String> customTags) {
+			this.customTags = customTags;
 		}
 
 	}
