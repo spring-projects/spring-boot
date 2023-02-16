@@ -62,6 +62,7 @@ public class MicrometerTracingAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(Tracer.class)
+	@Order(DEFAULT_TRACING_OBSERVATION_HANDLER_ORDER)
 	public DefaultTracingObservationHandler defaultTracingObservationHandler(Tracer tracer) {
 		return new DefaultTracingObservationHandler(tracer);
 	}
