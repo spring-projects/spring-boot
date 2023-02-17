@@ -28,7 +28,8 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 public interface RabbitTemplateCustomizer {
 
 	/**
-	 * Customize the {@link RabbitTemplate}.
+	 * Customize the {@link RabbitTemplate}, such as used in
+	 * {@link RabbitAutoConfiguration}
 	 * @param rabbitTemplate the rabbitTemplate to customize
 	 */
 	void customize(RabbitTemplate rabbitTemplate);
