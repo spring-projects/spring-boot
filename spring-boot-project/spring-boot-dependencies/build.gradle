@@ -1251,16 +1251,16 @@ bom {
 			]
 		}
 	}
-	library("Selenium", "4.8.0") {
+	library("Selenium", "4.8.1") {
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"lift",
 				"selenium-api",
 				"selenium-chrome-driver",
 				"selenium-chromium-driver",
-				"selenium-devtools-v107",
 				"selenium-devtools-v108",
 				"selenium-devtools-v109",
+				"selenium-devtools-v110",
 				"selenium-devtools-v85",
 				"selenium-edge-driver",
 				"selenium-firefox-driver",
