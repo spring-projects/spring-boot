@@ -146,9 +146,9 @@ public class HeapDumpWebEndpoint {
 	 */
 	protected static class HotSpotDiagnosticMXBeanHeapDumper implements HeapDumper {
 
-		private Object diagnosticMXBean;
+		private final Object diagnosticMXBean;
 
-		private Method dumpHeapMethod;
+		private final Method dumpHeapMethod;
 
 		@SuppressWarnings("unchecked")
 		protected HotSpotDiagnosticMXBeanHeapDumper() {
@@ -189,9 +189,9 @@ public class HeapDumpWebEndpoint {
 	 */
 	private static final class OpenJ9DiagnosticsMXBeanHeapDumper implements HeapDumper {
 
-		private Object diagnosticMXBean;
+		private final Object diagnosticMXBean;
 
-		private Method dumpHeapMethod;
+		private final Method dumpHeapMethod;
 
 		@SuppressWarnings("unchecked")
 		private OpenJ9DiagnosticsMXBeanHeapDumper() {

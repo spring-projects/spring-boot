@@ -42,16 +42,34 @@ class WebClientObservationConfiguration {
 
 	@Bean
 	ObservationWebClientCustomizer observationWebClientCustomizer(ObservationRegistry observationRegistry,
-			ObservationProperties observationProperties,
-			ObjectProvider<WebClientExchangeTagsProvider> optionalTagsProvider, MetricsProperties metricsProperties) {
+			ObjectProvider<ClientRequestObservationConvention> customConvention,
+			ObservationProperties observationProperties, ObjectProvider<WebClientExchangeTagsProvider> tagsProvider,
+			MetricsProperties metricsProperties) {
+		String name = observationName(observationProperties, metricsProperties);
+		ClientRequestObservationConvention observationConvention = createConvention(customConvention.getIfAvailable(),
+				tagsProvider.getIfAvailable(), name);
+		return new ObservationWebClientCustomizer(observationRegistry, observationConvention);
+	}
+
+	private static ClientRequestObservationConvention createConvention(
+			ClientRequestObservationConvention customConvention, WebClientExchangeTagsProvider tagsProvider,
+			String name) {
+		if (customConvention != null) {
+			return customConvention;
+		}
+		else if (tagsProvider != null) {
+			return new ClientObservationConventionAdapter(name, tagsProvider);
+		}
+		else {
+			return new DefaultClientRequestObservationConvention(name);
+		}
+	}
+
+	private static String observationName(ObservationProperties observationProperties,
+			MetricsProperties metricsProperties) {
 		String metricName = metricsProperties.getWeb().getClient().getRequest().getMetricName();
 		String observationName = observationProperties.getHttp().getClient().getRequests().getName();
-		String name = (observationName != null) ? observationName : metricName;
-		WebClientExchangeTagsProvider tagsProvider = optionalTagsProvider.getIfAvailable();
-		ClientRequestObservationConvention observationConvention = (tagsProvider != null)
-				? new ClientObservationConventionAdapter(name, tagsProvider)
-				: new DefaultClientRequestObservationConvention(name);
-		return new ObservationWebClientCustomizer(observationRegistry, observationConvention);
+		return (observationName != null) ? observationName : metricName;
 	}
 
 }

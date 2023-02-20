@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,11 +122,11 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 		Instant createInstant = builder.getArchive().getCreateDate();
 		OffsetDateTime createDateTime = OffsetDateTime.ofInstant(createInstant, ZoneId.of("UTC"));
 		assertThat(createDateTime.getYear()).isEqualTo(1980);
-		assertThat(createDateTime.getMonthValue()).isEqualTo(1);
-		assertThat(createDateTime.getDayOfMonth()).isEqualTo(1);
-		assertThat(createDateTime.getHour()).isEqualTo(0);
-		assertThat(createDateTime.getMinute()).isEqualTo(0);
-		assertThat(createDateTime.getSecond()).isEqualTo(1);
+		assertThat(createDateTime.getMonthValue()).isOne();
+		assertThat(createDateTime.getDayOfMonth()).isOne();
+		assertThat(createDateTime.getHour()).isZero();
+		assertThat(createDateTime.getMinute()).isZero();
+		assertThat(createDateTime.getSecond()).isOne();
 	}
 
 	@Test

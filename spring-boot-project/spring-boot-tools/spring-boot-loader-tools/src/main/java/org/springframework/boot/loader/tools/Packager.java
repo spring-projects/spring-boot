@@ -28,7 +28,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
@@ -37,8 +36,6 @@ import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
@@ -60,8 +57,6 @@ import org.springframework.util.StringUtils;
  * @since 2.3.0
  */
 public abstract class Packager {
-
-	private static final String REACHABILITY_METADATA_PROPERTIES_LOCATION = "META-INF/native-image/%s/%s/%s/reachability-metadata.properties";
 
 	private static final String MAIN_CLASS_ATTRIBUTE = "Main-Class";
 
@@ -229,31 +224,24 @@ public abstract class Packager {
 		Set<String> excludes = new LinkedHashSet<>();
 		for (Map.Entry<String, Library> entry : writtenLibraries.entrySet()) {
 			LibraryCoordinates coordinates = entry.getValue().getCoordinates();
-			ZipEntry zipEntry = (coordinates != null) ? sourceJar.getEntry(REACHABILITY_METADATA_PROPERTIES_LOCATION
-					.formatted(coordinates.getGroupId(), coordinates.getArtifactId(), coordinates.getVersion())) : null;
+			ZipEntry zipEntry = (coordinates != null)
+					? sourceJar.getEntry(ReachabilityMetadataProperties.getLocation(coordinates)) : null;
 			if (zipEntry != null) {
 				try (InputStream inputStream = sourceJar.getInputStream(zipEntry)) {
-					Properties properties = new Properties();
-					properties.load(inputStream);
-					if (Boolean.parseBoolean(properties.getProperty("override"))) {
+					ReachabilityMetadataProperties properties = ReachabilityMetadataProperties
+							.fromInputStream(inputStream);
+					if (properties.isOverridden()) {
 						excludes.add(entry.getKey());
 					}
 				}
 			}
 		}
-		if (!excludes.isEmpty()) {
-			List<String> args = new ArrayList<>();
-			for (String exclude : excludes) {
-				int lastSlash = exclude.lastIndexOf('/');
-				String jar = (lastSlash != -1) ? exclude.substring(lastSlash + 1) : exclude;
-				args.add("--exclude-config");
-				args.add(Pattern.quote(jar));
-				args.add("^/META-INF/native-image/.*");
-			}
-			String contents = args.stream().collect(Collectors.joining("\n")) + "\n";
-			writer.writeEntry("META-INF/native-image/argfile",
+		NativeImageArgFile argFile = new NativeImageArgFile(excludes);
+		argFile.writeIfNecessary((lines) -> {
+			String contents = String.join("\n", lines) + "\n";
+			writer.writeEntry(NativeImageArgFile.LOCATION,
 					new ByteArrayInputStream(contents.getBytes(StandardCharsets.UTF_8)));
-		}
+		});
 	}
 
 	private void writeLayerIndex(AbstractJarWriter writer) throws IOException {

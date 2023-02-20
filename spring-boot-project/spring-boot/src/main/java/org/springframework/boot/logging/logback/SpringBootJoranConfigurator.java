@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -76,21 +77,35 @@ import org.springframework.util.function.SingletonSupplier;
  */
 class SpringBootJoranConfigurator extends JoranConfigurator {
 
-	private LoggingInitializationContext initializationContext;
+	private final LoggingInitializationContext initializationContext;
+
+	private final Collection<JoranConfigurator> configurators;
 
 	SpringBootJoranConfigurator(LoggingInitializationContext initializationContext) {
+		this(initializationContext, Collections.emptyList());
+	}
+
+	SpringBootJoranConfigurator(LoggingInitializationContext initializationContext,
+			Collection<JoranConfigurator> configurators) {
 		this.initializationContext = initializationContext;
+		this.configurators = configurators;
+	}
+
+	@Override
+	protected void sanityCheck(Model topModel) {
+		super.sanityCheck(topModel);
+		performCheck(new SpringProfileIfNestedWithinSecondPhaseElementSanityChecker(), topModel);
 	}
 
 	@Override
 	protected void addModelHandlerAssociations(DefaultProcessor defaultProcessor) {
-		super.addModelHandlerAssociations(defaultProcessor);
 		defaultProcessor.addHandler(SpringPropertyModel.class,
 				(handlerContext, handlerMic) -> new SpringPropertyModelHandler(this.context,
 						this.initializationContext.getEnvironment()));
 		defaultProcessor.addHandler(SpringProfileModel.class,
 				(handlerContext, handlerMic) -> new SpringProfileModelHandler(this.context,
 						this.initializationContext.getEnvironment()));
+		super.addModelHandlerAssociations(defaultProcessor);
 	}
 
 	@Override
@@ -99,6 +114,7 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		ruleStore.addRule(new ElementSelector("configuration/springProperty"), SpringPropertyAction::new);
 		ruleStore.addRule(new ElementSelector("*/springProfile"), SpringProfileAction::new);
 		ruleStore.addTransparentPathPart("springProfile");
+		this.configurators.forEach((configurator) -> configurator.addElementSelectorAndActionAssociations(ruleStore));
 	}
 
 	boolean configureUsingAotGeneratedArtifacts() {
@@ -118,6 +134,7 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 			getContext().putObject(BeanFactoryInitializationAotContribution.class.getName(),
 					new LogbackConfigurationAotContribution(model, getModelInterpretationContext(), getContext()));
 		}
+		this.configurators.forEach((configurator) -> configurator.processModel(model));
 	}
 
 	private boolean isAotProcessingInProgress() {
@@ -291,7 +308,8 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 					.filter((method) -> !method.getDeclaringClass().equals(ContextAware.class)
 							&& !method.getDeclaringClass().equals(ContextAwareBase.class))
 					.map(Method::getParameterTypes).flatMap(Stream::of)
-					.filter((type) -> !type.isPrimitive() && !type.equals(String.class)).map(Class::getName).toList();
+					.filter((type) -> !type.isPrimitive() && !type.equals(String.class))
+					.map((type) -> type.isArray() ? type.getComponentType() : type).map(Class::getName).toList();
 		}
 
 	}

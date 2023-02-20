@@ -40,7 +40,7 @@ import org.springframework.util.ObjectUtils;
 public class ParentContextCloserApplicationListener
 		implements ApplicationListener<ParentContextAvailableEvent>, ApplicationContextAware, Ordered {
 
-	private int order = Ordered.LOWEST_PRECEDENCE - 10;
+	private final int order = Ordered.LOWEST_PRECEDENCE - 10;
 
 	private ApplicationContext context;
 
@@ -80,7 +80,7 @@ public class ParentContextCloserApplicationListener
 	 */
 	protected static class ContextCloserListener implements ApplicationListener<ContextClosedEvent> {
 
-		private WeakReference<ConfigurableApplicationContext> childContext;
+		private final WeakReference<ConfigurableApplicationContext> childContext;
 
 		public ContextCloserListener(ConfigurableApplicationContext childContext) {
 			this.childContext = new WeakReference<>(childContext);

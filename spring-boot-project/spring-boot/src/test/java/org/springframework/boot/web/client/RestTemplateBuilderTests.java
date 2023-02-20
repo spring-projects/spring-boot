@@ -75,7 +75,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @ExtendWith(MockitoExtension.class)
 class RestTemplateBuilderTests {
 
-	private RestTemplateBuilder builder = new RestTemplateBuilder();
+	private final RestTemplateBuilder builder = new RestTemplateBuilder();
 
 	@Mock
 	private HttpMessageConverter<Object> messageConverter;

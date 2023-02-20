@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jms.artemis.ArtemisAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -34,7 +35,7 @@ import org.springframework.context.annotation.Import;
  * @since 1.2.0
  */
 @AutoConfiguration(before = { XADataSourceAutoConfiguration.class, ArtemisAutoConfiguration.class,
-		HibernateJpaAutoConfiguration.class })
+		HibernateJpaAutoConfiguration.class, TransactionAutoConfiguration.class })
 @ConditionalOnClass(jakarta.transaction.Transaction.class)
 @ConditionalOnProperty(prefix = "spring.jta", value = "enabled", matchIfMissing = true)
 @Import(JndiJtaConfiguration.class)

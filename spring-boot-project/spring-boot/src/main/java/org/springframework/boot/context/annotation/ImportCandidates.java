@@ -82,12 +82,12 @@ public final class ImportCandidates implements Iterable<String> {
 		ClassLoader classLoaderToUse = decideClassloader(classLoader);
 		String location = String.format(LOCATION, annotation.getName());
 		Enumeration<URL> urls = findUrlsInClasspath(classLoaderToUse, location);
-		List<String> autoConfigurations = new ArrayList<>();
+		List<String> importCandidates = new ArrayList<>();
 		while (urls.hasMoreElements()) {
 			URL url = urls.nextElement();
-			autoConfigurations.addAll(readAutoConfigurations(url));
+			importCandidates.addAll(readCandidateConfigurations(url));
 		}
-		return new ImportCandidates(autoConfigurations);
+		return new ImportCandidates(importCandidates);
 	}
 
 	private static ClassLoader decideClassloader(ClassLoader classLoader) {
@@ -102,15 +102,14 @@ public final class ImportCandidates implements Iterable<String> {
 			return classLoader.getResources(location);
 		}
 		catch (IOException ex) {
-			throw new IllegalArgumentException("Failed to load autoconfigurations from location [" + location + "]",
-					ex);
+			throw new IllegalArgumentException("Failed to load configurations from location [" + location + "]", ex);
 		}
 	}
 
-	private static List<String> readAutoConfigurations(URL url) {
+	private static List<String> readCandidateConfigurations(URL url) {
 		try (BufferedReader reader = new BufferedReader(
 				new InputStreamReader(new UrlResource(url).getInputStream(), StandardCharsets.UTF_8))) {
-			List<String> autoConfigurations = new ArrayList<>();
+			List<String> candidates = new ArrayList<>();
 			String line;
 			while ((line = reader.readLine()) != null) {
 				line = stripComment(line);
@@ -118,12 +117,12 @@ public final class ImportCandidates implements Iterable<String> {
 				if (line.isEmpty()) {
 					continue;
 				}
-				autoConfigurations.add(line);
+				candidates.add(line);
 			}
-			return autoConfigurations;
+			return candidates;
 		}
 		catch (IOException ex) {
-			throw new IllegalArgumentException("Unable to load autoconfigurations from location [" + url + "]", ex);
+			throw new IllegalArgumentException("Unable to load configurations from location [" + url + "]", ex);
 		}
 	}
 

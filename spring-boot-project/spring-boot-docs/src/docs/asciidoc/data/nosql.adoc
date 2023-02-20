@@ -34,10 +34,24 @@ TIP: We also provide a `spring-boot-starter-data-redis-reactive` "`Starter`" for
 [[data.nosql.redis.connecting]]
 ==== Connecting to Redis
 You can inject an auto-configured `RedisConnectionFactory`, `StringRedisTemplate`, or vanilla `RedisTemplate` instance as you would any other Spring Bean.
-By default, the instance tries to connect to a Redis server at `localhost:6379`.
 The following listing shows an example of such a bean:
 
 include::code:MyBean[]
+
+By default, the instance tries to connect to a Redis server at `localhost:6379`.
+You can specify custom connection details using `spring.data.redis.*` properties, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  data:
+	    redis:
+	      host: "localhost"
+	      port: 6379
+	      database: 0
+	      username: "user"
+	      password: "secret"
+----
 
 TIP: You can also register an arbitrary number of beans that implement `LettuceClientConfigurationBuilderCustomizer` for more advanced customizations.
 `ClientResources` can also be customized using `ClientResourcesBuilderCustomizer`.
@@ -221,7 +235,7 @@ Spring Boot provides a dedicated "`Starter`", `spring-boot-starter-data-elastics
 
 [[data.nosql.elasticsearch.connecting-using-rest]]
 ==== Connecting to Elasticsearch Using REST clients
-Elasticsearch ships two different REST clients] that you can use to query a cluster: the https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/java-rest-low.html[low-level client] from the `org.elasticsearch.client:elasticsearch-rest-client` module and the https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/index.html[Java API client] from the `co.elastic.clients:elasticsearch-java` module.
+Elasticsearch ships two different REST clients that you can use to query a cluster: the https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/java-rest-low.html[low-level client] from the `org.elasticsearch.client:elasticsearch-rest-client` module and the https://www.elastic.co/guide/en/elasticsearch/client/java-api-client/current/index.html[Java API client] from the `co.elastic.clients:elasticsearch-java` module.
 Additionally, Spring Boot provides support for a reactive client from the `org.springframework.data:spring-data-elasticsearch` module.
 By default, the clients will target `http://localhost:9200`.
 You can use `spring.elasticsearch.*` properties to further tune how the clients are configured, as shown in the following example:
@@ -384,7 +398,7 @@ If you add your own `@Bean` of type `CassandraTemplate`, it replaces the default
 [[data.nosql.cassandra.repositories]]
 ==== Spring Data Cassandra Repositories
 Spring Data includes basic repository support for Cassandra.
-Currently, this is more limited than the JPA repositories discussed earlier and needs to annotate finder methods with `@Query`.
+Currently, this is more limited than the JPA repositories discussed earlier and needs `@Query` annotated finder methods.
 
 TIP: For complete details of Spring Data Cassandra, see the https://docs.spring.io/spring-data/cassandra/docs/[reference documentation].
 
@@ -414,7 +428,7 @@ Generally, you provide the https://github.com/couchbaselabs/sdk-rfcs/blob/master
 ----
 
 It is also possible to customize some of the `ClusterEnvironment` settings.
-For instance, the following configuration changes the timeout to use to open a new `Bucket` and enables SSL support:
+For instance, the following configuration changes the timeout to open a new `Bucket` and enables SSL support:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -533,7 +547,7 @@ In yaml files, you can use the yaml list notation. In properties files, you must
 ----
 	spring.ldap.embedded.base-dn:
 	  - "dc=spring,dc=io"
-	  - "dc=pivotal,dc=io"
+	  - "dc=vmware,dc=com"
 ----
 ====
 

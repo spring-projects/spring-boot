@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -155,7 +155,10 @@ class HazelcastAutoConfigurationServerTests {
 	private ContextConsumer<AssertableApplicationContext> assertSpecificHazelcastServer(String location) {
 		return (context) -> {
 			Config config = context.getBean(HazelcastInstance.class).getConfig();
-			assertThat(config.getConfigurationUrl()).asString().endsWith(location);
+			String configurationLocation = (config.getConfigurationUrl() != null)
+					? config.getConfigurationUrl().toString()
+					: config.getConfigurationFile().toURI().toURL().toString();
+			assertThat(configurationLocation).endsWith(location);
 		};
 	}
 

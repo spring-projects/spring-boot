@@ -29,6 +29,8 @@ import graphql.schema.visibility.NoIntrospectionGraphqlFieldVisibility;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -38,6 +40,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.log.LogMessage;
@@ -62,6 +65,7 @@ import org.springframework.graphql.execution.SubscriptionExceptionResolver;
 @ConditionalOnClass({ GraphQL.class, GraphQlSource.class })
 @ConditionalOnGraphQlSchema
 @EnableConfigurationProperties(GraphQlProperties.class)
+@ImportRuntimeHints(GraphQlAutoConfiguration.GraphQlResourcesRuntimeHints.class)
 public class GraphQlAutoConfiguration {
 
 	private static final Log logger = LogFactory.getLog(GraphQlAutoConfiguration.class);
@@ -141,6 +145,15 @@ public class GraphQlAutoConfiguration {
 		controllerConfigurer
 				.addFormatterRegistrar((registry) -> ApplicationConversionService.addBeans(registry, this.beanFactory));
 		return controllerConfigurer;
+	}
+
+	static class GraphQlResourcesRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.resources().registerPattern("graphql/*.graphqls").registerPattern("graphql/*.gqls");
+		}
+
 	}
 
 }

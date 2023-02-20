@@ -16,7 +16,7 @@
 
 package org.springframework.boot.cli.command.init;
 
-import org.apache.http.entity.ContentType;
+import org.apache.hc.core5.http.ContentType;
 
 /**
  * Represent the response of a {@link ProjectGenerationRequest}.

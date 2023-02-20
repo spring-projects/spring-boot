@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +44,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.servlet.DispatcherServlet;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Integration tests for the Jersey actuator endpoints.
@@ -87,7 +90,22 @@ class JerseyEndpointIntegrationTests {
 					.responseTimeout(Duration.ofMinutes(5)).build();
 			client.get().uri("/actuator").exchange().expectStatus().isUnauthorized();
 		});
+	}
 
+	@Test
+	void endpointObjectMapperCanBeApplied() {
+		WebApplicationContextRunner contextRunner = getContextRunner(new Class<?>[] { EndpointsConfiguration.class,
+				ResourceConfigConfiguration.class, EndpointObjectMapperConfiguration.class });
+		contextRunner.run((context) -> {
+			int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
+					.getWebServer().getPort();
+			WebTestClient client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port)
+					.responseTimeout(Duration.ofMinutes(5)).build();
+			client.get().uri("/actuator/beans").exchange().expectStatus().isOk().expectBody().consumeWith((result) -> {
+				String json = new String(result.getResponseBody(), StandardCharsets.UTF_8);
+				assertThat(json).contains("\"scope\":\"notelgnis\"");
+			});
+		});
 	}
 
 	protected void testJerseyEndpoints(Class<?>[] userConfigurations) {

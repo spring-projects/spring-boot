@@ -96,12 +96,6 @@ class SpringBootAotPluginIntegrationTests {
 	}
 
 	@TestTemplate
-	void processAotIsSkippedWhenProjectHasNoMainSource() {
-		assertThat(this.gradleBuild.build("processAot").task(":processAot").getOutcome())
-				.isEqualTo(TaskOutcome.NO_SOURCE);
-	}
-
-	@TestTemplate
 	void processAotRunsWhenProjectHasMainSource() throws IOException {
 		writeMainClass("org.springframework.boot", "SpringApplicationAotProcessor");
 		writeMainClass("com.example", "Main");

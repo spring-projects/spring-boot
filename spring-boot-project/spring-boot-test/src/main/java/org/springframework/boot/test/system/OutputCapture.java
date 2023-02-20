@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,7 +83,7 @@ class OutputCapture implements CapturedOutput {
 		if (obj == this) {
 			return true;
 		}
-		if (obj instanceof CapturedOutput || obj instanceof CharSequence) {
+		if (obj instanceof CharSequence) {
 			return getAll().equals(obj.toString());
 		}
 		return false;
@@ -318,7 +318,7 @@ class OutputCapture implements CapturedOutput {
 	 */
 	private static class AnsiOutputState {
 
-		private Enabled saved;
+		private final Enabled saved;
 
 		AnsiOutputState() {
 			this.saved = AnsiOutput.getEnabled();

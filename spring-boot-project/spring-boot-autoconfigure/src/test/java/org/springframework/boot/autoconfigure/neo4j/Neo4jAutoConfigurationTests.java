@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,8 +113,7 @@ class Neo4jAutoConfigurationTests {
 	void maxTransactionRetryTime() {
 		Neo4jProperties properties = new Neo4jProperties();
 		properties.setMaxTransactionRetryTime(Duration.ofSeconds(2));
-		assertThat(mapDriverConfig(properties)).extracting("retrySettings")
-				.hasFieldOrPropertyWithValue("maxRetryTimeMs", 2000L);
+		assertThat(mapDriverConfig(properties).maxTransactionRetryTimeMillis()).isEqualTo(2000L);
 	}
 
 	@Test
@@ -275,8 +274,7 @@ class Neo4jAutoConfigurationTests {
 
 	@Test
 	void driverConfigShouldBeConfiguredToUseUseSpringJclLogging() {
-		assertThat(mapDriverConfig(new Neo4jProperties()).logging()).isNotNull()
-				.isInstanceOf(Neo4jSpringJclLogging.class);
+		assertThat(mapDriverConfig(new Neo4jProperties()).logging()).isInstanceOf(Neo4jSpringJclLogging.class);
 	}
 
 	private URI determineServerUri(Neo4jProperties properties, Environment environment) {

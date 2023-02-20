@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,7 +122,7 @@ class ConditionEvaluationReportTests {
 		this.report.recordConditionEvaluation("a", this.condition2, this.outcome2);
 		this.report.recordConditionEvaluation("b", this.condition3, this.outcome3);
 		Map<String, ConditionAndOutcomes> map = this.report.getConditionAndOutcomesBySource();
-		assertThat(map.size()).isEqualTo(2);
+		assertThat(map).hasSize(2);
 		Iterator<ConditionAndOutcome> iterator = map.get("a").iterator();
 		ConditionAndOutcome conditionAndOutcome = iterator.next();
 		assertThat(conditionAndOutcome.getCondition()).isEqualTo(this.condition1);
@@ -164,7 +164,7 @@ class ConditionEvaluationReportTests {
 	void springBootConditionPopulatesReport() {
 		ConditionEvaluationReport report = ConditionEvaluationReport
 				.get(new AnnotationConfigApplicationContext(Config.class).getBeanFactory());
-		assertThat(report.getConditionAndOutcomesBySource().size()).isNotEqualTo(0);
+		assertThat(report.getConditionAndOutcomesBySource().size()).isNotZero();
 	}
 
 	@Test
@@ -175,7 +175,6 @@ class ConditionEvaluationReportTests {
 				new ConditionOutcome(true, "Message 2"));
 		ConditionAndOutcome outcome3 = new ConditionAndOutcome(this.condition3,
 				new ConditionOutcome(true, "Message 2"));
-		assertThat(outcome1).isEqualTo(outcome1);
 		assertThat(outcome1).isNotEqualTo(outcome2);
 		assertThat(outcome2).isEqualTo(outcome3);
 		ConditionAndOutcomes outcomes = new ConditionAndOutcomes();

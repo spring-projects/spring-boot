@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,24 +73,24 @@ class CentralDirectoryParserTests {
 		parser.addVisitor(collector);
 		parser.parse(this.jarData, false);
 		Iterator<CentralDirectoryFileHeader> headers = collector.getHeaders().iterator();
-		assertThat(headers.next().getName().toString()).isEqualTo("META-INF/");
-		assertThat(headers.next().getName().toString()).isEqualTo("META-INF/MANIFEST.MF");
-		assertThat(headers.next().getName().toString()).isEqualTo("1.dat");
-		assertThat(headers.next().getName().toString()).isEqualTo("2.dat");
-		assertThat(headers.next().getName().toString()).isEqualTo("d/");
-		assertThat(headers.next().getName().toString()).isEqualTo("d/9.dat");
-		assertThat(headers.next().getName().toString()).isEqualTo("special/");
-		assertThat(headers.next().getName().toString()).isEqualTo("special/\u00EB.dat");
-		assertThat(headers.next().getName().toString()).isEqualTo("nested.jar");
-		assertThat(headers.next().getName().toString()).isEqualTo("another-nested.jar");
-		assertThat(headers.next().getName().toString()).isEqualTo("space nested.jar");
-		assertThat(headers.next().getName().toString()).isEqualTo("multi-release.jar");
+		assertThat(headers.next().getName()).hasToString("META-INF/");
+		assertThat(headers.next().getName()).hasToString("META-INF/MANIFEST.MF");
+		assertThat(headers.next().getName()).hasToString("1.dat");
+		assertThat(headers.next().getName()).hasToString("2.dat");
+		assertThat(headers.next().getName()).hasToString("d/");
+		assertThat(headers.next().getName()).hasToString("d/9.dat");
+		assertThat(headers.next().getName()).hasToString("special/");
+		assertThat(headers.next().getName()).hasToString("special/\u00EB.dat");
+		assertThat(headers.next().getName()).hasToString("nested.jar");
+		assertThat(headers.next().getName()).hasToString("another-nested.jar");
+		assertThat(headers.next().getName()).hasToString("space nested.jar");
+		assertThat(headers.next().getName()).hasToString("multi-release.jar");
 		assertThat(headers.hasNext()).isFalse();
 	}
 
 	static class Collector implements CentralDirectoryVisitor {
 
-		private List<CentralDirectoryFileHeader> headers = new ArrayList<>();
+		private final List<CentralDirectoryFileHeader> headers = new ArrayList<>();
 
 		@Override
 		public void visitStart(CentralDirectoryEndRecord endRecord, RandomAccessData centralDirectoryData) {

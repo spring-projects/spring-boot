@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,19 +23,24 @@ import javax.net.ssl.KeyManager;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.web.embedded.test.MockPkcs11Security;
+import org.springframework.boot.web.embedded.test.MockPkcs11SecurityProvider;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 /**
  * Tests for {@link SslBuilderCustomizer}
  *
  * @author Brian Clozel
  * @author Raheela Aslam
+ * @author Cyril Dangerville
  */
+@MockPkcs11Security
 class SslBuilderCustomizerTests {
 
 	@Test
@@ -77,12 +82,37 @@ class SslBuilderCustomizerTests {
 	}
 
 	@Test
-	void getKeyManagersWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException() throws Exception {
+	void getKeyManagersWhenSslIsEnabledWithNoKeyStoreAndNotPkcs11ThrowsException() throws Exception {
 		Ssl ssl = new Ssl();
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
 		assertThatIllegalStateException()
 				.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null))
 				.withCauseInstanceOf(WebServerException.class).withMessageContaining("Could not load key store 'null'");
+	}
+
+	@Test
+	void configureSslWhenSslIsEnabledWithPkcs11AndKeyStoreThrowsException() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStoreType("PKCS11");
+		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyPassword("password");
+		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null))
+				.withCauseInstanceOf(IllegalArgumentException.class)
+				.withMessageContaining("Input keystore location is not valid for keystore type 'PKCS11'");
+	}
+
+	@Test
+	void customizeWhenSslIsEnabledWithPkcs11AndKeyStoreProvider() throws Exception {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStoreType("PKCS11");
+		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
+		ssl.setKeyStorePassword("1234");
+		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
+		assertThatNoException()
+				.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null));
 	}
 
 }

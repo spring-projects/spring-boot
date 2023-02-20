@@ -6,6 +6,17 @@ plugins {
 
 repositories {
 	mavenCentral()
+	maven { url 'file:repository' }
+}
+
+configurations.all {
+	resolutionStrategy {
+		eachDependency {
+			if (it.requested.group == 'org.springframework.boot') {
+				it.useVersion project.bootVersion
+			}
+		}
+	}
 }
 
 dependencies {
@@ -13,7 +24,8 @@ dependencies {
 }
 
 task('processTestAotClasspath') {
+	dependsOn configurations.processTestAotClasspath 
 	doFirst {
-		tasks.findByName('processTestAot').classpath.files.each { println it }
+		configurations.processTestAotClasspath.files.each { println it }
 	}
 }

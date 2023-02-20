@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -155,7 +155,7 @@ class LoggingApplicationListenerTests {
 		assertThat(this.output).contains("Hello world");
 		assertThat(this.output).doesNotContain("???");
 		assertThat(this.output).contains("[junit-");
-		assertThat(new File(this.tempDir + "/spring.log").exists()).isFalse();
+		assertThat(new File(this.tempDir + "/spring.log")).doesNotExist();
 	}
 
 	@Test
@@ -191,7 +191,7 @@ class LoggingApplicationListenerTests {
 		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.info("Hello world");
 		assertThat(this.output).contains("Hello world").doesNotContain("???");
-		assertThat(new File(this.tempDir.toFile(), "/spring.log").exists()).isFalse();
+		assertThat(new File(this.tempDir.toFile(), "/spring.log")).doesNotExist();
 	}
 
 	@Test
@@ -200,7 +200,7 @@ class LoggingApplicationListenerTests {
 		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.info("Hello world");
 		assertThat(this.output).contains("Hello world").doesNotContain("???");
-		assertThat(new File(this.tempDir.toFile(), "/spring.log").exists()).isFalse();
+		assertThat(new File(this.tempDir.toFile(), "/spring.log")).doesNotExist();
 	}
 
 	@Test

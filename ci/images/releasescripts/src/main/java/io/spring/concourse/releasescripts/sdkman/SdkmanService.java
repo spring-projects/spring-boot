@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ public class SdkmanService {
 
 	private static final String SDKMAN_URL = "https://vendors.sdkman.io/";
 
-	private static final String DOWNLOAD_URL = "https://repo.spring.io/simple/libs-release-local/org/springframework/boot/spring-boot-cli/"
+	private static final String DOWNLOAD_URL = "https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-cli/"
 			+ "%s/spring-boot-cli-%s-bin.zip";
 
 	private static final String CHANGELOG_URL = "https://github.com/spring-projects/spring-boot/releases/tag/v%s";

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class MetricsEndpointTests {
 
 	@Test
 	void listNamesHandlesEmptyListOfMeters() {
-		MetricsEndpoint.ListNamesResponse result = this.endpoint.listNames();
+		MetricsEndpoint.MetricNamesDescriptor result = this.endpoint.listNames();
 		assertThat(result.getNames()).isEmpty();
 	}
 
@@ -61,7 +61,7 @@ class MetricsEndpointTests {
 		this.registry.counter("com.example.delta");
 		this.registry.counter("com.example.echo");
 		this.registry.counter("com.example.bravo");
-		MetricsEndpoint.ListNamesResponse result = this.endpoint.listNames();
+		MetricsEndpoint.MetricNamesDescriptor result = this.endpoint.listNames();
 		assertThat(result.getNames()).containsExactly("com.example.alpha", "com.example.bravo", "com.example.charlie",
 				"com.example.delta", "com.example.echo");
 	}
@@ -84,7 +84,7 @@ class MetricsEndpointTests {
 		this.registry.counter("cache", "result", "hit", "host", "1").increment(2);
 		this.registry.counter("cache", "result", "miss", "host", "1").increment(2);
 		this.registry.counter("cache", "result", "hit", "host", "2").increment(2);
-		MetricsEndpoint.MetricResponse response = this.endpoint.metric("cache", Collections.emptyList());
+		MetricsEndpoint.MetricDescriptor response = this.endpoint.metric("cache", Collections.emptyList());
 		assertThat(response.getName()).isEqualTo("cache");
 		assertThat(availableTagKeys(response)).containsExactly("result", "host");
 		assertThat(getCount(response)).hasValue(6.0);
@@ -106,7 +106,7 @@ class MetricsEndpointTests {
 		secondLevel.counter("cache", "result", "miss", "host", "1").increment(2);
 		secondLevel.counter("cache", "result", "hit", "host", "2").increment(2);
 		MetricsEndpoint endpoint = new MetricsEndpoint(composite);
-		MetricsEndpoint.MetricResponse response = endpoint.metric("cache", Collections.emptyList());
+		MetricsEndpoint.MetricDescriptor response = endpoint.metric("cache", Collections.emptyList());
 		assertThat(response.getName()).isEqualTo("cache");
 		assertThat(availableTagKeys(response)).containsExactly("result", "host");
 		assertThat(getCount(response)).hasValue(6.0);
@@ -123,7 +123,7 @@ class MetricsEndpointTests {
 		composite.add(firstLevel);
 		firstLevel.add(secondLevel);
 		MetricsEndpoint endpoint = new MetricsEndpoint(composite);
-		MetricsEndpoint.MetricResponse response = endpoint.metric("invalid.metric.name", Collections.emptyList());
+		MetricsEndpoint.MetricDescriptor response = endpoint.metric("invalid.metric.name", Collections.emptyList());
 		assertThat(response).isNull();
 	}
 
@@ -131,7 +131,7 @@ class MetricsEndpointTests {
 	void metricTagValuesAreDeduplicated() {
 		this.registry.counter("cache", "host", "1", "region", "east", "result", "hit");
 		this.registry.counter("cache", "host", "1", "region", "east", "result", "miss");
-		MetricsEndpoint.MetricResponse response = this.endpoint.metric("cache", Collections.singletonList("host:1"));
+		MetricsEndpoint.MetricDescriptor response = this.endpoint.metric("cache", Collections.singletonList("host:1"));
 		assertThat(response.getAvailableTags().stream().filter((t) -> t.getTag().equals("region"))
 				.flatMap((t) -> t.getValues().stream())).containsExactly("east");
 	}
@@ -139,7 +139,7 @@ class MetricsEndpointTests {
 	@Test
 	void metricWithSpaceInTagValue() {
 		this.registry.counter("counter", "key", "a space").increment(2);
-		MetricsEndpoint.MetricResponse response = this.endpoint.metric("counter",
+		MetricsEndpoint.MetricDescriptor response = this.endpoint.metric("counter",
 				Collections.singletonList("key:a space"));
 		assertThat(response.getName()).isEqualTo("counter");
 		assertThat(availableTagKeys(response)).isEmpty();
@@ -168,7 +168,7 @@ class MetricsEndpointTests {
 
 	@Test
 	void nonExistentMetric() {
-		MetricsEndpoint.MetricResponse response = this.endpoint.metric("does.not.exist", Collections.emptyList());
+		MetricsEndpoint.MetricDescriptor response = this.endpoint.metric("does.not.exist", Collections.emptyList());
 		assertThat(response).isNull();
 	}
 
@@ -196,12 +196,12 @@ class MetricsEndpointTests {
 						.hasValueSatisfying((sample) -> assertThat(sample.getValue()).isEqualTo(value));
 	}
 
-	private Optional<Double> getCount(MetricsEndpoint.MetricResponse response) {
+	private Optional<Double> getCount(MetricsEndpoint.MetricDescriptor response) {
 		return response.getMeasurements().stream().filter((sample) -> sample.getStatistic().equals(Statistic.COUNT))
 				.findAny().map(MetricsEndpoint.Sample::getValue);
 	}
 
-	private Stream<String> availableTagKeys(MetricsEndpoint.MetricResponse response) {
+	private Stream<String> availableTagKeys(MetricsEndpoint.MetricDescriptor response) {
 		return response.getAvailableTags().stream().map(MetricsEndpoint.AvailableTag::getTag);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,7 +102,7 @@ class IntegrationPropertiesEnvironmentPostProcessorTests {
 		new IntegrationPropertiesEnvironmentPostProcessor().registerIntegrationPropertiesPropertySource(environment,
 				resource);
 		PropertySource<?> ps = environment.getPropertySources().get("META-INF/spring.integration.properties");
-		assertThat(ps).isNotNull().isInstanceOf(OriginLookup.class);
+		assertThat(ps).isInstanceOf(OriginLookup.class);
 		OriginLookup<String> originLookup = (OriginLookup<String>) ps;
 		assertThat(originLookup.getOrigin("spring.integration.channel.auto-create"))
 				.satisfies(textOrigin(resource, 0, 39));

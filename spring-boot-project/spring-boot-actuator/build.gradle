@@ -19,7 +19,6 @@ dependencies {
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.hazelcast:hazelcast")
 	optional("com.hazelcast:hazelcast-spring")
-	optional("com.sun.mail:jakarta.mail")
 	optional("com.zaxxer:HikariCP")
 	optional("io.lettuce:lettuce-core")
 	optional("io.micrometer:micrometer-observation")
@@ -31,15 +30,14 @@ dependencies {
 	}
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.r2dbc:r2dbc-spi")
-	optional("io.undertow:undertow-servlet-jakarta") {
-		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
-	}
+	optional("io.undertow:undertow-servlet")
 	optional("javax.cache:cache-api")
 	optional("jakarta.jms:jakarta.jms-api")
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.aspectj:aspectjweaver")
 	optional("org.cache2k:cache2k-micrometer")
 	optional("org.cache2k:cache2k-spring")
+	optional("org.eclipse.angus:angus-mail")
 	optional("org.eclipse.jetty:jetty-server") {
 		exclude(group: "org.eclipse.jetty.toolchain", module: "jetty-jakarta-servlet-api")
 	}
@@ -100,6 +98,8 @@ dependencies {
 	testImplementation("org.springframework:spring-test")
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 	testImplementation("org.testcontainers:junit-jupiter")
+	testImplementation("org.testcontainers:neo4j")
+	testImplementation("org.testcontainers:testcontainers")
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("io.projectreactor.netty:reactor-netty-http")

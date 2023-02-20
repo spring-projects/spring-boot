@@ -67,7 +67,7 @@ To use the factory bean, wire `StreamsBuilder` into your `@Bean` as shown in the
 
 include::code:MyKafkaStreamsConfiguration[]
 
-By default, the streams managed by the `StreamBuilder` object it creates are started automatically.
+By default, the streams managed by the `StreamBuilder` object are started automatically.
 You can customize this behavior using the configprop:spring.kafka.streams.auto-startup[] property.
 
 

@@ -585,8 +585,12 @@ abstract class AbstractBootArchiveIntegrationTests {
 		for (String layerName : layerNames) {
 			File layer = new File(root, layerName);
 			assertThat(layer).isDirectory();
-			extractedLayers.put(layerName, Files.walk(layer.toPath()).filter((path) -> path.toFile().isFile())
-					.map(layer.toPath()::relativize).map(Path::toString).map(StringUtils::cleanPath).toList());
+			List<String> files;
+			try (Stream<Path> pathStream = Files.walk(layer.toPath())) {
+				files = pathStream.filter((path) -> path.toFile().isFile()).map(layer.toPath()::relativize)
+						.map(Path::toString).map(StringUtils::cleanPath).toList();
+			}
+			extractedLayers.put(layerName, files);
 		}
 		return extractedLayers;
 	}

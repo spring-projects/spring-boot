@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +20,23 @@ import java.security.NoSuchProviderException;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.web.embedded.test.MockPkcs11Security;
+import org.springframework.boot.web.embedded.test.MockPkcs11SecurityProvider;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 /**
  * Tests for {@link SslServerCustomizer}.
  *
  * @author Andy Wilkinson
  * @author Raheela Aslam
+ * @author Cyril Dangerville
  */
 @SuppressWarnings("deprecation")
+@MockPkcs11Security
 class SslServerCustomizerTests {
 
 	@Test
@@ -59,11 +64,34 @@ class SslServerCustomizerTests {
 	}
 
 	@Test
-	void getKeyManagerFactoryWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException() {
+	void getKeyManagerFactoryWhenSslIsEnabledWithNoKeyStoreAndNotPkcs11ThrowsException() {
 		Ssl ssl = new Ssl();
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
 		assertThatIllegalStateException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
 				.withCauseInstanceOf(WebServerException.class).withMessageContaining("Could not load key store 'null'");
+	}
+
+	@Test
+	void getKeyManagerFactoryWhenSslIsEnabledWithPkcs11AndKeyStoreThrowsException() {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStoreType("PKCS11");
+		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setKeyPassword("password");
+		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
+		assertThatIllegalStateException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
+				.withCauseInstanceOf(IllegalStateException.class)
+				.withMessageContaining("must be empty or null for PKCS11 key stores");
+	}
+
+	@Test
+	void getKeyManagerFactoryWhenSslIsEnabledWithPkcs11AndKeyStoreProvider() {
+		Ssl ssl = new Ssl();
+		ssl.setKeyStoreType("PKCS11");
+		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
+		ssl.setKeyStorePassword("1234");
+		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
+		assertThatNoException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null));
 	}
 
 }

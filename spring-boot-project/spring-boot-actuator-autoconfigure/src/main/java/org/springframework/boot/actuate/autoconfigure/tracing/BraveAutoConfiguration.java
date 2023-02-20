@@ -19,6 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 import java.util.Collections;
 import java.util.List;
 
+import brave.CurrentSpanCustomizer;
+import brave.SpanCustomizer;
 import brave.Tracer;
 import brave.Tracing;
 import brave.Tracing.Builder;
@@ -33,13 +35,6 @@ import brave.baggage.CorrelationScopeCustomizer;
 import brave.baggage.CorrelationScopeDecorator;
 import brave.context.slf4j.MDCScopeDecorator;
 import brave.handler.SpanHandler;
-import brave.http.HttpClientHandler;
-import brave.http.HttpClientRequest;
-import brave.http.HttpClientResponse;
-import brave.http.HttpServerHandler;
-import brave.http.HttpServerRequest;
-import brave.http.HttpServerResponse;
-import brave.http.HttpTracing;
 import brave.propagation.B3Propagation;
 import brave.propagation.CurrentTraceContext;
 import brave.propagation.CurrentTraceContext.ScopeDecorator;
@@ -49,9 +44,8 @@ import brave.propagation.ThreadLocalCurrentTraceContext;
 import brave.sampler.Sampler;
 import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
 import io.micrometer.tracing.brave.bridge.BraveCurrentTraceContext;
-import io.micrometer.tracing.brave.bridge.BraveHttpClientHandler;
-import io.micrometer.tracing.brave.bridge.BraveHttpServerHandler;
 import io.micrometer.tracing.brave.bridge.BravePropagator;
+import io.micrometer.tracing.brave.bridge.BraveSpanCustomizer;
 import io.micrometer.tracing.brave.bridge.BraveTracer;
 import io.micrometer.tracing.brave.bridge.CompositeSpanHandler;
 import io.micrometer.tracing.brave.bridge.W3CPropagation;
@@ -142,25 +136,7 @@ public class BraveAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	public HttpTracing httpTracing(Tracing tracing) {
-		return HttpTracing.newBuilder(tracing).build();
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public HttpServerHandler<HttpServerRequest, HttpServerResponse> httpServerHandler(HttpTracing httpTracing) {
-		return HttpServerHandler.create(httpTracing);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public HttpClientHandler<HttpClientRequest, HttpClientResponse> httpClientHandler(HttpTracing httpTracing) {
-		return HttpClientHandler.create(httpTracing);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(io.micrometer.tracing.Tracer.class)
 	BraveTracer braveTracerBridge(brave.Tracer tracer, CurrentTraceContext currentTraceContext) {
 		return new BraveTracer(tracer, new BraveCurrentTraceContext(currentTraceContext), BRAVE_BAGGAGE_MANAGER);
 	}
@@ -172,17 +148,15 @@ public class BraveAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	BraveHttpServerHandler braveHttpServerHandler(
-			HttpServerHandler<HttpServerRequest, HttpServerResponse> httpServerHandler) {
-		return new BraveHttpServerHandler(httpServerHandler);
+	@ConditionalOnMissingBean(SpanCustomizer.class)
+	CurrentSpanCustomizer currentSpanCustomizer(Tracing tracing) {
+		return CurrentSpanCustomizer.create(tracing);
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	BraveHttpClientHandler braveHttpClientHandler(
-			HttpClientHandler<HttpClientRequest, HttpClientResponse> httpClientHandler) {
-		return new BraveHttpClientHandler(httpClientHandler);
+	@ConditionalOnMissingBean(io.micrometer.tracing.SpanCustomizer.class)
+	BraveSpanCustomizer braveSpanCustomizer(SpanCustomizer spanCustomizer) {
+		return new BraveSpanCustomizer(spanCustomizer);
 	}
 
 	@Configuration(proxyBeanMethods = false)

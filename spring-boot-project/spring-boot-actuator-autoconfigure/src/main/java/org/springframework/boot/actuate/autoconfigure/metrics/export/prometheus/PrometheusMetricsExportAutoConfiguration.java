@@ -92,7 +92,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(SpanContextSupplier.class)
-	public ExemplarSampler exemplarSampler(SpanContextSupplier spanContextSupplier) {
+	public DefaultExemplarSampler exemplarSampler(SpanContextSupplier spanContextSupplier) {
 		return new DefaultExemplarSampler(spanContextSupplier);
 	}
 

@@ -44,7 +44,7 @@ class DefaultWebClientExchangeTagsProviderTests {
 
 	private static final String URI_TEMPLATE_ATTRIBUTE = WebClient.class.getName() + ".uriTemplate";
 
-	private WebClientExchangeTagsProvider tagsProvider = new DefaultWebClientExchangeTagsProvider();
+	private final WebClientExchangeTagsProvider tagsProvider = new DefaultWebClientExchangeTagsProvider();
 
 	private ClientRequest request;
 

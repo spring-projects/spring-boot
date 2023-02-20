@@ -25,7 +25,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * A {@link HttpSender} which uses {@link WebClient} for HTTP communication.
+ * An {@link HttpSender} which uses {@link WebClient} for HTTP communication.
  *
  * @author Stefan Bratanov
  */

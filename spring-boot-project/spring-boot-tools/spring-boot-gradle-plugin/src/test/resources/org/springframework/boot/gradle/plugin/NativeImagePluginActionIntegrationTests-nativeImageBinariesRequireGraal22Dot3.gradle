@@ -1,0 +1,25 @@
+plugins {
+	id 'org.springframework.boot' version '{version}'
+	id 'java'
+}
+
+apply plugin: 'org.graalvm.buildtools.native'
+
+repositories {
+	mavenCentral()
+}
+
+graalvmNative {
+	binaries {
+		custom {
+		}
+	}
+}
+
+task('requiredGraalVersion') {
+	doFirst {
+		graalvmNative.binaries.asMap.each { name, binary ->
+			println "${name}: ${binary.requiredVersion.get()}"
+		}
+	}
+}

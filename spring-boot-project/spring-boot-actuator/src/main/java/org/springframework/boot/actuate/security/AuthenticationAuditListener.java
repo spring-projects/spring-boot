@@ -53,7 +53,7 @@ public class AuthenticationAuditListener extends AbstractAuthenticationAuditList
 
 	private static final String WEB_LISTENER_CHECK_CLASS = "org.springframework.security.web.authentication.switchuser.AuthenticationSwitchUserEvent";
 
-	private WebAuditListener webListener = maybeCreateWebListener();
+	private final WebAuditListener webListener = maybeCreateWebListener();
 
 	private static WebAuditListener maybeCreateWebListener() {
 		if (ClassUtils.isPresent(WEB_LISTENER_CHECK_CLASS, null)) {

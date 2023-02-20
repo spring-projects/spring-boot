@@ -10,9 +10,15 @@
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT" follow="true">
 			<PatternLayout pattern="${sys:CONSOLE_LOG_PATTERN}" charset="${sys:CONSOLE_LOG_CHARSET}" />
+			<Filters>
+				<ThresholdFilter level="${sys:CONSOLE_LOG_THRESHOLD:-TRACE}"/>
+			</Filters>
 		</Console>
 		<RollingFile name="File" fileName="${sys:LOG_FILE}" filePattern="${sys:LOG_PATH}/$${date:yyyy-MM}/app-%d{yyyy-MM-dd-HH}-%i.log.gz">
 			<PatternLayout pattern="${sys:FILE_LOG_PATTERN}" charset="${sys:FILE_LOG_CHARSET}"/>
+			<Filters>
+				<ThresholdFilter level="${sys:FILE_LOG_THRESHOLD:-TRACE}"/>
+			</Filters>
 			<Policies>
 				<SizeBasedTriggeringPolicy size="10 MB" />
 			</Policies>

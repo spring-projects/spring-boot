@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.ApplicationContextFactory;
+import org.springframework.boot.Banner;
 import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplication.AbandonedRunException;
@@ -44,6 +45,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.aot.AotApplicationContextInitializer;
+import org.springframework.core.KotlinDetector;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.core.SpringVersion;
@@ -55,6 +57,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
+import org.springframework.test.context.ContextLoadException;
 import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.SmartContextLoader;
@@ -64,6 +67,7 @@ import org.springframework.test.context.support.AnnotationConfigContextLoaderUti
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.context.web.WebMergedContextConfiguration;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
@@ -116,7 +120,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	private ApplicationContext loadContext(MergedContextConfiguration mergedConfig, Mode mode,
-			ApplicationContextInitializer<ConfigurableApplicationContext> initializer) {
+			ApplicationContextInitializer<ConfigurableApplicationContext> initializer) throws Exception {
 		assertHasClassesOrLocations(mergedConfig);
 		SpringBootTestAnnotation annotation = SpringBootTestAnnotation.get(mergedConfig);
 		String[] args = annotation.getArgs();
@@ -125,15 +129,12 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		if (mainMethod != null) {
 			ContextLoaderHook hook = new ContextLoaderHook(mode, initializer,
 					(application) -> configure(mergedConfig, application));
-			return hook.run(() -> ReflectionUtils.invokeMethod(mainMethod, null, new Object[] { args }));
+			return hook.runMain(() -> ReflectionUtils.invokeMethod(mainMethod, null, new Object[] { args }));
 		}
 		SpringApplication application = getSpringApplication();
 		configure(mergedConfig, application);
-		if (mode == Mode.AOT_PROCESSING || mode == Mode.AOT_RUNTIME) {
-			ContextLoaderHook hook = new ContextLoaderHook(mode, initializer, ALREADY_CONFIGURED);
-			return hook.run(() -> application.run(args));
-		}
-		return application.run(args);
+		ContextLoaderHook hook = new ContextLoaderHook(mode, initializer, ALREADY_CONFIGURED);
+		return hook.run(() -> application.run(args));
 	}
 
 	private void assertHasClassesOrLocations(MergedContextConfiguration mergedConfig) {
@@ -149,12 +150,23 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		if (useMainMethod == UseMainMethod.NEVER) {
 			return null;
 		}
+		Assert.state(mergedConfig.getParent() == null,
+				() -> "UseMainMethod.%s cannot be used with @ContextHierarchy tests".formatted(useMainMethod));
 		Class<?> springBootConfiguration = Arrays.stream(mergedConfig.getClasses())
 				.filter(this::isSpringBootConfiguration).findFirst().orElse(null);
 		Assert.state(springBootConfiguration != null || useMainMethod == UseMainMethod.WHEN_AVAILABLE,
 				"Cannot use main method as no @SpringBootConfiguration-annotated class is available");
 		Method mainMethod = (springBootConfiguration != null)
 				? ReflectionUtils.findMethod(springBootConfiguration, "main", String[].class) : null;
+		if (mainMethod == null && KotlinDetector.isKotlinPresent()) {
+			try {
+				Class<?> kotlinClass = ClassUtils.forName(springBootConfiguration.getName() + "Kt",
+						springBootConfiguration.getClassLoader());
+				mainMethod = ReflectionUtils.findMethod(kotlinClass, "main", String[].class);
+			}
+			catch (ClassNotFoundException ex) {
+			}
+		}
 		Assert.state(mainMethod != null || useMainMethod == UseMainMethod.WHEN_AVAILABLE,
 				() -> "Main method not found on '%s'".formatted(springBootConfiguration.getName()));
 		return mainMethod;
@@ -184,6 +196,9 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		}
 		application.setApplicationContextFactory(
 				(webApplicationType) -> getApplicationContextFactory(mergedConfig, webApplicationType));
+		if (mergedConfig.getParent() != null) {
+			application.setBannerMode(Banner.Mode.OFF);
+		}
 		application.setInitializers(initializers);
 		ConfigurableEnvironment environment = getEnvironment();
 		if (environment != null) {
@@ -399,7 +414,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 
 	/**
 	 * Adapts a {@link ContextCustomizer} to a {@link ApplicationContextInitializer} so
-	 * that it can be triggered via {@link SpringApplication}.
+	 * that it can be triggered through {@link SpringApplication}.
 	 */
 	private static class ContextCustomizerAdapter
 			implements ApplicationContextInitializer<ConfigurableApplicationContext> {
@@ -465,10 +480,10 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	/**
-	 * {@link SpringApplicationHook} used to capture the {@link ApplicationContext} and to
-	 * trigger early exit for the {@link Mode#AOT_PROCESSING} mode.
+	 * {@link SpringApplicationHook} used to capture {@link ApplicationContext} instances
+	 * and to trigger early exit for the {@link Mode#AOT_PROCESSING} mode.
 	 */
-	private class ContextLoaderHook implements SpringApplicationHook {
+	private static class ContextLoaderHook implements SpringApplicationHook {
 
 		private final Mode mode;
 
@@ -477,6 +492,8 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		private final Consumer<SpringApplication> configurer;
 
 		private final List<ApplicationContext> contexts = Collections.synchronizedList(new ArrayList<>());
+
+		private final List<ApplicationContext> failedContexts = Collections.synchronizedList(new ArrayList<>());
 
 		ContextLoaderHook(Mode mode, ApplicationContextInitializer<ConfigurableApplicationContext> initializer,
 				Consumer<SpringApplication> configurer) {
@@ -506,14 +523,35 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 					}
 				}
 
+				@Override
+				public void failed(ConfigurableApplicationContext context, Throwable exception) {
+					ContextLoaderHook.this.failedContexts.add(context);
+				}
+
 			};
 		}
 
-		private <T> ApplicationContext run(ThrowingSupplier<T> action) {
+		private <T> ApplicationContext runMain(Runnable action) throws Exception {
+			return run(() -> {
+				action.run();
+				return null;
+			});
+		}
+
+		private ApplicationContext run(ThrowingSupplier<ConfigurableApplicationContext> action) throws Exception {
 			try {
-				SpringApplication.withHook(this, action);
+				ConfigurableApplicationContext context = SpringApplication.withHook(this, action);
+				if (context != null) {
+					return context;
+				}
 			}
 			catch (AbandonedRunException ex) {
+			}
+			catch (Exception ex) {
+				if (this.failedContexts.size() == 1) {
+					throw new ContextLoadException(this.failedContexts.get(0), ex);
+				}
+				throw ex;
 			}
 			List<ApplicationContext> rootContexts = this.contexts.stream()
 					.filter((context) -> context.getParent() == null).toList();

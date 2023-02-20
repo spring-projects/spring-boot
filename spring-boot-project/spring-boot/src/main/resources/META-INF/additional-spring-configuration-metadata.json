@@ -204,6 +204,18 @@
       "defaultValue": true
     },
     {
+      "name": "logging.threshold.console",
+      "type": "java.lang.String",
+      "description": "Log level threshold for console output.",
+      "defaultValue": "TRACE"
+    },
+    {
+      "name": "logging.threshold.file",
+      "type": "java.lang.String",
+      "description": "Log level threshold for file output.",
+      "defaultValue": "TRACE"
+    },
+    {
       "name": "spring.application.index",
       "type": "java.lang.Integer",
       "description": "Application index.",

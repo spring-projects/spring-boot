@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ class ValidatorAdapterTests {
 			assertThat(wrapper.supports(SampleData.class)).isTrue();
 			MapBindingResult errors = new MapBindingResult(new HashMap<String, Object>(), "test");
 			wrapper.validate(new SampleData(40), errors);
-			assertThat(errors.getErrorCount()).isEqualTo(1);
+			assertThat(errors.getErrorCount()).isOne();
 		});
 	}
 
@@ -134,7 +134,7 @@ class ValidatorAdapterTests {
 	static class SampleData {
 
 		@Min(42)
-		private int counter;
+		private final int counter;
 
 		SampleData(int counter) {
 			this.counter = counter;

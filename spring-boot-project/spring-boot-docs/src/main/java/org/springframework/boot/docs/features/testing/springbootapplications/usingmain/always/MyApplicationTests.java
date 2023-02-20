@@ -22,7 +22,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.UseMainMethod;
 
 @SpringBootTest(useMainMethod = UseMainMethod.ALWAYS)
-public class MyApplicationTests {
+class MyApplicationTests {
 
 	@Test
 	void exampleTest() {

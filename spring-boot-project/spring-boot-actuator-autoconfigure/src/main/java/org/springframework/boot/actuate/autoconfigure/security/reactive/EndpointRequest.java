@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -226,6 +226,30 @@ public final class EndpointRequest {
 			return source.stream().filter(Objects::nonNull).map(this::getEndpointId).map(pathMappedEndpoints::getPath);
 		}
 
+		@Override
+		protected Mono<MatchResult> matches(ServerWebExchange exchange, Supplier<PathMappedEndpoints> context) {
+			return this.delegate.matches(exchange);
+		}
+
+		private List<ServerWebExchangeMatcher> getDelegateMatchers(Set<String> paths) {
+			return paths.stream().map(this::getDelegateMatcher).collect(Collectors.toCollection(ArrayList::new));
+		}
+
+		private PathPatternParserServerWebExchangeMatcher getDelegateMatcher(String path) {
+			return new PathPatternParserServerWebExchangeMatcher(path + "/**");
+		}
+
+		@Override
+		public String toString() {
+			return String.format("EndpointRequestMatcher includes=%s, excludes=%s, includeLinks=%s",
+					toString(this.includes, "[*]"), toString(this.excludes, "[]"), this.includeLinks);
+		}
+
+		private String toString(List<Object> endpoints, String emptyValue) {
+			return (!endpoints.isEmpty()) ? endpoints.stream().map(this::getEndpointId).map(Object::toString)
+					.collect(Collectors.joining(", ", "[", "]")) : emptyValue;
+		}
+
 		private EndpointId getEndpointId(Object source) {
 			if (source instanceof EndpointId endpointId) {
 				return endpointId;
@@ -243,19 +267,6 @@ public final class EndpointRequest {
 			MergedAnnotation<Endpoint> annotation = MergedAnnotations.from(source).get(Endpoint.class);
 			Assert.state(annotation.isPresent(), () -> "Class " + source + " is not annotated with @Endpoint");
 			return EndpointId.of(annotation.getString("id"));
-		}
-
-		private List<ServerWebExchangeMatcher> getDelegateMatchers(Set<String> paths) {
-			return paths.stream().map(this::getDelegateMatcher).collect(Collectors.toCollection(ArrayList::new));
-		}
-
-		private PathPatternParserServerWebExchangeMatcher getDelegateMatcher(String path) {
-			return new PathPatternParserServerWebExchangeMatcher(path + "/**");
-		}
-
-		@Override
-		protected Mono<MatchResult> matches(ServerWebExchange exchange, Supplier<PathMappedEndpoints> context) {
-			return this.delegate.matches(exchange);
 		}
 
 	}

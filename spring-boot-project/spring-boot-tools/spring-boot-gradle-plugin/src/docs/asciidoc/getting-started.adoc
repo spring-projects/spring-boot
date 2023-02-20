@@ -2,7 +2,7 @@
 = Getting Started
 To get started with the plugin it needs to be applied to your project.
 
-ifeval::["{spring-boot-artifactory-repo}" == "release"]
+ifeval::["{artifact-release-type}" == "release"]
 The plugin is https://plugins.gradle.org/plugin/org.springframework.boot[published to Gradle's plugin portal] and can be applied using the `plugins` block:
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
@@ -16,7 +16,7 @@ include::../gradle/getting-started/apply-plugin-release.gradle[]
 include::../gradle/getting-started/apply-plugin-release.gradle.kts[]
 ----
 endif::[]
-ifeval::["{spring-boot-artifactory-repo}" == "milestone"]
+ifeval::["{artifact-release-type}" == "milestone"]
 The plugin is published to the Spring milestones repository.
 Gradle can be configured to use the milestones repository and the plugin can then be applied using the `plugins` block.
 To configure Gradle to use the milestones repository, add the following to your `settings.gradle` (Groovy) or `settings.gradle.kts` (Kotlin):
@@ -47,7 +47,7 @@ include::../gradle/getting-started/apply-plugin-release.gradle[]
 include::../gradle/getting-started/apply-plugin-release.gradle.kts[]
 ----
 endif::[]
-ifeval::["{spring-boot-artifactory-repo}" == "snapshot"]
+ifeval::["{artifact-release-type}" == "snapshot"]
 The plugin is published to the Spring snapshots repository.
 Gradle can be configured to use the snapshots repository and the plugin can then be applied using the `plugins` block.
 To configure Gradle to use the snapshots repository, add the following to your `settings.gradle` (Groovy) or `settings.gradle.kts` (Kotlin):

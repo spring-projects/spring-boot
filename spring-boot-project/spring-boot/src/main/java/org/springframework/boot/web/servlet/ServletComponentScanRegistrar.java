@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 
 	static final class ServletComponentRegisteringPostProcessorBeanDefinition extends GenericBeanDefinition {
 
-		private Set<String> packageNames = new LinkedHashSet<>();
+		private final Set<String> packageNames = new LinkedHashSet<>();
 
 		ServletComponentRegisteringPostProcessorBeanDefinition(Collection<String> packageNames) {
 			setBeanClass(ServletComponentRegisteringPostProcessor.class);

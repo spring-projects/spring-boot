@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,9 @@ import java.lang.reflect.Constructor;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -33,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  */
 class DefaultBindConstructorProviderTests {
 
-	private DefaultBindConstructorProvider provider = new DefaultBindConstructorProvider();
+	private final DefaultBindConstructorProvider provider = new DefaultBindConstructorProvider();
 
 	@Test
 	void getBindConstructorWhenHasOnlyDefaultConstructorReturnsNull() {
@@ -52,7 +55,7 @@ class DefaultBindConstructorProviderTests {
 		Constructor<?> constructor = this.provider.getBindConstructor(TwoConstructorsWithOneConstructorBinding.class,
 				false);
 		assertThat(constructor).isNotNull();
-		assertThat(constructor.getParameterCount()).isEqualTo(1);
+		assertThat(constructor.getParameterCount()).isOne();
 	}
 
 	@Test
@@ -95,6 +98,32 @@ class DefaultBindConstructorProviderTests {
 		Constructor<?> constructor = this.provider.getBindConstructor(MemberTypeWithPrivateConstructor.Member.class,
 				false);
 		assertThat(constructor).isNull();
+	}
+
+	@Test
+	void getBindConstructorFromProxiedClassWithOneAutowiredConstructorReturnsNull() {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				ProxiedWithOneConstructorWithAutowired.class)) {
+			ProxiedWithOneConstructorWithAutowired bean = context.getBean(ProxiedWithOneConstructorWithAutowired.class);
+			Constructor<?> bindConstructor = this.provider.getBindConstructor(bean.getClass(), false);
+			assertThat(bindConstructor).isNull();
+		}
+	}
+
+	@Test
+	void getBindConstructorWhenHasExistingValueAndOneConstructorWithoutAnnotationsReturnsNull() {
+		OneConstructorWithoutAnnotations existingValue = new OneConstructorWithoutAnnotations("name", 123);
+		Bindable<?> bindable = Bindable.of(OneConstructorWithoutAnnotations.class).withExistingValue(existingValue);
+		Constructor<?> bindConstructor = this.provider.getBindConstructor(bindable, false);
+		assertThat(bindConstructor).isNull();
+	}
+
+	@Test
+	void getBindConstructorWhenHasExistingValueAndOneConstructorWithConstructorBindingReturnsConstructor() {
+		OneConstructorWithConstructorBinding existingValue = new OneConstructorWithConstructorBinding("name", 123);
+		Bindable<?> bindable = Bindable.of(OneConstructorWithConstructorBinding.class).withExistingValue(existingValue);
+		Constructor<?> bindConstructor = this.provider.getBindConstructor(bindable, false);
+		assertThat(bindConstructor).isNotNull();
 	}
 
 	static class OnlyDefaultConstructor {
@@ -164,6 +193,13 @@ class DefaultBindConstructorProviderTests {
 
 	}
 
+	static class OneConstructorWithoutAnnotations {
+
+		OneConstructorWithoutAnnotations(String name, int age) {
+		}
+
+	}
+
 	static class TwoConstructorsWithBothConstructorBinding {
 
 		@ConstructorBinding
@@ -184,6 +220,15 @@ class DefaultBindConstructorProviderTests {
 			private Member(String name) {
 			}
 
+		}
+
+	}
+
+	@Configuration
+	static class ProxiedWithOneConstructorWithAutowired {
+
+		@Autowired
+		ProxiedWithOneConstructorWithAutowired(Environment environment) {
 		}
 
 	}

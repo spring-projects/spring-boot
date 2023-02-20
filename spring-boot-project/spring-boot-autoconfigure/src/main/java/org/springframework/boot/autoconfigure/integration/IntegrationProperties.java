@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -170,7 +170,7 @@ public class IntegrationProperties {
 	public static class Error {
 
 		/**
-		 * Whether to not silently ignore messages on the global 'errorChannel' when they
+		 * Whether to not silently ignore messages on the global 'errorChannel' when there
 		 * are no subscribers.
 		 */
 		private boolean requireSubscribers = true;
@@ -306,7 +306,7 @@ public class IntegrationProperties {
 		public static class Server {
 
 			/**
-			 * Whether to handle message mapping for RSocket via Spring Integration.
+			 * Whether to handle message mapping for RSocket through Spring Integration.
 			 */
 			private boolean messageMappingEnabled;
 
@@ -416,12 +416,29 @@ public class IntegrationProperties {
 		 */
 		private boolean defaultLoggingEnabled = true;
 
+		/**
+		 * Comma-separated list of simple patterns to match against the names of Spring
+		 * Integration components. When matched, observation instrumentation will be
+		 * performed for the component. Please refer to the javadoc of the smartMatch
+		 * method of Spring Integration's PatternMatchUtils for details of the pattern
+		 * syntax.
+		 */
+		private List<String> observationPatterns = new ArrayList<>();
+
 		public boolean isDefaultLoggingEnabled() {
 			return this.defaultLoggingEnabled;
 		}
 
 		public void setDefaultLoggingEnabled(boolean defaultLoggingEnabled) {
 			this.defaultLoggingEnabled = defaultLoggingEnabled;
+		}
+
+		public List<String> getObservationPatterns() {
+			return this.observationPatterns;
+		}
+
+		public void setObservationPatterns(List<String> observationPatterns) {
+			this.observationPatterns = observationPatterns;
 		}
 
 	}

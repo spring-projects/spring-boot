@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -209,7 +209,7 @@ public class LocalDevToolsAutoConfiguration {
 		public void onApplicationEvent(ClassPathChangedEvent event) {
 			if (event.isRestartRequired()) {
 				logger.info(LogMessage.format("Restarting due to %s", event.overview()));
-				logger.debug(LogMessage.of(() -> "Change set: %s" + event.getChangeSet()));
+				logger.debug(LogMessage.format("Change set: %s", event.getChangeSet()));
 				Restarter.getInstance().restart(new FileWatchingFailureHandler(this.fileSystemWatcherFactory));
 			}
 		}

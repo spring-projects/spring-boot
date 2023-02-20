@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,14 +26,13 @@ import org.testcontainers.DockerClientFactory;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 class DisabledIfDockerUnavailableCondition implements ExecutionCondition {
 
 	private static final String SILENCE_PROPERTY = "visibleassertions.silence";
 
 	private static final ConditionEvaluationResult ENABLED = ConditionEvaluationResult.enabled("Docker available");
-
-	private static final ConditionEvaluationResult DISABLED = ConditionEvaluationResult.disabled("Docker unavailable");
 
 	@Override
 	public ConditionEvaluationResult evaluateExecutionCondition(ExtensionContext context) {
@@ -43,7 +42,7 @@ class DisabledIfDockerUnavailableCondition implements ExecutionCondition {
 			return ENABLED;
 		}
 		catch (Throwable ex) {
-			return DISABLED;
+			return ConditionEvaluationResult.disabled("Docker unavailable", ex.getMessage());
 		}
 		finally {
 			if (originalSilenceValue != null) {

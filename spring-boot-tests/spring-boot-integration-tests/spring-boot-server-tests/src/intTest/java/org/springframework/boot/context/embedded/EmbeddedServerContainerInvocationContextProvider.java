@@ -83,17 +83,22 @@ class EmbeddedServerContainerInvocationContextProvider
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 		EmbeddedServletContainerTest annotation = context.getRequiredTestClass()
 				.getAnnotation(EmbeddedServletContainerTest.class);
-		return CONTAINERS
-				.stream().map(
-						(container) -> getApplication(annotation, container))
-				.flatMap(
-						(builder) -> Stream
-								.of(annotation.launchers()).map(
-										(launcherClass) -> getAbstractApplicationLauncher(builder, launcherClass))
-								.map((launcher) -> new EmbeddedServletContainerInvocationContext(
-										StringUtils.capitalize(builder.getContainer()) + ": "
-												+ launcher.getDescription(builder.getPackaging()),
-										launcher)));
+		return CONTAINERS.stream().map((container) -> getApplication(annotation, container))
+				.flatMap((builder) -> provideTestTemplateInvocationContexts(annotation, builder));
+	}
+
+	private Stream<EmbeddedServletContainerInvocationContext> provideTestTemplateInvocationContexts(
+			EmbeddedServletContainerTest annotation, Application application) {
+		return Stream.of(annotation.launchers())
+				.map((launcherClass) -> getAbstractApplicationLauncher(application, launcherClass))
+				.map((launcher) -> provideTestTemplateInvocationContext(application, launcher));
+	}
+
+	private EmbeddedServletContainerInvocationContext provideTestTemplateInvocationContext(Application application,
+			AbstractApplicationLauncher launcher) {
+		String name = StringUtils.capitalize(application.getContainer()) + ": "
+				+ launcher.getDescription(application.getPackaging());
+		return new EmbeddedServletContainerInvocationContext(name, launcher);
 	}
 
 	@Override

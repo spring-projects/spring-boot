@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,15 +56,15 @@ import static org.mockito.Mockito.mock;
  */
 class ConfigDataEnvironmentTests {
 
-	private DeferredLogFactory logFactory = Supplier::get;
+	private final DeferredLogFactory logFactory = Supplier::get;
 
-	private DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
+	private final DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
 
-	private MockApplicationEnvironment environment = new MockApplicationEnvironment();
+	private final MockApplicationEnvironment environment = new MockApplicationEnvironment();
 
-	private ResourceLoader resourceLoader = new DefaultResourceLoader();
+	private final ResourceLoader resourceLoader = new DefaultResourceLoader();
 
-	private Collection<String> additionalProfiles = Collections.emptyList();
+	private final Collection<String> additionalProfiles = Collections.emptyList();
 
 	@Test
 	void createExposesEnvironmentBinderToConfigDataLocationResolvers() {
@@ -301,7 +301,7 @@ class ConfigDataEnvironmentTests {
 		assertThat(listener.getAddedPropertySources()).hasSize(1);
 		AddedPropertySource addedPropertySource = listener.getAddedPropertySources().get(0);
 		assertThat(addedPropertySource.getPropertySource().getProperty("spring")).isEqualTo("boot");
-		assertThat(addedPropertySource.getLocation().toString()).isEqualTo(getConfigLocation(info));
+		assertThat(addedPropertySource.getLocation()).hasToString(getConfigLocation(info));
 		assertThat(addedPropertySource.getResource().toString()).contains("class path resource")
 				.contains(info.getTestMethod().get().getName());
 	}

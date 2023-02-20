@@ -34,11 +34,11 @@ class ObservationRestTemplateCustomizerTests {
 
 	private static final String TEST_METRIC_NAME = "http.test.metric.name";
 
-	private ObservationRegistry observationRegistry = TestObservationRegistry.create();
+	private final ObservationRegistry observationRegistry = TestObservationRegistry.create();
 
-	private RestTemplate restTemplate = new RestTemplate();
+	private final RestTemplate restTemplate = new RestTemplate();
 
-	private ObservationRestTemplateCustomizer customizer = new ObservationRestTemplateCustomizer(
+	private final ObservationRestTemplateCustomizer customizer = new ObservationRestTemplateCustomizer(
 			this.observationRegistry, new DefaultClientRequestObservationConvention(TEST_METRIC_NAME));
 
 	@Test

@@ -23,7 +23,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest.UseMainMethod;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,8 +43,7 @@ class SpringBootTestUseMainMethodWithPropertiesTests {
 		assertThat(this.applicationContext.getEnvironment().getProperty("test")).isEqualTo("123");
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@SpringBootConfiguration
+	@SpringBootConfiguration(proxyBeanMethods = false)
 	public static class ConfigWithMain {
 
 		public static void main(String[] args) {

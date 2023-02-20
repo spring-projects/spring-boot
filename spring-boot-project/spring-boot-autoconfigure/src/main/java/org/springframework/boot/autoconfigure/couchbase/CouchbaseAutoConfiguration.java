@@ -23,9 +23,6 @@ import java.security.KeyStore;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 
-import com.couchbase.client.core.env.IoConfig;
-import com.couchbase.client.core.env.SecurityConfig;
-import com.couchbase.client.core.env.TimeoutConfig;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.ClusterOptions;
 import com.couchbase.client.java.codec.JacksonJsonSerializer;
@@ -83,16 +80,16 @@ public class CouchbaseAutoConfiguration {
 	private ClusterEnvironment.Builder initializeEnvironmentBuilder(CouchbaseProperties properties) {
 		ClusterEnvironment.Builder builder = ClusterEnvironment.builder();
 		Timeouts timeouts = properties.getEnv().getTimeouts();
-		builder.timeoutConfig(TimeoutConfig.kvTimeout(timeouts.getKeyValue()).analyticsTimeout(timeouts.getAnalytics())
-				.kvDurableTimeout(timeouts.getKeyValueDurable()).queryTimeout(timeouts.getQuery())
-				.viewTimeout(timeouts.getView()).searchTimeout(timeouts.getSearch())
+		builder.timeoutConfig((config) -> config.kvTimeout(timeouts.getKeyValue())
+				.analyticsTimeout(timeouts.getAnalytics()).kvDurableTimeout(timeouts.getKeyValueDurable())
+				.queryTimeout(timeouts.getQuery()).viewTimeout(timeouts.getView()).searchTimeout(timeouts.getSearch())
 				.managementTimeout(timeouts.getManagement()).connectTimeout(timeouts.getConnect())
 				.disconnectTimeout(timeouts.getDisconnect()));
 		CouchbaseProperties.Io io = properties.getEnv().getIo();
-		builder.ioConfig(IoConfig.maxHttpConnections(io.getMaxEndpoints()).numKvConnections(io.getMinEndpoints())
-				.idleHttpConnectionTimeout(io.getIdleHttpConnectionTimeout()));
+		builder.ioConfig((config) -> config.maxHttpConnections(io.getMaxEndpoints())
+				.numKvConnections(io.getMinEndpoints()).idleHttpConnectionTimeout(io.getIdleHttpConnectionTimeout()));
 		if (properties.getEnv().getSsl().getEnabled()) {
-			builder.securityConfig(SecurityConfig.enableTls(true)
+			builder.securityConfig((config) -> config.enableTls(true)
 					.trustManagerFactory(getTrustManagerFactory(properties.getEnv().getSsl())));
 		}
 		return builder;

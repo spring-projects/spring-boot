@@ -64,9 +64,9 @@ class ConfigDataEnvironmentContributorsTests {
 
 	private static final ConfigDataLocation LOCATION_2 = ConfigDataLocation.of("location2");
 
-	private DeferredLogFactory logFactory = Supplier::get;
+	private final DeferredLogFactory logFactory = Supplier::get;
 
-	private DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
+	private final DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
 
 	private MockEnvironment environment;
 

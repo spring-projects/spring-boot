@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
@@ -60,14 +61,14 @@ public class ConditionsReportEndpoint {
 	}
 
 	@ReadOperation
-	public ApplicationConditionEvaluation applicationConditionEvaluation() {
-		Map<String, ContextConditionEvaluation> contextConditionEvaluations = new HashMap<>();
+	public ConditionsDescriptor conditions() {
+		Map<String, ContextConditionsDescriptor> contextConditionEvaluations = new HashMap<>();
 		ConfigurableApplicationContext target = this.context;
 		while (target != null) {
-			contextConditionEvaluations.put(target.getId(), new ContextConditionEvaluation(target));
+			contextConditionEvaluations.put(target.getId(), new ContextConditionsDescriptor(target));
 			target = getConfigurableParent(target);
 		}
-		return new ApplicationConditionEvaluation(contextConditionEvaluations);
+		return new ConditionsDescriptor(contextConditionEvaluations);
 	}
 
 	private ConfigurableApplicationContext getConfigurableParent(ConfigurableApplicationContext context) {
@@ -79,18 +80,17 @@ public class ConditionsReportEndpoint {
 	}
 
 	/**
-	 * A description of an application's condition evaluation, primarily intended for
-	 * serialization to JSON.
+	 * A description of an application's condition evaluation.
 	 */
-	public static final class ApplicationConditionEvaluation {
+	public static final class ConditionsDescriptor implements OperationResponseBody {
 
-		private final Map<String, ContextConditionEvaluation> contexts;
+		private final Map<String, ContextConditionsDescriptor> contexts;
 
-		private ApplicationConditionEvaluation(Map<String, ContextConditionEvaluation> contexts) {
+		private ConditionsDescriptor(Map<String, ContextConditionsDescriptor> contexts) {
 			this.contexts = contexts;
 		}
 
-		public Map<String, ContextConditionEvaluation> getContexts() {
+		public Map<String, ContextConditionsDescriptor> getContexts() {
 			return this.contexts;
 		}
 
@@ -101,11 +101,11 @@ public class ConditionsReportEndpoint {
 	 * for serialization to JSON.
 	 */
 	@JsonInclude(Include.NON_EMPTY)
-	public static final class ContextConditionEvaluation {
+	public static final class ContextConditionsDescriptor {
 
-		private final MultiValueMap<String, MessageAndCondition> positiveMatches;
+		private final MultiValueMap<String, MessageAndConditionDescriptor> positiveMatches;
 
-		private final Map<String, MessageAndConditions> negativeMatches;
+		private final Map<String, MessageAndConditionsDescriptor> negativeMatches;
 
 		private final List<String> exclusions;
 
@@ -113,7 +113,7 @@ public class ConditionsReportEndpoint {
 
 		private final String parentId;
 
-		public ContextConditionEvaluation(ConfigurableApplicationContext context) {
+		public ContextConditionsDescriptor(ConfigurableApplicationContext context) {
 			ConditionEvaluationReport report = ConditionEvaluationReport.get(context.getBeanFactory());
 			this.positiveMatches = new LinkedMultiValueMap<>();
 			this.negativeMatches = new LinkedHashMap<>();
@@ -127,18 +127,18 @@ public class ConditionsReportEndpoint {
 			String name = ClassUtils.getShortName(source);
 			if (conditionAndOutcomes.isFullMatch()) {
 				conditionAndOutcomes.forEach((conditionAndOutcome) -> this.positiveMatches.add(name,
-						new MessageAndCondition(conditionAndOutcome)));
+						new MessageAndConditionDescriptor(conditionAndOutcome)));
 			}
 			else {
-				this.negativeMatches.put(name, new MessageAndConditions(conditionAndOutcomes));
+				this.negativeMatches.put(name, new MessageAndConditionsDescriptor(conditionAndOutcomes));
 			}
 		}
 
-		public Map<String, List<MessageAndCondition>> getPositiveMatches() {
+		public Map<String, List<MessageAndConditionDescriptor>> getPositiveMatches() {
 			return this.positiveMatches;
 		}
 
-		public Map<String, MessageAndConditions> getNegativeMatches() {
+		public Map<String, MessageAndConditionsDescriptor> getNegativeMatches() {
 			return this.negativeMatches;
 		}
 
@@ -160,25 +160,25 @@ public class ConditionsReportEndpoint {
 	 * Adapts {@link ConditionAndOutcomes} to a JSON friendly structure.
 	 */
 	@JsonPropertyOrder({ "notMatched", "matched" })
-	public static class MessageAndConditions {
+	public static class MessageAndConditionsDescriptor {
 
-		private final List<MessageAndCondition> notMatched = new ArrayList<>();
+		private final List<MessageAndConditionDescriptor> notMatched = new ArrayList<>();
 
-		private final List<MessageAndCondition> matched = new ArrayList<>();
+		private final List<MessageAndConditionDescriptor> matched = new ArrayList<>();
 
-		public MessageAndConditions(ConditionAndOutcomes conditionAndOutcomes) {
+		public MessageAndConditionsDescriptor(ConditionAndOutcomes conditionAndOutcomes) {
 			for (ConditionAndOutcome conditionAndOutcome : conditionAndOutcomes) {
-				List<MessageAndCondition> target = (conditionAndOutcome.getOutcome().isMatch() ? this.matched
+				List<MessageAndConditionDescriptor> target = (conditionAndOutcome.getOutcome().isMatch() ? this.matched
 						: this.notMatched);
-				target.add(new MessageAndCondition(conditionAndOutcome));
+				target.add(new MessageAndConditionDescriptor(conditionAndOutcome));
 			}
 		}
 
-		public List<MessageAndCondition> getNotMatched() {
+		public List<MessageAndConditionDescriptor> getNotMatched() {
 			return this.notMatched;
 		}
 
-		public List<MessageAndCondition> getMatched() {
+		public List<MessageAndConditionDescriptor> getMatched() {
 			return this.matched;
 		}
 
@@ -188,13 +188,13 @@ public class ConditionsReportEndpoint {
 	 * Adapts {@link ConditionAndOutcome} to a JSON friendly structure.
 	 */
 	@JsonPropertyOrder({ "condition", "message" })
-	public static class MessageAndCondition {
+	public static class MessageAndConditionDescriptor {
 
 		private final String condition;
 
 		private final String message;
 
-		public MessageAndCondition(ConditionAndOutcome conditionAndOutcome) {
+		public MessageAndConditionDescriptor(ConditionAndOutcome conditionAndOutcome) {
 			Condition condition = conditionAndOutcome.getCondition();
 			ConditionOutcome outcome = conditionAndOutcome.getOutcome();
 			this.condition = ClassUtils.getShortName(condition.getClass());

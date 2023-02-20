@@ -3,7 +3,7 @@
 Maven users can inherit from the `spring-boot-starter-parent` project to obtain sensible defaults.
 The parent project provides the following features:
 
-* Java 1.8 as the default compiler level.
+* Java 17 as the default compiler level.
 * UTF-8 source encoding.
 * Compilation with `-parameters`.
 * A dependency management section, inherited from the `spring-boot-dependencies` POM, that manages the versions of common dependencies.

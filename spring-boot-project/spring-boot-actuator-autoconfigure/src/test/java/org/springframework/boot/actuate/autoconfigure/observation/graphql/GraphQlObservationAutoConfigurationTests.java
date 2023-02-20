@@ -18,15 +18,21 @@ package org.springframework.boot.actuate.autoconfigure.observation.graphql;
 
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.tck.TestObservationRegistry;
+import io.micrometer.tracing.propagation.Propagator;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.graphql.observation.DefaultDataFetcherObservationConvention;
+import org.springframework.graphql.observation.DefaultExecutionRequestObservationConvention;
 import org.springframework.graphql.observation.GraphQlObservationInstrumentation;
+import org.springframework.graphql.observation.PropagationWebGraphQlInterceptor;
+import org.springframework.graphql.server.WebGraphQlHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link GraphQlObservationAutoConfiguration}.
@@ -58,12 +64,85 @@ class GraphQlObservationAutoConfigurationTests {
 						.hasBean("customInstrumentation"));
 	}
 
+	@Test
+	void instrumentationUsesCustomConventionsIfAvailable() {
+		this.contextRunner.withUserConfiguration(CustomConventionsConfiguration.class).run((context) -> {
+			GraphQlObservationInstrumentation instrumentation = context
+					.getBean(GraphQlObservationInstrumentation.class);
+			assertThat(instrumentation).extracting("requestObservationConvention")
+					.isInstanceOf(CustomExecutionRequestObservationConvention.class);
+			assertThat(instrumentation).extracting("dataFetcherObservationConvention")
+					.isInstanceOf(CustomDataFetcherObservationConvention.class);
+		});
+	}
+
+	@Test
+	void propagationInterceptorNotContributedWhenPropagatorIsMissing() {
+		this.contextRunner.withUserConfiguration(WebGraphQlConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(PropagationWebGraphQlInterceptor.class));
+	}
+
+	@Test
+	void propagationInterceptorNotContributedWhenNotWebApplication() {
+		this.contextRunner.withUserConfiguration(TracingConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(PropagationWebGraphQlInterceptor.class));
+	}
+
+	@Test
+	void propagationInterceptorContributed() {
+		this.contextRunner.withUserConfiguration(WebGraphQlConfiguration.class, TracingConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(PropagationWebGraphQlInterceptor.class));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class InstrumentationConfiguration {
 
 		@Bean
 		GraphQlObservationInstrumentation customInstrumentation(ObservationRegistry registry) {
 			return new GraphQlObservationInstrumentation(registry);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomConventionsConfiguration {
+
+		@Bean
+		CustomExecutionRequestObservationConvention customExecutionConvention() {
+			return new CustomExecutionRequestObservationConvention();
+		}
+
+		@Bean
+		CustomDataFetcherObservationConvention customDataFetcherConvention() {
+			return new CustomDataFetcherObservationConvention();
+		}
+
+	}
+
+	static class CustomExecutionRequestObservationConvention extends DefaultExecutionRequestObservationConvention {
+
+	}
+
+	static class CustomDataFetcherObservationConvention extends DefaultDataFetcherObservationConvention {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class WebGraphQlConfiguration {
+
+		@Bean
+		WebGraphQlHandler webGraphQlHandler() {
+			return mock(WebGraphQlHandler.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TracingConfiguration {
+
+		@Bean
+		Propagator propagator() {
+			return mock(Propagator.class);
 		}
 
 	}

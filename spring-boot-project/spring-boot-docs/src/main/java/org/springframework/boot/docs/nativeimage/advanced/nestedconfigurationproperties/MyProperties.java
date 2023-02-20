@@ -25,7 +25,7 @@ public class MyProperties {
 	private String name;
 
 	@NestedConfigurationProperty
-	private Nested nested = new Nested();
+	private final Nested nested = new Nested();
 
 	// @fold:on // getters / setters...
 	public String getName() {
@@ -40,21 +40,5 @@ public class MyProperties {
 		return this.nested;
 	}
 	// @fold:off
-
-	public static class Nested {
-
-		private int number;
-
-		// @fold:on // getters / setters...
-		public int getNumber() {
-			return this.number;
-		}
-
-		public void setNumber(int number) {
-			this.number = number;
-		}
-		// @fold:off
-
-	}
 
 }

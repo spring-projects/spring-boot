@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Base endpoint element condition. An element can be disabled globally via the
- * {@code defaults} name or individually via the name of the element.
+ * Base endpoint element condition. An element can be disabled globally through the
+ * {@code defaults} name or individually through the name of the element.
  *
  * @author Stephane Nicoll
  * @author Madhura Bhave

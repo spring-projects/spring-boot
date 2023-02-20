@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ class ConditionalOnJndiTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
-	private MockableOnJndi condition = new MockableOnJndi();
+	private final MockableOnJndi condition = new MockableOnJndi();
 
 	@BeforeEach
 	void setupThreadContextClassLoader() {
@@ -149,7 +149,7 @@ class ConditionalOnJndiTests {
 
 	static class MockableOnJndi extends OnJndiCondition {
 
-		private boolean jndiAvailable = true;
+		private final boolean jndiAvailable = true;
 
 		private String foundLocation;
 

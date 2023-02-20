@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.springframework.core.annotation.AliasFor;
 /**
  * {@link Conditional @Conditional} that only matches when no {@link Filter} beans of the
  * specified type are contained in the {@link BeanFactory}. This condition will detect
- * both directly registered {@link Filter} beans as well as those registered via a
+ * both directly registered {@link Filter} beans as well as those registered through a
  * {@link FilterRegistrationBean}.
  * <p>
  * When placed on a {@code @Bean} method, the bean class defaults to the return type of

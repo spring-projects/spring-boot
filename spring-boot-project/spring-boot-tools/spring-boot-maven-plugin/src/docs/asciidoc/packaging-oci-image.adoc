@@ -1,7 +1,8 @@
 [[build-image]]
 = Packaging OCI Images
 The plugin can create an https://github.com/opencontainers/image-spec[OCI image] from a jar or war file using https://buildpacks.io/[Cloud Native Buildpacks] (CNB).
-Images can be built using the `build-image` goal.
+Images can be built on the command-line using the `build-image` goal.
+This makes sure that the package lifecycle has run before the image is created.
 
 NOTE: For security reasons, images build and run as non-root users.
 See the {buildpacks-reference}/reference/spec/platform-api/#users[CNB specification] for more details.
@@ -13,6 +14,10 @@ It is possible to automate the creation of an image whenever the `package` phase
 ----
 include::../maven/packaging-oci-image/pom.xml[tags=packaging-oci-image]
 ----
+
+NOTE: Use `build-image-no-fork` when binding the goal to the package lifecycle.
+This goal is similar to `build-image` but does not fork the lifecycle to make sure `package` has run.
+In the rest of this section, `build-image` is used to refer to either the `build-image` or `build-image-no-fork` goals.
 
 TIP: While the buildpack runs from an <<packaging,executable archive>>, it is not necessary to execute the `repackage` goal first as the executable archive is created automatically if necessary.
 When the `build-image` repackages the application, it applies the same settings as the `repackage` goal would, that is dependencies can be excluded using one of the exclude options, and Devtools is automatically excluded by default (you can control that using the `excludeDevtools` property).
@@ -164,14 +169,12 @@ Where `<options>` can contain:
 * `volume-opt=key=value` to specify key-value pairs consisting of an option name and its value
 |
 
-| `network` +
-(`spring-boot.build-image.network`)
+| `network` + (`spring-boot.build-image.network`)
 | The https://docs.docker.com/network/#network-drivers[network driver] the builder container will be configured to use.
 The value supplied will be passed unvalidated to Docker when creating the builder container.
 |
 
-| `cleanCache` +
-(`spring-boot.build-image.cleanCache`)
+| `cleanCache` + (`spring-boot.build-image.cleanCache`)
 | Whether to clean the cache before building.
 | `false`
 
@@ -179,13 +182,13 @@ The value supplied will be passed unvalidated to Docker when creating the builde
 | Enables verbose logging of builder operations.
 | `false`
 
-| `publish` +
-(`spring-boot.build-image.publish`)
+| `publish` + (`spring-boot.build-image.publish`)
 | Whether to publish the generated image to a Docker registry.
 | `false`
 
 | `tags`
 | One or more additional tags to apply to the generated image.
+The values provided to the `tags` option should be full image references in the form of `[image name]:[tag]` or `[repository]/[image name]:[tag]`.
 |
 
 | `caches`
@@ -209,6 +212,7 @@ You can override this behaviour as shown in the <<build-image.examples.builder-c
 For more details, see also <<build-image.examples,examples>>.
 
 include::goals/build-image.adoc[leveloffset=+1]
+include::goals/build-image-no-fork.adoc[leveloffset=+1]
 
 
 

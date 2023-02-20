@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.http.server.observation.DefaultServerRequestObservationConvention;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -98,6 +99,13 @@ class WebMvcObservationAutoConfigurationTests {
 	}
 
 	@Test
+	void customConventionWhenPresent() {
+		this.contextRunner.withUserConfiguration(CustomConventionConfiguration.class)
+				.run((context) -> assertThat(context.getBean(FilterRegistrationBean.class).getFilter())
+						.extracting("observationConvention").isInstanceOf(CustomConvention.class));
+	}
+
+	@Test
 	void filterRegistrationHasExpectedDispatcherTypesAndOrder() {
 		this.contextRunner.run((context) -> {
 			FilterRegistrationBean<?> registration = context.getBean(FilterRegistrationBean.class);
@@ -143,8 +151,37 @@ class WebMvcObservationAutoConfigurationTests {
 						ObservationAutoConfiguration.class, WebMvcAutoConfiguration.class))
 				.withPropertyValues("management.metrics.web.server.max-uri-tags=2").run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context);
-					assertThat(registry.get("http.server.requests").meters().size()).isLessThanOrEqualTo(2);
+					assertThat(registry.get("http.server.requests").meters()).hasSizeLessThanOrEqualTo(2);
 					assertThat(output).contains("Reached the maximum number of URI tags for 'http.server.requests'");
+				});
+	}
+
+	@Test
+	@Deprecated(since = "3.0.0", forRemoval = true)
+	void afterMaxUrisReachedFurtherUrisAreDeniedWhenUsingCustomMetricName(CapturedOutput output) {
+		this.contextRunner.withUserConfiguration(TestController.class)
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
+						ObservationAutoConfiguration.class, WebMvcAutoConfiguration.class))
+				.withPropertyValues("management.metrics.web.server.max-uri-tags=2",
+						"management.metrics.web.server.request.metric-name=my.http.server.requests")
+				.run((context) -> {
+					MeterRegistry registry = getInitializedMeterRegistry(context);
+					assertThat(registry.get("my.http.server.requests").meters()).hasSizeLessThanOrEqualTo(2);
+					assertThat(output).contains("Reached the maximum number of URI tags for 'my.http.server.requests'");
+				});
+	}
+
+	@Test
+	void afterMaxUrisReachedFurtherUrisAreDeniedWhenUsingCustomObservationName(CapturedOutput output) {
+		this.contextRunner.withUserConfiguration(TestController.class)
+				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
+						ObservationAutoConfiguration.class, WebMvcAutoConfiguration.class))
+				.withPropertyValues("management.metrics.web.server.max-uri-tags=2",
+						"management.observations.http.server.requests.name=my.http.server.requests")
+				.run((context) -> {
+					MeterRegistry registry = getInitializedMeterRegistry(context);
+					assertThat(registry.get("my.http.server.requests").meters()).hasSizeLessThanOrEqualTo(2);
+					assertThat(output).contains("Reached the maximum number of URI tags for 'my.http.server.requests'");
 				});
 	}
 
@@ -265,6 +302,20 @@ class WebMvcObservationAutoConfigurationTests {
 		Filter testFilter() {
 			return mock(Filter.class);
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomConventionConfiguration {
+
+		@Bean
+		CustomConvention customConvention() {
+			return new CustomConvention();
+		}
+
+	}
+
+	static class CustomConvention extends DefaultServerRequestObservationConvention {
 
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,9 @@ class ConventionsPluginTests {
 		this.buildFile = new File(this.projectDir, "build.gradle");
 		File settingsFile = new File(this.projectDir, "settings.gradle");
 		try (PrintWriter out = new PrintWriter(new FileWriter(settingsFile))) {
+			out.println("plugins {");
+			out.println("    id 'com.gradle.enterprise'");
+			out.println("}");
 			out.println("include ':spring-boot-project:spring-boot-parent'");
 		}
 		File springBootParent = new File(this.projectDir, "spring-boot-project/spring-boot-parent/build.gradle");
@@ -175,8 +178,7 @@ class ConventionsPluginTests {
 			out.println("description 'Test'");
 			out.println("task retryConfig {");
 			out.println("    doLast {");
-			out.println("        println \"Retry plugin applied: ${plugins.hasPlugin('org.gradle.test-retry')}\"");
-			out.println("    test.retry {");
+			out.println("        test.retry {");
 			out.println("            println \"maxRetries: ${maxRetries.get()}\"");
 			out.println("            println \"failOnPassedAfterRetry: ${failOnPassedAfterRetry.get()}\"");
 			out.println("        }");
@@ -184,8 +186,7 @@ class ConventionsPluginTests {
 			out.println("}");
 		}
 		assertThat(runGradle(Collections.singletonMap("CI", "true"), "retryConfig", "--stacktrace").getOutput())
-				.contains("Retry plugin applied: true").contains("maxRetries: 3")
-				.contains("failOnPassedAfterRetry: true");
+				.contains("maxRetries: 3").contains("failOnPassedAfterRetry: true");
 	}
 
 	@Test
@@ -198,8 +199,7 @@ class ConventionsPluginTests {
 			out.println("description 'Test'");
 			out.println("task retryConfig {");
 			out.println("    doLast {");
-			out.println("        println \"Retry plugin applied: ${plugins.hasPlugin('org.gradle.test-retry')}\"");
-			out.println("    test.retry {");
+			out.println("        test.retry {");
 			out.println("            println \"maxRetries: ${maxRetries.get()}\"");
 			out.println("            println \"failOnPassedAfterRetry: ${failOnPassedAfterRetry.get()}\"");
 			out.println("        }");
@@ -207,8 +207,7 @@ class ConventionsPluginTests {
 			out.println("}");
 		}
 		assertThat(runGradle(Collections.singletonMap("CI", "local"), "retryConfig", "--stacktrace").getOutput())
-				.contains("Retry plugin applied: true").contains("maxRetries: 0")
-				.contains("failOnPassedAfterRetry: true");
+				.contains("maxRetries: 0").contains("failOnPassedAfterRetry: true");
 	}
 
 	private BuildResult runGradle(String... args) {

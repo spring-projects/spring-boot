@@ -16,12 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
-import java.net.URL;
 import java.util.function.Consumer;
 
-import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -36,6 +32,7 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
@@ -44,7 +41,6 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.core.test.tools.CompileWithForkedClassLoader;
 import org.springframework.core.test.tools.TestCompiler;
 import org.springframework.javapoet.ClassName;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -55,14 +51,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 @ExtendWith(OutputCaptureExtension.class)
+@DirtiesUrlFactories
 class ChildManagementContextInitializerAotTests {
-
-	@BeforeEach
-	@AfterEach
-	void reset() {
-		ReflectionTestUtils.setField(TomcatURLStreamHandlerFactory.class, "instance", null);
-		ReflectionTestUtils.setField(URL.class, "factory", null);
-	}
 
 	@Test
 	@CompileWithForkedClassLoader

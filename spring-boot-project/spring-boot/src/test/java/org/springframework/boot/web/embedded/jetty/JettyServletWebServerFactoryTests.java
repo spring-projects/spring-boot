@@ -61,6 +61,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.PortInUseException;
@@ -86,6 +87,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Henri Kerola
  */
+@Servlet5ClassPathOverrides
 class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryTests {
 
 	@Override
@@ -142,7 +144,6 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	@Override
 	@Disabled("Jetty 11 does not support User-Agent-based compression")
 	protected void noCompressionForUserAgent() {
-
 	}
 
 	@Test

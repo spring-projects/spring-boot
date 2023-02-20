@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ class ConfigurationPropertyTests {
 
 	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName.of("foo");
 
-	private ConfigurationPropertySource source = ConfigurationPropertySource.from(mock(PropertySource.class));
+	private final ConfigurationPropertySource source = ConfigurationPropertySource.from(mock(PropertySource.class));
 
 	@Test
 	void createWhenNameIsNullShouldThrowException() {
@@ -82,7 +82,7 @@ class ConfigurationPropertyTests {
 		ConfigurationProperty property2 = new ConfigurationProperty(ConfigurationPropertyName.of("foo"), "bar", null);
 		ConfigurationProperty property3 = new ConfigurationProperty(ConfigurationPropertyName.of("foo"), "baz", null);
 		ConfigurationProperty property4 = new ConfigurationProperty(ConfigurationPropertyName.of("baz"), "bar", null);
-		assertThat(property1.hashCode()).isEqualTo(property2.hashCode());
+		assertThat(property1).hasSameHashCodeAs(property2);
 		assertThat(property1).isEqualTo(property2).isNotEqualTo(property3).isNotEqualTo(property4);
 	}
 

@@ -401,11 +401,11 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 		private final EndpointId id;
 
-		private boolean enabledByDefault;
+		private final boolean enabledByDefault;
 
 		private final Class<?> filter;
 
-		private Set<ExtensionBean> extensions = new LinkedHashSet<>();
+		private final Set<ExtensionBean> extensions = new LinkedHashSet<>();
 
 		EndpointBean(Environment environment, String beanName, Class<?> beanType, Supplier<Object> beanSupplier) {
 			MergedAnnotation<Endpoint> annotation = MergedAnnotations.from(beanType, SearchStrategy.TYPE_HIERARCHY)

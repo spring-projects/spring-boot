@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -177,9 +177,9 @@ class WebMvcAutoConfigurationTests {
 			assertThat(locations.get("/webjars/**").get(0))
 					.isEqualTo(new ClassPathResource("/META-INF/resources/webjars/"));
 			assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(1);
-			assertThat(getResourceTransformers(context, "/webjars/**")).hasSize(0);
+			assertThat(getResourceTransformers(context, "/webjars/**")).isEmpty();
 			assertThat(getResourceResolvers(context, "/**")).hasSize(1);
-			assertThat(getResourceTransformers(context, "/**")).hasSize(0);
+			assertThat(getResourceTransformers(context, "/**")).isEmpty();
 		});
 	}
 
@@ -318,7 +318,7 @@ class WebMvcAutoConfigurationTests {
 					Locale locale = localeResolver.resolveLocale(request);
 					// test locale resolver uses fixed locale and not user preferred
 					// locale
-					assertThat(locale.toString()).isEqualTo("en_UK");
+					assertThat(locale).hasToString("en_UK");
 				});
 	}
 
@@ -333,7 +333,7 @@ class WebMvcAutoConfigurationTests {
 			assertThat(localeResolver).isInstanceOf(AcceptHeaderLocaleResolver.class);
 			Locale locale = localeResolver.resolveLocale(request);
 			// test locale resolver uses user preferred locale
-			assertThat(locale.toString()).isEqualTo("nl_NL");
+			assertThat(locale).hasToString("nl_NL");
 		});
 	}
 
@@ -346,7 +346,7 @@ class WebMvcAutoConfigurationTests {
 			assertThat(localeResolver).isInstanceOf(AcceptHeaderLocaleResolver.class);
 			Locale locale = localeResolver.resolveLocale(request);
 			// test locale resolver uses default locale if no header is set
-			assertThat(locale.toString()).isEqualTo("en_UK");
+			assertThat(locale).hasToString("en_UK");
 		});
 	}
 
@@ -611,7 +611,7 @@ class WebMvcAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomRequestMappingHandlerMapping.class).run((context) -> {
 			assertThat(context).getBean(RequestMappingHandlerMapping.class)
 					.isInstanceOf(MyRequestMappingHandlerMapping.class);
-			assertThat(context.getBean(CustomRequestMappingHandlerMapping.class).handlerMappings).isEqualTo(1);
+			assertThat(context.getBean(CustomRequestMappingHandlerMapping.class).handlerMappings).isOne();
 		});
 	}
 
@@ -620,7 +620,7 @@ class WebMvcAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomRequestMappingHandlerAdapter.class).run((context) -> {
 			assertThat(context).getBean(RequestMappingHandlerAdapter.class)
 					.isInstanceOf(MyRequestMappingHandlerAdapter.class);
-			assertThat(context.getBean(CustomRequestMappingHandlerAdapter.class).handlerAdapters).isEqualTo(1);
+			assertThat(context.getBean(CustomRequestMappingHandlerAdapter.class).handlerAdapters).isOne();
 		});
 	}
 
@@ -628,8 +628,7 @@ class WebMvcAutoConfigurationTests {
 	void customExceptionHandlerExceptionResolver() {
 		this.contextRunner.withUserConfiguration(CustomExceptionHandlerExceptionResolver.class)
 				.run((context) -> assertThat(
-						context.getBean(CustomExceptionHandlerExceptionResolver.class).exceptionResolvers)
-								.isEqualTo(1));
+						context.getBean(CustomExceptionHandlerExceptionResolver.class).exceptionResolvers).isOne());
 	}
 
 	@Test
@@ -764,7 +763,7 @@ class WebMvcAutoConfigurationTests {
 					assertThat(context).getBeanNames(Validator.class).containsOnly("defaultValidator", "mvcValidator");
 					assertThat(context.getBean("mvcValidator")).isSameAs(context.getBean(MvcValidator.class).validator);
 					// Primary Spring validator is the auto-configured one as the MVC one
-					// has been customized via a WebMvcConfigurer
+					// has been customized through a WebMvcConfigurer
 					assertThat(context.getBean(Validator.class)).isEqualTo(context.getBean("defaultValidator"));
 				});
 	}
@@ -996,7 +995,7 @@ class WebMvcAutoConfigurationTests {
 		if (bean instanceof HandlerMapping handlerMapping) {
 			return getMappingLocations(context, handlerMapping);
 		}
-		assertThat(bean.toString()).isEqualTo("null");
+		assertThat(bean).hasToString("null");
 		return Collections.emptyMap();
 	}
 

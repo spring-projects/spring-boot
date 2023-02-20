@@ -46,7 +46,7 @@ import static org.mockito.Mockito.mock;
  */
 class ApplicationConversionServiceTests {
 
-	private FormatterRegistry registry = mock(FormatterRegistry.class);
+	private final FormatterRegistry registry = mock(FormatterRegistry.class);
 
 	@Test
 	void addBeansWhenHasGenericConverterBeanAddConverter() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,26 +19,19 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 import java.util.Collections;
 
 import brave.Span;
+import brave.SpanCustomizer;
 import brave.Tracer;
 import brave.Tracing;
 import brave.baggage.BaggagePropagation;
 import brave.baggage.CorrelationScopeConfig.SingleCorrelationField;
 import brave.handler.SpanHandler;
-import brave.http.HttpClientHandler;
-import brave.http.HttpClientRequest;
-import brave.http.HttpClientResponse;
-import brave.http.HttpServerHandler;
-import brave.http.HttpServerRequest;
-import brave.http.HttpServerResponse;
-import brave.http.HttpTracing;
 import brave.propagation.CurrentTraceContext;
 import brave.propagation.CurrentTraceContext.ScopeDecorator;
 import brave.propagation.Propagation;
 import brave.propagation.Propagation.Factory;
 import brave.sampler.Sampler;
 import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
-import io.micrometer.tracing.brave.bridge.BraveHttpClientHandler;
-import io.micrometer.tracing.brave.bridge.BraveHttpServerHandler;
+import io.micrometer.tracing.brave.bridge.BraveSpanCustomizer;
 import io.micrometer.tracing.brave.bridge.BraveTracer;
 import io.micrometer.tracing.brave.bridge.CompositeSpanHandler;
 import io.micrometer.tracing.brave.bridge.W3CPropagation;
@@ -47,7 +40,6 @@ import io.micrometer.tracing.exporter.SpanFilter;
 import io.micrometer.tracing.exporter.SpanReporter;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
-import org.mockito.Answers;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.BraveAutoConfigurationTests.SpanHandlerConfiguration.AdditionalSpanHandler;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -79,18 +71,13 @@ class BraveAutoConfigurationTests {
 			assertThat(context).hasSingleBean(CurrentTraceContext.class);
 			assertThat(context).hasSingleBean(Factory.class);
 			assertThat(context).hasSingleBean(Sampler.class);
-			assertThat(context).hasSingleBean(HttpTracing.class);
-			assertThat(context).hasSingleBean(HttpServerHandler.class);
-			assertThat(context).hasSingleBean(HttpClientHandler.class);
 			assertThat(context).hasSingleBean(BraveTracer.class);
-			assertThat(context).hasSingleBean(BraveHttpServerHandler.class);
-			assertThat(context).hasSingleBean(BraveHttpClientHandler.class);
 			assertThat(context).hasSingleBean(Propagation.Factory.class);
 			assertThat(context).hasSingleBean(BaggagePropagation.FactoryBuilder.class);
 			assertThat(context).hasSingleBean(BraveTracer.class);
-			assertThat(context).hasSingleBean(BraveHttpServerHandler.class);
-			assertThat(context).hasSingleBean(BraveHttpClientHandler.class);
 			assertThat(context).hasSingleBean(CompositeSpanHandler.class);
+			assertThat(context).hasSingleBean(SpanCustomizer.class);
+			assertThat(context).hasSingleBean(BraveSpanCustomizer.class);
 		});
 	}
 
@@ -107,36 +94,22 @@ class BraveAutoConfigurationTests {
 			assertThat(context).hasSingleBean(Factory.class);
 			assertThat(context).hasBean("customSampler");
 			assertThat(context).hasSingleBean(Sampler.class);
-			assertThat(context).hasBean("customHttpTracing");
-			assertThat(context).hasSingleBean(HttpTracing.class);
-			assertThat(context).hasBean("customHttpServerHandler");
-			assertThat(context).hasSingleBean(HttpServerHandler.class);
-			assertThat(context).hasBean("customHttpClientHandler");
-			assertThat(context).hasSingleBean(HttpClientHandler.class);
-			assertThat(context).hasBean("customBraveTracer");
-			assertThat(context).hasSingleBean(BraveTracer.class);
+			assertThat(context).hasBean("customMicrometerTracer");
+			assertThat(context).hasSingleBean(io.micrometer.tracing.Tracer.class);
 			assertThat(context).hasBean("customBraveBaggageManager");
 			assertThat(context).hasSingleBean(BraveBaggageManager.class);
-			assertThat(context).hasBean("customBraveHttpServerHandler");
-			assertThat(context).hasSingleBean(BraveHttpServerHandler.class);
-			assertThat(context).hasBean("customBraveHttpClientHandler");
-			assertThat(context).hasSingleBean(BraveHttpClientHandler.class);
-			assertThat(context).hasBean("customHttpServerHandler");
-			assertThat(context).hasSingleBean(HttpServerHandler.class);
-			assertThat(context).hasBean("customHttpClientHandler");
-			assertThat(context).hasSingleBean(HttpClientHandler.class);
 			assertThat(context).hasBean("customCompositeSpanHandler");
 			assertThat(context).hasSingleBean(CompositeSpanHandler.class);
+			assertThat(context).hasBean("customSpanCustomizer");
+			assertThat(context).hasSingleBean(SpanCustomizer.class);
+			assertThat(context).hasBean("customMicrometerSpanCustomizer");
+			assertThat(context).hasSingleBean(io.micrometer.tracing.SpanCustomizer.class);
 		});
 	}
 
 	@Test
 	void shouldSupplyMicrometerBeans() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(BraveTracer.class);
-			assertThat(context).hasSingleBean(BraveHttpServerHandler.class);
-			assertThat(context).hasSingleBean(BraveHttpClientHandler.class);
-		});
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(BraveTracer.class));
 	}
 
 	@Test
@@ -164,7 +137,7 @@ class BraveAutoConfigurationTests {
 	void shouldSupplyB3PropagationFactoryViaProperty() {
 		this.contextRunner.withPropertyValues("management.tracing.propagation.type=B3").run((context) -> {
 			assertThat(context).hasBean("propagationFactory");
-			assertThat(context.getBean(Factory.class).toString()).isEqualTo("B3Propagation");
+			assertThat(context.getBean(Factory.class)).hasToString("B3Propagation");
 			assertThat(context).hasSingleBean(BaggagePropagation.FactoryBuilder.class);
 		});
 	}
@@ -195,7 +168,7 @@ class BraveAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false",
 				"management.tracing.propagation.type=B3").run((context) -> {
 					assertThat(context).hasBean("propagationFactory");
-					assertThat(context.getBean(Factory.class).toString()).isEqualTo("B3Propagation");
+					assertThat(context.getBean(Factory.class)).hasToString("B3Propagation");
 					assertThat(context).doesNotHaveBean(BaggagePropagation.FactoryBuilder.class);
 				});
 	}
@@ -380,25 +353,8 @@ class BraveAutoConfigurationTests {
 		}
 
 		@Bean
-		HttpTracing customHttpTracing() {
-			return mock(HttpTracing.class);
-		}
-
-		@Bean
-		HttpServerHandler<HttpServerRequest, HttpServerResponse> customHttpServerHandler() {
-			HttpTracing httpTracing = mock(HttpTracing.class, Answers.RETURNS_MOCKS);
-			return HttpServerHandler.create(httpTracing);
-		}
-
-		@Bean
-		HttpClientHandler<HttpClientRequest, HttpClientResponse> customHttpClientHandler() {
-			HttpTracing httpTracing = mock(HttpTracing.class, Answers.RETURNS_MOCKS);
-			return HttpClientHandler.create(httpTracing);
-		}
-
-		@Bean
-		BraveTracer customBraveTracer() {
-			return mock(BraveTracer.class);
+		io.micrometer.tracing.Tracer customMicrometerTracer() {
+			return mock(io.micrometer.tracing.Tracer.class);
 		}
 
 		@Bean
@@ -407,18 +363,18 @@ class BraveAutoConfigurationTests {
 		}
 
 		@Bean
-		BraveHttpServerHandler customBraveHttpServerHandler() {
-			return mock(BraveHttpServerHandler.class);
-		}
-
-		@Bean
-		BraveHttpClientHandler customBraveHttpClientHandler() {
-			return mock(BraveHttpClientHandler.class);
-		}
-
-		@Bean
 		CompositeSpanHandler customCompositeSpanHandler() {
 			return new CompositeSpanHandler(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+		}
+
+		@Bean
+		SpanCustomizer customSpanCustomizer() {
+			return mock(SpanCustomizer.class);
+		}
+
+		@Bean
+		io.micrometer.tracing.SpanCustomizer customMicrometerSpanCustomizer() {
+			return mock(io.micrometer.tracing.SpanCustomizer.class);
 		}
 
 	}

@@ -7,11 +7,10 @@ anchors:
   registry-image-resource-source: &registry-image-resource-source
     username: ((docker-hub-username))
     password: ((docker-hub-password))
+  ci-registry-image-resource-source: &ci-registry-image-resource-source
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
     tag: ((milestone))
-    registry_mirror:
-      host: ((docker-hub-mirror))
-      username: ((docker-hub-mirror-username))
-      password: ((docker-hub-mirror-password))
   gradle-enterprise-task-params: &gradle-enterprise-task-params
     GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
     GRADLE_ENTERPRISE_CACHE_URL: ((gradle_enterprise_cache_url))
@@ -61,7 +60,7 @@ anchors:
     repo: libs-snapshot-local
     folder: distribution-repository
     build_uri: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
-    build_number: "${BUILD_PIPELINE_NAME}-${BUILD_JOB_NAME}-${BUILD_NAME}"
+    build_number: "${BUILD_JOB_NAME}-${BUILD_NAME}"
     disable_checksum_uploads: true
     threads: 8
     artifact_set:
@@ -94,41 +93,43 @@ anchors:
   gradle-publish-params: &gradle-publish-params
     GRADLE_PUBLISH_KEY: ((gradle-publish-key))
     GRADLE_PUBLISH_SECRET: ((gradle-publish-secret))
-  docker-hub-mirror-vars: &docker-hub-mirror-vars
-    docker-hub-mirror: ((docker-hub-mirror))
-    docker-hub-mirror-username: ((docker-hub-mirror-username))
-    docker-hub-mirror-password: ((docker-hub-mirror-password))
 resource_types:
 - name: registry-image
   type: registry-image
   source:
+    <<: *registry-image-resource-source
     repository: concourse/registry-image-resource
-    tag: 1.5.0
+    tag: 1.7.1
 - name: artifactory-resource
   type: registry-image
   source:
+    <<: *registry-image-resource-source
     repository: springio/artifactory-resource
-    tag: 0.0.17
+    tag: 0.0.18
 - name: pull-request
   type: registry-image
   source:
+    <<: *registry-image-resource-source
     repository: teliaoss/github-pr-resource
     tag: v0.23.0
 - name: github-status-resource
   type: registry-image
   source:
+    <<: *registry-image-resource-source
     repository: dpb587/github-status-resource
     tag: master
 - name: slack-notification
   type: registry-image
   source:
+    <<: *registry-image-resource-source
     repository: cfcommunity/slack-notification-resource
     tag: latest
 - name: github-release
   type: registry-image
   source:
+    <<: *registry-image-resource-source
     repository: concourse/github-release-resource
-    tag: 1.5.5
+    tag: 1.8.0
 resources:
 - name: git-repo
   type: git
@@ -179,13 +180,13 @@ resources:
   type: registry-image
   icon: docker
   source:
-    <<: *registry-image-resource-source
+    <<: *ci-registry-image-resource-source
     repository: ((docker-hub-organization))/spring-boot-ci
 - name: ci-image-jdk19
   type: registry-image
   icon: docker
   source:
-    <<: *registry-image-resource-source
+    <<: *ci-registry-image-resource-source
     repository: ((docker-hub-organization))/spring-boot-ci-jdk19
 - name: paketo-builder-base-image
   type: registry-image
@@ -201,6 +202,8 @@ resources:
     username: ((artifactory-username))
     password: ((artifactory-password))
     build_name: ((build-name))
+    build_number_prefix: "${BUILD_PIPELINE_NAME}-"
+    check_limit: 500
 - name: repo-status-build
   type: github-status-resource
   icon: eye-check-outline
@@ -252,7 +255,6 @@ jobs:
         image: ci-image
       vars:
         ci-image-name: ci-image
-        <<: *docker-hub-mirror-vars
     - task: build-ci-image-jdk19
       privileged: true
       file: git-repo/ci/tasks/build-ci-image.yml
@@ -260,7 +262,6 @@ jobs:
         image: ci-image-jdk19
       vars:
         ci-image-name: ci-image-jdk19
-        <<: *docker-hub-mirror-vars
   - in_parallel:
     - put: ci-image
       params:
@@ -521,8 +522,6 @@ jobs:
       RELEASE_TYPE: M
       GITHUB_USERNAME: ((github-username))
       GITHUB_TOKEN: ((github-ci-release-token))
-    vars:
-      <<: *docker-hub-mirror-vars
   - put: github-pre-release
     params:
       name: generated-changelog/tag
@@ -552,8 +551,6 @@ jobs:
       RELEASE_TYPE: RC
       GITHUB_USERNAME: ((github-username))
       GITHUB_TOKEN: ((github-ci-release-token))
-    vars:
-      <<: *docker-hub-mirror-vars
   - put: github-pre-release
     params:
       name: generated-changelog/tag
@@ -613,8 +610,6 @@ jobs:
       RELEASE_TYPE: RELEASE
       GITHUB_USERNAME: ((github-username))
       GITHUB_TOKEN: ((github-ci-release-token))
-    vars:
-      <<: *docker-hub-mirror-vars
   - put: github-release
     params:
       name: generated-changelog/tag

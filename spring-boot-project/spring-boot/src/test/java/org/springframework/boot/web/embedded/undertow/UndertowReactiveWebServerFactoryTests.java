@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,7 +135,7 @@ class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFac
 		factory.setAccessLogSuffix(suffix);
 		File accessLogDirectory = this.tempDir;
 		factory.setAccessLogDirectory(accessLogDirectory);
-		assertThat(accessLogDirectory.listFiles()).isEmpty();
+		assertThat(accessLogDirectory).isEmptyDirectory();
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
 		WebClient client = getWebClient(this.webServer.getPort()).build();

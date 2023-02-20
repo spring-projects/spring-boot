@@ -29,19 +29,14 @@ dependencies {
 	optional("com.oracle.database.jdbc:ojdbc8")
 	optional("com.oracle.database.jdbc:ucp")
 	optional("com.samskivert:jmustache")
-	optional("com.sun.mail:jakarta.mail")
 	optional("io.lettuce:lettuce-core")
 	optional("io.projectreactor.netty:reactor-netty-http")
 	optional("io.r2dbc:r2dbc-spi")
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.rsocket:rsocket-core")
 	optional("io.rsocket:rsocket-transport-netty")
-	optional("io.undertow:undertow-servlet-jakarta") {
-		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
-	}
-	optional("io.undertow:undertow-websockets-jsr-jakarta") {
-		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.3_spec"
-	}
+	optional("io.undertow:undertow-servlet")
+	optional("io.undertow:undertow-websockets-jsr")
 	optional("jakarta.jms:jakarta.jms-api")
 	optional("jakarta.mail:jakarta.mail-api")
 	optional("jakarta.json.bind:jakarta.json.bind-api")
@@ -69,6 +64,7 @@ dependencies {
 	optional("org.apache.tomcat:tomcat-jdbc")
 	optional("org.apiguardian:apiguardian-api")
 	optional("org.apache.groovy:groovy-templates")
+	optional("org.eclipse.angus:angus-mail")
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.github.mxab.thymeleaf.extras:thymeleaf-extras-data-attribute")
 	optional("com.sendgrid:sendgrid-java") {
@@ -266,4 +262,8 @@ tasks.named("checkSpringConfigurationMetadata").configure {
 		"spring.datasource.tomcat.*",
 		"spring.groovy.template.configuration.*"
 	]
+}
+
+test {
+	jvmArgs += "--add-opens=java.base/java.net=ALL-UNNAMED"
 }

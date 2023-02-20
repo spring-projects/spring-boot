@@ -29,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientRequestObservationContext;
 import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,19 +43,21 @@ class ClientObservationConventionAdapterTests {
 
 	private static final String TEST_METRIC_NAME = "test.metric.name";
 
-	private ClientObservationConventionAdapter convention = new ClientObservationConventionAdapter(TEST_METRIC_NAME,
-			new DefaultWebClientExchangeTagsProvider());
+	private final ClientObservationConventionAdapter convention = new ClientObservationConventionAdapter(
+			TEST_METRIC_NAME, new DefaultWebClientExchangeTagsProvider());
 
-	private ClientRequest request = ClientRequest.create(HttpMethod.GET, URI.create("/resource/test")).build();
+	private final ClientRequest.Builder requestBuilder = ClientRequest
+			.create(HttpMethod.GET, URI.create("/resource/test"))
+			.attribute(WebClient.class.getName() + ".uriTemplate", "/resource/{name}");
 
-	private ClientResponse response = ClientResponse.create(HttpStatus.OK).body("foo").build();
+	private final ClientResponse response = ClientResponse.create(HttpStatus.OK).body("foo").build();
 
 	private ClientRequestObservationContext context;
 
 	@BeforeEach
 	void setup() {
 		this.context = new ClientRequestObservationContext();
-		this.context.setCarrier(this.request);
+		this.context.setCarrier(this.requestBuilder);
 		this.context.setResponse(this.response);
 		this.context.setUriTemplate("/resource/{name}");
 	}
@@ -72,6 +75,14 @@ class ClientObservationConventionAdapterTests {
 
 	@Test
 	void shouldPushTagsAsLowCardinalityKeyValues() {
+		this.context.setRequest(this.requestBuilder.build());
+		assertThat(this.convention.getLowCardinalityKeyValues(this.context)).contains(KeyValue.of("status", "200"),
+				KeyValue.of("outcome", "SUCCESS"), KeyValue.of("uri", "/resource/{name}"),
+				KeyValue.of("method", "GET"));
+	}
+
+	@Test
+	void doesNotFailWithEmptyRequest() {
 		assertThat(this.convention.getLowCardinalityKeyValues(this.context)).contains(KeyValue.of("status", "200"),
 				KeyValue.of("outcome", "SUCCESS"), KeyValue.of("uri", "/resource/{name}"),
 				KeyValue.of("method", "GET"));

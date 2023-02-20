@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.security.servlet;
 
 import java.security.interfaces.RSAPublicKey;
+import java.util.EnumSet;
 
 import jakarta.servlet.DispatcherType;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -91,7 +92,7 @@ class SecurityAutoConfigurationTests {
 	void securityConfigurerBacksOffWhenOtherSecurityFilterChainBeanPresent() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebMvcAutoConfiguration.class))
 				.withUserConfiguration(TestSecurityFilterChainConfig.class).run((context) -> {
-					assertThat(context.getBeansOfType(SecurityFilterChain.class).size()).isEqualTo(1);
+					assertThat(context.getBeansOfType(SecurityFilterChain.class)).hasSize(1);
 					assertThat(context.containsBean("testSecurityFilterChain")).isTrue();
 				});
 	}
@@ -161,7 +162,7 @@ class SecurityAutoConfigurationTests {
 							DelegatingFilterProxyRegistrationBean.class);
 					assertThat(bean)
 							.extracting("dispatcherTypes", InstanceOfAssertFactories.iterable(DispatcherType.class))
-							.containsOnly(DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST);
+							.containsExactlyInAnyOrderElementsOf(EnumSet.allOf(DispatcherType.class));
 				});
 	}
 

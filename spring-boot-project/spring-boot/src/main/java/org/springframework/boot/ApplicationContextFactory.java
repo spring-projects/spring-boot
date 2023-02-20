@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ public interface ApplicationContextFactory {
 
 	/**
 	 * Creates an {@code ApplicationContextFactory} that will create contexts by
-	 * instantiating the given {@code contextClass} via its primary constructor.
+	 * instantiating the given {@code contextClass} through its primary constructor.
 	 * @param contextClass the context class
 	 * @return the factory that will instantiate the context class
 	 * @see BeanUtils#instantiateClass(Class)

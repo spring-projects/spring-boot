@@ -77,7 +77,7 @@ public class MockRestServiceServerAutoConfiguration {
 	 */
 	private static class DeferredRequestExpectationManager implements RequestExpectationManager {
 
-		private MockServerRestTemplateCustomizer customizer;
+		private final MockServerRestTemplateCustomizer customizer;
 
 		DeferredRequestExpectationManager(MockServerRestTemplateCustomizer customizer) {
 			this.customizer = customizer;

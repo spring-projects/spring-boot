@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.origin;
 
 import java.io.IOException;
+import java.nio.channels.ReadableByteChannel;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -100,8 +101,9 @@ class OriginTrackedResourceTests {
 
 	@Test
 	void readableChannelDelegatesToResource() throws IOException {
-		this.tracked.readableChannel();
-		then(this.resource).should().readableChannel();
+		try (ReadableByteChannel ignore = this.tracked.readableChannel()) {
+			then(this.resource).should().readableChannel();
+		}
 	}
 
 	@Test
@@ -169,7 +171,7 @@ class OriginTrackedResourceTests {
 		OriginTrackedResource r2o1 = OriginTrackedResource.of(r2, o1);
 		OriginTrackedResource r2o2 = OriginTrackedResource.of(r2, o2);
 		assertThat(r1o1a).isEqualTo(r1o1a).isEqualTo(r1o1a).isNotEqualTo(r1o2).isNotEqualTo(r2o1).isNotEqualTo(r2o2);
-		assertThat(r1o1a.hashCode()).isEqualTo(r1o1b.hashCode());
+		assertThat(r1o1a).hasSameHashCodeAs(r1o1b);
 	}
 
 	@Test

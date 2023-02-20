@@ -73,7 +73,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 	protected static final class ConfigurationWarningsPostProcessor
 			implements PriorityOrdered, BeanDefinitionRegistryPostProcessor {
 
-		private Check[] checks;
+		private final Check[] checks;
 
 		public ConfigurationWarningsPostProcessor(Check[] checks) {
 			this.checks = checks;

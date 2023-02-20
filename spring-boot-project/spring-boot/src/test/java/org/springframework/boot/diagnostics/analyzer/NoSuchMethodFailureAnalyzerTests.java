@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class NoSuchMethodFailureAnalyzerTests {
 		assertThat(descriptor.getErrorMessage()).isEqualTo(
 				"'boolean org.springframework.util.MimeType.isMoreSpecific(org.springframework.util.MimeType)'");
 		assertThat(descriptor.getClassName()).isEqualTo("org.springframework.util.MimeType");
-		assertThat(descriptor.getCandidateLocations().size()).isGreaterThan(1);
+		assertThat(descriptor.getCandidateLocations()).hasSizeGreaterThan(1);
 		List<ClassDescriptor> typeHierarchy = descriptor.getTypeHierarchy();
 		assertThat(typeHierarchy).hasSize(1);
 		assertThat(typeHierarchy.get(0).getLocation()).asString().contains("spring-core-5.3.12.jar");
@@ -66,7 +66,7 @@ class NoSuchMethodFailureAnalyzerTests {
 		assertThat(descriptor.getErrorMessage())
 				.isEqualTo("org/springframework/util/MimeType.isMoreSpecific(Lorg/springframework/util/MimeType;)Z");
 		assertThat(descriptor.getClassName()).isEqualTo("org.springframework.util.MimeType");
-		assertThat(descriptor.getCandidateLocations().size()).isGreaterThan(1);
+		assertThat(descriptor.getCandidateLocations()).hasSizeGreaterThan(1);
 		List<ClassDescriptor> typeHierarchy = descriptor.getTypeHierarchy();
 		assertThat(typeHierarchy).hasSize(1);
 		assertThat(typeHierarchy.get(0).getLocation()).asString().contains("spring-core-5.3.12.jar");

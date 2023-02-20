@@ -44,12 +44,12 @@ class ClientHttpObservationConventionAdapterTests {
 
 	private static final String TEST_METRIC_NAME = "test.metric.name";
 
-	private ClientHttpObservationConventionAdapter convention = new ClientHttpObservationConventionAdapter(
+	private final ClientHttpObservationConventionAdapter convention = new ClientHttpObservationConventionAdapter(
 			TEST_METRIC_NAME, new DefaultRestTemplateExchangeTagsProvider());
 
-	private ClientHttpRequest request = new MockClientHttpRequest(HttpMethod.GET, URI.create("/resource/test"));
+	private final ClientHttpRequest request = new MockClientHttpRequest(HttpMethod.GET, URI.create("/resource/test"));
 
-	private ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(), HttpStatus.OK);
+	private final ClientHttpResponse response = new MockClientHttpResponse("foo".getBytes(), HttpStatus.OK);
 
 	private ClientRequestObservationContext context;
 

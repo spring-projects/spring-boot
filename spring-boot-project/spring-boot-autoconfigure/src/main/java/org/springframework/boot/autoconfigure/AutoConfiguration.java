@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ public @interface AutoConfiguration {
 	 * name will be automatically generated.
 	 * <p>
 	 * The custom name applies only if the {@code @AutoConfiguration} class is picked up
-	 * via component scanning or supplied directly to an
+	 * through component scanning or supplied directly to an
 	 * {@link AnnotationConfigApplicationContext}. If the {@code @AutoConfiguration} class
 	 * is registered as a traditional XML bean definition, the name/id of the bean element
 	 * will take precedence.

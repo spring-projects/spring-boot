@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ class OriginTrackedValueTests {
 	@Test
 	void toStringShouldReturnValueToString() {
 		Object value = new Object();
-		assertThat(OriginTrackedValue.of(value).toString()).isEqualTo(value.toString());
+		assertThat(OriginTrackedValue.of(value)).hasToString(value.toString());
 	}
 
 	@Test
@@ -53,7 +53,7 @@ class OriginTrackedValueTests {
 		OriginTrackedValue tracked1 = OriginTrackedValue.of(value1);
 		OriginTrackedValue tracked2 = OriginTrackedValue.of(value1, mock(Origin.class));
 		OriginTrackedValue tracked3 = OriginTrackedValue.of(new Object());
-		assertThat(tracked1.hashCode()).isEqualTo(tracked2.hashCode());
+		assertThat(tracked1).hasSameHashCodeAs(tracked2);
 		assertThat(tracked1).isEqualTo(tracked1).isEqualTo(tracked2).isNotEqualTo(tracked3);
 	}
 
@@ -69,7 +69,7 @@ class OriginTrackedValueTests {
 		OriginTrackedValue tracked = OriginTrackedValue.of(value);
 		assertThat(tracked).isInstanceOf(CharSequence.class);
 		CharSequence charSequence = (CharSequence) tracked;
-		assertThat(charSequence.length()).isEqualTo(value.length());
+		assertThat(charSequence).hasSameSizeAs(value);
 		assertThat(charSequence.charAt(0)).isEqualTo(value.charAt(0));
 		assertThat(charSequence.subSequence(0, 1)).isEqualTo(value.subSequence(0, 1));
 	}

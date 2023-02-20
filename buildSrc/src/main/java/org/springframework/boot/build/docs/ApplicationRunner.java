@@ -131,7 +131,7 @@ public class ApplicationRunner extends DefaultTask {
 	}
 
 	private void awaitLogging(Process process) {
-		long end = System.currentTimeMillis() + 30000;
+		long end = System.currentTimeMillis() + 60000;
 		String expectedLogging = this.expectedLogging.get();
 		while (System.currentTimeMillis() < end) {
 			for (String line : outputLines()) {
@@ -143,7 +143,7 @@ public class ApplicationRunner extends DefaultTask {
 				throw new IllegalStateException("Process exited before '" + expectedLogging + "' was logged");
 			}
 		}
-		throw new IllegalStateException("'" + expectedLogging + "' was not logged within 30 seconds");
+		throw new IllegalStateException("'" + expectedLogging + "' was not logged within 60 seconds");
 	}
 
 	private List<String> outputLines() {

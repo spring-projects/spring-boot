@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ import static org.junit.jupiter.api.Assertions.fail;
  */
 class WebSocketMessagingAutoConfigurationTests {
 
-	private AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
+	private final AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
 
 	private SockJsClient sockJsClient;
 
@@ -121,7 +121,7 @@ class WebSocketMessagingAutoConfigurationTests {
 	void customizedConverterTypesMatchDefaultConverterTypes() {
 		List<MessageConverter> customizedConverters = getCustomizedConverters();
 		List<MessageConverter> defaultConverters = getDefaultConverters();
-		assertThat(customizedConverters.size()).isEqualTo(defaultConverters.size());
+		assertThat(customizedConverters).hasSameSizeAs(defaultConverters);
 		Iterator<MessageConverter> customizedIterator = customizedConverters.iterator();
 		Iterator<MessageConverter> defaultIterator = defaultConverters.iterator();
 		while (customizedIterator.hasNext()) {
@@ -255,9 +255,9 @@ class WebSocketMessagingAutoConfigurationTests {
 
 	public static class Data {
 
-		private int foo;
+		private final int foo;
 
-		private String bar;
+		private final String bar;
 
 		Data(int foo, String bar) {
 			this.foo = foo;

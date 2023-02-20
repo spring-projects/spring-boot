@@ -247,6 +247,7 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getIgnoreMigrationPatterns()).whenNot(List::isEmpty)
 					.as((patterns) -> patterns.toArray(new String[0])).to(configuration::ignoreMigrationPatterns);
 			map.from(properties.getDetectEncoding()).to(configuration::detectEncoding);
+			map.from(properties.isExecuteInTransaction()).to(configuration::executeInTransaction);
 		}
 
 		private void configureSqlServerKerberosLoginFile(FluentConfiguration configuration,

@@ -49,7 +49,7 @@ public class ExplodedArchive implements Archive {
 
 	private final boolean recursive;
 
-	private File manifestFile;
+	private final File manifestFile;
 
 	private Manifest manifest;
 
@@ -147,7 +147,7 @@ public class ExplodedArchive implements Archive {
 
 		private FileEntry current;
 
-		private String rootUrl;
+		private final String rootUrl;
 
 		AbstractIterator(File root, boolean recursive, EntryFilter searchFilter, EntryFilter includeFilter) {
 			this.root = root;

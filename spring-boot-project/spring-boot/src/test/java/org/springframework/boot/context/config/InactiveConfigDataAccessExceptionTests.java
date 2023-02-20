@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,13 +38,13 @@ import static org.mockito.Mockito.mock;
  */
 class InactiveConfigDataAccessExceptionTests {
 
-	private MockPropertySource propertySource = new MockPropertySource();
+	private final MockPropertySource propertySource = new MockPropertySource();
 
-	private ConfigDataResource resource = new TestConfigDataResource();
+	private final ConfigDataResource resource = new TestConfigDataResource();
 
-	private String propertyName = "spring";
+	private final String propertyName = "spring";
 
-	private Origin origin = new PropertySourceOrigin(this.propertySource, this.propertyName);
+	private final Origin origin = new PropertySourceOrigin(this.propertySource, this.propertyName);
 
 	@Test
 	void createHasCorrectMessage() {

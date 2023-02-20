@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,17 +36,17 @@ class JavaVersionTests {
 
 	@Test
 	void compareToWhenComparingSmallerToGreaterShouldBeLessThanZero() {
-		assertThat(JavaVersion.SEVENTEEN.compareTo(JavaVersion.EIGHTEEN)).isLessThan(0);
+		assertThat(JavaVersion.SEVENTEEN).isLessThan(JavaVersion.EIGHTEEN);
 	}
 
 	@Test
 	void compareToWhenComparingGreaterToSmallerShouldBeGreaterThanZero() {
-		assertThat(JavaVersion.EIGHTEEN.compareTo(JavaVersion.SEVENTEEN)).isGreaterThan(0);
+		assertThat(JavaVersion.EIGHTEEN).isGreaterThan(JavaVersion.SEVENTEEN);
 	}
 
 	@Test
 	void compareToWhenComparingSameShouldBeZero() {
-		assertThat(JavaVersion.SEVENTEEN.compareTo(JavaVersion.SEVENTEEN)).isEqualTo(0);
+		assertThat(JavaVersion.SEVENTEEN).isEqualByComparingTo(JavaVersion.SEVENTEEN);
 	}
 
 	@Test

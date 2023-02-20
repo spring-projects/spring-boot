@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1127,17 +1127,20 @@ public class RabbitProperties {
 		}
 
 		private String parseUsernameAndPassword(String input) {
-			if (input.contains("@")) {
-				String[] split = StringUtils.split(input, "@");
-				String creds = split[0];
-				input = split[1];
-				split = StringUtils.split(creds, ":");
-				this.username = split[0];
-				if (split.length > 0) {
-					this.password = split[1];
-				}
+			String[] splitInput = StringUtils.split(input, "@");
+			if (splitInput == null) {
+				return input;
 			}
-			return input;
+			String credentials = splitInput[0];
+			String[] splitCredentials = StringUtils.split(credentials, ":");
+			if (splitCredentials == null) {
+				this.username = credentials;
+			}
+			else {
+				this.username = splitCredentials[0];
+				this.password = splitCredentials[1];
+			}
+			return splitInput[1];
 		}
 
 		private String parseVirtualHost(String input) {

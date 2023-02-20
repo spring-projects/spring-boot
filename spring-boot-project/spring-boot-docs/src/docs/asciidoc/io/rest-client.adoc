@@ -63,7 +63,7 @@ include::code:MyService[]
 [[io.rest-client.webclient.runtime]]
 ==== WebClient Runtime
 Spring Boot will auto-detect which `ClientHttpConnector` to use to drive `WebClient`, depending on the libraries available on the application classpath.
-For now, Reactor Netty, Jetty RS client, Apache HttpClient, and the JDK's HttpClient are supported.
+For now, Reactor Netty, Jetty ReactiveStream client, Apache HttpClient, and the JDK's HttpClient are supported.
 
 The `spring-boot-starter-webflux` starter depends on `io.projectreactor.netty:reactor-netty` by default, which brings both server and client implementations.
 If you choose to use Jetty as a reactive server instead, you should add a dependency on the Jetty Reactive HTTP client library, `org.eclipse.jetty:jetty-reactive-httpclient`.

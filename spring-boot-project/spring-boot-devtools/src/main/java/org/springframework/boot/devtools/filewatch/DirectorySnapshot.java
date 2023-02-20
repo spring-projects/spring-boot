@@ -43,7 +43,7 @@ class DirectorySnapshot {
 
 	private final Date time;
 
-	private Set<FileSnapshot> files;
+	private final Set<FileSnapshot> files;
 
 	/**
 	 * Create a new {@link DirectorySnapshot} for the given directory.

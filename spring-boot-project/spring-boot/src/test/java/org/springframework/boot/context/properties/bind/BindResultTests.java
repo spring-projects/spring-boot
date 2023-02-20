@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -163,7 +163,7 @@ class BindResultTests {
 		BindResult<?> result2 = BindResult.of("foo");
 		BindResult<?> result3 = BindResult.of("bar");
 		BindResult<?> result4 = BindResult.of(null);
-		assertThat(result1.hashCode()).isEqualTo(result2.hashCode());
+		assertThat(result1).hasSameHashCodeAs(result2);
 		assertThat(result1).isEqualTo(result1).isEqualTo(result2).isNotEqualTo(result3).isNotEqualTo(result4);
 	}
 

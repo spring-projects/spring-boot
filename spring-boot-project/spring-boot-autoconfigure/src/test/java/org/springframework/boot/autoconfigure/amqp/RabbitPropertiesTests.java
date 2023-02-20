@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -329,6 +329,13 @@ class RabbitPropertiesTests {
 		assertThat(direct.isAutoStartup()).isEqualTo(container.isAutoStartup());
 		assertThat(container).hasFieldOrPropertyWithValue("missingQueuesFatal", direct.isMissingQueuesFatal());
 		assertThat(container).hasFieldOrPropertyWithValue("deBatchingEnabled", direct.isDeBatchingEnabled());
+	}
+
+	@Test
+	void determineUsernameWithoutPassword() {
+		this.properties.setAddresses("user@rabbit1.example.com:1234/alpha");
+		assertThat(this.properties.determineUsername()).isEqualTo("user");
+		assertThat(this.properties.determinePassword()).isEqualTo("guest");
 	}
 
 }

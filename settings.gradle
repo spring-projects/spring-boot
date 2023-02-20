@@ -2,9 +2,6 @@ pluginManagement {
 	repositories {
 		mavenCentral()
 		gradlePluginPortal()
-		maven {
-			url 'https://repo.spring.io/release'
-		}
 		if (version.endsWith('-SNAPSHOT')) {
 			maven { url "https://repo.spring.io/snapshot" }
 		}
@@ -22,8 +19,8 @@ pluginManagement {
 }
 
 plugins {
-	id "com.gradle.enterprise" version "3.11.2"
-	id "io.spring.ge.conventions" version "0.0.11"
+	id "com.gradle.enterprise" version "3.12.2"
+	id "io.spring.ge.conventions" version "0.0.13"
 }
 
 rootProject.name="spring-boot-build"

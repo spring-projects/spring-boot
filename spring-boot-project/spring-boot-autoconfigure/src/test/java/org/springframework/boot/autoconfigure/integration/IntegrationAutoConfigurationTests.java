@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 import javax.management.MBeanServer;
 import javax.sql.DataSource;
 
+import io.micrometer.observation.ObservationRegistry;
 import io.rsocket.transport.ClientTransport;
 import io.rsocket.transport.netty.client.TcpClientTransport;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -62,6 +63,8 @@ import org.springframework.integration.context.IntegrationContextUtils;
 import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.endpoint.MessageProcessorMessageSource;
 import org.springframework.integration.gateway.RequestReplyExchanger;
+import org.springframework.integration.handler.BridgeHandler;
+import org.springframework.integration.handler.LoggingHandler;
 import org.springframework.integration.handler.MessageProcessor;
 import org.springframework.integration.rsocket.ClientRSocketConnector;
 import org.springframework.integration.rsocket.IntegrationRSocketEndpoint;
@@ -420,7 +423,7 @@ class IntegrationAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context).hasSingleBean(PollerMetadata.class);
 					PollerMetadata metadata = context.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class);
-					assertThat(metadata.getMaxMessagesPerPoll()).isEqualTo(1L);
+					assertThat(metadata.getMaxMessagesPerPoll()).isOne();
 					assertThat(metadata.getReceiveTimeout()).isEqualTo(10000L);
 					assertThat(metadata.getTrigger()).asInstanceOf(InstanceOfAssertFactories.type(CronTrigger.class))
 							.satisfies((trigger) -> assertThat(trigger.getExpression()).isEqualTo("* * * ? * *"));
@@ -489,6 +492,18 @@ class IntegrationAutoConfigurationTests {
 				.withBean(DirectChannel.class, DirectChannel::new).run((context) -> assertThat(context)
 						.getBean(DirectChannel.class).extracting(DirectChannel::isLoggingEnabled).isEqualTo(false));
 
+	}
+
+	@Test
+	void integrationManagementInstrumentedWithObservation() {
+		this.contextRunner.withPropertyValues("spring.integration.management.observation-patterns=testHandler")
+				.withBean("testHandler", LoggingHandler.class, () -> new LoggingHandler("warn"))
+				.withBean(ObservationRegistry.class, ObservationRegistry::create)
+				.withBean(BridgeHandler.class, BridgeHandler::new).run((context) -> {
+					assertThat(context).getBean("testHandler").extracting("observationRegistry").isNotNull();
+					assertThat(context).getBean(BridgeHandler.class).extracting("observationRegistry")
+							.isEqualTo(ObservationRegistry.NOOP);
+				});
 	}
 
 	@Configuration(proxyBeanMethods = false)

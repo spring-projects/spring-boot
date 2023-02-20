@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
  */
 class ReactiveWebServerFactoryCustomizerTests {
 
-	private ServerProperties properties = new ServerProperties();
+	private final ServerProperties properties = new ServerProperties();
 
 	private ReactiveWebServerFactoryCustomizer customizer;
 

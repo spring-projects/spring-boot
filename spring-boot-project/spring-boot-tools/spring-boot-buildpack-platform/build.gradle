@@ -11,9 +11,7 @@ dependencies {
 	api("com.fasterxml.jackson.module:jackson-module-parameter-names")
 	api("net.java.dev.jna:jna-platform")
 	api("org.apache.commons:commons-compress:1.19")
-	api("org.apache.httpcomponents:httpclient") {
-		exclude(group: "commons-logging", module: "commons-logging")
-	}
+	api("org.apache.httpcomponents.client5:httpclient5")
 	api("org.springframework:spring-core")
 	api("org.tomlj:tomlj:1.0.0")
 	

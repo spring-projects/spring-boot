@@ -41,7 +41,7 @@
 					</execution>
 					<execution>
 						<goals>
-							<goal>build-image</goal>
+							<goal>build-image-no-fork</goal>
 						</goals>
 						<configuration>
 							<image>

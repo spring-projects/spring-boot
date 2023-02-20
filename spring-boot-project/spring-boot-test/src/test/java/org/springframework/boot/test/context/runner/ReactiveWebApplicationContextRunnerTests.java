@@ -25,7 +25,7 @@ import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebAppl
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class ReactiveWebApplicationContextRunnerTests extends
+class ReactiveWebApplicationContextRunnerTests extends
 		AbstractApplicationContextRunnerTests<ReactiveWebApplicationContextRunner, ConfigurableReactiveWebApplicationContext, AssertableReactiveWebApplicationContext> {
 
 	@Override

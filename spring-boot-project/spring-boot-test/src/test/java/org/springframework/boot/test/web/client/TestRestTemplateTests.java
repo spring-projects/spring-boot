@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.URI;
+import java.util.Base64;
 import java.util.stream.Stream;
 
 import org.apache.hc.client5.http.config.RequestConfig;
@@ -43,7 +44,6 @@ import org.springframework.mock.env.MockEnvironment;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.MethodCallback;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -120,7 +120,7 @@ class TestRestTemplateTests {
 
 	@Test
 	void getRootUriRootUriNotSet() {
-		assertThat(new TestRestTemplate().getRootUri()).isEqualTo("");
+		assertThat(new TestRestTemplate().getRootUri()).isEmpty();
 	}
 
 	@Test
@@ -372,8 +372,8 @@ class TestRestTemplateTests {
 		}
 		else {
 			assertThat(request.getHeaders()).containsKeys(HttpHeaders.AUTHORIZATION);
-			assertThat(request.getHeaders().get(HttpHeaders.AUTHORIZATION)).containsExactly(
-					"Basic " + Base64Utils.encodeToString(String.format("%s:%s", username, password).getBytes()));
+			assertThat(request.getHeaders().get(HttpHeaders.AUTHORIZATION)).containsExactly("Basic "
+					+ Base64.getEncoder().encodeToString(String.format("%s:%s", username, password).getBytes()));
 		}
 
 	}

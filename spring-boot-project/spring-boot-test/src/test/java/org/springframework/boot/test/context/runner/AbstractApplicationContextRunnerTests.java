@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,19 +71,19 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 	@Test
 	void runWithSystemPropertiesShouldSetAndRemoveProperties() {
 		String key = "test." + UUID.randomUUID();
-		assertThat(System.getProperties().containsKey(key)).isFalse();
+		assertThat(System.getProperties()).doesNotContainKey(key);
 		get().withSystemProperties(key + "=value")
 				.run((context) -> assertThat(System.getProperties()).containsEntry(key, "value"));
-		assertThat(System.getProperties().containsKey(key)).isFalse();
+		assertThat(System.getProperties()).doesNotContainKey(key);
 	}
 
 	@Test
 	void runWithSystemPropertiesWhenContextFailsShouldRemoveProperties() {
 		String key = "test." + UUID.randomUUID();
-		assertThat(System.getProperties().containsKey(key)).isFalse();
+		assertThat(System.getProperties()).doesNotContainKey(key);
 		get().withSystemProperties(key + "=value").withUserConfiguration(FailingConfig.class)
 				.run((context) -> assertThat(context).hasFailed());
-		assertThat(System.getProperties().containsKey(key)).isFalse();
+		assertThat(System.getProperties()).doesNotContainKey(key);
 	}
 
 	@Test

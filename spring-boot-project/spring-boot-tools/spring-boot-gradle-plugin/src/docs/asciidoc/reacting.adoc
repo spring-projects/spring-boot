@@ -78,6 +78,7 @@ When the {nbt-gradle-plugin}[GraalVM Native Image plugin] is applied to a projec
 . Adds the output of the `aot` source set to the classpath of the `main` GraalVM native binary.
 . Adds the output of the `aotTest` source set to the classpath of the `test` GraalVM native binary.
 . Configures the GraalVM extension to disable Toolchain detection.
+. Configures each GraalVM native binary to require GraalVM 22.3 or later.
 . Configures the `bootJar` task to include the reachability metadata produced by the `collectReachabilityMetadata` task in its jar.
 . Configures the `bootBuildImage` task to use `paketobuildpacks/builder:tiny` as its builder and to set `BP_NATIVE_IMAGE` to `true` in its environment.
 

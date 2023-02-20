@@ -171,7 +171,7 @@ public class FlywayProperties {
 	/**
 	 * Target version up to which migrations should be considered.
 	 */
-	private String target;
+	private String target = "latest";
 
 	/**
 	 * Login user of the database to migrate.
@@ -361,6 +361,11 @@ public class FlywayProperties {
 	 * Suffix of placeholders in migration scripts.
 	 */
 	private String scriptPlaceholderSuffix = "__";
+
+	/**
+	 * Whether Flyway should execute SQL within a transaction.
+	 */
+	private boolean executeInTransaction;
 
 	public boolean isEnabled() {
 		return this.enabled;
@@ -840,6 +845,14 @@ public class FlywayProperties {
 
 	public void setScriptPlaceholderSuffix(String scriptPlaceholderSuffix) {
 		this.scriptPlaceholderSuffix = scriptPlaceholderSuffix;
+	}
+
+	public boolean isExecuteInTransaction() {
+		return this.executeInTransaction;
+	}
+
+	public void setExecuteInTransaction(boolean executeInTransaction) {
+		this.executeInTransaction = executeInTransaction;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -163,9 +163,9 @@ class ValueObjectBinderTests {
 		source.put("foo.string-value", "foo");
 		this.sources.add(source);
 		ExampleValueBean bean = this.binder.bind("foo", Bindable.of(ExampleValueBean.class)).get();
-		assertThat(bean.getIntValue()).isEqualTo(0);
-		assertThat(bean.getLongValue()).isEqualTo(0);
-		assertThat(bean.isBooleanValue()).isEqualTo(false);
+		assertThat(bean.getIntValue()).isZero();
+		assertThat(bean.getLongValue()).isZero();
+		assertThat(bean.isBooleanValue()).isFalse();
 		assertThat(bean.getStringValue()).isEqualTo("foo");
 	}
 
@@ -193,7 +193,7 @@ class ValueObjectBinderTests {
 		this.sources.add(source);
 		ConverterAnnotatedExampleBean bean = this.binder.bind("foo", Bindable.of(ConverterAnnotatedExampleBean.class))
 				.get();
-		assertThat(bean.getDate().toString()).isEqualTo("2014-04-01");
+		assertThat(bean.getDate()).hasToString("2014-04-01");
 	}
 
 	@Test
@@ -203,7 +203,7 @@ class ValueObjectBinderTests {
 		this.sources.add(source);
 		ConverterAnnotatedExampleBean bean = this.binder.bind("foo", Bindable.of(ConverterAnnotatedExampleBean.class))
 				.get();
-		assertThat(bean.getDate().toString()).isEqualTo("2019-05-10");
+		assertThat(bean.getDate()).hasToString("2019-05-10");
 	}
 
 	@Test
@@ -219,9 +219,9 @@ class ValueObjectBinderTests {
 	@Test
 	void createShouldReturnCreatedValue() {
 		ExampleValueBean value = this.binder.bindOrCreate("foo", Bindable.of(ExampleValueBean.class));
-		assertThat(value.getIntValue()).isEqualTo(0);
-		assertThat(value.getLongValue()).isEqualTo(0);
-		assertThat(value.isBooleanValue()).isEqualTo(false);
+		assertThat(value.getIntValue()).isZero();
+		assertThat(value.getLongValue()).isZero();
+		assertThat(value.isBooleanValue()).isFalse();
 		assertThat(value.getStringValue()).isNull();
 		assertThat(value.getEnumValue()).isNull();
 	}
@@ -229,7 +229,7 @@ class ValueObjectBinderTests {
 	@Test
 	void createWithNestedShouldReturnCreatedValue() {
 		ExampleNestedBean value = this.binder.bindOrCreate("foo", Bindable.of(ExampleNestedBean.class));
-		assertThat(value.getValueBean()).isEqualTo(null);
+		assertThat(value.getValueBean()).isNull();
 	}
 
 	@Test
@@ -244,7 +244,7 @@ class ValueObjectBinderTests {
 	void createWithDefaultValuesAndAnnotationsShouldReturnCreatedWithDefaultValues() {
 		ConverterAnnotatedExampleBean bean = this.binder.bindOrCreate("foo",
 				Bindable.of(ConverterAnnotatedExampleBean.class));
-		assertThat(bean.getDate().toString()).isEqualTo("2019-05-10");
+		assertThat(bean.getDate()).hasToString("2019-05-10");
 	}
 
 	@Test
@@ -267,7 +267,7 @@ class ValueObjectBinderTests {
 		GenericValue<Map<String, String>> bean = this.binder.bind("foo", Bindable
 				.<GenericValue<Map<String, String>>>of(ResolvableType.forClassWithGenerics(GenericValue.class, type)))
 				.get();
-		assertThat(bean.getValue().get("bar")).isEqualTo("baz");
+		assertThat(bean.getValue()).containsEntry("bar", "baz");
 	}
 
 	@Test
@@ -775,7 +775,7 @@ class ValueObjectBinderTests {
 
 	static class NestedConstructorBeanWithEmptyDefaultValueForEnumTypes {
 
-		private Foo foo;
+		private final Foo foo;
 
 		NestedConstructorBeanWithEmptyDefaultValueForEnumTypes(@DefaultValue Foo foo) {
 			this.foo = foo;
@@ -795,7 +795,7 @@ class ValueObjectBinderTests {
 
 	static class NestedConstructorBeanWithEmptyDefaultValueForPrimitiveTypes {
 
-		private int intValue;
+		private final int intValue;
 
 		NestedConstructorBeanWithEmptyDefaultValueForPrimitiveTypes(@DefaultValue int intValue) {
 			this.intValue = intValue;

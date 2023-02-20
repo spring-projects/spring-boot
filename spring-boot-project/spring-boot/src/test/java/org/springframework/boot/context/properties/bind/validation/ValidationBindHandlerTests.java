@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 class ValidationBindHandlerTests {
 
-	private List<ConfigurationPropertySource> sources = new ArrayList<>();
+	private final List<ConfigurationPropertySource> sources = new ArrayList<>();
 
 	private ValidationBindHandler handler;
 
@@ -106,7 +106,7 @@ class ValidationBindHandlerTests {
 		BindValidationException cause = bindAndExpectValidationError(() -> this.binder
 				.bind(ConfigurationPropertyName.of("foo"), Bindable.of(ExampleValidatedBean.class), this.handler));
 		ObjectError objectError = cause.getValidationErrors().getAllErrors().get(0);
-		assertThat(Origin.from(objectError).toString()).isEqualTo("file");
+		assertThat(Origin.from(objectError)).hasToString("file");
 	}
 
 	@Test
@@ -128,7 +128,7 @@ class ValidationBindHandlerTests {
 		this.sources.add(new MockConfigurationPropertySource("foo.nested.age", "4"));
 		BindValidationException cause = bindAndExpectValidationError(() -> this.binder.bind(
 				ConfigurationPropertyName.of("foo"), Bindable.of(ExampleValidatedWithNestedBean.class), this.handler));
-		assertThat(cause.getValidationErrors().getName().toString()).isEqualTo("foo.nested");
+		assertThat(cause.getValidationErrors().getName()).hasToString("foo.nested");
 		assertThat(cause.getMessage()).contains("nested.age");
 		assertThat(cause.getMessage()).contains("rejected value [4]");
 	}
@@ -380,7 +380,7 @@ class ValidationBindHandlerTests {
 	static class ExampleCamelCase {
 
 		@Valid
-		private InnerProperties inner = new InnerProperties();
+		private final InnerProperties inner = new InnerProperties();
 
 		InnerProperties getInner() {
 			return this.inner;
@@ -414,7 +414,7 @@ class ValidationBindHandlerTests {
 
 	static class ExampleWithMap {
 
-		private Map<String, ExampleMapValue> items = new LinkedHashMap<>();
+		private final Map<String, ExampleMapValue> items = new LinkedHashMap<>();
 
 		Map<String, ExampleMapValue> getItems() {
 			return this.items;
@@ -438,7 +438,7 @@ class ValidationBindHandlerTests {
 
 	static class TestHandler extends AbstractBindHandler {
 
-		private Object result;
+		private final Object result;
 
 		TestHandler(Object result) {
 			this.result = result;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,9 @@ import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension;
 import org.antlr.v4.runtime.Lexer;
 import org.apache.commons.compress.archivers.ArchiveEntry;
-import org.apache.http.HttpRequest;
-import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.hc.client5.http.io.HttpClientConnectionManager;
+import org.apache.hc.core5.http.HttpRequest;
+import org.apache.hc.core5.http2.HttpVersionPolicy;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.util.GradleVersion;
@@ -83,11 +84,11 @@ public class GradleBuild {
 
 	private GradleVersion expectDeprecationWarnings;
 
-	private List<String> expectedDeprecationMessages = new ArrayList<>();
+	private final List<String> expectedDeprecationMessages = new ArrayList<>();
 
 	private boolean configurationCache = false;
 
-	private Map<String, String> scriptProperties = new HashMap<>();
+	private final Map<String, String> scriptProperties = new HashMap<>();
 
 	public GradleBuild() {
 		this(Dsl.GROOVY);
@@ -123,7 +124,8 @@ public class GradleBuild {
 				new File(pathOfJarContaining(LanguageSettings.class)),
 				new File(pathOfJarContaining(ArchiveEntry.class)), new File(pathOfJarContaining(BuildRequest.class)),
 				new File(pathOfJarContaining(HttpClientConnectionManager.class)),
-				new File(pathOfJarContaining(HttpRequest.class)), new File(pathOfJarContaining(Module.class)),
+				new File(pathOfJarContaining(HttpRequest.class)),
+				new File(pathOfJarContaining(HttpVersionPolicy.class)), new File(pathOfJarContaining(Module.class)),
 				new File(pathOfJarContaining(Versioned.class)),
 				new File(pathOfJarContaining(ParameterNamesModule.class)),
 				new File(pathOfJarContaining(JsonView.class)), new File(pathOfJarContaining(Platform.class)),

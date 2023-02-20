@@ -24,7 +24,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.web.client.RestTemplate;
 
 /**
- * A {@link HttpSender} which uses {@link RestTemplate} for HTTP communication.
+ * An {@link HttpSender} which uses {@link RestTemplate} for HTTP communication.
  *
  * @author Moritz Halbritter
  * @author Stefan Bratanov

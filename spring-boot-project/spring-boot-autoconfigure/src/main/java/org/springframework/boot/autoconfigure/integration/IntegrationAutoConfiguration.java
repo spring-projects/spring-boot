@@ -49,9 +49,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.config.EnableIntegrationManagement;
+import org.springframework.integration.config.IntegrationComponentScanRegistrar;
 import org.springframework.integration.config.IntegrationManagementConfigurer;
 import org.springframework.integration.context.IntegrationContextUtils;
-import org.springframework.integration.gateway.GatewayProxyFactoryBean;
 import org.springframework.integration.jdbc.store.JdbcMessageStore;
 import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
 import org.springframework.integration.monitor.IntegrationMBeanExporter;
@@ -209,7 +209,8 @@ public class IntegrationAutoConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
 		@EnableIntegrationManagement(
-				defaultLoggingEnabled = "${spring.integration.management.default-logging-enabled:true}")
+				defaultLoggingEnabled = "${spring.integration.management.default-logging-enabled:true}",
+				observationPatterns = "${spring.integration.management.observation-patterns:}")
 		protected static class EnableIntegrationManagementConfiguration {
 
 		}
@@ -220,7 +221,7 @@ public class IntegrationAutoConfiguration {
 	 * Integration component scan configuration.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(GatewayProxyFactoryBean.class)
+	@ConditionalOnMissingBean(IntegrationComponentScanRegistrar.class)
 	@Import(IntegrationAutoConfigurationScanRegistrar.class)
 	protected static class IntegrationComponentScanConfiguration {
 

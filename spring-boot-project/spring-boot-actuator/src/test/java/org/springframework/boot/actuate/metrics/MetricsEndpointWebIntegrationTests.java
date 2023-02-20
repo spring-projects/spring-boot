@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class MetricsEndpointWebIntegrationTests {
 
-	private static MeterRegistry registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
+	private static final MeterRegistry registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, new MockClock());
 
 	private final ObjectMapper mapper = new ObjectMapper();
 

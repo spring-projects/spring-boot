@@ -16,9 +16,8 @@
 
 package org.springframework.boot.actuate.context;
 
-import java.util.Map;
-
 import org.springframework.beans.BeansException;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.context.ApplicationContext;
@@ -36,19 +35,15 @@ import org.springframework.context.ConfigurableApplicationContext;
 @Endpoint(id = "shutdown", enableByDefault = false)
 public class ShutdownEndpoint implements ApplicationContextAware {
 
-	private static final Map<String, String> NO_CONTEXT_MESSAGE = Map.of("message", "No context to shutdown.");
-
-	private static final Map<String, String> SHUTDOWN_MESSAGE = Map.of("message", "Shutting down, bye...");
-
 	private ConfigurableApplicationContext context;
 
 	@WriteOperation
-	public Map<String, String> shutdown() {
+	public ShutdownDescriptor shutdown() {
 		if (this.context == null) {
-			return NO_CONTEXT_MESSAGE;
+			return ShutdownDescriptor.NO_CONTEXT;
 		}
 		try {
-			return SHUTDOWN_MESSAGE;
+			return ShutdownDescriptor.DEFAULT;
 		}
 		finally {
 			Thread thread = new Thread(this::performShutdown);
@@ -72,6 +67,27 @@ public class ShutdownEndpoint implements ApplicationContextAware {
 		if (context instanceof ConfigurableApplicationContext configurableContext) {
 			this.context = configurableContext;
 		}
+	}
+
+	/**
+	 * Description of the shutdown.
+	 */
+	public static class ShutdownDescriptor implements OperationResponseBody {
+
+		private static final ShutdownDescriptor DEFAULT = new ShutdownDescriptor("Shutting down, bye...");
+
+		private static final ShutdownDescriptor NO_CONTEXT = new ShutdownDescriptor("No context to shutdown.");
+
+		private final String message;
+
+		ShutdownDescriptor(String message) {
+			this.message = message;
+		}
+
+		public String getMessage() {
+			return this.message;
+		}
+
 	}
 
 }

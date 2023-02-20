@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.springframework.r2dbc.connection.init.DatabasePopulator;
 import org.springframework.util.StringUtils;
 
 /**
- * Configuration for initializing an SQL database accessed via an R2DBC
+ * Configuration for initializing an SQL database accessed through an R2DBC
  * {@link ConnectionFactory}.
  *
  * @author Andy Wilkinson

@@ -2722,6 +2722,8 @@
       "defaultValue": [
         "async",
         "error",
+        "forward",
+        "include",
         "request"
       ]
     },
@@ -3072,6 +3074,10 @@
           "name": "any"
         }
       ]
+    },
+    {
+      "name": "spring.jmx.registration-policy",
+      "defaultValue": "fail-on-existing"
     },
     {
       "name": "spring.jmx.server",

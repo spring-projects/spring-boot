@@ -21,6 +21,7 @@ import java.util.List;
 
 import io.micrometer.common.KeyValue;
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Tags;
 import io.micrometer.observation.Observation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,7 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.metrics.web.servlet.DefaultWebMvcTagsProvider;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsContributor;
-import org.springframework.http.observation.ServerRequestObservationContext;
+import org.springframework.http.server.observation.ServerRequestObservationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.servlet.HandlerMapping;
@@ -46,14 +47,15 @@ class ServerRequestObservationConventionAdapterTests {
 
 	private static final String TEST_METRIC_NAME = "test.metric.name";
 
-	private ServerRequestObservationConventionAdapter convention = new ServerRequestObservationConventionAdapter(
+	private final ServerRequestObservationConventionAdapter convention = new ServerRequestObservationConventionAdapter(
 			TEST_METRIC_NAME, new DefaultWebMvcTagsProvider(), Collections.emptyList());
 
-	private MockHttpServletRequest request = new MockHttpServletRequest("GET", "/resource/test");
+	private final MockHttpServletRequest request = new MockHttpServletRequest("GET", "/resource/test");
 
-	private MockHttpServletResponse response = new MockHttpServletResponse();
+	private final MockHttpServletResponse response = new MockHttpServletResponse();
 
-	private ServerRequestObservationContext context = new ServerRequestObservationContext(this.request, this.response);
+	private final ServerRequestObservationContext context = new ServerRequestObservationContext(this.request,
+			this.response);
 
 	@Test
 	void customNameIsUsed() {
@@ -96,7 +98,7 @@ class ServerRequestObservationConventionAdapterTests {
 		@Override
 		public Iterable<Tag> getTags(HttpServletRequest request, HttpServletResponse response, Object handler,
 				Throwable exception) {
-			return List.of(Tag.of("custom", "value"));
+			return Tags.of("custom", "value");
 		}
 
 		@Override

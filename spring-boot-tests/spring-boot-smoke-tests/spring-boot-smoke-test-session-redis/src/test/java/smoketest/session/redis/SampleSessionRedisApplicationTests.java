@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers(disabledWithoutDocker = true)
-public class SampleSessionRedisApplicationTests {
+class SampleSessionRedisApplicationTests {
 
 	@Container
 	static RedisContainer redis = new RedisContainer();
@@ -73,7 +73,7 @@ public class SampleSessionRedisApplicationTests {
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		List<Map<String, Object>> sessions = (List<Map<String, Object>>) response.getBody().get("sessions");
-		assertThat(sessions.size()).isEqualTo(1);
+		assertThat(sessions).hasSize(1);
 	}
 
 	private String performLogin() {
@@ -96,7 +96,7 @@ public class SampleSessionRedisApplicationTests {
 
 	private ResponseEntity<Map<String, Object>> getSessions() {
 		RequestEntity<Object> request = getRequestEntity(URI.create("/actuator/sessions?username=user"));
-		ParameterizedTypeReference<Map<String, Object>> stringObjectMap = new ParameterizedTypeReference<Map<String, Object>>() {
+		ParameterizedTypeReference<Map<String, Object>> stringObjectMap = new ParameterizedTypeReference<>() {
 		};
 		return this.restTemplate.exchange(request, stringObjectMap);
 	}

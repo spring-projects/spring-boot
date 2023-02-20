@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.UUID;
 
 import javax.sql.DataSource;
 
-import org.assertj.core.api.Assertions;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.Location;
 import org.flywaydb.core.api.MigrationVersion;
@@ -273,7 +272,7 @@ class FlywayAutoConfigurationTests {
 				.withPropertyValues("spring.flyway.schemas:public").run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
 					Flyway flyway = context.getBean(Flyway.class);
-					assertThat(Arrays.asList(flyway.getConfiguration().getSchemas()).toString()).isEqualTo("[public]");
+					assertThat(Arrays.asList(flyway.getConfiguration().getSchemas())).hasToString("[public]");
 				});
 	}
 
@@ -671,9 +670,8 @@ class FlywayAutoConfigurationTests {
 	void shouldRegisterResourceHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new FlywayAutoConfigurationRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		Assertions.assertThat(RuntimeHintsPredicates.resource().forResource("db/migration/")).accepts(runtimeHints);
-		Assertions.assertThat(RuntimeHintsPredicates.resource().forResource("db/migration/V1__init.sql"))
-				.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.resource().forResource("db/migration/")).accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.resource().forResource("db/migration/V1__init.sql")).accepts(runtimeHints);
 	}
 
 	private ContextConsumer<AssertableApplicationContext> validateFlywayTeamsPropertyOnly(String propertyName) {

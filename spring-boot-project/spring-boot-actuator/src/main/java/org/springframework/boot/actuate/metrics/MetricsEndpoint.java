@@ -34,6 +34,7 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
@@ -56,10 +57,10 @@ public class MetricsEndpoint {
 	}
 
 	@ReadOperation
-	public ListNamesResponse listNames() {
+	public MetricNamesDescriptor listNames() {
 		Set<String> names = new TreeSet<>();
 		collectNames(names, this.registry);
-		return new ListNamesResponse(names);
+		return new MetricNamesDescriptor(names);
 	}
 
 	private void collectNames(Set<String> names, MeterRegistry registry) {
@@ -76,7 +77,7 @@ public class MetricsEndpoint {
 	}
 
 	@ReadOperation
-	public MetricResponse metric(@Selector String requiredMetricName, @Nullable List<String> tag) {
+	public MetricDescriptor metric(@Selector String requiredMetricName, @Nullable List<String> tag) {
 		List<Tag> tags = parseTags(tag);
 		Collection<Meter> meters = findFirstMatchingMeters(this.registry, requiredMetricName, tags);
 		if (meters.isEmpty()) {
@@ -86,7 +87,7 @@ public class MetricsEndpoint {
 		Map<String, Set<String>> availableTags = getAvailableTags(meters);
 		tags.forEach((t) -> availableTags.remove(t.getKey()));
 		Meter.Id meterId = meters.iterator().next().getId();
-		return new MetricResponse(requiredMetricName, meterId.getDescription(), meterId.getBaseUnit(),
+		return new MetricDescriptor(requiredMetricName, meterId.getDescription(), meterId.getBaseUnit(),
 				asList(samples, Sample::new), asList(availableTags, AvailableTag::new));
 	}
 
@@ -157,13 +158,13 @@ public class MetricsEndpoint {
 	}
 
 	/**
-	 * Response payload for a metric name listing.
+	 * Description of metric names.
 	 */
-	public static final class ListNamesResponse {
+	public static final class MetricNamesDescriptor implements OperationResponseBody {
 
 		private final Set<String> names;
 
-		ListNamesResponse(Set<String> names) {
+		MetricNamesDescriptor(Set<String> names) {
 			this.names = names;
 		}
 
@@ -174,9 +175,9 @@ public class MetricsEndpoint {
 	}
 
 	/**
-	 * Response payload for a metric name selector.
+	 * Description of a metric.
 	 */
-	public static final class MetricResponse {
+	public static final class MetricDescriptor implements OperationResponseBody {
 
 		private final String name;
 
@@ -188,7 +189,7 @@ public class MetricsEndpoint {
 
 		private final List<AvailableTag> availableTags;
 
-		MetricResponse(String name, String description, String baseUnit, List<Sample> measurements,
+		MetricDescriptor(String name, String description, String baseUnit, List<Sample> measurements,
 				List<AvailableTag> availableTags) {
 			this.name = name;
 			this.description = description;

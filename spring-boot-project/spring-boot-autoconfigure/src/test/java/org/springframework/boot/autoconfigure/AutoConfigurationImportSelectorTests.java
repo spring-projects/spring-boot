@@ -56,7 +56,7 @@ class AutoConfigurationImportSelectorTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
 
-	private List<AutoConfigurationImportFilter> filters = new ArrayList<>();
+	private final List<AutoConfigurationImportFilter> filters = new ArrayList<>();
 
 	@BeforeEach
 	void setup() {

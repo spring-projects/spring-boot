@@ -11,7 +11,7 @@
 :docinfo: shared,private
 :attribute-missing: warn
 :chomp: default headers packages
-:spring-boot-artifactory-repo: snapshot
+:artifact-release-type: snapshot
 :github-tag: main
 :spring-boot-version: current
 :github-repo: spring-projects/spring-boot
@@ -93,7 +93,7 @@
 :spring-restdocs: https://spring.io/projects/spring-restdocs
 :spring-security: https://spring.io/projects/spring-security
 :spring-security-docs: https://docs.spring.io/spring-security/reference/{spring-security-version}
-:spring-security-oauth2: https://spring.io/projects/spring-security-oauth
+:spring-authorization-server: https://spring.io/projects/spring-authorization-server
 :spring-session: https://spring.io/projects/spring-session
 :spring-webservices-docs: https://docs.spring.io/spring-ws/docs/{spring-webservices-version}/reference/html/
 :ant-docs: https://ant.apache.org/manual
@@ -112,4 +112,4 @@
 :tomcat-docs: https://tomcat.apache.org/tomcat-{tomcat-version}-doc
 :graal-version: 22.3
 :graal-native-image-docs: https://www.graalvm.org/{graal-version}/reference-manual/native-image
-:liberica-nik-download: https://bell-sw.com/pages/downloads/native-image-kit/#/nik-22-17-ea
+:liberica-nik-download: https://bell-sw.com/pages/downloads/native-image-kit/#/nik-22-17

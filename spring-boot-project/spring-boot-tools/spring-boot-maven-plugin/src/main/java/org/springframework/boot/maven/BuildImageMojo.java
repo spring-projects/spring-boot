@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,11 +32,7 @@ import org.apache.commons.compress.archivers.tar.TarConstants;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
-import org.apache.maven.plugins.annotations.Execute;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
-import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
-import org.apache.maven.plugins.annotations.ResolutionScope;
 
 import org.springframework.boot.buildpack.platform.build.AbstractBuildLog;
 import org.springframework.boot.buildpack.platform.build.BuildLog;
@@ -62,11 +58,7 @@ import org.springframework.util.StringUtils;
  * @author Jeroen Meijer
  * @since 2.3.0
  */
-@Mojo(name = "build-image", defaultPhase = LifecyclePhase.PACKAGE, requiresProject = true, threadSafe = true,
-		requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
-		requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME)
-@Execute(phase = LifecyclePhase.PACKAGE)
-public class BuildImageMojo extends AbstractPackagerMojo {
+public abstract class BuildImageMojo extends AbstractPackagerMojo {
 
 	static {
 		System.setProperty("org.slf4j.simpleLogger.log.org.apache.http.wire", "ERROR");
@@ -110,21 +102,23 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	private Image image;
 
 	/**
-	 * Alias for {@link Image#name} to support configuration via command-line property.
+	 * Alias for {@link Image#name} to support configuration through command-line
+	 * property.
 	 * @since 2.3.0
 	 */
 	@Parameter(property = "spring-boot.build-image.imageName", readonly = true)
 	String imageName;
 
 	/**
-	 * Alias for {@link Image#builder} to support configuration via command-line property.
+	 * Alias for {@link Image#builder} to support configuration through command-line
+	 * property.
 	 * @since 2.3.0
 	 */
 	@Parameter(property = "spring-boot.build-image.builder", readonly = true)
 	String imageBuilder;
 
 	/**
-	 * Alias for {@link Image#runImage} to support configuration via command-line
+	 * Alias for {@link Image#runImage} to support configuration through command-line
 	 * property.
 	 * @since 2.3.1
 	 */
@@ -132,7 +126,7 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	String runImage;
 
 	/**
-	 * Alias for {@link Image#cleanCache} to support configuration via command-line
+	 * Alias for {@link Image#cleanCache} to support configuration through command-line
 	 * property.
 	 * @since 2.4.0
 	 */
@@ -140,20 +134,22 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	Boolean cleanCache;
 
 	/**
-	 * Alias for {@link Image#pullPolicy} to support configuration via command-line
+	 * Alias for {@link Image#pullPolicy} to support configuration through command-line
 	 * property.
 	 */
 	@Parameter(property = "spring-boot.build-image.pullPolicy", readonly = true)
 	PullPolicy pullPolicy;
 
 	/**
-	 * Alias for {@link Image#publish} to support configuration via command-line property.
+	 * Alias for {@link Image#publish} to support configuration through command-line
+	 * property.
 	 */
 	@Parameter(property = "spring-boot.build-image.publish", readonly = true)
 	Boolean publish;
 
 	/**
-	 * Alias for {@link Image#network} to support configuration via command-line property.
+	 * Alias for {@link Image#network} to support configuration through command-line
+	 * property.
 	 * @since 2.6.0
 	 */
 	@Parameter(property = "spring-boot.build-image.network", readonly = true)

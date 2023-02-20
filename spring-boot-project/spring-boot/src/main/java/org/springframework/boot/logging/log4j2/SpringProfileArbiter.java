@@ -64,7 +64,7 @@ final class SpringProfileArbiter implements Arbiter {
 	/**
 	 * Standard Builder to create the Arbiter.
 	 */
-	public static final class Builder implements org.apache.logging.log4j.core.util.Builder<SpringProfileArbiter> {
+	static final class Builder implements org.apache.logging.log4j.core.util.Builder<SpringProfileArbiter> {
 
 		private static final Logger statusLogger = StatusLogger.getLogger();
 
@@ -86,7 +86,7 @@ final class SpringProfileArbiter implements Arbiter {
 		 * @return this
 		 * @see Profiles#of(String...)
 		 */
-		public Builder setName(String name) {
+		Builder setName(String name) {
 			this.name = name;
 			return this;
 		}

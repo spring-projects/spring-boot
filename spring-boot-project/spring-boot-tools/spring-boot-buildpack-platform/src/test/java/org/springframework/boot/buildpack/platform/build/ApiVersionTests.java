@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ class ApiVersionTests {
 	@Test
 	void parseReturnsVersion() {
 		ApiVersion version = ApiVersion.parse("1.2");
-		assertThat(version.getMajor()).isEqualTo(1);
+		assertThat(version.getMajor()).isOne();
 		assertThat(version.getMinor()).isEqualTo(2);
 	}
 
@@ -111,7 +111,7 @@ class ApiVersionTests {
 
 	@Test
 	void toStringReturnsString() {
-		assertThat(ApiVersion.parse("1.2").toString()).isEqualTo("1.2");
+		assertThat(ApiVersion.parse("1.2")).hasToString("1.2");
 	}
 
 	@Test
@@ -119,7 +119,7 @@ class ApiVersionTests {
 		ApiVersion v12a = ApiVersion.parse("1.2");
 		ApiVersion v12b = ApiVersion.parse("1.2");
 		ApiVersion v13 = ApiVersion.parse("1.3");
-		assertThat(v12a.hashCode()).isEqualTo(v12b.hashCode());
+		assertThat(v12a).hasSameHashCodeAs(v12b);
 		assertThat(v12a).isEqualTo(v12a).isEqualTo(v12b).isNotEqualTo(v13);
 	}
 

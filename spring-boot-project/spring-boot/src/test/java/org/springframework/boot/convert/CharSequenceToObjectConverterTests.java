@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,12 +39,12 @@ class CharSequenceToObjectConverterTests {
 
 	@ConversionServiceTest
 	void convertWhenCanConvertViaToString(ConversionService conversionService) {
-		assertThat(conversionService.convert(new StringBuilder("1"), Integer.class)).isEqualTo(1);
+		assertThat(conversionService.convert(new StringBuilder("1"), Integer.class)).isOne();
 	}
 
 	@ConversionServiceTest
 	void convertWhenCanConvertDirectlySkipsStringConversion(ConversionService conversionService) {
-		assertThat(conversionService.convert(new String("1"), Long.class)).isEqualTo(1);
+		assertThat(conversionService.convert(new String("1"), Long.class)).isOne();
 		if (!ConversionServiceArguments.isApplicationConversionService(conversionService)) {
 			assertThat(conversionService.convert(new StringBuilder("1"), Long.class)).isEqualTo(2);
 		}

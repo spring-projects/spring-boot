@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ class RedisHealthIndicatorTests {
 		RedisHealthIndicator healthIndicator = createHealthIndicator(redisConnection);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("version")).isEqualTo("2.8.9");
+		assertThat(health.getDetails()).containsEntry("version", "2.8.9");
 	}
 
 	@Test
@@ -80,9 +80,9 @@ class RedisHealthIndicatorTests {
 		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(redisConnectionFactory);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("cluster_size")).isEqualTo(4L);
-		assertThat(health.getDetails().get("slots_up")).isEqualTo(4L);
-		assertThat(health.getDetails().get("slots_fail")).isEqualTo(0L);
+		assertThat(health.getDetails()).containsEntry("cluster_size", 4L);
+		assertThat(health.getDetails()).containsEntry("slots_up", 4L);
+		assertThat(health.getDetails()).containsEntry("slots_fail", 0L);
 		then(redisConnectionFactory).should(atLeastOnce()).getConnection();
 	}
 
@@ -92,9 +92,9 @@ class RedisHealthIndicatorTests {
 		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(redisConnectionFactory);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("cluster_size")).isEqualTo(4L);
-		assertThat(health.getDetails().get("slots_up")).isEqualTo(4L);
-		assertThat(health.getDetails().get("slots_fail")).isEqualTo(0L);
+		assertThat(health.getDetails()).containsEntry("cluster_size", 4L);
+		assertThat(health.getDetails()).containsEntry("slots_up", 4L);
+		assertThat(health.getDetails()).containsEntry("slots_fail", 0L);
 		then(redisConnectionFactory).should(atLeastOnce()).getConnection();
 	}
 
@@ -104,9 +104,9 @@ class RedisHealthIndicatorTests {
 		RedisHealthIndicator healthIndicator = new RedisHealthIndicator(redisConnectionFactory);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("cluster_size")).isEqualTo(4L);
-		assertThat(health.getDetails().get("slots_up")).isEqualTo(3L);
-		assertThat(health.getDetails().get("slots_fail")).isEqualTo(1L);
+		assertThat(health.getDetails()).containsEntry("cluster_size", 4L);
+		assertThat(health.getDetails()).containsEntry("slots_up", 3L);
+		assertThat(health.getDetails()).containsEntry("slots_fail", 1L);
 		then(redisConnectionFactory).should(atLeastOnce()).getConnection();
 	}
 

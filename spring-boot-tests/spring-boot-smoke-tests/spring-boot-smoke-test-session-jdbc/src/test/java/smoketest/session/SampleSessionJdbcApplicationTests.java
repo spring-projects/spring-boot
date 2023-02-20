@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ class SampleSessionJdbcApplicationTests {
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		List<Map<String, Object>> sessions = (List<Map<String, Object>>) response.getBody().get("sessions");
-		assertThat(sessions.size()).isEqualTo(1);
+		assertThat(sessions).hasSize(1);
 	}
 
 	private ResponseEntity<String> performRequest(URI uri, String cookie) {
@@ -115,7 +115,7 @@ class SampleSessionJdbcApplicationTests {
 		HttpHeaders headers = getHeaders(null);
 		RequestEntity<Object> request = new RequestEntity<>(headers, HttpMethod.GET,
 				URI.create("/actuator/sessions?username=user"));
-		ParameterizedTypeReference<Map<String, Object>> stringObjectMap = new ParameterizedTypeReference<Map<String, Object>>() {
+		ParameterizedTypeReference<Map<String, Object>> stringObjectMap = new ParameterizedTypeReference<>() {
 		};
 		return this.restTemplate.exchange(request, stringObjectMap);
 	}

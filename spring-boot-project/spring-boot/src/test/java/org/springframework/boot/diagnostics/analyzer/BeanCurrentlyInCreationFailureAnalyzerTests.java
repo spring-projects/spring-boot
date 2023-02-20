@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 		assertThat(lines).hasSize(9);
 		assertThat(lines.get(0))
 				.isEqualTo("The dependencies of some of the beans in the application context form a cycle:");
-		assertThat(lines.get(1)).isEqualTo("");
+		assertThat(lines.get(1)).isEmpty();
 		assertThat(lines.get(2)).isEqualTo("┌─────┐");
 		assertThat(lines.get(3)).startsWith("|  one defined in " + InnerInnerConfiguration.class.getName());
 		assertThat(lines.get(4)).isEqualTo("↑     ↓");
@@ -78,7 +78,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 		assertThat(lines).hasSize(9);
 		assertThat(lines.get(0))
 				.isEqualTo("The dependencies of some of the beans in the application context form a cycle:");
-		assertThat(lines.get(1)).isEqualTo("");
+		assertThat(lines.get(1)).isEmpty();
 		assertThat(lines.get(2)).isEqualTo("┌─────┐");
 		assertThat(lines.get(3)).startsWith("|  three defined in " + BeanThreeConfiguration.class.getName());
 		assertThat(lines.get(4)).isEqualTo("↑     ↓");
@@ -97,7 +97,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 		assertThat(lines).hasSize(12);
 		assertThat(lines.get(0))
 				.isEqualTo("The dependencies of some of the beans in the application context form a cycle:");
-		assertThat(lines.get(1)).isEqualTo("");
+		assertThat(lines.get(1)).isEmpty();
 		assertThat(lines.get(2)).contains("refererOne (field " + RefererTwo.class.getName());
 		assertThat(lines.get(3)).isEqualTo("      ↓");
 		assertThat(lines.get(4)).contains("refererTwo (field " + BeanOne.class.getName());
@@ -121,7 +121,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 		assertThat(lines).hasSize(5);
 		assertThat(lines.get(0))
 				.isEqualTo("The dependencies of some of the beans in the application context form a cycle:");
-		assertThat(lines.get(1)).isEqualTo("");
+		assertThat(lines.get(1)).isEmpty();
 		assertThat(lines.get(2)).isEqualTo("┌──->──┐");
 		assertThat(lines.get(3)).startsWith("|  bean defined in " + SelfReferenceBeanConfiguration.class.getName());
 		assertThat(lines.get(4)).isEqualTo("└──<-──┘");

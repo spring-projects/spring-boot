@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ class Saml2RelyingPartyPropertiesTests {
 		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.assertingparty.single-sign-on.sign-request",
 				"false");
 		assertThat(this.properties.getRegistration().get("simplesamlphp").getAssertingparty().getSinglesignon()
-				.isSignRequest()).isEqualTo(false);
+				.isSignRequest()).isFalse();
 	}
 
 	@Test
@@ -90,7 +90,7 @@ class Saml2RelyingPartyPropertiesTests {
 	void customizeSsoSignRequestsIsTrueByDefault() {
 		this.properties.getRegistration().put("simplesamlphp", new Saml2RelyingPartyProperties.Registration());
 		assertThat(this.properties.getRegistration().get("simplesamlphp").getAssertingparty().getSinglesignon()
-				.isSignRequest()).isEqualTo(true);
+				.isSignRequest()).isTrue();
 	}
 
 	private void bind(String name, String value) {

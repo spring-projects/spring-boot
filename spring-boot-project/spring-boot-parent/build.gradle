@@ -55,8 +55,16 @@ bom {
 			]
 		}
 	}
+	library("Janino", "3.1.8") {
+		group("org.codehaus.janino") {
+			imports = [
+				"janino"
+			]
+		}
+	}
 	library("JLine", "2.11") {
-		prohibit("[2.12,)") {
+		prohibit {
+			versionRange "[2.12,)"
 			because "it contains breaking changes"
 		}
 		group("jline") {
@@ -185,7 +193,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Asciidoctor Extensions", "0.6.0") {
+	library("Spring Asciidoctor Extensions", "0.6.1") {
 		group("io.spring.asciidoctor") {
 			modules = [
 				"spring-asciidoctor-extensions-spring-boot",

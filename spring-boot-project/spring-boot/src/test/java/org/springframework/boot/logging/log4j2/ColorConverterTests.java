@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,49 +61,49 @@ class ColorConverterTests {
 	void faint() {
 		StringBuilder output = new StringBuilder();
 		newConverter("faint").format(this.event, output);
-		assertThat(output.toString()).isEqualTo("\033[2min\033[0;39m");
+		assertThat(output).hasToString("\033[2min\033[0;39m");
 	}
 
 	@Test
 	void red() {
 		StringBuilder output = new StringBuilder();
 		newConverter("red").format(this.event, output);
-		assertThat(output.toString()).isEqualTo("\033[31min\033[0;39m");
+		assertThat(output).hasToString("\033[31min\033[0;39m");
 	}
 
 	@Test
 	void green() {
 		StringBuilder output = new StringBuilder();
 		newConverter("green").format(this.event, output);
-		assertThat(output.toString()).isEqualTo("\033[32min\033[0;39m");
+		assertThat(output).hasToString("\033[32min\033[0;39m");
 	}
 
 	@Test
 	void yellow() {
 		StringBuilder output = new StringBuilder();
 		newConverter("yellow").format(this.event, output);
-		assertThat(output.toString()).isEqualTo("\033[33min\033[0;39m");
+		assertThat(output).hasToString("\033[33min\033[0;39m");
 	}
 
 	@Test
 	void blue() {
 		StringBuilder output = new StringBuilder();
 		newConverter("blue").format(this.event, output);
-		assertThat(output.toString()).isEqualTo("\033[34min\033[0;39m");
+		assertThat(output).hasToString("\033[34min\033[0;39m");
 	}
 
 	@Test
 	void magenta() {
 		StringBuilder output = new StringBuilder();
 		newConverter("magenta").format(this.event, output);
-		assertThat(output.toString()).isEqualTo("\033[35min\033[0;39m");
+		assertThat(output).hasToString("\033[35min\033[0;39m");
 	}
 
 	@Test
 	void cyan() {
 		StringBuilder output = new StringBuilder();
 		newConverter("cyan").format(this.event, output);
-		assertThat(output.toString()).isEqualTo("\033[36min\033[0;39m");
+		assertThat(output).hasToString("\033[36min\033[0;39m");
 	}
 
 	@Test
@@ -111,7 +111,7 @@ class ColorConverterTests {
 		this.event.setLevel(Level.FATAL);
 		StringBuilder output = new StringBuilder();
 		newConverter(null).format(this.event, output);
-		assertThat(output.toString()).isEqualTo("\033[31min\033[0;39m");
+		assertThat(output).hasToString("\033[31min\033[0;39m");
 	}
 
 	@Test
@@ -119,7 +119,7 @@ class ColorConverterTests {
 		this.event.setLevel(Level.ERROR);
 		StringBuilder output = new StringBuilder();
 		newConverter(null).format(this.event, output);
-		assertThat(output.toString()).isEqualTo("\033[31min\033[0;39m");
+		assertThat(output).hasToString("\033[31min\033[0;39m");
 	}
 
 	@Test
@@ -127,7 +127,7 @@ class ColorConverterTests {
 		this.event.setLevel(Level.WARN);
 		StringBuilder output = new StringBuilder();
 		newConverter(null).format(this.event, output);
-		assertThat(output.toString()).isEqualTo("\033[33min\033[0;39m");
+		assertThat(output).hasToString("\033[33min\033[0;39m");
 	}
 
 	@Test
@@ -135,7 +135,7 @@ class ColorConverterTests {
 		this.event.setLevel(Level.DEBUG);
 		StringBuilder output = new StringBuilder();
 		newConverter(null).format(this.event, output);
-		assertThat(output.toString()).isEqualTo("\033[32min\033[0;39m");
+		assertThat(output).hasToString("\033[32min\033[0;39m");
 	}
 
 	@Test
@@ -143,7 +143,7 @@ class ColorConverterTests {
 		this.event.setLevel(Level.TRACE);
 		StringBuilder output = new StringBuilder();
 		newConverter(null).format(this.event, output);
-		assertThat(output.toString()).isEqualTo("\033[32min\033[0;39m");
+		assertThat(output).hasToString("\033[32min\033[0;39m");
 	}
 
 	static class TestLogEvent extends AbstractLogEvent {

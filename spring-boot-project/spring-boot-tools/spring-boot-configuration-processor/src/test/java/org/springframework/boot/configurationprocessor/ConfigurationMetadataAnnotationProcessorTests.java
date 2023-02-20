@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
+import org.springframework.boot.configurationsample.record.RecordWithGetter;
 import org.springframework.boot.configurationsample.recursive.RecursiveProperties;
 import org.springframework.boot.configurationsample.simple.ClassWithNestedProperties;
 import org.springframework.boot.configurationsample.simple.DeprecatedFieldSingleProperty;
+import org.springframework.boot.configurationsample.simple.DeprecatedRecord;
 import org.springframework.boot.configurationsample.simple.DeprecatedSingleProperty;
 import org.springframework.boot.configurationsample.simple.DescriptionProperties;
 import org.springframework.boot.configurationsample.simple.HierarchicalProperties;
@@ -70,6 +72,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Jonas Keßler
  * @author Pavel Anisimov
  * @author Scott Frederick
+ * @author Moritz Halbritter
  */
 class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGenerationTests {
 
@@ -141,7 +144,7 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(Metadata.withProperty("simple.type.my-primitive-double", Double.class));
 		assertThat(metadata).has(Metadata.withProperty("simple.type.my-float", Float.class));
 		assertThat(metadata).has(Metadata.withProperty("simple.type.my-primitive-float", Float.class));
-		assertThat(metadata.getItems().size()).isEqualTo(18);
+		assertThat(metadata.getItems()).hasSize(18);
 	}
 
 	@Test
@@ -217,6 +220,16 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		assertThat(metadata).has(Metadata.withGroup("not.deprecated").fromSource(type));
 		assertThat(metadata).has(Metadata.withProperty("not.deprecated.flag", Boolean.class).withDefaultValue(false)
 				.withNoDeprecation().fromSource(type));
+	}
+
+	@Test
+	void deprecatedPropertyOnRecord() {
+		Class<?> type = DeprecatedRecord.class;
+		ConfigurationMetadata metadata = compile(type);
+		assertThat(metadata).has(Metadata.withGroup("deprecated-record").fromSource(type));
+		assertThat(metadata).has(Metadata.withProperty("deprecated-record.alpha", String.class).fromSource(type)
+				.withDeprecation("some-reason", null));
+		assertThat(metadata).has(Metadata.withProperty("deprecated-record.bravo", String.class).fromSource(type));
 	}
 
 	@Test
@@ -463,6 +476,13 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 		ConfigurationMetadata metadata = compile(InnerClassWithPrivateConstructor.class);
 		assertThat(metadata).has(Metadata.withProperty("config.nested.name"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("config.nested.ignored"));
+	}
+
+	@Test
+	void recordWithGetter() {
+		ConfigurationMetadata metadata = compile(RecordWithGetter.class);
+		assertThat(metadata).has(Metadata.withProperty("record-with-getter.alpha"));
+		assertThat(metadata).doesNotHave(Metadata.withProperty("record-with-getter.bravo"));
 	}
 
 }

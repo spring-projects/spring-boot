@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 		SERIES_VIEWS = Collections.unmodifiableMap(views);
 	}
 
-	private ApplicationContext applicationContext;
+	private final ApplicationContext applicationContext;
 
 	private final Resources resources;
 
@@ -145,7 +145,7 @@ public class DefaultErrorViewResolver implements ErrorViewResolver, Ordered {
 	 */
 	private static class HtmlResourceView implements View {
 
-		private Resource resource;
+		private final Resource resource;
 
 		HtmlResourceView(Resource resource) {
 			this.resource = resource;

@@ -20,17 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.gradle.api.file.DirectoryProperty;
-import org.gradle.api.file.FileCollection;
-import org.gradle.api.file.FileTree;
 import org.gradle.api.provider.Property;
-import org.gradle.api.tasks.IgnoreEmptyDirectories;
 import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.OutputDirectory;
-import org.gradle.api.tasks.PathSensitive;
-import org.gradle.api.tasks.PathSensitivity;
-import org.gradle.api.tasks.SkipWhenEmpty;
 import org.gradle.work.DisableCachingByDefault;
 
 /**
@@ -53,8 +46,6 @@ public abstract class AbstractAot extends JavaExec {
 
 	private final Property<String> artifactId;
 
-	private FileCollection classpathRoots;
-
 	protected AbstractAot() {
 		this.sourcesDir = getProject().getObjects().directoryProperty();
 		this.resourcesDir = getProject().getObjects().directoryProperty();
@@ -63,47 +54,49 @@ public abstract class AbstractAot extends JavaExec {
 		this.artifactId = getProject().getObjects().property(String.class);
 	}
 
+	/**
+	 * The group ID of the application that is to be processed ahead-of-time.
+	 * @return the group ID property
+	 */
 	@Input
 	public final Property<String> getGroupId() {
 		return this.groupId;
 	}
 
+	/**
+	 * The artifact ID of the application that is to be processed ahead-of-time.
+	 * @return the artifact ID property
+	 */
 	@Input
 	public final Property<String> getArtifactId() {
 		return this.artifactId;
 	}
 
+	/**
+	 * The directory to which AOT-generated sources should be written.
+	 * @return the sources directory property
+	 */
 	@OutputDirectory
 	public final DirectoryProperty getSourcesOutput() {
 		return this.sourcesDir;
 	}
 
+	/**
+	 * The directory to which AOT-generated resources should be written.
+	 * @return the resources directory property
+	 */
 	@OutputDirectory
 	public final DirectoryProperty getResourcesOutput() {
 		return this.resourcesDir;
 	}
 
+	/**
+	 * The directory to which AOT-generated classes should be written.
+	 * @return the classes directory property
+	 */
 	@OutputDirectory
 	public final DirectoryProperty getClassesOutput() {
 		return this.classesDir;
-	}
-
-	@InputFiles
-	@PathSensitive(PathSensitivity.RELATIVE)
-	public final FileCollection getClasspathRoots() {
-		return this.classpathRoots;
-	}
-
-	@InputFiles
-	@SkipWhenEmpty
-	@IgnoreEmptyDirectories
-	@PathSensitive(PathSensitivity.RELATIVE)
-	final FileTree getInputClasses() {
-		return this.classpathRoots.getAsFileTree();
-	}
-
-	public void setClasspathRoots(FileCollection classpathRoots) {
-		this.classpathRoots = classpathRoots;
 	}
 
 	List<String> processorArgs() {

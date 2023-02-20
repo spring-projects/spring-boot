@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,12 @@
 
 package org.springframework.boot.maven;
 
+import java.util.Base64;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
-import org.springframework.util.Base64Utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -53,7 +54,7 @@ class DockerTests {
 		DockerConfiguration dockerConfiguration = docker.asDockerConfiguration();
 		DockerHost host = dockerConfiguration.getHost();
 		assertThat(host.getAddress()).isEqualTo("docker.example.com");
-		assertThat(host.isSecure()).isEqualTo(true);
+		assertThat(host.isSecure()).isTrue();
 		assertThat(host.getCertificatePath()).isEqualTo("/tmp/ca-cert");
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isFalse();
 		assertThat(docker.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
@@ -72,7 +73,7 @@ class DockerTests {
 		DockerConfiguration dockerConfiguration = docker.asDockerConfiguration();
 		DockerHost host = dockerConfiguration.getHost();
 		assertThat(host.getAddress()).isEqualTo("docker.example.com");
-		assertThat(host.isSecure()).isEqualTo(true);
+		assertThat(host.isSecure()).isTrue();
 		assertThat(host.getCertificatePath()).isEqualTo("/tmp/ca-cert");
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isTrue();
 		assertThat(docker.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
@@ -142,7 +143,7 @@ class DockerTests {
 	}
 
 	String decoded(String value) {
-		return new String(Base64Utils.decodeFromString(value));
+		return new String(Base64.getDecoder().decode(value));
 	}
 
 }

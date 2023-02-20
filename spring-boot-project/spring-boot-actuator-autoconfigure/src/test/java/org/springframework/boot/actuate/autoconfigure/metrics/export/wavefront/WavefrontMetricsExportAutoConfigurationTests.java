@@ -16,12 +16,17 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 
+import java.util.Map;
+
 import com.wavefront.sdk.common.WavefrontSender;
+import com.wavefront.sdk.common.application.ApplicationTags;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.wavefront.WavefrontConfig;
 import io.micrometer.wavefront.WavefrontMeterRegistry;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -36,11 +41,12 @@ import static org.mockito.Mockito.mock;
  *
  * @author Jon Schneider
  * @author Stephane Nicoll
+ * @author Glenn Oppegard
  */
 class WavefrontMetricsExportAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(WavefrontMetricsExportAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
+			AutoConfigurations.of(WavefrontAutoConfiguration.class, WavefrontMetricsExportAutoConfiguration.class));
 
 	@Test
 	void backsOffWithoutAClock() {
@@ -79,6 +85,39 @@ class WavefrontMetricsExportAutoConfigurationTests {
 				.withPropertyValues("management.wavefront.api-token=abcde")
 				.run((context) -> assertThat(context).hasSingleBean(Clock.class).hasSingleBean(WavefrontConfig.class)
 						.hasSingleBean(WavefrontMeterRegistry.class).hasBean("customRegistry"));
+	}
+
+	@Test
+	void exportsApplicationTagsInWavefrontRegistryWhenApplicationTagsBean() {
+		ApplicationTags.Builder builder = new ApplicationTags.Builder("super-application", "super-service");
+		builder.cluster("super-cluster");
+		builder.shard("super-shard");
+		builder.customTags(Map.of("custom-key", "custom-val"));
+		this.contextRunner.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
+				.withUserConfiguration(BaseConfiguration.class).withBean(ApplicationTags.class, builder::build)
+				.run((context) -> {
+					WavefrontMeterRegistry registry = context.getBean(WavefrontMeterRegistry.class);
+					registry.counter("my.counter", "env", "qa");
+					assertThat(registry.find("my.counter").tags("env", "qa").tags("application", "super-application")
+							.tags("service", "super-service").tags("cluster", "super-cluster")
+							.tags("shard", "super-shard").tags("custom-key", "custom-val").counter()).isNotNull();
+				});
+	}
+
+	@Test
+	void exportsApplicationTagsInWavefrontRegistryWhenInProperties() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class))
+				.withPropertyValues("management.wavefront.application.service-name=super-service",
+						"management.wavefront.application.name=super-application",
+						"management.wavefront.application.cluster-name=super-cluster",
+						"management.wavefront.application.shard-name=super-shard")
+				.withUserConfiguration(BaseConfiguration.class).run((context) -> {
+					WavefrontMeterRegistry registry = context.getBean(WavefrontMeterRegistry.class);
+					registry.counter("my.counter", "env", "qa");
+					assertThat(registry.find("my.counter").tags("env", "qa").tags("application", "super-application")
+							.tags("service", "super-service").tags("cluster", "super-cluster")
+							.tags("shard", "super-shard").counter()).isNotNull();
+				});
 	}
 
 	@Test

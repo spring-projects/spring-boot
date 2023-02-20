@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.time.Duration;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonCreator.Mode;
@@ -38,6 +39,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies.SnakeCaseStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -50,10 +52,14 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.ReflectionHintsPredicates;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration.JacksonAutoConfigurationRuntimeHints;
 import org.springframework.boot.jackson.JsonComponent;
 import org.springframework.boot.jackson.JsonMixin;
 import org.springframework.boot.jackson.JsonMixinModule;
@@ -81,6 +87,7 @@ import static org.mockito.Mockito.mock;
  * @author Sebastien Deleuze
  * @author Johannes Edmeier
  * @author Grzegorz Poznachowski
+ * @author Ralf Ueberfuhr
  */
 class JacksonAutoConfigurationTests {
 
@@ -456,6 +463,20 @@ class JacksonAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void shouldRegisterPropertyNamingStrategyHints() {
+		shouldRegisterPropertyNamingStrategyHints(PropertyNamingStrategies.class, "LOWER_CAMEL_CASE",
+				"UPPER_CAMEL_CASE", "SNAKE_CASE", "UPPER_SNAKE_CASE", "LOWER_CASE", "KEBAB_CASE", "LOWER_DOT_CASE");
+	}
+
+	private void shouldRegisterPropertyNamingStrategyHints(Class<?> type, String... fieldNames) {
+		RuntimeHints hints = new RuntimeHints();
+		new JacksonAutoConfigurationRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		ReflectionHintsPredicates reflection = RuntimeHintsPredicates.reflection();
+		Stream.of(fieldNames).map((name) -> reflection.onField(type, name))
+				.forEach((predicate) -> assertThat(predicate).accepts(hints));
+	}
+
 	private void assertParameterNamesModuleCreatorBinding(Mode expectedMode, Class<?>... configClasses) {
 		this.contextRunner.withUserConfiguration(configClasses).run((context) -> {
 			DeserializationConfig deserializationConfig = context.getBean(ObjectMapper.class)
@@ -502,7 +523,7 @@ class JacksonAutoConfigurationTests {
 		@Bean
 		Module jacksonModule() {
 			SimpleModule module = new SimpleModule();
-			module.addSerializer(Foo.class, new JsonSerializer<Foo>() {
+			module.addSerializer(Foo.class, new JsonSerializer<>() {
 
 				@Override
 				public void serialize(Foo value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
@@ -615,7 +636,7 @@ class JacksonAutoConfigurationTests {
 
 	static class CustomModule extends SimpleModule {
 
-		private Set<ObjectCodec> owners = new HashSet<>();
+		private final Set<ObjectCodec> owners = new HashSet<>();
 
 		@Override
 		public void setupModule(SetupContext context) {

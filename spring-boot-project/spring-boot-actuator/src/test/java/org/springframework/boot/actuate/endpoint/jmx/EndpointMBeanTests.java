@@ -54,9 +54,9 @@ class EndpointMBeanTests {
 
 	private static final String[] NO_SIGNATURE = {};
 
-	private TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(new TestJmxOperation());
+	private final TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(new TestJmxOperation());
 
-	private TestJmxOperationResponseMapper responseMapper = new TestJmxOperationResponseMapper();
+	private final TestJmxOperationResponseMapper responseMapper = new TestJmxOperationResponseMapper();
 
 	@Test
 	void createWhenResponseMapperIsNullShouldThrowException() {

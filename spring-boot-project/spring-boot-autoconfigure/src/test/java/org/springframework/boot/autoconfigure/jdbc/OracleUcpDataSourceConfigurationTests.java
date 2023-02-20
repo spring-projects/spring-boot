@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,13 +75,13 @@ class OracleUcpDataSourceConfigurationTests {
 	void testDataSourceDefaultsPreserved() {
 		this.contextRunner.run((context) -> {
 			PoolDataSourceImpl ds = context.getBean(PoolDataSourceImpl.class);
-			assertThat(ds.getInitialPoolSize()).isEqualTo(0);
-			assertThat(ds.getMinPoolSize()).isEqualTo(0);
+			assertThat(ds.getInitialPoolSize()).isZero();
+			assertThat(ds.getMinPoolSize()).isZero();
 			assertThat(ds.getMaxPoolSize()).isEqualTo(Integer.MAX_VALUE);
-			assertThat(ds.getInactiveConnectionTimeout()).isEqualTo(0);
+			assertThat(ds.getInactiveConnectionTimeout()).isZero();
 			assertThat(ds.getConnectionWaitTimeout()).isEqualTo(3);
-			assertThat(ds.getTimeToLiveConnectionTimeout()).isEqualTo(0);
-			assertThat(ds.getAbandonedConnectionTimeout()).isEqualTo(0);
+			assertThat(ds.getTimeToLiveConnectionTimeout()).isZero();
+			assertThat(ds.getAbandonedConnectionTimeout()).isZero();
 			assertThat(ds.getTimeoutCheckInterval()).isEqualTo(30);
 			assertThat(ds.getFastConnectionFailoverEnabled()).isFalse();
 		});

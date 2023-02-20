@@ -25,8 +25,8 @@ import io.micrometer.observation.Observation;
 import org.springframework.boot.actuate.metrics.web.servlet.DefaultWebMvcTagsProvider;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsContributor;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsProvider;
-import org.springframework.http.observation.ServerRequestObservationContext;
-import org.springframework.http.observation.ServerRequestObservationConvention;
+import org.springframework.http.server.observation.ServerRequestObservationContext;
+import org.springframework.http.server.observation.ServerRequestObservationConvention;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.HandlerMapping;
 
@@ -66,11 +66,7 @@ class ServerRequestObservationConventionAdapter implements ServerRequestObservat
 	public KeyValues getLowCardinalityKeyValues(ServerRequestObservationContext context) {
 		Iterable<Tag> tags = this.tagsProvider.getTags(context.getCarrier(), context.getResponse(), getHandler(context),
 				context.getError());
-		KeyValues keyValues = KeyValues.empty();
-		for (Tag tag : tags) {
-			keyValues = keyValues.and(tag.getKey(), tag.getValue());
-		}
-		return keyValues;
+		return KeyValues.of(tags, Tag::getKey, Tag::getValue);
 	}
 
 	private Object getHandler(ServerRequestObservationContext context) {

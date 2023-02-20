@@ -37,7 +37,7 @@ public class RabbitTemplateConfigurer {
 
 	private List<RabbitRetryTemplateCustomizer> retryTemplateCustomizers;
 
-	private RabbitProperties rabbitProperties;
+	private final RabbitProperties rabbitProperties;
 
 	/**
 	 * Creates a new configurer that will use the given {@code rabbitProperties}.

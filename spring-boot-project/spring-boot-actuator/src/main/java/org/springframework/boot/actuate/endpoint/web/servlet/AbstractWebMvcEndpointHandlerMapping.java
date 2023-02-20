@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -375,10 +375,9 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 				return new ResponseEntity<>(
 						(httpMethod != HttpMethod.GET) ? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND);
 			}
-			if (!(result instanceof WebEndpointResponse)) {
+			if (!(result instanceof WebEndpointResponse<?> response)) {
 				return convertIfNecessary(result);
 			}
-			WebEndpointResponse<?> response = (WebEndpointResponse<?>) result;
 			MediaType contentType = (response.getContentType() != null) ? new MediaType(response.getContentType())
 					: null;
 			return ResponseEntity.status(response.getStatus()).contentType(contentType)

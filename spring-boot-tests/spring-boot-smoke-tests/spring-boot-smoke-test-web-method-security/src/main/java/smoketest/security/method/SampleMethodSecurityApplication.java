@@ -16,6 +16,8 @@
 
 package smoketest.security.method;
 
+import jakarta.servlet.DispatcherType;
+
 import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -29,8 +31,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
-import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -71,7 +71,10 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 		@Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
 			http.csrf().disable();
-			http.authorizeHttpRequests((requests) -> requests.anyRequest().fullyAuthenticated());
+			http.authorizeHttpRequests((requests) -> {
+				requests.dispatcherTypeMatchers(DispatcherType.FORWARD).permitAll();
+				requests.anyRequest().fullyAuthenticated();
+			});
 			http.httpBasic();
 			http.formLogin((form) -> form.loginPage("/login").permitAll());
 			http.exceptionHandling((exceptions) -> exceptions.accessDeniedPage("/access"));
@@ -90,7 +93,6 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 			http.securityMatcher(EndpointRequest.toAnyEndpoint());
 			http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
 			http.httpBasic();
-			http.setSharedObject(SecurityContextRepository.class, new RequestAttributeSecurityContextRepository());
 			return http.build();
 		}
 

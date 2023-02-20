@@ -46,8 +46,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.observation.DefaultServerRequestObservationConvention;
-import org.springframework.http.observation.ServerRequestObservationConvention;
+import org.springframework.http.server.observation.DefaultServerRequestObservationConvention;
+import org.springframework.http.server.observation.ServerRequestObservationConvention;
 import org.springframework.web.filter.ServerHttpObservationFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -82,23 +82,38 @@ public class WebMvcObservationAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingFilterBean
 	public FilterRegistrationBean<ServerHttpObservationFilter> webMvcObservationFilter(ObservationRegistry registry,
+			ObjectProvider<ServerRequestObservationConvention> customConvention,
 			ObjectProvider<WebMvcTagsProvider> customTagsProvider,
 			ObjectProvider<WebMvcTagsContributor> contributorsProvider) {
-
-		String observationName = this.observationProperties.getHttp().getServer().getRequests().getName();
-		String metricName = this.metricsProperties.getWeb().getServer().getRequest().getMetricName();
-		String name = (observationName != null) ? observationName : metricName;
-		ServerRequestObservationConvention convention = new DefaultServerRequestObservationConvention(name);
-		WebMvcTagsProvider tagsProvider = customTagsProvider.getIfAvailable();
-		List<WebMvcTagsContributor> contributors = contributorsProvider.orderedStream().toList();
-		if (tagsProvider != null || contributors.size() > 0) {
-			convention = new ServerRequestObservationConventionAdapter(name, tagsProvider, contributors);
-		}
+		String name = httpRequestsMetricName(this.observationProperties, this.metricsProperties);
+		ServerRequestObservationConvention convention = createConvention(customConvention.getIfAvailable(), name,
+				customTagsProvider.getIfAvailable(), contributorsProvider.orderedStream().toList());
 		ServerHttpObservationFilter filter = new ServerHttpObservationFilter(registry, convention);
 		FilterRegistrationBean<ServerHttpObservationFilter> registration = new FilterRegistrationBean<>(filter);
 		registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
 		registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
 		return registration;
+	}
+
+	private static ServerRequestObservationConvention createConvention(
+			ServerRequestObservationConvention customConvention, String name, WebMvcTagsProvider tagsProvider,
+			List<WebMvcTagsContributor> contributors) {
+		if (customConvention != null) {
+			return customConvention;
+		}
+		else if (tagsProvider != null || contributors.size() > 0) {
+			return new ServerRequestObservationConventionAdapter(name, tagsProvider, contributors);
+		}
+		else {
+			return new DefaultServerRequestObservationConvention(name);
+		}
+	}
+
+	private static String httpRequestsMetricName(ObservationProperties observationProperties,
+			MetricsProperties metricsProperties) {
+		String observationName = observationProperties.getHttp().getServer().getRequests().getName();
+		return (observationName != null) ? observationName
+				: metricsProperties.getWeb().getServer().getRequest().getMetricName();
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -108,11 +123,12 @@ public class WebMvcObservationAutoConfiguration {
 
 		@Bean
 		@Order(0)
-		MeterFilter metricsHttpServerUriTagFilter(MetricsProperties properties) {
-			String metricName = properties.getWeb().getServer().getRequest().getMetricName();
+		MeterFilter metricsHttpServerUriTagFilter(MetricsProperties metricsProperties,
+				ObservationProperties observationProperties) {
+			String name = httpRequestsMetricName(observationProperties, metricsProperties);
 			MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
-					() -> String.format("Reached the maximum number of URI tags for '%s'.", metricName));
-			return MeterFilter.maximumAllowableTags(metricName, "uri", properties.getWeb().getServer().getMaxUriTags(),
+					() -> String.format("Reached the maximum number of URI tags for '%s'.", name));
+			return MeterFilter.maximumAllowableTags(name, "uri", metricsProperties.getWeb().getServer().getMaxUriTags(),
 					filter);
 		}
 

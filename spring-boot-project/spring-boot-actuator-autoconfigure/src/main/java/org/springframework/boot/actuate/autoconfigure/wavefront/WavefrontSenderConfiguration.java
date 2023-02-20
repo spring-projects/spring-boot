@@ -32,7 +32,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.unit.DataSize;
 
 /**
- * Configuration for Wavefront common infrastructure. This configuration is imported from
+ * Configuration for {@link WavefrontSender}. This configuration is imported from
  * {@link WavefrontMetricsExportAutoConfiguration} and
  * {@link WavefrontTracingAutoConfiguration}.
  *

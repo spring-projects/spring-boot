@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
  */
 class ClassLoaderFilesTests {
 
-	private ClassLoaderFiles files = new ClassLoaderFiles();
+	private final ClassLoaderFiles files = new ClassLoaderFiles();
 
 	@Test
 	void addFileNameMustNotBeNull() {
@@ -85,8 +85,8 @@ class ClassLoaderFilesTests {
 		this.files.addFile("a", "myfile", file1);
 		this.files.addFile("b", "myfile", file2);
 		assertThat(this.files.getFile("myfile")).isEqualTo(file2);
-		assertThat(this.files.getOrCreateSourceDirectory("a").getFiles().size()).isEqualTo(0);
-		assertThat(this.files.getOrCreateSourceDirectory("b").getFiles().size()).isEqualTo(1);
+		assertThat(this.files.getOrCreateSourceDirectory("a").getFiles()).isEmpty();
+		assertThat(this.files.getOrCreateSourceDirectory("b").getFiles()).hasSize(1);
 	}
 
 	@Test

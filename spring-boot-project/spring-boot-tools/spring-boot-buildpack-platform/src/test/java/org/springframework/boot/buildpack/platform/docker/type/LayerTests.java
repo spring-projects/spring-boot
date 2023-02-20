@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,8 @@ class LayerTests {
 			layout.directory("/directory", Owner.ROOT);
 			layout.file("/directory/file", Owner.ROOT, Content.of("test"));
 		});
-		assertThat(layer.getId().toString())
-				.isEqualTo("sha256:d03a34f73804698c875eb56ff694fc2fceccc69b645e4adceb004ed13588613b");
+		assertThat(layer.getId())
+				.hasToString("sha256:d03a34f73804698c875eb56ff694fc2fceccc69b645e4adceb004ed13588613b");
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		layer.writeTo(outputStream);
 		try (TarArchiveInputStream tarStream = new TarArchiveInputStream(

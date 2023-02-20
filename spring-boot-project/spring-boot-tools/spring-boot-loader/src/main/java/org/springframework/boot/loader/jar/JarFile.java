@@ -79,9 +79,9 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 
 	private String urlString;
 
-	private JarFileEntries entries;
+	private final JarFileEntries entries;
 
-	private Supplier<Manifest> manifestSupplier;
+	private final Supplier<Manifest> manifestSupplier;
 
 	private SoftReference<Manifest> manifest;
 

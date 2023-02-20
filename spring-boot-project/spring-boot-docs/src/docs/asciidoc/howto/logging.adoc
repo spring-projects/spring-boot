@@ -118,7 +118,7 @@ You also need to add `logging.file.name` to your `application.properties` or `ap
 [[howto.logging.log4j]]
 === Configure Log4j for Logging
 Spring Boot supports https://logging.apache.org/log4j/2.x/[Log4j 2] for logging configuration if it is on the classpath.
-If you use the starters for assembling dependencies, you have to exclude Logback and then include log4j 2 instead.
+If you use the starters for assembling dependencies, you have to exclude Logback and then include Log4j 2 instead.
 If you do not use the starters, you need to provide (at least) `spring-jcl` in addition to Log4j 2.
 
 The recommended path is through the starters, even though it requires some jiggling.

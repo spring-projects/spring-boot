@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,8 @@ import org.springframework.util.unit.DataSize;
  * @author Phillip Webb
  * @author HaiTao Zhang
  * @author Rafiullah Hamedy
+ * @author Florian Storz
+ * @author Michael Weidmann
  * @since 2.0.0
  */
 public class JettyWebServerFactoryCustomizer
@@ -85,6 +87,9 @@ public class JettyWebServerFactoryCustomizer
 		propertyMapper.from(properties::getMaxHttpRequestHeaderSize).whenNonNull().asInt(DataSize::toBytes)
 				.when(this::isPositive).to((maxHttpRequestHeaderSize) -> factory
 						.addServerCustomizers(new MaxHttpRequestHeaderSizeCustomizer(maxHttpRequestHeaderSize)));
+		propertyMapper.from(jettyProperties::getMaxHttpResponseHeaderSize).whenNonNull().asInt(DataSize::toBytes)
+				.when(this::isPositive).to((maxHttpResponseHeaderSize) -> factory
+						.addServerCustomizers(new MaxHttpResponseHeaderSizeCustomizer(maxHttpResponseHeaderSize)));
 		propertyMapper.from(jettyProperties::getMaxHttpFormPostSize).asInt(DataSize::toBytes).when(this::isPositive)
 				.to((maxHttpFormPostSize) -> customizeMaxHttpFormPostSize(factory, maxHttpFormPostSize));
 		propertyMapper.from(jettyProperties::getConnectionIdleTimeout).whenNonNull()
@@ -213,6 +218,32 @@ public class JettyWebServerFactoryCustomizer
 			if (factory instanceof HttpConfiguration.ConnectionFactory) {
 				((HttpConfiguration.ConnectionFactory) factory).getHttpConfiguration()
 						.setRequestHeaderSize(this.maxRequestHeaderSize);
+			}
+		}
+
+	}
+
+	private static class MaxHttpResponseHeaderSizeCustomizer implements JettyServerCustomizer {
+
+		private final int maxResponseHeaderSize;
+
+		MaxHttpResponseHeaderSizeCustomizer(int maxResponseHeaderSize) {
+			this.maxResponseHeaderSize = maxResponseHeaderSize;
+		}
+
+		@Override
+		public void customize(Server server) {
+			Arrays.stream(server.getConnectors()).forEach(this::customize);
+		}
+
+		private void customize(org.eclipse.jetty.server.Connector connector) {
+			connector.getConnectionFactories().forEach(this::customize);
+		}
+
+		private void customize(ConnectionFactory factory) {
+			if (factory instanceof HttpConfiguration.ConnectionFactory) {
+				((HttpConfiguration.ConnectionFactory) factory).getHttpConfiguration()
+						.setResponseHeaderSize(this.maxResponseHeaderSize);
 			}
 		}
 

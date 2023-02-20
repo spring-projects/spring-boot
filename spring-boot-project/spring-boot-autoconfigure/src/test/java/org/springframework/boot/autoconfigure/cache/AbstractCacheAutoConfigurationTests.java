@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ abstract class AbstractCacheAutoConfigurationTests {
 					assertThat(value.cacheManager).isNull();
 				}
 			});
-			assertThat(expected).hasSize(0);
+			assertThat(expected).isEmpty();
 		};
 	}
 
@@ -102,7 +102,7 @@ abstract class AbstractCacheAutoConfigurationTests {
 
 		@Bean
 		CacheManagerCustomizer<CouchbaseCacheManager> couchbaseCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<CouchbaseCacheManager>() {
+			return new CacheManagerTestCustomizer<>() {
 
 			};
 		}
@@ -130,7 +130,7 @@ abstract class AbstractCacheAutoConfigurationTests {
 
 		@Bean
 		CacheManagerCustomizer<SpringCache2kCacheManager> cache2kCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<SpringCache2kCacheManager>() {
+			return new CacheManagerTestCustomizer<>() {
 
 			};
 		}

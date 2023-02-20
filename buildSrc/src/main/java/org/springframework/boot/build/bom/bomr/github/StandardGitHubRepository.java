@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,12 @@
 
 package org.springframework.boot.build.bom.bomr.github;
 
+import java.time.Duration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import org.springframework.http.ResponseEntity;
@@ -52,13 +55,9 @@ final class StandardGitHubRepository implements GitHubRepository {
 		}
 		requestBody.put("body", body);
 		try {
-			Thread.sleep(1000);
-		}
-		catch (InterruptedException ex) {
-			Thread.currentThread().interrupt();
-		}
-		try {
 			ResponseEntity<Map> response = this.rest.postForEntity("issues", requestBody, Map.class);
+			// See gh-30304
+			sleep(Duration.ofSeconds(3));
 			return (Integer) response.getBody().get("number");
 		}
 		catch (RestClientException ex) {
@@ -70,8 +69,8 @@ final class StandardGitHubRepository implements GitHubRepository {
 	}
 
 	@Override
-	public List<String> getLabels() {
-		return get("labels?per_page=100", (label) -> (String) label.get("name"));
+	public Set<String> getLabels() {
+		return new HashSet<>(get("labels?per_page=100", (label) -> (String) label.get("name")));
 	}
 
 	@Override
@@ -85,13 +84,23 @@ final class StandardGitHubRepository implements GitHubRepository {
 		return get(
 				"issues?per_page=100&state=all&labels=" + String.join(",", labels) + "&milestone="
 						+ milestone.getNumber(),
-				(issue) -> new Issue(this.rest, (Integer) issue.get("number"), (String) issue.get("title")));
+				(issue) -> new Issue(this.rest, (Integer) issue.get("number"), (String) issue.get("title"),
+						Issue.State.of((String) issue.get("state"))));
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private <T> List<T> get(String name, Function<Map<String, Object>, T> mapper) {
 		ResponseEntity<List> response = this.rest.getForEntity(name, List.class);
 		return ((List<Map<String, Object>>) response.getBody()).stream().map(mapper).toList();
+	}
+
+	private static void sleep(Duration duration) {
+		try {
+			Thread.sleep(duration.toMillis());
+		}
+		catch (InterruptedException ex) {
+			Thread.currentThread().interrupt();
+		}
 	}
 
 }

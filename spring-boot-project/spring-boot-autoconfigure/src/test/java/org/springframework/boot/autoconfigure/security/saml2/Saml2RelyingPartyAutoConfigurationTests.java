@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,7 +99,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 			assertThat(registration.getAssertionConsumerServiceBinding()).isEqualTo(Saml2MessageBinding.REDIRECT);
 			assertThat(registration.getAssertingPartyDetails().getSingleSignOnServiceBinding())
 					.isEqualTo(Saml2MessageBinding.POST);
-			assertThat(registration.getAssertingPartyDetails().getWantAuthnRequestsSigned()).isEqualTo(false);
+			assertThat(registration.getAssertingPartyDetails().getWantAuthnRequestsSigned()).isFalse();
 			assertThat(registration.getSigningX509Credentials()).hasSize(1);
 			assertThat(registration.getDecryptionX509Credentials()).hasSize(1);
 			assertThat(registration.getAssertingPartyDetails().getVerificationX509Credentials()).isNotNull();
@@ -142,7 +142,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 			this.contextRunner.withPropertyValues(PREFIX + ".foo.assertingparty.metadata-uri=" + metadataUrl)
 					.run((context) -> {
 						assertThat(context).hasSingleBean(RelyingPartyRegistrationRepository.class);
-						assertThat(server.getRequestCount()).isEqualTo(1);
+						assertThat(server.getRequestCount()).isOne();
 					});
 		}
 	}

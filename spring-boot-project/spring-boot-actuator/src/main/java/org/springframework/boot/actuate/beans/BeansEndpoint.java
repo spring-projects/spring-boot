@@ -22,6 +22,7 @@ import java.util.Map;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.context.ApplicationContext;
@@ -52,14 +53,14 @@ public class BeansEndpoint {
 	}
 
 	@ReadOperation
-	public ApplicationBeans beans() {
-		Map<String, ContextBeans> contexts = new HashMap<>();
+	public BeansDescriptor beans() {
+		Map<String, ContextBeansDescriptor> contexts = new HashMap<>();
 		ConfigurableApplicationContext context = this.context;
 		while (context != null) {
-			contexts.put(context.getId(), ContextBeans.describing(context));
+			contexts.put(context.getId(), ContextBeansDescriptor.describing(context));
 			context = getConfigurableParent(context);
 		}
-		return new ApplicationBeans(contexts);
+		return new BeansDescriptor(contexts);
 	}
 
 	private static ConfigurableApplicationContext getConfigurableParent(ConfigurableApplicationContext context) {
@@ -71,34 +72,32 @@ public class BeansEndpoint {
 	}
 
 	/**
-	 * A description of an application's beans, primarily intended for serialization to
-	 * JSON.
+	 * Description of an application's beans.
 	 */
-	public static final class ApplicationBeans {
+	public static final class BeansDescriptor implements OperationResponseBody {
 
-		private final Map<String, ContextBeans> contexts;
+		private final Map<String, ContextBeansDescriptor> contexts;
 
-		private ApplicationBeans(Map<String, ContextBeans> contexts) {
+		private BeansDescriptor(Map<String, ContextBeansDescriptor> contexts) {
 			this.contexts = contexts;
 		}
 
-		public Map<String, ContextBeans> getContexts() {
+		public Map<String, ContextBeansDescriptor> getContexts() {
 			return this.contexts;
 		}
 
 	}
 
 	/**
-	 * A description of an application context, primarily intended for serialization to
-	 * JSON.
+	 * Description of an application context beans.
 	 */
-	public static final class ContextBeans {
+	public static final class ContextBeansDescriptor {
 
 		private final Map<String, BeanDescriptor> beans;
 
 		private final String parentId;
 
-		private ContextBeans(Map<String, BeanDescriptor> beans, String parentId) {
+		private ContextBeansDescriptor(Map<String, BeanDescriptor> beans, String parentId) {
 			this.beans = beans;
 			this.parentId = parentId;
 		}
@@ -111,12 +110,13 @@ public class BeansEndpoint {
 			return this.beans;
 		}
 
-		private static ContextBeans describing(ConfigurableApplicationContext context) {
+		private static ContextBeansDescriptor describing(ConfigurableApplicationContext context) {
 			if (context == null) {
 				return null;
 			}
 			ConfigurableApplicationContext parent = getConfigurableParent(context);
-			return new ContextBeans(describeBeans(context.getBeanFactory()), (parent != null) ? parent.getId() : null);
+			return new ContextBeansDescriptor(describeBeans(context.getBeanFactory()),
+					(parent != null) ? parent.getId() : null);
 		}
 
 		private static Map<String, BeanDescriptor> describeBeans(ConfigurableListableBeanFactory beanFactory) {
@@ -144,8 +144,7 @@ public class BeansEndpoint {
 	}
 
 	/**
-	 * A description of a bean in an application context, primarily intended for
-	 * serialization to JSON.
+	 * Description of a bean.
 	 */
 	public static final class BeanDescriptor {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import javax.sql.DataSource;
 import org.jooq.ConnectionProvider;
 import org.jooq.DSLContext;
 import org.jooq.ExecuteListenerProvider;
+import org.jooq.TransactionProvider;
 import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultConfiguration;
 import org.jooq.impl.DefaultDSLContext;
@@ -62,6 +63,7 @@ public class JooqAutoConfiguration {
 
 	@Bean
 	@ConditionalOnBean(PlatformTransactionManager.class)
+	@ConditionalOnMissingBean(TransactionProvider.class)
 	public SpringTransactionProvider transactionProvider(PlatformTransactionManager txManager) {
 		return new SpringTransactionProvider(txManager);
 	}
@@ -85,11 +87,13 @@ public class JooqAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(org.jooq.Configuration.class)
 		public DefaultConfiguration jooqConfiguration(JooqProperties properties, ConnectionProvider connectionProvider,
-				DataSource dataSource, ObjectProvider<ExecuteListenerProvider> executeListenerProviders,
+				DataSource dataSource, ObjectProvider<TransactionProvider> transactionProvider,
+				ObjectProvider<ExecuteListenerProvider> executeListenerProviders,
 				ObjectProvider<DefaultConfigurationCustomizer> configurationCustomizers) {
 			DefaultConfiguration configuration = new DefaultConfiguration();
 			configuration.set(properties.determineSqlDialect(dataSource));
 			configuration.set(connectionProvider);
+			transactionProvider.ifAvailable(configuration::set);
 			configuration.set(executeListenerProviders.orderedStream().toArray(ExecuteListenerProvider[]::new));
 			configurationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(configuration));
 			return configuration;

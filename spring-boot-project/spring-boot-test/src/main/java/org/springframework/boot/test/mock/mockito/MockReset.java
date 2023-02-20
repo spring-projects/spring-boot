@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.mockito.mock.MockCreationSettings;
 import org.springframework.util.Assert;
 
 /**
- * Reset strategy used on a mock bean. Usually applied to a mock via the
+ * Reset strategy used on a mock bean. Usually applied to a mock through the
  * {@link MockBean @MockBean} annotation but can also be directly applied to any mock in
  * the {@code ApplicationContext} using the static methods.
  *

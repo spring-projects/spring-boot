@@ -84,6 +84,7 @@ public class SystemTestPlugin implements Plugin<Project> {
 		systemTest.shouldRunAfter(JavaPlugin.TEST_TASK_NAME);
 		if (isCi()) {
 			systemTest.getOutputs().upToDateWhen(NEVER);
+			systemTest.getOutputs().doNotCacheIf("System tests are always rerun on CI", (task) -> true);
 		}
 	}
 

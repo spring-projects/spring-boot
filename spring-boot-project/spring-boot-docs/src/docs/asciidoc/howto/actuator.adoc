@@ -42,7 +42,7 @@ Viewing original values in the unsanitized form can be configured per endpoint u
 This property can be configured to have the following values:
 
 - `ALWAYS` - all values are shown in their unsanitized form to all users
-- `NEVER  - all values are always sanitized (that is replaced by `+******+`)
+- `NEVER`  - all values are always sanitized (that is replaced by `+******+`)
 - `WHEN_AUTHORIZED` - all values are shown in their unsanitized form to authorized users
 
 For HTTP endpoints, a user is considered to be authorized if they have authenticated and have the roles configured by the endpoint's roles property.
@@ -66,13 +66,10 @@ NOTE: When `show-values` is set to `ALWAYS` or `WHEN_AUTHORIZED` any sanitizatio
 
 [[howto.actuator.sanitize-sensitive-values.customizing-sanitization]]
 ==== Customizing Sanitization
-Sanitization can be customized in two different ways.
-
-To take more control over the sanitization, define a `SanitizingFunction` bean.
+To take control over the sanitization, define a `SanitizingFunction` bean.
 The `SanitizableData` with which the function is called provides access to the key and value as well as the `PropertySource` from which they came.
 This allows you to, for example, sanitize every value that comes from a particular property source.
 Each `SanitizingFunction` is called in order until a function changes the value of the sanitizable data.
-If no function changes its value, the built-in key-based sanitization is performed.
 
 
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class OriginTrackedYamlLoaderTests {
 	@Test
 	void processSimpleKey() {
 		OriginTrackedValue value = getValue("name");
-		assertThat(value.toString()).isEqualTo("Martin D'vloper");
+		assertThat(value).hasToString("Martin D'vloper");
 		assertThat(getLocation(value)).isEqualTo("3:7");
 	}
 
@@ -64,11 +64,11 @@ class OriginTrackedYamlLoaderTests {
 		OriginTrackedValue perl = getValue("languages.perl");
 		OriginTrackedValue python = getValue("languages.python");
 		OriginTrackedValue pascal = getValue("languages.pascal");
-		assertThat(perl.toString()).isEqualTo("Elite");
+		assertThat(perl).hasToString("Elite");
 		assertThat(getLocation(perl)).isEqualTo("13:11");
-		assertThat(python.toString()).isEqualTo("Elite");
+		assertThat(python).hasToString("Elite");
 		assertThat(getLocation(python)).isEqualTo("14:13");
-		assertThat(pascal.toString()).isEqualTo("Lame");
+		assertThat(pascal).hasToString("Lame");
 		assertThat(getLocation(pascal)).isEqualTo("15:13");
 	}
 
@@ -78,20 +78,20 @@ class OriginTrackedYamlLoaderTests {
 		OriginTrackedValue orange = getValue("foods[1]");
 		OriginTrackedValue strawberry = getValue("foods[2]");
 		OriginTrackedValue mango = getValue("foods[3]");
-		assertThat(apple.toString()).isEqualTo("Apple");
+		assertThat(apple).hasToString("Apple");
 		assertThat(getLocation(apple)).isEqualTo("8:7");
-		assertThat(orange.toString()).isEqualTo("Orange");
+		assertThat(orange).hasToString("Orange");
 		assertThat(getLocation(orange)).isEqualTo("9:7");
-		assertThat(strawberry.toString()).isEqualTo("Strawberry");
+		assertThat(strawberry).hasToString("Strawberry");
 		assertThat(getLocation(strawberry)).isEqualTo("10:7");
-		assertThat(mango.toString()).isEqualTo("Mango");
+		assertThat(mango).hasToString("Mango");
 		assertThat(getLocation(mango)).isEqualTo("11:7");
 	}
 
 	@Test
 	void processMultiline() {
 		OriginTrackedValue education = getValue("education");
-		assertThat(education.toString()).isEqualTo("4 GCSEs\n3 A-Levels\nBSc in the Internet of Things\n");
+		assertThat(education).hasToString("4 GCSEs\n3 A-Levels\nBSc in the Internet of Things\n");
 		assertThat(getLocation(education)).isEqualTo("16:12");
 	}
 
@@ -101,13 +101,13 @@ class OriginTrackedYamlLoaderTests {
 		OriginTrackedValue url = getValue("example.foo[0].url");
 		OriginTrackedValue bar1 = getValue("example.foo[0].bar[0].bar1");
 		OriginTrackedValue bar2 = getValue("example.foo[0].bar[1].bar2");
-		assertThat(name.toString()).isEqualTo("springboot");
+		assertThat(name).hasToString("springboot");
 		assertThat(getLocation(name)).isEqualTo("22:15");
-		assertThat(url.toString()).isEqualTo("https://springboot.example.com/");
+		assertThat(url).hasToString("https://springboot.example.com/");
 		assertThat(getLocation(url)).isEqualTo("23:14");
-		assertThat(bar1.toString()).isEqualTo("baz");
+		assertThat(bar1).hasToString("baz");
 		assertThat(getLocation(bar1)).isEqualTo("25:19");
-		assertThat(bar2.toString()).isEqualTo("bling");
+		assertThat(bar2).hasToString("bling");
 		assertThat(getLocation(bar2)).isEqualTo("26:19");
 	}
 
@@ -171,6 +171,15 @@ class OriginTrackedYamlLoaderTests {
 		Map<String, Object> loaded = this.loader.load().get(0);
 		assertThat(loaded.get("test.a.spring")).hasToString("a");
 		assertThat(loaded.get("test.b.boot")).hasToString("b");
+	}
+
+	@Test
+	void loadWhenUsingAnchors() {
+		Resource resource = new ClassPathResource("anchors.yml", getClass());
+		this.loader = new OriginTrackedYamlLoader(resource);
+		Map<String, Object> loaded = this.loader.load().get(0);
+		assertThat(loaded.get("some.path.config.key")).hasToString("value");
+		assertThat(loaded.get("some.anotherpath.config.key")).hasToString("value");
 	}
 
 	private OriginTrackedValue getValue(String name) {

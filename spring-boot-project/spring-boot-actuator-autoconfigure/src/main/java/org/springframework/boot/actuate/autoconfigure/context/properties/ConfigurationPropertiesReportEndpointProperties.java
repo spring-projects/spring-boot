@@ -42,7 +42,7 @@ public class ConfigurationPropertiesReportEndpointProperties {
 	 * Roles used to determine whether a user is authorized to be shown unsanitized
 	 * values. When empty, all authenticated users are authorized.
 	 */
-	private Set<String> roles = new HashSet<>();
+	private final Set<String> roles = new HashSet<>();
 
 	public Show getShowValues() {
 		return this.showValues;

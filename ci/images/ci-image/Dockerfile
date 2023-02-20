@@ -1,4 +1,4 @@
-FROM ubuntu:focal-20221019
+FROM ubuntu:jammy-20230126
 
 ADD setup.sh /setup.sh
 ADD get-jdk-url.sh /get-jdk-url.sh
@@ -12,4 +12,3 @@ ADD docker-lib.sh /docker-lib.sh
 ADD build-release-scripts.sh /build-release-scripts.sh
 ADD releasescripts /release-scripts
 RUN ./build-release-scripts.sh
-ENTRYPOINT [ "switch", "shell=/bin/bash", "--", "codep", "/bin/docker daemon" ]

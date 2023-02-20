@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,9 +43,9 @@ import static org.mockito.ArgumentMatchers.isA;
  */
 class DelegatingFilterProxyRegistrationBeanTests extends AbstractFilterRegistrationBeanTests {
 
-	private static ThreadLocal<Boolean> mockFilterInitialized = new ThreadLocal<>();
+	private static final ThreadLocal<Boolean> mockFilterInitialized = new ThreadLocal<>();
 
-	private GenericWebApplicationContext applicationContext = new GenericWebApplicationContext(
+	private final GenericWebApplicationContext applicationContext = new GenericWebApplicationContext(
 			new MockServletContext());
 
 	@Test
@@ -87,9 +87,8 @@ class DelegatingFilterProxyRegistrationBeanTests extends AbstractFilterRegistrat
 
 	@Test
 	void createServletRegistrationBeanMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> new DelegatingFilterProxyRegistrationBean("mockFilter", (ServletRegistrationBean[]) null))
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> new DelegatingFilterProxyRegistrationBean("mockFilter", (ServletRegistrationBean<?>[]) null))
 				.withMessageContaining("ServletRegistrationBeans must not be null");
 	}
 

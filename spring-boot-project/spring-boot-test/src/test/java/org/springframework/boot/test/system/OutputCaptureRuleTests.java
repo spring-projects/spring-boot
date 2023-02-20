@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,29 @@ public class OutputCaptureRuleTests {
 	public void toStringShouldReturnAllCapturedOutput() {
 		System.out.println("Hello World");
 		assertThat(this.output.toString()).contains("Hello World");
+	}
+
+	@Test
+	public void getAllShouldReturnAllCapturedOutput() {
+		System.out.println("Hello World");
+		System.err.println("Hello Error");
+		assertThat(this.output.getAll()).contains("Hello World", "Hello Error");
+	}
+
+	@Test
+	public void getOutShouldOnlyReturnOutputCapturedFromSystemOut() {
+		System.out.println("Hello World");
+		System.err.println("Hello Error");
+		assertThat(this.output.getOut()).contains("Hello World");
+		assertThat(this.output.getOut()).doesNotContain("Hello Error");
+	}
+
+	@Test
+	public void getErrShouldOnlyReturnOutputCapturedFromSystemErr() {
+		System.out.println("Hello World");
+		System.err.println("Hello Error");
+		assertThat(this.output.getErr()).contains("Hello Error");
+		assertThat(this.output.getErr()).doesNotContain("Hello World");
 	}
 
 	@Test

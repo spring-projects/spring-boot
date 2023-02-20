@@ -127,9 +127,6 @@ do as they were designed before this was clarified.
 | https://www.ibm.com/products/mq[IBM MQ]
 | https://github.com/ibm-messaging/mq-jms-spring
 
-| https://infinispan.org/[Infinispan]
-| https://github.com/infinispan/infinispan-spring-boot
-
 | https://github.com/neuland/jade4j[Jade Templates] (Jade4J)
 | https://github.com/domix/jade4j-spring-boot-starter
 

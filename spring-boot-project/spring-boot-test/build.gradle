@@ -29,6 +29,7 @@ dependencies {
 	optional("org.skyscreamer:jsonassert")
 	optional("org.seleniumhq.selenium:htmlunit-driver") {
 		exclude(group: "commons-logging", module: "commons-logging")
+		exclude(group: "com.sun.activation", module: "jakarta.activation")
 	}
 	optional("org.seleniumhq.selenium:selenium-api")
 	optional("org.springframework:spring-test")

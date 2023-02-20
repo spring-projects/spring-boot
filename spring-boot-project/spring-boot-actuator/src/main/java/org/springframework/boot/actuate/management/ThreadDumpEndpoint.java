@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 
@@ -52,9 +53,9 @@ public class ThreadDumpEndpoint {
 	}
 
 	/**
-	 * A description of a thread dump. Primarily intended for serialization to JSON.
+	 * Description of a thread dump.
 	 */
-	public static final class ThreadDumpDescriptor {
+	public static final class ThreadDumpDescriptor implements OperationResponseBody {
 
 		private final List<ThreadInfo> threads;
 

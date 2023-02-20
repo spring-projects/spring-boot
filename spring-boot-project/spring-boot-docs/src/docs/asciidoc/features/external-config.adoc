@@ -1,7 +1,7 @@
 [[features.external-config]]
 == Externalized Configuration
 Spring Boot lets you externalize your configuration so that you can work with the same application code in different environments.
-You can use a variety of external configuration sources, include Java properties files, YAML files, environment variables, and command-line arguments.
+You can use a variety of external configuration sources including Java properties files, YAML files, environment variables, and command-line arguments.
 
 Property values can be injected directly into your beans by using the `@Value` annotation, accessed through Spring's `Environment` abstraction, or be <<features#features.external-config.typesafe-configuration-properties,bound to structured objects>> through `@ConfigurationProperties`.
 
@@ -724,7 +724,7 @@ In this setup, the presence of a single parameterized constructor implies that c
 This means that the binder will find a constructor with the parameters that you wish to have bound.
 If your class has multiple constructors, the `@ConstructorBinding` annotation can be used to specify which constructor to use for constructor binding.
 To opt out of constructor binding for a class with a single parameterized constructor, the constructor must be annotated with `@Autowired`.
-If you are using Java 16 or later, constructor binding can be used with records.
+Constructor binding can be used with records.
 Unless your record has multiple constructors, there is no need to use `@ConstructorBinding`.
 
 Nested members of a constructor bound class (such as `Security` in the example above) will also be bound through their constructor.
@@ -739,6 +739,9 @@ include::code:nonnull/MyProperties[tag=*]
 
 NOTE: To use constructor binding the class must be enabled using `@EnableConfigurationProperties` or configuration property scanning.
 You cannot use constructor binding with beans that are created by the regular Spring mechanisms (for example `@Component` beans, beans created by using `@Bean` methods or beans loaded by using `@Import`)
+
+NOTE: To use constructor binding in a native image the class must be compiled with `-parameters`.
+This will happen automatically if you use Spring Boot's Gradle plugin or if you use Maven and `spring-boot-starter-parent`.
 
 NOTE: The use of `java.util.Optional` with `@ConfigurationProperties` is not recommended as it is primarily intended for use as a return type.
 As such, it is not well-suited to configuration property injection.
@@ -756,6 +759,7 @@ In these cases, specify the list of types to process using the `@EnableConfigura
 This can be done on any `@Configuration` class, as shown in the following example:
 
 include::code:MyConfiguration[]
+include::code:SomeProperties[]
 
 To use configuration property scanning, add the `@ConfigurationPropertiesScan` annotation to your application.
 Typically, it is added to the main application class that is annotated with `@SpringBootApplication` but it can be added to any `@Configuration` class.
@@ -769,7 +773,7 @@ include::code:MyApplication[]
 When the `@ConfigurationProperties` bean is registered using configuration property scanning or through `@EnableConfigurationProperties`, the bean has a conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix specified in the `@ConfigurationProperties` annotation and `<fqn>` is the fully qualified name of the bean.
 If the annotation does not provide any prefix, only the fully qualified name of the bean is used.
 
-The bean name in the example above is `com.example.app-com.example.app.SomeProperties`.
+Assuming that it is in the `com.example.app` package, the bean name of the `SomeProperties` example above is `some.properties-com.example.app.SomeProperties`.
 ====
 
 We recommend that `@ConfigurationProperties` only deal with the environment and, in particular, does not inject other beans from the context.
@@ -1134,7 +1138,7 @@ Doing so gives a transparent upgrade path while supporting a much richer format.
 [[features.external-config.typesafe-configuration-properties.validation]]
 ==== @ConfigurationProperties Validation
 Spring Boot attempts to validate `@ConfigurationProperties` classes whenever they are annotated with Spring's `@Validated` annotation.
-You can use JSR-303 `javax.validation` constraint annotations directly on your configuration class.
+You can use JSR-303 `jakarta.validation` constraint annotations directly on your configuration class.
 To do so, ensure that a compliant JSR-303 implementation is on your classpath and then add constraint annotations to your fields, as shown in the following example:
 
 include::code:MyProperties[]

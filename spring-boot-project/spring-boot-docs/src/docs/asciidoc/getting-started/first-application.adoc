@@ -61,7 +61,7 @@ Open your favorite text editor and add the following:
 
 		<!-- Additional lines to be added here... -->
 
-ifeval::["{spring-boot-artifactory-repo}" != "release"]
+ifeval::["{artifact-release-type}" != "release"]
 		<!-- (you only need this if you are using a milestone or snapshot version) -->
 		<repositories>
 			<repository>
@@ -210,7 +210,7 @@ You should see output similar to the following:
 	....... . . .
 	....... . . . (log output here)
 	....... . . .
-	........ Started MyApplication in 2.222 seconds (process running for 6.514)
+	........ Started MyApplication in 0.906 seconds (process running for 6.514)
 ----
 
 If you open a web browser to `http://localhost:8080`, you should see the following output:

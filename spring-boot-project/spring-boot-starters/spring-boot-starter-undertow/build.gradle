@@ -6,8 +6,7 @@ description = "Starter for using Undertow as the embedded servlet container. An 
 
 dependencies {
 	api("io.undertow:undertow-core")
-	api("io.undertow:undertow-servlet-jakarta")
-	api("io.undertow:undertow-websockets-jsr-jakarta")
-	api("jakarta.websocket:jakarta.websocket-api")
+	api("io.undertow:undertow-servlet")
+	api("io.undertow:undertow-websockets-jsr")
 	api("org.apache.tomcat.embed:tomcat-embed-el")
 }

@@ -16,4 +16,4 @@ NOTE: The https://github.com/paketo-buildpacks/spring-boot[Paketo Spring Boot bu
 
 NOTE: In order to achieve reproducible builds and container image caching, Buildpacks can manipulate the application resources metadata (such as the file "last modified" information).
 You should ensure that your application does not rely on that metadata at runtime.
-Spring Boot can use that information when serving static resources, but this can be disabled with configprop:spring.web.resources.cache.use-last-modified[]
+Spring Boot can use that information when serving static resources, but this can be disabled with configprop:spring.web.resources.cache.use-last-modified[].

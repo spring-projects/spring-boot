@@ -26,7 +26,8 @@ dependencies {
 	optional("org.hibernate.orm:hibernate-core")
 	optional("org.junit.jupiter:junit-jupiter-api")
 	optional("org.seleniumhq.selenium:htmlunit-driver") {
-		exclude group: "commons-logging", module: "commons-logging"
+		exclude(group: "commons-logging", module: "commons-logging")
+		exclude(group: "com.sun.activation", module: "jakarta.activation")
 	}
 	optional("org.seleniumhq.selenium:selenium-api")
 	optional("org.springframework:spring-orm")
@@ -59,6 +60,7 @@ dependencies {
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
+	optional("io.micrometer:micrometer-tracing")
 
 	testImplementation(project(":spring-boot-project:spring-boot-actuator"))
 	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
@@ -92,6 +94,7 @@ dependencies {
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.skyscreamer:jsonassert")
+	testImplementation("org.springframework:spring-core-test")
 	testImplementation("org.springframework.hateoas:spring-hateoas")
 	testImplementation("org.springframework.plugin:spring-plugin-core")
 	testImplementation("org.testcontainers:cassandra")

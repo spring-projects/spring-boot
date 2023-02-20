@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,7 +125,7 @@ class ImportAutoConfigurationImportSelectorTests {
 		Set<Object> set2 = this.importSelector
 				.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationWithUnrelatedTwo.class));
 		assertThat(set1).isEqualTo(set2);
-		assertThat(set1.hashCode()).isEqualTo(set2.hashCode());
+		assertThat(set1).hasSameHashCodeAs(set2);
 	}
 
 	@Test
@@ -153,7 +153,7 @@ class ImportAutoConfigurationImportSelectorTests {
 		Set<Object> set2 = this.importSelector
 				.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationExcludeWithUnrelatedTwo.class));
 		assertThat(set1).isEqualTo(set2);
-		assertThat(set1.hashCode()).isEqualTo(set2.hashCode());
+		assertThat(set1).hasSameHashCodeAs(set2);
 	}
 
 	@Test

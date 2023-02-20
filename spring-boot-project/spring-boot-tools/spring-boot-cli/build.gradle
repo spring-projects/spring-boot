@@ -25,9 +25,7 @@ dependencies {
 	implementation("com.vaadin.external.google:android-json")
 	implementation("jline:jline")
 	implementation("net.sf.jopt-simple:jopt-simple")
-	implementation("org.apache.httpcomponents:httpclient") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	implementation("org.apache.httpcomponents.client5:httpclient5")
 	implementation("org.slf4j:slf4j-simple")
 	implementation("org.springframework:spring-core")
 	implementation("org.springframework.security:spring-security-crypto")
@@ -107,19 +105,6 @@ task tar(type: Tar) {
 	configureArchive it
 }
 
-task scoopManifest(type: org.springframework.boot.build.cli.ScoopManifest) {
-	dependsOn zip
-	outputDir = file("${buildDir}/scoop")
-	template = file("src/main/scoop/springboot.json")
-	archive = zip.archiveFile
-}
-
-def scoopManifestArtifact = artifacts.add("archives", file("${buildDir}/scoop/springboot.json")) {
-	type "json"
-	classifier "scoop"
-	builtBy "scoopManifest"
-}
-
 task homebrewFormula(type: org.springframework.boot.build.cli.HomebrewFormula) {
 	dependsOn tar
 	outputDir = file("${buildDir}/homebrew")
@@ -139,7 +124,6 @@ publishing {
 			artifact fullJar
 			artifact tar
 			artifact zip
-			artifact scoopManifestArtifact
 			artifact homebrewFormulaArtifact
 		}
 	}

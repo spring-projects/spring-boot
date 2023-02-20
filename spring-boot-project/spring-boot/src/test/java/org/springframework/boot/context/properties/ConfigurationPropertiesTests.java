@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -198,7 +198,7 @@ class ConfigurationPropertiesTests {
 	void loadWhenHasIgnoreInvalidFieldsTrueAndInvalidFieldsShouldBind() {
 		load(IgnoreInvalidFieldsFalseProperties.class, "com.example.bar=spam");
 		IgnoreInvalidFieldsFalseProperties bean = this.context.getBean(IgnoreInvalidFieldsFalseProperties.class);
-		assertThat(bean.getBar()).isEqualTo(0);
+		assertThat(bean.getBar()).isZero();
 	}
 
 	@Test
@@ -804,9 +804,9 @@ class ConfigurationPropertiesTests {
 		WithIntegerMapProperties bean = this.context.getBean(WithIntegerMapProperties.class);
 		Map<Integer, Foo> x = bean.getMap().get("x");
 		assertThat(x.get(-1).getA()).isEqualTo("baz");
-		assertThat(x.get(-1).getB()).isEqualTo(0);
+		assertThat(x.get(-1).getB()).isZero();
 		assertThat(x.get(1).getA()).isEqualTo("bar");
-		assertThat(x.get(1).getB()).isEqualTo(1);
+		assertThat(x.get(1).getB()).isOne();
 	}
 
 	@Test
@@ -851,7 +851,7 @@ class ConfigurationPropertiesTests {
 		load(ConstructorParameterConfiguration.class);
 		ConstructorParameterProperties bean = this.context.getBean(ConstructorParameterProperties.class);
 		assertThat(bean.getFoo()).isEqualTo("hello");
-		assertThat(bean.getBar()).isEqualTo(0);
+		assertThat(bean.getBar()).isZero();
 	}
 
 	@Test
@@ -979,7 +979,7 @@ class ConfigurationPropertiesTests {
 				.getBean(MultiConstructorConfigurationListProperties.class);
 		MultiConstructorConfigurationProperties nested = bean.getNested().get(0);
 		assertThat(nested.getName()).isEqualTo("spring");
-		assertThat(nested.getAge()).isEqualTo(0);
+		assertThat(nested.getAge()).isZero();
 	}
 
 	@Test // gh-18481
@@ -1111,6 +1111,22 @@ class ConfigurationPropertiesTests {
 		WithCustomConverterAndObjectToObjectMethodProperties bean = this.context
 				.getBean(WithCustomConverterAndObjectToObjectMethodProperties.class);
 		assertThat(bean.getItem().getValue()).isEqualTo("foo");
+	}
+
+	@Test // gh-33710
+	void loadWhenConstructorUsedInBeanMethodAndNotAsConstructorBinding() {
+		load(ConstructorUsedInBeanMethodConfiguration.class, "test.two=bound-2");
+		ConstructorUsedDirectly bean = this.context.getBean(ConstructorUsedDirectly.class);
+		assertThat(bean.getOne()).isEqualTo("bean-method-1");
+		assertThat(bean.getTwo()).isEqualTo("bound-2");
+	}
+
+	@Test // gh-33409
+	void loadWhenConstructorUsedInNestedPropertyAndNotAsConstructorBinding() {
+		load(ConstructorUsedInNestedPropertyConfiguration.class, "test.nested.two=bound-2");
+		ConstructorUsedInNestedProperty bean = this.context.getBean(ConstructorUsedInNestedProperty.class);
+		assertThat(bean.getNested().getOne()).isEqualTo("nested-1");
+		assertThat(bean.getNested().getTwo()).isEqualTo("bound-2");
 	}
 
 	private AnnotationConfigApplicationContext load(Class<?> configuration, String... inlinedProperties) {
@@ -1703,7 +1719,7 @@ class ConfigurationPropertiesTests {
 	static class ValidatedValidNestedJsr303Properties {
 
 		@Valid
-		private List<Jsr303Properties> properties = Collections.singletonList(new Jsr303Properties());
+		private final List<Jsr303Properties> properties = Collections.singletonList(new Jsr303Properties());
 
 		List<Jsr303Properties> getProperties() {
 			return this.properties;
@@ -1997,7 +2013,7 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties(prefix = "sample")
 	static class MapWithNumericKeyProperties {
 
-		private Map<String, BasicProperties> properties = new LinkedHashMap<>();
+		private final Map<String, BasicProperties> properties = new LinkedHashMap<>();
 
 		Map<String, BasicProperties> getProperties() {
 			return this.properties;
@@ -2575,7 +2591,7 @@ class ConfigurationPropertiesTests {
 
 		static class Nested {
 
-			private int age;
+			private final int age;
 
 			@Autowired
 			Nested(int age) {
@@ -2592,7 +2608,7 @@ class ConfigurationPropertiesTests {
 
 	static class Outer {
 
-		private int age;
+		private final int age;
 
 		Outer(int age) {
 			this.age = age;
@@ -2617,7 +2633,7 @@ class ConfigurationPropertiesTests {
 	@ConfigurationProperties("test")
 	static class MultiConstructorConfigurationListProperties {
 
-		private List<MultiConstructorConfigurationProperties> nested = new ArrayList<>();
+		private final List<MultiConstructorConfigurationProperties> nested = new ArrayList<>();
 
 		List<MultiConstructorConfigurationProperties> getNested() {
 			return this.nested;
@@ -2843,6 +2859,69 @@ class ConfigurationPropertiesTests {
 		@Override
 		public WithPublicObjectToObjectMethod convert(String source) {
 			return new WithPublicObjectToObjectMethod(source);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties
+	static class ConstructorUsedInBeanMethodConfiguration {
+
+		@Bean
+		@ConfigurationProperties("test")
+		ConstructorUsedDirectly constructorUsedInBeanMethod() {
+			return new ConstructorUsedDirectly("bean-method-1", "bean-method-2");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(ConstructorUsedInNestedProperty.class)
+	static class ConstructorUsedInNestedPropertyConfiguration {
+
+	}
+
+	@ConfigurationProperties("test")
+	static class ConstructorUsedInNestedProperty {
+
+		@NestedConfigurationProperty
+		private ConstructorUsedDirectly nested = new ConstructorUsedDirectly("nested-1", "nested-2");
+
+		ConstructorUsedDirectly getNested() {
+			return this.nested;
+		}
+
+		void setNested(ConstructorUsedDirectly nested) {
+			this.nested = nested;
+		}
+
+	}
+
+	static class ConstructorUsedDirectly {
+
+		private String one;
+
+		private String two;
+
+		ConstructorUsedDirectly(String one, String two) {
+			this.one = one;
+			this.two = two;
+		}
+
+		String getOne() {
+			return this.one;
+		}
+
+		void setOne(String one) {
+			this.one = one;
+		}
+
+		String getTwo() {
+			return this.two;
+		}
+
+		void setTwo(String two) {
+			this.two = two;
 		}
 
 	}

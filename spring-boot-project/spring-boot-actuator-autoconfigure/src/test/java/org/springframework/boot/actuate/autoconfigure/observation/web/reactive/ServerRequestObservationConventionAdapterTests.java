@@ -16,13 +16,15 @@
 
 package org.springframework.boot.actuate.autoconfigure.observation.web.reactive;
 
+import java.util.Map;
+
 import io.micrometer.common.KeyValue;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.metrics.web.reactive.server.DefaultWebFluxTagsProvider;
-import org.springframework.http.observation.reactive.ServerRequestObservationContext;
+import org.springframework.http.server.reactive.observation.ServerRequestObservationContext;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
-import org.springframework.mock.web.server.MockServerWebExchange;
+import org.springframework.mock.http.server.reactive.MockServerHttpResponse;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.util.pattern.PathPatternParser;
 
@@ -39,12 +41,6 @@ class ServerRequestObservationConventionAdapterTests {
 
 	private static final String TEST_METRIC_NAME = "test.metric.name";
 
-	private final MockServerHttpRequest request = MockServerHttpRequest.get("/resource/test").build();
-
-	private final MockServerWebExchange serverWebExchange = MockServerWebExchange.builder(this.request).build();
-
-	private final ServerRequestObservationContext context = new ServerRequestObservationContext(this.serverWebExchange);
-
 	private final ServerRequestObservationConventionAdapter convention = new ServerRequestObservationConventionAdapter(
 			TEST_METRIC_NAME, new DefaultWebFluxTagsProvider());
 
@@ -55,9 +51,12 @@ class ServerRequestObservationConventionAdapterTests {
 
 	@Test
 	void shouldPushTagsAsLowCardinalityKeyValues() {
-		this.serverWebExchange.getAttributes().put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
-				PathPatternParser.defaultInstance.parse("/resource/{name}"));
-		assertThat(this.convention.getLowCardinalityKeyValues(this.context)).contains(KeyValue.of("status", "200"),
+		MockServerHttpRequest request = MockServerHttpRequest.get("/resource/test").build();
+		MockServerHttpResponse response = new MockServerHttpResponse();
+		ServerRequestObservationContext context = new ServerRequestObservationContext(request, response,
+				Map.of(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
+						PathPatternParser.defaultInstance.parse("/resource/{name}")));
+		assertThat(this.convention.getLowCardinalityKeyValues(context)).contains(KeyValue.of("status", "200"),
 				KeyValue.of("outcome", "SUCCESS"), KeyValue.of("uri", "/resource/{name}"),
 				KeyValue.of("method", "GET"));
 	}

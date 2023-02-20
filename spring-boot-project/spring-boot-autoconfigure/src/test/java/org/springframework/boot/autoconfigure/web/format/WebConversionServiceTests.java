@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -174,8 +174,8 @@ class WebConversionServiceTests {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(date);
 		assertThat(calendar.get(Calendar.YEAR)).isEqualTo(2018);
-		assertThat(calendar.get(Calendar.MONTH)).isEqualTo(Calendar.JANUARY);
-		assertThat(calendar.get(Calendar.DAY_OF_MONTH)).isEqualTo(1);
+		assertThat(calendar.get(Calendar.MONTH)).isZero();
+		assertThat(calendar.get(Calendar.DAY_OF_MONTH)).isOne();
 	}
 
 	private void customDateFormat(Object input) {

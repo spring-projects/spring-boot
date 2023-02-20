@@ -643,6 +643,16 @@ public class KafkaProperties {
 		private final Map<String, String> properties = new HashMap<>();
 
 		/**
+		 * The close timeout.
+		 */
+		private Duration closeTimeout;
+
+		/**
+		 * The operation timeout.
+		 */
+		private Duration operationTimeout;
+
+		/**
 		 * Whether to fail fast if the broker is not available on startup.
 		 */
 		private boolean failFast;
@@ -651,6 +661,12 @@ public class KafkaProperties {
 		 * Whether to enable modification of existing topic configuration.
 		 */
 		private boolean modifyTopicConfigs;
+
+		/**
+		 * Whether to automatically create topics during context initialization. When set
+		 * to false, disables automatic topic creation during context initialization.
+		 */
+		private boolean autoCreate = true;
 
 		public Ssl getSsl() {
 			return this.ssl;
@@ -668,6 +684,22 @@ public class KafkaProperties {
 			this.clientId = clientId;
 		}
 
+		public Duration getCloseTimeout() {
+			return this.closeTimeout;
+		}
+
+		public void setCloseTimeout(Duration closeTimeout) {
+			this.closeTimeout = closeTimeout;
+		}
+
+		public Duration getOperationTimeout() {
+			return this.operationTimeout;
+		}
+
+		public void setOperationTimeout(Duration operationTimeout) {
+			this.operationTimeout = operationTimeout;
+		}
+
 		public boolean isFailFast() {
 			return this.failFast;
 		}
@@ -682,6 +714,14 @@ public class KafkaProperties {
 
 		public void setModifyTopicConfigs(boolean modifyTopicConfigs) {
 			this.modifyTopicConfigs = modifyTopicConfigs;
+		}
+
+		public boolean isAutoCreate() {
+			return this.autoCreate;
+		}
+
+		public void setAutoCreate(boolean autoCreate) {
+			this.autoCreate = autoCreate;
 		}
 
 		public Map<String, String> getProperties() {
@@ -972,6 +1012,11 @@ public class KafkaProperties {
 		 */
 		private boolean immediateStop = false;
 
+		/**
+		 * Whether to auto start the container.
+		 */
+		private boolean autoStartup = true;
+
 		public Type getType() {
 			return this.type;
 		}
@@ -1098,6 +1143,14 @@ public class KafkaProperties {
 
 		public void setImmediateStop(boolean immediateStop) {
 			this.immediateStop = immediateStop;
+		}
+
+		public boolean isAutoStartup() {
+			return this.autoStartup;
+		}
+
+		public void setAutoStartup(boolean autoStartup) {
+			this.autoStartup = autoStartup;
 		}
 
 	}

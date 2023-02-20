@@ -28,7 +28,10 @@ import graphql.schema.visibility.NoIntrospectionGraphqlFieldVisibility;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration.GraphQlResourcesRuntimeHints;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -180,6 +183,14 @@ class GraphQlAutoConfigurationTests {
 									InstanceOfAssertFactories.list(DataLoaderRegistrar.class))
 							.containsOnly(context.getBean(BatchLoaderRegistry.class));
 				});
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints hints = new RuntimeHints();
+		new GraphQlResourcesRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.resource().forResource("graphql/sample/schema.gqls")).accepts(hints);
+		assertThat(RuntimeHintsPredicates.resource().forResource("graphql/other.graphqls")).accepts(hints);
 	}
 
 	@Configuration(proxyBeanMethods = false)

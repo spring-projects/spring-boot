@@ -16,6 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing.zipkin;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okhttp3.mockwebserver.RecordedRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import zipkin2.reporter.Sender;
@@ -27,6 +34,7 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -139,12 +147,31 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		});
 	}
 
+	@Test
+	void shouldApplyZipkinRestTemplateBuilderCustomizers() throws IOException {
+		try (MockWebServer mockWebServer = new MockWebServer()) {
+			mockWebServer.enqueue(new MockResponse().setResponseCode(204));
+			this.reactiveContextRunner
+					.withPropertyValues("management.zipkin.tracing.endpoint=" + mockWebServer.url("/"))
+					.withUserConfiguration(RestTemplateConfiguration.class)
+					.withClassLoader(new FilteredClassLoader(URLConnectionSender.class, WebClient.class))
+					.run((context) -> {
+						assertThat(context).hasSingleBean(ZipkinRestTemplateSender.class);
+						ZipkinRestTemplateSender sender = context.getBean(ZipkinRestTemplateSender.class);
+						sender.sendSpans("spans".getBytes(StandardCharsets.UTF_8)).execute();
+						RecordedRequest recordedRequest = mockWebServer.takeRequest(1, TimeUnit.SECONDS);
+						assertThat(recordedRequest).isNotNull();
+						assertThat(recordedRequest.getHeaders().get("x-dummy")).isEqualTo("dummy");
+					});
+		}
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	private static class RestTemplateConfiguration {
 
 		@Bean
-		ZipkinRestTemplateBuilderCustomizer restTemplateBuilder() {
-			return mock(ZipkinRestTemplateBuilderCustomizer.class);
+		ZipkinRestTemplateBuilderCustomizer zipkinRestTemplateBuilderCustomizer() {
+			return new DummyZipkinRestTemplateBuilderCustomizer();
 		}
 
 	}
@@ -165,6 +192,15 @@ class ZipkinConfigurationsSenderConfigurationTests {
 		@Bean
 		Sender customSender() {
 			return mock(Sender.class);
+		}
+
+	}
+
+	private static class DummyZipkinRestTemplateBuilderCustomizer implements ZipkinRestTemplateBuilderCustomizer {
+
+		@Override
+		public RestTemplateBuilder customize(RestTemplateBuilder restTemplateBuilder) {
+			return restTemplateBuilder.defaultHeader("x-dummy", "dummy");
 		}
 
 	}

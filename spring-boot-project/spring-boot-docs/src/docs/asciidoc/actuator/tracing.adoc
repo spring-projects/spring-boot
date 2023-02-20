@@ -17,7 +17,7 @@ Spring Boot ships auto-configuration for the following tracers:
 
 [[actuator.micrometer-tracing.getting-started]]
 === Getting Started
-We need an example application that we can use to getting started with tracing.
+We need an example application that we can use to get started with tracing.
 For our purposes, the simple "`Hello World!`" web application that's covered in the "`<<getting-started#getting-started.first-application>>`" section will suffice.
 We're going to use the OpenTelemetry tracer with Zipkin as trace backend.
 
@@ -77,7 +77,7 @@ All tracer implementations need the `org.springframework.boot:spring-boot-starte
 [[actuator.micrometer-tracing.tracer-implementations.otel-zipkin]]
 ==== OpenTelemetry With Zipkin
 
-* `io.micrometer:micrometer-tracing-bridge-otel` - which is needed to bride the Micrometer Observation API to OpenTelemetry.
+* `io.micrometer:micrometer-tracing-bridge-otel` - which is needed to bridge the Micrometer Observation API to OpenTelemetry.
 * `io.opentelemetry:opentelemetry-exporter-zipkin` - which is needed to report traces to Zipkin.
 
 
@@ -85,7 +85,7 @@ All tracer implementations need the `org.springframework.boot:spring-boot-starte
 [[actuator.micrometer-tracing.tracer-implementations.otel-wavefront]]
 ==== OpenTelemetry With Wavefront
 
-* `io.micrometer:micrometer-tracing-bridge-otel` - which is needed to bride the Micrometer Observation API to OpenTelemetry.
+* `io.micrometer:micrometer-tracing-bridge-otel` - which is needed to bridge the Micrometer Observation API to OpenTelemetry.
 * `io.micrometer:micrometer-tracing-reporter-wavefront` - which is needed to report traces to Wavefront.
 
 

@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 class StaticResourceRequestTests {
 
-	private StaticResourceRequest resourceRequest = StaticResourceRequest.INSTANCE;
+	private final StaticResourceRequest resourceRequest = StaticResourceRequest.INSTANCE;
 
 	@Test
 	void atCommonLocationsShouldMatchCommonLocations() {

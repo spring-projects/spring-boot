@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,7 +114,7 @@ class ClassPathChangeUploaderTests {
 			throws IOException, ClassNotFoundException {
 		ClassLoaderFiles classLoaderFiles = deserialize(request.getBodyAsBytes());
 		Collection<SourceDirectory> sourceDirectories = classLoaderFiles.getSourceDirectories();
-		assertThat(sourceDirectories.size()).isEqualTo(1);
+		assertThat(sourceDirectories).hasSize(1);
 		SourceDirectory classSourceDirectory = sourceDirectories.iterator().next();
 		assertThat(classSourceDirectory.getName()).isEqualTo(sourceDirectory.getAbsolutePath());
 		Iterator<ClassLoaderFile> classFiles = classSourceDirectory.getFiles().iterator();

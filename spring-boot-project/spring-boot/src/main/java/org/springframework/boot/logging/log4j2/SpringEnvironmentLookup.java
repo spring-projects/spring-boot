@@ -44,7 +44,7 @@ class SpringEnvironmentLookup implements LoggerContextAware, StrLookup {
 	@Override
 	public String lookup(String key) {
 		Assert.state(this.environment != null, "Unable to obtain Spring Environment from LoggerContext");
-		return (this.environment != null) ? this.environment.getProperty(key) : null;
+		return this.environment.getProperty(key);
 	}
 
 	@Override

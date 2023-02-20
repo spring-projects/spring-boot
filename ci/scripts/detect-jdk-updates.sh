@@ -35,7 +35,7 @@ if [[ $current = $latest ]]; then
 	exit 0;
 fi
 
-milestone_response=$( curl -s https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/milestones\?state\=open )
+milestone_response=$( curl -s -u ${GITHUB_USERNAME}:${GITHUB_PASSWORD} https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/milestones\?state\=open )
 milestone_result=$( jq -r -c --arg MILESTONE "$MILESTONE" '.[] | select(has("title")) | select(.title==$MILESTONE)' <<< "$milestone_response" )
 if [[ ${milestone_result} = "null" || ${milestone_result} = "" ]]; then
 	echo "Could not parse milestone: $milestone_response"
@@ -43,7 +43,7 @@ if [[ ${milestone_result} = "null" || ${milestone_result} = "" ]]; then
 fi
 
 milestone_number=$( jq -r '.number' <<< "$milestone_result" )
-existing_tasks=$( curl -s https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/issues\?labels\=type:%20task\&state\=open\&creator\=spring-builds\&milestone\=${milestone_number} )
+existing_tasks=$( curl -u ${GITHUB_USERNAME}:${GITHUB_PASSWORD} -s https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/issues\?labels\=type:%20task\&state\=open\&creator\=spring-builds\&milestone\=${milestone_number} )
 existing_jdk_issues=$( jq -r -c --arg TITLE "$ISSUE_TITLE" '.[] | select(has("title")) | select(.title==$TITLE)' <<< "$existing_tasks" )
 
 if [[ ${existing_jdk_issues} = "" ]]; then

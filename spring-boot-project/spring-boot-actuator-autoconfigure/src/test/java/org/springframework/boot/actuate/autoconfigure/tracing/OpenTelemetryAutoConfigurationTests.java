@@ -19,10 +19,10 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 import java.util.Collection;
 import java.util.List;
 
+import io.micrometer.tracing.SpanCustomizer;
 import io.micrometer.tracing.otel.bridge.OtelCurrentTraceContext;
-import io.micrometer.tracing.otel.bridge.OtelHttpClientHandler;
-import io.micrometer.tracing.otel.bridge.OtelHttpServerHandler;
 import io.micrometer.tracing.otel.bridge.OtelPropagator;
+import io.micrometer.tracing.otel.bridge.OtelSpanCustomizer;
 import io.micrometer.tracing.otel.bridge.OtelTracer;
 import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
 import io.micrometer.tracing.otel.bridge.Slf4JBaggageEventListener;
@@ -66,8 +66,6 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).hasSingleBean(OtelTracer.class);
 			assertThat(context).hasSingleBean(EventPublisher.class);
 			assertThat(context).hasSingleBean(OtelCurrentTraceContext.class);
-			assertThat(context).hasSingleBean(OtelHttpClientHandler.class);
-			assertThat(context).hasSingleBean(OtelHttpServerHandler.class);
 			assertThat(context).hasSingleBean(OpenTelemetry.class);
 			assertThat(context).hasSingleBean(SdkTracerProvider.class);
 			assertThat(context).hasSingleBean(ContextPropagators.class);
@@ -78,6 +76,16 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).hasSingleBean(SpanProcessor.class);
 			assertThat(context).hasSingleBean(OtelPropagator.class);
 			assertThat(context).hasSingleBean(TextMapPropagator.class);
+			assertThat(context).hasSingleBean(OtelSpanCustomizer.class);
+		});
+	}
+
+	@Test
+	void samplerIsParentBased() {
+		this.contextRunner.run((context) -> {
+			Sampler sampler = context.getBean(Sampler.class);
+			assertThat(sampler).isNotNull();
+			assertThat(sampler.getDescription()).startsWith("ParentBased{");
 		});
 	}
 
@@ -88,8 +96,6 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).doesNotHaveBean(OtelTracer.class);
 			assertThat(context).doesNotHaveBean(EventPublisher.class);
 			assertThat(context).doesNotHaveBean(OtelCurrentTraceContext.class);
-			assertThat(context).doesNotHaveBean(OtelHttpClientHandler.class);
-			assertThat(context).doesNotHaveBean(OtelHttpServerHandler.class);
 			assertThat(context).doesNotHaveBean(OpenTelemetry.class);
 			assertThat(context).doesNotHaveBean(SdkTracerProvider.class);
 			assertThat(context).doesNotHaveBean(ContextPropagators.class);
@@ -100,22 +106,19 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).doesNotHaveBean(SpanProcessor.class);
 			assertThat(context).doesNotHaveBean(OtelPropagator.class);
 			assertThat(context).doesNotHaveBean(TextMapPropagator.class);
+			assertThat(context).doesNotHaveBean(OtelSpanCustomizer.class);
 		});
 	}
 
 	@Test
 	void shouldBackOffOnCustomBeans() {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
-			assertThat(context).hasBean("customOtelTracer");
-			assertThat(context).hasSingleBean(OtelTracer.class);
+			assertThat(context).hasBean("customMicrometerTracer");
+			assertThat(context).hasSingleBean(io.micrometer.tracing.Tracer.class);
 			assertThat(context).hasBean("customEventPublisher");
 			assertThat(context).hasSingleBean(EventPublisher.class);
 			assertThat(context).hasBean("customOtelCurrentTraceContext");
 			assertThat(context).hasSingleBean(OtelCurrentTraceContext.class);
-			assertThat(context).hasBean("customOtelHttpClientHandler");
-			assertThat(context).hasSingleBean(OtelHttpClientHandler.class);
-			assertThat(context).hasBean("customOtelHttpServerHandler");
-			assertThat(context).hasSingleBean(OtelHttpServerHandler.class);
 			assertThat(context).hasBean("customOpenTelemetry");
 			assertThat(context).hasSingleBean(OpenTelemetry.class);
 			assertThat(context).hasBean("customSdkTracerProvider");
@@ -132,6 +135,8 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).hasSingleBean(Slf4JBaggageEventListener.class);
 			assertThat(context).hasBean("customOtelPropagator");
 			assertThat(context).hasSingleBean(OtelPropagator.class);
+			assertThat(context).hasBean("customSpanCustomizer");
+			assertThat(context).hasSingleBean(SpanCustomizer.class);
 		});
 	}
 
@@ -201,8 +206,8 @@ class OpenTelemetryAutoConfigurationTests {
 	private static class CustomConfiguration {
 
 		@Bean
-		OtelTracer customOtelTracer() {
-			return mock(OtelTracer.class);
+		io.micrometer.tracing.Tracer customMicrometerTracer() {
+			return mock(io.micrometer.tracing.Tracer.class);
 		}
 
 		@Bean
@@ -213,16 +218,6 @@ class OpenTelemetryAutoConfigurationTests {
 		@Bean
 		OtelCurrentTraceContext customOtelCurrentTraceContext() {
 			return mock(OtelCurrentTraceContext.class);
-		}
-
-		@Bean
-		OtelHttpClientHandler customOtelHttpClientHandler() {
-			return mock(OtelHttpClientHandler.class);
-		}
-
-		@Bean
-		OtelHttpServerHandler customOtelHttpServerHandler() {
-			return mock(OtelHttpServerHandler.class);
 		}
 
 		@Bean
@@ -273,6 +268,11 @@ class OpenTelemetryAutoConfigurationTests {
 		@Bean
 		TextMapPropagator customTextMapPropagator() {
 			return mock(TextMapPropagator.class);
+		}
+
+		@Bean
+		SpanCustomizer customSpanCustomizer() {
+			return mock(SpanCustomizer.class);
 		}
 
 	}

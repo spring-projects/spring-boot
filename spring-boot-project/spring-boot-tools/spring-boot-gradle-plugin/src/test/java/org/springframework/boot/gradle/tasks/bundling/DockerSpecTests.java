@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
+import java.util.Base64;
 
 import org.gradle.api.GradleException;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,7 +27,6 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
 import org.springframework.boot.gradle.junit.GradleProjectBuilder;
-import org.springframework.util.Base64Utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -65,7 +65,7 @@ class DockerSpecTests {
 		DockerConfiguration dockerConfiguration = this.dockerSpec.asDockerConfiguration();
 		DockerHost host = dockerConfiguration.getHost();
 		assertThat(host.getAddress()).isEqualTo("docker.example.com");
-		assertThat(host.isSecure()).isEqualTo(true);
+		assertThat(host.isSecure()).isTrue();
 		assertThat(host.getCertificatePath()).isEqualTo("/tmp/ca-cert");
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isFalse();
 		assertThat(this.dockerSpec.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
@@ -80,7 +80,7 @@ class DockerSpecTests {
 		DockerConfiguration dockerConfiguration = this.dockerSpec.asDockerConfiguration();
 		DockerHost host = dockerConfiguration.getHost();
 		assertThat(host.getAddress()).isEqualTo("docker.example.com");
-		assertThat(host.isSecure()).isEqualTo(false);
+		assertThat(host.isSecure()).isFalse();
 		assertThat(host.getCertificatePath()).isNull();
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isFalse();
 		assertThat(this.dockerSpec.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
@@ -96,7 +96,7 @@ class DockerSpecTests {
 		DockerConfiguration dockerConfiguration = this.dockerSpec.asDockerConfiguration();
 		DockerHost host = dockerConfiguration.getHost();
 		assertThat(host.getAddress()).isEqualTo("docker.example.com");
-		assertThat(host.isSecure()).isEqualTo(false);
+		assertThat(host.isSecure()).isFalse();
 		assertThat(host.getCertificatePath()).isNull();
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isTrue();
 		assertThat(this.dockerSpec.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
@@ -176,7 +176,7 @@ class DockerSpecTests {
 	}
 
 	String decoded(String value) {
-		return new String(Base64Utils.decodeFromString(value));
+		return new String(Base64.getDecoder().decode(value));
 	}
 
 }

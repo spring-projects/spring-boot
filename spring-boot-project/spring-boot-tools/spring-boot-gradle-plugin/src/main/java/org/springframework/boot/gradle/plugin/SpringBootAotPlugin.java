@@ -19,6 +19,9 @@ package org.springframework.boot.gradle.plugin;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.Dependency;
+import org.gradle.api.artifacts.DependencySet;
+import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.attributes.Attribute;
 import org.gradle.api.attributes.AttributeContainer;
 import org.gradle.api.attributes.LibraryElements;
@@ -119,7 +122,7 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		TaskProvider<ProcessAot> processAot = project.getTasks().register(PROCESS_AOT_TASK_NAME, ProcessAot.class,
 				(task) -> {
 					configureAotTask(project, aotSourceSet, task, mainSourceSet, resourcesOutput);
-					task.getApplicationClass()
+					task.getApplicationMainClass()
 							.set(resolveMainClassName.flatMap(ResolveMainClassName::readMainClassName));
 					task.setClasspath(aotClasspath);
 				});
@@ -140,7 +143,6 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 				.set(project.getLayout().getBuildDirectory().dir("generated/" + sourceSet.getName() + "Classes"));
 		task.getGroupId().set(project.provider(() -> String.valueOf(project.getGroup())));
 		task.getArtifactId().set(project.provider(() -> project.getName()));
-		task.setClasspathRoots(inputSourceSet.getOutput().getClassesDirs());
 	}
 
 	@SuppressWarnings("unchecked")
@@ -171,6 +173,7 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 	private void registerProcessTestAotTask(Project project, SourceSet mainSourceSet, SourceSet aotTestSourceSet,
 			SourceSet testSourceSet) {
 		Configuration aotClasspath = createAotProcessingClasspath(project, PROCESS_TEST_AOT_TASK_NAME, testSourceSet);
+		addJUnitPlatformLauncherDependency(project, aotClasspath);
 		Configuration compileClasspath = project.getConfigurations()
 				.getByName(aotTestSourceSet.getCompileClasspathConfigurationName());
 		compileClasspath.extendsFrom(aotClasspath);
@@ -180,8 +183,7 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 				ProcessTestAot.class, (task) -> {
 					configureAotTask(project, aotTestSourceSet, task, testSourceSet, resourcesOutput);
 					task.setClasspath(aotClasspath);
-					task.setTestRuntimeClasspath(
-							project.getConfigurations().getByName(testSourceSet.getImplementationConfigurationName()));
+					task.setClasspathRoots(testSourceSet.getOutput());
 				});
 		aotTestSourceSet.getJava().srcDir(processTestAot.map(ProcessTestAot::getSourcesOutput));
 		aotTestSourceSet.getResources().srcDir(resourcesOutput);
@@ -192,6 +194,15 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 		testSourceSet.setRuntimeClasspath(testSourceSet.getRuntimeClasspath().plus(classesOutputFiles));
 		project.getDependencies().add(aotTestSourceSet.getImplementationConfigurationName(), classesOutputFiles);
 		configureDependsOn(project, aotTestSourceSet, processTestAot);
+	}
+
+	private void addJUnitPlatformLauncherDependency(Project project, Configuration configuration) {
+		DependencyHandler dependencyHandler = project.getDependencies();
+		Dependency springBootDependencies = dependencyHandler
+				.create(dependencyHandler.platform(SpringBootPlugin.BOM_COORDINATES));
+		DependencySet dependencies = configuration.getDependencies();
+		dependencies.add(springBootDependencies);
+		dependencies.add(dependencyHandler.create("org.junit.platform:junit-platform-launcher"));
 	}
 
 }

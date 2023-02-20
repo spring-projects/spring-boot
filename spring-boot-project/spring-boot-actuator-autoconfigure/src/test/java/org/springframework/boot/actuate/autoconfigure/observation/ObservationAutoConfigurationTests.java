@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import io.micrometer.core.instrument.search.MeterNotFoundException;
 import io.micrometer.observation.GlobalObservationConvention;
 import io.micrometer.observation.Observation;
 import io.micrometer.observation.Observation.Context;
+import io.micrometer.observation.ObservationFilter;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationHandler.AllMatchingCompositeObservationHandler;
 import io.micrometer.observation.ObservationHandler.FirstMatchingCompositeObservationHandler;
@@ -149,7 +150,7 @@ class ObservationAutoConfigurationTests {
 			// When a DefaultMeterObservationHandler is registered, every stopped
 			// Observation leads to a timer
 			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
-			assertThat(meterRegistry.get("test-observation").timer().count()).isEqualTo(1);
+			assertThat(meterRegistry.get("test-observation").timer().count()).isOne();
 			assertThat(context).hasSingleBean(DefaultMeterObservationHandler.class);
 			assertThat(context).hasSingleBean(ObservationHandler.class);
 		});
@@ -170,9 +171,19 @@ class ObservationAutoConfigurationTests {
 			// This isn't allowed by ObservationPredicates.customPredicate
 			Observation.start("observation2", observationRegistry).stop();
 			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
-			assertThat(meterRegistry.get("observation1").timer().count()).isEqualTo(1);
+			assertThat(meterRegistry.get("observation1").timer().count()).isOne();
 			assertThatThrownBy(() -> meterRegistry.get("observation2").timer())
 					.isInstanceOf(MeterNotFoundException.class);
+		});
+	}
+
+	@Test
+	void autoConfiguresObservationFilters() {
+		this.contextRunner.withUserConfiguration(ObservationFilters.class).run((context) -> {
+			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
+			Observation.start("filtered", observationRegistry).stop();
+			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+			assertThat(meterRegistry.get("filtered").tag("filter", "one").timer().count()).isOne();
 		});
 	}
 
@@ -269,6 +280,23 @@ class ObservationAutoConfigurationTests {
 		@Bean
 		ObservationPredicate customPredicate() {
 			return (s, context) -> s.equals("observation1");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ObservationFilters {
+
+		@Bean
+		@Order(1)
+		ObservationFilter observationFilterOne() {
+			return (context) -> context.addLowCardinalityKeyValue(KeyValue.of("filter", "one"));
+		}
+
+		@Bean
+		@Order(0)
+		ObservationFilter observationFilterTwo() {
+			return (context) -> context.addLowCardinalityKeyValue(KeyValue.of("filter", "two"));
 		}
 
 	}

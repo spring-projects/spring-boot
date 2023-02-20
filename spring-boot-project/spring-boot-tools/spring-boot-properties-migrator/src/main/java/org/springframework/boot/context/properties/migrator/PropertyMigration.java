@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,14 +23,17 @@ import java.util.Map;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 import org.springframework.boot.configurationmetadata.Deprecation;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.TextResourceOrigin;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
  * Description of a property migration.
  *
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  */
 class PropertyMigration {
 
@@ -45,14 +48,20 @@ class PropertyMigration {
 
 	private final ConfigurationMetadataProperty replacementMetadata;
 
+	/**
+	 * Whether this migration happened from a map type.
+	 */
+	private final boolean mapMigration;
+
 	private final boolean compatibleType;
 
 	PropertyMigration(ConfigurationProperty property, ConfigurationMetadataProperty metadata,
-			ConfigurationMetadataProperty replacementMetadata) {
+			ConfigurationMetadataProperty replacementMetadata, boolean mapMigration) {
 		this.property = property;
 		this.lineNumber = determineLineNumber(property);
 		this.metadata = metadata;
 		this.replacementMetadata = replacementMetadata;
+		this.mapMigration = mapMigration;
 		this.compatibleType = determineCompatibleType(metadata, replacementMetadata);
 	}
 
@@ -68,9 +77,9 @@ class PropertyMigration {
 
 	private static boolean determineCompatibleType(ConfigurationMetadataProperty metadata,
 			ConfigurationMetadataProperty replacementMetadata) {
-		String currentType = metadata.getType();
-		String replacementType = determineReplacementType(replacementMetadata);
-		if (replacementType == null || currentType == null) {
+		String currentType = determineType(metadata);
+		String replacementType = determineType(replacementMetadata);
+		if (currentType == null || replacementType == null) {
 			return false;
 		}
 		if (replacementType.equals(currentType)) {
@@ -83,14 +92,15 @@ class PropertyMigration {
 		return false;
 	}
 
-	private static String determineReplacementType(ConfigurationMetadataProperty replacementMetadata) {
-		if (replacementMetadata == null || replacementMetadata.getType() == null) {
+	private static String determineType(ConfigurationMetadataProperty metadata) {
+		if (metadata == null || metadata.getType() == null) {
 			return null;
 		}
-		String candidate = replacementMetadata.getType();
+		String candidate = metadata.getType();
 		if (candidate.startsWith(Map.class.getName())) {
 			int lastComma = candidate.lastIndexOf(',');
 			if (lastComma != -1) {
+				// Use Map value type
 				return candidate.substring(lastComma + 1, candidate.length() - 1).trim();
 			}
 		}
@@ -113,9 +123,16 @@ class PropertyMigration {
 		return this.compatibleType;
 	}
 
+	String getNewPropertyName() {
+		if (this.mapMigration) {
+			return getNewMapPropertyName(this.property, this.metadata, this.replacementMetadata).toString();
+		}
+		return this.metadata.getDeprecation().getReplacement();
+	}
+
 	String determineReason() {
 		if (this.compatibleType) {
-			return "Replacement: " + this.metadata.getDeprecation().getReplacement();
+			return "Replacement: " + getNewPropertyName();
 		}
 		Deprecation deprecation = this.metadata.getDeprecation();
 		if (StringUtils.hasText(deprecation.getShortReason())) {
@@ -129,6 +146,16 @@ class PropertyMigration {
 			return String.format("Reason: No metadata found for replacement key '%s'", deprecation.getReplacement());
 		}
 		return "Reason: none";
+	}
+
+	private static ConfigurationPropertyName getNewMapPropertyName(ConfigurationProperty property,
+			ConfigurationMetadataProperty metadata, ConfigurationMetadataProperty replacement) {
+		ConfigurationPropertyName oldName = property.getName();
+		ConfigurationPropertyName oldPrefix = ConfigurationPropertyName.of(metadata.getId());
+		Assert.state(oldPrefix.isAncestorOf(oldName),
+				String.format("'%s' is not an ancestor of '%s'", oldPrefix, oldName));
+		ConfigurationPropertyName newPrefix = ConfigurationPropertyName.of(replacement.getId());
+		return newPrefix.append(oldName.subName(oldPrefix.getNumberOfElements()));
 	}
 
 }

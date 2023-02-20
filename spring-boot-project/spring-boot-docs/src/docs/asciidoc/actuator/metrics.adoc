@@ -515,7 +515,9 @@ The following example `scrape_config` adds to `prometheus.yml`:
 		  - targets: ["HOST:PORT"]
 ----
 
-https://prometheus.io/docs/prometheus/latest/feature_flags/#exemplars-storage[Prometheus Exemplars] are also supported. To enable this feature, a `SpanContextSupplier` bean should present. If you use https://spring.io/projects/spring-cloud-sleuth[Spring Cloud Sleuth], this will be auto-configured for you, but you can always create your own if you want. +
+https://prometheus.io/docs/prometheus/latest/feature_flags/#exemplars-storage[Prometheus Exemplars] are also supported.
+To enable this feature, a `SpanContextSupplier` bean should be present.
+If you use https://micrometer.io/docs/tracing[Micrometer Tracing], this will be auto-configured for you, but you can always create your own if you want.
 Please check the https://prometheus.io/docs/prometheus/latest/feature_flags/#exemplars-storage[Prometheus Docs], since this feature needs to be explicitly enabled on Prometheus' side, and it is only supported using the https://github.com/OpenObservability/OpenMetrics/blob/v1.0.0/specification/OpenMetrics.md#exemplars[OpenMetrics] format.
 
 For ephemeral or batch jobs that may not exist long enough to be scraped, you can use https://github.com/prometheus/pushgateway[Prometheus Pushgateway] support to expose the metrics to Prometheus.
@@ -740,34 +742,16 @@ Metrics are tagged by the name of the executor, which is derived from the bean n
 
 [[actuator.metrics.supported.spring-mvc]]
 ==== Spring MVC Metrics
+
 Auto-configuration enables the instrumentation of all requests handled by Spring MVC controllers and functional handlers.
 By default, metrics are generated with the name, `http.server.requests`.
 You can customize the name by setting the configprop:management.observations.http.server.requests.name[] property.
 
-By default, Spring MVC related metrics are tagged with the following information:
+See the {spring-framework-docs}/integration.html#integration.observability.http-server.servlet[Spring Framework reference documentation for more information on produced observations].
 
-|===
-| Tag | Description
+To add to the default tags, provide a `@Bean` that extends `DefaultServerRequestObservationConvention` from the `org.springframework.http.server.observation` package.
+To replace the default tags, provide a `@Bean` that implements `ServerRequestObservationConvention`.
 
-| `exception`
-| The simple class name of any exception that was thrown while handling the request.
-
-| `method`
-| The request's method (for example, `GET` or `POST`)
-
-| `outcome`
-| The request's outcome, based on the status code of the response.
-  1xx is `INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx is `CLIENT_ERROR`, and 5xx is `SERVER_ERROR`
-
-| `status`
-| The response's HTTP status code (for example, `200` or `500`)
-
-| `uri`
-| The request's URI template prior to variable substitution, if possible (for example, `/api/person/\{id}`)
-|===
-
-To add to the default tags, provide one or more ``@Bean``s that implement `WebMvcTagsContributor`.
-To replace the default tags, provide a `@Bean` that implements `WebMvcTagsProvider`.
 
 TIP: In some cases, exceptions handled in web controllers are not recorded as request metrics tags.
 Applications can opt in and record exceptions by <<web#web.servlet.spring-mvc.error-handling, setting handled exceptions as request attributes>>.
@@ -783,30 +767,10 @@ Auto-configuration enables the instrumentation of all requests handled by Spring
 By default, metrics are generated with the name, `http.server.requests`.
 You can customize the name by setting the configprop:management.observations.http.server.requests.name[] property.
 
-By default, WebFlux related metrics are tagged with the following information:
+See the {spring-framework-docs}/integration.html#integration.observability.http-server.reactive[Spring Framework reference documentation for more information on produced observations].
 
-|===
-| Tag | Description
-
-| `exception`
-| The simple class name of any exception that was thrown while handling the request.
-
-| `method`
-| The request's method (for example, `GET` or `POST`)
-
-| `outcome`
-| The request's outcome, based on the status code of the response.
-  1xx is `INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx is `CLIENT_ERROR`, and 5xx is `SERVER_ERROR`
-
-| `status`
-| The response's HTTP status code (for example, `200` or `500`)
-
-| `uri`
-| The request's URI template prior to variable substitution, if possible (for example, `/api/person/\{id}`)
-|===
-
-To add to the default tags, provide one or more beans that implement `WebFluxTagsContributor`.
-To replace the default tags, provide a bean that implements `WebFluxTagsProvider`.
+To add to the default tags, provide a `@Bean` that extends `DefaultServerRequestObservationConvention` from the `org.springframework.http.server.reactive.observation` package.
+To replace the default tags, provide a `@Bean` that implements `ServerRequestObservationConvention`.
 
 TIP: In some cases, exceptions handled in controllers and handler functions are not recorded as request metrics tags.
 Applications can opt in and record exceptions by <<web#web.reactive.webflux.error-handling, setting handled exceptions as request attributes>>.
@@ -858,30 +822,10 @@ You can also manually apply the customizers responsible for this instrumentation
 By default, metrics are generated with the name, `http.client.requests`.
 You can customize the name by setting the configprop:management.observations.http.client.requests.name[] property.
 
-By default, metrics generated by an instrumented client are tagged with the following information:
+See the {spring-framework-docs}/integration.html#integration.observability.http-client[Spring Framework reference documentation for more information on produced observations].
 
-|===
-| Tag | Description
-
-| `clientName`
-| The host portion of the URI
-
-| `method`
-| The request's method (for example, `GET` or `POST`)
-
-| `outcome`
-| The request's outcome, based on the status code of the response.
-  1xx is `INFORMATIONAL`, 2xx is `SUCCESS`, 3xx is `REDIRECTION`, 4xx is `CLIENT_ERROR`, and 5xx is `SERVER_ERROR`. Otherwise, it is `UNKNOWN`.
-
-| `status`
-| The response's HTTP status code if available (for example, `200` or `500`) or `IO_ERROR` in case of I/O issues. Otherwise, it is `CLIENT_ERROR`.
-
-| `uri`
-| The request's URI template prior to variable substitution, if possible (for example, `/api/person/\{id}`)
-|===
-
-To customize the tags, and depending on your choice of client, you can provide a `@Bean` that implements `RestTemplateExchangeTagsProvider` or `WebClientExchangeTagsProvider`.
-There are convenience static functions in `RestTemplateExchangeTags` and `WebClientExchangeTags`.
+To customize the tags when using `RestTemplate`, provide a `@Bean` that implements `ClientRequestObservationConvention` from the `org.springframework.http.client.observation` package.
+To customize the tags when using `WebClient`, provide a `@Bean` that implements `ClientRequestObservationConvention` from the `org.springframework.web.reactive.function.client` package.
 
 
 
@@ -916,53 +860,8 @@ A `CacheMetricsRegistrar` bean is made available to make that process easier.
 
 [[actuator.metrics.supported.spring-graphql]]
 ==== Spring GraphQL Metrics
-Auto-configuration enables the instrumentation of GraphQL queries, for any supported transport.
 
-Spring Boot records a `graphql.request` timer with:
-
-[cols="1,2,2"]
-|===
-|Tag | Description| Sample values
-
-|outcome
-|Request outcome
-|"SUCCESS", "ERROR"
-|===
-
-A single GraphQL query can involve many `DataFetcher` calls, so there is a dedicated `graphql.datafetcher` timer:
-
-[cols="1,2,2"]
-|===
-|Tag | Description| Sample values
-
-|path
-|data fetcher path
-|"Query.project"
-
-|outcome
-|data fetching outcome
-|"SUCCESS", "ERROR"
-|===
-
-
-The `graphql.request.datafetch.count` https://micrometer.io/docs/concepts#_distribution_summaries[distribution summary] counts the number of non-trivia
-This metric is useful for detecting "N+1" data fetching issues and considering batch loading; it provides the `"TOTAL"` number of data fetcher calls ma
-More options are available for <<application-properties#application-properties.actuator.management.metrics.distribution.maximum-expected-value, configu
-
-A single response can contain many GraphQL errors, counted by the `graphql.error` counter:
-
-[cols="1,2,2"]
-|===
-|Tag | Description| Sample values
-
-|errorType
-|error type
-|"DataFetchingException"
-
-|errorPath
-|error JSON Path
-|"$.project"
-|===
+See the {spring-graphql-docs}[Spring GraphQL reference documentation].
 
 
 [[actuator.metrics.supported.jdbc]]
@@ -1006,8 +905,11 @@ Auto-configuration enables the instrumentation of all Spring Data `Repository` m
 By default, metrics are generated with the name, `spring.data.repository.invocations`.
 You can customize the name by setting the configprop:management.metrics.data.repository.metric-name[] property.
 
-`@Timed` annotations are supported on `Repository` classes and methods (see <<actuator#actuator.metrics.supported.timed-annotation>> for details).
+The `@Timed` annotation from the `io.micrometer.core.annotation` package is supported on `Repository` interfaces and methods.
 If you do not want to record metrics for all `Repository` invocations, you can set configprop:management.metrics.data.repository.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
+
+NOTE: A `@Timed` annotation with `longTask = true` enables a long task timer for the method.
+Long task timers require a separate metric name and can be stacked with a short task timer.
 
 By default, repository invocation related metrics are tagged with the following information:
 
@@ -1144,23 +1046,7 @@ Metrics for Jetty's `Connector` instances are bound by using Micrometer's `Jetty
 
 [[actuator.metrics.supported.timed-annotation]]
 ==== @Timed Annotation Support
-You can use the `@Timed` annotation from the `io.micrometer.core.annotation` package with several of the supported technologies described earlier.
-If supported, you can use the annotation at either the class level or the method level.
-
-For example, the following code shows how you can use the annotation to instrument all request mappings in a `@RestController`:
-
-include::code:all/MyController[]
-
-If you want only to instrument a single mapping, you can use the annotation on the method instead of the class:
-
-include::code:single/MyController[]
-
-You can also combine class-level and method-level annotations if you want to change the timing details for a specific method:
-
-include::code:change/MyController[]
-
-NOTE: A `@Timed` annotation with `longTask = true` enables a long task timer for the method.
-Long task timers require a separate metric name and can be stacked with a short task timer.
+To use `@Timed` where it is not directly supported by Spring Boot, refer to the {micrometer-concepts-docs}#_the_timed_annotation[Micrometer documentation].
 
 
 

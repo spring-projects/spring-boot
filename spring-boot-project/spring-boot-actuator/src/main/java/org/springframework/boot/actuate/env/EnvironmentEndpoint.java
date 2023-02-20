@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.SanitizableData;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
@@ -201,9 +202,9 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-	 * A description of an {@link Environment}.
+	 * Description of an {@link Environment}.
 	 */
-	public static final class EnvironmentDescriptor {
+	public static final class EnvironmentDescriptor implements OperationResponseBody {
 
 		private final List<String> activeProfiles;
 
@@ -225,7 +226,7 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-	 * A description of an entry of the {@link Environment}.
+	 * Description of an entry of the {@link Environment}.
 	 */
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public static final class EnvironmentEntryDescriptor {
@@ -258,7 +259,7 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-	 * A summary of a particular entry of the {@link Environment}.
+	 * Description of a particular entry of the {@link Environment}.
 	 */
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public static final class PropertySummaryDescriptor {
@@ -283,7 +284,7 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-	 * A description of a {@link PropertySource}.
+	 * Description of a {@link PropertySource}.
 	 */
 	public static final class PropertySourceDescriptor {
 
@@ -307,7 +308,7 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-	 * A description of a particular entry of {@link PropertySource}.
+	 * Description of a particular entry of {@link PropertySource}.
 	 */
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public static final class PropertySourceEntryDescriptor {
@@ -332,7 +333,7 @@ public class EnvironmentEndpoint {
 	}
 
 	/**
-	 * A description of a property's value, including its origin if available.
+	 * Description of a property's value, including its origin if available.
 	 */
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public static final class PropertyValueDescriptor {

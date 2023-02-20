@@ -18,13 +18,13 @@ package org.springframework.boot.buildpack.platform.docker.configuration;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 import org.json.JSONException;
 import org.junit.jupiter.api.Test;
 import org.skyscreamer.jsonassert.JSONAssert;
 
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.StreamUtils;
 
 /**
@@ -52,7 +52,7 @@ class DockerRegistryUserAuthenticationTests extends AbstractJsonTests {
 	}
 
 	private String decoded(String header) {
-		return new String(Base64Utils.decodeFromUrlSafeString(header));
+		return new String(Base64.getUrlDecoder().decode(header));
 	}
 
 }

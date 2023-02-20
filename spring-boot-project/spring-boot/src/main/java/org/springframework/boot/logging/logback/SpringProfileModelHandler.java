@@ -50,7 +50,7 @@ class SpringProfileModelHandler extends ModelHandlerBase {
 	public void handle(ModelInterpretationContext intercon, Model model) throws ModelHandlerException {
 		SpringProfileModel profileModel = (SpringProfileModel) model;
 		if (!acceptsProfiles(intercon, profileModel)) {
-			model.markAsSkipped();
+			model.deepMarkAsSkipped();
 		}
 	}
 

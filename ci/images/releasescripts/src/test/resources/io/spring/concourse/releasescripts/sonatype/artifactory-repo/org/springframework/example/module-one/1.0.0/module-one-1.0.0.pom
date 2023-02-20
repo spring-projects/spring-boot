@@ -14,7 +14,7 @@
   <description>Example module</description>
   <url>https://spring.io/projects/spring-boot</url>
   <organization>
-    <name>Pivotal Software, Inc.</name>
+    <name>Spring</name>
     <url>https://spring.io</url>
   </organization>
   <licenses>
@@ -25,9 +25,9 @@
   </licenses>
   <developers>
     <developer>
-      <name>Pivotal</name>
-      <email>info@pivotal.io</email>
-      <organization>Pivotal Software, Inc.</organization>
+      <name>Spring</name>
+      <email>ask@spring.io</email>
+      <organization>Spring</organization>
       <organizationUrl>https://www.spring.io</organizationUrl>
     </developer>
   </developers>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,7 +95,7 @@ import static org.mockito.Mockito.withSettings;
 @ExtendWith({ OutputCaptureExtension.class, MockitoExtension.class })
 class ServletWebServerApplicationContextTests {
 
-	private ServletWebServerApplicationContext context = new ServletWebServerApplicationContext();
+	private final ServletWebServerApplicationContext context = new ServletWebServerApplicationContext();
 
 	@Captor
 	private ArgumentCaptor<Filter> filterCaptor;
@@ -140,7 +140,7 @@ class ServletWebServerApplicationContextTests {
 		assertThat(events).hasSize(2).extracting("class").containsExactly(ServletWebServerInitializedEvent.class,
 				ContextRefreshedEvent.class);
 		ServletWebServerInitializedEvent initializedEvent = (ServletWebServerInitializedEvent) events.get(0);
-		assertThat(initializedEvent.getSource().getPort() >= 0).isTrue();
+		assertThat(initializedEvent.getSource().getPort()).isGreaterThanOrEqualTo(0);
 		assertThat(initializedEvent.getApplicationContext()).isEqualTo(this.context);
 	}
 
@@ -237,13 +237,14 @@ class ServletWebServerApplicationContextTests {
 		OrderedFilter filter = new OrderedFilter();
 		this.context.registerBeanDefinition("filterBean", beanDefinition(filter));
 		FilterRegistrationBean<Filter> registration = new FilterRegistrationBean<>();
+		registration.setName("filterBeanRegistration");
 		registration.setFilter(mock(Filter.class));
 		registration.setOrder(100);
 		this.context.registerBeanDefinition("filterRegistrationBean", beanDefinition(registration));
 		this.context.refresh();
 		MockServletWebServerFactory factory = getWebServerFactory();
 		then(factory.getServletContext()).should().addFilter("filterBean", filter);
-		then(factory.getServletContext()).should().addFilter("object", registration.getFilter());
+		then(factory.getServletContext()).should().addFilter("filterBeanRegistration", registration.getFilter());
 		assertThat(factory.getRegisteredFilter(0).getFilter()).isEqualTo(filter);
 	}
 
@@ -495,7 +496,7 @@ class ServletWebServerApplicationContextTests {
 
 	static class TestApplicationListener implements ApplicationListener<ApplicationEvent> {
 
-		private Deque<ApplicationEvent> events = new ArrayDeque<>();
+		private final Deque<ApplicationEvent> events = new ArrayDeque<>();
 
 		@Override
 		public void onApplicationEvent(ApplicationEvent event) {

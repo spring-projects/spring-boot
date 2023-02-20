@@ -4,13 +4,13 @@ require 'net/http'
 require 'yaml'
 require 'logger'
 
-$main_branch = "3.0.x"
+$main_branch = "3.1.x"
 
 $log = Logger.new(STDOUT)
 $log.level = Logger::WARN
 
 def get_fixed_issues()
-  $log.debug "Searching for for forward merge"
+  $log.debug "Searching for forward merge"
   rev=`git rev-parse -q --verify MERGE_HEAD`.strip
   $log.debug "Found #{rev} from git rev-parse"
   return nil unless rev
@@ -38,9 +38,9 @@ def rewrite_message(message_file, fixed)
       if from_branch.include? "/"
         from_branch = from_branch.partition("/").last
       end
-      to_brach = match[2]
+      to_branch = match[2]
       $log.debug "Rewriting merge message"
-      line = "Merge branch '#{from_branch}'" + (to_brach ? " into #{to_brach}\n" : "\n")
+      line = "Merge branch '#{from_branch}'" + (to_branch ? " into #{to_branch}\n" : "\n")
     end
     if fixed and line.start_with?("#")
       $log.debug "Adding fixed"
@@ -65,7 +65,7 @@ if message_type != "merge"
   exit 0;
 end
 
-$log.debug "Searching for for forward merge"
+$log.debug "Searching for forward merge"
 fixed = get_fixed_issues()
 rewritten_message = rewrite_message(message_file, fixed)
 File.write(message_file, rewritten_message)

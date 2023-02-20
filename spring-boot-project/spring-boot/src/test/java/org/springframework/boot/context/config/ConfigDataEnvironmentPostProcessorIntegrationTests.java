@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -232,7 +232,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	@Test
 	void runWhenHaslocalFileLoadsWithLocalFileTakingPrecedenceOverClasspath() throws Exception {
 		File localFile = new File(new File("."), "application.properties");
-		assertThat(localFile.exists()).isFalse();
+		assertThat(localFile).doesNotExist();
 		try {
 			Properties properties = new Properties();
 			properties.put("my.property", "fromlocalfile");
@@ -814,7 +814,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
-		return new Condition<ConfigurableEnvironment>("environment containing property source " + sourceName) {
+		return new Condition<>("environment containing property source " + sourceName) {
 
 			@Override
 			public boolean matches(ConfigurableEnvironment value) {
@@ -886,7 +886,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 
 		private final ConfigDataLocation location;
 
-		private boolean profileSpecific;
+		private final boolean profileSpecific;
 
 		TestConfigDataResource(ConfigDataLocation location, boolean profileSpecific) {
 			super(location.toString().contains("optionalresult"));

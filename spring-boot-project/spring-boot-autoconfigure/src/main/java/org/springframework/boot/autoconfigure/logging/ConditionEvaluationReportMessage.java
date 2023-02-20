@@ -41,7 +41,7 @@ import org.springframework.util.StringUtils;
  */
 public class ConditionEvaluationReportMessage {
 
-	private StringBuilder message;
+	private final StringBuilder message;
 
 	public ConditionEvaluationReportMessage(ConditionEvaluationReport report) {
 		this(report, "CONDITIONS EVALUATION REPORT");

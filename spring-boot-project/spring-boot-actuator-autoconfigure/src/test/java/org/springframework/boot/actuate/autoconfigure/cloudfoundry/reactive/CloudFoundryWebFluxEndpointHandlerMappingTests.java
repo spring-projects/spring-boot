@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aot.hint.RuntimeHints;
@@ -24,6 +23,8 @@ import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive.CloudFoundryWebFluxEndpointHandlerMapping.CloudFoundryLinksHandler;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive.CloudFoundryWebFluxEndpointHandlerMapping.CloudFoundryWebFluxEndpointHandlerMappingRuntimeHints;
 import org.springframework.boot.actuate.endpoint.web.Link;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link CloudFoundryWebFluxEndpointHandlerMapping}.
@@ -37,9 +38,9 @@ class CloudFoundryWebFluxEndpointHandlerMappingTests {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new CloudFoundryWebFluxEndpointHandlerMappingRuntimeHints().registerHints(runtimeHints,
 				getClass().getClassLoader());
-		Assertions.assertThat(RuntimeHintsPredicates.reflection().onMethod(CloudFoundryLinksHandler.class, "links"))
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(CloudFoundryLinksHandler.class, "links"))
 				.accepts(runtimeHints);
-		Assertions.assertThat(RuntimeHintsPredicates.reflection().onType(Link.class)).accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(Link.class)).accepts(runtimeHints);
 	}
 
 }

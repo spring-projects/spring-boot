@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
-import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpointWebExtension;
 import org.springframework.boot.actuate.endpoint.SanitizingFunction;
 import org.springframework.boot.actuate.endpoint.Show;
@@ -72,7 +72,7 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 					ConfigurationPropertiesReportEndpointWebExtension endpoint = context
 							.getBean(ConfigurationPropertiesReportEndpointWebExtension.class);
 					Set<String> roles = (Set<String>) ReflectionTestUtils.getField(endpoint, "roles");
-					assertThat(roles.contains("test")).isTrue();
+					assertThat(roles).contains("test");
 				});
 	}
 
@@ -115,12 +115,12 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 			assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpoint.class);
 			ConfigurationPropertiesReportEndpoint endpoint = context
 					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			ApplicationConfigurationProperties properties = endpoint.configurationProperties();
+			ConfigurationPropertiesDescriptor properties = endpoint.configurationProperties();
 			Map<String, Object> nestedProperties = properties.getContexts().get(context.getId()).getBeans()
 					.get("testProperties").getProperties();
 			assertThat(nestedProperties).isNotNull();
-			assertThat(nestedProperties.get("dbPassword")).isEqualTo(dbPassword);
-			assertThat(nestedProperties.get("myTestProperty")).isEqualTo(myTestProperty);
+			assertThat(nestedProperties).containsEntry("dbPassword", dbPassword);
+			assertThat(nestedProperties).containsEntry("myTestProperty", myTestProperty);
 		};
 	}
 

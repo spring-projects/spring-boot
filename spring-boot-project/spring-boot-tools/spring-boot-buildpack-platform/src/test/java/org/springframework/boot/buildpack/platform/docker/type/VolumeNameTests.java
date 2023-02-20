@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,7 +81,7 @@ class VolumeNameTests {
 	@Test
 	void basedOnGeneratesHashBasedName() {
 		VolumeName name = VolumeName.basedOn("index.docker.io/library/myapp:latest", "pack-cache-", ".build", 6);
-		assertThat(name.toString()).isEqualTo("pack-cache-40a311b545d7.build");
+		assertThat(name).hasToString("pack-cache-40a311b545d7.build");
 	}
 
 	@Test
@@ -99,7 +99,7 @@ class VolumeNameTests {
 	@Test
 	void ofGeneratesValue() {
 		VolumeName name = VolumeName.of("test");
-		assertThat(name.toString()).isEqualTo("test");
+		assertThat(name).hasToString("test");
 	}
 
 	@Test
@@ -107,7 +107,7 @@ class VolumeNameTests {
 		VolumeName n1 = VolumeName.of("test1");
 		VolumeName n2 = VolumeName.of("test1");
 		VolumeName n3 = VolumeName.of("test2");
-		assertThat(n1.hashCode()).isEqualTo(n2.hashCode());
+		assertThat(n1).hasSameHashCodeAs(n2);
 		assertThat(n1).isEqualTo(n1).isEqualTo(n2).isNotEqualTo(n3);
 	}
 

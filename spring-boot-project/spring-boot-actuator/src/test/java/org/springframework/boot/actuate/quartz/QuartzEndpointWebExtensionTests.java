@@ -28,10 +28,10 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.Show;
-import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzGroups;
-import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobDetails;
-import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobGroupSummary;
-import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzTriggerGroupSummary;
+import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzGroupsDescriptor;
+import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobDetailsDescriptor;
+import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobGroupSummaryDescriptor;
+import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzTriggerGroupSummaryDescriptor;
 import org.springframework.boot.actuate.quartz.QuartzEndpointWebExtension.QuartzEndpointWebExtensionRuntimeHints;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -100,8 +100,8 @@ class QuartzEndpointWebExtensionTests {
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new QuartzEndpointWebExtensionRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		Set<Class<?>> bindingTypes = Set.of(QuartzGroups.class, QuartzJobDetails.class, QuartzJobGroupSummary.class,
-				QuartzTriggerGroupSummary.class);
+		Set<Class<?>> bindingTypes = Set.of(QuartzGroupsDescriptor.class, QuartzJobDetailsDescriptor.class,
+				QuartzJobGroupSummaryDescriptor.class, QuartzTriggerGroupSummaryDescriptor.class);
 		for (Class<?> bindingType : bindingTypes) {
 			assertThat(RuntimeHintsPredicates.reflection().onType(bindingType)
 					.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))

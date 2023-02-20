@@ -26,8 +26,8 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.SpringBootVersion;
+import org.springframework.boot.actuate.startup.StartupEndpoint.StartupDescriptor;
 import org.springframework.boot.actuate.startup.StartupEndpoint.StartupEndpointRuntimeHints;
-import org.springframework.boot.actuate.startup.StartupEndpoint.StartupResponse;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -49,7 +49,7 @@ class StartupEndpointTests {
 	void startupEventsAreFound() {
 		BufferingApplicationStartup applicationStartup = new BufferingApplicationStartup(256);
 		testStartupEndpoint(applicationStartup, (startupEndpoint) -> {
-			StartupResponse startup = startupEndpoint.startup();
+			StartupDescriptor startup = startupEndpoint.startup();
 			assertThat(startup.getSpringBootVersion()).isEqualTo(SpringBootVersion.getVersion());
 			assertThat(startup.getTimeline().getStartTime())
 					.isEqualTo(applicationStartup.getBufferedTimeline().getStartTime());
@@ -60,7 +60,7 @@ class StartupEndpointTests {
 	void bufferWithGetIsNotDrained() {
 		BufferingApplicationStartup applicationStartup = new BufferingApplicationStartup(256);
 		testStartupEndpoint(applicationStartup, (startupEndpoint) -> {
-			StartupResponse startup = startupEndpoint.startupSnapshot();
+			StartupDescriptor startup = startupEndpoint.startupSnapshot();
 			assertThat(startup.getTimeline().getEvents()).isNotEmpty();
 			assertThat(applicationStartup.getBufferedTimeline().getEvents()).isNotEmpty();
 		});
@@ -70,7 +70,7 @@ class StartupEndpointTests {
 	void bufferWithPostIsDrained() {
 		BufferingApplicationStartup applicationStartup = new BufferingApplicationStartup(256);
 		testStartupEndpoint(applicationStartup, (startupEndpoint) -> {
-			StartupResponse startup = startupEndpoint.startup();
+			StartupDescriptor startup = startupEndpoint.startup();
 			assertThat(startup.getTimeline().getEvents()).isNotEmpty();
 			assertThat(applicationStartup.getBufferedTimeline().getEvents()).isEmpty();
 		});

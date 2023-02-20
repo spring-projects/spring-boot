@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -178,7 +178,7 @@ class ApplicationContextAssertProviderTests {
 	@Test
 	void toStringWhenContextFailsToStartShouldReturnSimpleString() {
 		ApplicationContextAssertProvider<ApplicationContext> context = get(this.startupFailureSupplier);
-		assertThat(context.toString()).isEqualTo("Unstarted application context "
+		assertThat(context).hasToString("Unstarted application context "
 				+ "org.springframework.context.ApplicationContext[startupFailure=java.lang.RuntimeException]");
 	}
 

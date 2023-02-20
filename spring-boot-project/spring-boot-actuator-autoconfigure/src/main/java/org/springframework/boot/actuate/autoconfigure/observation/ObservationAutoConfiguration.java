@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import io.micrometer.core.instrument.observation.DefaultMeterObservationHandler;
 import io.micrometer.core.instrument.observation.MeterObservationHandler;
 import io.micrometer.observation.GlobalObservationConvention;
 import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationFilter;
 import io.micrometer.observation.ObservationHandler;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
@@ -62,9 +63,10 @@ public class ObservationAutoConfiguration {
 			ObjectProvider<ObservationPredicate> observationPredicates,
 			ObjectProvider<GlobalObservationConvention<?>> observationConventions,
 			ObjectProvider<ObservationHandler<?>> observationHandlers,
-			ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping) {
+			ObjectProvider<ObservationHandlerGrouping> observationHandlerGrouping,
+			ObjectProvider<ObservationFilter> observationFilters) {
 		return new ObservationRegistryPostProcessor(observationRegistryCustomizers, observationPredicates,
-				observationConventions, observationHandlers, observationHandlerGrouping);
+				observationConventions, observationHandlers, observationHandlerGrouping, observationFilters);
 	}
 
 	@Bean

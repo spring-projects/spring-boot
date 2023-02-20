@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import org.springframework.context.ApplicationContext;
  * Components can inject this class to get the current state information. To update the
  * state of the application an {@link AvailabilityChangeEvent} should be
  * {@link ApplicationContext#publishEvent published} to the application context with
- * directly or via {@link AvailabilityChangeEvent#publish}.
+ * directly or through {@link AvailabilityChangeEvent#publish}.
  *
  * @author Brian Clozel
  * @author Phillip Webb

@@ -10,7 +10,7 @@ WebSocket support is also available for {spring-framework-docs}/web-reactive.htm
 [source,xml,indent=0,subs="verbatim"]
 ----
 	<dependency>
-		<groupId>javax.websocket</groupId>
-		<artifactId>javax.websocket-api</artifactId>
+		<groupId>jakarta.websocket</groupId>
+		<artifactId>jakarta.websocket-api</artifactId>
 	</dependency>
 ----

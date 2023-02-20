@@ -110,10 +110,11 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 					headers.setContentLength(bytes.length);
 					FileCopyUtils.copy(bytes, request.getBody());
 					logUpload(event);
-					ClientHttpResponse response = request.execute();
-					HttpStatusCode statusCode = response.getStatusCode();
-					Assert.state(statusCode == HttpStatus.OK,
-							() -> "Unexpected " + statusCode + " response uploading class files");
+					try (ClientHttpResponse response = request.execute()) {
+						HttpStatusCode statusCode = response.getStatusCode();
+						Assert.state(statusCode == HttpStatus.OK,
+								() -> "Unexpected " + statusCode + " response uploading class files");
+					}
 					return;
 				}
 				catch (SocketException ex) {

@@ -49,11 +49,11 @@ import static org.mockito.Mockito.mock;
  */
 class ConfigDataLoadersTests {
 
-	private DeferredLogFactory logFactory = Supplier::get;
+	private final DeferredLogFactory logFactory = Supplier::get;
 
-	private DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
+	private final DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
 
-	private ConfigDataLoaderContext context = mock(ConfigDataLoaderContext.class);
+	private final ConfigDataLoaderContext context = mock(ConfigDataLoaderContext.class);
 
 	@TempDir
 	private File tempDir;

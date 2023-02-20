@@ -8,7 +8,7 @@ The {spring-framework}[Spring Framework] provides extensive support for working 
 [[data.sql.datasource]]
 === Configure a DataSource
 Java's `javax.sql.DataSource` interface provides a standard method of working with database connections.
-Traditionally, a 'DataSource' uses a `URL` along with some credentials to establish a database connection.
+Traditionally, a `DataSource` uses a `URL` along with some credentials to establish a database connection.
 
 TIP: See <<howto#howto.data-access.configure-custom-datasource,the "`How-to`" section>> for more advanced examples, typically to take full control over the configuration of the DataSource.
 

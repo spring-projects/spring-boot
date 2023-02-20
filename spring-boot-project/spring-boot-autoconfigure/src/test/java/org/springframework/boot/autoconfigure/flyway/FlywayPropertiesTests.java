@@ -74,7 +74,7 @@ class FlywayPropertiesTests {
 		assertThat(properties.getSqlMigrationSeparator()).isEqualTo(configuration.getSqlMigrationSeparator());
 		assertThat(properties.getRepeatableSqlMigrationPrefix())
 				.isEqualTo(configuration.getRepeatableSqlMigrationPrefix());
-		assertThat(properties.getTarget()).isEqualTo(configuration.getTarget());
+		assertThat(MigrationVersion.fromVersion(properties.getTarget())).isEqualTo(configuration.getTarget());
 		assertThat(configuration.getInitSql()).isNull();
 		assertThat(properties.getInitSqls()).isEmpty();
 		assertThat(properties.isBaselineOnMigrate()).isEqualTo(configuration.isBaselineOnMigrate());
@@ -107,7 +107,8 @@ class FlywayPropertiesTests {
 		ignoreProperties(configuration, "callbacks", "classLoader", "dataSource", "javaMigrations",
 				"javaMigrationClassProvider", "pluginRegister", "resourceProvider", "resolvers");
 		// Properties we don't want to expose
-		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "loggers", "driver");
+		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "loggers", "driver",
+				"modernConfig", "resolvedEnvironments");
 		// Handled by the conversion service
 		ignoreProperties(configuration, "baselineVersionAsString", "encodingAsString", "locationsAsStrings",
 				"targetAsString");

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.observation.web.client;
 
+import io.micrometer.common.KeyValues;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.observation.ObservationRegistry;
@@ -41,6 +43,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.observation.ClientRequestObservationContext;
+import org.springframework.http.client.observation.DefaultClientRequestObservationConvention;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
@@ -117,10 +121,20 @@ class RestTemplateObservationConfigurationTests {
 	}
 
 	@Test
+	void restTemplateCreatedWithBuilderUsesCustomConvention() {
+		this.contextRunner.withUserConfiguration(CustomConvention.class).run((context) -> {
+			RestTemplate restTemplate = buildRestTemplate(context);
+			restTemplate.getForEntity("/projects/{project}", Void.class, "spring-boot");
+			TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
+			TestObservationRegistryAssert.assertThat(registry).hasObservationWithNameEqualTo("http.client.requests")
+					.that().hasLowCardinalityKeyValue("project", "spring-boot");
+		});
+	}
+
+	@Test
 	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput output) {
 		this.contextRunner.with(MetricsRun.simple()).withPropertyValues("management.metrics.web.client.max-uri-tags=2")
 				.run((context) -> {
-
 					RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class).build();
 					MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
 					for (int i = 0; i < 3; i++) {
@@ -130,8 +144,10 @@ class RestTemplateObservationConfigurationTests {
 						restTemplate.getForObject("/test/" + i, String.class);
 					}
 					TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
-					TestObservationRegistryAssert.assertThat(registry);
-					// TODO: check observation count for name
+					TestObservationRegistryAssert.assertThat(registry)
+							.hasNumberOfObservationsWithNameEqualTo("http.client.requests", 3);
+					MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+					assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(2);
 					assertThat(output).contains("Reached the maximum number of URI tags for 'http.client.requests'.")
 							.contains("Are you using 'uriVariables'?");
 				});
@@ -153,7 +169,7 @@ class RestTemplateObservationConfigurationTests {
 		return restTemplate;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomTagsConfiguration {
 
 		@Bean
@@ -169,6 +185,25 @@ class RestTemplateObservationConfigurationTests {
 		@Override
 		public Iterable<Tag> getTags(String urlTemplate, HttpRequest request, ClientHttpResponse response) {
 			return Tags.of("project", "spring-boot");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomConventionConfiguration {
+
+		@Bean
+		CustomConvention customConvention() {
+			return new CustomConvention();
+		}
+
+	}
+
+	static class CustomConvention extends DefaultClientRequestObservationConvention {
+
+		@Override
+		public KeyValues getLowCardinalityKeyValues(ClientRequestObservationContext context) {
+			return super.getLowCardinalityKeyValues(context).and("project", "spring-boot");
 		}
 
 	}

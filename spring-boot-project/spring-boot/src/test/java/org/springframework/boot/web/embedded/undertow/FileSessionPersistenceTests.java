@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,9 +39,9 @@ class FileSessionPersistenceTests {
 
 	private FileSessionPersistence persistence;
 
-	private ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+	private final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 
-	private Date expiration = new Date(System.currentTimeMillis() + 10000);
+	private final Date expiration = new Date(System.currentTimeMillis() + 10000);
 
 	@BeforeEach
 	void setup(@TempDir File tempDir) {
@@ -67,7 +67,7 @@ class FileSessionPersistenceTests {
 		Map<String, PersistentSession> restored = this.persistence.loadSessionAttributes("test", this.classLoader);
 		assertThat(restored).isNotNull();
 		assertThat(restored.get("abc").getExpiration()).isEqualTo(this.expiration);
-		assertThat(restored.get("abc").getSessionData().get("spring")).isEqualTo("boot");
+		assertThat(restored.get("abc").getSessionData()).containsEntry("spring", "boot");
 	}
 
 	@Test
@@ -89,9 +89,9 @@ class FileSessionPersistenceTests {
 		File sessionFile = new File(this.dir, "test.session");
 		Map<String, PersistentSession> sessionData = new LinkedHashMap<>();
 		this.persistence.persistSessions("test", sessionData);
-		assertThat(sessionFile.exists()).isTrue();
+		assertThat(sessionFile).exists();
 		this.persistence.clear("test");
-		assertThat(sessionFile.exists()).isFalse();
+		assertThat(sessionFile).doesNotExist();
 	}
 
 }

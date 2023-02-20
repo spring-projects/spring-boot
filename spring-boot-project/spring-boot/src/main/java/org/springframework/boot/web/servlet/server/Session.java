@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 
 /**
@@ -113,11 +114,15 @@ public class Session {
 		/**
 		 * Return the comment for the session cookie.
 		 * @return the session cookie comment
+		 * @deprecated since 3.0.0 without replacement
 		 */
+		@Deprecated(since = "3.0.0", forRemoval = true)
+		@DeprecatedConfigurationProperty
 		public String getComment() {
 			return this.comment;
 		}
 
+		@Deprecated(since = "3.0.0", forRemoval = true)
 		public void setComment(String comment) {
 			this.comment = comment;
 		}

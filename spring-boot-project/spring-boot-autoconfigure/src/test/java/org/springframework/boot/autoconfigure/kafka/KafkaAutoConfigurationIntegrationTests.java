@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,7 +91,7 @@ class KafkaAutoConfigurationIntegrationTests {
 
 		DefaultKafkaProducerFactory producerFactory = this.context.getBean(DefaultKafkaProducerFactory.class);
 		Producer producer = producerFactory.createProducer();
-		assertThat(producer.partitionsFor(ADMIN_CREATED_TOPIC).size()).isEqualTo(10);
+		assertThat(producer.partitionsFor(ADMIN_CREATED_TOPIC)).hasSize(10);
 		producer.close();
 	}
 

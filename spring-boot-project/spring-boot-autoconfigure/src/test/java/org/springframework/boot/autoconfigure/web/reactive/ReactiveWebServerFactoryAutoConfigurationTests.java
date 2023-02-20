@@ -28,6 +28,8 @@ import reactor.netty.http.server.HttpServer;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
+import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
 import org.springframework.boot.web.embedded.jetty.JettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
@@ -63,6 +65,7 @@ import static org.mockito.Mockito.mock;
  * @author Raheela Aslam
  * @author Madhura Bhave
  */
+@DirtiesUrlFactories
 class ReactiveWebServerFactoryAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner(
@@ -215,6 +218,7 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
+	@Servlet5ClassPathOverrides
 	void jettyServerCustomizerBeanIsAddedToFactory() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebApplicationContext::new)
 				.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
@@ -227,6 +231,7 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
+	@Servlet5ClassPathOverrides
 	void jettyServerCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
 				.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
