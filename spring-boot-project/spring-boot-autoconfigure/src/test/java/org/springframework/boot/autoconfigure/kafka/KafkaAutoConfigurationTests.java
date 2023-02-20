@@ -261,7 +261,7 @@ class KafkaAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class).withPropertyValues(
 				"spring.kafka.client-id=cid", "spring.kafka.bootstrap-servers=localhost:9092,localhost:9093",
 				"spring.application.name=appName", "spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
-				"spring.kafka.streams.auto-startup=false", "spring.kafka.streams.cache-max-size-buffering=1KB",
+				"spring.kafka.streams.auto-startup=false", "spring.kafka.streams.state-store-cache-max-size=1KB",
 				"spring.kafka.streams.client-id=override", "spring.kafka.streams.properties.fiz.buz=fix.fox",
 				"spring.kafka.streams.replication-factor=2", "spring.kafka.streams.state-dir=/tmp/state",
 				"spring.kafka.streams.security.protocol=SSL", "spring.kafka.streams.ssl.key-password=p7",
@@ -276,7 +276,7 @@ class KafkaAutoConfigurationTests {
 							.asProperties();
 					assertThat((List<String>) configs.get(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG))
 							.containsExactly("localhost:9092", "localhost:9093");
-					assertThat(configs).containsEntry(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 1024);
+					assertThat(configs).containsEntry(StreamsConfig.STATESTORE_CACHE_MAX_BYTES_CONFIG, 1024);
 					assertThat(configs).containsEntry(StreamsConfig.CLIENT_ID_CONFIG, "override");
 					assertThat(configs).containsEntry(StreamsConfig.REPLICATION_FACTOR_CONFIG, 2);
 					assertThat(configs).containsEntry(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SSL");
@@ -296,6 +296,19 @@ class KafkaAutoConfigurationTests {
 					assertThat(configs).containsEntry("fiz.buz", "fix.fox");
 					assertThat(context.getBean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_BUILDER_BEAN_NAME))
 							.isNotNull();
+				});
+	}
+
+	@SuppressWarnings("deprecation")
+	@Deprecated(since = "3.1.0", forRemoval = true)
+	void streamsCacheMaxSizeBuffering() {
+		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
+				.withPropertyValues("spring.kafka.streams.cache-max-size-buffering=1KB").run((context) -> {
+					Properties configs = context
+							.getBean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
+									KafkaStreamsConfiguration.class)
+							.asProperties();
+					assertThat(configs).containsEntry(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 1024);
 				});
 	}
 
