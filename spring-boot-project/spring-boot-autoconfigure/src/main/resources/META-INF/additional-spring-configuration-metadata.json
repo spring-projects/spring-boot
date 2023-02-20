@@ -2177,6 +2177,10 @@
       }
     },
     {
+      "name": "spring.reactor.context-propagation",
+      "defaultValue": "auto"
+    },
+    {
       "name": "spring.reactor.stacktrace-mode.enabled",
       "description": "Whether Reactor should collect stacktrace information at runtime.",
       "defaultValue": false,

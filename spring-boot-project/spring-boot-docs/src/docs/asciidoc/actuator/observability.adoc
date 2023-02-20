@@ -21,4 +21,7 @@ For JDBC, the https://github.com/jdbc-observations/datasource-micrometer[Datasou
 Read more about it https://jdbc-observations.github.io/datasource-micrometer/docs/current/docs/html/[in the reference documentation].
 For R2DBC, the https://github.com/spring-projects-experimental/r2dbc-micrometer-spring-boot[Spring Boot Auto Configuration for R2DBC Observation] creates observations for R2DBC query invocations.
 
+Observability support relies on the https://github.com/micrometer-metrics/context-propagation[Context Propagation library] for forwarding the current observation across threads and reactive pipelines.
+`ThreadLocal` values are automatically reinstated in reactive operators, this behavior is controlled with the configprop:spring.reactor.context-propagation[] property.
+
 The next sections will provide more details about logging, metrics and traces.
