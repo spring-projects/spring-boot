@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,7 +98,7 @@ public class UndertowWebServerFactoryCustomizer
 		map.from(properties::getMaxParameters).to(serverOptions.option(UndertowOptions.MAX_PARAMETERS));
 		map.from(properties::getMaxHeaders).to(serverOptions.option(UndertowOptions.MAX_HEADERS));
 		map.from(properties::getMaxCookies).to(serverOptions.option(UndertowOptions.MAX_COOKIES));
-		map.from(properties::isAllowEncodedSlash).to(serverOptions.option(UndertowOptions.ALLOW_ENCODED_SLASH));
+		mapSlashProperties(properties, serverOptions);
 		map.from(properties::isDecodeUrl).to(serverOptions.option(UndertowOptions.DECODE_URL));
 		map.from(properties::getUrlCharset).as(Charset::name).to(serverOptions.option(UndertowOptions.URL_CHARSET));
 		map.from(properties::isAlwaysSetKeepAlive).to(serverOptions.option(UndertowOptions.ALWAYS_SET_KEEP_ALIVE));
@@ -107,6 +107,14 @@ public class UndertowWebServerFactoryCustomizer
 		map.from(properties.getOptions()::getServer).to(serverOptions.forEach(serverOptions::option));
 		SocketOptions socketOptions = new SocketOptions(factory);
 		map.from(properties.getOptions()::getSocket).to(socketOptions.forEach(socketOptions::option));
+	}
+
+	@SuppressWarnings({ "deprecation", "removal" })
+	private void mapSlashProperties(Undertow properties, ServerOptions serverOptions) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(properties::isAllowEncodedSlash).to(serverOptions.option(UndertowOptions.ALLOW_ENCODED_SLASH));
+		map.from(properties::getDecodeSlash).to(serverOptions.option(UndertowOptions.DECODE_SLASH));
+
 	}
 
 	private boolean isPositive(Number value) {
