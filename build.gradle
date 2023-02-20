@@ -40,5 +40,5 @@ allprojects {
 }
 
 tasks.named("checkstyleNohttp").configure {
-	maxHeapSize = "1g"
+	maxHeapSize = "1536m"
 }
