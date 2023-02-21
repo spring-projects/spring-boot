@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -212,7 +212,11 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext,
 				configurators);
 		configurator.setContext(loggerContext);
-		return configurator.configureUsingAotGeneratedArtifacts();
+		boolean configuredUsingAotGeneratedArtifacts = configurator.configureUsingAotGeneratedArtifacts();
+		if (configuredUsingAotGeneratedArtifacts) {
+			reportConfigurationErrorsIfNecessary(loggerContext);
+		}
+		return configuredUsingAotGeneratedArtifacts;
 	}
 
 	@Override
@@ -246,6 +250,10 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not initialize Logback logging from " + location, ex);
 		}
+		reportConfigurationErrorsIfNecessary(loggerContext);
+	}
+
+	private void reportConfigurationErrorsIfNecessary(LoggerContext loggerContext) {
 		List<Status> statuses = loggerContext.getStatusManager().getCopyOfStatusList();
 		StringBuilder errors = new StringBuilder();
 		for (Status status : statuses) {
