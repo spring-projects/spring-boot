@@ -1383,7 +1383,6 @@ bom {
 		group("org.springframework.ldap") {
 			modules = [
 				"spring-ldap-core",
-				"spring-ldap-core-tiger",
 				"spring-ldap-ldif-core",
 				"spring-ldap-odm",
 				"spring-ldap-test"
