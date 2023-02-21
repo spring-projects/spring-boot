@@ -1362,7 +1362,7 @@ bom {
 			]
 		}
 	}
-	library("Spring GraphQL", "1.1.2-SNAPSHOT") {
+	library("Spring GraphQL", "1.1.2") {
 		group("org.springframework.graphql") {
 			modules = [
 					"spring-graphql",
