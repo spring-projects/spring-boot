@@ -62,4 +62,6 @@
 	<suppress files="DevToolsR2dbcAutoConfigurationTests" checks="HideUtilityClassConstructor" />
 	<suppress files="AbstractLaunchScriptIntegrationTests" checks="IllegalImport" />
 	<suppress files="SpringBootVersion" checks="JavadocPackage" />
+	<suppress files="WebEndpointTest\.java" checks="SpringTestFileName" />
+	<suppress files="ConversionServiceTest\.java" checks="SpringTestFileName" />
 </suppressions>
