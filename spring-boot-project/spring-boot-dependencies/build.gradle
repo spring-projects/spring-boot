@@ -245,11 +245,8 @@ bom {
 	}
 	library("Flyway", "9.15.0") {
 		group("org.flywaydb") {
-			modules = [
-				"flyway-core",
-				"flyway-firebird",
-				"flyway-mysql",
-				"flyway-sqlserver"
+			imports = [
+				"flyway-bom"
 			]
 			plugins = [
 				"flyway-maven-plugin"
@@ -1364,7 +1361,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Integration", "6.1.0-SNAPSHOT") {
+	library("Spring Integration", "6.0.2") {
 		group("org.springframework.integration") {
 			imports = [
 				"spring-integration-bom"
