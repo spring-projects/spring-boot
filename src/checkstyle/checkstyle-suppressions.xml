@@ -73,4 +73,6 @@
 	<suppress files="FailureAnalyzers\.java" checks="RedundantModifier" />
 	<suppress files="SpringBootVersion" checks="JavadocPackage" />
 	<suppress files="spring-boot-configuration-processor[\\/]src[\\/]test[\\/]java[\\/]org[\\/]springframework[\\/]boot[\\/]configurationsample[\\/]" checks="SpringDeprecatedCheck"/>
+	<suppress files="WebEndpointTest\.java" checks="SpringTestFileName" />
+	<suppress files="ConversionServiceTest\.java" checks="SpringTestFileName" />
 </suppressions>
