@@ -27,7 +27,7 @@ import org.springframework.graphql.test.tester.GraphQlTester;
  * @author Brian Clozel
  */
 @GraphQlTest(BookController.class)
-class GraphQlTestIntegrationTest {
+class GraphQlTestIntegrationTests {
 
 	@Autowired
 	private GraphQlTester graphQlTester;
