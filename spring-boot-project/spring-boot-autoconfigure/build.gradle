@@ -221,7 +221,6 @@ dependencies {
 	testImplementation("com.querydsl:querydsl-core")
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 	testImplementation("com.sun.xml.messaging.saaj:saaj-impl")
-	testImplementation("io.micrometer:context-propagation")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("io.r2dbc:r2dbc-h2")
 	testImplementation("jakarta.json:jakarta.json-api")
