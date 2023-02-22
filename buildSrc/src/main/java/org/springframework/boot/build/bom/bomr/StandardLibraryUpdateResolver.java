@@ -20,25 +20,20 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
 
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
-import org.gradle.api.InvalidUserDataException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.build.bom.Library;
-import org.springframework.boot.build.bom.Library.DependencyVersions;
 import org.springframework.boot.build.bom.Library.Group;
 import org.springframework.boot.build.bom.Library.Module;
 import org.springframework.boot.build.bom.Library.ProhibitedVersion;
-import org.springframework.boot.build.bom.Library.VersionAlignment;
 import org.springframework.boot.build.bom.UpgradePolicy;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 
@@ -83,9 +78,6 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 	}
 
 	protected List<VersionOption> getVersionOptions(Library library, Map<String, Library> libraries) {
-		if (library.getVersion().getVersionAlignment() != null) {
-			return determineAlignedVersionOption(library, libraries);
-		}
 		return determineResolvedVersionOptions(library);
 	}
 
@@ -119,51 +111,6 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 			.map((version) -> new VersionOption.ResolvedVersionOption(version,
 					getMissingModules(moduleVersions, version)))
 			.collect(Collectors.toList());
-	}
-
-	private List<VersionOption> determineAlignedVersionOption(Library library, Map<String, Library> libraries) {
-		VersionOption alignedVersionOption = alignedVersionOption(library, libraries);
-		if (alignedVersionOption == null) {
-			return Collections.emptyList();
-		}
-		if (!isPermitted(alignedVersionOption.getVersion(), library.getProhibitedVersions())) {
-			throw new InvalidUserDataException("Version alignment failed. Version " + alignedVersionOption.getVersion()
-					+ " from " + library.getName() + " is prohibited");
-		}
-		return Collections.singletonList(alignedVersionOption);
-	}
-
-	private VersionOption alignedVersionOption(Library library, Map<String, Library> libraries) {
-		VersionAlignment versionAlignment = library.getVersion().getVersionAlignment();
-		Library alignmentLibrary = libraries.get(versionAlignment.getLibraryName());
-		DependencyVersions dependencyVersions = alignmentLibrary.getDependencyVersions();
-		if (dependencyVersions == null) {
-			throw new InvalidUserDataException("Cannot align with library '" + versionAlignment.getLibraryName()
-					+ "' as it does not define any dependency versions");
-		}
-		if (!dependencyVersions.available()) {
-			return null;
-		}
-		Set<String> versions = new HashSet<>();
-		for (Group group : library.getGroups()) {
-			for (Module module : group.getModules()) {
-				String version = dependencyVersions.getVersion(group.getId(), module.getName());
-				if (version != null) {
-					versions.add(version);
-				}
-			}
-		}
-		if (versions.isEmpty()) {
-			throw new InvalidUserDataException("Cannot align with library '" + versionAlignment.getLibraryName()
-					+ "' as its dependency versions do not include any of this library's modules");
-		}
-		if (versions.size() > 1) {
-			throw new InvalidUserDataException("Cannot align with library '" + versionAlignment.getLibraryName()
-					+ "' as it uses multiple different versions of this library's modules");
-		}
-		DependencyVersion version = DependencyVersion.parse(versions.iterator().next());
-		return library.getVersion().getVersion().equals(version) ? null
-				: new VersionOption.AlignedVersionOption(version, alignmentLibrary);
 	}
 
 	private boolean isPermitted(DependencyVersion dependencyVersion, List<ProhibitedVersion> prohibitedVersions) {

@@ -16,20 +16,11 @@
 
 package org.springframework.boot.build.bom;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URI;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.maven.artifact.versioning.VersionRange;
-import org.gradle.api.GradleException;
 
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 
@@ -51,8 +42,6 @@ public class Library {
 
 	private final List<ProhibitedVersion> prohibitedVersions;
 
-	private final DependencyVersions dependencyVersions;
-
 	/**
 	 * Create a new {@code Library} with the given {@code name}, {@code version}, and
 	 * {@code groups}.
@@ -60,17 +49,15 @@ public class Library {
 	 * @param version version of the library
 	 * @param groups groups in the library
 	 * @param prohibitedVersions version of the library that are prohibited
-	 * @param dependencyVersions the library's dependency versions
 	 */
-	public Library(String name, LibraryVersion version, List<Group> groups, List<ProhibitedVersion> prohibitedVersions,
-			DependencyVersions dependencyVersions) {
+	public Library(String name, LibraryVersion version, List<Group> groups,
+			List<ProhibitedVersion> prohibitedVersions) {
 		this.name = name;
 		this.version = version;
 		this.groups = groups;
 		this.versionProperty = "Spring Boot".equals(name) ? null
 				: name.toLowerCase(Locale.ENGLISH).replace(' ', '-') + ".version";
 		this.prohibitedVersions = prohibitedVersions;
-		this.dependencyVersions = dependencyVersions;
 	}
 
 	public String getName() {
@@ -91,10 +78,6 @@ public class Library {
 
 	public List<ProhibitedVersion> getProhibitedVersions() {
 		return this.prohibitedVersions;
-	}
-
-	public DependencyVersions getDependencyVersions() {
-		return this.dependencyVersions;
 	}
 
 	/**
@@ -147,19 +130,12 @@ public class Library {
 
 		private final DependencyVersion version;
 
-		private final VersionAlignment versionAlignment;
-
-		public LibraryVersion(DependencyVersion version, VersionAlignment versionAlignment) {
+		public LibraryVersion(DependencyVersion version) {
 			this.version = version;
-			this.versionAlignment = versionAlignment;
 		}
 
 		public DependencyVersion getVersion() {
 			return this.version;
-		}
-
-		public VersionAlignment getVersionAlignment() {
-			return this.versionAlignment;
 		}
 
 	}
@@ -272,130 +248,6 @@ public class Library {
 
 		public String getArtifactId() {
 			return this.artifactId;
-		}
-
-	}
-
-	public interface DependencyVersions {
-
-		String getVersion(String groupId, String artifactId);
-
-		default boolean available() {
-			return true;
-		}
-
-	}
-
-	public static class DependencyLockDependencyVersions implements DependencyVersions {
-
-		private final Map<String, Map<String, String>> dependencyVersions = new HashMap<>();
-
-		private final String sourceTemplate;
-
-		private final String libraryVersion;
-
-		public DependencyLockDependencyVersions(String sourceTemplate, String libraryVersion) {
-			this.sourceTemplate = sourceTemplate;
-			this.libraryVersion = libraryVersion;
-		}
-
-		@Override
-		public boolean available() {
-			return !this.libraryVersion.contains("-SNAPSHOT");
-		}
-
-		@Override
-		public String getVersion(String groupId, String artifactId) {
-			if (this.dependencyVersions.isEmpty()) {
-				loadVersions();
-			}
-			return this.dependencyVersions.computeIfAbsent(groupId, (key) -> Collections.emptyMap()).get(artifactId);
-		}
-
-		private void loadVersions() {
-			String source = this.sourceTemplate.replace("<libraryVersion>", this.libraryVersion);
-			try {
-				try (BufferedReader reader = new BufferedReader(
-						new InputStreamReader(URI.create(source).toURL().openStream()))) {
-					String line;
-					while ((line = reader.readLine()) != null) {
-						if (!line.startsWith("#")) {
-							String[] components = line.split(":");
-							Map<String, String> groupDependencies = this.dependencyVersions
-								.computeIfAbsent(components[0], (key) -> new HashMap<>());
-							groupDependencies.put(components[1], components[2]);
-						}
-					}
-				}
-			}
-			catch (IOException ex) {
-				throw new GradleException("Failed to load versions from dependency lock file '" + source + "'", ex);
-			}
-		}
-
-	}
-
-	public static class DependencyConstraintsDependencyVersions implements DependencyVersions {
-
-		private static final Pattern CONSTRAINT_PATTERN = Pattern.compile("api \"(.+):(.+):(.+)\"");
-
-		private final Map<String, Map<String, String>> dependencyVersions = new HashMap<>();
-
-		private final String sourceTemplate;
-
-		private final String libraryVersion;
-
-		public DependencyConstraintsDependencyVersions(String sourceTemplate, String libraryVersion) {
-			this.sourceTemplate = sourceTemplate;
-			this.libraryVersion = libraryVersion;
-		}
-
-		@Override
-		public String getVersion(String groupId, String artifactId) {
-			if (this.dependencyVersions.isEmpty()) {
-				loadVersions();
-			}
-			return this.dependencyVersions.computeIfAbsent(groupId, (key) -> Collections.emptyMap()).get(artifactId);
-		}
-
-		private void loadVersions() {
-			String version = this.libraryVersion;
-			if (version.endsWith("-SNAPSHOT")) {
-				version = version.substring(0, version.lastIndexOf('.')) + ".x";
-			}
-			String source = this.sourceTemplate.replace("<libraryVersion>", version);
-			try {
-				try (BufferedReader reader = new BufferedReader(
-						new InputStreamReader(URI.create(source).toURL().openStream()))) {
-					String line;
-					while ((line = reader.readLine()) != null) {
-						Matcher matcher = CONSTRAINT_PATTERN.matcher(line.trim());
-						if (matcher.matches()) {
-							Map<String, String> groupDependencies = this.dependencyVersions
-								.computeIfAbsent(matcher.group(1), (key) -> new HashMap<>());
-							groupDependencies.put(matcher.group(2), matcher.group(3));
-						}
-					}
-				}
-			}
-			catch (IOException ex) {
-				throw new GradleException(
-						"Failed to load versions from dependency constraints declared in '" + source + "'", ex);
-			}
-		}
-
-	}
-
-	public static class VersionAlignment {
-
-		private final String libraryName;
-
-		public VersionAlignment(String libraryName) {
-			this.libraryName = libraryName;
-		}
-
-		public String getLibraryName() {
-			return this.libraryName;
 		}
 
 	}
