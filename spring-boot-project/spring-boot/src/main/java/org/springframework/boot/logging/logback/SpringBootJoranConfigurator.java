@@ -280,7 +280,8 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 
 		private Class<?> loadComponentType(String componentType) {
 			try {
-				return ClassUtils.forName(componentType, getClass().getClassLoader());
+				return ClassUtils.forName(this.modelInterpretationContext.subst(componentType),
+						getClass().getClassLoader());
 			}
 			catch (Throwable ex) {
 				throw new RuntimeException("Failed to load component type '" + componentType + "'", ex);
