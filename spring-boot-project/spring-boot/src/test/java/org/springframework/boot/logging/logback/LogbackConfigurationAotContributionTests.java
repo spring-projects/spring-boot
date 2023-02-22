@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -190,6 +191,18 @@ class LogbackConfigurationAotContributionTests {
 			.accepts(generationContext.getRuntimeHints());
 	}
 
+	@Test
+	void placeholdersInComponentClassAttributeAreReplaced() {
+		ComponentModel component = new ComponentModel();
+		component.setClassName("${VARIABLE_CLASS_NAME}");
+		TestGenerationContext generationContext = applyContribution(component,
+				(context) -> context.putProperty("VARIABLE_CLASS_NAME", Outer.class.getName()));
+		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Outer.class))
+			.accepts(generationContext.getRuntimeHints());
+		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Implementation.class))
+			.accepts(generationContext.getRuntimeHints());
+	}
+
 	private Predicate<RuntimeHints> invokePublicConstructorsOf(String name) {
 		return RuntimeHintsPredicates.reflection()
 			.onType(TypeReference.of(name))
@@ -220,7 +233,13 @@ class LogbackConfigurationAotContributionTests {
 	}
 
 	private TestGenerationContext applyContribution(Model model) {
+		return this.applyContribution(model, (context) -> {
+		});
+	}
+
+	private TestGenerationContext applyContribution(Model model, Consumer<LoggerContext> contextCustomizer) {
 		LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+		contextCustomizer.accept(context);
 		SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(null);
 		configurator.setContext(context);
 		withSystemProperty("spring.aot.processing", "true", () -> configurator.processModel(model));
