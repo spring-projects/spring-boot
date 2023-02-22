@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.graphql;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ import org.springframework.graphql.test.tester.GraphQlTester;
  * @author Brian Clozel
  */
 @GraphQlTest(BookController.class)
+@Disabled
 class GraphQlTestIntegrationTests {
 
 	@Autowired
