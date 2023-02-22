@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,31 +81,32 @@ class JmxEndpointExporterTests {
 
 	@Test
 	void createWhenMBeanServerIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new JmxEndpointExporter(null, this.objectNameFactory, this.responseMapper, this.endpoints))
-				.withMessageContaining("MBeanServer must not be null");
+		assertThatIllegalArgumentException()
+			.isThrownBy(
+					() -> new JmxEndpointExporter(null, this.objectNameFactory, this.responseMapper, this.endpoints))
+			.withMessageContaining("MBeanServer must not be null");
 	}
 
 	@Test
 	void createWhenObjectNameFactoryIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new JmxEndpointExporter(this.mBeanServer, null, this.responseMapper, this.endpoints))
-				.withMessageContaining("ObjectNameFactory must not be null");
+			.isThrownBy(() -> new JmxEndpointExporter(this.mBeanServer, null, this.responseMapper, this.endpoints))
+			.withMessageContaining("ObjectNameFactory must not be null");
 	}
 
 	@Test
 	void createWhenResponseMapperIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> new JmxEndpointExporter(this.mBeanServer, this.objectNameFactory, null, this.endpoints))
-				.withMessageContaining("ResponseMapper must not be null");
+			.isThrownBy(() -> new JmxEndpointExporter(this.mBeanServer, this.objectNameFactory, null, this.endpoints))
+			.withMessageContaining("ResponseMapper must not be null");
 	}
 
 	@Test
 	void createWhenEndpointsIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new JmxEndpointExporter(this.mBeanServer, this.objectNameFactory, this.responseMapper, null))
-				.withMessageContaining("Endpoints must not be null");
+		assertThatIllegalArgumentException()
+			.isThrownBy(
+					() -> new JmxEndpointExporter(this.mBeanServer, this.objectNameFactory, this.responseMapper, null))
+			.withMessageContaining("Endpoints must not be null");
 	}
 
 	@Test
@@ -127,19 +128,19 @@ class JmxEndpointExporterTests {
 	@Test
 	void registerWhenObjectNameIsMalformedShouldThrowException() throws Exception {
 		given(this.objectNameFactory.getObjectName(any(ExposableJmxEndpoint.class)))
-				.willThrow(MalformedObjectNameException.class);
+			.willThrow(MalformedObjectNameException.class);
 		this.endpoints.add(new TestExposableJmxEndpoint(new TestJmxOperation()));
 		assertThatIllegalStateException().isThrownBy(this.exporter::afterPropertiesSet)
-				.withMessageContaining("Invalid ObjectName for endpoint 'test'");
+			.withMessageContaining("Invalid ObjectName for endpoint 'test'");
 	}
 
 	@Test
 	void registerWhenRegistrationFailsShouldThrowException() throws Exception {
 		given(this.mBeanServer.registerMBean(any(), any(ObjectName.class)))
-				.willThrow(new MBeanRegistrationException(new RuntimeException()));
+			.willThrow(new MBeanRegistrationException(new RuntimeException()));
 		this.endpoints.add(new TestExposableJmxEndpoint(new TestJmxOperation()));
 		assertThatExceptionOfType(MBeanExportException.class).isThrownBy(this.exporter::afterPropertiesSet)
-				.withMessageContaining("Failed to register MBean for endpoint 'test");
+			.withMessageContaining("Failed to register MBean for endpoint 'test");
 	}
 
 	@Test
@@ -164,9 +165,9 @@ class JmxEndpointExporterTests {
 		this.endpoints.add(new TestExposableJmxEndpoint(new TestJmxOperation()));
 		this.exporter.afterPropertiesSet();
 		willThrow(new MBeanRegistrationException(new RuntimeException())).given(this.mBeanServer)
-				.unregisterMBean(any(ObjectName.class));
+			.unregisterMBean(any(ObjectName.class));
 		assertThatExceptionOfType(JmxException.class).isThrownBy(() -> this.exporter.destroy())
-				.withMessageContaining("Failed to unregister MBean with ObjectName 'boot");
+			.withMessageContaining("Failed to unregister MBean with ObjectName 'boot");
 	}
 
 	/**

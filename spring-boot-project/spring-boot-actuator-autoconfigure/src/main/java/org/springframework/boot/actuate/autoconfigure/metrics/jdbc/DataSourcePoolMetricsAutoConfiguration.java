@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ public class DataSourcePoolMetricsAutoConfiguration {
 			@Override
 			public void bindTo(MeterRegistry registry) {
 				List<DataSourcePoolMetadataProvider> metadataProvidersList = this.metadataProviders.stream()
-						.collect(Collectors.toList());
+					.collect(Collectors.toList());
 				this.dataSources.forEach((name, dataSource) -> bindDataSourceToRegistry(name, dataSource,
 						metadataProvidersList, registry));
 			}
@@ -97,7 +97,7 @@ public class DataSourcePoolMetricsAutoConfiguration {
 					Collection<DataSourcePoolMetadataProvider> metadataProviders, MeterRegistry registry) {
 				String dataSourceName = getDataSourceName(beanName);
 				new DataSourcePoolMetrics(dataSource, metadataProviders, dataSourceName, Collections.emptyList())
-						.bindTo(registry);
+					.bindTo(registry);
 			}
 
 			/**

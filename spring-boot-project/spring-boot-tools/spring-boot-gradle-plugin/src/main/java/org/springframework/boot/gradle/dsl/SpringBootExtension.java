@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,8 +107,8 @@ public class SpringBootExtension {
 	private void configureBuildInfoTask(BuildInfo task) {
 		task.setGroup(BasePlugin.BUILD_GROUP);
 		task.setDescription("Generates a META-INF/build-info.properties file.");
-		task.getConventionMapping().map("destinationDir",
-				() -> new File(determineMainSourceSetResourcesOutputDir(), "META-INF"));
+		task.getConventionMapping()
+			.map("destinationDir", () -> new File(determineMainSourceSetResourcesOutputDir(), "META-INF"));
 	}
 
 	private File determineMainSourceSetResourcesOutputDir() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,7 +128,7 @@ public class RabbitAutoConfiguration {
 			connectionFactoryBean.afterPropertiesSet();
 			com.rabbitmq.client.ConnectionFactory connectionFactory = connectionFactoryBean.getObject();
 			connectionFactoryCustomizers.orderedStream()
-					.forEach((customizer) -> customizer.customize(connectionFactory));
+				.forEach((customizer) -> customizer.customize(connectionFactory));
 
 			CachingConnectionFactory factory = new CachingConnectionFactory(connectionFactory);
 			rabbitCachingConnectionFactoryConfigurer.configure(factory);
@@ -150,7 +150,7 @@ public class RabbitAutoConfiguration {
 			RabbitTemplateConfigurer configurer = new RabbitTemplateConfigurer(properties);
 			configurer.setMessageConverter(messageConverter.getIfUnique());
 			configurer
-					.setRetryTemplateCustomizers(retryTemplateCustomizers.orderedStream().collect(Collectors.toList()));
+				.setRetryTemplateCustomizers(retryTemplateCustomizers.orderedStream().collect(Collectors.toList()));
 			return configurer;
 		}
 

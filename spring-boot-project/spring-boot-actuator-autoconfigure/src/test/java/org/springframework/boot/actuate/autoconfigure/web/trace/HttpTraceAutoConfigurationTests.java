@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class HttpTraceAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HttpTraceAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(HttpTraceAutoConfiguration.class));
 
 	@Test
 	void autoConfigurationIsDisabledByDefault() {
@@ -67,44 +67,48 @@ class HttpTraceAutoConfigurationTests {
 	@Test
 	void usesUserProvidedTracer() {
 		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
-				.withUserConfiguration(CustomTracerConfiguration.class).run((context) -> {
-					assertThat(context).hasSingleBean(HttpExchangeTracer.class);
-					assertThat(context.getBean(HttpExchangeTracer.class)).isInstanceOf(CustomHttpExchangeTracer.class);
-				});
+			.withUserConfiguration(CustomTracerConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(HttpExchangeTracer.class);
+				assertThat(context.getBean(HttpExchangeTracer.class)).isInstanceOf(CustomHttpExchangeTracer.class);
+			});
 	}
 
 	@Test
 	void usesUserProvidedWebFilterWhenReactiveContext() {
 		new ReactiveWebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(HttpTraceAutoConfiguration.class))
-				.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
-				.withUserConfiguration(CustomWebFilterConfiguration.class).run((context) -> {
-					assertThat(context).hasSingleBean(HttpTraceWebFilter.class);
-					assertThat(context.getBean(HttpTraceWebFilter.class)).isInstanceOf(CustomHttpTraceWebFilter.class);
-				});
+			.withConfiguration(AutoConfigurations.of(HttpTraceAutoConfiguration.class))
+			.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
+			.withUserConfiguration(CustomWebFilterConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(HttpTraceWebFilter.class);
+				assertThat(context.getBean(HttpTraceWebFilter.class)).isInstanceOf(CustomHttpTraceWebFilter.class);
+			});
 	}
 
 	@Test
 	void configuresServletFilter() {
 		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(HttpTraceFilter.class));
+			.run((context) -> assertThat(context).hasSingleBean(HttpTraceFilter.class));
 	}
 
 	@Test
 	void usesUserProvidedServletFilter() {
 		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
-				.withUserConfiguration(CustomFilterConfiguration.class).run((context) -> {
-					assertThat(context).hasSingleBean(HttpTraceFilter.class);
-					assertThat(context.getBean(HttpTraceFilter.class)).isInstanceOf(CustomHttpTraceFilter.class);
-				});
+			.withUserConfiguration(CustomFilterConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(HttpTraceFilter.class);
+				assertThat(context.getBean(HttpTraceFilter.class)).isInstanceOf(CustomHttpTraceFilter.class);
+			});
 	}
 
 	@Test
 	void backsOffWhenDisabled() {
 		this.contextRunner.withUserConfiguration(HttpTraceRepositoryConfiguration.class)
-				.withPropertyValues("management.trace.http.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(InMemoryHttpTraceRepository.class)
-						.doesNotHaveBean(HttpExchangeTracer.class).doesNotHaveBean(HttpTraceFilter.class));
+			.withPropertyValues("management.trace.http.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(InMemoryHttpTraceRepository.class)
+				.doesNotHaveBean(HttpExchangeTracer.class)
+				.doesNotHaveBean(HttpTraceFilter.class));
 	}
 
 	static class CustomHttpTraceRepository implements HttpTraceRepository {

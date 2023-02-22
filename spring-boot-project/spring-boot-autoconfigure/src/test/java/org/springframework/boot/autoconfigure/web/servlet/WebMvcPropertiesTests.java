@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,8 +58,8 @@ class WebMvcPropertiesTests {
 	@Test
 	void servletPathWhenHasWildcardThrowsException() {
 		assertThatExceptionOfType(BindException.class).isThrownBy(() -> bind("spring.mvc.servlet.path", "/*"))
-				.withRootCauseInstanceOf(IllegalArgumentException.class).satisfies(
-						(ex) -> assertThat(Throwables.getRootCause(ex)).hasMessage("Path must not contain wildcards"));
+			.withRootCauseInstanceOf(IllegalArgumentException.class)
+			.satisfies((ex) -> assertThat(Throwables.getRootCause(ex)).hasMessage("Path must not contain wildcards"));
 	}
 
 	@Test
@@ -68,7 +68,7 @@ class WebMvcPropertiesTests {
 		this.properties.getPathmatch().setMatchingStrategy(WebMvcProperties.MatchingStrategy.PATH_PATTERN_PARSER);
 		this.properties.getPathmatch().setUseSuffixPattern(true);
 		assertThatExceptionOfType(IncompatibleConfigurationException.class)
-				.isThrownBy(this.properties::checkConfiguration);
+			.isThrownBy(this.properties::checkConfiguration);
 	}
 
 	@Test
@@ -77,7 +77,7 @@ class WebMvcPropertiesTests {
 		this.properties.getPathmatch().setMatchingStrategy(WebMvcProperties.MatchingStrategy.PATH_PATTERN_PARSER);
 		this.properties.getPathmatch().setUseRegisteredSuffixPattern(true);
 		assertThatExceptionOfType(IncompatibleConfigurationException.class)
-				.isThrownBy(this.properties::checkConfiguration);
+			.isThrownBy(this.properties::checkConfiguration);
 	}
 
 	private void bind(String name, String value) {

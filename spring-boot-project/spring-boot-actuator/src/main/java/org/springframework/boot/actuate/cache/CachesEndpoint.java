@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,16 +109,22 @@ public class CachesEndpoint {
 
 	private List<CacheEntry> getCacheEntries(Predicate<String> cacheNamePredicate,
 			Predicate<String> cacheManagerNamePredicate) {
-		return this.cacheManagers.keySet().stream().filter(cacheManagerNamePredicate)
-				.flatMap((cacheManagerName) -> getCacheEntries(cacheManagerName, cacheNamePredicate).stream())
-				.collect(Collectors.toList());
+		return this.cacheManagers.keySet()
+			.stream()
+			.filter(cacheManagerNamePredicate)
+			.flatMap((cacheManagerName) -> getCacheEntries(cacheManagerName, cacheNamePredicate).stream())
+			.collect(Collectors.toList());
 	}
 
 	private List<CacheEntry> getCacheEntries(String cacheManagerName, Predicate<String> cacheNamePredicate) {
 		CacheManager cacheManager = this.cacheManagers.get(cacheManagerName);
-		return cacheManager.getCacheNames().stream().filter(cacheNamePredicate).map(cacheManager::getCache)
-				.filter(Objects::nonNull).map((cache) -> new CacheEntry(cache, cacheManagerName))
-				.collect(Collectors.toList());
+		return cacheManager.getCacheNames()
+			.stream()
+			.filter(cacheNamePredicate)
+			.map(cacheManager::getCache)
+			.filter(Objects::nonNull)
+			.map((cache) -> new CacheEntry(cache, cacheManagerName))
+			.collect(Collectors.toList());
 	}
 
 	private CacheEntry extractUniqueCacheEntry(String cache, List<CacheEntry> entries) {

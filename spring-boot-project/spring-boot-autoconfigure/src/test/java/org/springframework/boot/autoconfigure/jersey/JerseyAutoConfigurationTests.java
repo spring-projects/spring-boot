@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JerseyAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(JerseyAutoConfiguration.class))
-			.withUserConfiguration(ResourceConfigConfiguration.class);
+		.withConfiguration(AutoConfigurations.of(JerseyAutoConfiguration.class))
+		.withUserConfiguration(ResourceConfigConfiguration.class);
 
 	@Test
 	void requestContextFilterRegistrationIsAutoConfigured() {
@@ -72,29 +72,40 @@ class JerseyAutoConfigurationTests {
 	void whenJaxbIsAvailableTheObjectMapperIsCustomizedWithAnAnnotationIntrospector() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class)).run((context) -> {
 			ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
-			assertThat(objectMapper.getSerializationConfig().getAnnotationIntrospector().allIntrospectors().stream()
-					.filter(JaxbAnnotationIntrospector.class::isInstance)).hasSize(1);
+			assertThat(objectMapper.getSerializationConfig()
+				.getAnnotationIntrospector()
+				.allIntrospectors()
+				.stream()
+				.filter(JaxbAnnotationIntrospector.class::isInstance)).hasSize(1);
 		});
 	}
 
 	@Test
 	void whenJaxbIsNotAvailableTheObjectMapperCustomizationBacksOff() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
-				.withClassLoader(new FilteredClassLoader("javax.xml.bind.annotation")).run((context) -> {
-					ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
-					assertThat(objectMapper.getSerializationConfig().getAnnotationIntrospector().allIntrospectors()
-							.stream().filter(JaxbAnnotationIntrospector.class::isInstance)).isEmpty();
-				});
+			.withClassLoader(new FilteredClassLoader("javax.xml.bind.annotation"))
+			.run((context) -> {
+				ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
+				assertThat(objectMapper.getSerializationConfig()
+					.getAnnotationIntrospector()
+					.allIntrospectors()
+					.stream()
+					.filter(JaxbAnnotationIntrospector.class::isInstance)).isEmpty();
+			});
 	}
 
 	@Test
 	void whenJacksonJaxbModuleIsNotAvailableTheObjectMapperCustomizationBacksOff() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
-				.withClassLoader(new FilteredClassLoader(JaxbAnnotationIntrospector.class)).run((context) -> {
-					ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
-					assertThat(objectMapper.getSerializationConfig().getAnnotationIntrospector().allIntrospectors()
-							.stream().filter(JaxbAnnotationIntrospector.class::isInstance)).isEmpty();
-				});
+			.withClassLoader(new FilteredClassLoader(JaxbAnnotationIntrospector.class))
+			.run((context) -> {
+				ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
+				assertThat(objectMapper.getSerializationConfig()
+					.getAnnotationIntrospector()
+					.allIntrospectors()
+					.stream()
+					.filter(JaxbAnnotationIntrospector.class::isInstance)).isEmpty();
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

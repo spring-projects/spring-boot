@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ class LayerIdTests {
 	@Test
 	void ofWhenValueIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LayerId.of((String) null))
-				.withMessage("Value must not be empty");
+			.withMessage("Value must not be empty");
 	}
 
 	@Test
@@ -80,13 +80,13 @@ class LayerIdTests {
 	@Test
 	void ofSha256DigestWhenNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LayerId.ofSha256Digest((byte[]) null))
-				.withMessage("Digest must not be null");
+			.withMessage("Digest must not be null");
 	}
 
 	@Test
 	void ofSha256DigestWhenWrongLengthThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> LayerId.ofSha256Digest(new byte[31]))
-				.withMessage("Digest must be exactly 32 bytes");
+			.withMessage("Digest must be exactly 32 bytes");
 	}
 
 }

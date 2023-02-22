@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,9 +77,10 @@ class ServletContextInitializerBeansTests {
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
 				this.context.getBeanFactory());
 		assertThat(initializerBeans).hasSize(1);
-		assertThat(initializerBeans).first().isInstanceOf(ServletListenerRegistrationBean.class)
-				.extracting((initializer) -> ((ServletListenerRegistrationBean<?>) initializer).getListener())
-				.isInstanceOf(HttpSessionIdListener.class);
+		assertThat(initializerBeans).first()
+			.isInstanceOf(ServletListenerRegistrationBean.class)
+			.extracting((initializer) -> ((ServletListenerRegistrationBean<?>) initializer).getListener())
+			.isInstanceOf(HttpSessionIdListener.class);
 	}
 
 	private void load(Class<?>... configuration) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,8 +68,8 @@ class GrabCommandIntegrationTests {
 	@Test
 	void duplicateDependencyManagementBomAnnotationsProducesAnError() {
 		assertThatExceptionOfType(Exception.class)
-				.isThrownBy(() -> this.cli.grab("duplicateDependencyManagementBom.groovy"))
-				.withMessageContaining("Duplicate @DependencyManagementBom annotation");
+			.isThrownBy(() -> this.cli.grab("duplicateDependencyManagementBom.groovy"))
+			.withMessageContaining("Duplicate @DependencyManagementBom annotation");
 	}
 
 	@Test

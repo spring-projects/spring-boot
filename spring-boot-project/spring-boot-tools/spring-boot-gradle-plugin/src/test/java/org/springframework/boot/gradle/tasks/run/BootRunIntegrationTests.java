@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ class BootRunIntegrationTests {
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput())
-				.contains("Main class name = com.example.bootrun.classpath.BootRunClasspathApplication");
+			.contains("Main class name = com.example.bootrun.classpath.BootRunClasspathApplication");
 	}
 
 	@TestTemplate
@@ -118,12 +118,15 @@ class BootRunIntegrationTests {
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_13)) {
-			assertThat(result.getOutput()).contains("1. -Dcom.bar=baz").contains("2. -Dcom.foo=bar")
-					.contains("3. -XX:TieredStopAtLevel=1");
+			assertThat(result.getOutput()).contains("1. -Dcom.bar=baz")
+				.contains("2. -Dcom.foo=bar")
+				.contains("3. -XX:TieredStopAtLevel=1");
 		}
 		else {
-			assertThat(result.getOutput()).contains("1. -Dcom.bar=baz").contains("2. -Dcom.foo=bar")
-					.contains("3. -Xverify:none").contains("4. -XX:TieredStopAtLevel=1");
+			assertThat(result.getOutput()).contains("1. -Dcom.bar=baz")
+				.contains("2. -Dcom.foo=bar")
+				.contains("3. -Xverify:none")
+				.contains("4. -XX:TieredStopAtLevel=1");
 		}
 	}
 

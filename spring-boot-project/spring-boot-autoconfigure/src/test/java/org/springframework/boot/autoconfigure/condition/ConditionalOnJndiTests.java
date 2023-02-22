@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,21 +74,21 @@ class ConditionalOnJndiTests {
 	@Test
 	void jndiNotAvailable() {
 		this.contextRunner.withUserConfiguration(JndiAvailableConfiguration.class, JndiConditionConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
 	void jndiAvailable() {
 		setupJndi();
 		this.contextRunner.withUserConfiguration(JndiAvailableConfiguration.class, JndiConditionConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(String.class));
+			.run((context) -> assertThat(context).hasSingleBean(String.class));
 	}
 
 	@Test
 	void jndiLocationNotBound() {
 		setupJndi();
 		this.contextRunner.withUserConfiguration(JndiConditionConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
@@ -96,7 +96,7 @@ class ConditionalOnJndiTests {
 		setupJndi();
 		TestableInitialContextFactory.bind("java:/FooManager", new Object());
 		this.contextRunner.withUserConfiguration(JndiConditionConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(String.class));
+			.run((context) -> assertThat(context).hasSingleBean(String.class));
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,7 +99,7 @@ class PropertiesLauncherTests {
 	@SuppressWarnings("unchecked")
 	private void clearHandlerCache() throws Exception {
 		Map<File, JarFile> rootFileCache = ((SoftReference<Map<File, JarFile>>) ReflectionTestUtils
-				.getField(Handler.class, "rootFileCache")).get();
+			.getField(Handler.class, "rootFileCache")).get();
 		if (rootFileCache != null) {
 			for (JarFile rootJarFile : rootFileCache.values()) {
 				rootJarFile.close();
@@ -127,7 +127,8 @@ class PropertiesLauncherTests {
 	void testNonExistentHome() {
 		System.setProperty("loader.home", "src/test/resources/nonexistent");
 		assertThatIllegalStateException().isThrownBy(PropertiesLauncher::new)
-				.withMessageContaining("Invalid source directory").withCauseInstanceOf(IllegalArgumentException.class);
+			.withMessageContaining("Invalid source directory")
+			.withCauseInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test
@@ -194,7 +195,7 @@ class PropertiesLauncherTests {
 		System.setProperty("loader.path", "jar:file:./src/test/resources/nested-jars/app.jar!/");
 		this.launcher = new PropertiesLauncher();
 		assertThat(ReflectionTestUtils.getField(this.launcher, "paths").toString())
-				.isEqualTo("[jar:file:./src/test/resources/nested-jars/app.jar!/]");
+			.isEqualTo("[jar:file:./src/test/resources/nested-jars/app.jar!/]");
 		List<Archive> archives = new ArrayList<>();
 		this.launcher.getClassPathArchivesIterator().forEachRemaining(archives::add);
 		assertThat(archives).areExactly(1, endingWith("foo.jar!/"));
@@ -237,7 +238,7 @@ class PropertiesLauncherTests {
 		System.setProperty("loader.main", "demo.Application");
 		this.launcher = new PropertiesLauncher();
 		assertThat(ReflectionTestUtils.getField(this.launcher, "paths").toString())
-				.isEqualTo("[nested-jars/nested-jar-app.jar!/BOOT-INF/classes/]");
+			.isEqualTo("[nested-jars/nested-jar-app.jar!/BOOT-INF/classes/]");
 		this.launcher.launch(new String[0]);
 		waitFor("Hello World");
 	}
@@ -277,7 +278,7 @@ class PropertiesLauncherTests {
 		System.setProperty("loader.classLoader", URLClassLoader.class.getName());
 		this.launcher = new PropertiesLauncher();
 		assertThat(ReflectionTestUtils.getField(this.launcher, "paths").toString())
-				.isEqualTo("[more-jars/app.jar, jars/app.jar]");
+			.isEqualTo("[more-jars/app.jar, jars/app.jar]");
 		this.launcher.launch(new String[0]);
 		waitFor("Hello Other World");
 	}
@@ -393,7 +394,7 @@ class PropertiesLauncherTests {
 		catch (Exception ex) {
 			// Expected ClassNotFoundException
 			LaunchedURLClassLoader classLoader = (LaunchedURLClassLoader) Thread.currentThread()
-					.getContextClassLoader();
+				.getContextClassLoader();
 			classLoader.close();
 		}
 		URL resource = new URL("jar:" + jarFile.toURI() + "!/nested.jar!/3.dat");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,12 +53,12 @@ public final class Neo4jReactiveHealthIndicator extends AbstractReactiveHealthIn
 	@Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
 		return runHealthCheckQuery()
-				.doOnError(SessionExpiredException.class,
-						(ex) -> logger.warn(Neo4jHealthIndicator.MESSAGE_SESSION_EXPIRED))
-				.retryWhen(Retry.max(1).filter(SessionExpiredException.class::isInstance)).map((healthDetails) -> {
-					this.healthDetailsHandler.addHealthDetails(builder, healthDetails);
-					return builder.build();
-				});
+			.doOnError(SessionExpiredException.class, (ex) -> logger.warn(Neo4jHealthIndicator.MESSAGE_SESSION_EXPIRED))
+			.retryWhen(Retry.max(1).filter(SessionExpiredException.class::isInstance))
+			.map((healthDetails) -> {
+				this.healthDetailsHandler.addHealthDetails(builder, healthDetails);
+				return builder.build();
+			});
 	}
 
 	Mono<Neo4jHealthDetails> runHealthCheckQuery() {
@@ -66,8 +66,9 @@ public final class Neo4jReactiveHealthIndicator extends AbstractReactiveHealthIn
 		// all possible workloads
 		return Mono.using(() -> this.driver.rxSession(Neo4jHealthIndicator.DEFAULT_SESSION_CONFIG), (session) -> {
 			RxResult result = session.run(Neo4jHealthIndicator.CYPHER);
-			return Mono.from(result.records()).zipWhen((record) -> Mono.from(result.consume()))
-					.map((tuple) -> new Neo4jHealthDetails(tuple.getT1(), tuple.getT2()));
+			return Mono.from(result.records())
+				.zipWhen((record) -> Mono.from(result.consume()))
+				.map((tuple) -> new Neo4jHealthDetails(tuple.getT1(), tuple.getT2()));
 		}, RxSession::close);
 	}
 

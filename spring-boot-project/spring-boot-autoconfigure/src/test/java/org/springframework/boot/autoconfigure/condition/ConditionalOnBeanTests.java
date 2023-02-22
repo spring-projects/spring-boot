@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,76 +59,76 @@ class ConditionalOnBeanTests {
 	@Test
 	void testNameOnBeanCondition() {
 		this.contextRunner.withUserConfiguration(FooConfiguration.class, OnBeanNameConfiguration.class)
-				.run(this::hasBarBean);
+			.run(this::hasBarBean);
 	}
 
 	@Test
 	void testNameAndTypeOnBeanCondition() {
 		this.contextRunner.withUserConfiguration(FooConfiguration.class, OnBeanNameAndTypeConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean("bar"));
+			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
 	}
 
 	@Test
 	void testNameOnBeanConditionReverseOrder() {
 		// Ideally this should be true
 		this.contextRunner.withUserConfiguration(OnBeanNameConfiguration.class, FooConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean("bar"));
+			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
 	}
 
 	@Test
 	void testClassOnBeanCondition() {
 		this.contextRunner.withUserConfiguration(FooConfiguration.class, OnBeanClassConfiguration.class)
-				.run(this::hasBarBean);
+			.run(this::hasBarBean);
 	}
 
 	@Test
 	void testClassOnBeanClassNameCondition() {
 		this.contextRunner.withUserConfiguration(FooConfiguration.class, OnBeanClassNameConfiguration.class)
-				.run(this::hasBarBean);
+			.run(this::hasBarBean);
 	}
 
 	@Test
 	void testOnBeanConditionWithXml() {
 		this.contextRunner.withUserConfiguration(XmlConfiguration.class, OnBeanNameConfiguration.class)
-				.run(this::hasBarBean);
+			.run(this::hasBarBean);
 	}
 
 	@Test
 	void testOnBeanConditionWithCombinedXml() {
 		// Ideally this should be true
 		this.contextRunner.withUserConfiguration(CombinedXmlConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean("bar"));
+			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
 	}
 
 	@Test
 	void testAnnotationOnBeanCondition() {
 		this.contextRunner.withUserConfiguration(FooConfiguration.class, OnAnnotationConfiguration.class)
-				.run(this::hasBarBean);
+			.run(this::hasBarBean);
 	}
 
 	@Test
 	void testOnMissingBeanType() {
 		this.contextRunner.withUserConfiguration(FooConfiguration.class, OnBeanMissingClassConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean("bar"));
+			.run((context) -> assertThat(context).doesNotHaveBean("bar"));
 	}
 
 	@Test
 	void withPropertyPlaceholderClassName() {
 		this.contextRunner
-				.withUserConfiguration(PropertySourcesPlaceholderConfigurer.class,
-						WithPropertyPlaceholderClassName.class, OnBeanClassConfiguration.class)
-				.withPropertyValues("mybeanclass=java.lang.String")
-				.run((context) -> assertThat(context).hasNotFailed());
+			.withUserConfiguration(PropertySourcesPlaceholderConfigurer.class, WithPropertyPlaceholderClassName.class,
+					OnBeanClassConfiguration.class)
+			.withPropertyValues("mybeanclass=java.lang.String")
+			.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
 	void beanProducedByFactoryBeanIsConsideredWhenMatchingOnAnnotation() {
 		this.contextRunner
-				.withUserConfiguration(FactoryBeanConfiguration.class, OnAnnotationWithFactoryBeanConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasBean("bar");
-					assertThat(context).hasSingleBean(ExampleBean.class);
-				});
+			.withUserConfiguration(FactoryBeanConfiguration.class, OnAnnotationWithFactoryBeanConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasBean("bar");
+				assertThat(context).hasSingleBean(ExampleBean.class);
+			});
 	}
 
 	private void hasBarBean(AssertableApplicationContext context) {
@@ -140,8 +140,9 @@ class ConditionalOnBeanTests {
 	void onBeanConditionOutputShouldNotContainConditionalOnMissingBeanClassInMessage() {
 		this.contextRunner.withUserConfiguration(OnBeanNameConfiguration.class).run((context) -> {
 			Collection<ConditionAndOutcomes> conditionAndOutcomes = ConditionEvaluationReport
-					.get(context.getSourceApplicationContext().getBeanFactory()).getConditionAndOutcomesBySource()
-					.values();
+				.get(context.getSourceApplicationContext().getBeanFactory())
+				.getConditionAndOutcomesBySource()
+				.values();
 			String message = conditionAndOutcomes.iterator().next().iterator().next().getOutcome().getMessage();
 			assertThat(message).doesNotContain("@ConditionalOnMissingBean");
 		});
@@ -149,81 +150,81 @@ class ConditionalOnBeanTests {
 
 	@Test
 	void conditionEvaluationConsidersChangeInTypeWhenBeanIsOverridden() {
-		this.contextRunner.withAllowBeanDefinitionOverriding(true).withUserConfiguration(OriginalDefinition.class,
-				OverridingDefinition.class, ConsumingConfiguration.class).run((context) -> {
-					assertThat(context).hasBean("testBean");
-					assertThat(context).hasSingleBean(Integer.class);
-					assertThat(context).doesNotHaveBean(ConsumingConfiguration.class);
-				});
+		this.contextRunner.withAllowBeanDefinitionOverriding(true)
+			.withUserConfiguration(OriginalDefinition.class, OverridingDefinition.class, ConsumingConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasBean("testBean");
+				assertThat(context).hasSingleBean(Integer.class);
+				assertThat(context).doesNotHaveBean(ConsumingConfiguration.class);
+			});
 	}
 
 	@Test
 	void parameterizedContainerWhenValueIsOfMissingBeanDoesNotMatch() {
 		this.contextRunner
-				.withUserConfiguration(ParameterizedWithoutCustomConfig.class,
-						ParameterizedConditionWithValueConfig.class)
-				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("otherExampleBean")));
+			.withUserConfiguration(ParameterizedWithoutCustomConfig.class, ParameterizedConditionWithValueConfig.class)
+			.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("otherExampleBean")));
 	}
 
 	@Test
 	void parameterizedContainerWhenValueIsOfExistingBeanMatches() {
 		this.contextRunner
-				.withUserConfiguration(ParameterizedWithCustomConfig.class, ParameterizedConditionWithValueConfig.class)
-				.run((context) -> assertThat(context)
-						.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
+			.withUserConfiguration(ParameterizedWithCustomConfig.class, ParameterizedConditionWithValueConfig.class)
+			.run((context) -> assertThat(context)
+				.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
 	}
 
 	@Test
 	void parameterizedContainerWhenValueIsOfMissingBeanRegistrationDoesNotMatch() {
 		this.contextRunner
-				.withUserConfiguration(ParameterizedWithoutCustomContainerConfig.class,
-						ParameterizedConditionWithValueConfig.class)
-				.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("otherExampleBean")));
+			.withUserConfiguration(ParameterizedWithoutCustomContainerConfig.class,
+					ParameterizedConditionWithValueConfig.class)
+			.run((context) -> assertThat(context).satisfies(exampleBeanRequirement("otherExampleBean")));
 	}
 
 	@Test
 	void parameterizedContainerWhenValueIsOfExistingBeanRegistrationMatches() {
 		this.contextRunner
-				.withUserConfiguration(ParameterizedWithCustomContainerConfig.class,
-						ParameterizedConditionWithValueConfig.class)
-				.run((context) -> assertThat(context)
-						.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
+			.withUserConfiguration(ParameterizedWithCustomContainerConfig.class,
+					ParameterizedConditionWithValueConfig.class)
+			.run((context) -> assertThat(context)
+				.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
 	}
 
 	@Test
 	void parameterizedContainerWhenReturnTypeIsOfExistingBeanMatches() {
 		this.contextRunner
-				.withUserConfiguration(ParameterizedWithCustomConfig.class,
-						ParameterizedConditionWithReturnTypeConfig.class)
-				.run((context) -> assertThat(context)
-						.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
+			.withUserConfiguration(ParameterizedWithCustomConfig.class,
+					ParameterizedConditionWithReturnTypeConfig.class)
+			.run((context) -> assertThat(context)
+				.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
 	}
 
 	@Test
 	void parameterizedContainerWhenReturnTypeIsOfExistingBeanRegistrationMatches() {
 		this.contextRunner
-				.withUserConfiguration(ParameterizedWithCustomContainerConfig.class,
-						ParameterizedConditionWithReturnTypeConfig.class)
-				.run((context) -> assertThat(context)
-						.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
+			.withUserConfiguration(ParameterizedWithCustomContainerConfig.class,
+					ParameterizedConditionWithReturnTypeConfig.class)
+			.run((context) -> assertThat(context)
+				.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
 	}
 
 	@Test
 	void parameterizedContainerWhenReturnRegistrationTypeIsOfExistingBeanMatches() {
 		this.contextRunner
-				.withUserConfiguration(ParameterizedWithCustomConfig.class,
-						ParameterizedConditionWithReturnRegistrationTypeConfig.class)
-				.run((context) -> assertThat(context)
-						.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
+			.withUserConfiguration(ParameterizedWithCustomConfig.class,
+					ParameterizedConditionWithReturnRegistrationTypeConfig.class)
+			.run((context) -> assertThat(context)
+				.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
 	}
 
 	@Test
 	void parameterizedContainerWhenReturnRegistrationTypeIsOfExistingBeanRegistrationMatches() {
 		this.contextRunner
-				.withUserConfiguration(ParameterizedWithCustomContainerConfig.class,
-						ParameterizedConditionWithReturnRegistrationTypeConfig.class)
-				.run((context) -> assertThat(context)
-						.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
+			.withUserConfiguration(ParameterizedWithCustomContainerConfig.class,
+					ParameterizedConditionWithReturnRegistrationTypeConfig.class)
+			.run((context) -> assertThat(context)
+				.satisfies(exampleBeanRequirement("customExampleBean", "conditionalCustomExampleBean")));
 	}
 
 	private Consumer<ConfigurableApplicationContext> exampleBeanRequirement(String... names) {

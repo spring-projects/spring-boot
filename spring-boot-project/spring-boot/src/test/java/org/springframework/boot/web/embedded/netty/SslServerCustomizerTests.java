@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,8 @@ class SslServerCustomizerTests {
 		ssl.setKeyStoreProvider("com.example.KeyStoreProvider");
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
 		assertThatIllegalStateException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
-				.withCauseInstanceOf(NoSuchProviderException.class)
-				.withMessageContaining("com.example.KeyStoreProvider");
+			.withCauseInstanceOf(NoSuchProviderException.class)
+			.withMessageContaining("com.example.KeyStoreProvider");
 	}
 
 	@Test
@@ -59,8 +59,8 @@ class SslServerCustomizerTests {
 		ssl.setTrustStoreProvider("com.example.TrustStoreProvider");
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
 		assertThatIllegalStateException().isThrownBy(() -> customizer.getTrustManagerFactory(ssl, null))
-				.withCauseInstanceOf(NoSuchProviderException.class)
-				.withMessageContaining("com.example.TrustStoreProvider");
+			.withCauseInstanceOf(NoSuchProviderException.class)
+			.withMessageContaining("com.example.TrustStoreProvider");
 	}
 
 	@Test
@@ -68,7 +68,8 @@ class SslServerCustomizerTests {
 		Ssl ssl = new Ssl();
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
 		assertThatIllegalStateException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
-				.withCauseInstanceOf(WebServerException.class).withMessageContaining("Could not load key store 'null'");
+			.withCauseInstanceOf(WebServerException.class)
+			.withMessageContaining("Could not load key store 'null'");
 	}
 
 	@Test
@@ -80,8 +81,8 @@ class SslServerCustomizerTests {
 		ssl.setKeyPassword("password");
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
 		assertThatIllegalStateException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
-				.withCauseInstanceOf(IllegalStateException.class)
-				.withMessageContaining("must be empty or null for PKCS11 key stores");
+			.withCauseInstanceOf(IllegalStateException.class)
+			.withMessageContaining("must be empty or null for PKCS11 key stores");
 	}
 
 	@Test

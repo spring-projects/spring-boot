@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,22 +44,29 @@ class GreetingControllerTests {
 	@Test
 	void shouldGreetWithSpecificName() {
 		HttpGraphQlTester authenticated = withAdminCredentials(this.graphQlTester);
-		authenticated.documentName("greeting").variable("name", "Brian").execute().path("greeting").entity(String.class)
-				.isEqualTo("Hello, Brian!");
+		authenticated.documentName("greeting")
+			.variable("name", "Brian")
+			.execute()
+			.path("greeting")
+			.entity(String.class)
+			.isEqualTo("Hello, Brian!");
 	}
 
 	@Test
 	void shouldGreetWithDefaultName() {
 		HttpGraphQlTester authenticated = withAdminCredentials(this.graphQlTester);
-		authenticated.document("{ greeting }").execute().path("greeting").entity(String.class)
-				.isEqualTo("Hello, Spring!");
+		authenticated.document("{ greeting }")
+			.execute()
+			.path("greeting")
+			.entity(String.class)
+			.isEqualTo("Hello, Spring!");
 	}
 
 	private HttpGraphQlTester withAdminCredentials(HttpGraphQlTester graphQlTester) {
 		return graphQlTester.mutate()
-				.webTestClient(
-						(httpClient) -> httpClient.defaultHeaders((headers) -> headers.setBasicAuth("admin", "admin")))
-				.build();
+			.webTestClient(
+					(httpClient) -> httpClient.defaultHeaders((headers) -> headers.setBasicAuth("admin", "admin")))
+			.build();
 	}
 
 }

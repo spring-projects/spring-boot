@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ class DefaultErrorAttributesTests {
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(ex);
 		assertThat(this.webRequest.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE, WebRequest.SCOPE_REQUEST))
-				.isSameAs(ex);
+			.isSameAs(ex);
 		assertThat(modelAndView).isNull();
 		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes.get("message")).isEqualTo("Test");
@@ -104,7 +104,7 @@ class DefaultErrorAttributesTests {
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(ex);
 		assertThat(this.webRequest.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE, WebRequest.SCOPE_REQUEST))
-				.isSameAs(ex);
+			.isSameAs(ex);
 		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
@@ -117,7 +117,7 @@ class DefaultErrorAttributesTests {
 				ErrorAttributeOptions.defaults());
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(ex);
 		assertThat(this.webRequest.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE, WebRequest.SCOPE_REQUEST))
-				.isSameAs(ex);
+			.isSameAs(ex);
 		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes).doesNotContainKey("message");
 	}
@@ -168,7 +168,7 @@ class DefaultErrorAttributesTests {
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(wrapped);
 		assertThat(this.webRequest.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE, WebRequest.SCOPE_REQUEST))
-				.isSameAs(wrapped);
+			.isSameAs(wrapped);
 		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
@@ -181,7 +181,7 @@ class DefaultErrorAttributesTests {
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(error);
 		assertThat(this.webRequest.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE, WebRequest.SCOPE_REQUEST))
-				.isSameAs(error);
+			.isSameAs(error);
 		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes.get("message")).isEqualTo("Test error");
 	}
@@ -217,7 +217,7 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest, options);
 		if (options.isIncluded(Include.MESSAGE)) {
 			assertThat(attributes.get("message"))
-					.isEqualTo("Validation failed for object='objectName'. Error count: 1");
+				.isEqualTo("Validation failed for object='objectName'. Error count: 1");
 		}
 		else {
 			assertThat(attributes).doesNotContainKey("message");

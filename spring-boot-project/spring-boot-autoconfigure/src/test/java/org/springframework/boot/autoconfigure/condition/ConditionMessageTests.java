@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,15 +146,17 @@ class ConditionMessageTests {
 
 	@Test
 	void foundWhenMultipleElementsShouldUsePlural() {
-		ConditionMessage message = ConditionMessage.forCondition(Test.class).found("bean", "beans").items("a", "b",
-				"c");
+		ConditionMessage message = ConditionMessage.forCondition(Test.class)
+			.found("bean", "beans")
+			.items("a", "b", "c");
 		assertThat(message.toString()).isEqualTo("@Test found beans a, b, c");
 	}
 
 	@Test
 	void foundWhenQuoteStyleShouldQuote() {
-		ConditionMessage message = ConditionMessage.forCondition(Test.class).found("bean", "beans").items(Style.QUOTE,
-				"a", "b", "c");
+		ConditionMessage message = ConditionMessage.forCondition(Test.class)
+			.found("bean", "beans")
+			.items(Style.QUOTE, "a", "b", "c");
 		assertThat(message.toString()).isEqualTo("@Test found beans 'a', 'b', 'c'");
 	}
 
@@ -166,8 +168,9 @@ class ConditionMessageTests {
 
 	@Test
 	void didNotFindWhenMultipleElementsShouldUsePlural() {
-		ConditionMessage message = ConditionMessage.forCondition(Test.class).didNotFind("class", "classes").items("a",
-				"b", "c");
+		ConditionMessage message = ConditionMessage.forCondition(Test.class)
+			.didNotFind("class", "classes")
+			.items("a", "b", "c");
 		assertThat(message.toString()).isEqualTo("@Test did not find classes a, b, c");
 	}
 
@@ -199,8 +202,9 @@ class ConditionMessageTests {
 	@Test
 	void quotedItemsTolerateNullInput() {
 		Collection<?> items = null;
-		ConditionMessage message = ConditionMessage.forCondition(Test.class).didNotFind("item").items(Style.QUOTE,
-				items);
+		ConditionMessage message = ConditionMessage.forCondition(Test.class)
+			.didNotFind("item")
+			.items(Style.QUOTE, items);
 		assertThat(message.toString()).isEqualTo("@Test did not find item");
 	}
 

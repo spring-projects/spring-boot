@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,13 +42,13 @@ class BindableTests {
 	@Test
 	void ofClassWhenTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Bindable.of((Class<?>) null))
-				.withMessageContaining("Type must not be null");
+			.withMessageContaining("Type must not be null");
 	}
 
 	@Test
 	void ofTypeWhenTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Bindable.of((ResolvableType) null))
-				.withMessageContaining("Type must not be null");
+			.withMessageContaining("Type must not be null");
 	}
 
 	@Test
@@ -78,14 +78,14 @@ class BindableTests {
 	@Test
 	void ofTypeWithExistingValueShouldSetTypeAndExistingValue() {
 		assertThat(Bindable.of(ResolvableType.forClass(String.class)).withExistingValue("foo").getValue().get())
-				.isEqualTo("foo");
+			.isEqualTo("foo");
 	}
 
 	@Test
 	void ofTypeWhenExistingValueIsNotInstanceOfTypeShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> Bindable.of(ResolvableType.forClass(String.class)).withExistingValue(123))
-				.withMessageContaining("ExistingValue must be an instance of " + String.class.getName());
+			.isThrownBy(() -> Bindable.of(ResolvableType.forClass(String.class)).withExistingValue(123))
+			.withMessageContaining("ExistingValue must be an instance of " + String.class.getName());
 	}
 
 	@Test
@@ -131,7 +131,7 @@ class BindableTests {
 	void getAnnotationWhenMatchShouldReturnAnnotation() {
 		Test annotation = AnnotationUtils.synthesizeAnnotation(Test.class);
 		assertThat(Bindable.of(String.class).withAnnotations(annotation).getAnnotation(Test.class))
-				.isSameAs(annotation);
+			.isSameAs(annotation);
 	}
 
 	@Test
@@ -145,8 +145,8 @@ class BindableTests {
 		Annotation annotation = AnnotationUtils.synthesizeAnnotation(TestAnnotation.class);
 		Bindable<String> bindable = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation);
 		assertThat(bindable.toString())
-				.contains("type = java.lang.String, value = 'provided', annotations = array<Annotation>["
-						+ "@org.springframework.boot.context.properties.bind.BindableTests.TestAnnotation()]");
+			.contains("type = java.lang.String, value = 'provided', annotations = array<Annotation>["
+					+ "@org.springframework.boot.context.properties.bind.BindableTests.TestAnnotation()]");
 	}
 
 	@Test

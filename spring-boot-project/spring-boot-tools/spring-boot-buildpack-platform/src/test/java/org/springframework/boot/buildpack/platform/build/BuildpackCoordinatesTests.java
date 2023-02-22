@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ class BuildpackCoordinatesTests extends AbstractJsonTests {
 	@Test
 	void fromToml() throws IOException {
 		BuildpackCoordinates coordinates = BuildpackCoordinates
-				.fromToml(createTomlStream("example/buildpack1", "0.0.1", true, false), this.archive);
+			.fromToml(createTomlStream("example/buildpack1", "0.0.1", true, false), this.archive);
 		assertThat(coordinates.getId()).isEqualTo("example/buildpack1");
 		assertThat(coordinates.getVersion()).isEqualTo("0.0.1");
 	}
@@ -52,46 +52,46 @@ class BuildpackCoordinatesTests extends AbstractJsonTests {
 	void fromTomlWhenMissingDescriptorThrowsException() {
 		ByteArrayInputStream coordinates = new ByteArrayInputStream("".getBytes());
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackCoordinates.fromToml(coordinates, this.archive))
-				.withMessageContaining("Buildpack descriptor 'buildpack.toml' is required")
-				.withMessageContaining(this.archive.toString());
+			.withMessageContaining("Buildpack descriptor 'buildpack.toml' is required")
+			.withMessageContaining(this.archive.toString());
 	}
 
 	@Test
 	void fromTomlWhenMissingIDThrowsException() {
 		InputStream coordinates = createTomlStream(null, null, true, false);
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackCoordinates.fromToml(coordinates, this.archive))
-				.withMessageContaining("Buildpack descriptor must contain ID")
-				.withMessageContaining(this.archive.toString());
+			.withMessageContaining("Buildpack descriptor must contain ID")
+			.withMessageContaining(this.archive.toString());
 	}
 
 	@Test
 	void fromTomlWhenMissingVersionThrowsException() {
 		InputStream coordinates = createTomlStream("example/buildpack1", null, true, false);
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackCoordinates.fromToml(coordinates, this.archive))
-				.withMessageContaining("Buildpack descriptor must contain version")
-				.withMessageContaining(this.archive.toString());
+			.withMessageContaining("Buildpack descriptor must contain version")
+			.withMessageContaining(this.archive.toString());
 	}
 
 	@Test
 	void fromTomlWhenMissingStacksAndOrderThrowsException() {
 		InputStream coordinates = createTomlStream("example/buildpack1", "0.0.1", false, false);
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackCoordinates.fromToml(coordinates, this.archive))
-				.withMessageContaining("Buildpack descriptor must contain either 'stacks' or 'order'")
-				.withMessageContaining(this.archive.toString());
+			.withMessageContaining("Buildpack descriptor must contain either 'stacks' or 'order'")
+			.withMessageContaining(this.archive.toString());
 	}
 
 	@Test
 	void fromTomlWhenContainsBothStacksAndOrderThrowsException() {
 		InputStream coordinates = createTomlStream("example/buildpack1", "0.0.1", true, true);
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackCoordinates.fromToml(coordinates, this.archive))
-				.withMessageContaining("Buildpack descriptor must not contain both 'stacks' and 'order'")
-				.withMessageContaining(this.archive.toString());
+			.withMessageContaining("Buildpack descriptor must not contain both 'stacks' and 'order'")
+			.withMessageContaining(this.archive.toString());
 	}
 
 	@Test
 	void fromBuildpackMetadataWhenMetadataIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackCoordinates.fromBuildpackMetadata(null))
-				.withMessage("BuildpackMetadata must not be null");
+			.withMessage("BuildpackMetadata must not be null");
 	}
 
 	@Test
@@ -105,7 +105,7 @@ class BuildpackCoordinatesTests extends AbstractJsonTests {
 	@Test
 	void ofWhenIdIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackCoordinates.of(null, null))
-				.withMessage("ID must not be empty");
+			.withMessage("ID must not be empty");
 	}
 
 	@Test

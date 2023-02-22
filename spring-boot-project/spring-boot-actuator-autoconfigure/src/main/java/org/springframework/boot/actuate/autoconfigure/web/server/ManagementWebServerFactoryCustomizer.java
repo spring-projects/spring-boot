@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 	@Override
 	public final void customize(T factory) {
 		ManagementServerProperties managementServerProperties = BeanFactoryUtils
-				.beanOfTypeIncludingAncestors(this.beanFactory, ManagementServerProperties.class);
+			.beanOfTypeIncludingAncestors(this.beanFactory, ManagementServerProperties.class);
 		// Customize as per the parent context first (so e.g. the access logs go to
 		// the same place)
 		customizeSameAsParentContext(factory);
@@ -77,8 +77,10 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 	}
 
 	private void customizeSameAsParentContext(T factory) {
-		List<WebServerFactoryCustomizer<?>> customizers = Arrays.stream(this.customizerClasses).map(this::getCustomizer)
-				.filter(Objects::nonNull).collect(Collectors.toList());
+		List<WebServerFactoryCustomizer<?>> customizers = Arrays.stream(this.customizerClasses)
+			.map(this::getCustomizer)
+			.filter(Objects::nonNull)
+			.collect(Collectors.toList());
 		invokeCustomizers(factory, customizers);
 	}
 
@@ -95,7 +97,7 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 	@SuppressWarnings("unchecked")
 	private void invokeCustomizers(T factory, List<WebServerFactoryCustomizer<?>> customizers) {
 		LambdaSafe.callbacks(WebServerFactoryCustomizer.class, customizers, factory)
-				.invoke((customizer) -> customizer.customize(factory));
+			.invoke((customizer) -> customizer.customize(factory));
 	}
 
 	protected void customize(T factory, ManagementServerProperties managementServerProperties,

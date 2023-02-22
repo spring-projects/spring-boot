@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,10 +102,10 @@ class WebClientAutoConfigurationTests {
 			assertThat(firstBuilder).isNotEqualTo(secondBuilder);
 			firstBuilder.build().get().uri("/foo").retrieve().toBodilessEntity().block(Duration.ofSeconds(30));
 			secondBuilder.build().get().uri("/foo").retrieve().toBodilessEntity().block(Duration.ofSeconds(30));
-			then(firstConnector).should().connect(eq(HttpMethod.GET), eq(URI.create("https://first.example.org/foo")),
-					any());
-			then(secondConnector).should().connect(eq(HttpMethod.GET), eq(URI.create("https://second.example.org/foo")),
-					any());
+			then(firstConnector).should()
+				.connect(eq(HttpMethod.GET), eq(URI.create("https://first.example.org/foo")), any());
+			then(secondConnector).should()
+				.connect(eq(HttpMethod.GET), eq(URI.create("https://second.example.org/foo")), any());
 			WebClientCustomizer customizer = context.getBean("webClientCustomizer", WebClientCustomizer.class);
 			then(customizer).should(times(2)).customize(any(WebClient.Builder.class));
 		});
@@ -114,10 +114,10 @@ class WebClientAutoConfigurationTests {
 	@Test
 	void shouldNotCreateClientBuilderIfAlreadyPresent() {
 		this.contextRunner.withUserConfiguration(WebClientCustomizerConfig.class, CustomWebClientBuilderConfig.class)
-				.run((context) -> {
-					WebClient.Builder builder = context.getBean(WebClient.Builder.class);
-					assertThat(builder).isInstanceOf(MyWebClientBuilder.class);
-				});
+			.run((context) -> {
+				WebClient.Builder builder = context.getBean(WebClient.Builder.class);
+				assertThat(builder).isInstanceOf(MyWebClientBuilder.class);
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

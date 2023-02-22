@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ class PersistenceExceptionTranslationAutoConfigurationTests {
 	void exceptionTranslationPostProcessorUsesCglibByDefault() {
 		this.context = new AnnotationConfigApplicationContext(PersistenceExceptionTranslationAutoConfiguration.class);
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
-				.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
+			.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
 		assertThat(beans).hasSize(1);
 		assertThat(beans.values().iterator().next().isProxyTargetClass()).isTrue();
 	}
@@ -71,7 +71,7 @@ class PersistenceExceptionTranslationAutoConfigurationTests {
 		this.context.register(PersistenceExceptionTranslationAutoConfiguration.class);
 		this.context.refresh();
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
-				.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
+			.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
 		assertThat(beans).hasSize(1);
 		assertThat(beans.values().iterator().next().isProxyTargetClass()).isFalse();
 	}
@@ -83,7 +83,7 @@ class PersistenceExceptionTranslationAutoConfigurationTests {
 		this.context.register(PersistenceExceptionTranslationAutoConfiguration.class);
 		this.context.refresh();
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
-				.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
+			.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
 		assertThat(beans).isEmpty();
 	}
 
@@ -100,7 +100,7 @@ class PersistenceExceptionTranslationAutoConfigurationTests {
 				HibernateJpaAutoConfiguration.class, TestConfiguration.class,
 				PersistenceExceptionTranslationAutoConfiguration.class);
 		assertThatExceptionOfType(InvalidDataAccessApiUsageException.class)
-				.isThrownBy(() -> this.context.getBean(TestRepository.class).doSomething());
+			.isThrownBy(() -> this.context.getBean(TestRepository.class).doSomething());
 	}
 
 	@Configuration(proxyBeanMethods = false)

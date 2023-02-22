@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,8 @@ class ApiVersionsTests {
 	@Test
 	void findLatestWhenNoneSupportedThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ApiVersions.parse("1.1", "1.2").findLatestSupported("1.3", "1.4")).withMessage(
-						"Detected platform API versions '1.3,1.4' are not included in supported versions '1.1,1.2'");
+			.isThrownBy(() -> ApiVersions.parse("1.1", "1.2").findLatestSupported("1.3", "1.4"))
+			.withMessage("Detected platform API versions '1.3,1.4' are not included in supported versions '1.1,1.2'");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,8 +102,8 @@ public class MetadataStore {
 
 	private InputStream getAdditionalMetadataStream() throws IOException {
 		// Most build systems will have copied the file to the class output location
-		FileObject fileObject = this.environment.getFiler().getResource(StandardLocation.CLASS_OUTPUT, "",
-				ADDITIONAL_METADATA_PATH);
+		FileObject fileObject = this.environment.getFiler()
+			.getResource(StandardLocation.CLASS_OUTPUT, "", ADDITIONAL_METADATA_PATH);
 		File file = locateAdditionalMetadataFile(new File(fileObject.toUri()));
 		return (file.exists() ? new FileInputStream(file) : fileObject.toUri().toURL().openStream());
 	}
@@ -113,7 +113,7 @@ public class MetadataStore {
 			return standardLocation;
 		}
 		String locations = this.environment.getOptions()
-				.get(ConfigurationMetadataAnnotationProcessor.ADDITIONAL_METADATA_LOCATIONS_OPTION);
+			.get(ConfigurationMetadataAnnotationProcessor.ADDITIONAL_METADATA_LOCATIONS_OPTION);
 		if (locations != null) {
 			for (String location : locations.split(",")) {
 				File candidate = new File(location, ADDITIONAL_METADATA_PATH);

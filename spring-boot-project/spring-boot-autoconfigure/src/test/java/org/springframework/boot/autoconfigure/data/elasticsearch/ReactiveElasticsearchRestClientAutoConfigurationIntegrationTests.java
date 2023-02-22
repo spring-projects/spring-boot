@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,27 +45,28 @@ class ReactiveElasticsearchRestClientAutoConfigurationIntegrationTests {
 
 	@Container
 	static ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())
-			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
+		.withStartupAttempts(5)
+		.withStartupTimeout(Duration.ofMinutes(10));
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ReactiveElasticsearchRestClientAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ReactiveElasticsearchRestClientAutoConfiguration.class));
 
 	@Test
 	void restClientCanQueryElasticsearchNode() {
 		this.contextRunner
-				.withPropertyValues("spring.elasticsearch.uris=" + elasticsearch.getHttpHostAddress(),
-						"spring.elasticsearch.connection-timeout=120s", "spring.elasticsearch.socket-timeout=120s")
-				.run((context) -> {
-					ReactiveElasticsearchClient client = context.getBean(ReactiveElasticsearchClient.class);
-					Map<String, String> source = new HashMap<>();
-					source.put("a", "alpha");
-					source.put("b", "bravo");
-					IndexRequest indexRequest = new IndexRequest("foo").id("1").source(source);
-					GetRequest getRequest = new GetRequest("foo").id("1");
-					GetResult getResult = client.index(indexRequest).then(client.get(getRequest)).block();
-					assertThat(getResult).isNotNull();
-					assertThat(getResult.isExists()).isTrue();
-				});
+			.withPropertyValues("spring.elasticsearch.uris=" + elasticsearch.getHttpHostAddress(),
+					"spring.elasticsearch.connection-timeout=120s", "spring.elasticsearch.socket-timeout=120s")
+			.run((context) -> {
+				ReactiveElasticsearchClient client = context.getBean(ReactiveElasticsearchClient.class);
+				Map<String, String> source = new HashMap<>();
+				source.put("a", "alpha");
+				source.put("b", "bravo");
+				IndexRequest indexRequest = new IndexRequest("foo").id("1").source(source);
+				GetRequest getRequest = new GetRequest("foo").id("1");
+				GetResult getResult = client.index(indexRequest).then(client.get(getRequest)).block();
+				assertThat(getResult).isNotNull();
+				assertThat(getResult.isExists()).isTrue();
+			});
 	}
 
 }

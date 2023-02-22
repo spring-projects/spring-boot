@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,7 +135,7 @@ class FreeMarkerAutoConfigurationServletIntegrationTests {
 	void customFreeMarkerSettings() {
 		load("spring.freemarker.settings.boolean_format:yup,nope");
 		assertThat(this.context.getBean(FreeMarkerConfigurer.class).getConfiguration().getSetting("boolean_format"))
-				.isEqualTo("yup,nope");
+			.isEqualTo("yup,nope");
 	}
 
 	@Test
@@ -169,8 +169,11 @@ class FreeMarkerAutoConfigurationServletIntegrationTests {
 		load(FilterRegistrationOtherConfiguration.class, "spring.web.resources.chain.enabled:true");
 		Map<String, FilterRegistrationBean> beans = this.context.getBeansOfType(FilterRegistrationBean.class);
 		assertThat(beans).hasSize(2);
-		FilterRegistrationBean registration = beans.values().stream()
-				.filter((r) -> r.getFilter() instanceof ResourceUrlEncodingFilter).findFirst().get();
+		FilterRegistrationBean registration = beans.values()
+			.stream()
+			.filter((r) -> r.getFilter() instanceof ResourceUrlEncodingFilter)
+			.findFirst()
+			.get();
 		assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes",
 				EnumSet.of(DispatcherType.REQUEST, DispatcherType.ERROR));
 	}
@@ -182,8 +185,11 @@ class FreeMarkerAutoConfigurationServletIntegrationTests {
 		load(FilterRegistrationResourceConfiguration.class, "spring.web.resources.chain.enabled:true");
 		Map<String, FilterRegistrationBean> beans = this.context.getBeansOfType(FilterRegistrationBean.class);
 		assertThat(beans).hasSize(1);
-		FilterRegistrationBean registration = beans.values().stream()
-				.filter((r) -> r.getFilter() instanceof ResourceUrlEncodingFilter).findFirst().get();
+		FilterRegistrationBean registration = beans.values()
+			.stream()
+			.filter((r) -> r.getFilter() instanceof ResourceUrlEncodingFilter)
+			.findFirst()
+			.get();
 		assertThat(registration).hasFieldOrPropertyWithValue("dispatcherTypes", EnumSet.of(DispatcherType.INCLUDE));
 	}
 

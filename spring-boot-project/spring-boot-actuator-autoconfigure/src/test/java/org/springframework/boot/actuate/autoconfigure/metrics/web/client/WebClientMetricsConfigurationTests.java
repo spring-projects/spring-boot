@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,8 @@ import static org.mockito.Mockito.mock;
 class WebClientMetricsConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-			.withConfiguration(
-					AutoConfigurations.of(WebClientAutoConfiguration.class, HttpClientMetricsAutoConfiguration.class));
+		.withConfiguration(
+				AutoConfigurations.of(WebClientAutoConfiguration.class, HttpClientMetricsAutoConfiguration.class));
 
 	@Test
 	void webClientCreatedWithBuilderIsInstrumented() {
@@ -69,8 +69,10 @@ class WebClientMetricsConfigurationTests {
 
 	@Test
 	void shouldNotOverrideCustomTagsProvider() {
-		this.contextRunner.withUserConfiguration(CustomTagsProviderConfig.class).run((context) -> assertThat(context)
-				.getBeans(WebClientExchangeTagsProvider.class).hasSize(1).containsKey("customTagsProvider"));
+		this.contextRunner.withUserConfiguration(CustomTagsProviderConfig.class)
+			.run((context) -> assertThat(context).getBeans(WebClientExchangeTagsProvider.class)
+				.hasSize(1)
+				.containsKey("customTagsProvider"));
 	}
 
 	@Test
@@ -79,7 +81,7 @@ class WebClientMetricsConfigurationTests {
 			MeterRegistry registry = getInitializedMeterRegistry(context);
 			assertThat(registry.get("http.client.requests").meters()).hasSize(2);
 			assertThat(output).contains("Reached the maximum number of URI tags for 'http.client.requests'.")
-					.contains("Are you using 'uriVariables'?");
+				.contains("Are you using 'uriVariables'?");
 		});
 	}
 
@@ -89,30 +91,35 @@ class WebClientMetricsConfigurationTests {
 			MeterRegistry registry = getInitializedMeterRegistry(context);
 			assertThat(registry.get("http.client.requests").meters()).hasSize(3);
 			assertThat(output).doesNotContain("Reached the maximum number of URI tags for 'http.client.requests'.")
-					.doesNotContain("Are you using 'uriVariables'?");
+				.doesNotContain("Are you using 'uriVariables'?");
 		});
 	}
 
 	@Test
 	void autoTimeRequestsCanBeConfigured() {
-		this.contextRunner.withPropertyValues("management.metrics.web.client.request.autotime.enabled=true",
-				"management.metrics.web.client.request.autotime.percentiles=0.5,0.7",
-				"management.metrics.web.client.request.autotime.percentiles-histogram=true").run((context) -> {
-					MeterRegistry registry = getInitializedMeterRegistry(context);
-					Timer timer = registry.get("http.client.requests").timer();
-					HistogramSnapshot snapshot = timer.takeSnapshot();
-					assertThat(snapshot.percentileValues()).hasSize(2);
-					assertThat(snapshot.percentileValues()[0].percentile()).isEqualTo(0.5);
-					assertThat(snapshot.percentileValues()[1].percentile()).isEqualTo(0.7);
-				});
+		this.contextRunner
+			.withPropertyValues("management.metrics.web.client.request.autotime.enabled=true",
+					"management.metrics.web.client.request.autotime.percentiles=0.5,0.7",
+					"management.metrics.web.client.request.autotime.percentiles-histogram=true")
+			.run((context) -> {
+				MeterRegistry registry = getInitializedMeterRegistry(context);
+				Timer timer = registry.get("http.client.requests").timer();
+				HistogramSnapshot snapshot = timer.takeSnapshot();
+				assertThat(snapshot.percentileValues()).hasSize(2);
+				assertThat(snapshot.percentileValues()[0].percentile()).isEqualTo(0.5);
+				assertThat(snapshot.percentileValues()[1].percentile()).isEqualTo(0.7);
+			});
 	}
 
 	private MeterRegistry getInitializedMeterRegistry(AssertableApplicationContext context) {
 		WebClient webClient = mockWebClient(context.getBean(WebClient.Builder.class));
 		MeterRegistry registry = context.getBean(MeterRegistry.class);
 		for (int i = 0; i < 3; i++) {
-			webClient.get().uri("https://example.org/projects/" + i).retrieve().toBodilessEntity()
-					.block(Duration.ofSeconds(30));
+			webClient.get()
+				.uri("https://example.org/projects/" + i)
+				.retrieve()
+				.toBodilessEntity()
+				.block(Duration.ofSeconds(30));
 		}
 		return registry;
 	}
@@ -120,8 +127,11 @@ class WebClientMetricsConfigurationTests {
 	private void validateWebClient(WebClient.Builder builder, MeterRegistry registry) {
 		WebClient webClient = mockWebClient(builder);
 		assertThat(registry.find("http.client.requests").meter()).isNull();
-		webClient.get().uri("https://example.org/projects/{project}", "spring-boot").retrieve().toBodilessEntity()
-				.block(Duration.ofSeconds(30));
+		webClient.get()
+			.uri("https://example.org/projects/{project}", "spring-boot")
+			.retrieve()
+			.toBodilessEntity()
+			.block(Duration.ofSeconds(30));
 		assertThat(registry.find("http.client.requests").tags("uri", "/projects/{project}").meter()).isNotNull();
 	}
 

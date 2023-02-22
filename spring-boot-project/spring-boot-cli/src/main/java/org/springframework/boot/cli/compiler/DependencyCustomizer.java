@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -217,7 +217,7 @@ public class DependencyCustomizer {
 	public DependencyCustomizer add(String module, String classifier, String type, boolean transitive) {
 		if (canAdd()) {
 			ArtifactCoordinatesResolver artifactCoordinatesResolver = this.dependencyResolutionContext
-					.getArtifactCoordinatesResolver();
+				.getArtifactCoordinatesResolver();
 			this.classNode.addAnnotation(createGrabAnnotation(artifactCoordinatesResolver.getGroupId(module),
 					artifactCoordinatesResolver.getArtifactId(module), artifactCoordinatesResolver.getVersion(module),
 					classifier, type, transitive));

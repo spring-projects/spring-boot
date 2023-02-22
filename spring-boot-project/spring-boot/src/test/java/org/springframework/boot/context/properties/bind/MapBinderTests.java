@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,7 +131,8 @@ class MapBinderTests {
 		source.put("faf.far.bin", "x");
 		this.sources.add(source);
 		Map<String, Map<String, Integer>> result = this.binder
-				.bind("foo", Bindable.<Map<String, Map<String, Integer>>>of(type)).get();
+			.bind("foo", Bindable.<Map<String, Map<String, Integer>>>of(type))
+			.get();
 		assertThat(result).hasSize(2);
 		assertThat(result.get("bar")).containsEntry("baz", 1).containsEntry("bin", 2);
 		assertThat(result.get("far")).containsEntry("baz", 3).containsEntry("bin", 4);
@@ -301,7 +302,7 @@ class MapBinderTests {
 		source.put("foo.ccc.ddd.eee", "bazboo");
 		this.sources.add(source);
 		Map<String, ExampleEnum> result = this.binder.bind("foo", Bindable.mapOf(String.class, ExampleEnum.class))
-				.get();
+			.get();
 		assertThat(result).hasSize(3);
 		assertThat(result).containsEntry("aaa.bbb.ccc", ExampleEnum.FOO_BAR);
 		assertThat(result).containsEntry("bbb.ccc.ddd", ExampleEnum.BAR_BAZ);
@@ -316,7 +317,7 @@ class MapBinderTests {
 		this.sources.add(source);
 		this.binder = new Binder(this.sources, new PropertySourcesPlaceholdersResolver(environment));
 		Map<String, ExampleEnum> result = this.binder.bind("foo", Bindable.mapOf(String.class, ExampleEnum.class))
-				.get();
+			.get();
 		assertThat(result).containsEntry("aaa.bbb.ccc", ExampleEnum.BAZ_BOO);
 	}
 
@@ -335,8 +336,8 @@ class MapBinderTests {
 		Bindable<Map<String, Integer>> target = STRING_INTEGER_MAP;
 		this.binder.bind("foo", target, handler);
 		InOrder ordered = inOrder(handler);
-		ordered.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.bar")), eq(Bindable.of(Integer.class)),
-				any(), eq(1));
+		ordered.verify(handler)
+			.onSuccess(eq(ConfigurationPropertyName.of("foo.bar")), eq(Bindable.of(Integer.class)), any(), eq(1));
 		ordered.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(target), any(), isA(Map.class));
 	}
 
@@ -348,8 +349,9 @@ class MapBinderTests {
 		this.binder.bind("foo", target, handler);
 		InOrder ordered = inOrder(handler);
 		ArgumentCaptor<String[]> array = ArgumentCaptor.forClass(String[].class);
-		ordered.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.bar")), eq(Bindable.of(String[].class)),
-				any(), array.capture());
+		ordered.verify(handler)
+			.onSuccess(eq(ConfigurationPropertyName.of("foo.bar")), eq(Bindable.of(String[].class)), any(),
+					array.capture());
 		assertThat(array.getValue()).containsExactly("a", "b", "c");
 		ordered.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(target), any(), isA(Map.class));
 	}
@@ -559,7 +561,8 @@ class MapBinderTests {
 		source.put("foo.items.a", "b");
 		this.sources.add(source);
 		ExampleCustomNoDefaultConstructorBean result = this.binder
-				.bind("foo", ExampleCustomNoDefaultConstructorBean.class).get();
+			.bind("foo", ExampleCustomNoDefaultConstructorBean.class)
+			.get();
 		assertThat(result.getItems()).containsOnly(entry("foo", "bar"), entry("a", "b"));
 	}
 
@@ -570,7 +573,8 @@ class MapBinderTests {
 		source.put("foo.items.a", "b");
 		this.sources.add(source);
 		ExampleCustomWithDefaultConstructorBean result = this.binder
-				.bind("foo", ExampleCustomWithDefaultConstructorBean.class).get();
+			.bind("foo", ExampleCustomWithDefaultConstructorBean.class)
+			.get();
 		assertThat(result.getItems()).containsExactly(entry("a", "b"));
 	}
 
@@ -581,7 +585,8 @@ class MapBinderTests {
 		source.put("foo.values.e", "f");
 		this.sources.add(source);
 		Map<String, String> result = this.binder
-				.bind("foo.values", STRING_STRING_MAP.withExistingValue(Collections.singletonMap("a", "b"))).get();
+			.bind("foo.values", STRING_STRING_MAP.withExistingValue(Collections.singletonMap("a", "b")))
+			.get();
 		assertThat(result).hasSize(3);
 		assertThat(result).containsExactly(entry("a", "b"), entry("c", "d"), entry("e", "f"));
 	}
@@ -604,7 +609,7 @@ class MapBinderTests {
 		this.sources.add(source);
 		MapWithWildcardProperties result = this.binder.bind("foo", Bindable.of(MapWithWildcardProperties.class)).get();
 		assertThat(result.getAddresses().get("localhost").stream().map(InetAddress::getHostAddress))
-				.containsExactly("127.0.0.1", "127.0.0.2");
+			.containsExactly("127.0.0.1", "127.0.0.2");
 	}
 
 	private <K, V> Bindable<Map<K, V>> getMapBindable(Class<K> keyGeneric, ResolvableType valueType) {

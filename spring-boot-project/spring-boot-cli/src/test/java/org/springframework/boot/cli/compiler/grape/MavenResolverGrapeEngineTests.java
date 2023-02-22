@@ -57,7 +57,7 @@ class MavenResolverGrapeEngineTests {
 	private GrapeEngine createGrapeEngine(RepositoryConfiguration... additionalRepositories) {
 		List<RepositoryConfiguration> repositoryConfigurations = new ArrayList<>();
 		repositoryConfigurations
-				.add(new RepositoryConfiguration("central", URI.create("https://repo.maven.apache.org/maven2"), false));
+			.add(new RepositoryConfiguration("central", URI.create("https://repo.maven.apache.org/maven2"), false));
 		repositoryConfigurations.addAll(Arrays.asList(additionalRepositories));
 		DependencyResolutionContext dependencyResolutionContext = new DependencyResolutionContext();
 		dependencyResolutionContext.addDependencyManagement(new SpringBootDependenciesDependencyManagement());
@@ -78,7 +78,7 @@ class MavenResolverGrapeEngineTests {
 		doWithCustomUserHome(() -> {
 			GrapeEngine grapeEngine = createGrapeEngine();
 			DefaultRepositorySystemSession session = (DefaultRepositorySystemSession) ReflectionTestUtils
-					.getField(grapeEngine, "session");
+				.getField(grapeEngine, "session");
 
 			assertThat(session.getProxySelector() instanceof CompositeProxySelector).isTrue();
 		});

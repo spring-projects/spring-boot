@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,15 +67,15 @@ class TaskSchedulerBuilderTests {
 	@Test
 	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.customizers((TaskSchedulerCustomizer[]) null))
-				.withMessageContaining("Customizers must not be null");
+			.isThrownBy(() -> this.builder.customizers((TaskSchedulerCustomizer[]) null))
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.customizers((Set<TaskSchedulerCustomizer>) null))
-				.withMessageContaining("Customizers must not be null");
+			.isThrownBy(() -> this.builder.customizers((Set<TaskSchedulerCustomizer>) null))
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
@@ -100,7 +100,8 @@ class TaskSchedulerBuilderTests {
 		TaskSchedulerCustomizer customizer1 = mock(TaskSchedulerCustomizer.class);
 		TaskSchedulerCustomizer customizer2 = mock(TaskSchedulerCustomizer.class);
 		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer1)
-				.customizers(Collections.singleton(customizer2)).build();
+			.customizers(Collections.singleton(customizer2))
+			.build();
 		then(customizer1).shouldHaveNoInteractions();
 		then(customizer2).should().customize(scheduler);
 	}
@@ -108,23 +109,24 @@ class TaskSchedulerBuilderTests {
 	@Test
 	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.additionalCustomizers((TaskSchedulerCustomizer[]) null))
-				.withMessageContaining("Customizers must not be null");
+			.isThrownBy(() -> this.builder.additionalCustomizers((TaskSchedulerCustomizer[]) null))
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.additionalCustomizers((Set<TaskSchedulerCustomizer>) null))
-				.withMessageContaining("Customizers must not be null");
+			.isThrownBy(() -> this.builder.additionalCustomizers((Set<TaskSchedulerCustomizer>) null))
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void additionalCustomizersShouldAddToExisting() {
 		TaskSchedulerCustomizer customizer1 = mock(TaskSchedulerCustomizer.class);
 		TaskSchedulerCustomizer customizer2 = mock(TaskSchedulerCustomizer.class);
-		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer1).additionalCustomizers(customizer2)
-				.build();
+		ThreadPoolTaskScheduler scheduler = this.builder.customizers(customizer1)
+			.additionalCustomizers(customizer2)
+			.build();
 		then(customizer1).should().customize(scheduler);
 		then(customizer2).should().customize(scheduler);
 	}

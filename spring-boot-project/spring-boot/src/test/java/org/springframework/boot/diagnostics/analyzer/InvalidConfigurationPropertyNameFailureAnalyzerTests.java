@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,9 +42,9 @@ class InvalidConfigurationPropertyNameFailureAnalyzerTests {
 		BeanCreationException failure = createFailure(InvalidPrefixConfiguration.class);
 		FailureAnalysis analysis = this.analyzer.analyze(failure);
 		assertThat(analysis.getDescription())
-				.contains(String.format("%n    Invalid characters: %s%n    Bean: %s%n    Reason: %s", "'F', 'P'",
-						"invalidPrefixProperties", "Canonical names should be kebab-case ('-' separated), "
-								+ "lowercase alpha-numeric characters and must start with a letter"));
+			.contains(String.format("%n    Invalid characters: %s%n    Bean: %s%n    Reason: %s", "'F', 'P'",
+					"invalidPrefixProperties", "Canonical names should be kebab-case ('-' separated), "
+							+ "lowercase alpha-numeric characters and must start with a letter"));
 	}
 
 	private BeanCreationException createFailure(Class<?> configuration) {

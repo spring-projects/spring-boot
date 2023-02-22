@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,17 +56,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GraphQlRSocketAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(JacksonAutoConfiguration.class, RSocketStrategiesAutoConfiguration.class,
-							RSocketMessagingAutoConfiguration.class, RSocketServerAutoConfiguration.class,
-							GraphQlAutoConfiguration.class, GraphQlRSocketAutoConfiguration.class))
-			.withUserConfiguration(DataFetchersConfiguration.class)
-			.withPropertyValues("spring.main.web-application-type=reactive", "spring.graphql.rsocket.mapping=graphql");
+		.withConfiguration(
+				AutoConfigurations.of(JacksonAutoConfiguration.class, RSocketStrategiesAutoConfiguration.class,
+						RSocketMessagingAutoConfiguration.class, RSocketServerAutoConfiguration.class,
+						GraphQlAutoConfiguration.class, GraphQlRSocketAutoConfiguration.class))
+		.withUserConfiguration(DataFetchersConfiguration.class)
+		.withPropertyValues("spring.main.web-application-type=reactive", "spring.graphql.rsocket.mapping=graphql");
 
 	@Test
 	void shouldContributeDefaultBeans() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(GraphQlRSocketHandler.class)
-				.hasSingleBean(GraphQlRSocketController.class));
+			.hasSingleBean(GraphQlRSocketController.class));
 	}
 
 	@Test
@@ -81,45 +81,52 @@ class GraphQlRSocketAutoConfigurationTests {
 
 	private void assertThatSimpleQueryWorks(RSocketGraphQlClient client) {
 		String document = "{ bookById(id: \"book-1\"){ id name pageCount author } }";
-		String bookName = client.document(document).retrieve("bookById.name").toEntity(String.class)
-				.block(Duration.ofSeconds(5));
+		String bookName = client.document(document)
+			.retrieve("bookById.name")
+			.toEntity(String.class)
+			.block(Duration.ofSeconds(5));
 		assertThat(bookName).isEqualTo("GraphQL for beginners");
 	}
 
 	private void testWithRSocketTcp(Consumer<RSocketGraphQlClient> consumer) {
 		ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-				.withConfiguration(
-						AutoConfigurations.of(JacksonAutoConfiguration.class, RSocketStrategiesAutoConfiguration.class,
-								RSocketMessagingAutoConfiguration.class, RSocketServerAutoConfiguration.class,
-								GraphQlAutoConfiguration.class, GraphQlRSocketAutoConfiguration.class))
-				.withUserConfiguration(DataFetchersConfiguration.class).withPropertyValues(
-						"spring.main.web-application-type=reactive", "spring.graphql.rsocket.mapping=graphql");
+			.withConfiguration(
+					AutoConfigurations.of(JacksonAutoConfiguration.class, RSocketStrategiesAutoConfiguration.class,
+							RSocketMessagingAutoConfiguration.class, RSocketServerAutoConfiguration.class,
+							GraphQlAutoConfiguration.class, GraphQlRSocketAutoConfiguration.class))
+			.withUserConfiguration(DataFetchersConfiguration.class)
+			.withPropertyValues("spring.main.web-application-type=reactive", "spring.graphql.rsocket.mapping=graphql");
 		contextRunner.withInitializer(new RSocketPortInfoApplicationContextInitializer())
-				.withPropertyValues("spring.rsocket.server.port=0").run((context) -> {
-					String serverPort = context.getEnvironment().getProperty("local.rsocket.server.port");
-					RSocketGraphQlClient client = RSocketGraphQlClient.builder()
-							.tcp("localhost", Integer.parseInt(serverPort)).route("graphql").build();
-					consumer.accept(client);
-				});
+			.withPropertyValues("spring.rsocket.server.port=0")
+			.run((context) -> {
+				String serverPort = context.getEnvironment().getProperty("local.rsocket.server.port");
+				RSocketGraphQlClient client = RSocketGraphQlClient.builder()
+					.tcp("localhost", Integer.parseInt(serverPort))
+					.route("graphql")
+					.build();
+				consumer.accept(client);
+			});
 	}
 
 	private void testWithRSocketWebSocket(Consumer<RSocketGraphQlClient> consumer) {
 		ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner(
-				AnnotationConfigReactiveWebServerApplicationContext::new).withConfiguration(
-						AutoConfigurations.of(HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class,
-								ErrorWebFluxAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
-								JacksonAutoConfiguration.class, RSocketStrategiesAutoConfiguration.class,
-								RSocketMessagingAutoConfiguration.class, RSocketServerAutoConfiguration.class,
-								GraphQlAutoConfiguration.class, GraphQlRSocketAutoConfiguration.class))
-						.withInitializer(new ServerPortInfoApplicationContextInitializer())
-						.withUserConfiguration(DataFetchersConfiguration.class, NettyServerConfiguration.class)
-						.withPropertyValues("spring.main.web-application-type=reactive", "server.port=0",
-								"spring.graphql.rsocket.mapping=graphql", "spring.rsocket.server.transport=websocket",
-								"spring.rsocket.server.mapping-path=/rsocket");
+				AnnotationConfigReactiveWebServerApplicationContext::new)
+			.withConfiguration(AutoConfigurations.of(HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class,
+					ErrorWebFluxAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+					JacksonAutoConfiguration.class, RSocketStrategiesAutoConfiguration.class,
+					RSocketMessagingAutoConfiguration.class, RSocketServerAutoConfiguration.class,
+					GraphQlAutoConfiguration.class, GraphQlRSocketAutoConfiguration.class))
+			.withInitializer(new ServerPortInfoApplicationContextInitializer())
+			.withUserConfiguration(DataFetchersConfiguration.class, NettyServerConfiguration.class)
+			.withPropertyValues("spring.main.web-application-type=reactive", "server.port=0",
+					"spring.graphql.rsocket.mapping=graphql", "spring.rsocket.server.transport=websocket",
+					"spring.rsocket.server.mapping-path=/rsocket");
 		contextRunner.run((context) -> {
 			String serverPort = context.getEnvironment().getProperty("local.server.port");
 			RSocketGraphQlClient client = RSocketGraphQlClient.builder()
-					.webSocket(URI.create("ws://localhost:" + serverPort + "/rsocket")).route("graphql").build();
+				.webSocket(URI.create("ws://localhost:" + serverPort + "/rsocket"))
+				.route("graphql")
+				.build();
 			consumer.accept(client);
 		});
 	}
@@ -141,8 +148,8 @@ class GraphQlRSocketAutoConfigurationTests {
 
 		@Bean
 		RuntimeWiringConfigurer bookDataFetcher() {
-			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query").dataFetcher("bookById",
-					GraphQlTestDataFetchers.getBookByIdDataFetcher()));
+			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query")
+				.dataFetcher("bookById", GraphQlTestDataFetchers.getBookByIdDataFetcher()));
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,9 +118,10 @@ class StartupTimeMetricsListenerTests {
 	private void assertMetricExistsWithCustomTagsAndValue(String metricName, Tags expectedCustomTags,
 			Long expectedValueInMillis) {
 		assertThat(this.registry.find(metricName)
-				.tags(Tags.concat(expectedCustomTags, "main.application.class", TestMainApplication.class.getName()))
-				.timeGauge()).isNotNull().extracting((m) -> m.value(TimeUnit.MILLISECONDS))
-						.isEqualTo(expectedValueInMillis.doubleValue());
+			.tags(Tags.concat(expectedCustomTags, "main.application.class", TestMainApplication.class.getName()))
+			.timeGauge()).isNotNull()
+			.extracting((m) -> m.value(TimeUnit.MILLISECONDS))
+			.isEqualTo(expectedValueInMillis.doubleValue());
 	}
 
 	static class TestMainApplication {

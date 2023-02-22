@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,8 +74,8 @@ class ConditionEvaluationReportLoggingListenerTests {
 		this.initializer.initialize(context);
 		context.register(ErrorConfig.class);
 		assertThatExceptionOfType(Exception.class).isThrownBy(context::refresh)
-				.satisfies((ex) -> withDebugLogging(() -> this.initializer.onApplicationEvent(
-						new ApplicationFailedEvent(new SpringApplication(), new String[0], context, ex))));
+			.satisfies((ex) -> withDebugLogging(() -> this.initializer
+				.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(), new String[0], context, ex))));
 		assertThat(output).contains("CONDITIONS EVALUATION REPORT");
 	}
 
@@ -84,7 +84,8 @@ class ConditionEvaluationReportLoggingListenerTests {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(ErrorConfig.class);
-		assertThatExceptionOfType(Exception.class).isThrownBy(context::refresh).satisfies((ex) -> this.initializer
+		assertThatExceptionOfType(Exception.class).isThrownBy(context::refresh)
+			.satisfies((ex) -> this.initializer
 				.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(), new String[0], context, ex)));
 		assertThat(output).contains("Error starting ApplicationContext. To display the conditions report re-run"
 				+ " your application with 'debug' enabled.");
@@ -135,8 +136,8 @@ class ConditionEvaluationReportLoggingListenerTests {
 	@Test
 	void listenerSupportsOnlyInfoAndDebug() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ConditionEvaluationReportLoggingListener(LogLevel.TRACE))
-				.withMessageContaining("LogLevel must be INFO or DEBUG");
+			.isThrownBy(() -> new ConditionEvaluationReportLoggingListener(LogLevel.TRACE))
+			.withMessageContaining("LogLevel must be INFO or DEBUG");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
  * Annotation at the field or method/constructor parameter level that injects the HTTP
  * management port that got allocated at runtime. Provides a convenient alternative for
  * <code>&#064;Value(&quot;${local.management.port}&quot;)</code>.
+ *
  * @deprecated since 2.7.0 for removal in 3.0.0 in favor of
  * {@code org.springframework.boot.test.web.server.LocalManagementPort}
  * @author Stephane Nicoll

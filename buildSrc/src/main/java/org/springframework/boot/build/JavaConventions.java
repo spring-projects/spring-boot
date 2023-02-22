@@ -120,16 +120,18 @@ class JavaConventions {
 	}
 
 	private void configureJarManifestConventions(Project project) {
-		ExtractResources extractLegalResources = project.getTasks().create("extractLegalResources",
-				ExtractResources.class);
+		ExtractResources extractLegalResources = project.getTasks()
+			.create("extractLegalResources", ExtractResources.class);
 		extractLegalResources.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("legal"));
 		extractLegalResources.setResourcesNames(Arrays.asList("LICENSE.txt", "NOTICE.txt"));
 		extractLegalResources.property("version", project.getVersion().toString());
 		SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
-		Set<String> sourceJarTaskNames = sourceSets.stream().map(SourceSet::getSourcesJarTaskName)
-				.collect(Collectors.toSet());
-		Set<String> javadocJarTaskNames = sourceSets.stream().map(SourceSet::getJavadocJarTaskName)
-				.collect(Collectors.toSet());
+		Set<String> sourceJarTaskNames = sourceSets.stream()
+			.map(SourceSet::getSourcesJarTaskName)
+			.collect(Collectors.toSet());
+		Set<String> javadocJarTaskNames = sourceSets.stream()
+			.map(SourceSet::getJavadocJarTaskName)
+			.collect(Collectors.toSet());
 		project.getTasks().withType(Jar.class, (jar) -> project.afterEvaluate((evaluated) -> {
 			jar.metaInf((metaInf) -> metaInf.from(extractLegalResources));
 			jar.manifest((manifest) -> {
@@ -166,7 +168,8 @@ class JavaConventions {
 			testRetry.getFailOnPassedAfterRetry().set(true);
 			testRetry.getMaxRetries().set(isCi() ? 3 : 0);
 		});
-		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> project.getDependencies()
+		project.getPlugins()
+			.withType(JavaPlugin.class, (javaPlugin) -> project.getDependencies()
 				.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, "org.junit.platform:junit-platform-launcher"));
 	}
 
@@ -214,7 +217,7 @@ class JavaConventions {
 		String version = SpringJavaFormatPlugin.class.getPackage().getImplementationVersion();
 		DependencySet checkstyleDependencies = project.getConfigurations().getByName("checkstyle").getDependencies();
 		checkstyleDependencies
-				.add(project.getDependencies().create("io.spring.javaformat:spring-javaformat-checkstyle:" + version));
+			.add(project.getDependencies().create("io.spring.javaformat:spring-javaformat-checkstyle:" + version));
 	}
 
 	private void configureDependencyManagement(Project project) {
@@ -225,16 +228,19 @@ class JavaConventions {
 			configuration.setCanBeResolved(false);
 		});
 		configurations
-				.matching((configuration) -> configuration.getName().endsWith("Classpath")
-						|| JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME.equals(configuration.getName()))
-				.all((configuration) -> configuration.extendsFrom(dependencyManagement));
+			.matching((configuration) -> configuration.getName().endsWith("Classpath")
+					|| JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME.equals(configuration.getName()))
+			.all((configuration) -> configuration.extendsFrom(dependencyManagement));
 		String path = project.getName().contains("spring-boot-starter")
 				? ":spring-boot-project:spring-boot-dependencies" : ":spring-boot-project:spring-boot-parent";
 		Dependency dependency = project.getDependencies()
-				.enforcedPlatform(project.getDependencies().project(Collections.singletonMap("path", path)));
+			.enforcedPlatform(project.getDependencies().project(Collections.singletonMap("path", path)));
 		dependencyManagement.getDependencies().add(dependency);
-		project.getPlugins().withType(OptionalDependenciesPlugin.class, (optionalDependencies) -> configurations
-				.getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME).extendsFrom(dependencyManagement));
+		project.getPlugins()
+			.withType(OptionalDependenciesPlugin.class,
+					(optionalDependencies) -> configurations
+						.getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME)
+						.extendsFrom(dependencyManagement));
 	}
 
 	private void configureToolchain(Project project) {
@@ -256,9 +262,9 @@ class JavaConventions {
 	}
 
 	private void createProhibitedDependenciesCheck(Configuration classpath, Project project) {
-		CheckClasspathForProhibitedDependencies checkClasspathForProhibitedDependencies = project.getTasks().create(
-				"check" + StringUtils.capitalize(classpath.getName() + "ForProhibitedDependencies"),
-				CheckClasspathForProhibitedDependencies.class);
+		CheckClasspathForProhibitedDependencies checkClasspathForProhibitedDependencies = project.getTasks()
+			.create("check" + StringUtils.capitalize(classpath.getName() + "ForProhibitedDependencies"),
+					CheckClasspathForProhibitedDependencies.class);
 		checkClasspathForProhibitedDependencies.setClasspath(classpath);
 		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForProhibitedDependencies);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,39 +39,39 @@ class NamedContributorsMapAdapterTests {
 	@Test
 	void createWhenMapIsNullThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new TestNamedContributorsMapAdapter<>(null, Function.identity()))
-				.withMessage("Map must not be null");
+			.isThrownBy(() -> new TestNamedContributorsMapAdapter<>(null, Function.identity()))
+			.withMessage("Map must not be null");
 	}
 
 	@Test
 	void createWhenValueAdapterIsNullThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new TestNamedContributorsMapAdapter<>(Collections.emptyMap(), null))
-				.withMessage("ValueAdapter must not be null");
+			.isThrownBy(() -> new TestNamedContributorsMapAdapter<>(Collections.emptyMap(), null))
+			.withMessage("ValueAdapter must not be null");
 	}
 
 	@Test
 	void createWhenMapContainsNullValueThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new TestNamedContributorsMapAdapter<>(Collections.singletonMap("test", null),
-						Function.identity()))
-				.withMessage("Map must not contain null values");
+			.isThrownBy(() -> new TestNamedContributorsMapAdapter<>(Collections.singletonMap("test", null),
+					Function.identity()))
+			.withMessage("Map must not contain null values");
 	}
 
 	@Test
 	void createWhenMapContainsNullKeyThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new TestNamedContributorsMapAdapter<>(Collections.singletonMap(null, "test"),
-						Function.identity()))
-				.withMessage("Map must not contain null keys");
+			.isThrownBy(() -> new TestNamedContributorsMapAdapter<>(Collections.singletonMap(null, "test"),
+					Function.identity()))
+			.withMessage("Map must not contain null keys");
 	}
 
 	@Test
 	void createWhenMapContainsKeyWithSlashThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new TestNamedContributorsMapAdapter<>(Collections.singletonMap("test/key", "test"),
-						Function.identity()))
-				.withMessage("Map keys must not contain a '/'");
+			.isThrownBy(() -> new TestNamedContributorsMapAdapter<>(Collections.singletonMap("test/key", "test"),
+					Function.identity()))
+			.withMessage("Map keys must not contain a '/'");
 	}
 
 	@Test

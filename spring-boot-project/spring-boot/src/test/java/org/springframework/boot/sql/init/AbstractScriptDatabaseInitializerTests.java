@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public abstract class AbstractScriptDatabaseInitializerTests<T extends AbstractS
 		settings.setSchemaLocations(Arrays.asList("does-not-exist.sql"));
 		T initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThatIllegalStateException().isThrownBy(initializer::initializeDatabase)
-				.withMessage("No schema scripts found at location 'does-not-exist.sql'");
+			.withMessage("No schema scripts found at location 'does-not-exist.sql'");
 		assertThatDatabaseWasNotAccessed(initializer);
 	}
 
@@ -79,7 +79,7 @@ public abstract class AbstractScriptDatabaseInitializerTests<T extends AbstractS
 		settings.setDataLocations(Arrays.asList("does-not-exist.sql"));
 		T initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThatIllegalStateException().isThrownBy(initializer::initializeDatabase)
-				.withMessage("No data scripts found at location 'does-not-exist.sql'");
+			.withMessage("No data scripts found at location 'does-not-exist.sql'");
 		assertThatDatabaseWasNotAccessed(initializer);
 	}
 

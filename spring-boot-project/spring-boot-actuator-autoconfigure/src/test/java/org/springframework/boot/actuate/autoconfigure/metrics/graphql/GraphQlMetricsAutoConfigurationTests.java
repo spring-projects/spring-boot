@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,25 +43,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GraphQlMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(GraphQlMetricsAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(GraphQlMetricsAutoConfiguration.class));
 
 	@Test
 	void backsOffWhenMeterRegistryIsMissing() {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(GraphQlMetricsAutoConfiguration.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(DefaultGraphQlTagsProvider.class)
-						.doesNotHaveBean(GraphQlMetricsInstrumentation.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(DefaultGraphQlTagsProvider.class)
+				.doesNotHaveBean(GraphQlMetricsInstrumentation.class));
 	}
 
 	@Test
 	void definesTagsProviderAndInstrumentationWhenMeterRegistryIsPresent() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(DefaultGraphQlTagsProvider.class)
-				.hasSingleBean(GraphQlMetricsInstrumentation.class));
+			.hasSingleBean(GraphQlMetricsInstrumentation.class));
 	}
 
 	@Test
 	void tagsProviderBacksOffIfAlreadyPresent() {
-		this.contextRunner.withUserConfiguration(TagsProviderConfiguration.class).run((context) -> assertThat(context)
-				.doesNotHaveBean(DefaultGraphQlTagsProvider.class).hasSingleBean(TestGraphQlTagsProvider.class));
+		this.contextRunner.withUserConfiguration(TagsProviderConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(DefaultGraphQlTagsProvider.class)
+				.hasSingleBean(TestGraphQlTagsProvider.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

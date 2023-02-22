@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,8 +62,8 @@ class CloudFoundryWebEndpointDiscovererTests {
 				if (endpoint.getEndpointId().equals(EndpointId.of("health"))) {
 					WebOperation operation = findMainReadOperation(endpoint);
 					assertThat(operation
-							.invoke(new InvocationContext(mock(SecurityContext.class), Collections.emptyMap())))
-									.isEqualTo("cf");
+						.invoke(new InvocationContext(mock(SecurityContext.class), Collections.emptyMap())))
+						.isEqualTo("cf");
 				}
 			}
 		});

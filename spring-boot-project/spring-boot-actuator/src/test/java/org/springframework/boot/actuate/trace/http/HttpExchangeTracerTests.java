@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,8 +117,8 @@ class HttpExchangeTracerTests {
 	@Test
 	void authorizationHeaderCanBeIncluded() {
 		HttpTrace trace = new HttpExchangeTracer(EnumSet.of(Include.REQUEST_HEADERS, Include.AUTHORIZATION_HEADER))
-				.receivedRequest(
-						createRequest(Collections.singletonMap(HttpHeaders.AUTHORIZATION, Arrays.asList("secret"))));
+			.receivedRequest(
+					createRequest(Collections.singletonMap(HttpHeaders.AUTHORIZATION, Arrays.asList("secret"))));
 		Request request = trace.getRequest();
 		assertThat(request.getHeaders()).containsOnlyKeys(HttpHeaders.AUTHORIZATION);
 	}
@@ -126,16 +126,16 @@ class HttpExchangeTracerTests {
 	@Test
 	void mixedCaseAuthorizationHeaderCanBeIncluded() {
 		HttpTrace trace = new HttpExchangeTracer(EnumSet.of(Include.REQUEST_HEADERS, Include.AUTHORIZATION_HEADER))
-				.receivedRequest(createRequest(
-						Collections.singletonMap(mixedCase(HttpHeaders.AUTHORIZATION), Arrays.asList("secret"))));
+			.receivedRequest(createRequest(
+					Collections.singletonMap(mixedCase(HttpHeaders.AUTHORIZATION), Arrays.asList("secret"))));
 		Request request = trace.getRequest();
 		assertThat(request.getHeaders()).containsOnlyKeys(mixedCase(HttpHeaders.AUTHORIZATION));
 	}
 
 	@Test
 	void cookieHeaderIsNotIncludedByDefault() {
-		HttpTrace trace = new HttpExchangeTracer(EnumSet.of(Include.REQUEST_HEADERS)).receivedRequest(
-				createRequest(Collections.singletonMap(HttpHeaders.COOKIE, Arrays.asList("test=test"))));
+		HttpTrace trace = new HttpExchangeTracer(EnumSet.of(Include.REQUEST_HEADERS))
+			.receivedRequest(createRequest(Collections.singletonMap(HttpHeaders.COOKIE, Arrays.asList("test=test"))));
 		Request request = trace.getRequest();
 		assertThat(request.getHeaders()).isEmpty();
 	}
@@ -151,7 +151,7 @@ class HttpExchangeTracerTests {
 	@Test
 	void cookieHeaderCanBeIncluded() {
 		HttpTrace trace = new HttpExchangeTracer(EnumSet.of(Include.REQUEST_HEADERS, Include.COOKIE_HEADERS))
-				.receivedRequest(createRequest(Collections.singletonMap(HttpHeaders.COOKIE, Arrays.asList("value"))));
+			.receivedRequest(createRequest(Collections.singletonMap(HttpHeaders.COOKIE, Arrays.asList("value"))));
 		Request request = trace.getRequest();
 		assertThat(request.getHeaders()).containsOnlyKeys(HttpHeaders.COOKIE);
 	}
@@ -159,8 +159,8 @@ class HttpExchangeTracerTests {
 	@Test
 	void mixedCaseCookieHeaderCanBeIncluded() {
 		HttpTrace trace = new HttpExchangeTracer(EnumSet.of(Include.REQUEST_HEADERS, Include.COOKIE_HEADERS))
-				.receivedRequest(
-						createRequest(Collections.singletonMap(mixedCase(HttpHeaders.COOKIE), Arrays.asList("value"))));
+			.receivedRequest(
+					createRequest(Collections.singletonMap(mixedCase(HttpHeaders.COOKIE), Arrays.asList("value"))));
 		Request request = trace.getRequest();
 		assertThat(request.getHeaders()).containsOnlyKeys(mixedCase(HttpHeaders.COOKIE));
 	}
@@ -327,8 +327,8 @@ class HttpExchangeTracerTests {
 	private String mixedCase(String input) {
 		StringBuilder output = new StringBuilder();
 		for (int i = 0; i < input.length(); i++) {
-			output.append(
-					(i % 2 != 0) ? Character.toUpperCase(input.charAt(i)) : Character.toLowerCase(input.charAt(i)));
+			output
+				.append((i % 2 != 0) ? Character.toUpperCase(input.charAt(i)) : Character.toLowerCase(input.charAt(i)));
 		}
 		return output.toString();
 	}

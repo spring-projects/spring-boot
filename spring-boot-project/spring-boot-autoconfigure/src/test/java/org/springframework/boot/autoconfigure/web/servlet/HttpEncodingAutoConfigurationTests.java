@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ class HttpEncodingAutoConfigurationTests {
 	void disableConfiguration() {
 		load(EmptyConfiguration.class, "server.servlet.encoding.enabled:false");
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.context.getBean(CharacterEncodingFilter.class));
+			.isThrownBy(() -> this.context.getBean(CharacterEncodingFilter.class));
 	}
 
 	@Test
@@ -144,13 +144,13 @@ class HttpEncodingAutoConfigurationTests {
 		Map<String, WebServerFactoryCustomizer<?>> beans = getWebServerFactoryCustomizerBeans();
 		assertThat(beans.size()).isEqualTo(1);
 		assertThat(this.context.getBean(MockServletWebServerFactory.class).getLocaleCharsetMappings().size())
-				.isEqualTo(2);
+			.isEqualTo(2);
 		assertThat(
 				this.context.getBean(MockServletWebServerFactory.class).getLocaleCharsetMappings().get(Locale.ENGLISH))
-						.isEqualTo(StandardCharsets.UTF_8);
+			.isEqualTo(StandardCharsets.UTF_8);
 		assertThat(
 				this.context.getBean(MockServletWebServerFactory.class).getLocaleCharsetMappings().get(Locale.FRANCE))
-						.isEqualTo(StandardCharsets.UTF_8);
+			.isEqualTo(StandardCharsets.UTF_8);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

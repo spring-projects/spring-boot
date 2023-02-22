@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ import static org.mockito.Mockito.mock;
 class WavefrontMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(WavefrontMetricsExportAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(WavefrontMetricsExportAutoConfiguration.class));
 
 	@Test
 	void backsOffWithoutAClock() {
@@ -54,93 +54,103 @@ class WavefrontMetricsExportAutoConfigurationTests {
 	@Test
 	void failsWithoutAnApiTokenWhenPublishingDirectly() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.run((context) -> assertThat(context).hasFailed());
+			.run((context) -> assertThat(context).hasFailed());
 	}
 
 	@Test
 	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.wavefront.api-token=abcde",
-						"management.metrics.export.defaults.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(WavefrontMeterRegistry.class)
-						.doesNotHaveBean(WavefrontConfig.class).doesNotHaveBean(WavefrontSender.class));
+			.withPropertyValues("management.metrics.export.wavefront.api-token=abcde",
+					"management.metrics.export.defaults.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(WavefrontMeterRegistry.class)
+				.doesNotHaveBean(WavefrontConfig.class)
+				.doesNotHaveBean(WavefrontSender.class));
 	}
 
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.wavefront.api-token=abcde",
-						"management.metrics.export.wavefront.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(WavefrontMeterRegistry.class)
-						.doesNotHaveBean(WavefrontConfig.class).doesNotHaveBean(WavefrontSender.class));
+			.withPropertyValues("management.metrics.export.wavefront.api-token=abcde",
+					"management.metrics.export.wavefront.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(WavefrontMeterRegistry.class)
+				.doesNotHaveBean(WavefrontConfig.class)
+				.doesNotHaveBean(WavefrontSender.class));
 	}
 
 	@Test
 	void allowsConfigToBeCustomized() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(Clock.class)
-						.hasSingleBean(WavefrontMeterRegistry.class).hasSingleBean(WavefrontConfig.class)
-						.hasSingleBean(WavefrontSender.class).hasBean("customConfig"));
+			.run((context) -> assertThat(context).hasSingleBean(Clock.class)
+				.hasSingleBean(WavefrontMeterRegistry.class)
+				.hasSingleBean(WavefrontConfig.class)
+				.hasSingleBean(WavefrontSender.class)
+				.hasBean("customConfig"));
 	}
 
 	@Test
 	void defaultWavefrontSenderSettingsAreConsistent() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.wavefront.api-token=abcde").run((context) -> {
-					WavefrontProperties properties = new WavefrontProperties();
-					WavefrontSender sender = context.getBean(WavefrontSender.class);
-					assertThat(sender)
-							.extracting("metricsBuffer", as(InstanceOfAssertFactories.type(LinkedBlockingQueue.class)))
-							.satisfies((queue) -> assertThat(queue.remainingCapacity() + queue.size())
-									.isEqualTo(properties.getSender().getMaxQueueSize()));
-					assertThat(sender).hasFieldOrPropertyWithValue("batchSize", properties.getBatchSize());
-					assertThat(sender).hasFieldOrPropertyWithValue("messageSizeBytes",
-							(int) properties.getSender().getMessageSize().toBytes());
-				});
+			.withPropertyValues("management.metrics.export.wavefront.api-token=abcde")
+			.run((context) -> {
+				WavefrontProperties properties = new WavefrontProperties();
+				WavefrontSender sender = context.getBean(WavefrontSender.class);
+				assertThat(sender)
+					.extracting("metricsBuffer", as(InstanceOfAssertFactories.type(LinkedBlockingQueue.class)))
+					.satisfies((queue) -> assertThat(queue.remainingCapacity() + queue.size())
+						.isEqualTo(properties.getSender().getMaxQueueSize()));
+				assertThat(sender).hasFieldOrPropertyWithValue("batchSize", properties.getBatchSize());
+				assertThat(sender).hasFieldOrPropertyWithValue("messageSizeBytes",
+						(int) properties.getSender().getMessageSize().toBytes());
+			});
 	}
 
 	@Test
 	void configureWavefrontSender() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.wavefront.api-token=abcde",
-						"management.metrics.export.wavefront.batch-size=50",
-						"management.metrics.export.wavefront.sender.max-queue-size=100",
-						"management.metrics.export.wavefront.sender.message-size=1KB")
-				.run((context) -> {
-					WavefrontSender sender = context.getBean(WavefrontSender.class);
-					assertThat(sender).hasFieldOrPropertyWithValue("batchSize", 50);
-					assertThat(sender)
-							.extracting("metricsBuffer", as(InstanceOfAssertFactories.type(LinkedBlockingQueue.class)))
-							.satisfies((queue) -> assertThat(queue.remainingCapacity() + queue.size()).isEqualTo(100));
-					assertThat(sender).hasFieldOrPropertyWithValue("messageSizeBytes", 1024);
-				});
+			.withPropertyValues("management.metrics.export.wavefront.api-token=abcde",
+					"management.metrics.export.wavefront.batch-size=50",
+					"management.metrics.export.wavefront.sender.max-queue-size=100",
+					"management.metrics.export.wavefront.sender.message-size=1KB")
+			.run((context) -> {
+				WavefrontSender sender = context.getBean(WavefrontSender.class);
+				assertThat(sender).hasFieldOrPropertyWithValue("batchSize", 50);
+				assertThat(sender)
+					.extracting("metricsBuffer", as(InstanceOfAssertFactories.type(LinkedBlockingQueue.class)))
+					.satisfies((queue) -> assertThat(queue.remainingCapacity() + queue.size()).isEqualTo(100));
+				assertThat(sender).hasFieldOrPropertyWithValue("messageSizeBytes", 1024);
+			});
 	}
 
 	@Test
 	void allowsWavefrontSenderToBeCustomized() {
 		this.contextRunner.withUserConfiguration(CustomSenderConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(Clock.class)
-						.hasSingleBean(WavefrontMeterRegistry.class).hasSingleBean(WavefrontConfig.class)
-						.hasSingleBean(WavefrontSender.class).hasBean("customSender"));
+			.run((context) -> assertThat(context).hasSingleBean(Clock.class)
+				.hasSingleBean(WavefrontMeterRegistry.class)
+				.hasSingleBean(WavefrontConfig.class)
+				.hasSingleBean(WavefrontSender.class)
+				.hasBean("customSender"));
 	}
 
 	@Test
 	void allowsRegistryToBeCustomized() {
 		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
-				.withPropertyValues("management.metrics.export.wavefront.api-token=abcde")
-				.run((context) -> assertThat(context).hasSingleBean(Clock.class).hasSingleBean(WavefrontConfig.class)
-						.hasSingleBean(WavefrontMeterRegistry.class).hasBean("customRegistry"));
+			.withPropertyValues("management.metrics.export.wavefront.api-token=abcde")
+			.run((context) -> assertThat(context).hasSingleBean(Clock.class)
+				.hasSingleBean(WavefrontConfig.class)
+				.hasSingleBean(WavefrontMeterRegistry.class)
+				.hasBean("customRegistry"));
 	}
 
 	@Test
 	void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.wavefront.api-token=abcde").run((context) -> {
-					WavefrontMeterRegistry registry = context.getBean(WavefrontMeterRegistry.class);
-					assertThat(registry.isClosed()).isFalse();
-					context.close();
-					assertThat(registry.isClosed()).isTrue();
-				});
+			.withPropertyValues("management.metrics.export.wavefront.api-token=abcde")
+			.run((context) -> {
+				WavefrontMeterRegistry registry = context.getBean(WavefrontMeterRegistry.class);
+				assertThat(registry.isClosed()).isFalse();
+				context.close();
+				assertThat(registry.isClosed()).isTrue();
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

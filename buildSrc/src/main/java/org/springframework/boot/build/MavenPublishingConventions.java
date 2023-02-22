@@ -67,8 +67,9 @@ class MavenPublishingConventions {
 					mavenRepository.setName("deployment");
 				});
 			}
-			publishing.getPublications().withType(MavenPublication.class)
-					.all((mavenPublication) -> customizeMavenPublication(mavenPublication, project));
+			publishing.getPublications()
+				.withType(MavenPublication.class)
+				.all((mavenPublication) -> customizeMavenPublication(mavenPublication, project));
 			project.getPlugins().withType(JavaPlugin.class).all((javaPlugin) -> {
 				JavaPluginExtension extension = project.getExtensions().getByType(JavaPluginExtension.class);
 				extension.withJavadocJar();
@@ -79,8 +80,9 @@ class MavenPublishingConventions {
 
 	private void customizeMavenPublication(MavenPublication publication, Project project) {
 		customizePom(publication.getPom(), project);
-		project.getPlugins().withType(JavaPlugin.class)
-				.all((javaPlugin) -> customizeJavaMavenPublication(publication, project));
+		project.getPlugins()
+			.withType(JavaPlugin.class)
+			.all((javaPlugin) -> customizeJavaMavenPublication(publication, project));
 		suppressMavenOptionalFeatureWarnings(publication);
 	}
 
@@ -102,7 +104,7 @@ class MavenPublishingConventions {
 	private void customizeJavaMavenPublication(MavenPublication publication, Project project) {
 		addMavenOptionalFeature(project);
 		publication.versionMapping((strategy) -> strategy.usage(Usage.JAVA_API, (mappingStrategy) -> mappingStrategy
-				.fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME)));
+			.fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME)));
 		publication.versionMapping(
 				(strategy) -> strategy.usage(Usage.JAVA_RUNTIME, VariantVersionMappingStrategy::fromResolutionResult));
 	}
@@ -117,7 +119,7 @@ class MavenPublishingConventions {
 		extension.registerFeature("mavenOptional",
 				(feature) -> feature.usingSourceSet(extension.getSourceSets().getByName("main")));
 		AdhocComponentWithVariants javaComponent = (AdhocComponentWithVariants) project.getComponents()
-				.findByName("java");
+			.findByName("java");
 		javaComponent.addVariantsFromConfiguration(
 				project.getConfigurations().findByName("mavenOptionalRuntimeElements"),
 				ConfigurationVariantDetails::mapToOptional);

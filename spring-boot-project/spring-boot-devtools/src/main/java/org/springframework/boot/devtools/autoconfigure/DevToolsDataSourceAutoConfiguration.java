@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -189,8 +189,9 @@ public class DevToolsDataSourceAutoConfiguration {
 			if (dataSourceDefinition instanceof AnnotatedBeanDefinition
 					&& ((AnnotatedBeanDefinition) dataSourceDefinition).getFactoryMethodMetadata() != null
 					&& ((AnnotatedBeanDefinition) dataSourceDefinition).getFactoryMethodMetadata()
-							.getDeclaringClassName().startsWith(DataSourceAutoConfiguration.class.getPackage().getName()
-									+ ".DataSourceConfiguration$")) {
+						.getDeclaringClassName()
+						.startsWith(DataSourceAutoConfiguration.class.getPackage().getName()
+								+ ".DataSourceConfiguration$")) {
 				return ConditionOutcome.match(message.foundExactly("auto-configured DataSource"));
 			}
 			return ConditionOutcome.noMatch(message.didNotFind("an auto-configured DataSource").atAll());

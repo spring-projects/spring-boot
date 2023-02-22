@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,38 +86,49 @@ class DataSourceBuilderTests {
 
 	@Test
 	void buildWhenHikariNotAvailableReturnsTomcatDataSource() {
-		this.dataSource = DataSourceBuilder.create(new HidePackagesClassLoader("com.zaxxer.hikari")).url("jdbc:h2:test")
-				.build();
+		this.dataSource = DataSourceBuilder.create(new HidePackagesClassLoader("com.zaxxer.hikari"))
+			.url("jdbc:h2:test")
+			.build();
 		assertThat(this.dataSource).isInstanceOf(org.apache.tomcat.jdbc.pool.DataSource.class);
 	}
 
 	@Test // gh-26633
 	void buildWhenTomcatDataSourceWithNullPasswordReturnsDataSource() {
-		this.dataSource = DataSourceBuilder.create(new HidePackagesClassLoader("com.zaxxer.hikari")).url("jdbc:h2:test")
-				.username("test").password(null).build();
+		this.dataSource = DataSourceBuilder.create(new HidePackagesClassLoader("com.zaxxer.hikari"))
+			.url("jdbc:h2:test")
+			.username("test")
+			.password(null)
+			.build();
 		assertThat(this.dataSource).isInstanceOf(org.apache.tomcat.jdbc.pool.DataSource.class);
 	}
 
 	@Test
 	void buildWhenHikariAndTomcatNotAvailableReturnsDbcp2DataSource() {
 		this.dataSource = DataSourceBuilder
-				.create(new HidePackagesClassLoader("com.zaxxer.hikari", "org.apache.tomcat.jdbc.pool"))
-				.url("jdbc:h2:test").build();
+			.create(new HidePackagesClassLoader("com.zaxxer.hikari", "org.apache.tomcat.jdbc.pool"))
+			.url("jdbc:h2:test")
+			.build();
 		assertThat(this.dataSource).isInstanceOf(BasicDataSource.class);
 	}
 
 	@Test // gh-26633
 	void buildWhenDbcp2DataSourceWithNullPasswordReturnsDbcp2DataSource() {
 		this.dataSource = DataSourceBuilder
-				.create(new HidePackagesClassLoader("com.zaxxer.hikari", "org.apache.tomcat.jdbc.pool"))
-				.url("jdbc:h2:test").username("test").password(null).build();
+			.create(new HidePackagesClassLoader("com.zaxxer.hikari", "org.apache.tomcat.jdbc.pool"))
+			.url("jdbc:h2:test")
+			.username("test")
+			.password(null)
+			.build();
 		assertThat(this.dataSource).isInstanceOf(BasicDataSource.class);
 	}
 
 	@Test
 	void buildWhenHikariAndTomcatAndDbcpNotAvailableReturnsOracleUcpDataSource() {
-		this.dataSource = DataSourceBuilder.create(new HidePackagesClassLoader("com.zaxxer.hikari",
-				"org.apache.tomcat.jdbc.pool", "org.apache.commons.dbcp2")).url("jdbc:h2:test").build();
+		this.dataSource = DataSourceBuilder
+			.create(new HidePackagesClassLoader("com.zaxxer.hikari", "org.apache.tomcat.jdbc.pool",
+					"org.apache.commons.dbcp2"))
+			.url("jdbc:h2:test")
+			.build();
 		assertThat(this.dataSource).isInstanceOf(PoolDataSourceImpl.class);
 	}
 
@@ -138,8 +149,11 @@ class DataSourceBuilderTests {
 
 	@Test
 	void buildWhenOracleTypeSpecifiedReturnsExpectedDataSource() throws SQLException {
-		this.dataSource = DataSourceBuilder.create().url("jdbc:oracle:thin:@localhost:1521:xe")
-				.type(OracleDataSource.class).username("test").build();
+		this.dataSource = DataSourceBuilder.create()
+			.url("jdbc:oracle:thin:@localhost:1521:xe")
+			.type(OracleDataSource.class)
+			.username("test")
+			.build();
 		assertThat(this.dataSource).isInstanceOf(OracleDataSource.class);
 		OracleDataSource oracleDataSource = (OracleDataSource) this.dataSource;
 		assertThat(oracleDataSource.getURL()).isEqualTo("jdbc:oracle:thin:@localhost:1521:xe");
@@ -148,9 +162,12 @@ class DataSourceBuilderTests {
 
 	@Test // gh-26631
 	void buildWhenOracleTypeSpecifiedWithDriverClassReturnsExpectedDataSource() throws SQLException {
-		this.dataSource = DataSourceBuilder.create().url("jdbc:oracle:thin:@localhost:1521:xe")
-				.type(OracleDataSource.class).driverClassName("oracle.jdbc.pool.OracleDataSource").username("test")
-				.build();
+		this.dataSource = DataSourceBuilder.create()
+			.url("jdbc:oracle:thin:@localhost:1521:xe")
+			.type(OracleDataSource.class)
+			.driverClassName("oracle.jdbc.pool.OracleDataSource")
+			.username("test")
+			.build();
 		assertThat(this.dataSource).isInstanceOf(OracleDataSource.class);
 		OracleDataSource oracleDataSource = (OracleDataSource) this.dataSource;
 		assertThat(oracleDataSource.getURL()).isEqualTo("jdbc:oracle:thin:@localhost:1521:xe");
@@ -159,8 +176,11 @@ class DataSourceBuilderTests {
 
 	@Test
 	void buildWhenOracleUcpTypeSpecifiedReturnsExpectedDataSource() {
-		this.dataSource = DataSourceBuilder.create().driverClassName("org.hsqldb.jdbc.JDBCDriver")
-				.type(PoolDataSourceImpl.class).username("test").build();
+		this.dataSource = DataSourceBuilder.create()
+			.driverClassName("org.hsqldb.jdbc.JDBCDriver")
+			.type(PoolDataSourceImpl.class)
+			.username("test")
+			.build();
 		assertThat(this.dataSource).isInstanceOf(PoolDataSourceImpl.class);
 		PoolDataSourceImpl upcDataSource = (PoolDataSourceImpl) this.dataSource;
 		assertThat(upcDataSource.getConnectionFactoryClassName()).isEqualTo("org.hsqldb.jdbc.JDBCDriver");
@@ -169,8 +189,12 @@ class DataSourceBuilderTests {
 
 	@Test
 	void buildWhenH2TypeSpecifiedReturnsExpectedDataSource() {
-		this.dataSource = DataSourceBuilder.create().url("jdbc:h2:test").type(JdbcDataSource.class).username("test")
-				.password("secret").build();
+		this.dataSource = DataSourceBuilder.create()
+			.url("jdbc:h2:test")
+			.type(JdbcDataSource.class)
+			.username("test")
+			.password("secret")
+			.build();
 		assertThat(this.dataSource).isInstanceOf(JdbcDataSource.class);
 		JdbcDataSource h2DataSource = (JdbcDataSource) this.dataSource;
 		assertThat(h2DataSource.getUser()).isEqualTo("test");
@@ -179,8 +203,13 @@ class DataSourceBuilderTests {
 
 	@Test // gh-26631
 	void buildWhenH2TypeSpecifiedWithDriverClassReturnsExpectedDataSource() {
-		this.dataSource = DataSourceBuilder.create().url("jdbc:h2:test").type(JdbcDataSource.class)
-				.driverClassName("org.h2.jdbcx.JdbcDataSource").username("test").password("secret").build();
+		this.dataSource = DataSourceBuilder.create()
+			.url("jdbc:h2:test")
+			.type(JdbcDataSource.class)
+			.driverClassName("org.h2.jdbcx.JdbcDataSource")
+			.username("test")
+			.password("secret")
+			.build();
 		assertThat(this.dataSource).isInstanceOf(JdbcDataSource.class);
 		JdbcDataSource h2DataSource = (JdbcDataSource) this.dataSource;
 		assertThat(h2DataSource.getUser()).isEqualTo("test");
@@ -189,8 +218,11 @@ class DataSourceBuilderTests {
 
 	@Test
 	void buildWhenPostgresTypeSpecifiedReturnsExpectedDataSource() {
-		this.dataSource = DataSourceBuilder.create().url("jdbc:postgresql://localhost/test")
-				.type(PGSimpleDataSource.class).username("test").build();
+		this.dataSource = DataSourceBuilder.create()
+			.url("jdbc:postgresql://localhost/test")
+			.type(PGSimpleDataSource.class)
+			.username("test")
+			.build();
 		assertThat(this.dataSource).isInstanceOf(PGSimpleDataSource.class);
 		PGSimpleDataSource pgDataSource = (PGSimpleDataSource) this.dataSource;
 		assertThat(pgDataSource.getUser()).isEqualTo("test");
@@ -198,9 +230,12 @@ class DataSourceBuilderTests {
 
 	@Test // gh-26631
 	void buildWhenPostgresTypeSpecifiedWithDriverClassReturnsExpectedDataSource() {
-		this.dataSource = DataSourceBuilder.create().url("jdbc:postgresql://localhost/test")
-				.type(PGSimpleDataSource.class).driverClassName("org.postgresql.ds.PGSimpleDataSource").username("test")
-				.build();
+		this.dataSource = DataSourceBuilder.create()
+			.url("jdbc:postgresql://localhost/test")
+			.type(PGSimpleDataSource.class)
+			.driverClassName("org.postgresql.ds.PGSimpleDataSource")
+			.username("test")
+			.build();
 		assertThat(this.dataSource).isInstanceOf(PGSimpleDataSource.class);
 		PGSimpleDataSource pgDataSource = (PGSimpleDataSource) this.dataSource;
 		assertThat(pgDataSource.getUser()).isEqualTo("test");
@@ -208,8 +243,11 @@ class DataSourceBuilderTests {
 
 	@Test // gh-26647
 	void buildWhenSqlServerTypeSpecifiedReturnsExpectedDataSource() {
-		this.dataSource = DataSourceBuilder.create().url("jdbc:sqlserver://localhost/test")
-				.type(SQLServerDataSource.class).username("test").build();
+		this.dataSource = DataSourceBuilder.create()
+			.url("jdbc:sqlserver://localhost/test")
+			.type(SQLServerDataSource.class)
+			.username("test")
+			.build();
 		assertThat(this.dataSource).isInstanceOf(SQLServerDataSource.class);
 		SQLServerDataSource sqlServerDataSource = (SQLServerDataSource) this.dataSource;
 		assertThat(sqlServerDataSource.getUser()).isEqualTo("test");
@@ -223,8 +261,11 @@ class DataSourceBuilderTests {
 
 	@Test
 	void buildWhenCustomSubclassTypeSpecifiedReturnsDataSourceWithOnlyBasePropertiesSet() {
-		this.dataSource = DataSourceBuilder.create().url("jdbc:h2:test").type(CustomTomcatDataSource.class)
-				.username("test").build();
+		this.dataSource = DataSourceBuilder.create()
+			.url("jdbc:h2:test")
+			.type(CustomTomcatDataSource.class)
+			.username("test")
+			.build();
 		assertThat(this.dataSource).isInstanceOf(CustomTomcatDataSource.class);
 		CustomTomcatDataSource testDataSource = (CustomTomcatDataSource) this.dataSource;
 		assertThat(testDataSource.getUrl()).isEqualTo("jdbc:h2:test");
@@ -237,8 +278,13 @@ class DataSourceBuilderTests {
 
 	@Test
 	void buildWhenCustomTypeSpecifiedReturnsDataSourceWithPropertiesSetViaReflection() {
-		this.dataSource = DataSourceBuilder.create().type(CustomDataSource.class).username("test").password("secret")
-				.url("jdbc:h2:test").driverClassName("com.example").build();
+		this.dataSource = DataSourceBuilder.create()
+			.type(CustomDataSource.class)
+			.username("test")
+			.password("secret")
+			.url("jdbc:h2:test")
+			.driverClassName("com.example")
+			.build();
 		assertThat(this.dataSource).isInstanceOf(CustomDataSource.class);
 		CustomDataSource testDataSource = (CustomDataSource) this.dataSource;
 		assertThat(testDataSource.getUrl()).isEqualTo("jdbc:h2:test");
@@ -249,8 +295,10 @@ class DataSourceBuilderTests {
 
 	@Test
 	void buildWhenCustomTypeSpecifiedAndNoSuitableOptionalSetterBuilds() {
-		assertThatNoException().isThrownBy(() -> DataSourceBuilder.create().type(LimitedCustomDataSource.class)
-				.driverClassName("com.example").build());
+		assertThatNoException().isThrownBy(() -> DataSourceBuilder.create()
+			.type(LimitedCustomDataSource.class)
+			.driverClassName("com.example")
+			.build());
 	}
 
 	@Test
@@ -265,8 +313,9 @@ class DataSourceBuilderTests {
 		dataSource.setUsername("test");
 		dataSource.setPassword("secret");
 		dataSource.setJdbcUrl("jdbc:h2:test");
-		HikariDataSource built = (HikariDataSource) DataSourceBuilder.derivedFrom(dataSource).url("jdbc:h2:test2")
-				.build();
+		HikariDataSource built = (HikariDataSource) DataSourceBuilder.derivedFrom(dataSource)
+			.url("jdbc:h2:test2")
+			.build();
 		assertThat(built.getUsername()).isEqualTo("test");
 		assertThat(built.getPassword()).isEqualTo("secret");
 		assertThat(built.getJdbcUrl()).isEqualTo("jdbc:h2:test2");
@@ -292,7 +341,7 @@ class DataSourceBuilderTests {
 		dataSource.setPassword("secret");
 		dataSource.setURL("example.com");
 		assertThatExceptionOfType(UnsupportedDataSourcePropertyException.class)
-				.isThrownBy(() -> DataSourceBuilder.derivedFrom(dataSource).url("example.org").build());
+			.isThrownBy(() -> DataSourceBuilder.derivedFrom(dataSource).url("example.org").build());
 	}
 
 	@Test
@@ -302,7 +351,7 @@ class DataSourceBuilderTests {
 		dataSource.setPassword("secret");
 		dataSource.setURL("example.com");
 		assertThatExceptionOfType(UnsupportedDataSourcePropertyException.class)
-				.isThrownBy(() -> DataSourceBuilder.derivedFrom(dataSource).url("example.org").build());
+			.isThrownBy(() -> DataSourceBuilder.derivedFrom(dataSource).url("example.org").build());
 	}
 
 	@Test
@@ -313,10 +362,13 @@ class DataSourceBuilderTests {
 		dataSource.setURL("example.com");
 		DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource);
 		oracle.jdbc.datasource.impl.OracleDataSource built = (oracle.jdbc.datasource.impl.OracleDataSource) builder
-				.username("test2").password("secret2").build();
+			.username("test2")
+			.password("secret2")
+			.build();
 		assertThat(built.getUser()).isEqualTo("test2");
-		assertThat(built).extracting("password").extracting((opaque) -> ((OpaqueString) opaque).get())
-				.isEqualTo("secret2");
+		assertThat(built).extracting("password")
+			.extracting((opaque) -> ((OpaqueString) opaque).get())
+			.isEqualTo("secret2");
 		assertThat(built.getURL()).isEqualTo("example.com");
 	}
 
@@ -329,16 +381,19 @@ class DataSourceBuilderTests {
 		DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource);
 		PoolDataSource built = (PoolDataSource) builder.username("test2").password("secret2").build();
 		assertThat(built.getUser()).isEqualTo("test2");
-		assertThat(built).extracting("password").extracting((opaque) -> ((oracle.ucp.util.OpaqueString) opaque).get())
-				.isEqualTo("secret2");
+		assertThat(built).extracting("password")
+			.extracting((opaque) -> ((oracle.ucp.util.OpaqueString) opaque).get())
+			.isEqualTo("secret2");
 		assertThat(built.getURL()).isEqualTo("example.com");
 	}
 
 	@Test
 	void buildWhenDerivedFromEmbeddedDatabase() {
 		EmbeddedDatabase database = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.HSQL).build();
-		SimpleDriverDataSource built = (SimpleDriverDataSource) DataSourceBuilder.derivedFrom(database).username("test")
-				.password("secret").build();
+		SimpleDriverDataSource built = (SimpleDriverDataSource) DataSourceBuilder.derivedFrom(database)
+			.username("test")
+			.password("secret")
+			.build();
 		assertThat(built.getUsername()).isEqualTo("test");
 		assertThat(built.getPassword()).isEqualTo("secret");
 		assertThat(built.getUrl()).startsWith("jdbc:hsqldb:mem");
@@ -363,8 +418,9 @@ class DataSourceBuilderTests {
 		dataSource.setUsername("test");
 		dataSource.setPassword("secret");
 		dataSource.setUrl("jdbc:postgresql://localhost:5432/postgres");
-		DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource).username("alice")
-				.password("confidential");
+		DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource)
+			.username("alice")
+			.password("confidential");
 		CustomDataSource testSource = (CustomDataSource) builder.build();
 		assertThat(testSource).isNotSameAs(dataSource);
 		assertThat(testSource.getUsername()).isEqualTo("alice");
@@ -387,9 +443,13 @@ class DataSourceBuilderTests {
 
 	@Test // gh-31920
 	void buildWhenC3P0TypeSpecifiedReturnsExpectedDataSource() {
-		this.dataSource = DataSourceBuilder.create().url("jdbc:postgresql://localhost:5432/postgres")
-				.type(ComboPooledDataSource.class).username("test").password("secret")
-				.driverClassName("com.example.Driver").build();
+		this.dataSource = DataSourceBuilder.create()
+			.url("jdbc:postgresql://localhost:5432/postgres")
+			.type(ComboPooledDataSource.class)
+			.username("test")
+			.password("secret")
+			.driverClassName("com.example.Driver")
+			.build();
 		assertThat(this.dataSource).isInstanceOf(ComboPooledDataSource.class);
 		ComboPooledDataSource c3p0DataSource = (ComboPooledDataSource) this.dataSource;
 		assertThat(c3p0DataSource.getJdbcUrl()).isEqualTo("jdbc:postgresql://localhost:5432/postgres");

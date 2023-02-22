@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,10 +40,10 @@ class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 	@Test
 	void testNaming() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withUserConfiguration(Config.class)
-				.withPropertyValues("other.name:foo", "first.name:bar");
+			.withPropertyValues("other.name:foo", "first.name:bar");
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
-					.getBean(ConfigurationPropertiesReportEndpoint.class);
+				.getBean(ConfigurationPropertiesReportEndpoint.class);
 			ApplicationConfigurationProperties applicationProperties = endpoint.configurationProperties();
 			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
 			ContextConfigurationProperties contextProperties = applicationProperties.getContexts().get(context.getId());
@@ -58,10 +58,11 @@ class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 	@Test
 	void prefixFromBeanMethodConfigurationPropertiesCanOverridePrefixOnClass() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withUserConfiguration(OverriddenPrefix.class).withPropertyValues("other.name:foo");
+			.withUserConfiguration(OverriddenPrefix.class)
+			.withPropertyValues("other.name:foo");
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
-					.getBean(ConfigurationPropertiesReportEndpoint.class);
+				.getBean(ConfigurationPropertiesReportEndpoint.class);
 			ApplicationConfigurationProperties applicationProperties = endpoint.configurationProperties();
 			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
 			ContextConfigurationProperties contextProperties = applicationProperties.getContexts().get(context.getId());

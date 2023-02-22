@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,34 +61,51 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 class ControllerEndpointHandlerMappingIntegrationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner(
-			AnnotationConfigReactiveWebServerApplicationContext::new).withUserConfiguration(EndpointConfiguration.class,
-					ExampleWebFluxEndpoint.class);
+			AnnotationConfigReactiveWebServerApplicationContext::new)
+		.withUserConfiguration(EndpointConfiguration.class, ExampleWebFluxEndpoint.class);
 
 	@Test
 	void get() {
-		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.get().uri("/actuator/example/one")
-				.accept(MediaType.TEXT_PLAIN).exchange().expectStatus().isOk().expectHeader()
-				.contentTypeCompatibleWith(MediaType.TEXT_PLAIN).expectBody(String.class).isEqualTo("One")));
+		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.get()
+			.uri("/actuator/example/one")
+			.accept(MediaType.TEXT_PLAIN)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentTypeCompatibleWith(MediaType.TEXT_PLAIN)
+			.expectBody(String.class)
+			.isEqualTo("One")));
 	}
 
 	@Test
 	void getWithUnacceptableContentType() {
-		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.get().uri("/actuator/example/one")
-				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isEqualTo(HttpStatus.NOT_ACCEPTABLE)));
+		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.get()
+			.uri("/actuator/example/one")
+			.accept(MediaType.APPLICATION_JSON)
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.NOT_ACCEPTABLE)));
 	}
 
 	@Test
 	void post() {
-		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.post().uri("/actuator/example/two")
-				.bodyValue(Collections.singletonMap("id", "test")).exchange().expectStatus().isCreated().expectHeader()
-				.valueEquals(HttpHeaders.LOCATION, "/example/test")));
+		this.contextRunner.run(withWebTestClient((webTestClient) -> webTestClient.post()
+			.uri("/actuator/example/two")
+			.bodyValue(Collections.singletonMap("id", "test"))
+			.exchange()
+			.expectStatus()
+			.isCreated()
+			.expectHeader()
+			.valueEquals(HttpHeaders.LOCATION, "/example/test")));
 	}
 
 	private ContextConsumer<AssertableReactiveWebApplicationContext> withWebTestClient(
 			Consumer<WebTestClient> webClient) {
 		return (context) -> {
 			int port = ((AnnotationConfigReactiveWebServerApplicationContext) context.getSourceApplicationContext())
-					.getWebServer().getPort();
+				.getWebServer()
+				.getPort();
 			WebTestClient webTestClient = createWebTestClient(port);
 			webClient.accept(webTestClient);
 		};
@@ -97,8 +114,10 @@ class ControllerEndpointHandlerMappingIntegrationTests {
 	private WebTestClient createWebTestClient(int port) {
 		DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory("http://localhost:" + port);
 		uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
-		return WebTestClient.bindToServer().uriBuilderFactory(uriBuilderFactory).responseTimeout(Duration.ofMinutes(5))
-				.build();
+		return WebTestClient.bindToServer()
+			.uriBuilderFactory(uriBuilderFactory)
+			.responseTimeout(Duration.ofMinutes(5))
+			.build();
 	}
 
 	@Configuration(proxyBeanMethods = false)

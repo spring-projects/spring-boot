@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ public class MetricsWebFilter implements WebFilter {
 	private Publisher<Void> filter(ServerWebExchange exchange, Mono<Void> call) {
 		long start = System.nanoTime();
 		return call.doOnEach((signal) -> onTerminalSignal(exchange, signal.getThrowable(), start))
-				.doOnCancel(() -> onTerminalSignal(exchange, new CancelledServerWebExchangeException(), start));
+			.doOnCancel(() -> onTerminalSignal(exchange, new CancelledServerWebExchangeException(), start));
 	}
 
 	private void onTerminalSignal(ServerWebExchange exchange, Throwable cause, long start) {
@@ -109,8 +109,10 @@ public class MetricsWebFilter implements WebFilter {
 			Iterable<Tag> tags = this.tagsProvider.httpRequestTags(exchange, cause);
 			long duration = System.nanoTime() - start;
 			AutoTimer.apply(this.autoTimer, this.metricName, annotations,
-					(builder) -> builder.description("Duration of HTTP server request handling").tags(tags)
-							.register(this.registry).record(duration, TimeUnit.NANOSECONDS));
+					(builder) -> builder.description("Duration of HTTP server request handling")
+						.tags(tags)
+						.register(this.registry)
+						.record(duration, TimeUnit.NANOSECONDS));
 		}
 		catch (Exception ex) {
 			logger.warn("Failed to record timer metrics", ex);

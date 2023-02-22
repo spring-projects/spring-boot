@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Flyway9xAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
-			.withPropertyValues("spring.datasource.generate-unique-name=true");
+		.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
+		.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
 	void defaultFlyway() {
@@ -45,7 +45,7 @@ class Flyway9xAutoConfigurationTests {
 			assertThat(context).hasSingleBean(Flyway.class);
 			Flyway flyway = context.getBean(Flyway.class);
 			assertThat(flyway.getConfiguration().getLocations())
-					.containsExactly(new Location("classpath:db/migration"));
+				.containsExactly(new Location("classpath:db/migration"));
 		});
 	}
 

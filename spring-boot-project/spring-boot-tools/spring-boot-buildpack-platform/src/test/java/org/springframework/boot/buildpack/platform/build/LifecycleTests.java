@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,7 +135,7 @@ class LifecycleTests {
 		Lifecycle lifecycle = createLifecycle();
 		lifecycle.execute();
 		assertThatIllegalStateException().isThrownBy(lifecycle::execute)
-				.withMessage("Lifecycle has already been executed");
+			.withMessage("Lifecycle has already been executed");
 	}
 
 	@Test
@@ -144,7 +144,7 @@ class LifecycleTests {
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(9, null));
 		assertThatExceptionOfType(BuilderException.class).isThrownBy(() -> createLifecycle().execute())
-				.withMessage("Builder lifecycle 'creator' failed with status code 9");
+			.withMessage("Builder lifecycle 'creator' failed with status code 9");
 	}
 
 	@Test
@@ -165,8 +165,8 @@ class LifecycleTests {
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		assertThatIllegalStateException()
-				.isThrownBy(() -> createLifecycle("builder-metadata-unsupported-api.json").execute())
-				.withMessageContaining("Detected platform API versions '0.2' are not included in supported versions");
+			.isThrownBy(() -> createLifecycle("builder-metadata-unsupported-api.json").execute())
+			.withMessageContaining("Detected platform API versions '0.2' are not included in supported versions");
 	}
 
 	@Test
@@ -175,9 +175,8 @@ class LifecycleTests {
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		assertThatIllegalStateException()
-				.isThrownBy(() -> createLifecycle("builder-metadata-unsupported-apis.json").execute())
-				.withMessageContaining(
-						"Detected platform API versions '0.1,0.2' are not included in supported versions");
+			.isThrownBy(() -> createLifecycle("builder-metadata-unsupported-apis.json").execute())
+			.withMessageContaining("Detected platform API versions '0.1,0.2' are not included in supported versions");
 	}
 
 	@Test
@@ -213,7 +212,7 @@ class LifecycleTests {
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		BuildRequest request = getTestRequest().withBuildCache(Cache.volume("build-volume"))
-				.withLaunchCache(Cache.volume("launch-volume"));
+			.withLaunchCache(Cache.volume("launch-volume"));
 		createLifecycle(request).execute();
 		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-cache-volumes.json"));
 		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");

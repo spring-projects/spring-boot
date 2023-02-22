@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -147,8 +147,9 @@ public class EnvironmentEndpoint {
 	private PropertySourceDescriptor describeSource(String sourceName, EnumerablePropertySource<?> source,
 			PlaceholdersResolver resolver, Predicate<String> namePredicate) {
 		Map<String, PropertyValueDescriptor> properties = new LinkedHashMap<>();
-		Stream.of(source.getPropertyNames()).filter(namePredicate)
-				.forEach((name) -> properties.put(name, describeValueOf(name, source, resolver)));
+		Stream.of(source.getPropertyNames())
+			.filter(namePredicate)
+			.forEach((name) -> properties.put(name, describeValueOf(name, source, resolver)));
 		return new PropertySourceDescriptor(sourceName, properties);
 	}
 

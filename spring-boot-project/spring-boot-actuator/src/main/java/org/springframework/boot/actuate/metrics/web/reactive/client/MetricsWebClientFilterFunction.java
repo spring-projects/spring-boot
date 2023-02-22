@@ -79,8 +79,9 @@ public class MetricsWebClientFilterFunction implements ExchangeFilterFunction {
 		if (!this.autoTimer.isEnabled()) {
 			return next.exchange(request);
 		}
-		return next.exchange(request).as((responseMono) -> instrumentResponse(request, responseMono))
-				.contextWrite(this::putStartTime);
+		return next.exchange(request)
+			.as((responseMono) -> instrumentResponse(request, responseMono))
+			.contextWrite(this::putStartTime);
 	}
 
 	private Mono<ClientResponse> instrumentResponse(ClientRequest request, Mono<ClientResponse> responseMono) {
@@ -100,8 +101,11 @@ public class MetricsWebClientFilterFunction implements ExchangeFilterFunction {
 	private void recordTimer(ClientRequest request, ClientResponse response, Throwable error, Long startTime) {
 		try {
 			Iterable<Tag> tags = this.tagProvider.tags(request, response, error);
-			this.autoTimer.builder(this.metricName).tags(tags).description("Timer of WebClient operation")
-					.register(this.meterRegistry).record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
+			this.autoTimer.builder(this.metricName)
+				.tags(tags)
+				.description("Timer of WebClient operation")
+				.register(this.meterRegistry)
+				.record(System.nanoTime() - startTime, TimeUnit.NANOSECONDS);
 		}
 		catch (Exception ex) {
 			logger.warn("Failed to record timer metrics", ex);

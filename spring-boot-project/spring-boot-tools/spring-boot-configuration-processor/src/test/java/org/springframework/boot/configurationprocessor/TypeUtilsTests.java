@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class TypeUtilsTests {
 	void resolveTypeDescriptorOnConcreteClass() throws IOException {
 		process(SimpleGenericProperties.class, (roundEnv, typeUtils) -> {
 			TypeDescriptor typeDescriptor = typeUtils
-					.resolveTypeDescriptor(roundEnv.getRootElement(SimpleGenericProperties.class));
+				.resolveTypeDescriptor(roundEnv.getRootElement(SimpleGenericProperties.class));
 			assertThat(typeDescriptor.getGenerics().keySet().stream().map(Object::toString)).containsOnly("A", "B",
 					"C");
 			assertThat(typeDescriptor.resolveGeneric("A")).hasToString(String.class.getName());
@@ -62,7 +62,7 @@ class TypeUtilsTests {
 	void resolveTypeDescriptorOnIntermediateClass() throws IOException {
 		process(AbstractIntermediateGenericProperties.class, (roundEnv, typeUtils) -> {
 			TypeDescriptor typeDescriptor = typeUtils
-					.resolveTypeDescriptor(roundEnv.getRootElement(AbstractIntermediateGenericProperties.class));
+				.resolveTypeDescriptor(roundEnv.getRootElement(AbstractIntermediateGenericProperties.class));
 			assertThat(typeDescriptor.getGenerics().keySet().stream().map(Object::toString)).containsOnly("A", "B",
 					"C");
 			assertThat(typeDescriptor.resolveGeneric("A")).hasToString(String.class.getName());
@@ -75,7 +75,7 @@ class TypeUtilsTests {
 	void resolveTypeDescriptorWithOnlyGenerics() throws IOException {
 		process(AbstractGenericProperties.class, (roundEnv, typeUtils) -> {
 			TypeDescriptor typeDescriptor = typeUtils
-					.resolveTypeDescriptor(roundEnv.getRootElement(AbstractGenericProperties.class));
+				.resolveTypeDescriptor(roundEnv.getRootElement(AbstractGenericProperties.class));
 			assertThat(typeDescriptor.getGenerics().keySet().stream().map(Object::toString)).containsOnly("A", "B",
 					"C");
 

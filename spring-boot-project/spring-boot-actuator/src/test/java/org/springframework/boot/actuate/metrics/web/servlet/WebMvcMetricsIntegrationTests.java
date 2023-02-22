@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,16 +80,20 @@ class WebMvcMetricsIntegrationTests {
 	@Test
 	void handledExceptionIsRecordedInMetricTag() throws Exception {
 		this.mvc.perform(get("/api/handledError")).andExpect(status().is5xxServerError());
-		assertThat(this.registry.get("http.server.requests").tags("exception", "Exception1", "status", "500").timer()
-				.count()).isEqualTo(1L);
+		assertThat(this.registry.get("http.server.requests")
+			.tags("exception", "Exception1", "status", "500")
+			.timer()
+			.count()).isEqualTo(1L);
 	}
 
 	@Test
 	void rethrownExceptionIsRecordedInMetricTag() {
 		assertThatExceptionOfType(NestedServletException.class)
-				.isThrownBy(() -> this.mvc.perform(get("/api/rethrownError")).andReturn());
-		assertThat(this.registry.get("http.server.requests").tags("exception", "Exception2", "status", "500").timer()
-				.count()).isEqualTo(1L);
+			.isThrownBy(() -> this.mvc.perform(get("/api/rethrownError")).andReturn());
+		assertThat(this.registry.get("http.server.requests")
+			.tags("exception", "Exception2", "status", "500")
+			.timer()
+			.count()).isEqualTo(1L);
 	}
 
 	@Configuration(proxyBeanMethods = false)

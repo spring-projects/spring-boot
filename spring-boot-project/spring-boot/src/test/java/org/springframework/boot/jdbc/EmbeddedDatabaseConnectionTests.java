@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,13 +46,13 @@ class EmbeddedDatabaseConnectionTests {
 	@Test
 	void h2CustomDatabaseName() {
 		assertThat(EmbeddedDatabaseConnection.H2.getUrl("mydb"))
-				.isEqualTo("jdbc:h2:mem:mydb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
+			.isEqualTo("jdbc:h2:mem:mydb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
 	}
 
 	@Test
 	void derbyCustomDatabaseName() {
 		assertThat(EmbeddedDatabaseConnection.DERBY.getUrl("myderbydb"))
-				.isEqualTo("jdbc:derby:memory:myderbydb;create=true");
+			.isEqualTo("jdbc:derby:memory:myderbydb;create=true");
 	}
 
 	@Test
@@ -63,13 +63,13 @@ class EmbeddedDatabaseConnectionTests {
 	@Test
 	void getUrlWithNullDatabaseNameForHsqldb() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQLDB.getUrl(null))
-				.withMessageContaining("DatabaseName must not be empty");
+			.withMessageContaining("DatabaseName must not be empty");
 	}
 
 	@Test
 	void getUrlWithEmptyDatabaseNameForHsqldb() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQLDB.getUrl("  "))
-				.withMessageContaining("DatabaseName must not be empty");
+			.withMessageContaining("DatabaseName must not be empty");
 	}
 
 	@ParameterizedTest(name = "{0} - {1}")
@@ -127,8 +127,8 @@ class EmbeddedDatabaseConnectionTests {
 	@Test
 	void isEmbeddedWithH2File() throws SQLException {
 		assertThat(EmbeddedDatabaseConnection
-				.isEmbedded(mockDataSource(EmbeddedDatabaseConnection.H2.getDriverClassName(), "jdbc:h2:~/test")))
-						.isFalse();
+			.isEmbedded(mockDataSource(EmbeddedDatabaseConnection.H2.getDriverClassName(), "jdbc:h2:~/test")))
+			.isFalse();
 	}
 
 	@Test
@@ -139,7 +139,7 @@ class EmbeddedDatabaseConnectionTests {
 	@Test
 	void isEmbeddedWithMissingUrlMetadata() throws SQLException {
 		assertThat(EmbeddedDatabaseConnection
-				.isEmbedded(mockDataSource(EmbeddedDatabaseConnection.H2.getDriverClassName(), null))).isTrue();
+			.isEmbedded(mockDataSource(EmbeddedDatabaseConnection.H2.getDriverClassName(), null))).isTrue();
 	}
 
 	DataSource mockDataSource(String productName, String connectionUrl) throws SQLException {

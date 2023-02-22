@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,8 +62,9 @@ class HttpTraceWebFilterTests {
 	@Test
 	void filterCapturesSessionIdWhenSessionIsUsed() {
 		executeFilter(MockServerWebExchange.from(MockServerHttpRequest.get("https://api.example.com")),
-				(exchange) -> exchange.getSession().doOnNext((session) -> session.getAttributes().put("a", "alpha"))
-						.then());
+				(exchange) -> exchange.getSession()
+					.doOnNext((session) -> session.getAttributes().put("a", "alpha"))
+					.then());
 		assertThat(this.repository.findAll()).hasSize(1);
 		Session session = this.repository.findAll().get(0).getSession();
 		assertThat(session).isNotNull();
@@ -95,15 +96,16 @@ class HttpTraceWebFilterTests {
 		}, (exchange) -> exchange.getSession().doOnNext((session) -> session.getAttributes().put("a", "alpha")).then());
 		assertThat(this.repository.findAll()).hasSize(1);
 		org.springframework.boot.actuate.trace.http.HttpTrace.Principal tracedPrincipal = this.repository.findAll()
-				.get(0).getPrincipal();
+			.get(0)
+			.getPrincipal();
 		assertThat(tracedPrincipal).isNotNull();
 		assertThat(tracedPrincipal.getName()).isEqualTo("alice");
 	}
 
 	private void executeFilter(ServerWebExchange exchange, WebFilterChain chain) {
-		StepVerifier.create(
-				this.filter.filter(exchange, chain).then(Mono.defer(() -> exchange.getResponse().setComplete())))
-				.verifyComplete();
+		StepVerifier
+			.create(this.filter.filter(exchange, chain).then(Mono.defer(() -> exchange.getResponse().setComplete())))
+			.verifyComplete();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,14 +45,28 @@ class EnvironmentEndpointWebIntegrationTests {
 
 	@WebEndpointTest
 	void home() {
-		this.client.get().uri("/actuator/env").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("propertySources[?(@.name=='systemProperties')]").exists();
+		this.client.get()
+			.uri("/actuator/env")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("propertySources[?(@.name=='systemProperties')]")
+			.exists();
 	}
 
 	@WebEndpointTest
 	void sub() {
-		this.client.get().uri("/actuator/env/foo").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("property.source").isEqualTo("test").jsonPath("property.value").isEqualTo("bar");
+		this.client.get()
+			.uri("/actuator/env/foo")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("property.source")
+			.isEqualTo("test")
+			.jsonPath("property.value")
+			.isEqualTo("bar");
 	}
 
 	@WebEndpointTest
@@ -60,20 +74,35 @@ class EnvironmentEndpointWebIntegrationTests {
 		Map<String, Object> map = new HashMap<>();
 		map.put("food", null);
 		this.context.getEnvironment().getPropertySources().addFirst(new MapPropertySource("null-value", map));
-		this.client.get().uri("/actuator/env?pattern=foo.*").exchange().expectStatus().isOk().expectBody()
-				.jsonPath(forProperty("test", "foo")).isEqualTo("bar").jsonPath(forProperty("test", "fool"))
-				.isEqualTo("baz");
+		this.client.get()
+			.uri("/actuator/env?pattern=foo.*")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath(forProperty("test", "foo"))
+			.isEqualTo("bar")
+			.jsonPath(forProperty("test", "fool"))
+			.isEqualTo("baz");
 	}
 
 	@WebEndpointTest
 	void nestedPathWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.bar}");
-		this.context.getEnvironment().getPropertySources()
-				.addFirst(new MapPropertySource("unresolved-placeholder", map));
-		this.client.get().uri("/actuator/env/my.foo").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("property.value").isEqualTo("${my.bar}").jsonPath(forPropertyEntry("unresolved-placeholder"))
-				.isEqualTo("${my.bar}");
+		this.context.getEnvironment()
+			.getPropertySources()
+			.addFirst(new MapPropertySource("unresolved-placeholder", map));
+		this.client.get()
+			.uri("/actuator/env/my.foo")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("property.value")
+			.isEqualTo("${my.bar}")
+			.jsonPath(forPropertyEntry("unresolved-placeholder"))
+			.isEqualTo("${my.bar}");
 	}
 
 	@WebEndpointTest
@@ -82,9 +111,16 @@ class EnvironmentEndpointWebIntegrationTests {
 		map.put("my.foo", "${my.password}");
 		map.put("my.password", "hello");
 		this.context.getEnvironment().getPropertySources().addFirst(new MapPropertySource("placeholder", map));
-		this.client.get().uri("/actuator/env/my.foo").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("property.value").isEqualTo("******").jsonPath(forPropertyEntry("placeholder"))
-				.isEqualTo("******");
+		this.client.get()
+			.uri("/actuator/env/my.foo")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("property.value")
+			.isEqualTo("******")
+			.jsonPath(forPropertyEntry("placeholder"))
+			.isEqualTo("******");
 	}
 
 	@WebEndpointTest
@@ -96,11 +132,17 @@ class EnvironmentEndpointWebIntegrationTests {
 	void nestedPathMatchedByRegexWhenPlaceholderCannotBeResolvedShouldReturnUnresolvedProperty() {
 		Map<String, Object> map = new HashMap<>();
 		map.put("my.foo", "${my.bar}");
-		this.context.getEnvironment().getPropertySources()
-				.addFirst(new MapPropertySource("unresolved-placeholder", map));
-		this.client.get().uri("/actuator/env?pattern=my.*").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("propertySources[?(@.name=='unresolved-placeholder')].properties.['my.foo'].value")
-				.isEqualTo("${my.bar}");
+		this.context.getEnvironment()
+			.getPropertySources()
+			.addFirst(new MapPropertySource("unresolved-placeholder", map));
+		this.client.get()
+			.uri("/actuator/env?pattern=my.*")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("propertySources[?(@.name=='unresolved-placeholder')].properties.['my.foo'].value")
+			.isEqualTo("${my.bar}");
 	}
 
 	@WebEndpointTest
@@ -109,8 +151,14 @@ class EnvironmentEndpointWebIntegrationTests {
 		map.put("my.foo", "${my.password}");
 		map.put("my.password", "hello");
 		this.context.getEnvironment().getPropertySources().addFirst(new MapPropertySource("placeholder", map));
-		this.client.get().uri("/actuator/env?pattern=my.*").exchange().expectStatus().isOk().expectBody()
-				.jsonPath(forProperty("placeholder", "my.foo")).isEqualTo("******");
+		this.client.get()
+			.uri("/actuator/env?pattern=my.*")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath(forProperty("placeholder", "my.foo"))
+			.isEqualTo("******");
 	}
 
 	private String forProperty(String source, String name) {

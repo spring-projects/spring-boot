@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,13 +50,13 @@ class MockServerRestTemplateCustomizerTests {
 		MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer();
 		customizer.customize(new RestTemplate());
 		assertThat(customizer.getServer()).extracting("expectationManager")
-				.isInstanceOf(SimpleRequestExpectationManager.class);
+			.isInstanceOf(SimpleRequestExpectationManager.class);
 	}
 
 	@Test
 	void createWhenExpectationManagerClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new MockServerRestTemplateCustomizer(null))
-				.withMessageContaining("ExpectationManager must not be null");
+			.withMessageContaining("ExpectationManager must not be null");
 	}
 
 	@Test
@@ -65,7 +65,7 @@ class MockServerRestTemplateCustomizerTests {
 				UnorderedRequestExpectationManager.class);
 		customizer.customize(new RestTemplate());
 		assertThat(customizer.getServer()).extracting("expectationManager")
-				.isInstanceOf(UnorderedRequestExpectationManager.class);
+			.isInstanceOf(UnorderedRequestExpectationManager.class);
 	}
 
 	@Test
@@ -74,7 +74,7 @@ class MockServerRestTemplateCustomizerTests {
 				UnorderedRequestExpectationManager.class);
 		customizer.customize(new RestTemplateBuilder().rootUri("https://example.com").build());
 		assertThat(customizer.getServer()).extracting("expectationManager")
-				.isInstanceOf(RootUriRequestExpectationManager.class);
+			.isInstanceOf(RootUriRequestExpectationManager.class);
 	}
 
 	@Test
@@ -82,7 +82,7 @@ class MockServerRestTemplateCustomizerTests {
 		this.customizer.setDetectRootUri(false);
 		this.customizer.customize(new RestTemplateBuilder().rootUri("https://example.com").build());
 		assertThat(this.customizer.getServer()).extracting("expectationManager")
-				.isInstanceOf(SimpleRequestExpectationManager.class);
+			.isInstanceOf(SimpleRequestExpectationManager.class);
 
 	}
 
@@ -97,8 +97,8 @@ class MockServerRestTemplateCustomizerTests {
 	@Test
 	void getServerWhenNoServersAreBoundShouldThrowException() {
 		assertThatIllegalStateException().isThrownBy(this.customizer::getServer)
-				.withMessageContaining("Unable to return a single MockRestServiceServer since "
-						+ "MockServerRestTemplateCustomizer has not been bound to a RestTemplate");
+			.withMessageContaining("Unable to return a single MockRestServiceServer since "
+					+ "MockServerRestTemplateCustomizer has not been bound to a RestTemplate");
 	}
 
 	@Test
@@ -106,8 +106,8 @@ class MockServerRestTemplateCustomizerTests {
 		this.customizer.customize(new RestTemplate());
 		this.customizer.customize(new RestTemplate());
 		assertThatIllegalStateException().isThrownBy(this.customizer::getServer)
-				.withMessageContaining("Unable to return a single MockRestServiceServer since "
-						+ "MockServerRestTemplateCustomizer has been bound to more than one RestTemplate");
+			.withMessageContaining("Unable to return a single MockRestServiceServer since "
+					+ "MockServerRestTemplateCustomizer has been bound to more than one RestTemplate");
 	}
 
 	@Test

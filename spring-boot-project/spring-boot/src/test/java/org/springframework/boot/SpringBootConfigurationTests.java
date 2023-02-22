@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,14 +34,14 @@ class SpringBootConfigurationTests {
 	@Test
 	void proxyBeanMethodsIsEnabledByDefault() {
 		AnnotationAttributes attributes = AnnotatedElementUtils
-				.getMergedAnnotationAttributes(DefaultSpringBootConfiguration.class, Configuration.class);
+			.getMergedAnnotationAttributes(DefaultSpringBootConfiguration.class, Configuration.class);
 		assertThat(attributes.get("proxyBeanMethods")).isEqualTo(true);
 	}
 
 	@Test
 	void proxyBeanMethodsCanBeDisabled() {
 		AnnotationAttributes attributes = AnnotatedElementUtils
-				.getMergedAnnotationAttributes(NoBeanMethodProxyingSpringBootConfiguration.class, Configuration.class);
+			.getMergedAnnotationAttributes(NoBeanMethodProxyingSpringBootConfiguration.class, Configuration.class);
 		assertThat(attributes.get("proxyBeanMethods")).isEqualTo(false);
 	}
 

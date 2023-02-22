@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,14 +46,14 @@ public class ArchitecturePlugin implements Plugin<Project> {
 		JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
 		List<TaskProvider<PackageTangleCheck>> packageTangleChecks = new ArrayList<>();
 		for (SourceSet sourceSet : javaPluginExtension.getSourceSets()) {
-			TaskProvider<PackageTangleCheck> checkPackageTangles = project.getTasks().register(
-					"checkForPackageTangles" + StringUtils.capitalize(sourceSet.getName()), PackageTangleCheck.class,
-					(task) -> {
-						task.setClasses(sourceSet.getOutput().getClassesDirs());
-						task.setDescription("Checks the classes of the " + sourceSet.getName()
-								+ " source set for package tangles.");
-						task.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
-					});
+			TaskProvider<PackageTangleCheck> checkPackageTangles = project.getTasks()
+				.register("checkForPackageTangles" + StringUtils.capitalize(sourceSet.getName()),
+						PackageTangleCheck.class, (task) -> {
+							task.setClasses(sourceSet.getOutput().getClassesDirs());
+							task.setDescription("Checks the classes of the " + sourceSet.getName()
+									+ " source set for package tangles.");
+							task.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
+						});
 			packageTangleChecks.add(checkPackageTangles);
 		}
 		if (!packageTangleChecks.isEmpty()) {

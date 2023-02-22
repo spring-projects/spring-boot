@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class DataSourceUnwrapperNoSpringJdbcTests {
 		DataSource dataSource = new HikariDataSource();
 		DataSource actual = wrapInProxy(wrapInProxy(dataSource));
 		assertThat(DataSourceUnwrapper.unwrap(actual, HikariConfigMXBean.class, HikariDataSource.class))
-				.isSameAs(dataSource);
+			.isSameAs(dataSource);
 	}
 
 	@Test
@@ -50,7 +50,7 @@ class DataSourceUnwrapperNoSpringJdbcTests {
 		org.apache.tomcat.jdbc.pool.DataSource dataSource = new org.apache.tomcat.jdbc.pool.DataSource();
 		DataSource actual = wrapInProxy(wrapInProxy(dataSource));
 		assertThat(DataSourceUnwrapper.unwrap(actual, PoolConfiguration.class, DataSourceProxy.class))
-				.isSameAs(dataSource);
+			.isSameAs(dataSource);
 	}
 
 	private DataSource wrapInProxy(DataSource dataSource) {

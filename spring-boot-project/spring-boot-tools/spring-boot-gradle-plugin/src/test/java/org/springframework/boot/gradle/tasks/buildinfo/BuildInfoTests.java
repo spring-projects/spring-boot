@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -192,14 +192,15 @@ class BuildInfoTests {
 		BuildInfo task = createTask(createProject("test"));
 		task.getProperties().getAdditional().put("a", null);
 		assertThatThrownBy(() -> buildInfoProperties(task))
-				.hasMessage("Additional property 'a' is illegal as its value is null");
+			.hasMessage("Additional property 'a' is illegal as its value is null");
 	}
 
 	private Project createProject(String projectName) {
 		File projectDir = new File(this.temp, projectName);
 		Project project = GradleProjectBuilder.builder().withProjectDir(projectDir).withName(projectName).build();
-		((ProjectInternal) project).getServices().get(GradlePropertiesController.class)
-				.loadGradlePropertiesFrom(projectDir);
+		((ProjectInternal) project).getServices()
+			.get(GradlePropertiesController.class)
+			.loadGradlePropertiesFrom(projectDir);
 		return project;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,9 +45,18 @@ class SampleHazelcast4ApplicationTests {
 
 	@Test
 	void healthEndpointHasHazelcastContributor() {
-		this.webClient.get().uri("/actuator/health/hazelcast").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("status").isEqualTo("UP").jsonPath("details.name").isNotEmpty().jsonPath("details.uuid")
-				.isNotEmpty();
+		this.webClient.get()
+			.uri("/actuator/health/hazelcast")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("status")
+			.isEqualTo("UP")
+			.jsonPath("details.name")
+			.isNotEmpty()
+			.jsonPath("details.uuid")
+			.isNotEmpty();
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,7 +123,7 @@ class TestTarGzip {
 			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/");
 			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/");
 			assertThat(tar.getNextEntry().getName())
-					.isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/buildpack.toml");
+				.isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/buildpack.toml");
 			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/bin/");
 			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/bin/detect");
 			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/bin/build");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,8 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 
 	private void addJsonBean(Object bean) {
 		MergedAnnotation<JsonComponent> annotation = MergedAnnotations
-				.from(bean.getClass(), SearchStrategy.TYPE_HIERARCHY).get(JsonComponent.class);
+			.from(bean.getClass(), SearchStrategy.TYPE_HIERARCHY)
+			.get(JsonComponent.class);
 		Class<?>[] types = annotation.getClassArray("type");
 		Scope scope = annotation.getEnum("scope", JsonComponent.Scope.class);
 		addJsonBean(bean, types, scope);
@@ -117,7 +118,7 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	@SuppressWarnings("unchecked")
 	private <T> void addJsonSerializerBean(JsonSerializer<T> serializer, JsonComponent.Scope scope, Class<?>[] types) {
 		Class<T> baseType = (Class<T>) ResolvableType.forClass(JsonSerializer.class, serializer.getClass())
-				.resolveGeneric();
+			.resolveGeneric();
 		addBeanToModule(serializer, baseType, types,
 				(scope == Scope.VALUES) ? this::addSerializer : this::addKeySerializer);
 
@@ -126,7 +127,7 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	@SuppressWarnings("unchecked")
 	private <T> void addJsonDeserializerBean(JsonDeserializer<T> deserializer, Class<?>[] types) {
 		Class<T> baseType = (Class<T>) ResolvableType.forClass(JsonDeserializer.class, deserializer.getClass())
-				.resolveGeneric();
+			.resolveGeneric();
 		addBeanToModule(deserializer, baseType, types, this::addDeserializer);
 	}
 

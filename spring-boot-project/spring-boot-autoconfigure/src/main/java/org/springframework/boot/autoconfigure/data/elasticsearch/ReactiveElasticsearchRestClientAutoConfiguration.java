@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,11 +68,11 @@ public class ReactiveElasticsearchRestClientAutoConfiguration {
 	@ConditionalOnMissingBean
 	public ClientConfiguration clientConfiguration() {
 		ClientConfiguration.MaybeSecureClientConfigurationBuilder builder = ClientConfiguration.builder()
-				.connectedTo(this.properties.getEndpoints().toArray(new String[0]));
+			.connectedTo(this.properties.getEndpoints().toArray(new String[0]));
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(this.properties.isUseSsl()).whenTrue().toCall(builder::usingSsl);
 		map.from(this.properties.getCredentials())
-				.to((credentials) -> builder.withBasicAuth(credentials.getUsername(), credentials.getPassword()));
+			.to((credentials) -> builder.withBasicAuth(credentials.getUsername(), credentials.getPassword()));
 		map.from(this.properties.getConnectionTimeout()).to(builder::withConnectTimeout);
 		map.from(this.properties.getSocketTimeout()).to(builder::withSocketTimeout);
 		map.from(this.properties.getPathPrefix()).to(builder::withPathPrefix);
@@ -85,7 +85,8 @@ public class ReactiveElasticsearchRestClientAutoConfiguration {
 		map.from(this.properties.getMaxInMemorySize()).asInt(DataSize::toBytes).to((maxInMemorySize) -> {
 			builder.withClientConfigurer(WebClientConfigurationCallback.from((webClient) -> {
 				ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
-						.codecs((configurer) -> configurer.defaultCodecs().maxInMemorySize(maxInMemorySize)).build();
+					.codecs((configurer) -> configurer.defaultCodecs().maxInMemorySize(maxInMemorySize))
+					.build();
 				return webClient.mutate().exchangeStrategies(exchangeStrategies).build();
 			}));
 		});
@@ -113,8 +114,11 @@ public class ReactiveElasticsearchRestClientAutoConfiguration {
 			this.properties = properties;
 			this.restClientProperties = restClientProperties;
 			this.deprecatedProperties = deprecatedreactiveProperties;
-			this.uris = properties.getUris().stream().map((s) -> s.startsWith("http") ? s : "http://" + s)
-					.map(URI::create).collect(Collectors.toList());
+			this.uris = properties.getUris()
+				.stream()
+				.map((s) -> s.startsWith("http") ? s : "http://" + s)
+				.map(URI::create)
+				.collect(Collectors.toList());
 		}
 
 		private List<String> getEndpoints() {

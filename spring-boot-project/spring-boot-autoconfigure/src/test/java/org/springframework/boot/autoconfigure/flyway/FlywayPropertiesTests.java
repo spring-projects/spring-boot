@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ class FlywayPropertiesTests {
 		Configuration configuration = new FluentConfiguration();
 		assertThat(configuration.isFailOnMissingLocations()).isEqualTo(properties.isFailOnMissingLocations());
 		assertThat(properties.getLocations().stream().map(Location::new).toArray(Location[]::new))
-				.isEqualTo(configuration.getLocations());
+			.isEqualTo(configuration.getLocations());
 		assertThat(properties.getEncoding()).isEqualTo(configuration.getEncoding());
 		assertThat(properties.getConnectRetries()).isEqualTo(configuration.getConnectRetries());
 		// Can't assert connect retries interval as it is new in Flyway 7.15
@@ -66,7 +66,7 @@ class FlywayPropertiesTests {
 		assertThat(properties.getTable()).isEqualTo(configuration.getTable());
 		assertThat(properties.getBaselineDescription()).isEqualTo(configuration.getBaselineDescription());
 		assertThat(MigrationVersion.fromVersion(properties.getBaselineVersion()))
-				.isEqualTo(configuration.getBaselineVersion());
+			.isEqualTo(configuration.getBaselineVersion());
 		assertThat(properties.getInstalledBy()).isEqualTo(configuration.getInstalledBy());
 		assertThat(properties.getPlaceholders()).isEqualTo(configuration.getPlaceholders());
 		assertThat(properties.getPlaceholderPrefix()).isEqualToIgnoringWhitespace(configuration.getPlaceholderPrefix());
@@ -74,10 +74,10 @@ class FlywayPropertiesTests {
 		assertThat(properties.isPlaceholderReplacement()).isEqualTo(configuration.isPlaceholderReplacement());
 		assertThat(properties.getSqlMigrationPrefix()).isEqualTo(configuration.getSqlMigrationPrefix());
 		assertThat(properties.getSqlMigrationSuffixes())
-				.isEqualTo(Arrays.asList(configuration.getSqlMigrationSuffixes()));
+			.isEqualTo(Arrays.asList(configuration.getSqlMigrationSuffixes()));
 		assertThat(properties.getSqlMigrationSeparator()).isEqualTo(properties.getSqlMigrationSeparator());
 		assertThat(properties.getRepeatableSqlMigrationPrefix())
-				.isEqualTo(properties.getRepeatableSqlMigrationPrefix());
+			.isEqualTo(properties.getRepeatableSqlMigrationPrefix());
 		assertThat(properties.getTarget()).isNull();
 		assertThat(configuration.getTarget()).isNull();
 		assertThat(configuration.getInitSql()).isNull();
@@ -140,7 +140,7 @@ class FlywayPropertiesTests {
 	private void ignoreProperties(Map<String, ?> index, String... propertyNames) {
 		for (String propertyName : propertyNames) {
 			assertThat(index.remove(propertyName)).describedAs("Property to ignore should be present " + propertyName)
-					.isNotNull();
+				.isNotNull();
 		}
 	}
 

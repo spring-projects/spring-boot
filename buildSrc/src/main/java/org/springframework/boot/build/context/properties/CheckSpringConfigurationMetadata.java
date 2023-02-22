@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -154,8 +154,9 @@ public class CheckSpringConfigurationMetadata extends DefaultTask {
 			else {
 				lines.add("The following properties have no description:");
 				lines.add("");
-				lines.addAll(this.propertiesWithNoDescription.stream().map((line) -> "\t" + line)
-						.collect(Collectors.toList()));
+				lines.addAll(this.propertiesWithNoDescription.stream()
+					.map((line) -> "\t" + line)
+					.collect(Collectors.toList()));
 			}
 			lines.add("");
 			return lines.iterator();

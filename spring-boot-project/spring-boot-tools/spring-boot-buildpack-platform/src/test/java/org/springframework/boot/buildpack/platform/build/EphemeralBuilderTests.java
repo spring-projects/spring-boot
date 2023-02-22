@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -144,7 +144,7 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 				this.creator, this.env, this.buildpacks);
 		ImageConfig config = builder.getArchive().getImageConfig();
 		assertThat(config.getLabels())
-				.contains(entry(EphemeralBuilder.BUILDER_FOR_LABEL_NAME, this.targetImage.toString()));
+			.contains(entry(EphemeralBuilder.BUILDER_FOR_LABEL_NAME, this.targetImage.toString()));
 	}
 
 	@Test
@@ -164,7 +164,7 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 				"/cnb/buildpacks/example_buildpack3/0.0.3/buildpack.toml");
 		File orderDirectory = unpack(getLayer(builder.getArchive(), EXISTING_IMAGE_LAYER_COUNT + 3), "order");
 		assertThat(new File(orderDirectory, "cnb/order.toml")).usingCharset(StandardCharsets.UTF_8)
-				.hasContent(content("order.toml"));
+			.hasContent(content("order.toml"));
 	}
 
 	private void assertBuildpackLayerContent(EphemeralBuilder builder, int index, String s) throws Exception {

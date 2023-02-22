@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,10 +87,10 @@ abstract class AbstractFilterRegistrationBeanTests {
 		expectedInitParameters.put("a", "b");
 		expectedInitParameters.put("c", "d");
 		then(this.registration).should().setInitParameters(expectedInitParameters);
-		then(this.registration).should().addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/a", "/b",
-				"/c");
-		then(this.registration).should().addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST), true, "s4", "s5",
-				"s1", "s2", "s3");
+		then(this.registration).should()
+			.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), true, "/a", "/b", "/c");
+		then(this.registration).should()
+			.addMappingForServletNames(EnumSet.of(DispatcherType.REQUEST), true, "s4", "s5", "s1", "s2", "s3");
 	}
 
 	@Test
@@ -120,15 +120,15 @@ abstract class AbstractFilterRegistrationBeanTests {
 	void setServletRegistrationBeanMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.setServletRegistrationBeans(null))
-				.withMessageContaining("ServletRegistrationBeans must not be null");
+			.withMessageContaining("ServletRegistrationBeans must not be null");
 	}
 
 	@Test
 	void addServletRegistrationBeanMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> bean.addServletRegistrationBeans((ServletRegistrationBean[]) null))
-				.withMessageContaining("ServletRegistrationBeans must not be null");
+			.isThrownBy(() -> bean.addServletRegistrationBeans((ServletRegistrationBean[]) null))
+			.withMessageContaining("ServletRegistrationBeans must not be null");
 	}
 
 	@Test
@@ -155,28 +155,28 @@ abstract class AbstractFilterRegistrationBeanTests {
 	void setUrlPatternMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.setUrlPatterns(null))
-				.withMessageContaining("UrlPatterns must not be null");
+			.withMessageContaining("UrlPatterns must not be null");
 	}
 
 	@Test
 	void addUrlPatternMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.addUrlPatterns((String[]) null))
-				.withMessageContaining("UrlPatterns must not be null");
+			.withMessageContaining("UrlPatterns must not be null");
 	}
 
 	@Test
 	void setServletNameMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.setServletNames(null))
-				.withMessageContaining("ServletNames must not be null");
+			.withMessageContaining("ServletNames must not be null");
 	}
 
 	@Test
 	void addServletNameMustNotBeNull() {
 		AbstractFilterRegistrationBean<?> bean = createFilterRegistrationBean();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.addServletNames((String[]) null))
-				.withMessageContaining("ServletNames must not be null");
+			.withMessageContaining("ServletNames must not be null");
 	}
 
 	@Test
@@ -186,7 +186,7 @@ abstract class AbstractFilterRegistrationBeanTests {
 		bean.setDispatcherTypes(DispatcherType.INCLUDE, DispatcherType.FORWARD);
 		bean.onStartup(this.servletContext);
 		then(this.registration).should()
-				.addMappingForUrlPatterns(EnumSet.of(DispatcherType.INCLUDE, DispatcherType.FORWARD), false, "/*");
+			.addMappingForUrlPatterns(EnumSet.of(DispatcherType.INCLUDE, DispatcherType.FORWARD), false, "/*");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ class Jetty10WebSocketServletWebServerCustomizer
 			private void ensureWebSocketComponents(Server server, ServletContext servletContext)
 					throws ClassNotFoundException {
 				Class<?> webSocketServerComponents = ClassUtils
-						.forName("org.eclipse.jetty.websocket.core.server.WebSocketServerComponents", null);
+					.forName("org.eclipse.jetty.websocket.core.server.WebSocketServerComponents", null);
 				Method ensureWebSocketComponents = ReflectionUtils.findMethod(webSocketServerComponents,
 						"ensureWebSocketComponents", Server.class, ServletContext.class);
 				ReflectionUtils.invokeMethod(ensureWebSocketComponents, null, server, servletContext);
@@ -84,7 +84,7 @@ class Jetty10WebSocketServletWebServerCustomizer
 
 			private void ensureUpgradeFilter(ServletContext servletContext) throws ClassNotFoundException {
 				Class<?> webSocketUpgradeFilter = ClassUtils
-						.forName("org.eclipse.jetty.websocket.servlet.WebSocketUpgradeFilter", null);
+					.forName("org.eclipse.jetty.websocket.servlet.WebSocketUpgradeFilter", null);
 				Method ensureFilter = ReflectionUtils.findMethod(webSocketUpgradeFilter, "ensureFilter",
 						ServletContext.class);
 				ReflectionUtils.invokeMethod(ensureFilter, null, servletContext);
@@ -92,7 +92,7 @@ class Jetty10WebSocketServletWebServerCustomizer
 
 			private void ensureMappings(ServletContext servletContext) throws ClassNotFoundException {
 				Class<?> webSocketMappings = ClassUtils
-						.forName("org.eclipse.jetty.websocket.core.server.WebSocketMappings", null);
+					.forName("org.eclipse.jetty.websocket.core.server.WebSocketMappings", null);
 				Method ensureMappings = ReflectionUtils.findMethod(webSocketMappings, "ensureMappings",
 						ServletContext.class);
 				ReflectionUtils.invokeMethod(ensureMappings, null, servletContext);

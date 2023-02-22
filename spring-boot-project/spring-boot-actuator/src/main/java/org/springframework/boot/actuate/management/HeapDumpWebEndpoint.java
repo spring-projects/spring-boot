@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,9 +165,9 @@ public class HeapDumpWebEndpoint {
 		protected HotSpotDiagnosticMXBeanHeapDumper() {
 			try {
 				Class<?> diagnosticMXBeanClass = ClassUtils
-						.resolveClassName("com.sun.management.HotSpotDiagnosticMXBean", null);
+					.resolveClassName("com.sun.management.HotSpotDiagnosticMXBean", null);
 				this.diagnosticMXBean = ManagementFactory
-						.getPlatformMXBean((Class<PlatformManagedObject>) diagnosticMXBeanClass);
+					.getPlatformMXBean((Class<PlatformManagedObject>) diagnosticMXBeanClass);
 				this.dumpHeapMethod = ReflectionUtils.findMethod(diagnosticMXBeanClass, "dumpHeap", String.class,
 						Boolean.TYPE);
 			}
@@ -284,7 +284,7 @@ public class HeapDumpWebEndpoint {
 			}
 			catch (IOException ex) {
 				TemporaryFileSystemResource.this.logger
-						.warn("Failed to delete temporary heap dump file '" + getFile() + "'", ex);
+					.warn("Failed to delete temporary heap dump file '" + getFile() + "'", ex);
 			}
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,7 +127,7 @@ class SanitizerTests {
 	void uriWithSingleValueWithPasswordShouldBeSanitized(String key) {
 		Sanitizer sanitizer = new Sanitizer();
 		assertThat(sanitizer.sanitize(key, "http://user:password@localhost:8080"))
-				.isEqualTo("http://user:******@localhost:8080");
+			.isEqualTo("http://user:******@localhost:8080");
 	}
 
 	@ParameterizedTest(name = "key = {0}")
@@ -135,7 +135,7 @@ class SanitizerTests {
 	void uriWithNonAlphaSchemeCharactersAndSingleValueWithPasswordShouldBeSanitized(String key) {
 		Sanitizer sanitizer = new Sanitizer();
 		assertThat(sanitizer.sanitize(key, "s-ch3m.+-e://user:password@localhost:8080"))
-				.isEqualTo("s-ch3m.+-e://user:******@localhost:8080");
+			.isEqualTo("s-ch3m.+-e://user:******@localhost:8080");
 	}
 
 	@ParameterizedTest(name = "key = {0}")
@@ -151,7 +151,7 @@ class SanitizerTests {
 	void uriWithSingleValueWithPasswordMatchingOtherPartsOfStringShouldBeSanitized(String key) {
 		Sanitizer sanitizer = new Sanitizer();
 		assertThat(sanitizer.sanitize(key, "http://user://@localhost:8080"))
-				.isEqualTo("http://user:******@localhost:8080");
+			.isEqualTo("http://user:******@localhost:8080");
 	}
 
 	@ParameterizedTest(name = "key = {0}")
@@ -160,7 +160,7 @@ class SanitizerTests {
 		Sanitizer sanitizer = new Sanitizer();
 		assertThat(
 				sanitizer.sanitize(key, "http://user1:password1@localhost:8080,http://user2:password2@localhost:8082"))
-						.isEqualTo("http://user1:******@localhost:8080,http://user2:******@localhost:8082");
+			.isEqualTo("http://user1:******@localhost:8080,http://user2:******@localhost:8082");
 	}
 
 	@ParameterizedTest(name = "key = {0}")
@@ -168,7 +168,7 @@ class SanitizerTests {
 	void uriWithMultipleValuesNoneWithPasswordShouldHaveNoneSanitized(String key) {
 		Sanitizer sanitizer = new Sanitizer();
 		assertThat(sanitizer.sanitize(key, "http://user@localhost:8080,http://localhost:8082"))
-				.isEqualTo("http://user@localhost:8080,http://localhost:8082");
+			.isEqualTo("http://user@localhost:8080,http://localhost:8082");
 	}
 
 	@ParameterizedTest(name = "key = {0}")
@@ -176,8 +176,8 @@ class SanitizerTests {
 	void uriWithMultipleValuesSomeWithPasswordShouldHaveThoseSanitized(String key) {
 		Sanitizer sanitizer = new Sanitizer();
 		assertThat(sanitizer.sanitize(key,
-				"http://user1:password1@localhost:8080,http://user2@localhost:8082,http://localhost:8083")).isEqualTo(
-						"http://user1:******@localhost:8080,http://user2@localhost:8082,http://localhost:8083");
+				"http://user1:password1@localhost:8080,http://user2@localhost:8082,http://localhost:8083"))
+			.isEqualTo("http://user1:******@localhost:8080,http://user2@localhost:8082,http://localhost:8083");
 	}
 
 	@ParameterizedTest(name = "key = {0}")
@@ -185,7 +185,7 @@ class SanitizerTests {
 	void uriWithMultipleValuesWithPasswordMatchingOtherPartsOfStringShouldBeSanitized(String key) {
 		Sanitizer sanitizer = new Sanitizer();
 		assertThat(sanitizer.sanitize(key, "http://user1://@localhost:8080,http://user2://@localhost:8082"))
-				.isEqualTo("http://user1:******@localhost:8080,http://user2:******@localhost:8082");
+			.isEqualTo("http://user1:******@localhost:8080,http://user2:******@localhost:8082");
 	}
 
 	@ParameterizedTest(name = "key = {0}")
@@ -193,15 +193,15 @@ class SanitizerTests {
 	void uriKeyWithUserProvidedListLiteralShouldBeSanitized(String key) {
 		Sanitizer sanitizer = new Sanitizer();
 		assertThat(sanitizer.sanitize(key, "[amqp://username:password@host/]"))
-				.isEqualTo("[amqp://username:******@host/]");
+			.isEqualTo("[amqp://username:******@host/]");
 		assertThat(sanitizer.sanitize(key,
-				"[http://user1:password1@localhost:8080,http://user2@localhost:8082,http://localhost:8083]")).isEqualTo(
-						"[http://user1:******@localhost:8080,http://user2@localhost:8082,http://localhost:8083]");
+				"[http://user1:password1@localhost:8080,http://user2@localhost:8082,http://localhost:8083]"))
+			.isEqualTo("[http://user1:******@localhost:8080,http://user2@localhost:8082,http://localhost:8083]");
 		assertThat(sanitizer.sanitize(key,
 				"[http://user1:password1@localhost:8080,http://user2:password2@localhost:8082]"))
-						.isEqualTo("[http://user1:******@localhost:8080,http://user2:******@localhost:8082]");
+			.isEqualTo("[http://user1:******@localhost:8080,http://user2:******@localhost:8082]");
 		assertThat(sanitizer.sanitize(key, "[http://user1@localhost:8080,http://user2@localhost:8082]"))
-				.isEqualTo("[http://user1@localhost:8080,http://user2@localhost:8082]");
+			.isEqualTo("[http://user1@localhost:8080,http://user2@localhost:8082]");
 	}
 
 	private static Stream<String> matchingUriUserInfoKeys() {

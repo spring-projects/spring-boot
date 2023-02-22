@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,11 +84,12 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 	private List<FailureAnalyzer> handleAwareAnalyzers(List<FailureAnalyzer> analyzers,
 			ConfigurableApplicationContext context) {
 		List<FailureAnalyzer> awareAnalyzers = analyzers.stream()
-				.filter((analyzer) -> analyzer instanceof BeanFactoryAware || analyzer instanceof EnvironmentAware)
-				.collect(Collectors.toList());
+			.filter((analyzer) -> analyzer instanceof BeanFactoryAware || analyzer instanceof EnvironmentAware)
+			.collect(Collectors.toList());
 		if (!awareAnalyzers.isEmpty()) {
 			String awareAnalyzerNames = StringUtils.collectionToCommaDelimitedString(awareAnalyzers.stream()
-					.map((analyzer) -> analyzer.getClass().getName()).collect(Collectors.toList()));
+				.map((analyzer) -> analyzer.getClass().getName())
+				.collect(Collectors.toList()));
 			logger.warn(LogMessage.format(
 					"FailureAnalyzers [%s] implement BeanFactoryAware or EnvironmentAware. "
 							+ "Support for these interfaces on FailureAnalyzers is deprecated, "
@@ -97,8 +98,9 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 					awareAnalyzerNames));
 			if (context == null) {
 				logger.trace(LogMessage.format("Skipping [%s] due to missing context", awareAnalyzerNames));
-				return analyzers.stream().filter((analyzer) -> !awareAnalyzers.contains(analyzer))
-						.collect(Collectors.toList());
+				return analyzers.stream()
+					.filter((analyzer) -> !awareAnalyzers.contains(analyzer))
+					.collect(Collectors.toList());
 			}
 			awareAnalyzers.forEach((analyzer) -> {
 				if (analyzer instanceof BeanFactoryAware) {

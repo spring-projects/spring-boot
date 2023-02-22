@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,8 +76,8 @@ class SpringApplicationLauncherTests {
 		assertThat(args == TestSpringApplication.args).isTrue();
 
 		Map<String, String> defaultProperties = TestSpringApplication.defaultProperties;
-		assertThat(defaultProperties).hasSize(1).containsEntry("spring.groovy.template.check-template-location",
-				"false");
+		assertThat(defaultProperties).hasSize(1)
+			.containsEntry("spring.groovy.template.check-template-location", "false");
 	}
 
 	private Set<String> launch() {

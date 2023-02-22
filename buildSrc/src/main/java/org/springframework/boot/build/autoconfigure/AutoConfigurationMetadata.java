@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,18 +61,19 @@ public class AutoConfigurationMetadata extends DefaultTask {
 
 	public AutoConfigurationMetadata() {
 		getInputs()
-				.file((Callable<File>) () -> new File(this.sourceSet.getOutput().getResourcesDir(),
-						"META-INF/spring.factories"))
-				.withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("spring.factories");
+			.file((Callable<File>) () -> new File(this.sourceSet.getOutput().getResourcesDir(),
+					"META-INF/spring.factories"))
+			.withPathSensitivity(PathSensitivity.RELATIVE)
+			.withPropertyName("spring.factories");
 		getInputs()
-				.file((Callable<File>) () -> new File(this.sourceSet.getOutput().getResourcesDir(),
-						"META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports"))
-				.withPathSensitivity(PathSensitivity.RELATIVE)
-				.withPropertyName("org.springframework.boot.autoconfigure.AutoConfiguration");
+			.file((Callable<File>) () -> new File(this.sourceSet.getOutput().getResourcesDir(),
+					"META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports"))
+			.withPathSensitivity(PathSensitivity.RELATIVE)
+			.withPropertyName("org.springframework.boot.autoconfigure.AutoConfiguration");
 
 		dependsOn((Callable<String>) () -> this.sourceSet.getProcessResourcesTaskName());
 		getProject().getConfigurations()
-				.maybeCreate(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME);
+			.maybeCreate(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME);
 	}
 
 	public void setSourceSet(SourceSet sourceSet) {
@@ -131,7 +132,7 @@ public class AutoConfigurationMetadata extends DefaultTask {
 		}
 		Properties springFactories = readSpringFactories(file);
 		String enableAutoConfiguration = springFactories
-				.getProperty("org.springframework.boot.autoconfigure.EnableAutoConfiguration");
+			.getProperty("org.springframework.boot.autoconfigure.EnableAutoConfiguration");
 		return StringUtils.commaDelimitedListToSet(enableAutoConfiguration);
 	}
 

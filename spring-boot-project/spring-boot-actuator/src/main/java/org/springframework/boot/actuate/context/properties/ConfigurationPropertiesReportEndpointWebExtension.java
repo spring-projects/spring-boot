@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,9 +42,11 @@ public class ConfigurationPropertiesReportEndpointWebExtension {
 	public WebEndpointResponse<ApplicationConfigurationProperties> configurationPropertiesWithPrefix(
 			@Selector String prefix) {
 		ApplicationConfigurationProperties configurationProperties = this.delegate
-				.configurationPropertiesWithPrefix(prefix);
-		boolean foundMatchingBeans = configurationProperties.getContexts().values().stream()
-				.anyMatch((context) -> !context.getBeans().isEmpty());
+			.configurationPropertiesWithPrefix(prefix);
+		boolean foundMatchingBeans = configurationProperties.getContexts()
+			.values()
+			.stream()
+			.anyMatch((context) -> !context.getBeans().isEmpty());
 		return (foundMatchingBeans) ? new WebEndpointResponse<>(configurationProperties, WebEndpointResponse.STATUS_OK)
 				: new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
 	}

@@ -135,7 +135,7 @@ public class TestRestTemplate {
 			ClientHttpRequestFactory requestFactory = builder.buildRequestFactory();
 			if (requestFactory instanceof HttpComponentsClientHttpRequestFactory) {
 				builder = builder
-						.requestFactory(() -> new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
+					.requestFactory(() -> new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
 			}
 		}
 		if (username != null || password != null) {
@@ -952,12 +952,12 @@ public class TestRestTemplate {
 		if (entity instanceof UriTemplateRequestEntity) {
 			UriTemplateRequestEntity<?> templatedUriEntity = (UriTemplateRequestEntity<?>) entity;
 			if (templatedUriEntity.getVars() != null) {
-				return this.restTemplate.getUriTemplateHandler().expand(templatedUriEntity.getUriTemplate(),
-						templatedUriEntity.getVars());
+				return this.restTemplate.getUriTemplateHandler()
+					.expand(templatedUriEntity.getUriTemplate(), templatedUriEntity.getVars());
 			}
 			else if (templatedUriEntity.getVarsMap() != null) {
-				return this.restTemplate.getUriTemplateHandler().expand(templatedUriEntity.getUriTemplate(),
-						templatedUriEntity.getVarsMap());
+				return this.restTemplate.getUriTemplateHandler()
+					.expand(templatedUriEntity.getUriTemplate(), templatedUriEntity.getVarsMap());
 			}
 			throw new IllegalStateException(
 					"No variables specified for URI template: " + templatedUriEntity.getUriTemplate());
@@ -1025,8 +1025,10 @@ public class TestRestTemplate {
 		}
 
 		protected RequestConfig getRequestConfig() {
-			Builder builder = RequestConfig.custom().setCookieSpec(this.cookieSpec).setAuthenticationEnabled(false)
-					.setRedirectsEnabled(this.enableRedirects);
+			Builder builder = RequestConfig.custom()
+				.setCookieSpec(this.cookieSpec)
+				.setAuthenticationEnabled(false)
+				.setRedirectsEnabled(this.enableRedirects);
 			return builder.build();
 		}
 

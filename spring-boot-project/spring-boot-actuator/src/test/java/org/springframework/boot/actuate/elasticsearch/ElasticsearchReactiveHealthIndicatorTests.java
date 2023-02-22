@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ class ElasticsearchReactiveHealthIndicatorTests {
 		this.server = new MockWebServer();
 		this.server.start();
 		ReactiveElasticsearchClient client = DefaultReactiveElasticsearchClient
-				.create(ClientConfiguration.create(this.server.getHostName() + ":" + this.server.getPort()));
+			.create(ClientConfiguration.create(this.server.getHostName() + ":" + this.server.getPort()));
 		this.healthIndicator = new ElasticsearchReactiveHealthIndicator(client);
 	}
 
@@ -84,7 +84,7 @@ class ElasticsearchReactiveHealthIndicatorTests {
 		Health health = this.healthIndicator.health().block();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails().get("error")).asString()
-				.contains("org.springframework.data.elasticsearch.client.NoReachableHostException");
+			.contains("org.springframework.data.elasticsearch.client.NoReachableHostException");
 	}
 
 	@Test
@@ -121,8 +121,8 @@ class ElasticsearchReactiveHealthIndicatorTests {
 		// to "/"
 		this.server.enqueue(new MockResponse());
 		MockResponse mockResponse = new MockResponse().setResponseCode(HttpStatus.valueOf(responseCode).value())
-				.setBody(createJsonResult(responseCode, status))
-				.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+			.setBody(createJsonResult(responseCode, status))
+			.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		this.server.enqueue(mockResponse);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,8 +136,13 @@ public class ResolveMainClassName extends DefaultTask {
 		if (configuredMainClass != null) {
 			return configuredMainClass;
 		}
-		return getClasspath().filter(File::isDirectory).getFiles().stream().map(this::findMainClass)
-				.filter(Objects::nonNull).findFirst().orElse("");
+		return getClasspath().filter(File::isDirectory)
+			.getFiles()
+			.stream()
+			.map(this::findMainClass)
+			.filter(Objects::nonNull)
+			.findFirst()
+			.orElse("");
 	}
 
 	private String findMainClass(File file) {
@@ -156,23 +161,23 @@ public class ResolveMainClassName extends DefaultTask {
 	static TaskProvider<ResolveMainClassName> registerForTask(String taskName, Project project,
 			Callable<FileCollection> classpath) {
 		TaskProvider<ResolveMainClassName> resolveMainClassNameProvider = project.getTasks()
-				.register(taskName + "MainClassName", ResolveMainClassName.class, (resolveMainClassName) -> {
-					resolveMainClassName.setDescription(
-							"Resolves the name of the application's main class for the " + taskName + " task.");
-					resolveMainClassName.setGroup(BasePlugin.BUILD_GROUP);
-					resolveMainClassName.setClasspath(classpath);
-					resolveMainClassName.getConfiguredMainClassName().convention(project.provider(() -> {
-						String javaApplicationMainClass = getJavaApplicationMainClass(project);
-						if (javaApplicationMainClass != null) {
-							return javaApplicationMainClass;
-						}
-						SpringBootExtension springBootExtension = project.getExtensions()
-								.findByType(SpringBootExtension.class);
-						return springBootExtension.getMainClass().getOrNull();
-					}));
-					resolveMainClassName.getOutputFile()
-							.set(project.getLayout().getBuildDirectory().file(taskName + "MainClassName"));
-				});
+			.register(taskName + "MainClassName", ResolveMainClassName.class, (resolveMainClassName) -> {
+				resolveMainClassName
+					.setDescription("Resolves the name of the application's main class for the " + taskName + " task.");
+				resolveMainClassName.setGroup(BasePlugin.BUILD_GROUP);
+				resolveMainClassName.setClasspath(classpath);
+				resolveMainClassName.getConfiguredMainClassName().convention(project.provider(() -> {
+					String javaApplicationMainClass = getJavaApplicationMainClass(project);
+					if (javaApplicationMainClass != null) {
+						return javaApplicationMainClass;
+					}
+					SpringBootExtension springBootExtension = project.getExtensions()
+						.findByType(SpringBootExtension.class);
+					return springBootExtension.getMainClass().getOrNull();
+				}));
+				resolveMainClassName.getOutputFile()
+					.set(project.getLayout().getBuildDirectory().file(taskName + "MainClassName"));
+			});
 		return resolveMainClassNameProvider;
 	}
 

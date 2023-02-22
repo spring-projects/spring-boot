@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -142,7 +142,7 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 		try {
 			KeyStore store = getTrustStore(ssl, sslStoreProvider);
 			TrustManagerFactory trustManagerFactory = TrustManagerFactory
-					.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+				.getInstance(TrustManagerFactory.getDefaultAlgorithm());
 			trustManagerFactory.init(store);
 			return trustManagerFactory;
 		}
@@ -240,8 +240,11 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 
 		@Override
 		protected KeyManager[] engineGetKeyManagers() {
-			return Arrays.stream(this.delegate.getKeyManagers()).filter(X509ExtendedKeyManager.class::isInstance)
-					.map(X509ExtendedKeyManager.class::cast).map(this::wrap).toArray(KeyManager[]::new);
+			return Arrays.stream(this.delegate.getKeyManagers())
+				.filter(X509ExtendedKeyManager.class::isInstance)
+				.map(X509ExtendedKeyManager.class::cast)
+				.map(this::wrap)
+				.toArray(KeyManager[]::new);
 		}
 
 		private ConfigurableAliasKeyManager wrap(X509ExtendedKeyManager keyManager) {

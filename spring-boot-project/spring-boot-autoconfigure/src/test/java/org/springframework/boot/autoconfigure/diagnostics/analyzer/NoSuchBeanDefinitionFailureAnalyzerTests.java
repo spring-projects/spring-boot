@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringHandler.class));
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
 		assertThat(analysis.getDescription())
-				.doesNotContain("No matching auto-configuration has been found for this type.");
+			.doesNotContain("No matching auto-configuration has been found for this type.");
 		assertThat(analysis.getAction()).startsWith(
 				String.format("Consider defining a bean of type '%s' in your configuration.", String.class.getName()));
 	}
@@ -129,18 +129,18 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 	void failureAnalysisForNoMatchName() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringNameHandler.class));
 		assertThat(analysis.getDescription())
-				.startsWith(String.format("Constructor in %s required a bean named '%s' that could not be found",
-						StringNameHandler.class.getName(), "test-string"));
+			.startsWith(String.format("Constructor in %s required a bean named '%s' that could not be found",
+					StringNameHandler.class.getName(), "test-string"));
 		assertThat(analysis.getAction())
-				.startsWith(String.format("Consider defining a bean named '%s' in your configuration.", "test-string"));
+			.startsWith(String.format("Consider defining a bean named '%s' in your configuration.", "test-string"));
 	}
 
 	@Test
 	void failureAnalysisForMissingBeanName() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringMissingBeanNameConfiguration.class));
 		assertThat(analysis.getDescription())
-				.startsWith(String.format("Constructor in %s required a bean named '%s' that could not be found",
-						StringNameHandler.class.getName(), "test-string"));
+			.startsWith(String.format("Constructor in %s required a bean named '%s' that could not be found",
+					StringNameHandler.class.getName(), "test-string"));
 		assertBeanMethodDisabled(analysis,
 				"@ConditionalOnBean (types: java.lang.Integer; SearchStrategy: all) did not find any beans",
 				TestMissingBeanAutoConfiguration.class, "string");
@@ -174,8 +174,8 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 				createFailure(ConstructorBoundConfigurationPropertiesConfiguration.class));
 		assertThat(analysis.getAction()).startsWith(
 				String.format("Consider defining a bean of type '%s' in your configuration.", String.class.getName()));
-		assertThat(analysis.getAction()).contains(
-				"Consider adding @ConstructorBinding to " + NeedsConstructorBindingProperties.class.getName());
+		assertThat(analysis.getAction())
+			.contains("Consider adding @ConstructorBinding to " + NeedsConstructorBindingProperties.class.getName());
 	}
 
 	private void assertDescriptionConstructorMissingType(FailureAnalysis analysis, Class<?> component, int index,

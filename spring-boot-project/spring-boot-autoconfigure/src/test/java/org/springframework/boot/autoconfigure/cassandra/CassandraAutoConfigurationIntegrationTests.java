@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,19 +46,19 @@ class CassandraAutoConfigurationIntegrationTests {
 	static final CassandraContainer cassandra = new CassandraContainer();
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class)).withPropertyValues(
-					"spring.data.cassandra.contact-points:" + cassandra.getHost() + ":"
-							+ cassandra.getFirstMappedPort(),
-					"spring.data.cassandra.local-datacenter=datacenter1",
-					"spring.data.cassandra.connection.connect-timeout=60s",
-					"spring.data.cassandra.connection.init-query-timeout=60s",
-					"spring.data.cassandra.request.timeout=60s");
+		.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class))
+		.withPropertyValues(
+				"spring.data.cassandra.contact-points:" + cassandra.getHost() + ":" + cassandra.getFirstMappedPort(),
+				"spring.data.cassandra.local-datacenter=datacenter1",
+				"spring.data.cassandra.connection.connect-timeout=60s",
+				"spring.data.cassandra.connection.init-query-timeout=60s", "spring.data.cassandra.request.timeout=60s");
 
 	@Test
 	void whenTheContextIsClosedThenTheDriverConfigLoaderIsClosed() {
 		this.contextRunner.withUserConfiguration(DriverConfigLoaderSpyConfiguration.class).run((context) -> {
 			assertThat(((BeanDefinitionRegistry) context.getSourceApplicationContext())
-					.getBeanDefinition("cassandraDriverConfigLoader").getDestroyMethodName()).isEmpty();
+				.getBeanDefinition("cassandraDriverConfigLoader")
+				.getDestroyMethodName()).isEmpty();
 			// Initialize lazy bean
 			context.getBean(CqlSession.class);
 			DriverConfigLoader driverConfigLoader = context.getBean(DriverConfigLoader.class);

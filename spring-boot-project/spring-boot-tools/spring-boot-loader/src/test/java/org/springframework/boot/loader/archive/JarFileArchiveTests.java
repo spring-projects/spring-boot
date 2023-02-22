@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,7 +136,7 @@ class JarFileArchiveTests {
 		setup(true);
 		try (Archive nestedArchive = this.archive.getNestedArchive(getEntriesMap(this.archive).get("nested.jar"));
 				Archive anotherNestedArchive = this.archive
-						.getNestedArchive(getEntriesMap(this.archive).get("another-nested.jar"))) {
+					.getNestedArchive(getEntriesMap(this.archive).get("another-nested.jar"))) {
 			File nested = new File(nestedArchive.getUrl().toURI());
 			File anotherNested = new File(anotherNestedArchive.getUrl().toURI());
 			assertThat(nested.getParent()).isEqualTo(anotherNested.getParent());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ScheduledTasksEndpointTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(BaseConfiguration.class);
+		.withUserConfiguration(BaseConfiguration.class);
 
 	@Test
 	void cronScheduledMethodIsReported() {
@@ -89,7 +89,7 @@ class ScheduledTasksEndpointTests {
 			assertThat(description.getInitialDelay()).isEqualTo(2);
 			assertThat(description.getInterval()).isEqualTo(1);
 			assertThat(description.getRunnable().getTarget())
-					.isEqualTo(FixedDelayScheduledMethod.class.getName() + ".fixedDelay");
+				.isEqualTo(FixedDelayScheduledMethod.class.getName() + ".fixedDelay");
 		});
 	}
 
@@ -118,7 +118,7 @@ class ScheduledTasksEndpointTests {
 			assertThat(description.getInitialDelay()).isEqualTo(4);
 			assertThat(description.getInterval()).isEqualTo(3);
 			assertThat(description.getRunnable().getTarget())
-					.isEqualTo(FixedRateScheduledMethod.class.getName() + ".fixedRate");
+				.isEqualTo(FixedRateScheduledMethod.class.getName() + ".fixedRate");
 		});
 	}
 
@@ -151,7 +151,7 @@ class ScheduledTasksEndpointTests {
 
 	private void run(Class<?> configuration, Consumer<ScheduledTasksReport> consumer) {
 		this.contextRunner.withUserConfiguration(configuration)
-				.run((context) -> consumer.accept(context.getBean(ScheduledTasksEndpoint.class).scheduledTasks()));
+			.run((context) -> consumer.accept(context.getBean(ScheduledTasksEndpoint.class).scheduledTasks()));
 	}
 
 	@Configuration(proxyBeanMethods = false)

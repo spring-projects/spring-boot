@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ class WebTestClientContextCustomizerFactory implements ContextCustomizerFactory 
 		reactorClientPresent = ClassUtils.isPresent("reactor.netty.http.client.HttpClient", loader);
 		jettyClientPresent = ClassUtils.isPresent("org.eclipse.jetty.client.HttpClient", loader);
 		httpComponentsClientPresent = ClassUtils
-				.isPresent("org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient", loader)
+			.isPresent("org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient", loader)
 				&& ClassUtils.isPresent("org.apache.hc.core5.reactive.ReactiveDataConsumer", loader);
 		webClientPresent = ClassUtils.isPresent("org.springframework.web.reactive.function.client.WebClient", loader);
 	}

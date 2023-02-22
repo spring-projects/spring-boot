@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,45 +40,45 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ElasticSearchRestHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class,
-					ElasticSearchRestHealthContributorAutoConfiguration.class,
-					HealthContributorAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class,
+				ElasticSearchRestHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(ElasticsearchRestClientHealthIndicator.class).hasBean("elasticsearchHealthContributor"));
+		this.contextRunner
+			.run((context) -> assertThat(context).hasSingleBean(ElasticsearchRestClientHealthIndicator.class)
+				.hasBean("elasticsearchHealthContributor"));
 	}
 
 	@Test
 	@SuppressWarnings("deprecation")
 	void runWithoutRestHighLevelClientAndWithoutRestClientShouldNotCreateIndicator() {
 		this.contextRunner
-				.withClassLoader(
-						new FilteredClassLoader(org.elasticsearch.client.RestHighLevelClient.class, RestClient.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(ElasticsearchRestClientHealthIndicator.class)
-						.doesNotHaveBean("elasticsearchHealthContributor"));
+			.withClassLoader(
+					new FilteredClassLoader(org.elasticsearch.client.RestHighLevelClient.class, RestClient.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(ElasticsearchRestClientHealthIndicator.class)
+				.doesNotHaveBean("elasticsearchHealthContributor"));
 	}
 
 	@Test
 	void runWithoutRestHighLevelClientAndWithRestClientShouldCreateIndicator() {
 		this.contextRunner.withUserConfiguration(CustomRestClientConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(ElasticsearchRestClientHealthIndicator.class)
-						.hasBean("elasticsearchHealthContributor"));
+			.run((context) -> assertThat(context).hasSingleBean(ElasticsearchRestClientHealthIndicator.class)
+				.hasBean("elasticsearchHealthContributor"));
 	}
 
 	@Test
 	void runWithRestHighLevelClientAndWithRestClientShouldCreateIndicator() {
 		this.contextRunner.withUserConfiguration(CustomRestHighClientConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(ElasticsearchRestClientHealthIndicator.class)
-						.hasBean("elasticsearchHealthContributor"));
+			.run((context) -> assertThat(context).hasSingleBean(ElasticsearchRestClientHealthIndicator.class)
+				.hasBean("elasticsearchHealthContributor"));
 	}
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.elasticsearch.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(ElasticsearchRestClientHealthIndicator.class)
-						.doesNotHaveBean("elasticsearchHealthContributor"));
+			.run((context) -> assertThat(context).doesNotHaveBean(ElasticsearchRestClientHealthIndicator.class)
+				.doesNotHaveBean("elasticsearchHealthContributor"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

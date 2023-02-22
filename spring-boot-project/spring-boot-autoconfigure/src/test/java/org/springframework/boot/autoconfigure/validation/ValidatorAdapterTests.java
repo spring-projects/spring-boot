@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,10 +87,9 @@ class ValidatorAdapterTests {
 		ClassPathResource hibernateValidator = new ClassPathResource(
 				"META-INF/services/javax.validation.spi.ValidationProvider");
 		this.contextRunner
-				.withClassLoader(
-						new FilteredClassLoader(FilteredClassLoader.ClassPathResourceFilter.of(hibernateValidator),
-								FilteredClassLoader.PackageFilter.of("org.hibernate.validator")))
-				.run((context) -> ValidatorAdapter.get(context, null));
+			.withClassLoader(new FilteredClassLoader(FilteredClassLoader.ClassPathResourceFilter.of(hibernateValidator),
+					FilteredClassLoader.PackageFilter.of("org.hibernate.validator")))
+			.run((context) -> ValidatorAdapter.get(context, null));
 	}
 
 	@Configuration(proxyBeanMethods = false)

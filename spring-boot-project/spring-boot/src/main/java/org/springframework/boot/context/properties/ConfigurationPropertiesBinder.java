@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -158,8 +158,9 @@ class ConfigurationPropertiesBinder {
 	}
 
 	private List<ConfigurationPropertiesBindHandlerAdvisor> getBindHandlerAdvisors() {
-		return this.applicationContext.getBeanProvider(ConfigurationPropertiesBindHandlerAdvisor.class).orderedStream()
-				.collect(Collectors.toList());
+		return this.applicationContext.getBeanProvider(ConfigurationPropertiesBindHandlerAdvisor.class)
+			.orderedStream()
+			.collect(Collectors.toList());
 	}
 
 	private Binder getBinder() {
@@ -193,16 +194,18 @@ class ConfigurationPropertiesBinder {
 	static void register(BeanDefinitionRegistry registry) {
 		if (!registry.containsBeanDefinition(FACTORY_BEAN_NAME)) {
 			BeanDefinition definition = BeanDefinitionBuilder
-					.rootBeanDefinition(ConfigurationPropertiesBinder.Factory.class).getBeanDefinition();
+				.rootBeanDefinition(ConfigurationPropertiesBinder.Factory.class)
+				.getBeanDefinition();
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(ConfigurationPropertiesBinder.FACTORY_BEAN_NAME, definition);
 		}
 		if (!registry.containsBeanDefinition(BEAN_NAME)) {
 			BeanDefinition definition = BeanDefinitionBuilder
-					.rootBeanDefinition(ConfigurationPropertiesBinder.class,
-							() -> ((BeanFactory) registry)
-									.getBean(FACTORY_BEAN_NAME, ConfigurationPropertiesBinder.Factory.class).create())
-					.getBeanDefinition();
+				.rootBeanDefinition(ConfigurationPropertiesBinder.class,
+						() -> ((BeanFactory) registry)
+							.getBean(FACTORY_BEAN_NAME, ConfigurationPropertiesBinder.Factory.class)
+							.create())
+				.getBeanDefinition();
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(ConfigurationPropertiesBinder.BEAN_NAME, definition);
 		}

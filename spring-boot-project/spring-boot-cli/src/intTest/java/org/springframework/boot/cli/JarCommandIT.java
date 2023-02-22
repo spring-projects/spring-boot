@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class JarCommandIT {
 		invocation.await();
 		assertThat(invocation.getStandardOutput()).isEqualTo("");
 		assertThat(invocation.getErrorOutput())
-				.contains("The name of the resulting jar and at least one source file must be specified");
+			.contains("The name of the resulting jar and at least one source file must be specified");
 	}
 
 	@Test
@@ -64,7 +64,7 @@ class JarCommandIT {
 		invocation.await();
 		assertThat(invocation.getStandardOutput()).isEqualTo("");
 		assertThat(invocation.getErrorOutput())
-				.contains("The name of the resulting jar and at least one source file must be specified");
+			.contains("The name of the resulting jar and at least one source file must be specified");
 	}
 
 	@Test
@@ -109,9 +109,12 @@ class JarCommandIT {
 			assertThat(invocation.getErrorOutput()).isEqualTo("");
 		}
 		assertThat(invocation.getStandardOutput()).contains("Hello World!")
-				.contains("/BOOT-INF/classes!/public/public.txt").contains("/BOOT-INF/classes!/resources/resource.txt")
-				.contains("/BOOT-INF/classes!/static/static.txt").contains("/BOOT-INF/classes!/templates/template.txt")
-				.contains("/BOOT-INF/classes!/root.properties").contains("Goodbye Mama");
+			.contains("/BOOT-INF/classes!/public/public.txt")
+			.contains("/BOOT-INF/classes!/resources/resource.txt")
+			.contains("/BOOT-INF/classes!/static/static.txt")
+			.contains("/BOOT-INF/classes!/templates/template.txt")
+			.contains("/BOOT-INF/classes!/root.properties")
+			.contains("Goodbye Mama");
 	}
 
 	@Test
@@ -132,9 +135,12 @@ class JarCommandIT {
 		if (!JAVA_9_OR_LATER) {
 			assertThat(invocation.getErrorOutput()).isEqualTo("");
 		}
-		assertThat(invocation.getStandardOutput()).contains("Hello World!").doesNotContain("/public/public.txt")
-				.doesNotContain("/resources/resource.txt").contains("/static/static.txt")
-				.contains("/templates/template.txt").contains("Goodbye Mama");
+		assertThat(invocation.getStandardOutput()).contains("Hello World!")
+			.doesNotContain("/public/public.txt")
+			.doesNotContain("/resources/resource.txt")
+			.contains("/static/static.txt")
+			.contains("/templates/template.txt")
+			.contains("Goodbye Mama");
 	}
 
 	private static boolean isClassPresent(String name) {

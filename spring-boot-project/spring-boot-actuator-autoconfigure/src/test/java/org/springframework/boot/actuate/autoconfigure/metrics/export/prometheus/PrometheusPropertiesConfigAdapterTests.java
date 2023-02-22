@@ -42,7 +42,7 @@ class PrometheusPropertiesConfigAdapterTests {
 		PrometheusProperties properties = new PrometheusProperties();
 		properties.setHistogramFlavor(HistogramFlavor.VictoriaMetrics);
 		assertThat(new PrometheusPropertiesConfigAdapter(properties).histogramFlavor())
-				.isEqualTo(HistogramFlavor.VictoriaMetrics);
+			.isEqualTo(HistogramFlavor.VictoriaMetrics);
 	}
 
 	@Test

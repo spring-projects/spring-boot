@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractConfigurat
 	@Test
 	void nullResource() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> ConfigurationMetadataRepositoryJsonBuilder.create().withJsonResource(null));
+			.isThrownBy(() -> ConfigurationMetadataRepositoryJsonBuilder.create().withJsonResource(null));
 	}
 
 	@Test
@@ -105,7 +105,7 @@ class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractConfigurat
 			assertThat(group.getSources().get("org.acme.Foo2").getProperties()).containsOnlyKeys("spring.foo.enabled",
 					"spring.foo.type");
 			assertThat(group.getSources().get("org.springframework.boot.FooProperties").getProperties())
-					.containsOnlyKeys("spring.foo.name", "spring.foo.counter");
+				.containsOnlyKeys("spring.foo.name", "spring.foo.counter");
 		}
 	}
 
@@ -123,7 +123,7 @@ class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractConfigurat
 			assertThat(group.getSources().get("org.acme.Foo").getProperties()).containsOnlyKeys("spring.foo.name",
 					"spring.foo.description", "spring.foo.enabled", "spring.foo.type");
 			assertThat(group.getSources().get("org.springframework.boot.FooProperties").getProperties())
-					.containsOnlyKeys("spring.foo.name", "spring.foo.counter");
+				.containsOnlyKeys("spring.foo.name", "spring.foo.counter");
 		}
 	}
 
@@ -243,7 +243,7 @@ class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractConfigurat
 		assertThat(values.getHints().getValueProviders().get(0).getName()).isEqualTo("handle-as");
 		assertThat(values.getHints().getValueProviders().get(0).getParameters()).hasSize(1);
 		assertThat(values.getHints().getValueProviders().get(0).getParameters().get("target"))
-				.isEqualTo("java.lang.Integer");
+			.isEqualTo("java.lang.Integer");
 	}
 
 	private void validateEmptyGroup(ConfigurationMetadataRepository repo) {

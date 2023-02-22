@@ -212,7 +212,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		}
 		initializers.addAll(application.getInitializers());
 		for (Class<? extends ApplicationContextInitializer<?>> initializerClass : config
-				.getContextInitializerClasses()) {
+			.getContextInitializerClasses()) {
 			initializers.add(BeanUtils.instantiateClass(initializerClass));
 		}
 		if (config.getParent() != null) {
@@ -222,8 +222,11 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	}
 
 	private boolean isEmbeddedWebEnvironment(MergedContextConfiguration config) {
-		return MergedAnnotations.from(config.getTestClass(), SearchStrategy.TYPE_HIERARCHY).get(SpringBootTest.class)
-				.getValue("webEnvironment", WebEnvironment.class).orElse(WebEnvironment.NONE).isEmbedded();
+		return MergedAnnotations.from(config.getTestClass(), SearchStrategy.TYPE_HIERARCHY)
+			.get(SpringBootTest.class)
+			.getValue("webEnvironment", WebEnvironment.class)
+			.orElse(WebEnvironment.NONE)
+			.isEmbedded();
 	}
 
 	@Override

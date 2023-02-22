@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,47 +38,47 @@ import static org.mockito.Mockito.mock;
 class QuartzEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(QuartzEndpointAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(QuartzEndpointAutoConfiguration.class));
 
 	@Test
 	void endpointIsAutoConfigured() {
 		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
-				.withPropertyValues("management.endpoints.web.exposure.include=quartz")
-				.run((context) -> assertThat(context).hasSingleBean(QuartzEndpoint.class));
+			.withPropertyValues("management.endpoints.web.exposure.include=quartz")
+			.run((context) -> assertThat(context).hasSingleBean(QuartzEndpoint.class));
 	}
 
 	@Test
 	void endpointIsNotAutoConfiguredIfSchedulerIsNotAvailable() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=quartz")
-				.run((context) -> assertThat(context).doesNotHaveBean(QuartzEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(QuartzEndpoint.class));
 	}
 
 	@Test
 	void endpointNotAutoConfiguredWhenNotExposed() {
 		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(QuartzEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(QuartzEndpoint.class));
 	}
 
 	@Test
 	void endpointCanBeDisabled() {
 		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
-				.withPropertyValues("management.endpoint.quartz.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(QuartzEndpoint.class));
+			.withPropertyValues("management.endpoint.quartz.enabled:false")
+			.run((context) -> assertThat(context).doesNotHaveBean(QuartzEndpoint.class));
 	}
 
 	@Test
 	void endpointBacksOffWhenUserProvidedEndpointIsPresent() {
 		this.contextRunner.withUserConfiguration(CustomEndpointConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(QuartzEndpoint.class).hasBean("customEndpoint"));
+			.run((context) -> assertThat(context).hasSingleBean(QuartzEndpoint.class).hasBean("customEndpoint"));
 	}
 
 	@Test
 	void runWhenOnlyExposedOverJmxShouldHaveEndpointBeanWithoutWebExtension() {
 		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
-				.withPropertyValues("management.endpoints.web.exposure.include=info", "spring.jmx.enabled=true",
-						"management.endpoints.jmx.exposure.include=quartz")
-				.run((context) -> assertThat(context).hasSingleBean(QuartzEndpoint.class)
-						.doesNotHaveBean(QuartzEndpointWebExtension.class));
+			.withPropertyValues("management.endpoints.web.exposure.include=info", "spring.jmx.enabled=true",
+					"management.endpoints.jmx.exposure.include=quartz")
+			.run((context) -> assertThat(context).hasSingleBean(QuartzEndpoint.class)
+				.doesNotHaveBean(QuartzEndpointWebExtension.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

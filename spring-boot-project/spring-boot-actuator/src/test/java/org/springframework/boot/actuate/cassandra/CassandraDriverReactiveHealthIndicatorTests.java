@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +59,9 @@ class CassandraDriverReactiveHealthIndicatorTests {
 		CqlSession session = mockCqlSessionWithNodeState(NodeState.UP);
 		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
 		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health).consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.UP))
-				.verifyComplete();
+		StepVerifier.create(health)
+			.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.UP))
+			.verifyComplete();
 	}
 
 	@Test
@@ -68,8 +69,9 @@ class CassandraDriverReactiveHealthIndicatorTests {
 		CqlSession session = mockCqlSessionWithNodeState(NodeState.DOWN);
 		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
 		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health).consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
-				.verifyComplete();
+		StepVerifier.create(health)
+			.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
+			.verifyComplete();
 	}
 
 	@Test
@@ -77,8 +79,9 @@ class CassandraDriverReactiveHealthIndicatorTests {
 		CqlSession session = mockCqlSessionWithNodeState(NodeState.UNKNOWN);
 		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
 		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health).consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
-				.verifyComplete();
+		StepVerifier.create(health)
+			.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
+			.verifyComplete();
 	}
 
 	@Test
@@ -86,8 +89,9 @@ class CassandraDriverReactiveHealthIndicatorTests {
 		CqlSession session = mockCqlSessionWithNodeState(NodeState.FORCED_DOWN);
 		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
 		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health).consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
-				.verifyComplete();
+		StepVerifier.create(health)
+			.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
+			.verifyComplete();
 	}
 
 	@Test
@@ -95,8 +99,9 @@ class CassandraDriverReactiveHealthIndicatorTests {
 		CqlSession session = mockCqlSessionWithNodeState(NodeState.UP, NodeState.DOWN);
 		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
 		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health).consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.UP))
-				.verifyComplete();
+		StepVerifier.create(health)
+			.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.UP))
+			.verifyComplete();
 	}
 
 	@Test
@@ -104,8 +109,9 @@ class CassandraDriverReactiveHealthIndicatorTests {
 		CqlSession session = mockCqlSessionWithNodeState(NodeState.UP, NodeState.UNKNOWN);
 		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
 		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health).consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.UP))
-				.verifyComplete();
+		StepVerifier.create(health)
+			.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.UP))
+			.verifyComplete();
 	}
 
 	@Test
@@ -113,8 +119,9 @@ class CassandraDriverReactiveHealthIndicatorTests {
 		CqlSession session = mockCqlSessionWithNodeState(NodeState.UP, NodeState.FORCED_DOWN);
 		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
 		Mono<Health> health = healthIndicator.health();
-		StepVerifier.create(health).consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.UP))
-				.verifyComplete();
+		StepVerifier.create(health)
+			.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.UP))
+			.verifyComplete();
 	}
 
 	@Test
@@ -157,7 +164,7 @@ class CassandraDriverReactiveHealthIndicatorTests {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
 			assertThat(h.getDetails()).containsOnlyKeys("error");
 			assertThat(h.getDetails().get("error"))
-					.isEqualTo(DriverTimeoutException.class.getName() + ": Test Exception");
+				.isEqualTo(DriverTimeoutException.class.getName() + ": Test Exception");
 		}).verifyComplete();
 	}
 

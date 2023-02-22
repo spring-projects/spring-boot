@@ -117,9 +117,9 @@ class WebFluxAutoConfigurationTests {
 	private static final MockReactiveWebServerFactory mockReactiveWebServerFactory = new MockReactiveWebServerFactory();
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(WebFluxAutoConfiguration.class, WebSessionIdResolverAutoConfiguration.class))
-			.withUserConfiguration(Config.class);
+		.withConfiguration(
+				AutoConfigurations.of(WebFluxAutoConfiguration.class, WebSessionIdResolverAutoConfiguration.class))
+		.withUserConfiguration(Config.class);
 
 	@Test
 	void shouldNotProcessIfExistingWebReactiveConfiguration() {
@@ -137,7 +137,7 @@ class WebFluxAutoConfigurationTests {
 			assertThat(context).getBeans(RequestedContentTypeResolver.class).hasSize(1);
 			assertThat(context).getBeans(RouterFunctionMapping.class).hasSize(1);
 			assertThat(context.getBean(WebHttpHandlerBuilder.WEB_SESSION_MANAGER_BEAN_NAME, WebSessionManager.class))
-					.isNotNull();
+				.isNotNull();
 			assertThat(context.getBean("resourceHandlerMapping", HandlerMapping.class)).isNotNull();
 		});
 	}
@@ -148,7 +148,7 @@ class WebFluxAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomArgumentResolvers.class).run((context) -> {
 			RequestMappingHandlerAdapter adapter = context.getBean(RequestMappingHandlerAdapter.class);
 			List<HandlerMethodArgumentResolver> customResolvers = (List<HandlerMethodArgumentResolver>) ReflectionTestUtils
-					.getField(adapter.getArgumentResolverConfigurer(), "customResolvers");
+				.getField(adapter.getArgumentResolverConfigurer(), "customResolvers");
 			assertThat(customResolvers).contains(context.getBean("firstResolver", HandlerMethodArgumentResolver.class),
 					context.getBean("secondResolver", HandlerMethodArgumentResolver.class));
 		});
@@ -174,7 +174,7 @@ class WebFluxAutoConfigurationTests {
 			ResourceWebHandler webjarsHandler = (ResourceWebHandler) hm.getUrlMap().get("/webjars/**");
 			assertThat(webjarsHandler.getLocations()).hasSize(1);
 			assertThat(webjarsHandler.getLocations().get(0))
-					.isEqualTo(new ClassPathResource("/META-INF/resources/webjars/"));
+				.isEqualTo(new ClassPathResource("/META-INF/resources/webjars/"));
 		});
 	}
 
@@ -191,8 +191,8 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void shouldNotMapResourcesWhenDisabled() {
 		this.contextRunner.withPropertyValues("spring.web.resources.add-mappings:false")
-				.run((context) -> assertThat(context.getBean("resourceHandlerMapping"))
-						.isNotInstanceOf(SimpleUrlHandlerMapping.class));
+			.run((context) -> assertThat(context.getBean("resourceHandlerMapping"))
+				.isNotInstanceOf(SimpleUrlHandlerMapping.class));
 	}
 
 	@Test
@@ -202,9 +202,9 @@ class WebFluxAutoConfigurationTests {
 			assertThat(hm.getUrlMap().get("/**")).isInstanceOf(ResourceWebHandler.class);
 			ResourceWebHandler staticHandler = (ResourceWebHandler) hm.getUrlMap().get("/**");
 			assertThat(staticHandler.getResourceResolvers()).extractingResultOf("getClass")
-					.containsOnly(CachingResourceResolver.class, PathResourceResolver.class);
+				.containsOnly(CachingResourceResolver.class, PathResourceResolver.class);
 			assertThat(staticHandler.getResourceTransformers()).extractingResultOf("getClass")
-					.containsOnly(CachingResourceTransformer.class);
+				.containsOnly(CachingResourceTransformer.class);
 		});
 	}
 
@@ -243,7 +243,7 @@ class WebFluxAutoConfigurationTests {
 			FormattingConversionService conversionService = context.getBean(FormattingConversionService.class);
 			LocalTime time = LocalTime.of(11, 43, 10);
 			assertThat(conversionService.convert(time, String.class))
-					.isEqualTo(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).format(time));
+				.isEqualTo(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).format(time));
 		});
 	}
 
@@ -262,7 +262,7 @@ class WebFluxAutoConfigurationTests {
 			FormattingConversionService conversionService = context.getBean(FormattingConversionService.class);
 			LocalDateTime dateTime = LocalDateTime.of(2020, 4, 28, 11, 43, 10);
 			assertThat(conversionService.convert(dateTime, String.class))
-					.isEqualTo(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(dateTime));
+				.isEqualTo(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(dateTime));
 		});
 	}
 
@@ -287,19 +287,18 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void validatorWhenNoCustomizationShouldUseAutoConfigured() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context).getBeanNames(javax.validation.Validator.class)
-							.containsExactly("defaultValidator");
-					assertThat(context).getBeanNames(Validator.class).containsExactlyInAnyOrder("defaultValidator",
-							"webFluxValidator");
-					Validator validator = context.getBean("webFluxValidator", Validator.class);
-					assertThat(validator).isInstanceOf(ValidatorAdapter.class);
-					Object defaultValidator = context.getBean("defaultValidator");
-					assertThat(((ValidatorAdapter) validator).getTarget()).isSameAs(defaultValidator);
-					// Primary Spring validator is the one used by WebFlux behind the
-					// scenes
-					assertThat(context.getBean(Validator.class)).isEqualTo(defaultValidator);
-				});
+			.run((context) -> {
+				assertThat(context).getBeanNames(javax.validation.Validator.class).containsExactly("defaultValidator");
+				assertThat(context).getBeanNames(Validator.class)
+					.containsExactlyInAnyOrder("defaultValidator", "webFluxValidator");
+				Validator validator = context.getBean("webFluxValidator", Validator.class);
+				assertThat(validator).isInstanceOf(ValidatorAdapter.class);
+				Object defaultValidator = context.getBean("defaultValidator");
+				assertThat(((ValidatorAdapter) validator).getTarget()).isSameAs(defaultValidator);
+				// Primary Spring validator is the one used by WebFlux behind the
+				// scenes
+				assertThat(context.getBean(Validator.class)).isEqualTo(defaultValidator);
+			});
 	}
 
 	@Test
@@ -309,7 +308,7 @@ class WebFluxAutoConfigurationTests {
 			assertThat(context).doesNotHaveBean(javax.validation.Validator.class);
 			assertThat(context).getBeanNames(Validator.class).containsOnly("webFluxValidator");
 			assertThat(context.getBean("webFluxValidator"))
-					.isSameAs(context.getBean(ValidatorWebFluxConfigurer.class).validator);
+				.isSameAs(context.getBean(ValidatorWebFluxConfigurer.class).validator);
 		});
 	}
 
@@ -322,42 +321,43 @@ class WebFluxAutoConfigurationTests {
 			Validator validator = context.getBean("webFluxValidator", Validator.class);
 			assertThat(validator).isInstanceOf(ValidatorAdapter.class);
 			assertThat(((ValidatorAdapter) validator).getTarget())
-					.isSameAs(context.getBean(ValidatorJsr303WebFluxConfigurer.class).validator);
+				.isSameAs(context.getBean(ValidatorJsr303WebFluxConfigurer.class).validator);
 		});
 	}
 
 	@Test
 	void validationCustomConfigurerTakesPrecedence() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
-				.withUserConfiguration(ValidatorWebFluxConfigurer.class).run((context) -> {
-					assertThat(context).getBeans(ValidatorFactory.class).hasSize(1);
-					assertThat(context).getBeans(javax.validation.Validator.class).hasSize(1);
-					assertThat(context).getBeanNames(Validator.class).containsExactlyInAnyOrder("defaultValidator",
-							"webFluxValidator");
-					assertThat(context.getBean("webFluxValidator"))
-							.isSameAs(context.getBean(ValidatorWebFluxConfigurer.class).validator);
-					// Primary Spring validator is the auto-configured one as the WebFlux
-					// one has been customized through a WebFluxConfigurer
-					assertThat(context.getBean(Validator.class)).isEqualTo(context.getBean("defaultValidator"));
-				});
+			.withUserConfiguration(ValidatorWebFluxConfigurer.class)
+			.run((context) -> {
+				assertThat(context).getBeans(ValidatorFactory.class).hasSize(1);
+				assertThat(context).getBeans(javax.validation.Validator.class).hasSize(1);
+				assertThat(context).getBeanNames(Validator.class)
+					.containsExactlyInAnyOrder("defaultValidator", "webFluxValidator");
+				assertThat(context.getBean("webFluxValidator"))
+					.isSameAs(context.getBean(ValidatorWebFluxConfigurer.class).validator);
+				// Primary Spring validator is the auto-configured one as the WebFlux
+				// one has been customized through a WebFluxConfigurer
+				assertThat(context.getBean(Validator.class)).isEqualTo(context.getBean("defaultValidator"));
+			});
 	}
 
 	@Test
 	void validatorWithCustomSpringValidatorIgnored() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
-				.withUserConfiguration(CustomSpringValidator.class).run((context) -> {
-					assertThat(context).getBeanNames(javax.validation.Validator.class)
-							.containsExactly("defaultValidator");
-					assertThat(context).getBeanNames(Validator.class).containsExactlyInAnyOrder("customValidator",
-							"defaultValidator", "webFluxValidator");
-					Validator validator = context.getBean("webFluxValidator", Validator.class);
-					assertThat(validator).isInstanceOf(ValidatorAdapter.class);
-					Object defaultValidator = context.getBean("defaultValidator");
-					assertThat(((ValidatorAdapter) validator).getTarget()).isSameAs(defaultValidator);
-					// Primary Spring validator is the one used by WebFlux behind the
-					// scenes
-					assertThat(context.getBean(Validator.class)).isEqualTo(defaultValidator);
-				});
+			.withUserConfiguration(CustomSpringValidator.class)
+			.run((context) -> {
+				assertThat(context).getBeanNames(javax.validation.Validator.class).containsExactly("defaultValidator");
+				assertThat(context).getBeanNames(Validator.class)
+					.containsExactlyInAnyOrder("customValidator", "defaultValidator", "webFluxValidator");
+				Validator validator = context.getBean("webFluxValidator", Validator.class);
+				assertThat(validator).isInstanceOf(ValidatorAdapter.class);
+				Object defaultValidator = context.getBean("defaultValidator");
+				assertThat(((ValidatorAdapter) validator).getTarget()).isSameAs(defaultValidator);
+				// Primary Spring validator is the one used by WebFlux behind the
+				// scenes
+				assertThat(context.getBean(Validator.class)).isEqualTo(defaultValidator);
+			});
 	}
 
 	@Test
@@ -381,23 +381,24 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void hiddenHttpMethodFilterCanBeOverridden() {
 		this.contextRunner.withPropertyValues("spring.webflux.hiddenmethod.filter.enabled=true")
-				.withUserConfiguration(CustomHiddenHttpMethodFilter.class).run((context) -> {
-					assertThat(context).doesNotHaveBean(OrderedHiddenHttpMethodFilter.class);
-					assertThat(context).hasSingleBean(HiddenHttpMethodFilter.class);
-				});
+			.withUserConfiguration(CustomHiddenHttpMethodFilter.class)
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(OrderedHiddenHttpMethodFilter.class);
+				assertThat(context).hasSingleBean(HiddenHttpMethodFilter.class);
+			});
 	}
 
 	@Test
 	void hiddenHttpMethodFilterCanBeEnabled() {
 		this.contextRunner.withPropertyValues("spring.webflux.hiddenmethod.filter.enabled=true")
-				.run((context) -> assertThat(context).hasSingleBean(OrderedHiddenHttpMethodFilter.class));
+			.run((context) -> assertThat(context).hasSingleBean(OrderedHiddenHttpMethodFilter.class));
 	}
 
 	@Test
 	void customRequestMappingHandlerMapping() {
 		this.contextRunner.withUserConfiguration(CustomRequestMappingHandlerMapping.class).run((context) -> {
 			assertThat(context).getBean(RequestMappingHandlerMapping.class)
-					.isInstanceOf(MyRequestMappingHandlerMapping.class);
+				.isInstanceOf(MyRequestMappingHandlerMapping.class);
 			assertThat(context.getBean(CustomRequestMappingHandlerMapping.class).handlerMappings).isEqualTo(1);
 		});
 	}
@@ -406,7 +407,7 @@ class WebFluxAutoConfigurationTests {
 	void customRequestMappingHandlerAdapter() {
 		this.contextRunner.withUserConfiguration(CustomRequestMappingHandlerAdapter.class).run((context) -> {
 			assertThat(context).getBean(RequestMappingHandlerAdapter.class)
-					.isInstanceOf(MyRequestMappingHandlerAdapter.class);
+				.isInstanceOf(MyRequestMappingHandlerAdapter.class);
 			assertThat(context.getBean(CustomRequestMappingHandlerAdapter.class).handlerAdapters).isEqualTo(1);
 		});
 	}
@@ -415,9 +416,9 @@ class WebFluxAutoConfigurationTests {
 	void multipleWebFluxRegistrations() {
 		this.contextRunner.withUserConfiguration(MultipleWebFluxRegistrations.class).run((context) -> {
 			assertThat(context.getBean(RequestMappingHandlerMapping.class))
-					.isNotInstanceOf(MyRequestMappingHandlerMapping.class);
+				.isNotInstanceOf(MyRequestMappingHandlerMapping.class);
 			assertThat(context.getBean(RequestMappingHandlerAdapter.class))
-					.isNotInstanceOf(MyRequestMappingHandlerAdapter.class);
+				.isNotInstanceOf(MyRequestMappingHandlerAdapter.class);
 		});
 	}
 
@@ -430,7 +431,7 @@ class WebFluxAutoConfigurationTests {
 			for (Object handler : handlerMap.values()) {
 				if (handler instanceof ResourceWebHandler) {
 					assertThat(((ResourceWebHandler) handler).getCacheControl()).usingRecursiveComparison()
-							.isEqualTo(CacheControl.maxAge(5, TimeUnit.SECONDS));
+						.isEqualTo(CacheControl.maxAge(5, TimeUnit.SECONDS));
 				}
 			}
 		});
@@ -440,17 +441,19 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void cacheControl() {
 		Assertions.setExtractBareNamePropertyMethods(false);
-		this.contextRunner.withPropertyValues("spring.web.resources.cache.cachecontrol.max-age:5",
-				"spring.web.resources.cache.cachecontrol.proxy-revalidate:true").run((context) -> {
-					Map<PathPattern, Object> handlerMap = getHandlerMap(context);
-					assertThat(handlerMap).hasSize(2);
-					for (Object handler : handlerMap.values()) {
-						if (handler instanceof ResourceWebHandler) {
-							assertThat(((ResourceWebHandler) handler).getCacheControl()).usingRecursiveComparison()
-									.isEqualTo(CacheControl.maxAge(5, TimeUnit.SECONDS).proxyRevalidate());
-						}
+		this.contextRunner
+			.withPropertyValues("spring.web.resources.cache.cachecontrol.max-age:5",
+					"spring.web.resources.cache.cachecontrol.proxy-revalidate:true")
+			.run((context) -> {
+				Map<PathPattern, Object> handlerMap = getHandlerMap(context);
+				assertThat(handlerMap).hasSize(2);
+				for (Object handler : handlerMap.values()) {
+					if (handler instanceof ResourceWebHandler) {
+						assertThat(((ResourceWebHandler) handler).getCacheControl()).usingRecursiveComparison()
+							.isEqualTo(CacheControl.maxAge(5, TimeUnit.SECONDS).proxyRevalidate());
 					}
-				});
+				}
+			});
 		Assertions.setExtractBareNamePropertyMethods(true);
 	}
 
@@ -470,21 +473,22 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void customPrinterAndParserShouldBeRegisteredAsConverters() {
 		this.contextRunner.withUserConfiguration(ParserConfiguration.class, PrinterConfiguration.class)
-				.run((context) -> {
-					ConversionService service = context.getBean(ConversionService.class);
-					assertThat(service.convert(new Example("spring", new Date()), String.class)).isEqualTo("spring");
-					assertThat(service.convert("boot", Example.class)).extracting(Example::getName).isEqualTo("boot");
-				});
+			.run((context) -> {
+				ConversionService service = context.getBean(ConversionService.class);
+				assertThat(service.convert(new Example("spring", new Date()), String.class)).isEqualTo("spring");
+				assertThat(service.convert("boot", Example.class)).extracting(Example::getName).isEqualTo("boot");
+			});
 	}
 
 	@Test
 	void welcomePageHandlerMapping() {
 		this.contextRunner.withPropertyValues("spring.web.resources.static-locations=classpath:/welcome-page/")
-				.run((context) -> {
-					assertThat(context).getBeans(RouterFunctionMapping.class).hasSize(2);
-					assertThat(context.getBean("welcomePageRouterFunctionMapping", HandlerMapping.class)).isNotNull()
-							.extracting("order").isEqualTo(1);
-				});
+			.run((context) -> {
+				assertThat(context).getBeans(RouterFunctionMapping.class).hasSize(2);
+				assertThat(context.getBean("welcomePageRouterFunctionMapping", HandlerMapping.class)).isNotNull()
+					.extracting("order")
+					.isEqualTo(1);
+			});
 	}
 
 	@Test
@@ -499,22 +503,24 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void whenFixedLocalContextResolverIsUsedThenAcceptLanguagesHeaderIsIgnored() {
 		this.contextRunner.withPropertyValues("spring.web.locale:en_UK", "spring.web.locale-resolver=fixed")
-				.run((context) -> {
-					MockServerHttpRequest request = MockServerHttpRequest.get("/")
-							.acceptLanguageAsLocales(StringUtils.parseLocaleString("nl_NL")).build();
-					MockServerWebExchange exchange = MockServerWebExchange.from(request);
-					LocaleContextResolver localeContextResolver = context.getBean(LocaleContextResolver.class);
-					assertThat(localeContextResolver).isInstanceOf(FixedLocaleContextResolver.class);
-					LocaleContext localeContext = localeContextResolver.resolveLocaleContext(exchange);
-					assertThat(localeContext.getLocale()).isEqualTo(StringUtils.parseLocaleString("en_UK"));
-				});
+			.run((context) -> {
+				MockServerHttpRequest request = MockServerHttpRequest.get("/")
+					.acceptLanguageAsLocales(StringUtils.parseLocaleString("nl_NL"))
+					.build();
+				MockServerWebExchange exchange = MockServerWebExchange.from(request);
+				LocaleContextResolver localeContextResolver = context.getBean(LocaleContextResolver.class);
+				assertThat(localeContextResolver).isInstanceOf(FixedLocaleContextResolver.class);
+				LocaleContext localeContext = localeContextResolver.resolveLocaleContext(exchange);
+				assertThat(localeContext.getLocale()).isEqualTo(StringUtils.parseLocaleString("en_UK"));
+			});
 	}
 
 	@Test
 	void whenAcceptHeaderLocaleContextResolverIsUsedThenAcceptLanguagesHeaderIsHonoured() {
 		this.contextRunner.withPropertyValues("spring.web.locale:en_UK").run((context) -> {
 			MockServerHttpRequest request = MockServerHttpRequest.get("/")
-					.acceptLanguageAsLocales(StringUtils.parseLocaleString("nl_NL")).build();
+				.acceptLanguageAsLocales(StringUtils.parseLocaleString("nl_NL"))
+				.build();
 			MockServerWebExchange exchange = MockServerWebExchange.from(request);
 			LocaleContextResolver localeContextResolver = context.getBean(LocaleContextResolver.class);
 			assertThat(localeContextResolver).isInstanceOf(AcceptHeaderLocaleContextResolver.class);
@@ -538,66 +544,72 @@ class WebFluxAutoConfigurationTests {
 	@Test
 	void customLocaleContextResolverWithMatchingNameReplacedAutoConfiguredLocaleContextResolver() {
 		this.contextRunner
-				.withBean("localeContextResolver", CustomLocaleContextResolver.class, CustomLocaleContextResolver::new)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(LocaleContextResolver.class);
-					assertThat(context.getBean("localeContextResolver"))
-							.isInstanceOf(CustomLocaleContextResolver.class);
-				});
+			.withBean("localeContextResolver", CustomLocaleContextResolver.class, CustomLocaleContextResolver::new)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(LocaleContextResolver.class);
+				assertThat(context.getBean("localeContextResolver")).isInstanceOf(CustomLocaleContextResolver.class);
+			});
 	}
 
 	@Test
 	void customLocaleContextResolverWithDifferentNameDoesNotReplaceAutoConfiguredLocaleContextResolver() {
-		this.contextRunner.withBean("customLocaleContextResolver", CustomLocaleContextResolver.class,
-				CustomLocaleContextResolver::new).run((context) -> {
-					assertThat(context.getBean("customLocaleContextResolver"))
-							.isInstanceOf(CustomLocaleContextResolver.class);
-					assertThat(context.getBean("localeContextResolver"))
-							.isInstanceOf(AcceptHeaderLocaleContextResolver.class);
-				});
+		this.contextRunner
+			.withBean("customLocaleContextResolver", CustomLocaleContextResolver.class,
+					CustomLocaleContextResolver::new)
+			.run((context) -> {
+				assertThat(context.getBean("customLocaleContextResolver"))
+					.isInstanceOf(CustomLocaleContextResolver.class);
+				assertThat(context.getBean("localeContextResolver"))
+					.isInstanceOf(AcceptHeaderLocaleContextResolver.class);
+			});
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
 	void userConfigurersCanBeOrderedBeforeOrAfterTheAutoConfiguredConfigurer() {
 		this.contextRunner.withBean(HighPrecedenceConfigurer.class, HighPrecedenceConfigurer::new)
-				.withBean(LowPrecedenceConfigurer.class, LowPrecedenceConfigurer::new)
-				.run((context) -> assertThat(context.getBean(DelegatingWebFluxConfiguration.class))
-						.extracting("configurers.delegates").asList()
-						.extracting((configurer) -> (Class) configurer.getClass()).containsExactly(
-								HighPrecedenceConfigurer.class, WebFluxConfig.class, LowPrecedenceConfigurer.class));
+			.withBean(LowPrecedenceConfigurer.class, LowPrecedenceConfigurer::new)
+			.run((context) -> assertThat(context.getBean(DelegatingWebFluxConfiguration.class))
+				.extracting("configurers.delegates")
+				.asList()
+				.extracting((configurer) -> (Class) configurer.getClass())
+				.containsExactly(HighPrecedenceConfigurer.class, WebFluxConfig.class, LowPrecedenceConfigurer.class));
 	}
 
 	@Test
 	void customWebSessionIdResolverShouldBeApplied() {
-		this.contextRunner.withUserConfiguration(CustomWebSessionIdResolver.class).run(assertExchangeWithSession(
-				(exchange) -> assertThat(exchange.getResponse().getCookies().get("TEST")).isNotEmpty()));
+		this.contextRunner.withUserConfiguration(CustomWebSessionIdResolver.class)
+			.run(assertExchangeWithSession(
+					(exchange) -> assertThat(exchange.getResponse().getCookies().get("TEST")).isNotEmpty()));
 	}
 
 	@Test
 	void customSessionTimeoutConfigurationShouldBeApplied() {
 		this.contextRunner.withPropertyValues("server.reactive.session.timeout:123")
-				.run((assertSessionTimeoutWithWebSession((webSession) -> {
-					webSession.start();
-					assertThat(webSession.getMaxIdleTime()).hasSeconds(123);
-				})));
+			.run((assertSessionTimeoutWithWebSession((webSession) -> {
+				webSession.start();
+				assertThat(webSession.getMaxIdleTime()).hasSeconds(123);
+			})));
 	}
 
 	@Test
 	void sameSiteAttributesAreExclusive() {
-		this.contextRunner.withPropertyValues("spring.webflux.session.cookie.same-site:strict",
-				"server.reactive.session.cookie.same-site:strict").run((context) -> {
-					assertThat(context).hasFailed();
-					assertThat(context).getFailure()
-							.hasRootCauseExactlyInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class);
-				});
+		this.contextRunner
+			.withPropertyValues("spring.webflux.session.cookie.same-site:strict",
+					"server.reactive.session.cookie.same-site:strict")
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context).getFailure()
+					.hasRootCauseExactlyInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class);
+			});
 	}
 
 	@Test
 	void deprecatedCustomSameSiteConfigurationShouldBeApplied() {
-		this.contextRunner.withPropertyValues("spring.webflux.session.cookie.same-site:strict").run(
-				assertExchangeWithSession((exchange) -> assertThat(exchange.getResponse().getCookies().get("SESSION"))
-						.isNotEmpty().allMatch((cookie) -> cookie.getSameSite().equals("Strict"))));
+		this.contextRunner.withPropertyValues("spring.webflux.session.cookie.same-site:strict")
+			.run(assertExchangeWithSession(
+					(exchange) -> assertThat(exchange.getResponse().getCookies().get("SESSION")).isNotEmpty()
+						.allMatch((cookie) -> cookie.getSameSite().equals("Strict"))));
 	}
 
 	@Test
@@ -606,25 +618,25 @@ class WebFluxAutoConfigurationTests {
 				"server.reactive.session.cookie.domain:.example.com", "server.reactive.session.cookie.path:/example",
 				"server.reactive.session.cookie.max-age:60", "server.reactive.session.cookie.http-only:false",
 				"server.reactive.session.cookie.secure:false", "server.reactive.session.cookie.same-site:strict")
-				.run(assertExchangeWithSession((exchange) -> {
-					List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
-					assertThat(cookies).isNotEmpty();
-					assertThat(cookies).allMatch((cookie) -> cookie.getDomain().equals(".example.com"));
-					assertThat(cookies).allMatch((cookie) -> cookie.getPath().equals("/example"));
-					assertThat(cookies).allMatch((cookie) -> cookie.getMaxAge().equals(Duration.ofSeconds(60)));
-					assertThat(cookies).allMatch((cookie) -> !cookie.isHttpOnly());
-					assertThat(cookies).allMatch((cookie) -> !cookie.isSecure());
-					assertThat(cookies).allMatch((cookie) -> cookie.getSameSite().equals("Strict"));
-				}));
+			.run(assertExchangeWithSession((exchange) -> {
+				List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
+				assertThat(cookies).isNotEmpty();
+				assertThat(cookies).allMatch((cookie) -> cookie.getDomain().equals(".example.com"));
+				assertThat(cookies).allMatch((cookie) -> cookie.getPath().equals("/example"));
+				assertThat(cookies).allMatch((cookie) -> cookie.getMaxAge().equals(Duration.ofSeconds(60)));
+				assertThat(cookies).allMatch((cookie) -> !cookie.isHttpOnly());
+				assertThat(cookies).allMatch((cookie) -> !cookie.isSecure());
+				assertThat(cookies).allMatch((cookie) -> cookie.getSameSite().equals("Strict"));
+			}));
 	}
 
 	@ParameterizedTest
 	@ValueSource(classes = { ServerProperties.class, WebFluxProperties.class })
 	void propertiesAreNotEnabledInNonWebApplication(Class<?> propertiesClass) {
 		new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class,
-						WebSessionIdResolverAutoConfiguration.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(propertiesClass));
+			.withConfiguration(
+					AutoConfigurations.of(WebFluxAutoConfiguration.class, WebSessionIdResolverAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(propertiesClass));
 	}
 
 	private ContextConsumer<ReactiveWebApplicationContext> assertExchangeWithSession(

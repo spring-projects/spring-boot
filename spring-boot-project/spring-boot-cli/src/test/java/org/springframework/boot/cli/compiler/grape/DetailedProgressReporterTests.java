@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ final class DetailedProgressReporterTests {
 		TransferEvent startedEvent = new TransferEvent.Builder(this.session, this.resource).build();
 		this.session.getTransferListener().transferStarted(startedEvent);
 		assertThat(new String(this.baos.toByteArray()))
-				.isEqualTo(String.format("Downloading: %s%s%n", REPOSITORY, ARTIFACT));
+			.isEqualTo(String.format("Downloading: %s%s%n", REPOSITORY, ARTIFACT));
 	}
 
 	@Test
@@ -65,7 +65,7 @@ final class DetailedProgressReporterTests {
 		// Ensure some transfer time
 		Thread.sleep(100);
 		TransferEvent completedEvent = new TransferEvent.Builder(this.session, this.resource).addTransferredBytes(4096)
-				.build();
+			.build();
 		this.session.getTransferListener().transferSucceeded(completedEvent);
 		String message = new String(this.baos.toByteArray()).replace("\\", "/");
 		assertThat(message).startsWith("Downloaded: " + REPOSITORY + ARTIFACT);

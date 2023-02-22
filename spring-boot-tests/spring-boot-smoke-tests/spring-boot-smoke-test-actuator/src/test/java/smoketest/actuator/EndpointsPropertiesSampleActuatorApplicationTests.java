@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class EndpointsPropertiesSampleActuatorApplicationTests {
 	@Test
 	void testCustomContextPath() {
 		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password")
-				.getForEntity("/admin/health", String.class);
+			.getForEntity("/admin/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 		assertThat(entity.getBody()).contains("\"hello\":\"world\"");

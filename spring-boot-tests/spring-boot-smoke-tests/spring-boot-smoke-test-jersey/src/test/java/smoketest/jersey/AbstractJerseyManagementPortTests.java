@@ -66,21 +66,21 @@ class AbstractJerseyManagementPortTests {
 	@Test
 	void resourceShouldNotBeAvailableOnManagementPort() {
 		ResponseEntity<String> entity = this.testRestTemplate
-				.getForEntity("http://localhost:" + this.managementPort + "/test", String.class);
+			.getForEntity("http://localhost:" + this.managementPort + "/test", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	@Test
 	void actuatorShouldBeAvailableOnManagementPort() {
 		ResponseEntity<String> entity = this.testRestTemplate
-				.getForEntity("http://localhost:" + this.managementPort + "/actuator/health", String.class);
+			.getForEntity("http://localhost:" + this.managementPort + "/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 	@Test
 	void actuatorShouldNotBeAvailableOnMainPort() {
 		ResponseEntity<String> entity = this.testRestTemplate
-				.getForEntity("http://localhost:" + this.port + "/actuator/health", String.class);
+			.getForEntity("http://localhost:" + this.port + "/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 

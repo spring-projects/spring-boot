@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -292,7 +292,9 @@ class BasicErrorControllerIntegrationTests {
 	void testRequestBodyValidationForMachineClient() {
 		load("--server.error.include-exception=true");
 		RequestEntity request = RequestEntity.post(URI.create(createUrl("/bodyValidation")))
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).body("{}");
+			.accept(MediaType.APPLICATION_JSON)
+			.contentType(MediaType.APPLICATION_JSON)
+			.body("{}");
 		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
 		assertErrorAttributes(entity.getBody(), "400", "Bad Request", MethodArgumentNotValidException.class, null,
 				"/bodyValidation");
@@ -304,7 +306,8 @@ class BasicErrorControllerIntegrationTests {
 	void testBindingExceptionForMachineClientDefault() {
 		load();
 		RequestEntity request = RequestEntity.get(URI.create(createUrl("/bind?trace=true,message=true")))
-				.accept(MediaType.APPLICATION_JSON).build();
+			.accept(MediaType.APPLICATION_JSON)
+			.build();
 		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
 		assertThat(entity.getBody()).doesNotContainKey("exception");
 		assertThat(entity.getBody()).doesNotContainKey("trace");
@@ -314,8 +317,9 @@ class BasicErrorControllerIntegrationTests {
 	@Test
 	void testConventionTemplateMapping() {
 		load();
-		RequestEntity<?> request = RequestEntity.get(URI.create(createUrl("/noStorage"))).accept(MediaType.TEXT_HTML)
-				.build();
+		RequestEntity<?> request = RequestEntity.get(URI.create(createUrl("/noStorage")))
+			.accept(MediaType.TEXT_HTML)
+			.build();
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(request, String.class);
 		String resp = entity.getBody();
 		assertThat(resp).contains("We are out of storage");
@@ -325,7 +329,8 @@ class BasicErrorControllerIntegrationTests {
 	void testIncompatibleMediaType() {
 		load();
 		RequestEntity<?> request = RequestEntity.get(URI.create(createUrl("/incompatibleType")))
-				.accept(MediaType.TEXT_PLAIN).build();
+			.accept(MediaType.TEXT_PLAIN)
+			.build();
 		ResponseEntity<String> entity = new TestRestTemplate().exchange(request, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 		assertThat(entity.getHeaders().getContentType()).isNull();

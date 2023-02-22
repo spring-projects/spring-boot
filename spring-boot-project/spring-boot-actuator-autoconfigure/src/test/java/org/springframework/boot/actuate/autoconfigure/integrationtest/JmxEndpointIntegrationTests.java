@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,12 +51,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JmxEndpointIntegrationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, EndpointAutoConfiguration.class,
-					JmxEndpointAutoConfiguration.class, HealthContributorAutoConfiguration.class,
-					HttpTraceAutoConfiguration.class))
-			.withUserConfiguration(HttpTraceRepositoryConfiguration.class, AuditEventRepositoryConfiguration.class)
-			.withPropertyValues("spring.jmx.enabled=true")
-			.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL));
+		.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, EndpointAutoConfiguration.class,
+				JmxEndpointAutoConfiguration.class, HealthContributorAutoConfiguration.class,
+				HttpTraceAutoConfiguration.class))
+		.withUserConfiguration(HttpTraceRepositoryConfiguration.class, AuditEventRepositoryConfiguration.class)
+		.withPropertyValues("spring.jmx.enabled=true")
+		.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL));
 
 	@Test
 	void jmxEndpointsAreExposed() {
@@ -69,12 +69,13 @@ class JmxEndpointIntegrationTests {
 
 	@Test
 	void jmxEndpointsAreExposedWhenLazyInitializationIsEnabled() {
-		this.contextRunner.withBean(LazyInitializationBeanFactoryPostProcessor.class,
-				LazyInitializationBeanFactoryPostProcessor::new).run((context) -> {
-					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
-					checkEndpointMBeans(mBeanServer, new String[] { "beans", "conditions", "configprops", "env",
-							"health", "info", "mappings", "threaddump", "httptrace" }, new String[] { "shutdown" });
-				});
+		this.contextRunner
+			.withBean(LazyInitializationBeanFactoryPostProcessor.class, LazyInitializationBeanFactoryPostProcessor::new)
+			.run((context) -> {
+				MBeanServer mBeanServer = context.getBean(MBeanServer.class);
+				checkEndpointMBeans(mBeanServer, new String[] { "beans", "conditions", "configprops", "env", "health",
+						"info", "mappings", "threaddump", "httptrace" }, new String[] { "shutdown" });
+			});
 	}
 
 	@Test
@@ -99,11 +100,13 @@ class JmxEndpointIntegrationTests {
 	private void checkEndpointMBeans(MBeanServer mBeanServer, String[] enabledEndpoints, String[] disabledEndpoints) {
 		for (String enabledEndpoint : enabledEndpoints) {
 			assertThat(isRegistered(mBeanServer, getDefaultObjectName(enabledEndpoint)))
-					.as(String.format("Endpoint %s", enabledEndpoint)).isTrue();
+				.as(String.format("Endpoint %s", enabledEndpoint))
+				.isTrue();
 		}
 		for (String disabledEndpoint : disabledEndpoints) {
 			assertThat(isRegistered(mBeanServer, getDefaultObjectName(disabledEndpoint)))
-					.as(String.format("Endpoint %s", disabledEndpoint)).isFalse();
+				.as(String.format("Endpoint %s", disabledEndpoint))
+				.isFalse();
 		}
 	}
 

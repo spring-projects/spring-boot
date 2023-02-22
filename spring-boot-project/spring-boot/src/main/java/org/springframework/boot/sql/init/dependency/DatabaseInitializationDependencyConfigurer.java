@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 		String name = DependsOnDatabaseInitializationPostProcessor.class.getName();
 		if (!registry.containsBeanDefinition(name)) {
 			BeanDefinitionBuilder builder = BeanDefinitionBuilder
-					.rootBeanDefinition(DependsOnDatabaseInitializationPostProcessor.class);
+				.rootBeanDefinition(DependsOnDatabaseInitializationPostProcessor.class);
 			registry.registerBeanDefinition(name, builder.getBeanDefinition());
 		}
 	}
@@ -104,7 +104,7 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 				for (String initializerBeanName : initializerBeanNamesBatch) {
 					BeanDefinition beanDefinition = getBeanDefinition(initializerBeanName, beanFactory);
 					beanDefinition
-							.setDependsOn(merge(beanDefinition.getDependsOn(), previousInitializerBeanNamesBatch));
+						.setDependsOn(merge(beanDefinition.getDependsOn(), previousInitializerBeanNamesBatch));
 				}
 				previousInitializerBeanNamesBatch = initializerBeanNamesBatch;
 			}

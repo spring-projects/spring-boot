@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,8 @@ class HttpTraceFilterTests {
 		this.filter.doFilter(request, new MockHttpServletResponse(), new MockFilterChain());
 		assertThat(this.repository.findAll()).hasSize(1);
 		org.springframework.boot.actuate.trace.http.HttpTrace.Principal tracedPrincipal = this.repository.findAll()
-				.get(0).getPrincipal();
+			.get(0)
+			.getPrincipal();
 		assertThat(tracedPrincipal).isNotNull();
 		assertThat(tracedPrincipal.getName()).isEqualTo("alice");
 	}
@@ -109,10 +110,11 @@ class HttpTraceFilterTests {
 						throw new IOException();
 					}
 
-				}))).satisfies((ex) -> {
-					assertThat(this.repository.findAll()).hasSize(1);
-					assertThat(this.repository.findAll().get(0).getResponse().getStatus()).isEqualTo(500);
-				});
+				})))
+			.satisfies((ex) -> {
+				assertThat(this.repository.findAll()).hasSize(1);
+				assertThat(this.repository.findAll().get(0).getResponse().getStatus()).isEqualTo(500);
+			});
 	}
 
 	@Test

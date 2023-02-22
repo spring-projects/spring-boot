@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,8 +71,8 @@ class ConfigDataEnvironmentTests {
 	void createWhenUseLegacyPropertyInEnvironmentThrowsException() {
 		this.environment.setProperty("spring.config.use-legacy-processing", "true");
 		assertThatExceptionOfType(UseLegacyConfigProcessingException.class)
-				.isThrownBy(() -> new ConfigDataEnvironment(this.logFactory, this.bootstrapContext, this.environment,
-						this.resourceLoader, this.additionalProfiles, null));
+			.isThrownBy(() -> new ConfigDataEnvironment(this.logFactory, this.bootstrapContext, this.environment,
+					this.resourceLoader, this.additionalProfiles, null));
 	}
 
 	@Test
@@ -81,7 +81,7 @@ class ConfigDataEnvironmentTests {
 		TestConfigDataEnvironment configDataEnvironment = new TestConfigDataEnvironment(this.logFactory,
 				this.bootstrapContext, this.environment, this.resourceLoader, this.additionalProfiles, null);
 		assertThat(configDataEnvironment.getConfigDataLocationResolversBinder().bind("spring", String.class).get())
-				.isEqualTo("boot");
+			.isEqualTo("boot");
 	}
 
 	@Test
@@ -94,10 +94,13 @@ class ConfigDataEnvironmentTests {
 		this.environment.getPropertySources().addLast(propertySource3);
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
 				this.environment, this.resourceLoader, this.additionalProfiles, null);
-		List<ConfigDataEnvironmentContributor> children = configDataEnvironment.getContributors().getRoot()
-				.getChildren(ImportPhase.BEFORE_PROFILE_ACTIVATION);
-		Object[] wrapped = children.stream().filter((child) -> child.getKind() == Kind.EXISTING)
-				.map(ConfigDataEnvironmentContributor::getPropertySource).toArray();
+		List<ConfigDataEnvironmentContributor> children = configDataEnvironment.getContributors()
+			.getRoot()
+			.getChildren(ImportPhase.BEFORE_PROFILE_ACTIVATION);
+		Object[] wrapped = children.stream()
+			.filter((child) -> child.getKind() == Kind.EXISTING)
+			.map(ConfigDataEnvironmentContributor::getPropertySource)
+			.toArray();
 		assertThat(wrapped[1]).isEqualTo(propertySource1);
 		assertThat(wrapped[2]).isEqualTo(propertySource2);
 		assertThat(wrapped[3]).isEqualTo(propertySource3);
@@ -113,10 +116,13 @@ class ConfigDataEnvironmentTests {
 		this.environment.getPropertySources().addLast(propertySource2);
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
 				this.environment, this.resourceLoader, this.additionalProfiles, null);
-		List<ConfigDataEnvironmentContributor> children = configDataEnvironment.getContributors().getRoot()
-				.getChildren(ImportPhase.BEFORE_PROFILE_ACTIVATION);
-		Object[] wrapped = children.stream().filter((child) -> child.getKind() == Kind.EXISTING)
-				.map(ConfigDataEnvironmentContributor::getPropertySource).toArray();
+		List<ConfigDataEnvironmentContributor> children = configDataEnvironment.getContributors()
+			.getRoot()
+			.getChildren(ImportPhase.BEFORE_PROFILE_ACTIVATION);
+		Object[] wrapped = children.stream()
+			.filter((child) -> child.getKind() == Kind.EXISTING)
+			.map(ConfigDataEnvironmentContributor::getPropertySource)
+			.toArray();
 		assertThat(wrapped[1]).isEqualTo(propertySource1);
 		assertThat(wrapped[2]).isEqualTo(propertySource2);
 		assertThat(wrapped[3]).isEqualTo(defaultPropertySource);
@@ -129,10 +135,14 @@ class ConfigDataEnvironmentTests {
 		this.environment.setProperty("spring.config.import", "i1,i2");
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
 				this.environment, this.resourceLoader, this.additionalProfiles, null);
-		List<ConfigDataEnvironmentContributor> children = configDataEnvironment.getContributors().getRoot()
-				.getChildren(ImportPhase.BEFORE_PROFILE_ACTIVATION);
-		Object[] imports = children.stream().filter((child) -> child.getKind() == Kind.INITIAL_IMPORT)
-				.map(ConfigDataEnvironmentContributor::getImports).map(Object::toString).toArray();
+		List<ConfigDataEnvironmentContributor> children = configDataEnvironment.getContributors()
+			.getRoot()
+			.getChildren(ImportPhase.BEFORE_PROFILE_ACTIVATION);
+		Object[] imports = children.stream()
+			.filter((child) -> child.getKind() == Kind.INITIAL_IMPORT)
+			.map(ConfigDataEnvironmentContributor::getImports)
+			.map(Object::toString)
+			.toArray();
 		assertThat(imports).containsExactly("[i2]", "[i1]", "[a2]", "[a1]", "[l2]", "[l1]");
 	}
 
@@ -239,7 +249,7 @@ class ConfigDataEnvironmentTests {
 
 		};
 		assertThatExceptionOfType(InactiveConfigDataAccessException.class)
-				.isThrownBy(configDataEnvironment::processAndApply);
+			.isThrownBy(configDataEnvironment::processAndApply);
 	}
 
 	@ParameterizedTest
@@ -297,7 +307,7 @@ class ConfigDataEnvironmentTests {
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
 				this.environment, this.resourceLoader, this.additionalProfiles, null);
 		assertThatExceptionOfType(InvalidConfigDataPropertyException.class)
-				.isThrownBy(() -> configDataEnvironment.processAndApply());
+			.isThrownBy(() -> configDataEnvironment.processAndApply());
 	}
 
 	@Test
@@ -312,7 +322,7 @@ class ConfigDataEnvironmentTests {
 		assertThat(addedPropertySource.getPropertySource().getProperty("spring")).isEqualTo("boot");
 		assertThat(addedPropertySource.getLocation().toString()).isEqualTo(getConfigLocation(info));
 		assertThat(addedPropertySource.getResource().toString()).contains("class path resource")
-				.contains(info.getTestMethod().get().getName());
+			.contains(info.getTestMethod().get().getName());
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,9 +60,11 @@ public class ScheduledTasksEndpoint {
 	@ReadOperation
 	public ScheduledTasksReport scheduledTasks() {
 		Map<TaskType, List<TaskDescription>> descriptionsByType = this.scheduledTaskHolders.stream()
-				.flatMap((holder) -> holder.getScheduledTasks().stream()).map(ScheduledTask::getTask)
-				.map(TaskDescription::of).filter(Objects::nonNull)
-				.collect(Collectors.groupingBy(TaskDescription::getType));
+			.flatMap((holder) -> holder.getScheduledTasks().stream())
+			.map(ScheduledTask::getTask)
+			.map(TaskDescription::of)
+			.filter(Objects::nonNull)
+			.collect(Collectors.groupingBy(TaskDescription::getType));
 		return new ScheduledTasksReport(descriptionsByType);
 	}
 
@@ -124,8 +126,12 @@ public class ScheduledTasksEndpoint {
 		private final RunnableDescription runnable;
 
 		private static TaskDescription of(Task task) {
-			return DESCRIBERS.entrySet().stream().filter((entry) -> entry.getKey().isInstance(task))
-					.map((entry) -> entry.getValue().apply(task)).findFirst().orElse(null);
+			return DESCRIBERS.entrySet()
+				.stream()
+				.filter((entry) -> entry.getKey().isInstance(task))
+				.map((entry) -> entry.getValue().apply(task))
+				.findFirst()
+				.orElse(null);
 		}
 
 		private static TaskDescription describeTriggerTask(TriggerTask triggerTask) {

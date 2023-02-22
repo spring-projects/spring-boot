@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,12 +91,16 @@ public class JmsAutoConfiguration {
 			map.from(properties::getDefaultDestination).whenNonNull().to(template::setDefaultDestinationName);
 			map.from(properties::getDeliveryDelay).whenNonNull().as(Duration::toMillis).to(template::setDeliveryDelay);
 			map.from(properties::determineQosEnabled).to(template::setExplicitQosEnabled);
-			map.from(properties::getDeliveryMode).whenNonNull().as(DeliveryMode::getValue)
-					.to(template::setDeliveryMode);
+			map.from(properties::getDeliveryMode)
+				.whenNonNull()
+				.as(DeliveryMode::getValue)
+				.to(template::setDeliveryMode);
 			map.from(properties::getPriority).whenNonNull().to(template::setPriority);
 			map.from(properties::getTimeToLive).whenNonNull().as(Duration::toMillis).to(template::setTimeToLive);
-			map.from(properties::getReceiveTimeout).whenNonNull().as(Duration::toMillis)
-					.to(template::setReceiveTimeout);
+			map.from(properties::getReceiveTimeout)
+				.whenNonNull()
+				.as(Duration::toMillis)
+				.to(template::setReceiveTimeout);
 		}
 
 	}

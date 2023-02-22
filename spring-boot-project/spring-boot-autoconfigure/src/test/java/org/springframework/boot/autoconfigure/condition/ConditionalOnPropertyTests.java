@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -196,15 +196,14 @@ class ConditionalOnPropertyTests {
 	@Test
 	void nameOrValueMustBeSpecified() {
 		assertThatIllegalStateException().isThrownBy(() -> load(NoNameOrValueAttribute.class, "some.property"))
-				.satisfies(causeMessageContaining(
-						"The name or value attribute of @ConditionalOnProperty must be specified"));
+			.satisfies(
+					causeMessageContaining("The name or value attribute of @ConditionalOnProperty must be specified"));
 	}
 
 	@Test
 	void nameAndValueMustNotBeSpecified() {
 		assertThatIllegalStateException().isThrownBy(() -> load(NameAndValueAttribute.class, "some.property"))
-				.satisfies(causeMessageContaining(
-						"The name and value attributes of @ConditionalOnProperty are exclusive"));
+			.satisfies(causeMessageContaining("The name and value attributes of @ConditionalOnProperty are exclusive"));
 	}
 
 	private <T extends Exception> Consumer<T> causeMessageContaining(String message) {
@@ -274,8 +273,9 @@ class ConditionalOnPropertyTests {
 
 	private void load(Class<?> config, String... environment) {
 		TestPropertyValues.of(environment).applyTo(this.environment);
-		this.context = new SpringApplicationBuilder(config).environment(this.environment).web(WebApplicationType.NONE)
-				.run();
+		this.context = new SpringApplicationBuilder(config).environment(this.environment)
+			.web(WebApplicationType.NONE)
+			.run();
 	}
 
 	@Configuration(proxyBeanMethods = false)

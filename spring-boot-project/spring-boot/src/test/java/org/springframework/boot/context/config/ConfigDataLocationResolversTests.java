@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,9 +107,11 @@ class ConfigDataLocationResolversTests {
 	@Test
 	void createWhenNameIsNotConfigDataLocationResolverThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ConfigDataLocationResolvers(this.logFactory, this.bootstrapContext, this.binder,
-						this.resourceLoader, Collections.singletonList(InputStream.class.getName())))
-				.withMessageContaining("Unable to instantiate").havingCause().withMessageContaining("not assignable");
+			.isThrownBy(() -> new ConfigDataLocationResolvers(this.logFactory, this.bootstrapContext, this.binder,
+					this.resourceLoader, Collections.singletonList(InputStream.class.getName())))
+			.withMessageContaining("Unable to instantiate")
+			.havingCause()
+			.withMessageContaining("not assignable");
 	}
 
 	@Test
@@ -164,8 +166,8 @@ class ConfigDataLocationResolversTests {
 				Arrays.asList(LowestTestResolver.class.getName(), HighestTestResolver.class.getName()));
 		ConfigDataLocation location = ConfigDataLocation.of("Missing:test");
 		assertThatExceptionOfType(UnsupportedConfigDataLocationException.class)
-				.isThrownBy(() -> resolvers.resolve(this.context, location, null))
-				.satisfies((ex) -> assertThat(ex.getLocation()).isEqualTo(location));
+			.isThrownBy(() -> resolvers.resolve(this.context, location, null))
+			.satisfies((ex) -> assertThat(ex.getLocation()).isEqualTo(location));
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,13 @@ class RemoteDevtoolsSecurityConfiguration {
 	@ConditionalOnMissingBean(org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter.class)
 	@SuppressWarnings("deprecation")
 	SecurityFilterChain devtoolsSecurityFilterChain(HttpSecurity http) throws Exception {
-		http.requestMatcher(new AntPathRequestMatcher(this.url)).authorizeRequests().anyRequest().anonymous().and()
-				.csrf().disable();
+		http.requestMatcher(new AntPathRequestMatcher(this.url))
+			.authorizeRequests()
+			.anyRequest()
+			.anonymous()
+			.and()
+			.csrf()
+			.disable();
 		return http.build();
 	}
 

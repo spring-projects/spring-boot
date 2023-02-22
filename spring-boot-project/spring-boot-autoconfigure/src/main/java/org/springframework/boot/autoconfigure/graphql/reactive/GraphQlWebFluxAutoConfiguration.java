@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,7 +83,8 @@ import static org.springframework.web.reactive.function.server.RequestPredicates
 public class GraphQlWebFluxAutoConfiguration {
 
 	private static final RequestPredicate SUPPORTS_MEDIATYPES = accept(MediaType.APPLICATION_GRAPHQL,
-			MediaType.APPLICATION_JSON).and(contentType(MediaType.APPLICATION_GRAPHQL, MediaType.APPLICATION_JSON));
+			MediaType.APPLICATION_JSON)
+		.and(contentType(MediaType.APPLICATION_GRAPHQL, MediaType.APPLICATION_JSON));
 
 	private static final Log logger = LogFactory.getLog(GraphQlWebFluxAutoConfiguration.class);
 
@@ -98,7 +99,8 @@ public class GraphQlWebFluxAutoConfiguration {
 	public WebGraphQlHandler webGraphQlHandler(ExecutionGraphQlService service,
 			ObjectProvider<WebGraphQlInterceptor> interceptorsProvider) {
 		return WebGraphQlHandler.builder(service)
-				.interceptors(interceptorsProvider.orderedStream().collect(Collectors.toList())).build();
+			.interceptors(interceptorsProvider.orderedStream().collect(Collectors.toList()))
+			.build();
 	}
 
 	@Bean

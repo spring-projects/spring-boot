@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,20 +63,20 @@ class LocalHostWebConnectionHtmlUnitDriverTests {
 	@Test
 	void createWhenEnvironmentIsNullWillThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null))
-				.withMessageContaining("Environment must not be null");
+			.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
 	void createWithJavascriptFlagWhenEnvironmentIsNullWillThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, true))
-				.withMessageContaining("Environment must not be null");
+			.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
 	void createWithBrowserVersionWhenEnvironmentIsNullWillThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, BrowserVersion.CHROME))
-				.withMessageContaining("Environment must not be null");
+			.isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, BrowserVersion.CHROME))
+			.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
@@ -85,8 +85,8 @@ class LocalHostWebConnectionHtmlUnitDriverTests {
 		given(capabilities.getBrowserName()).willReturn("htmlunit");
 		given(capabilities.getBrowserVersion()).willReturn("chrome");
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, capabilities))
-				.withMessageContaining("Environment must not be null");
+			.isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, capabilities))
+			.withMessageContaining("Environment must not be null");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,7 +117,7 @@ class ApplicationConversionServiceTests {
 	@Test
 	void sharedInstanceCannotBeModified() {
 		ApplicationConversionService instance = (ApplicationConversionService) ApplicationConversionService
-				.getSharedInstance();
+			.getSharedInstance();
 		assertUnmodifiableExceptionThrown(() -> instance.addPrinter(null));
 		assertUnmodifiableExceptionThrown(() -> instance.addParser(null));
 		assertUnmodifiableExceptionThrown(() -> instance.addFormatter(null));
@@ -133,7 +133,7 @@ class ApplicationConversionServiceTests {
 
 	private void assertUnmodifiableExceptionThrown(ThrowingCallable throwingCallable) {
 		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(throwingCallable)
-				.withMessage("This ApplicationConversionService cannot be modified");
+			.withMessage("This ApplicationConversionService cannot be modified");
 	}
 
 	static class ExampleGenericConverter implements GenericConverter {

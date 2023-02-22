@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ class SslServerCustomizerTests {
 		assertThat(server.getConnectors()).hasSize(1);
 		List<ConnectionFactory> factories = new ArrayList<>(server.getConnectors()[0].getConnectionFactories());
 		assertThat(factories).extracting((factory) -> (Class) factory.getClass())
-				.containsExactly(SslConnectionFactory.class, HttpConnectionFactory.class);
+			.containsExactly(SslConnectionFactory.class, HttpConnectionFactory.class);
 	}
 
 	@Test
@@ -71,9 +71,9 @@ class SslServerCustomizerTests {
 		Server server = createCustomizedServer(http2);
 		assertThat(server.getConnectors()).hasSize(1);
 		List<ConnectionFactory> factories = new ArrayList<>(server.getConnectors()[0].getConnectionFactories());
-		assertThat(factories).extracting((factory) -> (Class) factory.getClass()).containsExactly(
-				SslConnectionFactory.class, ALPNServerConnectionFactory.class, HTTP2ServerConnectionFactory.class,
-				HttpConnectionFactory.class);
+		assertThat(factories).extracting((factory) -> (Class) factory.getClass())
+			.containsExactly(SslConnectionFactory.class, ALPNServerConnectionFactory.class,
+					HTTP2ServerConnectionFactory.class, HttpConnectionFactory.class);
 	}
 
 	@Test
@@ -93,11 +93,11 @@ class SslServerCustomizerTests {
 		Ssl ssl = new Ssl();
 		SslServerCustomizer customizer = new SslServerCustomizer(null, ssl, null, null);
 		assertThatExceptionOfType(Exception.class)
-				.isThrownBy(() -> customizer.configureSsl(new SslContextFactory.Server(), ssl, null))
-				.satisfies((ex) -> {
-					assertThat(ex).isInstanceOf(WebServerException.class);
-					assertThat(ex).hasMessageContaining("Could not load key store 'null'");
-				});
+			.isThrownBy(() -> customizer.configureSsl(new SslContextFactory.Server(), ssl, null))
+			.satisfies((ex) -> {
+				assertThat(ex).isInstanceOf(WebServerException.class);
+				assertThat(ex).hasMessageContaining("Could not load key store 'null'");
+			});
 	}
 
 	@Test
@@ -109,8 +109,8 @@ class SslServerCustomizerTests {
 		ssl.setKeyPassword("password");
 		SslServerCustomizer customizer = new SslServerCustomizer(null, ssl, null, null);
 		assertThatIllegalStateException()
-				.isThrownBy(() -> customizer.configureSsl(new SslContextFactory.Server(), ssl, null))
-				.withMessageContaining("must be empty or null for PKCS11 key stores");
+			.isThrownBy(() -> customizer.configureSsl(new SslContextFactory.Server(), ssl, null))
+			.withMessageContaining("must be empty or null for PKCS11 key stores");
 	}
 
 	@Test

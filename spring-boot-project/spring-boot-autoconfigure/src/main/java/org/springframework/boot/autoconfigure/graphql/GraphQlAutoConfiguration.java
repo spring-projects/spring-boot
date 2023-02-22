@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,9 +84,10 @@ public class GraphQlAutoConfiguration {
 		Resource[] schemaResources = resolveSchemaResources(resourcePatternResolver, schemaLocations,
 				properties.getSchema().getFileExtensions());
 		GraphQlSource.SchemaResourceBuilder builder = GraphQlSource.schemaResourceBuilder()
-				.schemaResources(schemaResources).exceptionResolvers(toList(exceptionResolvers))
-				.subscriptionExceptionResolvers(toList(subscriptionExceptionResolvers))
-				.instrumentation(toList(instrumentations));
+			.schemaResources(schemaResources)
+			.exceptionResolvers(toList(exceptionResolvers))
+			.subscriptionExceptionResolvers(toList(subscriptionExceptionResolvers))
+			.instrumentation(toList(instrumentations));
 		if (!properties.getSchema().getIntrospection().isEnabled()) {
 			builder.configureRuntimeWiring(this::enableIntrospection);
 		}
@@ -140,7 +141,7 @@ public class GraphQlAutoConfiguration {
 	public AnnotatedControllerConfigurer annotatedControllerConfigurer() {
 		AnnotatedControllerConfigurer controllerConfigurer = new AnnotatedControllerConfigurer();
 		controllerConfigurer
-				.addFormatterRegistrar((registry) -> ApplicationConversionService.addBeans(registry, this.beanFactory));
+			.addFormatterRegistrar((registry) -> ApplicationConversionService.addBeans(registry, this.beanFactory));
 		return controllerConfigurer;
 	}
 

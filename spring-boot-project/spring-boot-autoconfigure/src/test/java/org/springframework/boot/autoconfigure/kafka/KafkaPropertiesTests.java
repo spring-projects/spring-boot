@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,10 +44,10 @@ class KafkaPropertiesTests {
 	@Test
 	void isolationLevelEnumConsistentWithKafkaVersion() {
 		org.apache.kafka.common.IsolationLevel[] original = org.apache.kafka.common.IsolationLevel.values();
-		assertThat(original).extracting(Enum::name).containsExactly(IsolationLevel.READ_UNCOMMITTED.name(),
-				IsolationLevel.READ_COMMITTED.name());
-		assertThat(original).extracting("id").containsExactly(IsolationLevel.READ_UNCOMMITTED.id(),
-				IsolationLevel.READ_COMMITTED.id());
+		assertThat(original).extracting(Enum::name)
+			.containsExactly(IsolationLevel.READ_UNCOMMITTED.name(), IsolationLevel.READ_COMMITTED.name());
+		assertThat(original).extracting("id")
+			.containsExactly(IsolationLevel.READ_UNCOMMITTED.id(), IsolationLevel.READ_COMMITTED.id());
 		assertThat(original).hasSize(IsolationLevel.values().length);
 	}
 
@@ -68,7 +68,7 @@ class KafkaPropertiesTests {
 		assertThat(consumerProperties.get(SslConfigs.SSL_KEYSTORE_KEY_CONFIG)).isEqualTo("-----BEGINkey");
 		assertThat(consumerProperties.get(SslConfigs.SSL_TRUSTSTORE_CERTIFICATES_CONFIG)).isEqualTo("-----BEGINtrust");
 		assertThat(consumerProperties.get(SslConfigs.SSL_KEYSTORE_CERTIFICATE_CHAIN_CONFIG))
-				.isEqualTo("-----BEGINchain");
+			.isEqualTo("-----BEGINchain");
 	}
 
 	@Test
@@ -77,7 +77,7 @@ class KafkaPropertiesTests {
 		properties.getSsl().setKeyStoreKey("-----BEGIN");
 		properties.getSsl().setKeyStoreLocation(new ClassPathResource("ksLoc"));
 		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
-				.isThrownBy(properties::buildConsumerProperties);
+			.isThrownBy(properties::buildConsumerProperties);
 	}
 
 	@Test
@@ -86,7 +86,7 @@ class KafkaPropertiesTests {
 		properties.getSsl().setTrustStoreLocation(new ClassPathResource("tsLoc"));
 		properties.getSsl().setTrustStoreCertificates("-----BEGIN");
 		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
-				.isThrownBy(properties::buildConsumerProperties);
+			.isThrownBy(properties::buildConsumerProperties);
 	}
 
 	@Test

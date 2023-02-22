@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,8 +83,8 @@ class EmbeddedMongoAutoConfigurationTests {
 		this.context.register(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 				EmbeddedMongoAutoConfiguration.class);
 		assertThatThrownBy(() -> this.context.refresh()).hasRootCauseExactlyInstanceOf(IllegalStateException.class)
-				.hasRootCauseMessage("Set the spring.mongodb.embedded.version property or define your own MongodConfig "
-						+ "bean to use embedded MongoDB");
+			.hasRootCauseMessage("Set the spring.mongodb.embedded.version property or define your own MongodConfig "
+					+ "bean to use embedded MongoDB");
 	}
 
 	@Test
@@ -178,7 +178,7 @@ class EmbeddedMongoAutoConfigurationTests {
 		loadWithValidVersion(DownloadConfigBuilderCustomizerConfiguration.class);
 		RuntimeConfig runtimeConfig = this.context.getBean(RuntimeConfig.class);
 		DownloadConfig downloadConfig = (DownloadConfig) new DirectFieldAccessor(runtimeConfig.artifactStore())
-				.getPropertyValue("downloadConfig");
+			.getPropertyValue("downloadConfig");
 		assertThat(downloadConfig.getUserAgent()).isEqualTo("Test User Agent");
 	}
 

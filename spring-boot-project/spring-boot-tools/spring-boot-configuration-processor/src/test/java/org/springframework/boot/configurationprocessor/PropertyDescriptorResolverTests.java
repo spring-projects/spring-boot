@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,13 +77,13 @@ class PropertyDescriptorResolverTests {
 					PropertyDescriptorResolver resolver = new PropertyDescriptorResolver(metadataEnv);
 					assertThat(resolver.resolve(type, null).map(PropertyDescriptor::getName)).containsExactly("third",
 							"second", "first");
-					assertThat(resolver.resolve(type, null).map(
-							(descriptor) -> descriptor.getGetter().getEnclosingElement().getSimpleName().toString()))
-									.containsExactly("HierarchicalProperties", "HierarchicalPropertiesParent",
-											"HierarchicalPropertiesParent");
 					assertThat(resolver.resolve(type, null)
-							.map((descriptor) -> descriptor.resolveItemMetadata("test", metadataEnv))
-							.map(ItemMetadata::getDefaultValue)).containsExactly("three", "two", "one");
+						.map((descriptor) -> descriptor.getGetter().getEnclosingElement().getSimpleName().toString()))
+						.containsExactly("HierarchicalProperties", "HierarchicalPropertiesParent",
+								"HierarchicalPropertiesParent");
+					assertThat(resolver.resolve(type, null)
+						.map((descriptor) -> descriptor.resolveItemMetadata("test", metadataEnv))
+						.map(ItemMetadata::getDefaultValue)).containsExactly("three", "two", "one");
 				});
 	}
 
@@ -116,7 +116,7 @@ class PropertyDescriptorResolverTests {
 		process(ImmutableSimpleProperties.class, propertyNames(
 				(stream) -> assertThat(stream).containsExactly("theName", "flag", "comparator", "counter")));
 		process(ImmutableSimpleProperties.class, properties((stream) -> assertThat(stream)
-				.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
+			.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
 	@Test
@@ -124,7 +124,7 @@ class PropertyDescriptorResolverTests {
 		process(ImmutableClassConstructorBindingProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("name", "description")));
 		process(ImmutableClassConstructorBindingProperties.class, properties((stream) -> assertThat(stream)
-				.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
+			.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
 	@Test
@@ -138,7 +138,7 @@ class PropertyDescriptorResolverTests {
 		process(MatchingConstructorNoDirectiveProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("name")));
 		process(MatchingConstructorNoDirectiveProperties.class, properties((stream) -> assertThat(stream)
-				.allMatch((predicate) -> predicate instanceof JavaBeanPropertyDescriptor)));
+			.allMatch((predicate) -> predicate instanceof JavaBeanPropertyDescriptor)));
 	}
 
 	@Test
@@ -146,7 +146,7 @@ class PropertyDescriptorResolverTests {
 		process(ImmutableMultiConstructorProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("name", "description")));
 		process(ImmutableMultiConstructorProperties.class, properties((stream) -> assertThat(stream)
-				.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
+			.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
 	@Test

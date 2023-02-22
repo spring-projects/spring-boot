@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 		getTask().providedClasspath(jarFile("provided-library.jar"));
 		executeTask();
 		assertThat(getEntryNames(getTask().getArchiveFile().get().getAsFile()))
-				.containsSubsequence("WEB-INF/lib/library.jar", "WEB-INF/lib-provided/provided-library.jar");
+			.containsSubsequence("WEB-INF/lib/library.jar", "WEB-INF/lib-provided/provided-library.jar");
 	}
 
 	@Test
@@ -124,7 +124,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	void classpathIndexPointsToWebInfLibs() throws IOException {
 		try (JarFile jarFile = new JarFile(createPopulatedJar())) {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classpath-Index"))
-					.isEqualTo("WEB-INF/classpath.idx");
+				.isEqualTo("WEB-INF/classpath.idx");
 			assertThat(entryLines(jarFile, "WEB-INF/classpath.idx")).containsExactly(
 					"- \"WEB-INF/lib/first-library.jar\"", "- \"WEB-INF/lib/second-library.jar\"",
 					"- \"WEB-INF/lib/third-library-SNAPSHOT.jar\"", "- \"WEB-INF/lib/first-project-library.jar\"",

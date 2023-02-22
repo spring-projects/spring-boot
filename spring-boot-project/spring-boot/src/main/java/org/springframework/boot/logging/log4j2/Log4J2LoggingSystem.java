@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -182,7 +182,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	private List<String> getOverrides(LoggingInitializationContext initializationContext) {
 		BindResult<List<String>> overrides = Binder.get(initializationContext.getEnvironment())
-				.bind("logging.log4j2.config.override", Bindable.listOf(String.class));
+			.bind("logging.log4j2.config.override", Bindable.listOf(String.class));
 		return overrides.orElse(Collections.emptyList());
 	}
 
@@ -311,8 +311,8 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	private void setLogLevel(String loggerName, LoggerConfig logger, Level level) {
 		if (logger == null) {
-			getLoggerContext().getConfiguration().addLogger(loggerName,
-					new LevelSetLoggerConfig(loggerName, level, true));
+			getLoggerContext().getConfiguration()
+				.addLogger(loggerName, new LevelSetLoggerConfig(loggerName, level, true));
 		}
 		else {
 			logger.setLevel(level);
@@ -420,7 +420,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	public static class Factory implements LoggingSystemFactory {
 
 		private static final boolean PRESENT = ClassUtils
-				.isPresent("org.apache.logging.log4j.core.impl.Log4jContextFactory", Factory.class.getClassLoader());
+			.isPresent("org.apache.logging.log4j.core.impl.Log4jContextFactory", Factory.class.getClassLoader());
 
 		@Override
 		public LoggingSystem getLoggingSystem(ClassLoader classLoader) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ class SolrHealthIndicatorTests {
 	void healthWhenSolrStatusUpAndBaseUrlPointsToParticularCoreReturnsUp() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
-				.willThrow(new RemoteSolrException("mock", 404, "", null));
+			.willThrow(new RemoteSolrException("mock", 404, "", null));
 		given(solrClient.ping()).willReturn(mockPingResponse(0));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		assertHealth(healthIndicator, Status.UP, 0, "particular core");
@@ -82,7 +82,7 @@ class SolrHealthIndicatorTests {
 	void healthWhenSolrStatusDownAndBaseUrlPointsToParticularCoreReturnsDown() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
-				.willThrow(new RemoteSolrException("mock", 404, "", null));
+			.willThrow(new RemoteSolrException("mock", 404, "", null));
 		given(solrClient.ping()).willReturn(mockPingResponse(400));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		assertHealth(healthIndicator, Status.DOWN, 400, "particular core");
@@ -95,7 +95,7 @@ class SolrHealthIndicatorTests {
 	void healthWhenSolrConnectionFailsReturnsDown() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
-				.willThrow(new IOException("Connection failed"));
+			.willThrow(new IOException("Connection failed"));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
@@ -108,7 +108,7 @@ class SolrHealthIndicatorTests {
 	void healthWhenMakingMultipleCallsRemembersStatusStrategy() throws Exception {
 		SolrClient solrClient = mock(SolrClient.class);
 		given(solrClient.request(any(CoreAdminRequest.class), isNull()))
-				.willThrow(new RemoteSolrException("mock", 404, "", null));
+			.willThrow(new RemoteSolrException("mock", 404, "", null));
 		given(solrClient.ping()).willReturn(mockPingResponse(0));
 		SolrHealthIndicator healthIndicator = new SolrHealthIndicator(solrClient);
 		healthIndicator.health();

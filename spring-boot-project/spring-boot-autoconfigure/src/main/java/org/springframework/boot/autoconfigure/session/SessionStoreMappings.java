@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,11 +57,13 @@ final class SessionStoreMappings {
 	}
 
 	static StoreType getType(WebApplicationType webApplicationType, String configurationClass) {
-		return MAPPINGS.entrySet().stream()
-				.filter((entry) -> ObjectUtils.nullSafeEquals(configurationClass,
-						entry.getValue().getConfiguration(webApplicationType)))
-				.map(Map.Entry::getKey).findFirst()
-				.orElseThrow(() -> new IllegalStateException("Unknown configuration class " + configurationClass));
+		return MAPPINGS.entrySet()
+			.stream()
+			.filter((entry) -> ObjectUtils.nullSafeEquals(configurationClass,
+					entry.getValue().getConfiguration(webApplicationType)))
+			.map(Map.Entry::getKey)
+			.findFirst()
+			.orElseThrow(() -> new IllegalStateException("Unknown configuration class " + configurationClass));
 	}
 
 	private static class Configurations {

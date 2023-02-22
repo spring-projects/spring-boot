@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -213,8 +213,9 @@ public class GradleBuild {
 		if (repository.exists()) {
 			FileSystemUtils.copyRecursively(repository, new File(this.projectDir, "repository"));
 		}
-		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
-				.withPluginClasspath(pluginClasspath());
+		GradleRunner gradleRunner = GradleRunner.create()
+			.withProjectDir(this.projectDir)
+			.withPluginClasspath(pluginClasspath());
 		if (this.dsl != Dsl.KOTLIN && !this.configurationCache) {
 			// see https://github.com/gradle/gradle/issues/6862
 			gradleRunner.withDebug(true);

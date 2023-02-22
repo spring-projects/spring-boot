@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ class ActiveMQPropertiesTests {
 	void setTrustAllPackages() {
 		this.properties.getPackages().setTrustAll(true);
 		assertThat(createFactory(this.properties).createConnectionFactory(ActiveMQConnectionFactory.class)
-				.isTrustAllPackages()).isTrue();
+			.isTrustAllPackages()).isTrue();
 	}
 
 	@Test
@@ -74,7 +74,7 @@ class ActiveMQPropertiesTests {
 		this.properties.getPackages().setTrustAll(false);
 		this.properties.getPackages().getTrusted().add("trusted.package");
 		ActiveMQConnectionFactory factory = createFactory(this.properties)
-				.createConnectionFactory(ActiveMQConnectionFactory.class);
+			.createConnectionFactory(ActiveMQConnectionFactory.class);
 		assertThat(factory.isTrustAllPackages()).isFalse();
 		assertThat(factory.getTrustedPackages().size()).isEqualTo(1);
 		assertThat(factory.getTrustedPackages().get(0)).isEqualTo("trusted.package");

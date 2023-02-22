@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,9 @@ class CorsSampleActuatorApplicationTests {
 	@Test
 	void preflightRequestToEndpointShouldReturnOk() throws Exception {
 		RequestEntity<?> envRequest = RequestEntity.options(new URI("/actuator/env"))
-				.header("Origin", "http://localhost:8080").header("Access-Control-Request-Method", "GET").build();
+			.header("Origin", "http://localhost:8080")
+			.header("Access-Control-Request-Method", "GET")
+			.build();
 		ResponseEntity<?> exchange = this.testRestTemplate.exchange(envRequest, Map.class);
 		assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
@@ -75,7 +77,9 @@ class CorsSampleActuatorApplicationTests {
 	@Test
 	void preflightRequestWhenCorsConfigInvalidShouldReturnForbidden() throws Exception {
 		RequestEntity<?> entity = RequestEntity.options(new URI("/actuator/env"))
-				.header("Origin", "http://localhost:9095").header("Access-Control-Request-Method", "GET").build();
+			.header("Origin", "http://localhost:9095")
+			.header("Access-Control-Request-Method", "GET")
+			.build();
 		ResponseEntity<byte[]> exchange = this.testRestTemplate.exchange(entity, byte[].class);
 		assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,25 +32,25 @@ class StringSequenceTests {
 	@Test
 	void createWhenSourceIsNullShouldThrowException() {
 		assertThatNullPointerException().isThrownBy(() -> new StringSequence(null))
-				.withMessage("Source must not be null");
+			.withMessage("Source must not be null");
 	}
 
 	@Test
 	void createWithIndexWhenSourceIsNullShouldThrowException() {
 		assertThatNullPointerException().isThrownBy(() -> new StringSequence(null, 0, 0))
-				.withMessage("Source must not be null");
+			.withMessage("Source must not be null");
 	}
 
 	@Test
 	void createWhenStartIsLessThanZeroShouldThrowException() {
 		assertThatExceptionOfType(StringIndexOutOfBoundsException.class)
-				.isThrownBy(() -> new StringSequence("x", -1, 0));
+			.isThrownBy(() -> new StringSequence("x", -1, 0));
 	}
 
 	@Test
 	void createWhenEndIsGreaterThanLengthShouldThrowException() {
 		assertThatExceptionOfType(StringIndexOutOfBoundsException.class)
-				.isThrownBy(() -> new StringSequence("x", 0, 2));
+			.isThrownBy(() -> new StringSequence("x", 0, 2));
 	}
 
 	@Test

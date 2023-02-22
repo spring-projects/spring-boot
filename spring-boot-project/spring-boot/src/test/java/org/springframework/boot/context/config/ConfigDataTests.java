@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,13 +45,13 @@ class ConfigDataTests {
 	@Test
 	void createWhenPropertySourcesIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigData(null))
-				.withMessage("PropertySources must not be null");
+			.withMessage("PropertySources must not be null");
 	}
 
 	@Test
 	void createWhenOptionsIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigData(Collections.emptyList(), (Option[]) null))
-				.withMessage("Options must not be null");
+			.withMessage("Options must not be null");
 	}
 
 	@Test
@@ -81,7 +81,7 @@ class ConfigDataTests {
 		PropertySourceOptions propertySourceOptions = (propertySource) -> Options.NONE;
 		ConfigData configData = new ConfigData(Collections.singleton(source), propertySourceOptions);
 		assertThatIllegalStateException().isThrownBy(() -> configData.getOptions())
-				.withMessage("No global options defined");
+			.withMessage("No global options defined");
 	}
 
 	@Test

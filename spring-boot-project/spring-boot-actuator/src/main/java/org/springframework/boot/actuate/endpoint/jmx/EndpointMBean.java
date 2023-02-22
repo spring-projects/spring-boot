@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,8 +115,10 @@ public class EndpointMBean implements DynamicMBean {
 
 	private Object invoke(JmxOperation operation, Object[] params) throws MBeanException, ReflectionException {
 		try {
-			String[] parameterNames = operation.getParameters().stream().map(JmxOperationParameter::getName)
-					.toArray(String[]::new);
+			String[] parameterNames = operation.getParameters()
+				.stream()
+				.map(JmxOperationParameter::getName)
+				.toArray(String[]::new);
 			Map<String, Object> arguments = getArguments(parameterNames, params);
 			InvocationContext context = new InvocationContext(SecurityContext.NONE, arguments);
 			Object result = operation.invoke(context);

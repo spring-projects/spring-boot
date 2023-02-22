@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -159,7 +159,8 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	private Timer getTimer(Builder builder, Object handler, HttpServletRequest request, HttpServletResponse response,
 			Throwable exception) {
 		return builder.description("Duration of HTTP server request handling")
-				.tags(this.tagsProvider.getTags(request, response, handler, exception)).register(this.registry);
+			.tags(this.tagsProvider.getTags(request, response, handler, exception))
+			.register(this.registry);
 	}
 
 	/**

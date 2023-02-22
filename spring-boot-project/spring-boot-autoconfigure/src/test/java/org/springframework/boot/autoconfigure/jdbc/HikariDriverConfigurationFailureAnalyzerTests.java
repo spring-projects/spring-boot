@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,15 +40,15 @@ class HikariDriverConfigurationFailureAnalyzerTests {
 	void failureAnalysisIsPerformed() {
 		FailureAnalysis failureAnalysis = performAnalysis(TestConfiguration.class);
 		assertThat(failureAnalysis).isNotNull();
-		assertThat(failureAnalysis.getDescription()).isEqualTo(
-				"Configuration of the Hikari connection pool failed: 'dataSourceClassName' is not supported.");
+		assertThat(failureAnalysis.getDescription())
+			.isEqualTo("Configuration of the Hikari connection pool failed: 'dataSourceClassName' is not supported.");
 		assertThat(failureAnalysis.getAction()).contains("Spring Boot auto-configures only a driver");
 	}
 
 	@Test
 	void unrelatedIllegalStateExceptionIsSkipped() {
 		FailureAnalysis failureAnalysis = new HikariDriverConfigurationFailureAnalyzer()
-				.analyze(new RuntimeException("foo", new IllegalStateException("bar")));
+			.analyze(new RuntimeException("foo", new IllegalStateException("bar")));
 		assertThat(failureAnalysis).isNull();
 	}
 
@@ -60,9 +60,10 @@ class HikariDriverConfigurationFailureAnalyzerTests {
 
 	private BeanCreationException createFailure(Class<?> configuration) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.datasource.type=" + HikariDataSource.class.getName(),
-				"spring.datasource.hikari.data-source-class-name=com.example.Foo", "spring.sql.init.mode=always")
-				.applyTo(context);
+		TestPropertyValues
+			.of("spring.datasource.type=" + HikariDataSource.class.getName(),
+					"spring.datasource.hikari.data-source-class-name=com.example.Foo", "spring.sql.init.mode=always")
+			.applyTo(context);
 		context.register(configuration);
 		try {
 			context.refresh();

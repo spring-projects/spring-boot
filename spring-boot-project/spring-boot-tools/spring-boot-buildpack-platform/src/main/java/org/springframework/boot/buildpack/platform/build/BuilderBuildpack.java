@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ class BuilderBuildpack implements Buildpack {
 	static Buildpack resolve(BuildpackResolverContext context, BuildpackReference reference) {
 		boolean unambiguous = reference.hasPrefix(PREFIX);
 		BuilderReference builderReference = BuilderReference
-				.of(unambiguous ? reference.getSubReference(PREFIX) : reference.toString());
+			.of(unambiguous ? reference.getSubReference(PREFIX) : reference.toString());
 		BuildpackMetadata buildpackMetadata = findBuildpackMetadata(context, builderReference);
 		if (unambiguous) {
 			Assert.isTrue(buildpackMetadata != null, () -> "Buildpack '" + reference + "' not found in builder");

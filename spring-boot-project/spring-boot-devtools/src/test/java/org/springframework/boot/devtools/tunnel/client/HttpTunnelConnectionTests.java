@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,26 +73,26 @@ class HttpTunnelConnectionTests {
 	@Test
 	void urlMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelConnection(null, this.requestFactory))
-				.withMessageContaining("URL must not be empty");
+			.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	void urlMustNotBeEmpty() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelConnection("", this.requestFactory))
-				.withMessageContaining("URL must not be empty");
+			.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	void urlMustNotBeMalformed() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new HttpTunnelConnection("htttttp:///ttest", this.requestFactory))
-				.withMessageContaining("Malformed URL 'htttttp:///ttest'");
+			.isThrownBy(() -> new HttpTunnelConnection("htttttp:///ttest", this.requestFactory))
+			.withMessageContaining("Malformed URL 'htttttp:///ttest'");
 	}
 
 	@Test
 	void requestFactoryMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelConnection(this.url, null))
-				.withMessageContaining("RequestFactory must not be null");
+			.withMessageContaining("RequestFactory must not be null");
 	}
 
 	@Test

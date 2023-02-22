@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -211,7 +211,7 @@ class ConfigDataPropertiesTests {
 		source.put("spring.config.activate.on-profile", "a | b");
 		Binder binder = new Binder(source);
 		assertThatExceptionOfType(InvalidConfigDataPropertyException.class)
-				.isThrownBy(() -> ConfigDataProperties.get(binder));
+			.isThrownBy(() -> ConfigDataProperties.get(binder));
 	}
 
 	@Test
@@ -221,7 +221,7 @@ class ConfigDataPropertiesTests {
 		Binder binder = new Binder(source);
 		ConfigDataProperties properties = ConfigDataProperties.get(binder);
 		assertThat(properties.getImports().get(1).getOrigin())
-				.hasToString("\"spring.config.import\" from property source \"source\"");
+			.hasToString("\"spring.config.import\" from property source \"source\"");
 	}
 
 	@Test
@@ -233,7 +233,7 @@ class ConfigDataPropertiesTests {
 		Binder binder = new Binder(source);
 		ConfigDataProperties properties = ConfigDataProperties.get(binder);
 		assertThat(properties.getImports().get(1).getOrigin())
-				.hasToString("\"spring.config.import[1]\" from property source \"source\"");
+			.hasToString("\"spring.config.import[1]\" from property source \"source\"");
 	}
 
 	private Profiles createTestProfiles() {

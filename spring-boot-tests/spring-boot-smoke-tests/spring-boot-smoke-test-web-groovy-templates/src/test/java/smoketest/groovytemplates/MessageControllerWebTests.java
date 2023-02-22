@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,20 +57,23 @@ class MessageControllerWebTests {
 
 	@Test
 	void testHome() throws Exception {
-		this.mockMvc.perform(get("/")).andExpect(status().isOk())
-				.andExpect(content().string(containsString("<title>Messages")));
+		this.mockMvc.perform(get("/"))
+			.andExpect(status().isOk())
+			.andExpect(content().string(containsString("<title>Messages")));
 	}
 
 	@Test
 	void testCreate() throws Exception {
-		this.mockMvc.perform(post("/").param("text", "FOO text").param("summary", "FOO")).andExpect(status().isFound())
-				.andExpect(header().string("location", RegexMatcher.matches("/[0-9]+")));
+		this.mockMvc.perform(post("/").param("text", "FOO text").param("summary", "FOO"))
+			.andExpect(status().isFound())
+			.andExpect(header().string("location", RegexMatcher.matches("/[0-9]+")));
 	}
 
 	@Test
 	void testCreateValidation() throws Exception {
-		this.mockMvc.perform(post("/").param("text", "").param("summary", "")).andExpect(status().isOk())
-				.andExpect(content().string(containsString("is required")));
+		this.mockMvc.perform(post("/").param("text", "").param("summary", ""))
+			.andExpect(status().isOk())
+			.andExpect(content().string(containsString("is required")));
 	}
 
 	private static class RegexMatcher extends TypeSafeMatcher<String> {

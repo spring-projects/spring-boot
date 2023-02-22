@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,8 +100,8 @@ class ConfigDataEnvironmentPostProcessorTests {
 		this.application.setAdditionalProfiles("dev");
 		willReturn(this.configDataEnvironment).given(this.postProcessor).getConfigDataEnvironment(any(), any(), any());
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
-		then(this.postProcessor).should().getConfigDataEnvironment(any(), any(),
-				this.additionalProfilesCaptor.capture());
+		then(this.postProcessor).should()
+			.getConfigDataEnvironment(any(), any(), this.additionalProfilesCaptor.capture());
 		then(this.configDataEnvironment).should().processAndApply();
 		assertThat(this.additionalProfilesCaptor.getValue()).containsExactly("dev");
 	}
@@ -120,7 +120,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 		ConfigDataEnvironmentPostProcessor.LegacyConfigFileApplicationListener legacyListener = mock(
 				ConfigDataEnvironmentPostProcessor.LegacyConfigFileApplicationListener.class);
 		willThrow(new UseLegacyConfigProcessingException(null)).given(this.postProcessor)
-				.getConfigDataEnvironment(any(), any(), any());
+			.getConfigDataEnvironment(any(), any(), any());
 		willReturn(legacyListener).given(this.postProcessor).getLegacyListener();
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
 		then(this.configDataEnvironment).shouldHaveNoInteractions();
@@ -134,7 +134,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 		ConfigDataEnvironmentPostProcessor.LegacyConfigFileApplicationListener legacyListener = mock(
 				ConfigDataEnvironmentPostProcessor.LegacyConfigFileApplicationListener.class);
 		willThrow(new UseLegacyConfigProcessingException(null)).given(this.postProcessor)
-				.getConfigDataEnvironment(any(), any(), any());
+			.getConfigDataEnvironment(any(), any(), any());
 		willReturn(legacyListener).given(this.postProcessor).getLegacyListener();
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
 		then(this.configDataEnvironment).shouldHaveNoInteractions();
@@ -153,7 +153,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 		assertThat(listener.getAddedPropertySources()).hasSizeGreaterThan(0);
 		assertThat(listener.getProfiles().getActive()).containsExactly("dev");
 		assertThat(listener.getAddedPropertySources().stream().anyMatch((added) -> hasDevProfile(added.getResource())))
-				.isTrue();
+			.isTrue();
 	}
 
 	private boolean hasDevProfile(ConfigDataResource resource) {

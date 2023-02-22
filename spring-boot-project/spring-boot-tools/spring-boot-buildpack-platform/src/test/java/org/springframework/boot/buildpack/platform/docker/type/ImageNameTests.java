@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,7 +118,7 @@ class ImageNameTests {
 	@Test
 	void ofWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageName.of(null))
-				.withMessage("Value must not be empty");
+			.withMessage("Value must not be empty");
 	}
 
 	@Test
@@ -129,20 +129,23 @@ class ImageNameTests {
 	@Test
 	void ofWhenContainsUppercaseThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageName.of("Test"))
-				.withMessageContaining("Unable to parse name").withMessageContaining("Test");
+			.withMessageContaining("Unable to parse name")
+			.withMessageContaining("Test");
 	}
 
 	@Test
 	void ofWhenNameIncludesTagThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageName.of("ubuntu:latest"))
-				.withMessageContaining("Unable to parse name").withMessageContaining(":latest");
+			.withMessageContaining("Unable to parse name")
+			.withMessageContaining(":latest");
 	}
 
 	@Test
 	void ofWhenNameIncludeDigestThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> ImageName.of("ubuntu@sha256:47bfdb88c3ae13e488167607973b7688f69d9e8c142c2045af343ec199649c09"))
-				.withMessageContaining("Unable to parse name").withMessageContaining("@sha256:47b");
+			.withMessageContaining("Unable to parse name")
+			.withMessageContaining("@sha256:47b");
 	}
 
 	@Test
@@ -153,8 +156,10 @@ class ImageNameTests {
 		ImageName n4 = ImageName.of("docker.io/library/ubuntu");
 		ImageName n5 = ImageName.of("index.docker.io/library/ubuntu");
 		ImageName n6 = ImageName.of("alpine");
-		assertThat(n1.hashCode()).isEqualTo(n2.hashCode()).isEqualTo(n3.hashCode()).isEqualTo(n4.hashCode())
-				.isEqualTo(n5.hashCode());
+		assertThat(n1.hashCode()).isEqualTo(n2.hashCode())
+			.isEqualTo(n3.hashCode())
+			.isEqualTo(n4.hashCode())
+			.isEqualTo(n5.hashCode());
 		assertThat(n1).isEqualTo(n1).isEqualTo(n2).isEqualTo(n3).isEqualTo(n4).isNotEqualTo(n6);
 	}
 

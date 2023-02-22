@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,7 +118,7 @@ public class SessionAutoConfiguration {
 			@Bean
 			DefaultCookieSerializerCustomizer rememberMeServicesCookieSerializerCustomizer() {
 				return (cookieSerializer) -> cookieSerializer
-						.setRememberMeRequestAttribute(SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
+					.setRememberMeRequestAttribute(SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
 			}
 
 		}
@@ -180,8 +180,8 @@ public class SessionAutoConfiguration {
 
 		protected final String[] selectImports(WebApplicationType webApplicationType) {
 			return Arrays.stream(StoreType.values())
-					.map((type) -> SessionStoreMappings.getConfigurationClass(webApplicationType, type))
-					.toArray(String[]::new);
+				.map((type) -> SessionStoreMappings.getConfigurationClass(webApplicationType, type))
+				.toArray(String[]::new);
 		}
 
 	}

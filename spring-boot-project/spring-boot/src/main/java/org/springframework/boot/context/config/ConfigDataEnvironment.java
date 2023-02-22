@@ -95,7 +95,7 @@ class ConfigDataEnvironment {
 	private static final ConfigDataLocation[] EMPTY_LOCATIONS = new ConfigDataLocation[0];
 
 	private static final Bindable<ConfigDataLocation[]> CONFIG_DATA_LOCATION_ARRAY = Bindable
-			.of(ConfigDataLocation[].class);
+		.of(ConfigDataLocation[].class);
 
 	private static final Bindable<List<String>> STRING_LIST = Bindable.listOf(String.class);
 
@@ -142,7 +142,7 @@ class ConfigDataEnvironment {
 		this.logFactory = logFactory;
 		this.logger = logFactory.getLog(getClass());
 		this.notFoundAction = binder.bind(ON_NOT_FOUND_PROPERTY, ConfigDataNotFoundAction.class)
-				.orElse(ConfigDataNotFoundAction.FAIL);
+			.orElse(ConfigDataNotFoundAction.FAIL);
 		this.bootstrapContext = bootstrapContext;
 		this.environment = environment;
 		this.resolvers = createConfigDataLocationResolvers(logFactory, bootstrapContext, binder, resourceLoader);
@@ -315,8 +315,9 @@ class ConfigDataEnvironment {
 
 	private void registerBootstrapBinder(ConfigDataEnvironmentContributors contributors,
 			ConfigDataActivationContext activationContext, BinderOption... binderOptions) {
-		this.bootstrapContext.register(Binder.class, InstanceSupplier
-				.from(() -> contributors.getBinder(activationContext, binderOptions)).withScope(Scope.PROTOTYPE));
+		this.bootstrapContext.register(Binder.class,
+				InstanceSupplier.from(() -> contributors.getBinder(activationContext, binderOptions))
+					.withScope(Scope.PROTOTYPE));
 	}
 
 	private void applyToEnvironment(ConfigDataEnvironmentContributors contributors,
@@ -342,12 +343,12 @@ class ConfigDataEnvironment {
 			PropertySource<?> propertySource = contributor.getPropertySource();
 			if (contributor.getKind() == ConfigDataEnvironmentContributor.Kind.BOUND_IMPORT && propertySource != null) {
 				if (!contributor.isActive(activationContext)) {
-					this.logger.trace(
-							LogMessage.format("Skipping inactive property source '%s'", propertySource.getName()));
+					this.logger
+						.trace(LogMessage.format("Skipping inactive property source '%s'", propertySource.getName()));
 				}
 				else {
 					this.logger
-							.trace(LogMessage.format("Adding imported property source '%s'", propertySource.getName()));
+						.trace(LogMessage.format("Adding imported property source '%s'", propertySource.getName()));
 					propertySources.addLast(propertySource);
 					this.environmentUpdateListener.onPropertySourceAdded(propertySource, contributor.getLocation(),
 							contributor.getResource());

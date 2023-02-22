@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JmxAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class));
 
 	@Test
 	void testDefaultMBeanExport() {
@@ -80,16 +80,18 @@ class JmxAutoConfigurationTests {
 
 	@Test
 	void testDefaultDomainConfiguredOnMBeanExport() {
-		this.contextRunner.withPropertyValues("spring.jmx.enabled=true", "spring.jmx.default-domain=my-test-domain",
-				"spring.jmx.unique-names=true").run((context) -> {
-					assertThat(context).hasSingleBean(MBeanExporter.class);
-					MBeanExporter exporter = context.getBean(MBeanExporter.class);
-					assertThat(exporter).hasFieldOrPropertyWithValue("ensureUniqueRuntimeObjectNames", true);
-					MetadataNamingStrategy naming = (MetadataNamingStrategy) ReflectionTestUtils.getField(exporter,
-							"namingStrategy");
-					assertThat(naming).hasFieldOrPropertyWithValue("defaultDomain", "my-test-domain");
-					assertThat(naming).hasFieldOrPropertyWithValue("ensureUniqueRuntimeObjectNames", true);
-				});
+		this.contextRunner
+			.withPropertyValues("spring.jmx.enabled=true", "spring.jmx.default-domain=my-test-domain",
+					"spring.jmx.unique-names=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(MBeanExporter.class);
+				MBeanExporter exporter = context.getBean(MBeanExporter.class);
+				assertThat(exporter).hasFieldOrPropertyWithValue("ensureUniqueRuntimeObjectNames", true);
+				MetadataNamingStrategy naming = (MetadataNamingStrategy) ReflectionTestUtils.getField(exporter,
+						"namingStrategy");
+				assertThat(naming).hasFieldOrPropertyWithValue("defaultDomain", "my-test-domain");
+				assertThat(naming).hasFieldOrPropertyWithValue("ensureUniqueRuntimeObjectNames", true);
+			});
 	}
 
 	@Test
@@ -106,21 +108,21 @@ class JmxAutoConfigurationTests {
 		try (AnnotationConfigApplicationContext parent = new AnnotationConfigApplicationContext()) {
 			parent.register(JmxAutoConfiguration.class, TestConfiguration.class);
 			parent.refresh();
-			this.contextRunner.withParent(parent).withConfiguration(UserConfigurations.of(TestConfiguration.class))
-					.run((context) -> assertThat(context.isRunning()));
+			this.contextRunner.withParent(parent)
+				.withConfiguration(UserConfigurations.of(TestConfiguration.class))
+				.run((context) -> assertThat(context.isRunning()));
 		}
 	}
 
 	@Test
 	void customJmxDomain() {
 		this.contextRunner.withConfiguration(UserConfigurations.of(CustomJmxDomainConfiguration.class))
-				.withConfiguration(
-						AutoConfigurations.of(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context).hasSingleBean(IntegrationMBeanExporter.class);
-					IntegrationMBeanExporter exporter = context.getBean(IntegrationMBeanExporter.class);
-					assertThat(exporter).hasFieldOrPropertyWithValue("domain", "foo.my");
-				});
+			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(IntegrationMBeanExporter.class);
+				IntegrationMBeanExporter exporter = context.getBean(IntegrationMBeanExporter.class);
+				assertThat(exporter).hasFieldOrPropertyWithValue("domain", "foo.my");
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

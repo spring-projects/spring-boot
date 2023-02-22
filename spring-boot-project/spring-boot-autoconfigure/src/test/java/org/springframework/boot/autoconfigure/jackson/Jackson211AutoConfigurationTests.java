@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,10 +48,10 @@ class Jackson211AutoConfigurationTests extends JacksonAutoConfigurationTests {
 	void customPropertyNamingStrategyClass() {
 		this.contextRunner.withPropertyValues(
 				"spring.jackson.property-naming-strategy:com.fasterxml.jackson.databind.PropertyNamingStrategy.SnakeCaseStrategy")
-				.run((context) -> {
-					ObjectMapper mapper = context.getBean(ObjectMapper.class);
-					assertThat(mapper.getPropertyNamingStrategy().getClass().getName()).isEqualTo(STRATEGY_CLASS_NAME);
-				});
+			.run((context) -> {
+				ObjectMapper mapper = context.getBean(ObjectMapper.class);
+				assertThat(mapper.getPropertyNamingStrategy().getClass().getName()).isEqualTo(STRATEGY_CLASS_NAME);
+			});
 	}
 
 	// ConstructorDetector only available as of Jackson 2.12

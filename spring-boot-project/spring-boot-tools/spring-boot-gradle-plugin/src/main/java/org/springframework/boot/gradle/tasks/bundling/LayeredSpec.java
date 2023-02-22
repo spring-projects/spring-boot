@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -361,14 +361,16 @@ public class LayeredSpec {
 
 		ContentSelector<Library> asLibrarySelector(Function<String, ContentFilter<Library>> filterFactory) {
 			Layer layer = new Layer(getIntoLayer());
-			List<ContentFilter<Library>> includeFilters = getIncludes().stream().map(filterFactory)
-					.collect(Collectors.toList());
+			List<ContentFilter<Library>> includeFilters = getIncludes().stream()
+				.map(filterFactory)
+				.collect(Collectors.toList());
 			if (this.includeProjectDependencies) {
 				includeFilters = new ArrayList<>(includeFilters);
 				includeFilters.add(Library::isLocal);
 			}
-			List<ContentFilter<Library>> excludeFilters = getExcludes().stream().map(filterFactory)
-					.collect(Collectors.toList());
+			List<ContentFilter<Library>> excludeFilters = getExcludes().stream()
+				.map(filterFactory)
+				.collect(Collectors.toList());
 			if (this.excludeProjectDependencies) {
 				excludeFilters = new ArrayList<>(excludeFilters);
 				excludeFilters.add(Library::isLocal);

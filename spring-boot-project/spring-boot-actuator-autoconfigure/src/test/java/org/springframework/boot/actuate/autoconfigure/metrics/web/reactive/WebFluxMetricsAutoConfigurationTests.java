@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,8 @@ import static org.mockito.Mockito.mock;
 class WebFluxMetricsAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.with(MetricsRun.simple()).withConfiguration(AutoConfigurations.of(WebFluxMetricsAutoConfiguration.class));
+		.with(MetricsRun.simple())
+		.withConfiguration(AutoConfigurations.of(WebFluxMetricsAutoConfiguration.class));
 
 	@Test
 	void shouldProvideWebFluxMetricsBeans() {
@@ -58,66 +59,70 @@ class WebFluxMetricsAutoConfigurationTests {
 			assertThat(context).getBeans(MetricsWebFilter.class).hasSize(1);
 			assertThat(context).getBeans(DefaultWebFluxTagsProvider.class).hasSize(1);
 			assertThat(context.getBean(DefaultWebFluxTagsProvider.class)).extracting("ignoreTrailingSlash")
-					.isEqualTo(true);
+				.isEqualTo(true);
 		});
 	}
 
 	@Test
 	void tagsProviderWhenIgnoreTrailingSlashIsFalse() {
 		this.contextRunner.withPropertyValues("management.metrics.web.server.request.ignore-trailing-slash=false")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(DefaultWebFluxTagsProvider.class);
-					assertThat(context.getBean(DefaultWebFluxTagsProvider.class)).extracting("ignoreTrailingSlash")
-							.isEqualTo(false);
-				});
+			.run((context) -> {
+				assertThat(context).hasSingleBean(DefaultWebFluxTagsProvider.class);
+				assertThat(context.getBean(DefaultWebFluxTagsProvider.class)).extracting("ignoreTrailingSlash")
+					.isEqualTo(false);
+			});
 	}
 
 	@Test
 	void shouldNotOverrideCustomTagsProvider() {
 		this.contextRunner.withUserConfiguration(CustomWebFluxTagsProviderConfig.class)
-				.run((context) -> assertThat(context).getBeans(WebFluxTagsProvider.class).hasSize(1)
-						.containsKey("customWebFluxTagsProvider"));
+			.run((context) -> assertThat(context).getBeans(WebFluxTagsProvider.class)
+				.hasSize(1)
+				.containsKey("customWebFluxTagsProvider"));
 	}
 
 	@Test
 	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput output) {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
-				.withUserConfiguration(TestController.class)
-				.withPropertyValues("management.metrics.web.server.max-uri-tags=2").run((context) -> {
-					MeterRegistry registry = getInitializedMeterRegistry(context);
-					assertThat(registry.get("http.server.requests").meters()).hasSize(2);
-					assertThat(output).contains("Reached the maximum number of URI tags for 'http.server.requests'");
-				});
+			.withUserConfiguration(TestController.class)
+			.withPropertyValues("management.metrics.web.server.max-uri-tags=2")
+			.run((context) -> {
+				MeterRegistry registry = getInitializedMeterRegistry(context);
+				assertThat(registry.get("http.server.requests").meters()).hasSize(2);
+				assertThat(output).contains("Reached the maximum number of URI tags for 'http.server.requests'");
+			});
 	}
 
 	@Test
 	void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput output) {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
-				.withUserConfiguration(TestController.class)
-				.withPropertyValues("management.metrics.web.server.max-uri-tags=5").run((context) -> {
-					MeterRegistry registry = getInitializedMeterRegistry(context);
-					assertThat(registry.get("http.server.requests").meters()).hasSize(3);
-					assertThat(output)
-							.doesNotContain("Reached the maximum number of URI tags for 'http.server.requests'");
-				});
+			.withUserConfiguration(TestController.class)
+			.withPropertyValues("management.metrics.web.server.max-uri-tags=5")
+			.run((context) -> {
+				MeterRegistry registry = getInitializedMeterRegistry(context);
+				assertThat(registry.get("http.server.requests").meters()).hasSize(3);
+				assertThat(output).doesNotContain("Reached the maximum number of URI tags for 'http.server.requests'");
+			});
 	}
 
 	@Test
 	void metricsAreNotRecordedIfAutoTimeRequestsIsDisabled() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class))
-				.withUserConfiguration(TestController.class)
-				.withPropertyValues("management.metrics.web.server.request.autotime.enabled=false").run((context) -> {
-					MeterRegistry registry = getInitializedMeterRegistry(context);
-					assertThat(registry.find("http.server.requests").meter()).isNull();
-				});
+			.withUserConfiguration(TestController.class)
+			.withPropertyValues("management.metrics.web.server.request.autotime.enabled=false")
+			.run((context) -> {
+				MeterRegistry registry = getInitializedMeterRegistry(context);
+				assertThat(registry.find("http.server.requests").meter()).isNull();
+			});
 	}
 
 	@Test
 	void whenTagContributorsAreDefinedThenTagsProviderUsesThem() {
 		this.contextRunner.withUserConfiguration(TagsContributorsConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(DefaultWebFluxTagsProvider.class);
-			assertThat(context.getBean(DefaultWebFluxTagsProvider.class)).extracting("contributors").asList()
-					.hasSize(2);
+			assertThat(context.getBean(DefaultWebFluxTagsProvider.class)).extracting("contributors")
+				.asList()
+				.hasSize(2);
 		});
 	}
 

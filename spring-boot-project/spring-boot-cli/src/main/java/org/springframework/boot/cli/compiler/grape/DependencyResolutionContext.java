@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,10 +85,10 @@ public class DependencyResolutionContext {
 
 	public void addDependencyManagement(DependencyManagement dependencyManagement) {
 		for (org.springframework.boot.cli.compiler.dependencies.Dependency dependency : dependencyManagement
-				.getDependencies()) {
+			.getDependencies()) {
 			List<Exclusion> aetherExclusions = new ArrayList<>();
 			for (org.springframework.boot.cli.compiler.dependencies.Dependency.Exclusion exclusion : dependency
-					.getExclusions()) {
+				.getExclusions()) {
 				aetherExclusions.add(new Exclusion(exclusion.getGroupId(), exclusion.getArtifactId(), "*", "*"));
 			}
 			Dependency aetherDependency = new Dependency(new DefaultArtifact(dependency.getGroupId(),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -177,11 +177,11 @@ class LoggingApplicationListenerTests {
 	@Test
 	void overrideConfigDoesNotExist() {
 		addPropertiesToEnvironment(this.context, "logging.config=doesnotexist.xml");
-		assertThatIllegalStateException().isThrownBy(
-				() -> this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader()));
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader()));
 		assertThat(this.output)
-				.contains("Logging system failed to initialize using configuration from 'doesnotexist.xml'")
-				.doesNotContain("JoranException");
+			.contains("Logging system failed to initialize using configuration from 'doesnotexist.xml'")
+			.doesNotContain("JoranException");
 	}
 
 	@Test
@@ -343,8 +343,8 @@ class LoggingApplicationListenerTests {
 	void parseLevelsFails() {
 		this.logger.setLevel(Level.INFO);
 		addPropertiesToEnvironment(this.context, "logging.level.org.springframework.boot=GARBAGE");
-		assertThatExceptionOfType(BindException.class).isThrownBy(
-				() -> this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader()));
+		assertThatExceptionOfType(BindException.class)
+			.isThrownBy(() -> this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader()));
 	}
 
 	@Test
@@ -485,7 +485,7 @@ class LoggingApplicationListenerTests {
 		addPropertiesToEnvironment(this.context, "logging.pattern.console=console ${doesnotexist}");
 		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN))
-				.isEqualTo("console ${doesnotexist}");
+			.isEqualTo("console ${doesnotexist}");
 	}
 
 	@Test
@@ -493,7 +493,7 @@ class LoggingApplicationListenerTests {
 		addPropertiesToEnvironment(this.context, "logging.pattern.console=console ${pid}");
 		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN))
-				.isEqualTo(this.context.getEnvironment().getProperty("logging.pattern.console"));
+			.isEqualTo(this.context.getEnvironment().getProperty("logging.pattern.console"));
 	}
 
 	@Test
@@ -501,7 +501,7 @@ class LoggingApplicationListenerTests {
 		addPropertiesToEnvironment(this.context, "logging.file.name=" + this.tempDir + "${PID}.log");
 		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE))
-				.isEqualTo(this.tempDir + new ApplicationPid().toString() + ".log");
+			.isEqualTo(this.tempDir + new ApplicationPid().toString() + ".log");
 	}
 
 	@Test
@@ -521,8 +521,11 @@ class LoggingApplicationListenerTests {
 		System.setProperty(LoggingSystem.SYSTEM_PROPERTY, TestCleanupLoggingSystem.class.getName());
 		this.springApplication.setWebApplicationType(WebApplicationType.NONE);
 		ConfigurableApplicationContext context = this.springApplication.run();
-		ApplicationListener<?> listener = this.springApplication.getListeners().stream()
-				.filter(LoggingApplicationListener.class::isInstance).findFirst().get();
+		ApplicationListener<?> listener = this.springApplication.getListeners()
+			.stream()
+			.filter(LoggingApplicationListener.class::isInstance)
+			.findFirst()
+			.get();
 		TestCleanupLoggingSystem loggingSystem = (TestCleanupLoggingSystem) ReflectionTestUtils.getField(listener,
 				"loggingSystem");
 		assertThat(loggingSystem.cleanedUp).isFalse();
@@ -543,7 +546,7 @@ class LoggingApplicationListenerTests {
 	void lowPriorityPropertySourceShouldNotOverrideRootLoggerConfig() {
 		MutablePropertySources propertySources = this.context.getEnvironment().getPropertySources();
 		propertySources
-				.addFirst(new MapPropertySource("test1", Collections.singletonMap("logging.level.ROOT", "DEBUG")));
+			.addFirst(new MapPropertySource("test1", Collections.singletonMap("logging.level.ROOT", "DEBUG")));
 		propertySources.addLast(new MapPropertySource("test2", Collections.singletonMap("logging.level.root", "WARN")));
 		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.debug("testatdebug");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -174,7 +174,7 @@ class JarURLConnectionTests {
 		URL url = new URL("jar:" + this.rootJarFile.toURI().toURL() + "!/w.jar!/3.dat");
 		try (JarFile nested = this.jarFile.getNestedJarFile(this.jarFile.getEntry("nested.jar"))) {
 			assertThatExceptionOfType(FileNotFoundException.class)
-					.isThrownBy(JarURLConnection.get(url, nested)::getInputStream);
+				.isThrownBy(JarURLConnection.get(url, nested)::getInputStream);
 		}
 	}
 
@@ -229,7 +229,7 @@ class JarURLConnectionTests {
 	@Test
 	void jarEntryNameWithMixtureOfEncodedAndUnencodedDoubleByteCharacters() {
 		assertThat(new JarEntryName(new StringSequence("%c3%a1/b/\u00c7.class")).toString())
-				.isEqualTo("\u00e1/b/\u00c7.class");
+			.isEqualTo("\u00e1/b/\u00c7.class");
 	}
 
 	@Test

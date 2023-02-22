@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,8 +85,8 @@ class ActiveMQConnectionFactoryFactory {
 		String user = this.properties.getUser();
 		String password = this.properties.getPassword();
 		if (StringUtils.hasLength(user) && StringUtils.hasLength(password)) {
-			return factoryClass.getConstructor(String.class, String.class, String.class).newInstance(user, password,
-					brokerUrl);
+			return factoryClass.getConstructor(String.class, String.class, String.class)
+				.newInstance(user, password, brokerUrl);
 		}
 		return factoryClass.getConstructor(String.class).newInstance(brokerUrl);
 	}

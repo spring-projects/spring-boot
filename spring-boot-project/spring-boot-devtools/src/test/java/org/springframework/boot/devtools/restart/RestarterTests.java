@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ class RestarterTests {
 	void cantGetInstanceBeforeInitialize() {
 		Restarter.clearInstance();
 		assertThatIllegalStateException().isThrownBy(Restarter::getInstance)
-				.withMessageContaining("Restarter has not been initialized");
+			.withMessageContaining("Restarter has not been initialized");
 	}
 
 	@Test
@@ -102,7 +102,7 @@ class RestarterTests {
 	@Test
 	void addUrlsMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Restarter.getInstance().addUrls(null))
-				.withMessageContaining("Urls must not be null");
+			.withMessageContaining("Urls must not be null");
 	}
 
 	@Test
@@ -119,7 +119,7 @@ class RestarterTests {
 	@Test
 	void addClassLoaderFilesMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Restarter.getInstance().addClassLoaderFiles(null))
-				.withMessageContaining("ClassLoaderFiles must not be null");
+			.withMessageContaining("ClassLoaderFiles must not be null");
 	}
 
 	@Test

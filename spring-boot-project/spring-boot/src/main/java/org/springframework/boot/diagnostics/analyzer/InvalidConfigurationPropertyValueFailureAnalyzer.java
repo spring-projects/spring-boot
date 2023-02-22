@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,15 +63,17 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 
 	private List<Descriptor> getDescriptors(String propertyName) {
 		return getPropertySources().filter((source) -> source.containsProperty(propertyName))
-				.map((source) -> Descriptor.get(source, propertyName)).collect(Collectors.toList());
+			.map((source) -> Descriptor.get(source, propertyName))
+			.collect(Collectors.toList());
 	}
 
 	private Stream<PropertySource<?>> getPropertySources() {
 		if (this.environment == null) {
 			return Stream.empty();
 		}
-		return this.environment.getPropertySources().stream()
-				.filter((source) -> !ConfigurationPropertySources.isAttachedConfigurationPropertySource(source));
+		return this.environment.getPropertySources()
+			.stream()
+			.filter((source) -> !ConfigurationPropertySources.isAttachedConfigurationPropertySource(source));
 	}
 
 	private void appendDetails(StringBuilder message, InvalidConfigurationPropertyValueException cause,
@@ -96,9 +98,9 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 	private void appendAdditionalProperties(StringBuilder message, List<Descriptor> descriptors) {
 		List<Descriptor> others = descriptors.subList(1, descriptors.size());
 		if (!others.isEmpty()) {
-			message.append(
-					String.format("%n%nAdditionally, this property is also set in the following property %s:%n%n",
-							(others.size() > 1) ? "sources" : "source"));
+			message
+				.append(String.format("%n%nAdditionally, this property is also set in the following property %s:%n%n",
+						(others.size() > 1) ? "sources" : "source"));
 			for (Descriptor other : others) {
 				message.append("\t- In '").append(other.getPropertySource()).append("'");
 				message.append(" with the value '").append(other.getValue()).append("'");

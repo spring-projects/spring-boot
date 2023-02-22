@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,7 +98,7 @@ class ConditionEvaluationReportTests {
 		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory.getParentBeanFactory());
 		assertThat(this.report).isSameAs(ConditionEvaluationReport.get(this.beanFactory));
 		assertThat(this.report.getParent()).isSameAs(ConditionEvaluationReport
-				.get((ConfigurableListableBeanFactory) this.beanFactory.getParentBeanFactory()));
+			.get((ConfigurableListableBeanFactory) this.beanFactory.getParentBeanFactory()));
 	}
 
 	@Test
@@ -163,7 +163,7 @@ class ConditionEvaluationReportTests {
 	@SuppressWarnings("resource")
 	void springBootConditionPopulatesReport() {
 		ConditionEvaluationReport report = ConditionEvaluationReport
-				.get(new AnnotationConfigApplicationContext(Config.class).getBeanFactory());
+			.get(new AnnotationConfigApplicationContext(Config.class).getBeanFactory());
 		assertThat(report.getConditionAndOutcomesBySource().size()).isNotEqualTo(0);
 	}
 
@@ -246,7 +246,7 @@ class ConditionEvaluationReportTests {
 				"org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration",
 				"org.springframework.boot.autoconfigure.condition.config.second.SampleAutoConfiguration");
 		assertThat(reportMessage)
-				.doesNotContain("org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration");
+			.doesNotContain("org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration");
 		context.close();
 	}
 

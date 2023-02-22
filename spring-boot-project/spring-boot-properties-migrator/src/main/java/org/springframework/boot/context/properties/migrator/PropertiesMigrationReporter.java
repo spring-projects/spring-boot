@@ -80,8 +80,9 @@ class PropertiesMigrationReporter {
 	private PropertySource<?> mapPropertiesWithReplacement(PropertiesMigrationReport report, String name,
 			List<PropertyMigration> properties) {
 		report.add(name, properties);
-		List<PropertyMigration> renamed = properties.stream().filter(PropertyMigration::isCompatibleType)
-				.collect(Collectors.toList());
+		List<PropertyMigration> renamed = properties.stream()
+			.filter(PropertyMigration::isCompatibleType)
+			.collect(Collectors.toList());
 		if (renamed.isEmpty()) {
 			return null;
 		}
@@ -103,8 +104,10 @@ class PropertiesMigrationReporter {
 	private Map<String, List<PropertyMigration>> getMatchingProperties(
 			Predicate<ConfigurationMetadataProperty> filter) {
 		MultiValueMap<String, PropertyMigration> result = new LinkedMultiValueMap<>();
-		List<ConfigurationMetadataProperty> candidates = this.allProperties.values().stream().filter(filter)
-				.collect(Collectors.toList());
+		List<ConfigurationMetadataProperty> candidates = this.allProperties.values()
+			.stream()
+			.filter(filter)
+			.collect(Collectors.toList());
 		getPropertySourcesAsMap().forEach((propertySourceName, propertySource) -> candidates.forEach((metadata) -> {
 			ConfigurationPropertyName metadataName = ConfigurationPropertyName.isValid(metadata.getId())
 					? ConfigurationPropertyName.of(metadata.getId())
@@ -118,12 +121,13 @@ class PropertiesMigrationReporter {
 			// Prefix match for maps
 			if (isMapType(metadata) && propertySource instanceof IterableConfigurationPropertySource) {
 				IterableConfigurationPropertySource iterableSource = (IterableConfigurationPropertySource) propertySource;
-				iterableSource.stream().filter(metadataName::isAncestorOf).map(propertySource::getConfigurationProperty)
-						.forEach((property) -> {
-							ConfigurationMetadataProperty replacement = determineReplacementMetadata(metadata);
-							result.add(propertySourceName,
-									new PropertyMigration(property, metadata, replacement, true));
-						});
+				iterableSource.stream()
+					.filter(metadataName::isAncestorOf)
+					.map(propertySource::getConfigurationProperty)
+					.forEach((property) -> {
+						ConfigurationMetadataProperty replacement = determineReplacementMetadata(metadata);
+						result.add(propertySourceName, new PropertyMigration(property, metadata, replacement, true));
+					});
 			}
 		}));
 		return result;

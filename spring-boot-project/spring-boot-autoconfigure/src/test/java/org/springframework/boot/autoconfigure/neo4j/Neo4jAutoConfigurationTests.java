@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,13 +54,13 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class Neo4jAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(Neo4jAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(Neo4jAutoConfiguration.class));
 
 	@Test
 	void driverNotConfiguredWithoutDriverApi() {
 		this.contextRunner.withPropertyValues("spring.neo4j.uri=bolt://localhost:4711")
-				.withClassLoader(new FilteredClassLoader(Driver.class))
-				.run((ctx) -> assertThat(ctx).doesNotHaveBean(Driver.class));
+			.withClassLoader(new FilteredClassLoader(Driver.class))
+			.run((ctx) -> assertThat(ctx).doesNotHaveBean(Driver.class));
 	}
 
 	@Test
@@ -71,8 +71,8 @@ class Neo4jAutoConfigurationTests {
 	@Test
 	void driverShouldInvokeConfigBuilderCustomizers() {
 		this.contextRunner.withPropertyValues("spring.neo4j.uri=bolt://localhost:4711")
-				.withBean(ConfigBuilderCustomizer.class, () -> ConfigBuilder::withEncryption)
-				.run((ctx) -> assertThat(ctx.getBean(Driver.class).isEncrypted()).isTrue());
+			.withBean(ConfigBuilderCustomizer.class, () -> ConfigBuilder::withEncryption)
+			.run((ctx) -> assertThat(ctx.getBean(Driver.class).isEncrypted()).isTrue());
 	}
 
 	@ParameterizedTest
@@ -98,8 +98,9 @@ class Neo4jAutoConfigurationTests {
 	@ValueSource(strings = { "bolt+routing", "bolt+x", "neo4j+wth" })
 	void uriWithInvalidSchemesAreDetected(String invalidScheme) {
 		this.contextRunner.withPropertyValues("spring.neo4j.uri=" + invalidScheme + "://localhost:4711")
-				.run((ctx) -> assertThat(ctx).hasFailed().getFailure()
-						.hasMessageContaining("'%s' is not a supported scheme.", invalidScheme));
+			.run((ctx) -> assertThat(ctx).hasFailed()
+				.getFailure()
+				.hasMessageContaining("'%s' is not a supported scheme.", invalidScheme));
 	}
 
 	@Test
@@ -114,13 +115,13 @@ class Neo4jAutoConfigurationTests {
 		Neo4jProperties properties = new Neo4jProperties();
 		properties.setMaxTransactionRetryTime(Duration.ofSeconds(2));
 		assertThat(mapDriverConfig(properties)).extracting("retrySettings")
-				.hasFieldOrPropertyWithValue("maxRetryTimeMs", 2000L);
+			.hasFieldOrPropertyWithValue("maxRetryTimeMs", 2000L);
 	}
 
 	@Test
 	void determineServerUriShouldDefaultToLocalhost() {
 		assertThat(determineServerUri(new Neo4jProperties(), new MockEnvironment()))
-				.isEqualTo(URI.create("bolt://localhost:7687"));
+			.isEqualTo(URI.create("bolt://localhost:7687"));
 	}
 
 	@Test
@@ -177,7 +178,7 @@ class Neo4jAutoConfigurationTests {
 	@Deprecated
 	void authenticationWithUsernameUsingDeprecatedPropertiesShouldEnableBasicAuth() {
 		MockEnvironment environment = new MockEnvironment().withProperty("spring.data.neo4j.username", "user")
-				.withProperty("spring.data.neo4j.password", "secret");
+			.withProperty("spring.data.neo4j.password", "secret");
 		assertThat(mapAuthToken(new Authentication(), environment)).isEqualTo(AuthTokens.basic("user", "secret"));
 	}
 
@@ -185,7 +186,7 @@ class Neo4jAutoConfigurationTests {
 	@Deprecated
 	void authenticationWithUsernameShouldTakePrecedenceOverDeprecatedPropertiesAndEnableBasicAuth() {
 		MockEnvironment environment = new MockEnvironment().withProperty("spring.data.neo4j.username", "user")
-				.withProperty("spring.data.neo4j.password", "secret");
+			.withProperty("spring.data.neo4j.password", "secret");
 		Authentication authentication = new Authentication();
 		authentication.setUsername("Farin");
 		authentication.setPassword("Urlaub");
@@ -205,7 +206,7 @@ class Neo4jAutoConfigurationTests {
 		authentication.setUsername("Farin");
 		authentication.setKerberosTicket("AABBCCDDEE");
 		assertThatIllegalStateException().isThrownBy(() -> mapAuthToken(authentication))
-				.withMessage("Cannot specify both username ('Farin') and kerberos ticket ('AABBCCDDEE')");
+			.withMessage("Cannot specify both username ('Farin') and kerberos ticket ('AABBCCDDEE')");
 	}
 
 	@Test
@@ -262,7 +263,7 @@ class Neo4jAutoConfigurationTests {
 		Neo4jProperties properties = new Neo4jProperties();
 		properties.getSecurity().setTrustStrategy(TrustStrategy.TRUST_SYSTEM_CA_SIGNED_CERTIFICATES);
 		assertThat(mapDriverConfig(properties).trustStrategy().strategy())
-				.isEqualTo(Config.TrustStrategy.Strategy.TRUST_SYSTEM_CA_SIGNED_CERTIFICATES);
+			.isEqualTo(Config.TrustStrategy.Strategy.TRUST_SYSTEM_CA_SIGNED_CERTIFICATES);
 	}
 
 	@Test
@@ -270,7 +271,7 @@ class Neo4jAutoConfigurationTests {
 		Neo4jProperties properties = new Neo4jProperties();
 		properties.getSecurity().setTrustStrategy(TrustStrategy.TRUST_ALL_CERTIFICATES);
 		assertThat(mapDriverConfig(properties).trustStrategy().strategy())
-				.isEqualTo(Config.TrustStrategy.Strategy.TRUST_ALL_CERTIFICATES);
+			.isEqualTo(Config.TrustStrategy.Strategy.TRUST_ALL_CERTIFICATES);
 	}
 
 	@Test
@@ -291,7 +292,7 @@ class Neo4jAutoConfigurationTests {
 		properties.getSecurity().setCertFile(certFile);
 		Config.TrustStrategy trustStrategy = mapDriverConfig(properties).trustStrategy();
 		assertThat(trustStrategy.strategy())
-				.isEqualTo(Config.TrustStrategy.Strategy.TRUST_CUSTOM_CA_SIGNED_CERTIFICATES);
+			.isEqualTo(Config.TrustStrategy.Strategy.TRUST_CUSTOM_CA_SIGNED_CERTIFICATES);
 		assertThat(trustStrategy.certFiles()).containsOnly(certFile);
 	}
 
@@ -300,8 +301,9 @@ class Neo4jAutoConfigurationTests {
 		Neo4jProperties properties = new Neo4jProperties();
 		properties.getSecurity().setTrustStrategy(TrustStrategy.TRUST_CUSTOM_CA_SIGNED_CERTIFICATES);
 		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
-				.isThrownBy(() -> mapDriverConfig(properties)).withMessage(
-						"Property spring.neo4j.security.trust-strategy with value 'TRUST_CUSTOM_CA_SIGNED_CERTIFICATES' is invalid: Configured trust strategy requires a certificate file.");
+			.isThrownBy(() -> mapDriverConfig(properties))
+			.withMessage(
+					"Property spring.neo4j.security.trust-strategy with value 'TRUST_CUSTOM_CA_SIGNED_CERTIFICATES' is invalid: Configured trust strategy requires a certificate file.");
 	}
 
 	@Test
@@ -309,13 +311,13 @@ class Neo4jAutoConfigurationTests {
 		Neo4jProperties properties = new Neo4jProperties();
 		properties.getSecurity().setTrustStrategy(TrustStrategy.TRUST_SYSTEM_CA_SIGNED_CERTIFICATES);
 		assertThat(mapDriverConfig(properties).trustStrategy().strategy())
-				.isEqualTo(Config.TrustStrategy.Strategy.TRUST_SYSTEM_CA_SIGNED_CERTIFICATES);
+			.isEqualTo(Config.TrustStrategy.Strategy.TRUST_SYSTEM_CA_SIGNED_CERTIFICATES);
 	}
 
 	@Test
 	void driverConfigShouldBeConfiguredToUseUseSpringJclLogging() {
 		assertThat(mapDriverConfig(new Neo4jProperties()).logging()).isNotNull()
-				.isInstanceOf(Neo4jSpringJclLogging.class);
+			.isInstanceOf(Neo4jSpringJclLogging.class);
 	}
 
 	private URI determineServerUri(Neo4jProperties properties, Environment environment) {

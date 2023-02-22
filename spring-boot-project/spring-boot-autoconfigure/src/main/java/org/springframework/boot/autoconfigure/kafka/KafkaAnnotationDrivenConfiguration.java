@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ class KafkaAnnotationDrivenConfiguration {
 		this.messageConverter = messageConverter.getIfUnique();
 		this.recordFilterStrategy = recordFilterStrategy.getIfUnique();
 		this.batchMessageConverter = batchMessageConverter
-				.getIfUnique(() -> new BatchMessagingMessageConverter(this.messageConverter));
+			.getIfUnique(() -> new BatchMessagingMessageConverter(this.messageConverter));
 		this.kafkaTemplate = kafkaTemplate.getIfUnique();
 		this.transactionManager = kafkaTransactionManager.getIfUnique();
 		this.rebalanceListener = rebalanceListener.getIfUnique();
@@ -127,7 +127,7 @@ class KafkaAnnotationDrivenConfiguration {
 			ObjectProvider<ConsumerFactory<Object, Object>> kafkaConsumerFactory) {
 		ConcurrentKafkaListenerContainerFactory<Object, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
 		configurer.configure(factory, kafkaConsumerFactory
-				.getIfAvailable(() -> new DefaultKafkaConsumerFactory<>(this.properties.buildConsumerProperties())));
+			.getIfAvailable(() -> new DefaultKafkaConsumerFactory<>(this.properties.buildConsumerProperties())));
 		return factory;
 	}
 

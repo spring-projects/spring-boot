@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,11 +73,11 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 			assertThat(jarFile.getEntry("BOOT-INF/lib/first-library.jar").getMethod()).isEqualTo(ZipEntry.STORED);
 			assertThat(jarFile.getEntry("BOOT-INF/lib/second-library.jar").getMethod()).isEqualTo(ZipEntry.STORED);
 			assertThat(jarFile.getEntry("BOOT-INF/lib/third-library-SNAPSHOT.jar").getMethod())
-					.isEqualTo(ZipEntry.STORED);
+				.isEqualTo(ZipEntry.STORED);
 			assertThat(jarFile.getEntry("BOOT-INF/lib/first-project-library.jar").getMethod())
-					.isEqualTo(ZipEntry.STORED);
+				.isEqualTo(ZipEntry.STORED);
 			assertThat(jarFile.getEntry("BOOT-INF/lib/second-project-library-SNAPSHOT.jar").getMethod())
-					.isEqualTo(ZipEntry.STORED);
+				.isEqualTo(ZipEntry.STORED);
 		}
 	}
 
@@ -95,7 +95,7 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	void classpathIndexPointsToBootInfLibs() throws IOException {
 		try (JarFile jarFile = new JarFile(createPopulatedJar())) {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classpath-Index"))
-					.isEqualTo("BOOT-INF/classpath.idx");
+				.isEqualTo("BOOT-INF/classpath.idx");
 			assertThat(entryLines(jarFile, "BOOT-INF/classpath.idx")).containsExactly(
 					"- \"BOOT-INF/lib/first-library.jar\"", "- \"BOOT-INF/lib/second-library.jar\"",
 					"- \"BOOT-INF/lib/third-library-SNAPSHOT.jar\"", "- \"BOOT-INF/lib/first-project-library.jar\"",

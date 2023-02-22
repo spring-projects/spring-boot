@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,20 +38,21 @@ public class SpringSecurityCompilerAutoConfiguration extends CompilerAutoConfigu
 
 	@Override
 	public void applyDependencies(DependencyCustomizer dependencies) {
-		dependencies.ifAnyMissingClasses(
-				"org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity")
-				.add("spring-boot-starter-security");
+		dependencies
+			.ifAnyMissingClasses(
+					"org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity")
+			.add("spring-boot-starter-security");
 	}
 
 	@Override
 	public void applyImports(ImportCustomizer imports) {
-		imports.addImports("org.springframework.security.core.Authentication",
-				"org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity",
-				"org.springframework.security.core.authority.AuthorityUtils")
-				.addStarImports("org.springframework.security.config.annotation.web.configuration",
-						"org.springframework.security.authentication",
-						"org.springframework.security.config.annotation.web",
-						"org.springframework.security.config.annotation.web.builders");
+		imports
+			.addImports("org.springframework.security.core.Authentication",
+					"org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity",
+					"org.springframework.security.core.authority.AuthorityUtils")
+			.addStarImports("org.springframework.security.config.annotation.web.configuration",
+					"org.springframework.security.authentication", "org.springframework.security.config.annotation.web",
+					"org.springframework.security.config.annotation.web.builders");
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,7 +104,7 @@ class ResourceMatcherTests {
 	void jarFileAlwaysMatches() throws Exception {
 		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("*"), Arrays.asList("**/*.jar"));
 		List<MatchedResource> found = resourceMatcher
-				.find(Arrays.asList(new File("src/test/resources/templates"), new File("src/test/resources/foo.jar")));
+			.find(Arrays.asList(new File("src/test/resources/templates"), new File("src/test/resources/foo.jar")));
 		assertThat(found).areAtLeastOne(new Condition<MatchedResource>() {
 
 			@Override
@@ -120,9 +120,9 @@ class ResourceMatcherTests {
 		ResourceMatcher resourceMatcher = new ResourceMatcher(Arrays.asList("alpha/**", "bravo/*", "*"),
 				Arrays.asList(".*", "alpha/**/excluded"));
 		List<MatchedResource> matchedResources = resourceMatcher
-				.find(Arrays.asList(new File("src/test/resources/resource-matcher/one"),
-						new File("src/test/resources/resource-matcher/two"),
-						new File("src/test/resources/resource-matcher/three")));
+			.find(Arrays.asList(new File("src/test/resources/resource-matcher/one"),
+					new File("src/test/resources/resource-matcher/two"),
+					new File("src/test/resources/resource-matcher/three")));
 		List<String> paths = new ArrayList<>();
 		for (MatchedResource resource : matchedResources) {
 			paths.add(resource.getName());

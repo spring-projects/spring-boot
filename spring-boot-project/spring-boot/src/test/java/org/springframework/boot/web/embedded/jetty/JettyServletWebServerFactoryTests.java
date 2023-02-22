@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -322,8 +322,9 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		response = request.get();
 		assertThat(response).isInstanceOf(HttpResponse.class);
 		assertThat(((HttpResponse) response).getStatusLine().getStatusCode()).isEqualTo(200);
-		assertThat(((HttpResponse) response).getFirstHeader("Connection")).isNotNull().extracting(Header::getValue)
-				.isEqualTo("close");
+		assertThat(((HttpResponse) response).getFirstHeader("Connection")).isNotNull()
+			.extracting(Header::getValue)
+			.isEqualTo("close");
 		this.webServer.stop();
 	}
 
@@ -424,7 +425,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 			threadPool.setMinThreads(2);
 		});
 		assertThatExceptionOfType(WebServerException.class).isThrownBy(factory.getWebServer()::start)
-				.withCauseInstanceOf(IllegalStateException.class);
+			.withCauseInstanceOf(IllegalStateException.class);
 	}
 
 	@Test

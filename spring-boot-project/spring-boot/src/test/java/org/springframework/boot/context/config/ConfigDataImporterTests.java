@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,15 +81,17 @@ class ConfigDataImporterTests {
 		ConfigData configData1 = new ConfigData(Collections.singleton(new MockPropertySource()));
 		ConfigData configData2 = new ConfigData(Collections.singleton(new MockPropertySource()));
 		given(this.resolvers.resolve(this.locationResolverContext, location1, this.profiles))
-				.willReturn(Collections.singletonList(new ConfigDataResolutionResult(location1, resource1, false)));
+			.willReturn(Collections.singletonList(new ConfigDataResolutionResult(location1, resource1, false)));
 		given(this.resolvers.resolve(this.locationResolverContext, location2, this.profiles))
-				.willReturn(Collections.singletonList(new ConfigDataResolutionResult(location2, resource2, false)));
+			.willReturn(Collections.singletonList(new ConfigDataResolutionResult(location2, resource2, false)));
 		given(this.loaders.load(this.loaderContext, resource1)).willReturn(configData1);
 		given(this.loaders.load(this.loaderContext, resource2)).willReturn(configData2);
 		ConfigDataImporter importer = new ConfigDataImporter(this.logFactory, ConfigDataNotFoundAction.FAIL,
 				this.resolvers, this.loaders);
-		Collection<ConfigData> loaded = importer.resolveAndLoad(this.activationContext, this.locationResolverContext,
-				this.loaderContext, Arrays.asList(location1, location2)).values();
+		Collection<ConfigData> loaded = importer
+			.resolveAndLoad(this.activationContext, this.locationResolverContext, this.loaderContext,
+					Arrays.asList(location1, location2))
+			.values();
 		assertThat(loaded).containsExactly(configData2, configData1);
 	}
 
@@ -107,20 +109,22 @@ class ConfigDataImporterTests {
 		ConfigData configData2 = new ConfigData(Collections.singleton(new MockPropertySource()));
 		ConfigData configData3 = new ConfigData(Collections.singleton(new MockPropertySource()));
 		given(this.resolvers.resolve(this.locationResolverContext, location1, this.profiles))
-				.willReturn(Collections.singletonList(new ConfigDataResolutionResult(location1, resource1, false)));
+			.willReturn(Collections.singletonList(new ConfigDataResolutionResult(location1, resource1, false)));
 		given(this.resolvers.resolve(this.locationResolverContext, location2, this.profiles))
-				.willReturn(Collections.singletonList(new ConfigDataResolutionResult(location2, resource2, false)));
+			.willReturn(Collections.singletonList(new ConfigDataResolutionResult(location2, resource2, false)));
 		given(this.resolvers.resolve(this.locationResolverContext, location3, this.profiles))
-				.willReturn(Collections.singletonList(new ConfigDataResolutionResult(location3, resource3, false)));
+			.willReturn(Collections.singletonList(new ConfigDataResolutionResult(location3, resource3, false)));
 		given(this.loaders.load(this.loaderContext, resource1)).willReturn(configData1);
 		given(this.loaders.load(this.loaderContext, resource2)).willReturn(configData2);
 		given(this.loaders.load(this.loaderContext, resource3)).willReturn(configData3);
 		ConfigDataImporter importer = new ConfigDataImporter(this.logFactory, ConfigDataNotFoundAction.FAIL,
 				this.resolvers, this.loaders);
-		Collection<ConfigData> loaded1and2 = importer.resolveAndLoad(this.activationContext,
-				this.locationResolverContext, this.loaderContext, locations1and2).values();
-		Collection<ConfigData> loaded2and3 = importer.resolveAndLoad(this.activationContext,
-				this.locationResolverContext, this.loaderContext, locations2and3).values();
+		Collection<ConfigData> loaded1and2 = importer
+			.resolveAndLoad(this.activationContext, this.locationResolverContext, this.loaderContext, locations1and2)
+			.values();
+		Collection<ConfigData> loaded2and3 = importer
+			.resolveAndLoad(this.activationContext, this.locationResolverContext, this.loaderContext, locations2and3)
+			.values();
 		assertThat(loaded1and2).containsExactly(configData2, configData1);
 		assertThat(loaded2and3).containsExactly(configData3);
 	}

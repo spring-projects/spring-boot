@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -218,7 +218,7 @@ class ConfigurationPropertiesBeanTests {
 	@Test
 	void forValueObjectWithConstructorBindingAnnotatedClassReturnsBean() {
 		ConfigurationPropertiesBean propertiesBean = ConfigurationPropertiesBean
-				.forValueObject(ConstructorBindingOnConstructor.class, "valueObjectBean");
+			.forValueObject(ConstructorBindingOnConstructor.class, "valueObjectBean");
 		assertThat(propertiesBean.getName()).isEqualTo("valueObjectBean");
 		assertThat(propertiesBean.getInstance()).isNull();
 		assertThat(propertiesBean.getType()).isEqualTo(ConstructorBindingOnConstructor.class);
@@ -228,21 +228,25 @@ class ConfigurationPropertiesBeanTests {
 		assertThat(target.getType()).isEqualTo(ResolvableType.forClass(ConstructorBindingOnConstructor.class));
 		assertThat(target.getValue()).isNull();
 		assertThat(ConfigurationPropertiesBindConstructorProvider.INSTANCE
-				.getBindConstructor(ConstructorBindingOnConstructor.class, false)).isNotNull();
+			.getBindConstructor(ConstructorBindingOnConstructor.class, false)).isNotNull();
 	}
 
 	@Test
 	@EnabledForJreRange(min = JRE.JAVA_16)
 	void forValueObjectWithConstructorBindingAnnotatedRecordReturnsBean() {
 		Class<?> constructorBindingRecord = new ByteBuddy(ClassFileVersion.JAVA_V16).makeRecord()
-				.name("org.springframework.boot.context.properties.RecordProperties")
-				.annotateType(AnnotationDescription.Builder.ofType(ConfigurationProperties.class)
-						.define("prefix", "explicit").build())
-				.annotateType(AnnotationDescription.Builder.ofType(ConstructorBinding.class).build())
-				.defineRecordComponent("someString", String.class).defineRecordComponent("someInteger", Integer.class)
-				.make().load(getClass().getClassLoader()).getLoaded();
+			.name("org.springframework.boot.context.properties.RecordProperties")
+			.annotateType(AnnotationDescription.Builder.ofType(ConfigurationProperties.class)
+				.define("prefix", "explicit")
+				.build())
+			.annotateType(AnnotationDescription.Builder.ofType(ConstructorBinding.class).build())
+			.defineRecordComponent("someString", String.class)
+			.defineRecordComponent("someInteger", Integer.class)
+			.make()
+			.load(getClass().getClassLoader())
+			.getLoaded();
 		ConfigurationPropertiesBean propertiesBean = ConfigurationPropertiesBean
-				.forValueObject(constructorBindingRecord, "constructorBindingRecord");
+			.forValueObject(constructorBindingRecord, "constructorBindingRecord");
 		assertThat(propertiesBean.getName()).isEqualTo("constructorBindingRecord");
 		assertThat(propertiesBean.getInstance()).isNull();
 		assertThat(propertiesBean.getType()).isEqualTo(constructorBindingRecord);
@@ -252,7 +256,7 @@ class ConfigurationPropertiesBeanTests {
 		assertThat(target.getType()).isEqualTo(ResolvableType.forClass(constructorBindingRecord));
 		assertThat(target.getValue()).isNull();
 		Constructor<?> bindConstructor = ConfigurationPropertiesBindConstructorProvider.INSTANCE
-				.getBindConstructor(constructorBindingRecord, false);
+			.getBindConstructor(constructorBindingRecord, false);
 		assertThat(bindConstructor).isNotNull();
 		assertThat(bindConstructor.getParameterTypes()).containsExactly(String.class, Integer.class);
 	}
@@ -261,13 +265,17 @@ class ConfigurationPropertiesBeanTests {
 	@EnabledForJreRange(min = JRE.JAVA_16)
 	void forValueObjectWithUnannotatedRecordReturnsBean() {
 		Class<?> implicitConstructorBinding = new ByteBuddy(ClassFileVersion.JAVA_V16).makeRecord()
-				.name("org.springframework.boot.context.properties.ImplicitConstructorBinding")
-				.annotateType(AnnotationDescription.Builder.ofType(ConfigurationProperties.class)
-						.define("prefix", "implicit").build())
-				.defineRecordComponent("someString", String.class).defineRecordComponent("someInteger", Integer.class)
-				.make().load(getClass().getClassLoader()).getLoaded();
+			.name("org.springframework.boot.context.properties.ImplicitConstructorBinding")
+			.annotateType(AnnotationDescription.Builder.ofType(ConfigurationProperties.class)
+				.define("prefix", "implicit")
+				.build())
+			.defineRecordComponent("someString", String.class)
+			.defineRecordComponent("someInteger", Integer.class)
+			.make()
+			.load(getClass().getClassLoader())
+			.getLoaded();
 		ConfigurationPropertiesBean propertiesBean = ConfigurationPropertiesBean
-				.forValueObject(implicitConstructorBinding, "implicitBindingRecord");
+			.forValueObject(implicitConstructorBinding, "implicitBindingRecord");
 		assertThat(propertiesBean.getName()).isEqualTo("implicitBindingRecord");
 		assertThat(propertiesBean.getInstance()).isNull();
 		assertThat(propertiesBean.getType()).isEqualTo(implicitConstructorBinding);
@@ -277,7 +285,7 @@ class ConfigurationPropertiesBeanTests {
 		assertThat(target.getType()).isEqualTo(ResolvableType.forClass(implicitConstructorBinding));
 		assertThat(target.getValue()).isNull();
 		Constructor<?> bindConstructor = ConfigurationPropertiesBindConstructorProvider.INSTANCE
-				.getBindConstructor(implicitConstructorBinding, false);
+			.getBindConstructor(implicitConstructorBinding, false);
 		assertThat(bindConstructor).isNotNull();
 		assertThat(bindConstructor.getParameterTypes()).containsExactly(String.class, Integer.class);
 	}
@@ -285,12 +293,11 @@ class ConfigurationPropertiesBeanTests {
 	@Test
 	void forValueObjectWhenJavaBeanBindTypeThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ConfigurationPropertiesBean.forValueObject(AnnotatedBean.class, "annotatedBean"))
-				.withMessage("Bean 'annotatedBean' is not a @ConfigurationProperties value object");
+			.isThrownBy(() -> ConfigurationPropertiesBean.forValueObject(AnnotatedBean.class, "annotatedBean"))
+			.withMessage("Bean 'annotatedBean' is not a @ConfigurationProperties value object");
 		assertThatIllegalStateException()
-				.isThrownBy(
-						() -> ConfigurationPropertiesBean.forValueObject(NonAnnotatedBean.class, "nonAnnotatedBean"))
-				.withMessage("Bean 'nonAnnotatedBean' is not a @ConfigurationProperties value object");
+			.isThrownBy(() -> ConfigurationPropertiesBean.forValueObject(NonAnnotatedBean.class, "nonAnnotatedBean"))
+			.withMessage("Bean 'nonAnnotatedBean' is not a @ConfigurationProperties value object");
 
 	}
 
@@ -315,9 +322,9 @@ class ConfigurationPropertiesBeanTests {
 	@Test
 	void bindTypeForTypeWhenConstructorBindingOnMultipleConstructorsThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> BindMethod.forType(ConstructorBindingOnMultipleConstructors.class))
-				.withMessage(ConstructorBindingOnMultipleConstructors.class.getName()
-						+ " has more than one @ConstructorBinding constructor");
+			.isThrownBy(() -> BindMethod.forType(ConstructorBindingOnMultipleConstructors.class))
+			.withMessage(ConstructorBindingOnMultipleConstructors.class.getName()
+					+ " has more than one @ConstructorBinding constructor");
 	}
 
 	private void get(Class<?> configuration, String beanName, ThrowingConsumer<ConfigurationPropertiesBean> consumer)

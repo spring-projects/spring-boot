@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,7 +126,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		ImageReference imageReference = ImageReference.of("example/buildpack1:1.0.0");
 		BuildpackResolverContext resolverContext = mock(BuildpackResolverContext.class);
 		given(resolverContext.getBuildpackLayersMetadata())
-				.willReturn(BuildpackLayersMetadata.fromJson(getContentAsString("buildpack-layers-metadata.json")));
+			.willReturn(BuildpackLayersMetadata.fromJson(getContentAsString("buildpack-layers-metadata.json")));
 		given(resolverContext.fetchImage(eq(imageReference), eq(ImageType.BUILDPACK))).willReturn(image);
 		willAnswer(this::withMockLayers).given(resolverContext).exportImageLayers(eq(imageReference), any());
 		BuildpackReference reference = BuildpackReference.of("docker://example/buildpack1:1.0.0");
@@ -141,8 +141,8 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		given(resolverContext.fetchImage(any(), any())).willThrow(IOException.class);
 		BuildpackReference reference = BuildpackReference.of("docker://example/buildpack1");
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageBuildpack.resolve(resolverContext, reference))
-				.withMessageContaining("Error pulling buildpack image")
-				.withMessageContaining("example/buildpack1:latest");
+			.withMessageContaining("Error pulling buildpack image")
+			.withMessageContaining("example/buildpack1:latest");
 	}
 
 	@Test
@@ -152,7 +152,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		given(resolverContext.fetchImage(any(), any())).willReturn(image);
 		BuildpackReference reference = BuildpackReference.of("docker://example/buildpack1:latest");
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageBuildpack.resolve(resolverContext, reference))
-				.withMessageContaining("No 'io.buildpacks.buildpackage.metadata' label found");
+			.withMessageContaining("No 'io.buildpacks.buildpackage.metadata' label found");
 	}
 
 	@Test
@@ -160,7 +160,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		BuildpackReference reference = BuildpackReference.of("docker://buildpack@0.0.1");
 		BuildpackResolverContext resolverContext = mock(BuildpackResolverContext.class);
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageBuildpack.resolve(resolverContext, reference))
-				.withMessageContaining("Unable to parse image reference \"buildpack@0.0.1\"");
+			.withMessageContaining("Unable to parse image reference \"buildpack@0.0.1\"");
 	}
 
 	@Test
@@ -217,14 +217,14 @@ class ImageBuildpackTests extends AbstractJsonTests {
 				entry = tar.getNextTarEntry();
 			}
 		}
-		assertThat(entries).extracting("name", "mode").containsExactlyInAnyOrder(
-				tuple("cnb/", TarArchiveEntry.DEFAULT_DIR_MODE),
-				tuple("cnb/buildpacks/", TarArchiveEntry.DEFAULT_DIR_MODE),
-				tuple("cnb/buildpacks/example_buildpack/", TarArchiveEntry.DEFAULT_DIR_MODE),
-				tuple("cnb/buildpacks/example_buildpack/0.0.1/", TarArchiveEntry.DEFAULT_DIR_MODE),
-				tuple("cnb/buildpacks/example_buildpack/0.0.1/buildpack.toml", TarArchiveEntry.DEFAULT_FILE_MODE),
-				tuple("cnb/buildpacks/example_buildpack/0.0.1/" + this.longFilePath,
-						TarArchiveEntry.DEFAULT_FILE_MODE));
+		assertThat(entries).extracting("name", "mode")
+			.containsExactlyInAnyOrder(tuple("cnb/", TarArchiveEntry.DEFAULT_DIR_MODE),
+					tuple("cnb/buildpacks/", TarArchiveEntry.DEFAULT_DIR_MODE),
+					tuple("cnb/buildpacks/example_buildpack/", TarArchiveEntry.DEFAULT_DIR_MODE),
+					tuple("cnb/buildpacks/example_buildpack/0.0.1/", TarArchiveEntry.DEFAULT_DIR_MODE),
+					tuple("cnb/buildpacks/example_buildpack/0.0.1/buildpack.toml", TarArchiveEntry.DEFAULT_FILE_MODE),
+					tuple("cnb/buildpacks/example_buildpack/0.0.1/" + this.longFilePath,
+							TarArchiveEntry.DEFAULT_FILE_MODE));
 	}
 
 	private void assertAppliesNoLayers(Buildpack buildpack) throws IOException {

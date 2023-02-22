@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@ class NonUniqueSessionRepositoryFailureAnalyzer extends AbstractFailureAnalyzer<
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, NonUniqueSessionRepositoryException cause) {
 		StringBuilder message = new StringBuilder();
-		message.append(
-				String.format("Multiple Spring Session store implementations are available on the classpath:%n"));
+		message
+			.append(String.format("Multiple Spring Session store implementations are available on the classpath:%n"));
 		for (Class<?> candidate : cause.getAvailableCandidates()) {
 			message.append(String.format("    - %s%n", candidate.getName()));
 		}

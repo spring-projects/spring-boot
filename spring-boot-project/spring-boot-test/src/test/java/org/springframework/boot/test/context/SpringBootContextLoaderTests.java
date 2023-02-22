@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,7 +127,7 @@ class SpringBootContextLoaderTests {
 	@Test
 	void testPropertyValuesShouldTakePrecedenceWhenInlinedPropertiesPresentAndProfilesActive() {
 		TestContext context = new ExposedTestContextManager(ActiveProfileWithInlinedProperties.class)
-				.getExposedTestContext();
+			.getExposedTestContext();
 		StandardEnvironment environment = (StandardEnvironment) context.getApplicationContext().getEnvironment();
 		TestPropertyValues.of("key=thisValue").applyTo(environment);
 		assertThat(environment.getProperty("key")).isEqualTo("thisValue");
@@ -138,9 +138,11 @@ class SpringBootContextLoaderTests {
 	void propertySourceOrdering() {
 		TestContext context = new ExposedTestContextManager(PropertySourceOrdering.class).getExposedTestContext();
 		ConfigurableEnvironment environment = (ConfigurableEnvironment) context.getApplicationContext()
-				.getEnvironment();
-		List<String> names = environment.getPropertySources().stream().map(PropertySource::getName)
-				.collect(Collectors.toList());
+			.getEnvironment();
+		List<String> names = environment.getPropertySources()
+			.stream()
+			.map(PropertySource::getName)
+			.collect(Collectors.toList());
 		String last = names.remove(names.size() - 1);
 		assertThat(names).containsExactly("configurationProperties", "Inlined Test Properties", "commandLineArgs",
 				"servletConfigInitParams", "servletContextInitParams", "systemProperties", "systemEnvironment",
@@ -151,14 +153,14 @@ class SpringBootContextLoaderTests {
 	@Test
 	void whenEnvironmentChangesWebApplicationTypeToNoneThenContextTypeChangesAccordingly() {
 		TestContext context = new ExposedTestContextManager(ChangingWebApplicationTypeToNone.class)
-				.getExposedTestContext();
+			.getExposedTestContext();
 		assertThat(context.getApplicationContext()).isNotInstanceOf(WebApplicationContext.class);
 	}
 
 	@Test
 	void whenEnvironmentChangesWebApplicationTypeToReactiveThenContextTypeChangesAccordingly() {
 		TestContext context = new ExposedTestContextManager(ChangingWebApplicationTypeToReactive.class)
-				.getExposedTestContext();
+			.getExposedTestContext();
 		assertThat(context.getApplicationContext()).isInstanceOf(GenericReactiveWebApplicationContext.class);
 	}
 

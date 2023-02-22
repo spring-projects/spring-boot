@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2022 the original author or authors.
+ * Copyright 2020-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,10 @@ public class GraphQlMetricsInstrumentation extends SimpleInstrumentation {
 		this.registry = registry;
 		this.tagsProvider = tagsProvider;
 		this.autoTimer = autoTimer;
-		this.dataFetchingSummary = DistributionSummary.builder("graphql.request.datafetch.count").baseUnit("calls")
-				.description("Count of DataFetcher calls per request.").register(this.registry);
+		this.dataFetchingSummary = DistributionSummary.builder("graphql.request.datafetch.count")
+			.baseUnit("calls")
+			.description("Count of DataFetcher calls per request.")
+			.register(this.registry);
 	}
 
 	@Override
@@ -77,8 +79,11 @@ public class GraphQlMetricsInstrumentation extends SimpleInstrumentation {
 					state.tags(tags).stopTimer();
 					if (!result.getErrors().isEmpty()) {
 						result.getErrors()
-								.forEach((error) -> GraphQlMetricsInstrumentation.this.registry.counter("graphql.error",
-										GraphQlMetricsInstrumentation.this.tagsProvider.getErrorTags(parameters, error))
+							.forEach(
+									(error) -> GraphQlMetricsInstrumentation.this.registry
+										.counter("graphql.error",
+												GraphQlMetricsInstrumentation.this.tagsProvider.getErrorTags(parameters,
+														error))
 										.increment());
 					}
 					GraphQlMetricsInstrumentation.this.dataFetchingSummary.record(state.getDataFetchingCount());

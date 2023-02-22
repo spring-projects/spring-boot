@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,10 @@ public abstract class TestResultsOverview
 	private final Object monitor = new Object();
 
 	void addFailures(Test test, List<TestDescriptor> failureDescriptors) {
-		List<TestFailure> testFailures = failureDescriptors.stream().map(TestFailure::new).sorted()
-				.collect(Collectors.toList());
+		List<TestFailure> testFailures = failureDescriptors.stream()
+			.map(TestFailure::new)
+			.sorted()
+			.collect(Collectors.toList());
 		synchronized (this.monitor) {
 			this.testFailures.put(test, testFailures);
 		}
@@ -67,7 +69,7 @@ public abstract class TestResultsOverview
 				System.err.println();
 				System.err.println(task.getPath());
 				failures.forEach((failure) -> System.err
-						.println("    " + failure.descriptor.getClassName() + " > " + failure.descriptor.getName()));
+					.println("    " + failure.descriptor.getClassName() + " > " + failure.descriptor.getName()));
 			});
 		}
 	}

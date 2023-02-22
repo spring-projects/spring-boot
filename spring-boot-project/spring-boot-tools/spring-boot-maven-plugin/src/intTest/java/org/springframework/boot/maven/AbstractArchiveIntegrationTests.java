@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ abstract class AbstractArchiveIntegrationTests {
 				}
 				else if (line.startsWith(entryPrefix)) {
 					index.computeIfAbsent(layer, (key) -> new ArrayList<>())
-							.add(line.substring(entryPrefix.length() + 1, line.length() - 1));
+						.add(line.substring(entryPrefix.length() + 1, line.length() - 1));
 				}
 				line = reader.readLine();
 			}
@@ -147,7 +147,7 @@ abstract class AbstractArchiveIntegrationTests {
 			withJarFile((jarFile) -> {
 				withEntries(jarFile, (entries) -> {
 					Optional<JarEntry> match = entries.filter((entry) -> entry.getName().startsWith(prefix))
-							.findFirst();
+						.findFirst();
 					assertThat(match).hasValueSatisfying((entry) -> assertThat(entry.getComment()).isNull());
 				});
 			});
@@ -158,9 +158,9 @@ abstract class AbstractArchiveIntegrationTests {
 			withJarFile((jarFile) -> {
 				withEntries(jarFile, (entries) -> {
 					Optional<JarEntry> match = entries.filter((entry) -> entry.getName().startsWith(prefix))
-							.findFirst();
+						.findFirst();
 					assertThat(match).as("Name starting with %s", prefix)
-							.hasValueSatisfying((entry) -> assertThat(entry.getComment()).startsWith("UNPACK:"));
+						.hasValueSatisfying((entry) -> assertThat(entry.getComment()).startsWith("UNPACK:"));
 				});
 			});
 			return this;
@@ -170,7 +170,7 @@ abstract class AbstractArchiveIntegrationTests {
 			withJarFile((jarFile) -> {
 				withEntries(jarFile, (entries) -> {
 					Optional<JarEntry> match = entries.filter((entry) -> entry.getName().startsWith(prefix))
-							.findFirst();
+						.findFirst();
 					assertThat(match).isNotPresent();
 				});
 			});
@@ -181,8 +181,8 @@ abstract class AbstractArchiveIntegrationTests {
 			List<String> matches = new ArrayList<>();
 			withJarFile((jarFile) -> withEntries(jarFile,
 					(entries) -> matches.addAll(entries.map(ZipEntry::getName)
-							.filter((name) -> name.startsWith(path) && name.length() > path.length())
-							.collect(Collectors.toList()))));
+						.filter((name) -> name.startsWith(path) && name.length() > path.length())
+						.collect(Collectors.toList()))));
 			return new ListAssert<>(matches);
 		}
 

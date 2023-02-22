@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,11 +38,14 @@ class DeducedImmutablePropertiesMetadataGenerationTests extends AbstractMetadata
 		ConfigurationMetadata metadata = compile(DeducedImmutableClassProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("test").fromSource(DeducedImmutableClassProperties.class));
 		assertThat(metadata).has(Metadata.withGroup("test.nested", DeducedImmutableClassProperties.Nested.class)
-				.fromSource(DeducedImmutableClassProperties.class));
+			.fromSource(DeducedImmutableClassProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("test.nested.name", String.class)
-				.fromSource(DeducedImmutableClassProperties.Nested.class));
-		ItemMetadata nestedMetadata = metadata.getItems().stream()
-				.filter((item) -> item.getName().equals("test.nested")).findFirst().get();
+			.fromSource(DeducedImmutableClassProperties.Nested.class));
+		ItemMetadata nestedMetadata = metadata.getItems()
+			.stream()
+			.filter((item) -> item.getName().equals("test.nested"))
+			.findFirst()
+			.get();
 		assertThat(nestedMetadata.getDefaultValue()).isNull();
 	}
 

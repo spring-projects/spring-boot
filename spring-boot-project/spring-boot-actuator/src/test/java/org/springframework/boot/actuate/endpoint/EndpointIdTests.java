@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ class EndpointIdTests {
 	@Test
 	void ofWhenNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of(null))
-				.withMessage("Value must not be empty");
+			.withMessage("Value must not be empty");
 	}
 
 	@Test
@@ -48,31 +48,31 @@ class EndpointIdTests {
 	@Test
 	void ofWhenContainsSlashThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("foo/bar"))
-				.withMessage("Value must only contain valid chars");
+			.withMessage("Value must only contain valid chars");
 	}
 
 	@Test
 	void ofWhenContainsBackslashThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("foo\\bar"))
-				.withMessage("Value must only contain valid chars");
+			.withMessage("Value must only contain valid chars");
 	}
 
 	@Test
 	void ofWhenHasBadCharThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("foo!bar"))
-				.withMessage("Value must only contain valid chars");
+			.withMessage("Value must only contain valid chars");
 	}
 
 	@Test
 	void ofWhenStartsWithNumberThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("1foo"))
-				.withMessage("Value must not start with a number");
+			.withMessage("Value must not start with a number");
 	}
 
 	@Test
 	void ofWhenStartsWithUppercaseLetterThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EndpointId.of("Foo"))
-				.withMessage("Value must not start with an uppercase letter");
+			.withMessage("Value must not start with an uppercase letter");
 	}
 
 	@Test
@@ -96,7 +96,7 @@ class EndpointIdTests {
 		EndpointId.resetLoggedWarnings();
 		EndpointId.of("foo-bar");
 		assertThat(output)
-				.contains("Endpoint ID 'foo-bar' contains invalid characters, please migrate to a valid format");
+			.contains("Endpoint ID 'foo-bar' contains invalid characters, please migrate to a valid format");
 	}
 
 	@Test
@@ -136,8 +136,12 @@ class EndpointIdTests {
 		EndpointId five = EndpointId.of("barfoo1");
 		EndpointId six = EndpointId.of("foobar2");
 		assertThat(one.hashCode()).isEqualTo(two.hashCode());
-		assertThat(one).isEqualTo(one).isEqualTo(two).isEqualTo(three).isEqualTo(four).isNotEqualTo(five)
-				.isNotEqualTo(six);
+		assertThat(one).isEqualTo(one)
+			.isEqualTo(two)
+			.isEqualTo(three)
+			.isEqualTo(four)
+			.isNotEqualTo(five)
+			.isNotEqualTo(six);
 	}
 
 	@Test

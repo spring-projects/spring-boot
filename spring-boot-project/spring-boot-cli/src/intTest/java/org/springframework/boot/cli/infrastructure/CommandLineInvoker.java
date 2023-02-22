@@ -133,9 +133,9 @@ public final class CommandLineInvoker {
 		public Invocation(Process process) {
 			this.process = process;
 			this.streamReaders
-					.add(new Thread(new StreamReadingRunnable(this.process.getErrorStream(), this.err, this.combined)));
+				.add(new Thread(new StreamReadingRunnable(this.process.getErrorStream(), this.err, this.combined)));
 			this.streamReaders
-					.add(new Thread(new StreamReadingRunnable(this.process.getInputStream(), this.out, this.combined)));
+				.add(new Thread(new StreamReadingRunnable(this.process.getInputStream(), this.out, this.combined)));
 			for (Thread streamReader : this.streamReaders) {
 				streamReader.start();
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,8 @@ class SpringBootPluginIntegrationTests {
 	@Test
 	void failFastWithVersionOfGradle6LowerThanRequired() {
 		BuildResult result = this.gradleBuild.gradleVersion("6.7.1").buildAndFail();
-		assertThat(result.getOutput()).contains(
-				"Spring Boot plugin requires Gradle 6.8.x, 6.9.x, or 7.x. The current version is Gradle 6.7.1");
+		assertThat(result.getOutput())
+			.contains("Spring Boot plugin requires Gradle 6.8.x, 6.9.x, or 7.x. The current version is Gradle 6.7.1");
 	}
 
 	@DisabledForJreRange(min = JRE.JAVA_16)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,7 +112,7 @@ public class EntityScanPackages {
 		Assert.notNull(packageNames, "PackageNames must not be null");
 		if (registry.containsBeanDefinition(BEAN)) {
 			EntityScanPackagesBeanDefinition beanDefinition = (EntityScanPackagesBeanDefinition) registry
-					.getBeanDefinition(BEAN);
+				.getBeanDefinition(BEAN);
 			beanDefinition.addPackageNames(packageNames);
 		}
 		else {
@@ -139,7 +139,7 @@ public class EntityScanPackages {
 
 		private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
 			AnnotationAttributes attributes = AnnotationAttributes
-					.fromMap(metadata.getAnnotationAttributes(EntityScan.class.getName()));
+				.fromMap(metadata.getAnnotationAttributes(EntityScan.class.getName()));
 			Set<String> packagesToScan = new LinkedHashSet<>();
 			for (String basePackage : attributes.getStringArray("basePackages")) {
 				String[] tokenized = StringUtils.tokenizeToStringArray(

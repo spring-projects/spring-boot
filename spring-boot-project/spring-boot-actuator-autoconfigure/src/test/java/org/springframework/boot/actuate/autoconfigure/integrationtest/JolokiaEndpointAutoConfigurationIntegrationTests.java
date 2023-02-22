@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ class JolokiaEndpointAutoConfigurationIntegrationTests {
 	@Test
 	void list() {
 		ResponseEntity<String> response = this.restTemplate
-				.getForEntity("/actuator/jolokia/list/java.lang/type=Memory/attr", String.class);
+			.getForEntity("/actuator/jolokia/list/java.lang/type=Memory/attr", String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getBody()).contains("NonHeapMemoryUsage");
 	}

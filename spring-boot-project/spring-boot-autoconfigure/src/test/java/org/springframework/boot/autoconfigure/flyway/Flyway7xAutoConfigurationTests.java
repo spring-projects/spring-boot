@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,8 @@ import static org.mockito.Mockito.mock;
 class Flyway7xAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
-			.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:" + UUID.randomUUID());
+		.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
+		.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:" + UUID.randomUUID());
 
 	@Test
 	void defaultFlyway() {
@@ -57,24 +57,24 @@ class Flyway7xAutoConfigurationTests {
 			assertThat(context).hasSingleBean(Flyway.class);
 			Flyway flyway = context.getBean(Flyway.class);
 			assertThat(flyway.getConfiguration().getLocations())
-					.containsExactly(new Location("classpath:db/migration"));
+				.containsExactly(new Location("classpath:db/migration"));
 		});
 	}
 
 	@Test
 	void callbacksAreConfigured() {
 		this.contextRunner.withUserConfiguration(DataSourceAutoConfiguration.class, CallbackConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(Flyway.class);
-					Flyway flyway = context.getBean(Flyway.class);
-					Callback callbackOne = context.getBean("callbackOne", Callback.class);
-					Callback callbackTwo = context.getBean("callbackTwo", Callback.class);
-					assertThat(flyway.getConfiguration().getCallbacks()).hasSize(2);
-					assertThat(flyway.getConfiguration().getCallbacks()).containsExactlyInAnyOrder(callbackTwo,
-							callbackOne);
-					then(callbackOne).should(atLeastOnce()).handle(any(Event.class), any(Context.class));
-					then(callbackTwo).should(atLeastOnce()).handle(any(Event.class), any(Context.class));
-				});
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Flyway.class);
+				Flyway flyway = context.getBean(Flyway.class);
+				Callback callbackOne = context.getBean("callbackOne", Callback.class);
+				Callback callbackTwo = context.getBean("callbackTwo", Callback.class);
+				assertThat(flyway.getConfiguration().getCallbacks()).hasSize(2);
+				assertThat(flyway.getConfiguration().getCallbacks()).containsExactlyInAnyOrder(callbackTwo,
+						callbackOne);
+				then(callbackOne).should(atLeastOnce()).handle(any(Event.class), any(Context.class));
+				then(callbackTwo).should(atLeastOnce()).handle(any(Event.class), any(Context.class));
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -58,8 +58,8 @@ class ClientHttpConnectorConfiguration {
 		ReactorClientHttpConnector reactorClientHttpConnector(ReactorResourceFactory reactorResourceFactory,
 				ObjectProvider<ReactorNettyHttpClientMapper> mapperProvider) {
 			ReactorNettyHttpClientMapper mapper = mapperProvider.orderedStream()
-					.reduce((before, after) -> (client) -> after.configure(before.configure(client)))
-					.orElse((client) -> client);
+				.reduce((before, after) -> (client) -> after.configure(before.configure(client)))
+				.orElse((client) -> client);
 			return new ReactorClientHttpConnector(reactorResourceFactory, mapper::configure);
 		}
 

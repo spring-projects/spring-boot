@@ -39,7 +39,7 @@ class DynatracePropertiesTests extends StepRegistryPropertiesTests {
 		assertThat(properties.getTechnologyType()).isEqualTo(config.technologyType());
 		assertThat(properties.getV1().getTechnologyType()).isEqualTo(config.technologyType());
 		assertThat(properties.getV2().isUseDynatraceSummaryInstruments())
-				.isEqualTo(config.useDynatraceSummaryInstruments());
+			.isEqualTo(config.useDynatraceSummaryInstruments());
 	}
 
 }

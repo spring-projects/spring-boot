@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,13 +71,13 @@ class RootUriRequestExpectationManagerTests {
 	@Test
 	void createWhenRootUriIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RootUriRequestExpectationManager(null, this.delegate))
-				.withMessageContaining("RootUri must not be null");
+			.withMessageContaining("RootUri must not be null");
 	}
 
 	@Test
 	void createWhenExpectationManagerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RootUriRequestExpectationManager(this.uri, null))
-				.withMessageContaining("ExpectationManager must not be null");
+			.withMessageContaining("ExpectationManager must not be null");
 	}
 
 	@Test
@@ -112,9 +112,9 @@ class RootUriRequestExpectationManagerTests {
 		ClientHttpRequest request = mock(ClientHttpRequest.class);
 		given(request.getURI()).willReturn(new URI(this.uri + "/hello"));
 		given(this.delegate.validateRequest(any(ClientHttpRequest.class)))
-				.willThrow(new AssertionError("Request URI expected:</hello> was:<https://example.com/bad>"));
+			.willThrow(new AssertionError("Request URI expected:</hello> was:<https://example.com/bad>"));
 		assertThatExceptionOfType(AssertionError.class).isThrownBy(() -> this.manager.validateRequest(request))
-				.withMessageContaining("Request URI expected:<https://example.com/hello>");
+			.withMessageContaining("Request URI expected:<https://example.com/hello>");
 	}
 
 	@Test
@@ -168,8 +168,8 @@ class RootUriRequestExpectationManagerTests {
 		MockRestServiceServer server = RootUriRequestExpectationManager.bindTo(restTemplate);
 		server.expect(requestTo("/hello")).andRespond(withSuccess());
 		assertThatExceptionOfType(AssertionError.class)
-				.isThrownBy(() -> restTemplate.getForEntity("https://spring.io/hello", String.class))
-				.withMessageContaining("expected:<https://example.com/hello> but was:<https://spring.io/hello>");
+			.isThrownBy(() -> restTemplate.getForEntity("https://spring.io/hello", String.class))
+			.withMessageContaining("expected:<https://example.com/hello> but was:<https://spring.io/hello>");
 	}
 
 }

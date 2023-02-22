@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -234,7 +234,7 @@ class JarFileTests {
 	void getEntryTime() throws Exception {
 		java.util.jar.JarFile jdkJarFile = new java.util.jar.JarFile(this.rootJarFile);
 		assertThat(this.jarFile.getEntry("META-INF/MANIFEST.MF").getTime())
-				.isEqualTo(jdkJarFile.getEntry("META-INF/MANIFEST.MF").getTime());
+			.isEqualTo(jdkJarFile.getEntry("META-INF/MANIFEST.MF").getTime());
 		jdkJarFile.close();
 	}
 
@@ -280,7 +280,7 @@ class JarFileTests {
 		URL url = new URL(this.jarFile.getUrl(), "missing.dat");
 		assertThat(url.toString()).isEqualTo("jar:" + this.rootJarFile.toURI() + "!/missing.dat");
 		assertThatExceptionOfType(FileNotFoundException.class)
-				.isThrownBy(((JarURLConnection) url.openConnection())::getJarEntry);
+			.isThrownBy(((JarURLConnection) url.openConnection())::getJarEntry);
 	}
 
 	@Test
@@ -375,7 +375,7 @@ class JarFileTests {
 			assertThat(inputStream.read()).isEqualTo(3);
 			assertThat(connection.getURL().toString()).isEqualTo(spec);
 			assertThat(connection.getJarFileURL().toString())
-					.isEqualTo("jar:" + this.rootJarFile.toURI() + "!/nested.jar");
+				.isEqualTo("jar:" + this.rootJarFile.toURI() + "!/nested.jar");
 			assertThat(connection.getEntryName()).isEqualTo("3.dat");
 			connection.getJarFile().close();
 		}
@@ -442,9 +442,9 @@ class JarFileTests {
 					StreamUtils.drain(expected.getInputStream(expectedEntry));
 					if (!actualEntry.getName().equals("META-INF/MANIFEST.MF")) {
 						assertThat(actualEntry.getCertificates()).as(actualEntry.getName())
-								.isEqualTo(expectedEntry.getCertificates());
+							.isEqualTo(expectedEntry.getCertificates());
 						assertThat(actualEntry.getCodeSigners()).as(actualEntry.getName())
-								.isEqualTo(expectedEntry.getCodeSigners());
+							.isEqualTo(expectedEntry.getCodeSigners());
 					}
 				}
 				assertThat(stopWatch.getTotalTimeSeconds()).isLessThan(3.0);
@@ -542,10 +542,11 @@ class JarFileTests {
 			try (JarFile nested = this.jarFile.getNestedJarFile(this.jarFile.getEntry("nested.jar"))) {
 				URL context = nested.getUrl();
 				new URL(context, "jar:" + this.rootJarFile.toURI() + "!/nested.jar!/3.dat").openConnection()
-						.getInputStream().close();
+					.getInputStream()
+					.close();
 				assertThatExceptionOfType(FileNotFoundException.class)
-						.isThrownBy(new URL(context, "jar:" + this.rootJarFile.toURI() + "!/no.dat")
-								.openConnection()::getInputStream);
+					.isThrownBy(new URL(context, "jar:" + this.rootJarFile.toURI() + "!/no.dat")
+						.openConnection()::getInputStream);
 			}
 		}
 		finally {
@@ -630,7 +631,7 @@ class JarFileTests {
 		}
 		try (JarFile outerJarFile = new JarFile(outer)) {
 			try (JarFile nestedZip64JarFile = outerJarFile
-					.getNestedJarFile(outerJarFile.getJarEntry("nested-zip64.jar"))) {
+				.getNestedJarFile(outerJarFile.getJarEntry("nested-zip64.jar"))) {
 				List<JarEntry> entries = Collections.list(nestedZip64JarFile.entries());
 				assertThat(entries).hasSize(65537);
 				for (int i = 0; i < entries.size(); i++) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class LocationResourceLoaderTests {
 	@Test
 	void getResourceWhenPatternThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> this.loader.getResource("spring/boot/*"))
-				.withMessage("Location 'spring/boot/*' must not be a pattern");
+			.withMessage("Location 'spring/boot/*' must not be a pattern");
 	}
 
 	@Test
@@ -85,27 +85,27 @@ class LocationResourceLoaderTests {
 	@Test
 	void getResourcesWhenNotPatternThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> this.loader.getResources("spring/boot", ResourceType.FILE))
-				.withMessage("Location 'spring/boot' must be a pattern");
+			.withMessage("Location 'spring/boot' must be a pattern");
 	}
 
 	@Test
 	void getResourcesWhenLocationStartsWithClasspathWildcardThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.loader.getResources("classpath*:spring/boot/*/", ResourceType.FILE))
-				.withMessage("Location 'classpath*:spring/boot/*/' cannot use classpath wildcards");
+			.isThrownBy(() -> this.loader.getResources("classpath*:spring/boot/*/", ResourceType.FILE))
+			.withMessage("Location 'classpath*:spring/boot/*/' cannot use classpath wildcards");
 	}
 
 	@Test
 	void getResourcesWhenLocationContainsMultipleWildcardsThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.loader.getResources("spring/*/boot/*/", ResourceType.FILE))
-				.withMessage("Location 'spring/*/boot/*/' cannot contain multiple wildcards");
+			.isThrownBy(() -> this.loader.getResources("spring/*/boot/*/", ResourceType.FILE))
+			.withMessage("Location 'spring/*/boot/*/' cannot contain multiple wildcards");
 	}
 
 	@Test
 	void getResourcesWhenPatternDoesNotEndWithAsteriskSlashThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> this.loader.getResources("spring/boot/*", ResourceType.FILE))
-				.withMessage("Location 'spring/boot/*' must end with '*/'");
+			.withMessage("Location 'spring/boot/*' must end with '*/'");
 	}
 
 	@Test

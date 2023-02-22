@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ class StartupEndpointTests {
 			StartupResponse startup = startupEndpoint.startup();
 			assertThat(startup.getSpringBootVersion()).isEqualTo(SpringBootVersion.getVersion());
 			assertThat(startup.getTimeline().getStartTime())
-					.isEqualTo(applicationStartup.getBufferedTimeline().getStartTime());
+				.isEqualTo(applicationStartup.getBufferedTimeline().getStartTime());
 		});
 	}
 
@@ -71,8 +71,8 @@ class StartupEndpointTests {
 
 	private void testStartupEndpoint(ApplicationStartup applicationStartup, Consumer<StartupEndpoint> startupEndpoint) {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withInitializer((context) -> context.setApplicationStartup(applicationStartup))
-				.withUserConfiguration(EndpointConfiguration.class);
+			.withInitializer((context) -> context.setApplicationStartup(applicationStartup))
+			.withUserConfiguration(EndpointConfiguration.class);
 		contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(StartupEndpoint.class);
 			startupEndpoint.accept(context.getBean(StartupEndpoint.class));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,8 +76,9 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 		@Override
 		@ResponseBody
 		public Map<String, Map<String, Link>> links(ServerWebExchange exchange) {
-			String requestUri = UriComponentsBuilder.fromUri(exchange.getRequest().getURI()).replaceQuery(null)
-					.toUriString();
+			String requestUri = UriComponentsBuilder.fromUri(exchange.getRequest().getURI())
+				.replaceQuery(null)
+				.toUriString();
 			return Collections.singletonMap("_links",
 					WebFluxEndpointHandlerMapping.this.linksResolver.resolveLinks(requestUri));
 		}

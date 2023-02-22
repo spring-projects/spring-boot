@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public class GrabCommand extends OptionParsingCommand {
 		protected ExitStatus run(OptionSet options) throws Exception {
 			SourceOptions sourceOptions = new SourceOptions(options);
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
-					.createDefaultRepositoryConfiguration();
+				.createDefaultRepositoryConfiguration();
 			GroovyCompilerConfiguration configuration = new OptionSetGroovyCompilerConfiguration(options, this,
 					repositoryConfiguration);
 			if (System.getProperty("grape.root") == null) {

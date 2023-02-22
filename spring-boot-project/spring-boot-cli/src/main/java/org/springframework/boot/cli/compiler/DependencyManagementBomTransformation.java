@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,8 +71,8 @@ public class DependencyManagementBomTransformation extends AnnotatedNodeASTTrans
 	public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 100;
 
 	private static final Set<String> DEPENDENCY_MANAGEMENT_BOM_ANNOTATION_NAMES = Collections
-			.unmodifiableSet(new HashSet<>(Arrays.asList(DependencyManagementBom.class.getName(),
-					DependencyManagementBom.class.getSimpleName())));
+		.unmodifiableSet(new HashSet<>(
+				Arrays.asList(DependencyManagementBom.class.getName(), DependencyManagementBom.class.getSimpleName())));
 
 	private final DependencyResolutionContext resolutionContext;
 

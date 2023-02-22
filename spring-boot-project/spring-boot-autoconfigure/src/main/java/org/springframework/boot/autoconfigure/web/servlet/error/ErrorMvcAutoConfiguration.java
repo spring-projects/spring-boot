@@ -212,11 +212,16 @@ public class ErrorMvcAutoConfiguration {
 			if (response.getContentType() == null) {
 				response.setContentType(getContentType());
 			}
-			builder.append("<html><body><h1>Whitelabel Error Page</h1>").append(
-					"<p>This application has no explicit mapping for /error, so you are seeing this as a fallback.</p>")
-					.append("<div id='created'>").append(timestamp).append("</div>")
-					.append("<div>There was an unexpected error (type=").append(htmlEscape(model.get("error")))
-					.append(", status=").append(htmlEscape(model.get("status"))).append(").</div>");
+			builder.append("<html><body><h1>Whitelabel Error Page</h1>")
+				.append("<p>This application has no explicit mapping for /error, so you are seeing this as a fallback.</p>")
+				.append("<div id='created'>")
+				.append(timestamp)
+				.append("</div>")
+				.append("<div>There was an unexpected error (type=")
+				.append(htmlEscape(model.get("error")))
+				.append(", status=")
+				.append(htmlEscape(model.get("status")))
+				.append(").</div>");
 			if (message != null) {
 				builder.append("<div>").append(htmlEscape(message)).append("</div>");
 			}
@@ -289,7 +294,7 @@ public class ErrorMvcAutoConfiguration {
 			for (String errorControllerBean : errorControllerBeans) {
 				try {
 					beanFactory.getBeanDefinition(errorControllerBean)
-							.setAttribute(AutoProxyUtils.PRESERVE_TARGET_CLASS_ATTRIBUTE, Boolean.TRUE);
+						.setAttribute(AutoProxyUtils.PRESERVE_TARGET_CLASS_ATTRIBUTE, Boolean.TRUE);
 				}
 				catch (Throwable ex) {
 					// Ignore

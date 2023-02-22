@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,7 +98,7 @@ public abstract class ResourceUtils {
 	private static List<String> getUrlsFromPrefixedWildcardPath(String path, ClassLoader classLoader)
 			throws IOException {
 		Resource[] resources = new PathMatchingResourcePatternResolver(new FileSearchResourceLoader(classLoader))
-				.getResources(path);
+			.getResources(path);
 		List<String> result = new ArrayList<>();
 		for (Resource resource : resources) {
 			if (resource.exists()) {

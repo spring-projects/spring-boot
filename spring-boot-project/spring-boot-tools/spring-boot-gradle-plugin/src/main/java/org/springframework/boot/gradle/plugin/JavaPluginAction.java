@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,34 +87,38 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void classifyJarTask(Project project) {
-		project.getTasks().named(JavaPlugin.JAR_TASK_NAME, Jar.class)
-				.configure((task) -> task.getArchiveClassifier().convention("plain"));
+		project.getTasks()
+			.named(JavaPlugin.JAR_TASK_NAME, Jar.class)
+			.configure((task) -> task.getArchiveClassifier().convention("plain"));
 	}
 
 	private void configureBuildTask(Project project) {
-		project.getTasks().named(BasePlugin.ASSEMBLE_TASK_NAME)
-				.configure((task) -> task.dependsOn(this.singlePublishedArtifact));
+		project.getTasks()
+			.named(BasePlugin.ASSEMBLE_TASK_NAME)
+			.configure((task) -> task.dependsOn(this.singlePublishedArtifact));
 	}
 
 	private TaskProvider<BootJar> configureBootJarTask(Project project) {
 		SourceSet mainSourceSet = sourceSets(project).getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 		Configuration developmentOnly = project.getConfigurations()
-				.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
+			.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
 		Configuration productionRuntimeClasspath = project.getConfigurations()
-				.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+			.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
 		Callable<FileCollection> classpath = () -> mainSourceSet.getRuntimeClasspath()
-				.minus((developmentOnly.minus(productionRuntimeClasspath))).filter(new JarTypeFileSpec());
+			.minus((developmentOnly.minus(productionRuntimeClasspath)))
+			.filter(new JarTypeFileSpec());
 		TaskProvider<ResolveMainClassName> resolveMainClassName = ResolveMainClassName
-				.registerForTask(SpringBootPlugin.BOOT_JAR_TASK_NAME, project, classpath);
+			.registerForTask(SpringBootPlugin.BOOT_JAR_TASK_NAME, project, classpath);
 		return project.getTasks().register(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class, (bootJar) -> {
 			bootJar.setDescription(
 					"Assembles an executable jar archive containing the main classes and their dependencies.");
 			bootJar.setGroup(BasePlugin.BUILD_GROUP);
 			bootJar.classpath(classpath);
 			Provider<String> manifestStartClass = project
-					.provider(() -> (String) bootJar.getManifest().getAttributes().get("Start-Class"));
-			bootJar.getMainClass().convention(resolveMainClassName.flatMap((resolver) -> manifestStartClass.isPresent()
-					? manifestStartClass : resolveMainClassName.get().readMainClassName()));
+				.provider(() -> (String) bootJar.getManifest().getAttributes().get("Start-Class"));
+			bootJar.getMainClass()
+				.convention(resolveMainClassName.flatMap((resolver) -> manifestStartClass.isPresent()
+						? manifestStartClass : resolveMainClassName.get().readMainClassName()));
 		});
 	}
 
@@ -123,8 +127,9 @@ final class JavaPluginAction implements PluginApplicationAction {
 			buildImage.setDescription("Builds an OCI image of the application using the output of the bootJar task");
 			buildImage.setGroup(BasePlugin.BUILD_GROUP);
 			buildImage.getArchiveFile().set(bootJar.get().getArchiveFile());
-			buildImage.getTargetJavaVersion().set(project.provider(
-					() -> project.getExtensions().getByType(JavaPluginExtension.class).getTargetCompatibility()));
+			buildImage.getTargetJavaVersion()
+				.set(project.provider(
+						() -> project.getExtensions().getByType(JavaPluginExtension.class).getTargetCompatibility()));
 		});
 	}
 
@@ -134,7 +139,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 
 	private void configureBootRunTask(Project project) {
 		Callable<FileCollection> classpath = () -> sourceSets(project).findByName(SourceSet.MAIN_SOURCE_SET_NAME)
-				.getRuntimeClasspath().filter(new JarTypeFileSpec());
+			.getRuntimeClasspath()
+			.filter(new JarTypeFileSpec());
 		TaskProvider<ResolveMainClassName> resolveProvider = ResolveMainClassName.registerForTask("bootRun", project,
 				classpath);
 		project.getTasks().register("bootRun", BootRun.class, (run) -> {
@@ -183,26 +189,28 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureAdditionalMetadataLocations(Project project) {
-		project.afterEvaluate((evaluated) -> evaluated.getTasks().withType(JavaCompile.class)
-				.configureEach(this::configureAdditionalMetadataLocations));
+		project.afterEvaluate((evaluated) -> evaluated.getTasks()
+			.withType(JavaCompile.class)
+			.configureEach(this::configureAdditionalMetadataLocations));
 	}
 
 	private void configureAdditionalMetadataLocations(JavaCompile compile) {
 		sourceSets(compile.getProject()).stream()
-				.filter((candidate) -> candidate.getCompileJavaTaskName().equals(compile.getName()))
-				.map((match) -> match.getResources().getSrcDirs()).findFirst()
-				.ifPresent((locations) -> compile.doFirst(new AdditionalMetadataLocationsConfigurer(locations)));
+			.filter((candidate) -> candidate.getCompileJavaTaskName().equals(compile.getName()))
+			.map((match) -> match.getResources().getSrcDirs())
+			.findFirst()
+			.ifPresent((locations) -> compile.doFirst(new AdditionalMetadataLocationsConfigurer(locations)));
 	}
 
 	private void configureDevelopmentOnlyConfiguration(Project project) {
 		Configuration developmentOnly = project.getConfigurations()
-				.create(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
+			.create(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
 		developmentOnly
-				.setDescription("Configuration for development-only dependencies such as Spring Boot's DevTools.");
+			.setDescription("Configuration for development-only dependencies such as Spring Boot's DevTools.");
 		Configuration runtimeClasspath = project.getConfigurations()
-				.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+			.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
 		Configuration productionRuntimeClasspath = project.getConfigurations()
-				.create(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+			.create(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
 		AttributeContainer attributes = productionRuntimeClasspath.getAttributes();
 		ObjectFactory objectFactory = project.getObjects();
 		attributes.attribute(Usage.USAGE_ATTRIBUTE, objectFactory.named(Usage.class, Usage.JAVA_RUNTIME));
@@ -243,14 +251,16 @@ final class JavaPluginAction implements PluginApplicationAction {
 		private boolean hasConfigurationProcessorOnClasspath(JavaCompile compile) {
 			Set<File> files = (compile.getOptions().getAnnotationProcessorPath() != null)
 					? compile.getOptions().getAnnotationProcessorPath().getFiles() : compile.getClasspath().getFiles();
-			return files.stream().map(File::getName)
-					.anyMatch((name) -> name.startsWith("spring-boot-configuration-processor"));
+			return files.stream()
+				.map(File::getName)
+				.anyMatch((name) -> name.startsWith("spring-boot-configuration-processor"));
 		}
 
 		private void configureAdditionalMetadataLocations(JavaCompile compile) {
-			compile.getOptions().getCompilerArgs()
-					.add("-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations="
-							+ StringUtils.collectionToCommaDelimitedString(this.locations));
+			compile.getOptions()
+				.getCompilerArgs()
+				.add("-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations="
+						+ StringUtils.collectionToCommaDelimitedString(this.locations));
 		}
 
 	}

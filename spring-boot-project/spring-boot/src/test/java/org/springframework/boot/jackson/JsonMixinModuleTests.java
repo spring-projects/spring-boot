@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ class JsonMixinModuleTests {
 	@Test
 	void createWhenContextIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new JsonMixinModule(null, Collections.emptyList()))
-				.withMessageContaining("Context must not be null");
+			.withMessageContaining("Context must not be null");
 	}
 
 	@Test
@@ -92,8 +92,9 @@ class JsonMixinModuleTests {
 
 	private void load(Class<?>... basePackageClasses) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		List<String> basePackages = Arrays.stream(basePackageClasses).map(ClassUtils::getPackageName)
-				.collect(Collectors.toList());
+		List<String> basePackages = Arrays.stream(basePackageClasses)
+			.map(ClassUtils::getPackageName)
+			.collect(Collectors.toList());
 		context.registerBean(JsonMixinModule.class, () -> new JsonMixinModule(context, basePackages));
 		context.refresh();
 		this.context = context;

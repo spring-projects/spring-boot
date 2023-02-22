@@ -191,7 +191,8 @@ class PropertyDescriptorResolver {
 			boolean constructorBoundType = isConstructorBoundType(type, env);
 			List<ExecutableElement> constructors = ElementFilter.constructorsIn(type.getEnclosedElements());
 			List<ExecutableElement> boundConstructors = constructors.stream()
-					.filter(env::hasConstructorBindingAnnotation).collect(Collectors.toList());
+				.filter(env::hasConstructorBindingAnnotation)
+				.collect(Collectors.toList());
 			return new ConfigurationPropertiesTypeElement(type, constructorBoundType, constructors, boundConstructors);
 		}
 

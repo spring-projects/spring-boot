@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ class ConfigDataProperties {
 	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName.of("spring.config");
 
 	private static final ConfigurationPropertyName LEGACY_PROFILES_NAME = ConfigurationPropertyName
-			.of("spring.profiles");
+		.of("spring.profiles");
 
 	private static final Bindable<ConfigDataProperties> BINDABLE_PROPERTIES = Bindable.of(ConfigDataProperties.class);
 
@@ -103,9 +103,9 @@ class ConfigDataProperties {
 	static ConfigDataProperties get(Binder binder) {
 		LegacyProfilesBindHandler legacyProfilesBindHandler = new LegacyProfilesBindHandler();
 		String[] legacyProfiles = binder.bind(LEGACY_PROFILES_NAME, BINDABLE_STRING_ARRAY, legacyProfilesBindHandler)
-				.orElse(null);
+			.orElse(null);
 		ConfigDataProperties properties = binder.bind(NAME, BINDABLE_PROPERTIES, new ConfigDataLocationBindHandler())
-				.orElse(null);
+			.orElse(null);
 		if (!ObjectUtils.isEmpty(legacyProfiles)) {
 			properties = (properties != null)
 					? properties.withLegacyProfiles(legacyProfiles, legacyProfilesBindHandler.getProperty())

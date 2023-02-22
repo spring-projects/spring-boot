@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,8 +64,8 @@ class DefaultErrorAttributesTests {
 		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
 		ServerRequest request = ServerRequest.create(exchange, this.readers);
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.errorAttributes.getErrorAttributes(request, ErrorAttributeOptions.defaults()))
-				.withMessageContaining("Missing exception attribute in ServerWebExchange");
+			.isThrownBy(() -> this.errorAttributes.getErrorAttributes(request, ErrorAttributeOptions.defaults()))
+			.withMessageContaining("Missing exception attribute in ServerWebExchange");
 	}
 
 	@Test
@@ -243,9 +243,9 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, ex),
 				ErrorAttributeOptions.of(Include.MESSAGE, Include.BINDING_ERRORS));
 		assertThat(attributes.get("message")).asString()
-				.startsWith("Validation failed for argument at index 0 in method: "
-						+ "int org.springframework.boot.web.reactive.error.DefaultErrorAttributesTests"
-						+ ".method(java.lang.String), with 1 error(s)");
+			.startsWith("Validation failed for argument at index 0 in method: "
+					+ "int org.springframework.boot.web.reactive.error.DefaultErrorAttributesTests"
+					+ ".method(java.lang.String), with 1 error(s)");
 		assertThat(attributes.get("errors")).isEqualTo(bindingResult.getAllErrors());
 	}
 

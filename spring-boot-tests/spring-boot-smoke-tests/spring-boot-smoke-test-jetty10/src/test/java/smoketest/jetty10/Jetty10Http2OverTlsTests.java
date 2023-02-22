@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,8 +58,9 @@ class Jetty10Http2OverTlsTests {
 	void httpOverTlsGetWhenHttp2AndSslAreEnabledSucceeds() throws Exception {
 		SSLContext sslContext = SSLContexts.custom().loadTrustMaterial(new TrustAllStrategy()).build();
 		TlsStrategy tlsStrategy = ClientTlsStrategyBuilder.create().setSslContext(sslContext).build();
-		try (CloseableHttpAsyncClient http2Client = HttpAsyncClients.customHttp2().setTlsStrategy(tlsStrategy)
-				.build()) {
+		try (CloseableHttpAsyncClient http2Client = HttpAsyncClients.customHttp2()
+			.setTlsStrategy(tlsStrategy)
+			.build()) {
 			http2Client.start();
 			SimpleHttpRequest request = SimpleRequestBuilder.get("https://localhost:" + this.port).build();
 			request.setBody("Hello World", ContentType.TEXT_PLAIN);

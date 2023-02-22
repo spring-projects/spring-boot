@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,8 @@ class RestTemplateBuilderClientHttpRequestInitializerTests {
 	@Test
 	void createRequestWhenHasBasicAuthAndNoAuthHeaderAddsHeader() {
 		new RestTemplateBuilderClientHttpRequestInitializer(new BasicAuthentication("spring", "boot", null),
-				Collections.emptyMap(), Collections.emptySet()).initialize(this.request);
+				Collections.emptyMap(), Collections.emptySet())
+			.initialize(this.request);
 		assertThat(this.request.getHeaders().get(HttpHeaders.AUTHORIZATION)).containsExactly("Basic c3ByaW5nOmJvb3Q=");
 	}
 
@@ -57,7 +58,8 @@ class RestTemplateBuilderClientHttpRequestInitializerTests {
 	void createRequestWhenHasBasicAuthAndExistingAuthHeaderDoesNotAddHeader() {
 		this.request.getHeaders().setBasicAuth("boot", "spring");
 		new RestTemplateBuilderClientHttpRequestInitializer(new BasicAuthentication("spring", "boot", null),
-				Collections.emptyMap(), Collections.emptySet()).initialize(this.request);
+				Collections.emptyMap(), Collections.emptySet())
+			.initialize(this.request);
 		assertThat(this.request.getHeaders().get(HttpHeaders.AUTHORIZATION)).doesNotContain("Basic c3ByaW5nOmJvb3Q=");
 	}
 
@@ -69,7 +71,7 @@ class RestTemplateBuilderClientHttpRequestInitializerTests {
 		defaultHeaders.put("two", Arrays.asList("2", "3"));
 		defaultHeaders.put("three", Collections.singletonList("4"));
 		new RestTemplateBuilderClientHttpRequestInitializer(null, defaultHeaders, Collections.emptySet())
-				.initialize(this.request);
+			.initialize(this.request);
 		assertThat(this.request.getHeaders().get("one")).containsExactly("existing");
 		assertThat(this.request.getHeaders().get("two")).containsExactly("2", "3");
 		assertThat(this.request.getHeaders().get("three")).containsExactly("4");
@@ -83,7 +85,7 @@ class RestTemplateBuilderClientHttpRequestInitializerTests {
 		customizers.add(mock(RestTemplateRequestCustomizer.class));
 		customizers.add(mock(RestTemplateRequestCustomizer.class));
 		new RestTemplateBuilderClientHttpRequestInitializer(null, Collections.emptyMap(), customizers)
-				.initialize(this.request);
+			.initialize(this.request);
 		InOrder inOrder = inOrder(customizers.toArray());
 		for (RestTemplateRequestCustomizer<?> customizer : customizers) {
 			inOrder.verify((RestTemplateRequestCustomizer<ClientHttpRequest>) customizer).customize(this.request);

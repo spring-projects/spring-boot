@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,16 +44,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Hazelcast4AutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class));
 
 	@Test
 	void serverConfig() {
-		this.contextRunner.withPropertyValues(
-				"spring.hazelcast.config=org/springframework/boot/autoconfigure/hazelcast/hazelcast-4-server.xml")
-				.run((context) -> {
-					Config config = context.getBean(HazelcastInstance.class).getConfig();
-					assertThat(config.getInstanceName()).isEqualTo("explicit-server");
-				});
+		this.contextRunner
+			.withPropertyValues(
+					"spring.hazelcast.config=org/springframework/boot/autoconfigure/hazelcast/hazelcast-4-server.xml")
+			.run((context) -> {
+				Config config = context.getBean(HazelcastInstance.class).getConfig();
+				assertThat(config.getInstanceName()).isEqualTo("explicit-server");
+			});
 	}
 
 	@Test
@@ -65,9 +66,9 @@ class Hazelcast4AutoConfigurationTests {
 		HazelcastInstance hazelcastServer = Hazelcast.newHazelcastInstance(config);
 		try {
 			this.contextRunner
-					.withPropertyValues("spring.hazelcast.config="
-							+ "org/springframework/boot/autoconfigure/hazelcast/hazelcast-4-client.xml")
-					.run(assertSpecificHazelcastClient("explicit-client"));
+				.withPropertyValues("spring.hazelcast.config="
+						+ "org/springframework/boot/autoconfigure/hazelcast/hazelcast-4-client.xml")
+				.run(assertSpecificHazelcastClient("explicit-client"));
 		}
 		finally {
 			hazelcastServer.shutdown();
@@ -76,22 +77,26 @@ class Hazelcast4AutoConfigurationTests {
 
 	@Test
 	void autoConfiguredConfigUsesSpringManagedContext() {
-		this.contextRunner.withPropertyValues(
-				"spring.hazelcast.config=" + "org/springframework/boot/autoconfigure/hazelcast/hazelcast-4-server.xml")
-				.run((context) -> {
-					Config config = context.getBean(HazelcastInstance.class).getConfig();
-					assertThat(config.getManagedContext()).isInstanceOf(SpringManagedContext.class);
-				});
+		this.contextRunner
+			.withPropertyValues("spring.hazelcast.config="
+					+ "org/springframework/boot/autoconfigure/hazelcast/hazelcast-4-server.xml")
+			.run((context) -> {
+				Config config = context.getBean(HazelcastInstance.class).getConfig();
+				assertThat(config.getManagedContext()).isInstanceOf(SpringManagedContext.class);
+			});
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertSpecificHazelcastClient(String label) {
-		return (context) -> assertThat(context).getBean(HazelcastInstance.class).isInstanceOf(HazelcastInstance.class)
-				.has(labelEqualTo(label));
+		return (context) -> assertThat(context).getBean(HazelcastInstance.class)
+			.isInstanceOf(HazelcastInstance.class)
+			.has(labelEqualTo(label));
 	}
 
 	private static Condition<HazelcastInstance> labelEqualTo(String label) {
-		return new Condition<>((o) -> ((HazelcastClientProxy) o).getClientConfig().getLabels().stream()
-				.anyMatch((e) -> e.equals(label)), "Label equals to " + label);
+		return new Condition<>((o) -> ((HazelcastClientProxy) o).getClientConfig()
+			.getLabels()
+			.stream()
+			.anyMatch((e) -> e.equals(label)), "Label equals to " + label);
 	}
 
 }

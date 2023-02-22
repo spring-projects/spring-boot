@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -159,10 +159,8 @@ class MavenBuild {
 			});
 			String settingsXml = new String(Files.readAllBytes(Paths.get("src", "intTest", "projects", "settings.xml")),
 					StandardCharsets.UTF_8)
-							.replace("@localCentralUrl@",
-									new File("build/int-test-maven-repository").toURI().toURL().toString())
-							.replace("@localRepositoryPath@",
-									new File("build/local-maven-repository").getAbsolutePath());
+				.replace("@localCentralUrl@", new File("build/int-test-maven-repository").toURI().toURL().toString())
+				.replace("@localRepositoryPath@", new File("build/local-maven-repository").getAbsolutePath());
 			Files.write(destination.resolve("settings.xml"), settingsXml.getBytes(StandardCharsets.UTF_8),
 					StandardOpenOption.CREATE_NEW);
 			request.setBaseDirectory(this.temp);

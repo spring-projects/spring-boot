@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,8 +71,11 @@ class Saml2RelyingPartyRegistrationConfiguration {
 
 	@Bean
 	RelyingPartyRegistrationRepository relyingPartyRegistrationRepository(Saml2RelyingPartyProperties properties) {
-		List<RelyingPartyRegistration> registrations = properties.getRegistration().entrySet().stream()
-				.map(this::asRegistration).collect(Collectors.toList());
+		List<RelyingPartyRegistration> registrations = properties.getRegistration()
+			.entrySet()
+			.stream()
+			.map(this::asRegistration)
+			.collect(Collectors.toList());
 		return new InMemoryRelyingPartyRegistrationRepository(registrations);
 	}
 
@@ -89,13 +92,22 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		builder.assertionConsumerServiceLocation(properties.getAcs().getLocation());
 		builder.assertionConsumerServiceBinding(properties.getAcs().getBinding());
 		builder.assertingPartyDetails(mapAssertingParty(properties, id, usingMetadata));
-		builder.signingX509Credentials((credentials) -> properties.getSigning().getCredentials().stream()
-				.map(this::asSigningCredential).forEach(credentials::add));
-		builder.decryptionX509Credentials((credentials) -> properties.getDecryption().getCredentials().stream()
-				.map(this::asDecryptionCredential).forEach(credentials::add));
+		builder.signingX509Credentials((credentials) -> properties.getSigning()
+			.getCredentials()
+			.stream()
+			.map(this::asSigningCredential)
+			.forEach(credentials::add));
+		builder.decryptionX509Credentials((credentials) -> properties.getDecryption()
+			.getCredentials()
+			.stream()
+			.map(this::asDecryptionCredential)
+			.forEach(credentials::add));
 		builder.assertingPartyDetails(
 				(details) -> details.verificationX509Credentials((credentials) -> assertingParty.getVerification()
-						.getCredentials().stream().map(this::asVerificationCredential).forEach(credentials::add)));
+					.getCredentials()
+					.stream()
+					.map(this::asVerificationCredential)
+					.forEach(credentials::add)));
 		builder.singleLogoutServiceLocation(properties.getSinglelogout().getUrl());
 		builder.singleLogoutServiceResponseLocation(properties.getSinglelogout().getResponseUrl());
 		builder.singleLogoutServiceBinding(properties.getSinglelogout().getBinding());
@@ -114,8 +126,9 @@ class Saml2RelyingPartyRegistrationConfiguration {
 			map.from(assertingParty::getEntityId).to(details::entityId);
 			map.from(assertingParty::getSingleSignonBinding).to(details::singleSignOnServiceBinding);
 			map.from(assertingParty::getSingleSignonUrl).to(details::singleSignOnServiceLocation);
-			map.from(assertingParty::getSingleSignonSignRequest).when((ignored) -> !usingMetadata)
-					.to(details::wantAuthnRequestsSigned);
+			map.from(assertingParty::getSingleSignonSignRequest)
+				.when((ignored) -> !usingMetadata)
+				.to(details::wantAuthnRequestsSigned);
 			map.from(assertingParty.getSinglelogoutUrl()).to(details::singleLogoutServiceLocation);
 			map.from(assertingParty.getSinglelogoutResponseUrl()).to(details::singleLogoutServiceResponseLocation);
 			map.from(assertingParty.getSinglelogoutBinding()).to(details::singleLogoutServiceBinding);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,25 +42,33 @@ class RestTemplateBuilderTestsOkHttp3Tests {
 	@Test
 	void connectTimeoutCanBeConfiguredOnOkHttpRequestFactory() {
 		ClientHttpRequestFactory requestFactory = this.builder.requestFactory(OkHttp3ClientHttpRequestFactory.class)
-				.setConnectTimeout(Duration.ofMillis(1234)).build().getRequestFactory();
+			.setConnectTimeout(Duration.ofMillis(1234))
+			.build()
+			.getRequestFactory();
 		assertThat(requestFactory).extracting("client", InstanceOfAssertFactories.type(OkHttpClient.class))
-				.extracting(OkHttpClient::connectTimeoutMillis).isEqualTo(1234);
+			.extracting(OkHttpClient::connectTimeoutMillis)
+			.isEqualTo(1234);
 	}
 
 	@Test
 	void readTimeoutCanBeConfiguredOnOkHttpRequestFactory() {
 		ClientHttpRequestFactory requestFactory = this.builder.requestFactory(OkHttp3ClientHttpRequestFactory.class)
-				.setReadTimeout(Duration.ofMillis(1234)).build().getRequestFactory();
+			.setReadTimeout(Duration.ofMillis(1234))
+			.build()
+			.getRequestFactory();
 		assertThat(requestFactory).extracting("client", InstanceOfAssertFactories.type(OkHttpClient.class))
-				.extracting(OkHttpClient::readTimeoutMillis).isEqualTo(1234);
+			.extracting(OkHttpClient::readTimeoutMillis)
+			.isEqualTo(1234);
 	}
 
 	@Test
 	void bufferRequestBodyCanNotBeConfiguredOnOkHttpRequestFactory() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.builder.requestFactory(OkHttp3ClientHttpRequestFactory.class)
-						.setBufferRequestBody(false).build().getRequestFactory())
-				.withMessageContaining(OkHttp3ClientHttpRequestFactory.class.getName());
+			.isThrownBy(() -> this.builder.requestFactory(OkHttp3ClientHttpRequestFactory.class)
+				.setBufferRequestBody(false)
+				.build()
+				.getRequestFactory())
+			.withMessageContaining(OkHttp3ClientHttpRequestFactory.class.getName());
 	}
 
 }

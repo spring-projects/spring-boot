@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,9 +48,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MeterRegistryConfigurerIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.limitedTo(AtlasMetricsExportAutoConfiguration.class,
-					PrometheusMetricsExportAutoConfiguration.class))
-			.withConfiguration(AutoConfigurations.of(JvmMetricsAutoConfiguration.class));
+		.with(MetricsRun.limitedTo(AtlasMetricsExportAutoConfiguration.class,
+				PrometheusMetricsExportAutoConfiguration.class))
+		.withConfiguration(AutoConfigurations.of(JvmMetricsAutoConfiguration.class));
 
 	@Test
 	void binderMetricsAreSearchableFromTheComposite() {
@@ -58,50 +58,52 @@ class MeterRegistryConfigurerIntegrationTests {
 			CompositeMeterRegistry composite = context.getBean(CompositeMeterRegistry.class);
 			composite.get("jvm.memory.used").gauge();
 			context.getBeansOfType(MeterRegistry.class)
-					.forEach((name, registry) -> registry.get("jvm.memory.used").gauge());
+				.forEach((name, registry) -> registry.get("jvm.memory.used").gauge());
 		});
 	}
 
 	@Test
 	void customizersAreAppliedBeforeBindersAreCreated() {
 		new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
-						SimpleMetricsExportAutoConfiguration.class))
-				.withUserConfiguration(TestConfiguration.class).run((context) -> {
+			.withConfiguration(
+					AutoConfigurations.of(MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class))
+			.withUserConfiguration(TestConfiguration.class)
+			.run((context) -> {
 
-				});
+			});
 	}
 
 	@Test
 	void counterIsIncrementedOncePerEventWithoutCompositeMeterRegistry() {
 		new ApplicationContextRunner().with(MetricsRun.limitedTo(JmxMetricsExportAutoConfiguration.class))
-				.withConfiguration(AutoConfigurations.of(LogbackMetricsAutoConfiguration.class)).run((context) -> {
-					Logger logger = ((LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory())
-							.getLogger("test-logger");
-					logger.error("Error.");
-					Map<String, MeterRegistry> registriesByName = context.getBeansOfType(MeterRegistry.class);
-					assertThat(registriesByName).hasSize(1);
-					MeterRegistry registry = registriesByName.values().iterator().next();
-					assertThat(registry.get("logback.events").tag("level", "error").counter().count()).isEqualTo(1);
-				});
+			.withConfiguration(AutoConfigurations.of(LogbackMetricsAutoConfiguration.class))
+			.run((context) -> {
+				Logger logger = ((LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory())
+					.getLogger("test-logger");
+				logger.error("Error.");
+				Map<String, MeterRegistry> registriesByName = context.getBeansOfType(MeterRegistry.class);
+				assertThat(registriesByName).hasSize(1);
+				MeterRegistry registry = registriesByName.values().iterator().next();
+				assertThat(registry.get("logback.events").tag("level", "error").counter().count()).isEqualTo(1);
+			});
 	}
 
 	@Test
 	void counterIsIncrementedOncePerEventWithCompositeMeterRegistry() {
 		new ApplicationContextRunner()
-				.with(MetricsRun.limitedTo(JmxMetricsExportAutoConfiguration.class,
-						PrometheusMetricsExportAutoConfiguration.class))
-				.withConfiguration(AutoConfigurations.of(LogbackMetricsAutoConfiguration.class)).run((context) -> {
-					Logger logger = ((LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory())
-							.getLogger("test-logger");
-					logger.error("Error.");
-					Map<String, MeterRegistry> registriesByName = context.getBeansOfType(MeterRegistry.class);
-					assertThat(registriesByName).hasSize(3);
-					registriesByName.forEach((name,
-							registry) -> assertThat(
-									registry.get("logback.events").tag("level", "error").counter().count())
-											.isEqualTo(1));
-				});
+			.with(MetricsRun.limitedTo(JmxMetricsExportAutoConfiguration.class,
+					PrometheusMetricsExportAutoConfiguration.class))
+			.withConfiguration(AutoConfigurations.of(LogbackMetricsAutoConfiguration.class))
+			.run((context) -> {
+				Logger logger = ((LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory())
+					.getLogger("test-logger");
+				logger.error("Error.");
+				Map<String, MeterRegistry> registriesByName = context.getBeansOfType(MeterRegistry.class);
+				assertThat(registriesByName).hasSize(3);
+				registriesByName.forEach((name,
+						registry) -> assertThat(registry.get("logback.events").tag("level", "error").counter().count())
+							.isEqualTo(1));
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,13 +47,13 @@ class IndexedLayersTests {
 	@Test
 	void createWhenIndexFileIsEmptyThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> new IndexedLayers(" \n "))
-				.withMessage("Empty layer index file loaded");
+			.withMessage("Empty layer index file loaded");
 	}
 
 	@Test
 	void createWhenIndexFileIsMalformedThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> new IndexedLayers("test"))
-				.withMessage("Layer index file is malformed");
+			.withMessage("Layer index file is malformed");
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class IndexedLayersTests {
 	void getLayerWhenMatchesNameForMissingLayerThrowsException() throws Exception {
 		IndexedLayers layers = new IndexedLayers(getIndex());
 		assertThatIllegalStateException().isThrownBy(() -> layers.getLayer(mockEntry("file.jar")))
-				.withMessage("No layer defined in index for file " + "'file.jar'");
+			.withMessage("No layer defined in index for file " + "'file.jar'");
 	}
 
 	@Test

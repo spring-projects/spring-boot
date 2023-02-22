@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ class ApplicationPidTests {
 	void throwIllegalStateWritingMissingPid() {
 		ApplicationPid pid = new ApplicationPid(null);
 		assertThatIllegalStateException().isThrownBy(() -> pid.write(new File(this.tempDir, "pid")))
-				.withMessageContaining("No PID available");
+			.withMessageContaining("No PID available");
 	}
 
 	@Test

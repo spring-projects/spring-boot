@@ -113,9 +113,9 @@ class NoUniqueBeanDefinitionFailureAnalyzerTests {
 	private void assertFoundBeans(FailureAnalysis analysis) {
 		assertThat(analysis.getDescription()).contains("beanOne: defined in unknown location");
 		assertThat(analysis.getDescription())
-				.contains("beanTwo: defined by method 'beanTwo' in " + DuplicateBeansProducer.class.getName());
+			.contains("beanTwo: defined by method 'beanTwo' in " + DuplicateBeansProducer.class.getName());
 		assertThat(analysis.getDescription())
-				.contains("beanThree: defined by method 'beanThree' in " + ParentProducer.class.getName());
+			.contains("beanThree: defined by method 'beanThree' in " + ParentProducer.class.getName());
 		assertThat(analysis.getDescription()).contains("barTestBean");
 		assertThat(analysis.getDescription()).contains("fooTestBean");
 		assertThat(analysis.getDescription()).contains("xmlTestBean");

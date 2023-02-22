@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,20 +37,20 @@ import static org.mockito.Mockito.mock;
 class LiquibaseEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(LiquibaseEndpointAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(LiquibaseEndpointAutoConfiguration.class));
 
 	@Test
 	void runShouldHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=liquibase")
-				.withBean(SpringLiquibase.class, () -> mock(SpringLiquibase.class))
-				.run((context) -> assertThat(context).hasSingleBean(LiquibaseEndpoint.class));
+			.withBean(SpringLiquibase.class, () -> mock(SpringLiquibase.class))
+			.run((context) -> assertThat(context).hasSingleBean(LiquibaseEndpoint.class));
 	}
 
 	@Test
 	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withBean(SpringLiquibase.class, () -> mock(SpringLiquibase.class))
-				.withPropertyValues("management.endpoint.liquibase.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(LiquibaseEndpoint.class));
+			.withPropertyValues("management.endpoint.liquibase.enabled:false")
+			.run((context) -> assertThat(context).doesNotHaveBean(LiquibaseEndpoint.class));
 	}
 
 	@Test
@@ -61,21 +61,23 @@ class LiquibaseEndpointAutoConfigurationTests {
 	@Test
 	void disablesCloseOfDataSourceWhenEndpointIsEnabled() {
 		this.contextRunner.withUserConfiguration(DataSourceClosingLiquibaseConfiguration.class)
-				.withPropertyValues("management.endpoints.web.exposure.include=liquibase").run((context) -> {
-					assertThat(context).hasSingleBean(LiquibaseEndpoint.class);
-					assertThat(context.getBean(DataSourceClosingSpringLiquibase.class))
-							.hasFieldOrPropertyWithValue("closeDataSourceOnceMigrated", false);
-				});
+			.withPropertyValues("management.endpoints.web.exposure.include=liquibase")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(LiquibaseEndpoint.class);
+				assertThat(context.getBean(DataSourceClosingSpringLiquibase.class))
+					.hasFieldOrPropertyWithValue("closeDataSourceOnceMigrated", false);
+			});
 	}
 
 	@Test
 	void doesNotDisableCloseOfDataSourceWhenEndpointIsDisabled() {
 		this.contextRunner.withUserConfiguration(DataSourceClosingLiquibaseConfiguration.class)
-				.withPropertyValues("management.endpoint.liquibase.enabled:false").run((context) -> {
-					assertThat(context).doesNotHaveBean(LiquibaseEndpoint.class);
-					DataSourceClosingSpringLiquibase bean = context.getBean(DataSourceClosingSpringLiquibase.class);
-					assertThat(bean).hasFieldOrPropertyWithValue("closeDataSourceOnceMigrated", true);
-				});
+			.withPropertyValues("management.endpoint.liquibase.enabled:false")
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(LiquibaseEndpoint.class);
+				DataSourceClosingSpringLiquibase bean = context.getBean(DataSourceClosingSpringLiquibase.class);
+				assertThat(bean).hasFieldOrPropertyWithValue("closeDataSourceOnceMigrated", true);
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

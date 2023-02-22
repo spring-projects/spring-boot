@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,28 +39,29 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AbstractDependsOnBeanFactoryPostProcessorTests {
 
 	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(FooBarConfiguration.class);
+		.withUserConfiguration(FooBarConfiguration.class);
 
 	@Test
 	void fooBeansShouldDependOnBarBeanNames() {
 		this.contextRunner
-				.withUserConfiguration(FooDependsOnBarNamePostProcessor.class, FooBarFactoryBeanConfiguration.class)
-				.run(this::assertThatFooDependsOnBar);
+			.withUserConfiguration(FooDependsOnBarNamePostProcessor.class, FooBarFactoryBeanConfiguration.class)
+			.run(this::assertThatFooDependsOnBar);
 	}
 
 	@Test
 	void fooBeansShouldDependOnBarBeanTypes() {
 		this.contextRunner
-				.withUserConfiguration(FooDependsOnBarTypePostProcessor.class, FooBarFactoryBeanConfiguration.class)
-				.run(this::assertThatFooDependsOnBar);
+			.withUserConfiguration(FooDependsOnBarTypePostProcessor.class, FooBarFactoryBeanConfiguration.class)
+			.run(this::assertThatFooDependsOnBar);
 	}
 
 	@Test
 	void fooBeansShouldDependOnBarBeanNamesParentContext() {
 		try (AnnotationConfigApplicationContext parentContext = new AnnotationConfigApplicationContext(
 				FooBarFactoryBeanConfiguration.class)) {
-			this.contextRunner.withUserConfiguration(FooDependsOnBarNamePostProcessor.class).withParent(parentContext)
-					.run(this::assertThatFooDependsOnBar);
+			this.contextRunner.withUserConfiguration(FooDependsOnBarNamePostProcessor.class)
+				.withParent(parentContext)
+				.run(this::assertThatFooDependsOnBar);
 		}
 	}
 
@@ -68,8 +69,9 @@ class AbstractDependsOnBeanFactoryPostProcessorTests {
 	void fooBeansShouldDependOnBarBeanTypesParentContext() {
 		try (AnnotationConfigApplicationContext parentContext = new AnnotationConfigApplicationContext(
 				FooBarFactoryBeanConfiguration.class)) {
-			this.contextRunner.withUserConfiguration(FooDependsOnBarTypePostProcessor.class).withParent(parentContext)
-					.run(this::assertThatFooDependsOnBar);
+			this.contextRunner.withUserConfiguration(FooDependsOnBarTypePostProcessor.class)
+				.withParent(parentContext)
+				.run(this::assertThatFooDependsOnBar);
 		}
 	}
 

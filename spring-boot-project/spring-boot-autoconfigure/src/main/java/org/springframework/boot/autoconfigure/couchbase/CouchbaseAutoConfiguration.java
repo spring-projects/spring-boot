@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,24 +76,29 @@ public class CouchbaseAutoConfiguration {
 	@ConditionalOnMissingBean
 	public Cluster couchbaseCluster(CouchbaseProperties properties, ClusterEnvironment couchbaseClusterEnvironment) {
 		ClusterOptions options = ClusterOptions.clusterOptions(properties.getUsername(), properties.getPassword())
-				.environment(couchbaseClusterEnvironment);
+			.environment(couchbaseClusterEnvironment);
 		return Cluster.connect(properties.getConnectionString(), options);
 	}
 
 	private ClusterEnvironment.Builder initializeEnvironmentBuilder(CouchbaseProperties properties) {
 		ClusterEnvironment.Builder builder = ClusterEnvironment.builder();
 		Timeouts timeouts = properties.getEnv().getTimeouts();
-		builder.timeoutConfig(TimeoutConfig.kvTimeout(timeouts.getKeyValue()).analyticsTimeout(timeouts.getAnalytics())
-				.kvDurableTimeout(timeouts.getKeyValueDurable()).queryTimeout(timeouts.getQuery())
-				.viewTimeout(timeouts.getView()).searchTimeout(timeouts.getSearch())
-				.managementTimeout(timeouts.getManagement()).connectTimeout(timeouts.getConnect())
-				.disconnectTimeout(timeouts.getDisconnect()));
+		builder.timeoutConfig(TimeoutConfig.kvTimeout(timeouts.getKeyValue())
+			.analyticsTimeout(timeouts.getAnalytics())
+			.kvDurableTimeout(timeouts.getKeyValueDurable())
+			.queryTimeout(timeouts.getQuery())
+			.viewTimeout(timeouts.getView())
+			.searchTimeout(timeouts.getSearch())
+			.managementTimeout(timeouts.getManagement())
+			.connectTimeout(timeouts.getConnect())
+			.disconnectTimeout(timeouts.getDisconnect()));
 		CouchbaseProperties.Io io = properties.getEnv().getIo();
-		builder.ioConfig(IoConfig.maxHttpConnections(io.getMaxEndpoints()).numKvConnections(io.getMinEndpoints())
-				.idleHttpConnectionTimeout(io.getIdleHttpConnectionTimeout()));
+		builder.ioConfig(IoConfig.maxHttpConnections(io.getMaxEndpoints())
+			.numKvConnections(io.getMinEndpoints())
+			.idleHttpConnectionTimeout(io.getIdleHttpConnectionTimeout()));
 		if (properties.getEnv().getSsl().getEnabled()) {
 			builder.securityConfig(SecurityConfig.enableTls(true)
-					.trustManagerFactory(getTrustManagerFactory(properties.getEnv().getSsl())));
+				.trustManagerFactory(getTrustManagerFactory(properties.getEnv().getSsl())));
 		}
 		return builder;
 	}
@@ -102,7 +107,7 @@ public class CouchbaseAutoConfiguration {
 		String resource = ssl.getKeyStore();
 		try {
 			TrustManagerFactory trustManagerFactory = TrustManagerFactory
-					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+				.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 			KeyStore keyStore = loadKeyStore(resource, ssl.getKeyStorePassword());
 			trustManagerFactory.init(keyStore);
 			return trustManagerFactory;

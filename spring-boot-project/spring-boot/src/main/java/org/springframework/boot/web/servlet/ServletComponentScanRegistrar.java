@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 
 	private void updatePostProcessor(BeanDefinitionRegistry registry, Set<String> packagesToScan) {
 		ServletComponentRegisteringPostProcessorBeanDefinition definition = (ServletComponentRegisteringPostProcessorBeanDefinition) registry
-				.getBeanDefinition(BEAN_NAME);
+			.getBeanDefinition(BEAN_NAME);
 		definition.addPackageNames(packagesToScan);
 	}
 
@@ -66,7 +66,7 @@ class ServletComponentScanRegistrar implements ImportBeanDefinitionRegistrar {
 
 	private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
 		AnnotationAttributes attributes = AnnotationAttributes
-				.fromMap(metadata.getAnnotationAttributes(ServletComponentScan.class.getName()));
+			.fromMap(metadata.getAnnotationAttributes(ServletComponentScan.class.getName()));
 		String[] basePackages = attributes.getStringArray("basePackages");
 		Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
 		Set<String> packagesToScan = new LinkedHashSet<>(Arrays.asList(basePackages));

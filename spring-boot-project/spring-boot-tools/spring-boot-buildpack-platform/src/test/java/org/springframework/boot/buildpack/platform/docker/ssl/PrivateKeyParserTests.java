@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ class PrivateKeyParserTests {
 	void parseWithNonKeyFileWillThrowException() throws IOException {
 		Path path = this.fileWriter.writeFile("text.pem", "plain text");
 		assertThatIllegalStateException().isThrownBy(() -> PrivateKeyParser.parse(path))
-				.withMessageContaining(path.toString());
+			.withMessageContaining(path.toString());
 		Files.delete(path);
 	}
 
@@ -95,7 +95,7 @@ class PrivateKeyParserTests {
 	void parseWithInvalidPathWillThrowException() throws URISyntaxException {
 		Path path = Paths.get(new URI("file:///bad/path/key.pem"));
 		assertThatIllegalStateException().isThrownBy(() -> PrivateKeyParser.parse(path))
-				.withMessageContaining(path.toString());
+			.withMessageContaining(path.toString());
 	}
 
 	@Nested

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,56 +75,59 @@ class StandardConfigDataLocationResolverTests {
 		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
 		assertThat(locations.size()).isEqualTo(1);
 		assertThat(locations).extracting(Object::toString)
-				.containsExactly("class path resource [configdata/properties/application.properties]");
+			.containsExactly("class path resource [configdata/properties/application.properties]");
 	}
 
 	@Test
 	void resolveWhenLocationIsFileResolvesFile() {
 		ConfigDataLocation location = ConfigDataLocation
-				.of("file:src/test/resources/configdata/properties/application.properties");
+			.of("file:src/test/resources/configdata/properties/application.properties");
 		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
 		assertThat(locations.size()).isEqualTo(1);
-		assertThat(locations).extracting(Object::toString).containsExactly(
-				filePath("src", "test", "resources", "configdata", "properties", "application.properties"));
+		assertThat(locations).extracting(Object::toString)
+			.containsExactly(
+					filePath("src", "test", "resources", "configdata", "properties", "application.properties"));
 	}
 
 	@Test
 	void resolveWhenLocationIsFileAndNoMatchingLoaderThrowsException() {
 		ConfigDataLocation location = ConfigDataLocation
-				.of("file:src/test/resources/configdata/properties/application.unknown");
+			.of("file:src/test/resources/configdata/properties/application.unknown");
 		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve(this.context, location))
-				.withMessageStartingWith("Unable to load config data from")
-				.satisfies((ex) -> assertThat(ex.getCause()).hasMessageStartingWith("File extension is not known"));
+			.withMessageStartingWith("Unable to load config data from")
+			.satisfies((ex) -> assertThat(ex.getCause()).hasMessageStartingWith("File extension is not known"));
 	}
 
 	@Test
 	void resolveWhenLocationWildcardIsSpecifiedForClasspathLocationThrowsException() {
 		ConfigDataLocation location = ConfigDataLocation.of("classpath*:application.properties");
 		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve(this.context, location))
-				.withMessageContaining("Location 'classpath*:application.properties' cannot use classpath wildcards");
+			.withMessageContaining("Location 'classpath*:application.properties' cannot use classpath wildcards");
 	}
 
 	@Test
 	void resolveWhenLocationWildcardIsNotBeforeLastSlashThrowsException() {
 		ConfigDataLocation location = ConfigDataLocation.of("file:src/test/resources/*/config/");
 		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve(this.context, location))
-				.withMessageStartingWith("Location '").withMessageEndingWith("' must end with '*/'");
+			.withMessageStartingWith("Location '")
+			.withMessageEndingWith("' must end with '*/'");
 	}
 
 	@Test
 	void createWhenConfigNameHasWildcardThrowsException() {
 		this.environment.setProperty("spring.config.name", "*/application");
 		assertThatIllegalStateException()
-				.isThrownBy(
-						() -> new StandardConfigDataLocationResolver(null, this.environmentBinder, this.resourceLoader))
-				.withMessageStartingWith("Config name '").withMessageEndingWith("' cannot contain '*'");
+			.isThrownBy(() -> new StandardConfigDataLocationResolver(null, this.environmentBinder, this.resourceLoader))
+			.withMessageStartingWith("Config name '")
+			.withMessageEndingWith("' cannot contain '*'");
 	}
 
 	@Test
 	void resolveWhenLocationHasMultipleWildcardsThrowsException() {
 		ConfigDataLocation location = ConfigDataLocation.of("file:src/test/resources/config/**/");
 		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve(this.context, location))
-				.withMessageStartingWith("Location '").withMessageEndingWith("' cannot contain multiple wildcards");
+			.withMessageStartingWith("Location '")
+			.withMessageEndingWith("' cannot contain multiple wildcards");
 	}
 
 	@Test
@@ -135,9 +138,9 @@ class StandardConfigDataLocationResolverTests {
 		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
 		assertThat(locations.size()).isEqualTo(3);
 		assertThat(locations).extracting(Object::toString)
-				.contains(filePath("src", "test", "resources", "config", "1-first", "testproperties.properties"))
-				.contains(filePath("src", "test", "resources", "config", "2-second", "testproperties.properties"))
-				.doesNotContain(filePath("src", "test", "resources", "config", "3-third", "testproperties.properties"));
+			.contains(filePath("src", "test", "resources", "config", "1-first", "testproperties.properties"))
+			.contains(filePath("src", "test", "resources", "config", "2-second", "testproperties.properties"))
+			.doesNotContain(filePath("src", "test", "resources", "config", "3-third", "testproperties.properties"));
 	}
 
 	@Test
@@ -146,10 +149,10 @@ class StandardConfigDataLocationResolverTests {
 		this.environment.setProperty("spring.config.name", "testproperties");
 		this.resolver = new StandardConfigDataLocationResolver(null, this.environmentBinder, this.resourceLoader);
 		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
-		assertThat(locations).extracting(Object::toString).containsExactly(
-				filePath("src", "test", "resources", "config", "0-empty", "testproperties.properties"),
-				filePath("src", "test", "resources", "config", "1-first", "testproperties.properties"),
-				filePath("src", "test", "resources", "config", "2-second", "testproperties.properties"));
+		assertThat(locations).extracting(Object::toString)
+			.containsExactly(filePath("src", "test", "resources", "config", "0-empty", "testproperties.properties"),
+					filePath("src", "test", "resources", "config", "1-first", "testproperties.properties"),
+					filePath("src", "test", "resources", "config", "2-second", "testproperties.properties"));
 	}
 
 	@Test
@@ -161,14 +164,14 @@ class StandardConfigDataLocationResolverTests {
 	@Test
 	void resolveWhenLocationIsWildcardFilesLoadsAllFilesThatMatch() {
 		ConfigDataLocation location = ConfigDataLocation
-				.of("file:src/test/resources/config/*/testproperties.properties");
+			.of("file:src/test/resources/config/*/testproperties.properties");
 		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
 		assertThat(locations.size()).isEqualTo(3);
 		assertThat(locations).extracting(Object::toString)
-				.contains(filePath("src", "test", "resources", "config", "1-first", "testproperties.properties"))
-				.contains(filePath("src", "test", "resources", "config", "2-second", "testproperties.properties"))
-				.doesNotContain(filePath("src", "test", "resources", "config", "nested", "3-third",
-						"testproperties.properties"));
+			.contains(filePath("src", "test", "resources", "config", "1-first", "testproperties.properties"))
+			.contains(filePath("src", "test", "resources", "config", "2-second", "testproperties.properties"))
+			.doesNotContain(
+					filePath("src", "test", "resources", "config", "nested", "3-third", "testproperties.properties"));
 	}
 
 	@Test
@@ -187,7 +190,7 @@ class StandardConfigDataLocationResolverTests {
 		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
 		assertThat(locations.size()).isEqualTo(1);
 		assertThat(locations).extracting(Object::toString)
-				.contains("class path resource [configdata/properties/other.properties]");
+			.contains("class path resource [configdata/properties/other.properties]");
 	}
 
 	@Test
@@ -205,7 +208,7 @@ class StandardConfigDataLocationResolverTests {
 		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
 		assertThat(locations.size()).isEqualTo(1);
 		assertThat(locations).extracting(Object::toString)
-				.contains("class path resource [config/nested/3-third/testproperties.properties]");
+			.contains("class path resource [config/nested/3-third/testproperties.properties]");
 	}
 
 	@Test
@@ -218,8 +221,8 @@ class StandardConfigDataLocationResolverTests {
 		StandardConfigDataResource parent = new StandardConfigDataResource(parentReference, parentResource);
 		given(this.context.getParent()).willReturn(parent);
 		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve(this.context, location))
-				.withMessageStartingWith("Unable to load config data from 'application.other'")
-				.satisfies((ex) -> assertThat(ex.getCause()).hasMessageStartingWith("File extension is not known"));
+			.withMessageStartingWith("Unable to load config data from 'application.other'")
+			.satisfies((ex) -> assertThat(ex.getCause()).hasMessageStartingWith("File extension is not known"));
 	}
 
 	@Test
@@ -243,7 +246,7 @@ class StandardConfigDataLocationResolverTests {
 				profiles);
 		assertThat(locations.size()).isEqualTo(1);
 		assertThat(locations).extracting(Object::toString)
-				.containsExactly("class path resource [configdata/properties/application-dev.properties]");
+			.containsExactly("class path resource [configdata/properties/application-dev.properties]");
 	}
 
 	@Test

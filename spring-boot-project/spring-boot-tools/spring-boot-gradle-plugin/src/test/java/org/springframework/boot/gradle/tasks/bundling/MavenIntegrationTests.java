@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,22 +43,27 @@ class MavenIntegrationTests {
 	@TestTemplate
 	void bootJarCanBeUploaded() {
 		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("6.0.0")
-				.build("uploadBootArchives");
+			.build("uploadBootArchives");
 		assertThat(result.task(":uploadBootArchives").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(artifactWithSuffix("jar")).isFile();
 		assertThat(artifactWithSuffix("pom")).is(pomWith().groupId("com.example")
-				.artifactId(this.gradleBuild.getProjectDir().getName()).version("1.0").noPackaging().noDependencies());
+			.artifactId(this.gradleBuild.getProjectDir().getName())
+			.version("1.0")
+			.noPackaging()
+			.noDependencies());
 	}
 
 	@TestTemplate
 	void bootWarCanBeUploaded() {
 		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("6.0.0")
-				.build("uploadBootArchives");
+			.build("uploadBootArchives");
 		assertThat(result.task(":uploadBootArchives").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(artifactWithSuffix("war")).isFile();
-		assertThat(artifactWithSuffix("pom"))
-				.is(pomWith().groupId("com.example").artifactId(this.gradleBuild.getProjectDir().getName())
-						.version("1.0").packaging("war").noDependencies());
+		assertThat(artifactWithSuffix("pom")).is(pomWith().groupId("com.example")
+			.artifactId(this.gradleBuild.getProjectDir().getName())
+			.version("1.0")
+			.packaging("war")
+			.noDependencies());
 	}
 
 	private File artifactWithSuffix(String suffix) {

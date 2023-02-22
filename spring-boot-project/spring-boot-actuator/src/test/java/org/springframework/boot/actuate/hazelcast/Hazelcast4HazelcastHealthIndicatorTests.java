@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,14 +46,15 @@ class Hazelcast4HazelcastHealthIndicatorTests {
 	@Test
 	void hazelcastUp() {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class))
-				.withPropertyValues("spring.hazelcast.config=hazelcast-4.xml").run((context) -> {
-					HazelcastInstance hazelcast = context.getBean(HazelcastInstance.class);
-					Health health = new HazelcastHealthIndicator(hazelcast).health();
-					assertThat(health.getStatus()).isEqualTo(Status.UP);
-					assertThat(health.getDetails()).containsOnlyKeys("name", "uuid").containsEntry("name",
-							"actuator-hazelcast-4");
-					assertThat(health.getDetails().get("uuid")).asString().isNotEmpty();
-				});
+			.withPropertyValues("spring.hazelcast.config=hazelcast-4.xml")
+			.run((context) -> {
+				HazelcastInstance hazelcast = context.getBean(HazelcastInstance.class);
+				Health health = new HazelcastHealthIndicator(hazelcast).health();
+				assertThat(health.getStatus()).isEqualTo(Status.UP);
+				assertThat(health.getDetails()).containsOnlyKeys("name", "uuid")
+					.containsEntry("name", "actuator-hazelcast-4");
+				assertThat(health.getDetails().get("uuid")).asString().isNotEmpty();
+			});
 	}
 
 	@Test

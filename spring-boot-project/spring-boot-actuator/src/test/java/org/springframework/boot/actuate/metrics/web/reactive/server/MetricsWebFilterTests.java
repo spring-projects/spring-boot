@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ class MetricsWebFilterTests {
 	void filterAddsTagsToRegistry() {
 		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
 		this.webFilter.filter(exchange, (serverWebExchange) -> exchange.getResponse().setComplete())
-				.block(Duration.ofSeconds(30));
+			.block(Duration.ofSeconds(30));
 		assertMetricsContainsTag("uri", "/projects/{project}");
 		assertMetricsContainsTag("status", "200");
 	}
@@ -81,10 +81,11 @@ class MetricsWebFilterTests {
 	void filterAddsTagsToRegistryForExceptions() {
 		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
 		this.webFilter.filter(exchange, (serverWebExchange) -> Mono.error(new IllegalStateException("test error")))
-				.onErrorResume((t) -> {
-					exchange.getResponse().setRawStatusCode(500);
-					return exchange.getResponse().setComplete();
-				}).block(Duration.ofSeconds(30));
+			.onErrorResume((t) -> {
+				exchange.getResponse().setRawStatusCode(500);
+				return exchange.getResponse().setComplete();
+			})
+			.block(Duration.ofSeconds(30));
 		assertMetricsContainsTag("uri", "/projects/{project}");
 		assertMetricsContainsTag("status", "500");
 		assertMetricsContainsTag("exception", "IllegalStateException");
@@ -133,11 +134,11 @@ class MetricsWebFilterTests {
 		MockServerWebExchange exchange1 = createExchange("/projects/spring-boot", "/projects/{project}");
 		MockServerWebExchange exchange2 = createExchange("/projects/spring-boot", "/projects/{project}/");
 		this.webFilter.filter(exchange1, (serverWebExchange) -> exchange1.getResponse().setComplete())
-				.block(Duration.ofSeconds(30));
+			.block(Duration.ofSeconds(30));
 		this.webFilter.filter(exchange2, (serverWebExchange) -> exchange2.getResponse().setComplete())
-				.block(Duration.ofSeconds(30));
+			.block(Duration.ofSeconds(30));
 		assertThat(this.registry.get(REQUEST_METRICS_NAME).tag("uri", "/projects/{project}").timer().count())
-				.isEqualTo(2);
+			.isEqualTo(2);
 		assertThat(this.registry.get(REQUEST_METRICS_NAME).tag("status", "200").timer().count()).isEqualTo(2);
 	}
 
@@ -156,11 +157,11 @@ class MetricsWebFilterTests {
 	void disconnectedExceptionShouldProduceMetrics() {
 		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
 		Mono<Void> processing = this.webFilter
-				.filter(exchange, (serverWebExchange) -> Mono.error(new EOFException("Disconnected")))
-				.onErrorResume((t) -> {
-					exchange.getResponse().setRawStatusCode(500);
-					return exchange.getResponse().setComplete();
-				});
+			.filter(exchange, (serverWebExchange) -> Mono.error(new EOFException("Disconnected")))
+			.onErrorResume((t) -> {
+				exchange.getResponse().setRawStatusCode(500);
+				return exchange.getResponse().setComplete();
+			});
 		StepVerifier.create(processing).expectComplete().verify(Duration.ofSeconds(5));
 		assertMetricsContainsTag("uri", "/projects/{project}");
 		assertMetricsContainsTag("status", "500");
@@ -171,7 +172,7 @@ class MetricsWebFilterTests {
 	void filterAddsStandardTags() {
 		MockServerWebExchange exchange = createTimedHandlerMethodExchange("timed");
 		this.webFilter.filter(exchange, (serverWebExchange) -> exchange.getResponse().setComplete())
-				.block(Duration.ofSeconds(30));
+			.block(Duration.ofSeconds(30));
 		assertMetricsContainsTag("uri", "/projects/{project}");
 		assertMetricsContainsTag("status", "200");
 	}
@@ -180,7 +181,7 @@ class MetricsWebFilterTests {
 	void filterAddsExtraTags() {
 		MockServerWebExchange exchange = createTimedHandlerMethodExchange("timedExtraTags");
 		this.webFilter.filter(exchange, (serverWebExchange) -> exchange.getResponse().setComplete())
-				.block(Duration.ofSeconds(30));
+			.block(Duration.ofSeconds(30));
 		assertMetricsContainsTag("uri", "/projects/{project}");
 		assertMetricsContainsTag("status", "200");
 		assertMetricsContainsTag("tag1", "value1");
@@ -191,10 +192,11 @@ class MetricsWebFilterTests {
 	void filterAddsExtraTagsAndException() {
 		MockServerWebExchange exchange = createTimedHandlerMethodExchange("timedExtraTags");
 		this.webFilter.filter(exchange, (serverWebExchange) -> Mono.error(new IllegalStateException("test error")))
-				.onErrorResume((ex) -> {
-					exchange.getResponse().setRawStatusCode(500);
-					return exchange.getResponse().setComplete();
-				}).block(Duration.ofSeconds(30));
+			.onErrorResume((ex) -> {
+				exchange.getResponse().setRawStatusCode(500);
+				return exchange.getResponse().setComplete();
+			})
+			.block(Duration.ofSeconds(30));
 		assertMetricsContainsTag("uri", "/projects/{project}");
 		assertMetricsContainsTag("status", "500");
 		assertMetricsContainsTag("exception", "IllegalStateException");
@@ -206,7 +208,7 @@ class MetricsWebFilterTests {
 	void filterAddsPercentileMeters() {
 		MockServerWebExchange exchange = createTimedHandlerMethodExchange("timedPercentiles");
 		this.webFilter.filter(exchange, (serverWebExchange) -> exchange.getResponse().setComplete())
-				.block(Duration.ofSeconds(30));
+			.block(Duration.ofSeconds(30));
 		assertMetricsContainsTag("uri", "/projects/{project}");
 		assertMetricsContainsTag("status", "200");
 		assertThat(this.registry.get(REQUEST_METRICS_NAME_PERCENTILE).tag("phi", "0.95").gauge().value()).isNotZero();
@@ -218,13 +220,14 @@ class MetricsWebFilterTests {
 		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
 		this.tagsProvider.failOnce();
 		this.webFilter.filter(exchange, (serverWebExchange) -> exchange.getResponse().setComplete())
-				.block(Duration.ofSeconds(30));
+			.block(Duration.ofSeconds(30));
 	}
 
 	private MockServerWebExchange createTimedHandlerMethodExchange(String methodName) {
 		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
-		exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE,
-				new HandlerMethod(this, ReflectionUtils.findMethod(Handlers.class, methodName)));
+		exchange.getAttributes()
+			.put(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE,
+					new HandlerMethod(this, ReflectionUtils.findMethod(Handlers.class, methodName)));
 		return exchange;
 	}
 

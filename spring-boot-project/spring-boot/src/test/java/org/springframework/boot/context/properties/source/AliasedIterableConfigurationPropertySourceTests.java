@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ class AliasedIterableConfigurationPropertySourceTests extends AliasedConfigurati
 		source.put("foo.bar", "bing");
 		source.put("foo.baz", "biff");
 		IterableConfigurationPropertySource aliased = source
-				.withAliases(new ConfigurationPropertyNameAliases("foo.bar", "foo.bar1"));
+			.withAliases(new ConfigurationPropertyNameAliases("foo.bar", "foo.bar1"));
 		assertThat(aliased.stream()).containsExactly(ConfigurationPropertyName.of("foo.bar"),
 				ConfigurationPropertyName.of("foo.bar1"), ConfigurationPropertyName.of("foo.baz"));
 	}

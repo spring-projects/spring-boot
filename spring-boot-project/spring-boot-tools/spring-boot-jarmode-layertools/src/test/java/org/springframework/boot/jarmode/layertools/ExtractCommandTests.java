@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,16 +103,16 @@ class ExtractCommandTests {
 	private void timeAttributes(File file) {
 		try {
 			BasicFileAttributes basicAttributes = Files
-					.getFileAttributeView(file.toPath(), BasicFileAttributeView.class, new LinkOption[0])
-					.readAttributes();
+				.getFileAttributeView(file.toPath(), BasicFileAttributeView.class, new LinkOption[0])
+				.readAttributes();
 			assertThat(basicAttributes.lastModifiedTime().to(TimeUnit.SECONDS))
-					.isEqualTo(LAST_MODIFIED_TIME.to(TimeUnit.SECONDS));
+				.isEqualTo(LAST_MODIFIED_TIME.to(TimeUnit.SECONDS));
 			assertThat(basicAttributes.creationTime().to(TimeUnit.SECONDS)).satisfiesAnyOf(
 					(creationTime) -> assertThat(creationTime).isEqualTo(CREATION_TIME.to(TimeUnit.SECONDS)),
 					// On macOS (at least) the creation time is the last modified time
 					(creationTime) -> assertThat(creationTime).isEqualTo(LAST_MODIFIED_TIME.to(TimeUnit.SECONDS)));
 			assertThat(basicAttributes.lastAccessTime().to(TimeUnit.SECONDS))
-					.isEqualTo(LAST_ACCESS_TIME.to(TimeUnit.SECONDS));
+				.isEqualTo(LAST_ACCESS_TIME.to(TimeUnit.SECONDS));
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
@@ -151,8 +151,8 @@ class ExtractCommandTests {
 		given(this.context.getArchiveFile()).willReturn(file);
 		given(this.context.getWorkingDir()).willReturn(this.extract);
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.command.run(Collections.emptyMap(), Collections.emptyList()))
-				.withMessageContaining("not compatible with layertools");
+			.isThrownBy(() -> this.command.run(Collections.emptyMap(), Collections.emptyList()))
+			.withMessageContaining("not compatible with layertools");
 	}
 
 	@Test
@@ -168,8 +168,8 @@ class ExtractCommandTests {
 		});
 		given(this.context.getArchiveFile()).willReturn(this.jarFile);
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.command.run(Collections.emptyMap(), Collections.emptyList()))
-				.withMessageContaining("Entry 'e/../../e.jar' would be written");
+			.isThrownBy(() -> this.command.run(Collections.emptyMap(), Collections.emptyList()))
+			.withMessageContaining("Entry 'e/../../e.jar' would be written");
 	}
 
 	private File createJarFile(String name) throws Exception {

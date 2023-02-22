@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,19 +44,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 class EnvironmentEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(EnvironmentEndpointAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(EnvironmentEndpointAutoConfiguration.class));
 
 	@Test
 	void runShouldHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=env")
-				.withSystemProperties("dbPassword=123456", "apiKey=123456")
-				.run(validateSystemProperties("******", "******"));
+			.withSystemProperties("dbPassword=123456", "apiKey=123456")
+			.run(validateSystemProperties("******", "******"));
 	}
 
 	@Test
 	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.env.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(EnvironmentEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(EnvironmentEndpoint.class));
 	}
 
 	@Test
@@ -67,41 +67,42 @@ class EnvironmentEndpointAutoConfigurationTests {
 	@Test
 	void keysToSanitizeCanBeConfiguredViaTheEnvironment() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=env")
-				.withSystemProperties("dbPassword=123456", "apiKey=123456")
-				.withPropertyValues("management.endpoint.env.keys-to-sanitize=.*pass.*")
-				.run(validateSystemProperties("******", "123456"));
+			.withSystemProperties("dbPassword=123456", "apiKey=123456")
+			.withPropertyValues("management.endpoint.env.keys-to-sanitize=.*pass.*")
+			.run(validateSystemProperties("******", "123456"));
 	}
 
 	@Test
 	void customSanitizingFunctionsAreAppliedInOrder() {
 		this.contextRunner.withUserConfiguration(SanitizingFunctionConfiguration.class)
-				.withPropertyValues("management.endpoints.web.exposure.include=env")
-				.withSystemProperties("custom=123456", "password=123456").run((context) -> {
-					assertThat(context).hasSingleBean(EnvironmentEndpoint.class);
-					EnvironmentEndpoint endpoint = context.getBean(EnvironmentEndpoint.class);
-					EnvironmentDescriptor env = endpoint.environment(null);
-					Map<String, PropertyValueDescriptor> systemProperties = getSource("systemProperties", env)
-							.getProperties();
-					assertThat(systemProperties.get("custom").getValue()).isEqualTo("$$$111$$$");
-					assertThat(systemProperties.get("password").getValue()).isEqualTo("$$$222$$$");
-				});
+			.withPropertyValues("management.endpoints.web.exposure.include=env")
+			.withSystemProperties("custom=123456", "password=123456")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(EnvironmentEndpoint.class);
+				EnvironmentEndpoint endpoint = context.getBean(EnvironmentEndpoint.class);
+				EnvironmentDescriptor env = endpoint.environment(null);
+				Map<String, PropertyValueDescriptor> systemProperties = getSource("systemProperties", env)
+					.getProperties();
+				assertThat(systemProperties.get("custom").getValue()).isEqualTo("$$$111$$$");
+				assertThat(systemProperties.get("password").getValue()).isEqualTo("$$$222$$$");
+			});
 	}
 
 	@Test
 	void additionalKeysToSanitizeCanBeConfiguredViaTheEnvironment() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=env")
-				.withSystemProperties("dbPassword=123456", "apiKey=123456")
-				.withPropertyValues("management.endpoint.env.additional-keys-to-sanitize=key")
-				.run(validateSystemProperties("******", "******"));
+			.withSystemProperties("dbPassword=123456", "apiKey=123456")
+			.withPropertyValues("management.endpoint.env.additional-keys-to-sanitize=key")
+			.run(validateSystemProperties("******", "******"));
 	}
 
 	@Test
 	void runWhenOnlyExposedOverJmxShouldHaveEndpointBeanWithoutWebExtension() {
 		this.contextRunner
-				.withPropertyValues("management.endpoints.web.exposure.include=info", "spring.jmx.enabled=true",
-						"management.endpoints.jmx.exposure.include=env")
-				.run((context) -> assertThat(context).hasSingleBean(EnvironmentEndpoint.class)
-						.doesNotHaveBean(EnvironmentEndpointWebExtension.class));
+			.withPropertyValues("management.endpoints.web.exposure.include=info", "spring.jmx.enabled=true",
+					"management.endpoints.jmx.exposure.include=env")
+			.run((context) -> assertThat(context).hasSingleBean(EnvironmentEndpoint.class)
+				.doesNotHaveBean(EnvironmentEndpointWebExtension.class));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> validateSystemProperties(String dbPassword, String apiKey) {
@@ -116,8 +117,11 @@ class EnvironmentEndpointAutoConfigurationTests {
 	}
 
 	private PropertySourceDescriptor getSource(String name, EnvironmentDescriptor descriptor) {
-		return descriptor.getPropertySources().stream().filter((source) -> name.equals(source.getName())).findFirst()
-				.get();
+		return descriptor.getPropertySources()
+			.stream()
+			.filter((source) -> name.equals(source.getName()))
+			.findFirst()
+			.get();
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,19 +36,19 @@ class VehicleIdentificationNumberTests {
 	@Test
 	void createWhenVinIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new VehicleIdentificationNumber(null))
-				.withMessage("VIN must not be null");
+			.withMessage("VIN must not be null");
 	}
 
 	@Test
 	void createWhenVinIsMoreThan17CharsShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new VehicleIdentificationNumber("012345678901234567"))
-				.withMessage("VIN must be exactly 17 characters");
+			.withMessage("VIN must be exactly 17 characters");
 	}
 
 	@Test
 	void createWhenVinIsLessThan17CharsShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new VehicleIdentificationNumber("0123456789012345"))
-				.withMessage("VIN must be exactly 17 characters");
+			.withMessage("VIN must be exactly 17 characters");
 	}
 
 	@Test

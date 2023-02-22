@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -169,6 +169,7 @@ public class WebFluxProperties {
 
 	/**
 	 * SameSite values.
+	 *
 	 * @deprecated since 2.6.0 for removal in 3.0.0 in favor of
 	 * {@link org.springframework.boot.web.server.Cookie.SameSite}.
 	 */

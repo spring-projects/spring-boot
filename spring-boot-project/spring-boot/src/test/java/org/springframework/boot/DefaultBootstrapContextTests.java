@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,13 +51,13 @@ class DefaultBootstrapContextTests {
 	@Test
 	void registerWhenTypeIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.context.register(null, InstanceSupplier.of(1)))
-				.withMessage("Type must not be null");
+			.withMessage("Type must not be null");
 	}
 
 	@Test
 	void registerWhenRegistrationIsNullThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.context.register(Integer.class, null))
-				.withMessage("InstanceSupplier must not be null");
+			.withMessage("InstanceSupplier must not be null");
 	}
 
 	@Test
@@ -80,8 +80,8 @@ class DefaultBootstrapContextTests {
 		this.context.register(Integer.class, InstanceSupplier.from(this.counter::getAndIncrement));
 		this.context.get(Integer.class);
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.context.register(Integer.class, InstanceSupplier.of(100)))
-				.withMessage("java.lang.Integer has already been created");
+			.isThrownBy(() -> this.context.register(Integer.class, InstanceSupplier.of(100)))
+			.withMessage("java.lang.Integer has already been created");
 	}
 
 	@Test
@@ -98,8 +98,8 @@ class DefaultBootstrapContextTests {
 		this.context.register(Integer.class, InstanceSupplier.from(this.counter::getAndIncrement));
 		this.context.get(Integer.class);
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.context.register(Integer.class, InstanceSupplier.of(100)))
-				.withMessage("java.lang.Integer has already been created");
+			.isThrownBy(() -> this.context.register(Integer.class, InstanceSupplier.of(100)))
+			.withMessage("java.lang.Integer has already been created");
 	}
 
 	@Test
@@ -155,7 +155,7 @@ class DefaultBootstrapContextTests {
 	void getWhenNoRegistrationThrowsIllegalStateException() {
 		this.context.register(Number.class, InstanceSupplier.of(1));
 		assertThatIllegalStateException().isThrownBy(() -> this.context.get(Long.class))
-				.withMessageContaining("has not been registered");
+			.withMessageContaining("has not been registered");
 	}
 
 	@Test
@@ -247,8 +247,9 @@ class DefaultBootstrapContextTests {
 		this.context.addCloseListener(listener);
 		assertThat(listener).wasNotCalled();
 		this.context.close(this.applicationContext);
-		assertThat(listener).wasCalledOnlyOnce().hasBootstrapContextSameAs(this.context)
-				.hasApplicationContextSameAs(this.applicationContext);
+		assertThat(listener).wasCalledOnlyOnce()
+			.hasBootstrapContextSameAs(this.context)
+			.hasApplicationContextSameAs(this.applicationContext);
 	}
 
 	@Test

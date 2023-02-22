@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ class MyServiceAutoConfigurationTests {
 
 	// tag::runner[]
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(MyServiceAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(MyServiceAutoConfiguration.class));
 
 	// end::runner[]
 
@@ -48,7 +48,7 @@ class MyServiceAutoConfigurationTests {
 	@Test
 	void serviceIsIgnoredIfLibraryIsNotPresent() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(MyService.class))
-				.run((context) -> assertThat(context).doesNotHaveBean("myService"));
+			.run((context) -> assertThat(context).doesNotHaveBean("myService"));
 	}
 	// end::test-classloader[]
 

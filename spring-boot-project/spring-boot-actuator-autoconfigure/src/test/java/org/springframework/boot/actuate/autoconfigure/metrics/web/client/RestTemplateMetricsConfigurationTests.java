@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,8 +51,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 class RestTemplateMetricsConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class,
-					HttpClientMetricsAutoConfiguration.class));
+		.withConfiguration(
+				AutoConfigurations.of(RestTemplateAutoConfiguration.class, HttpClientMetricsAutoConfiguration.class));
 
 	@Test
 	void restTemplateCreatedWithBuilderIsInstrumented() {
@@ -78,7 +78,7 @@ class RestTemplateMetricsConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(MetricsRestTemplateCustomizer.class);
 			RestTemplateBuilder customBuilder = new RestTemplateBuilder()
-					.customizers(context.getBean(MetricsRestTemplateCustomizer.class));
+				.customizers(context.getBean(MetricsRestTemplateCustomizer.class));
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			validateRestTemplate(customBuilder, registry);
 		});
@@ -90,7 +90,7 @@ class RestTemplateMetricsConfigurationTests {
 			MeterRegistry registry = getInitializedMeterRegistry(context);
 			assertThat(registry.get("http.client.requests").meters()).hasSize(2);
 			assertThat(output).contains("Reached the maximum number of URI tags for 'http.client.requests'.")
-					.contains("Are you using 'uriVariables'?");
+				.contains("Are you using 'uriVariables'?");
 		});
 	}
 
@@ -100,30 +100,32 @@ class RestTemplateMetricsConfigurationTests {
 			MeterRegistry registry = getInitializedMeterRegistry(context);
 			assertThat(registry.get("http.client.requests").meters()).hasSize(3);
 			assertThat(output).doesNotContain("Reached the maximum number of URI tags for 'http.client.requests'.")
-					.doesNotContain("Are you using 'uriVariables'?");
+				.doesNotContain("Are you using 'uriVariables'?");
 		});
 	}
 
 	@Test
 	void autoTimeRequestsCanBeConfigured() {
-		this.contextRunner.withPropertyValues("management.metrics.web.client.request.autotime.enabled=true",
-				"management.metrics.web.client.request.autotime.percentiles=0.5,0.7",
-				"management.metrics.web.client.request.autotime.percentiles-histogram=true").run((context) -> {
-					MeterRegistry registry = getInitializedMeterRegistry(context);
-					Timer timer = registry.get("http.client.requests").timer();
-					HistogramSnapshot snapshot = timer.takeSnapshot();
-					assertThat(snapshot.percentileValues()).hasSize(2);
-					assertThat(snapshot.percentileValues()[0].percentile()).isEqualTo(0.5);
-					assertThat(snapshot.percentileValues()[1].percentile()).isEqualTo(0.7);
-				});
+		this.contextRunner
+			.withPropertyValues("management.metrics.web.client.request.autotime.enabled=true",
+					"management.metrics.web.client.request.autotime.percentiles=0.5,0.7",
+					"management.metrics.web.client.request.autotime.percentiles-histogram=true")
+			.run((context) -> {
+				MeterRegistry registry = getInitializedMeterRegistry(context);
+				Timer timer = registry.get("http.client.requests").timer();
+				HistogramSnapshot snapshot = timer.takeSnapshot();
+				assertThat(snapshot.percentileValues()).hasSize(2);
+				assertThat(snapshot.percentileValues()[0].percentile()).isEqualTo(0.5);
+				assertThat(snapshot.percentileValues()[1].percentile()).isEqualTo(0.7);
+			});
 	}
 
 	@Test
 	void backsOffWhenRestTemplateBuilderIsMissing() {
 		new ApplicationContextRunner().with(MetricsRun.simple())
-				.withConfiguration(AutoConfigurations.of(HttpClientMetricsAutoConfiguration.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(DefaultRestTemplateExchangeTagsProvider.class)
-						.doesNotHaveBean(MetricsRestTemplateCustomizer.class));
+			.withConfiguration(AutoConfigurations.of(HttpClientMetricsAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(DefaultRestTemplateExchangeTagsProvider.class)
+				.doesNotHaveBean(MetricsRestTemplateCustomizer.class));
 	}
 
 	private MeterRegistry getInitializedMeterRegistry(AssertableApplicationContext context) {
@@ -147,9 +149,9 @@ class RestTemplateMetricsConfigurationTests {
 		RestTemplate restTemplate = mockRestTemplate(builder, rootUri);
 		assertThat(registry.find("http.client.requests").meter()).isNull();
 		assertThat(restTemplate.getForEntity("/projects/{project}", Void.class, "spring-boot").getStatusCode())
-				.isEqualTo(HttpStatus.OK);
+			.isEqualTo(HttpStatus.OK);
 		assertThat(registry.get("http.client.requests").tags("uri", rootUri + "/projects/{project}").meter())
-				.isNotNull();
+			.isNotNull();
 	}
 
 	private RestTemplate mockRestTemplate(RestTemplateBuilder builder, String rootUri) {

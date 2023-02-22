@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,31 +39,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LettuceMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(LettuceMetricsAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(LettuceMetricsAutoConfiguration.class));
 
 	@Test
 	void whenThereIsAMeterRegistryThenCommandLatencyRecorderIsAdded() {
 		this.contextRunner.with(MetricsRun.simple())
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class)).run((context) -> {
-					ClientResources clientResources = context.getBean(LettuceConnectionFactory.class)
-							.getClientResources();
-					assertThat(clientResources.commandLatencyRecorder())
-							.isInstanceOf(MicrometerCommandLatencyRecorder.class);
-				});
+			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+			.run((context) -> {
+				ClientResources clientResources = context.getBean(LettuceConnectionFactory.class).getClientResources();
+				assertThat(clientResources.commandLatencyRecorder())
+					.isInstanceOf(MicrometerCommandLatencyRecorder.class);
+			});
 	}
 
 	@Test
 	void whenUserDefinesAMicrometerOptionsBeanThenCommandLatencyRecorderUsesIt() {
 		this.contextRunner.with(MetricsRun.simple())
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.withUserConfiguration(CustomMicrometerOptionsConfiguration.class).run((context) -> {
-					ClientResources clientResources = context.getBean(LettuceConnectionFactory.class)
-							.getClientResources();
-					assertThat(clientResources.commandLatencyRecorder())
-							.isInstanceOf(MicrometerCommandLatencyRecorder.class);
-					assertThat(clientResources.commandLatencyRecorder()).hasFieldOrPropertyWithValue("options",
-							context.getBean("customMicrometerOptions"));
-				});
+			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+			.withUserConfiguration(CustomMicrometerOptionsConfiguration.class)
+			.run((context) -> {
+				ClientResources clientResources = context.getBean(LettuceConnectionFactory.class).getClientResources();
+				assertThat(clientResources.commandLatencyRecorder())
+					.isInstanceOf(MicrometerCommandLatencyRecorder.class);
+				assertThat(clientResources.commandLatencyRecorder()).hasFieldOrPropertyWithValue("options",
+						context.getBean("customMicrometerOptions"));
+			});
 	}
 
 	@Test
@@ -71,7 +71,7 @@ class LettuceMetricsAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class)).run((context) -> {
 			ClientResources clientResources = context.getBean(LettuceConnectionFactory.class).getClientResources();
 			assertThat(clientResources.commandLatencyRecorder())
-					.isNotInstanceOf(MicrometerCommandLatencyRecorder.class);
+				.isNotInstanceOf(MicrometerCommandLatencyRecorder.class);
 		});
 	}
 

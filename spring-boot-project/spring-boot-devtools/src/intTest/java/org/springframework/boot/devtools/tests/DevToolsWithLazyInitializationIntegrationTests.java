@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ class DevToolsWithLazyInitializationIntegrationTests extends AbstractDevToolsInt
 		String urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");
 		assertThat(template.getForEntity(urlBase + "/two", String.class).getStatusCode())
-				.isEqualTo(HttpStatus.NOT_FOUND);
+			.isEqualTo(HttpStatus.NOT_FOUND);
 		controller("com.example.ControllerOne").withRequestMapping("one").withRequestMapping("two").build();
 		urlBase = "http://localhost:" + awaitServerPort();
 		assertThat(template.getForObject(urlBase + "/one", String.class)).isEqualTo("one");

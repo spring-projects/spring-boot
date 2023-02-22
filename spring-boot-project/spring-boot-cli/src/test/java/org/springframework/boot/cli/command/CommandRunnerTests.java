@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -160,7 +160,7 @@ class CommandRunnerTests {
 	@Test
 	void exceptionMessages() {
 		assertThat(new NoSuchCommandException("name").getMessage())
-				.isEqualTo("'name' is not a valid command. See 'help'.");
+			.isEqualTo("'name' is not a valid command. See 'help'.");
 	}
 
 	@Test
@@ -172,13 +172,13 @@ class CommandRunnerTests {
 	@Test
 	void helpNoCommand() {
 		assertThatExceptionOfType(NoHelpCommandArgumentsException.class)
-				.isThrownBy(() -> this.commandRunner.run("help"));
+			.isThrownBy(() -> this.commandRunner.run("help"));
 	}
 
 	@Test
 	void helpUnknownCommand() {
 		assertThatExceptionOfType(NoSuchCommandException.class)
-				.isThrownBy(() -> this.commandRunner.run("help", "missing"));
+			.isThrownBy(() -> this.commandRunner.run("help", "missing"));
 	}
 
 	private enum Call {

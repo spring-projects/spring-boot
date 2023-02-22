@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,18 +64,18 @@ class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 	void propertyInterpolation() {
 		final DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 		given(this.repositorySystem.newLocalRepositoryManager(eq(session), any(LocalRepository.class)))
-				.willAnswer((invocation) -> {
-					LocalRepository localRepository = invocation.getArgument(1);
-					return new SimpleLocalRepositoryManagerFactory().newInstance(session, localRepository);
-				});
+			.willAnswer((invocation) -> {
+				LocalRepository localRepository = invocation.getArgument(1);
+				return new SimpleLocalRepositoryManagerFactory().newInstance(session, localRepository);
+			});
 		TestPropertyValues.of("user.home:src/test/resources/maven-settings/property-interpolation", "foo:bar")
-				.applyToSystemProperties(() -> {
-					new SettingsXmlRepositorySystemSessionAutoConfiguration().apply(session,
-							SettingsXmlRepositorySystemSessionAutoConfigurationTests.this.repositorySystem);
-					return null;
-				});
+			.applyToSystemProperties(() -> {
+				new SettingsXmlRepositorySystemSessionAutoConfiguration().apply(session,
+						SettingsXmlRepositorySystemSessionAutoConfigurationTests.this.repositorySystem);
+				return null;
+			});
 		assertThat(session.getLocalRepository().getBasedir().getAbsolutePath())
-				.endsWith(File.separatorChar + "bar" + File.separatorChar + "repository");
+			.endsWith(File.separatorChar + "bar" + File.separatorChar + "repository");
 	}
 
 	private void assertSessionCustomization(String userHome) {
@@ -86,7 +86,7 @@ class SettingsXmlRepositorySystemSessionAutoConfigurationTests {
 			return null;
 		});
 		RemoteRepository repository = new RemoteRepository.Builder("my-server", "default", "https://maven.example.com")
-				.build();
+			.build();
 		assertMirrorSelectorConfiguration(session, repository);
 		assertProxySelectorConfiguration(session, repository);
 		assertAuthenticationSelectorConfiguration(session, repository);

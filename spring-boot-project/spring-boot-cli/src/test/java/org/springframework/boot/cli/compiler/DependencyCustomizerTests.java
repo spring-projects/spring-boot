@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,7 +116,7 @@ class DependencyCustomizerTests {
 	@Test
 	void anyMissingClassesWithMixtureOfClassesPerformsAdd() {
 		this.dependencyCustomizer.ifAnyMissingClasses(getClass().getName(), "does.not.Exist")
-				.add("spring-boot-starter-logging");
+			.add("spring-boot-starter-logging");
 		assertThat(this.classNode.getAnnotations(new ClassNode(Grab.class))).hasSize(1);
 	}
 
@@ -135,56 +135,68 @@ class DependencyCustomizerTests {
 	@Test
 	void allMissingClassesWithMixtureOfClassesDoesNotPerformAdd() {
 		this.dependencyCustomizer.ifAllMissingClasses(getClass().getName(), "does.not.Exist")
-				.add("spring-boot-starter-logging");
+			.add("spring-boot-starter-logging");
 		assertThat(this.classNode.getAnnotations(new ClassNode(Grab.class))).isEmpty();
 	}
 
 	@Test
 	void allMissingClassesWithAllClassesMissingPerformsAdd() {
 		this.dependencyCustomizer.ifAllMissingClasses("does.not.Exist", "does.not.exist.Either")
-				.add("spring-boot-starter-logging");
+			.add("spring-boot-starter-logging");
 		assertThat(this.classNode.getAnnotations(new ClassNode(Grab.class))).hasSize(1);
 	}
 
 	@Test
 	void allResourcesPresentWithAllResourcesPresentPerformsAdd() {
-		this.dependencyCustomizer.ifAllResourcesPresent("dependency-customizer-tests/resource1.txt",
-				"dependency-customizer-tests/resource2.txt").add("spring-boot-starter-logging");
+		this.dependencyCustomizer
+			.ifAllResourcesPresent("dependency-customizer-tests/resource1.txt",
+					"dependency-customizer-tests/resource2.txt")
+			.add("spring-boot-starter-logging");
 		assertThat(this.classNode.getAnnotations(new ClassNode(Grab.class))).hasSize(1);
 	}
 
 	@Test
 	void allResourcesPresentWithSomeResourcesPresentDoesNotPerformAdd() {
-		this.dependencyCustomizer.ifAllResourcesPresent("dependency-customizer-tests/resource1.txt",
-				"dependency-customizer-tests/does-not-exist.txt").add("spring-boot-starter-logging");
+		this.dependencyCustomizer
+			.ifAllResourcesPresent("dependency-customizer-tests/resource1.txt",
+					"dependency-customizer-tests/does-not-exist.txt")
+			.add("spring-boot-starter-logging");
 		assertThat(this.classNode.getAnnotations(new ClassNode(Grab.class))).isEmpty();
 	}
 
 	@Test
 	void allResourcesPresentWithNoResourcesPresentDoesNotPerformAdd() {
-		this.dependencyCustomizer.ifAllResourcesPresent("dependency-customizer-tests/does-not-exist",
-				"dependency-customizer-tests/does-not-exist-either.txt").add("spring-boot-starter-logging");
+		this.dependencyCustomizer
+			.ifAllResourcesPresent("dependency-customizer-tests/does-not-exist",
+					"dependency-customizer-tests/does-not-exist-either.txt")
+			.add("spring-boot-starter-logging");
 		assertThat(this.classNode.getAnnotations(new ClassNode(Grab.class))).isEmpty();
 	}
 
 	@Test
 	void anyResourcesPresentWithAllResourcesPresentPerformsAdd() {
-		this.dependencyCustomizer.ifAnyResourcesPresent("dependency-customizer-tests/resource1.txt",
-				"dependency-customizer-tests/resource2.txt").add("spring-boot-starter-logging");
+		this.dependencyCustomizer
+			.ifAnyResourcesPresent("dependency-customizer-tests/resource1.txt",
+					"dependency-customizer-tests/resource2.txt")
+			.add("spring-boot-starter-logging");
 		assertThat(this.classNode.getAnnotations(new ClassNode(Grab.class))).hasSize(1);
 	}
 
 	@Test
 	void anyResourcesPresentWithSomeResourcesPresentPerforms() {
-		this.dependencyCustomizer.ifAnyResourcesPresent("dependency-customizer-tests/resource1.txt",
-				"dependency-customizer-tests/does-not-exist.txt").add("spring-boot-starter-logging");
+		this.dependencyCustomizer
+			.ifAnyResourcesPresent("dependency-customizer-tests/resource1.txt",
+					"dependency-customizer-tests/does-not-exist.txt")
+			.add("spring-boot-starter-logging");
 		assertThat(this.classNode.getAnnotations(new ClassNode(Grab.class))).hasSize(1);
 	}
 
 	@Test
 	void anyResourcesPresentWithNoResourcesPresentDoesNotPerformAdd() {
-		this.dependencyCustomizer.ifAnyResourcesPresent("dependency-customizer-tests/does-not-exist",
-				"dependency-customizer-tests/does-not-exist-either.txt").add("spring-boot-starter-logging");
+		this.dependencyCustomizer
+			.ifAnyResourcesPresent("dependency-customizer-tests/does-not-exist",
+					"dependency-customizer-tests/does-not-exist-either.txt")
+			.add("spring-boot-starter-logging");
 		assertThat(this.classNode.getAnnotations(new ClassNode(Grab.class))).isEmpty();
 	}
 

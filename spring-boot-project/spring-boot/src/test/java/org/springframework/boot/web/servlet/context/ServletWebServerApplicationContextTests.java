@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,10 +114,10 @@ class ServletWebServerApplicationContextTests {
 		// Ensure that the context has been set up
 		assertThat(this.context.getServletContext()).isEqualTo(factory.getServletContext());
 		then(factory.getServletContext()).should()
-				.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
+			.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 		// Ensure WebApplicationContextUtils.registerWebApplicationScopes was called
 		assertThat(this.context.getBeanFactory().getRegisteredScope(WebApplicationContext.SCOPE_SESSION))
-				.isInstanceOf(SessionScope.class);
+			.isInstanceOf(SessionScope.class);
 		// Ensure WebApplicationContextUtils.registerEnvironmentBeans was called
 		assertThat(this.context.containsBean(WebApplicationContext.SERVLET_CONTEXT_BEAN_NAME)).isTrue();
 	}
@@ -138,8 +138,9 @@ class ServletWebServerApplicationContextTests {
 		this.context.registerBeanDefinition("listener", new RootBeanDefinition(TestApplicationListener.class));
 		this.context.refresh();
 		List<ApplicationEvent> events = this.context.getBean(TestApplicationListener.class).receivedEvents();
-		assertThat(events).hasSize(2).extracting("class").containsExactly(ServletWebServerInitializedEvent.class,
-				ContextRefreshedEvent.class);
+		assertThat(events).hasSize(2)
+			.extracting("class")
+			.containsExactly(ServletWebServerInitializedEvent.class, ContextRefreshedEvent.class);
 		ServletWebServerInitializedEvent initializedEvent = (ServletWebServerInitializedEvent) events.get(0);
 		assertThat(initializedEvent.getSource().getPort() >= 0).isTrue();
 		assertThat(initializedEvent.getApplicationContext()).isEqualTo(this.context);
@@ -171,8 +172,9 @@ class ServletWebServerApplicationContextTests {
 		this.context.refresh();
 		this.context.addApplicationListener(listener);
 		this.context.close();
-		assertThat(listener.receivedEvents()).hasSize(2).extracting("class").contains(AvailabilityChangeEvent.class,
-				ContextClosedEvent.class);
+		assertThat(listener.receivedEvents()).hasSize(2)
+			.extracting("class")
+			.contains(AvailabilityChangeEvent.class, ContextClosedEvent.class);
 	}
 
 	@Test
@@ -205,8 +207,8 @@ class ServletWebServerApplicationContextTests {
 	@Test
 	void missingServletWebServerFactory() {
 		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(() -> this.context.refresh())
-				.withMessageContaining("Unable to start ServletWebServerApplicationContext due to missing "
-						+ "ServletWebServerFactory bean");
+			.withMessageContaining("Unable to start ServletWebServerApplicationContext due to missing "
+					+ "ServletWebServerFactory bean");
 	}
 
 	@Test
@@ -215,8 +217,8 @@ class ServletWebServerApplicationContextTests {
 		this.context.registerBeanDefinition("webServerFactory2",
 				new RootBeanDefinition(MockServletWebServerFactory.class));
 		assertThatExceptionOfType(ApplicationContextException.class).isThrownBy(() -> this.context.refresh())
-				.withMessageContaining("Unable to start ServletWebServerApplicationContext due to "
-						+ "multiple ServletWebServerFactory beans");
+			.withMessageContaining("Unable to start ServletWebServerApplicationContext due to "
+					+ "multiple ServletWebServerFactory beans");
 
 	}
 
@@ -305,9 +307,9 @@ class ServletWebServerApplicationContextTests {
 		then(factory.getServletContext()).should(ordered).addFilter("filterBean1", filter1);
 		then(factory.getServletContext()).should(ordered).addFilter("filterBean2", filter2);
 		then(factory.getRegisteredFilter(0).getRegistration()).should()
-				.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*");
+			.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*");
 		then(factory.getRegisteredFilter(1).getRegistration()).should()
-				.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*");
+			.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST), false, "/*");
 	}
 
 	@Test
@@ -409,8 +411,8 @@ class ServletWebServerApplicationContextTests {
 		// the delegate proxy will trigger creation and an exception
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(() -> {
 			this.filterCaptor.getValue().init(new MockFilterConfig());
-			this.filterCaptor.getValue().doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(),
-					new MockFilterChain());
+			this.filterCaptor.getValue()
+				.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterChain());
 		}).withMessageContaining("Create FilterBean Failure");
 	}
 
@@ -464,7 +466,7 @@ class ServletWebServerApplicationContextTests {
 		addWebServerFactoryBean();
 		this.context.refresh();
 		assertThat(this.context.getBeanFactory().getRegisteredScope(WebApplicationContext.SCOPE_APPLICATION))
-				.isNotNull();
+			.isNotNull();
 	}
 
 	private void addWebServerFactoryBean() {

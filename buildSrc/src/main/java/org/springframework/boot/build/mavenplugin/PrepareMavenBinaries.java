@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,10 +60,11 @@ public class PrepareMavenBinaries extends DefaultTask {
 	@TaskAction
 	public void prepareBinaries() {
 		for (String version : this.versions) {
-			Configuration configuration = getProject().getConfigurations().detachedConfiguration(
-					getProject().getDependencies().create("org.apache.maven:apache-maven:" + version + ":bin@zip"));
-			getProject().copy(
-					(copy) -> copy.into(this.outputDir).from(getProject().zipTree(configuration.getSingleFile())));
+			Configuration configuration = getProject().getConfigurations()
+				.detachedConfiguration(
+						getProject().getDependencies().create("org.apache.maven:apache-maven:" + version + ":bin@zip"));
+			getProject()
+				.copy((copy) -> copy.into(this.outputDir).from(getProject().zipTree(configuration.getSingleFile())));
 		}
 	}
 

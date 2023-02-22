@@ -45,7 +45,7 @@ class PropertiesMigrationReport {
 		}
 		StringBuilder report = new StringBuilder();
 		report.append(String
-				.format("%nThe use of configuration keys that have been renamed was found in the environment:%n%n"));
+			.format("%nThe use of configuration keys that have been renamed was found in the environment:%n%n"));
 		append(report, content);
 		report.append(String.format("%n"));
 		report.append("Each configuration key has been temporarily mapped to its "
@@ -66,8 +66,8 @@ class PropertiesMigrationReport {
 			return null;
 		}
 		StringBuilder report = new StringBuilder();
-		report.append(String.format(
-				"%nThe use of configuration keys that are no longer supported was found in the environment:%n%n"));
+		report.append(String
+			.format("%nThe use of configuration keys that are no longer supported was found in the environment:%n%n"));
 		append(report, content);
 		report.append(String.format("%n"));
 		report.append("Please refer to the release notes or reference guide for potential alternatives.");
@@ -77,8 +77,11 @@ class PropertiesMigrationReport {
 
 	private Map<String, List<PropertyMigration>> getContent(
 			Function<LegacyProperties, List<PropertyMigration>> extractor) {
-		return this.content.entrySet().stream().filter((entry) -> !extractor.apply(entry.getValue()).isEmpty()).collect(
-				Collectors.toMap(Map.Entry::getKey, (entry) -> new ArrayList<>(extractor.apply(entry.getValue()))));
+		return this.content.entrySet()
+			.stream()
+			.filter((entry) -> !extractor.apply(entry.getValue()).isEmpty())
+			.collect(
+					Collectors.toMap(Map.Entry::getKey, (entry) -> new ArrayList<>(extractor.apply(entry.getValue()))));
 	}
 
 	private void append(StringBuilder report, Map<String, List<PropertyMigration>> content) {
@@ -118,8 +121,9 @@ class PropertiesMigrationReport {
 		}
 
 		List<PropertyMigration> getUnsupported() {
-			return this.properties.stream().filter((property) -> !property.isCompatibleType())
-					.collect(Collectors.toList());
+			return this.properties.stream()
+				.filter((property) -> !property.isCompatibleType())
+				.collect(Collectors.toList());
 		}
 
 	}

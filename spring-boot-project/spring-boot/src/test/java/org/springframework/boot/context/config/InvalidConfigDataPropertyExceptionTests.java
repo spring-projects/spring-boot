@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,20 +54,20 @@ class InvalidConfigDataPropertyExceptionTests {
 	@Test
 	void createHasCorrectMessage() {
 		assertThat(new InvalidConfigDataPropertyException(this.property, false, this.replacement, this.resource))
-				.hasMessage(
-						"Property 'invalid' imported from location 'test' is invalid and should be replaced with 'replacement' [origin: origin]");
+			.hasMessage(
+					"Property 'invalid' imported from location 'test' is invalid and should be replaced with 'replacement' [origin: origin]");
 	}
 
 	@Test
 	void createWhenNoLocationHasCorrectMessage() {
 		assertThat(new InvalidConfigDataPropertyException(this.property, false, this.replacement, null))
-				.hasMessage("Property 'invalid' is invalid and should be replaced with 'replacement' [origin: origin]");
+			.hasMessage("Property 'invalid' is invalid and should be replaced with 'replacement' [origin: origin]");
 	}
 
 	@Test
 	void createWhenNoReplacementHasCorrectMessage() {
 		assertThat(new InvalidConfigDataPropertyException(this.property, false, null, this.resource))
-				.hasMessage("Property 'invalid' imported from location 'test' is invalid [origin: origin]");
+			.hasMessage("Property 'invalid' imported from location 'test' is invalid [origin: origin]");
 	}
 
 	@Test
@@ -80,8 +80,8 @@ class InvalidConfigDataPropertyExceptionTests {
 	@Test
 	void createWhenProfileSpecificHasCorrectMessage() {
 		ConfigurationProperty property = new ConfigurationProperty(this.invalid, "bad", null);
-		assertThat(new InvalidConfigDataPropertyException(property, true, null, this.resource)).hasMessage(
-				"Property 'invalid' imported from location 'test' is invalid in a profile specific resource");
+		assertThat(new InvalidConfigDataPropertyException(property, true, null, this.resource))
+			.hasMessage("Property 'invalid' imported from location 'test' is invalid in a profile specific resource");
 	}
 
 	@Test
@@ -112,9 +112,9 @@ class InvalidConfigDataPropertyExceptionTests {
 		propertySource.setProperty("spring.profiles", "a");
 		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofExisting(propertySource);
 		assertThatExceptionOfType(InvalidConfigDataPropertyException.class)
-				.isThrownBy(() -> InvalidConfigDataPropertyException.throwOrWarn(this.logger, contributor))
-				.withMessageStartingWith("Property 'spring.profiles' is invalid and should be replaced with "
-						+ "'spring.config.activate.on-profile'");
+			.isThrownBy(() -> InvalidConfigDataPropertyException.throwOrWarn(this.logger, contributor))
+			.withMessageStartingWith("Property 'spring.profiles' is invalid and should be replaced with "
+					+ "'spring.config.activate.on-profile'");
 	}
 
 	@Test
@@ -129,14 +129,14 @@ class InvalidConfigDataPropertyExceptionTests {
 		ConfigDataEnvironmentContributor contributor = createInvalidProfileSpecificPropertyContributor(
 				"spring.profiles.active", ConfigData.Option.IGNORE_PROFILES);
 		assertThatNoException()
-				.isThrownBy(() -> InvalidConfigDataPropertyException.throwOrWarn(this.logger, contributor));
+			.isThrownBy(() -> InvalidConfigDataPropertyException.throwOrWarn(this.logger, contributor));
 	}
 
 	private void throwOrWarnWhenWhenHasInvalidProfileSpecificPropertyThrowsException(String name) {
 		ConfigDataEnvironmentContributor contributor = createInvalidProfileSpecificPropertyContributor(name);
 		assertThatExceptionOfType(InvalidConfigDataPropertyException.class)
-				.isThrownBy(() -> InvalidConfigDataPropertyException.throwOrWarn(this.logger, contributor))
-				.withMessageStartingWith("Property '" + name + "' is invalid in a profile specific resource");
+			.isThrownBy(() -> InvalidConfigDataPropertyException.throwOrWarn(this.logger, contributor))
+			.withMessageStartingWith("Property '" + name + "' is invalid in a profile specific resource");
 	}
 
 	private ConfigDataEnvironmentContributor createInvalidProfileSpecificPropertyContributor(String name,
@@ -152,7 +152,7 @@ class InvalidConfigDataPropertyExceptionTests {
 	@Test
 	void throwOrWarnWhenHasNoInvalidPropertyDoesNothing() {
 		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor
-				.ofExisting(new MockPropertySource());
+			.ofExisting(new MockPropertySource());
 		InvalidConfigDataPropertyException.throwOrWarn(this.logger, contributor);
 	}
 
@@ -162,8 +162,9 @@ class InvalidConfigDataPropertyExceptionTests {
 		propertySource.setProperty("spring.profiles", "a");
 		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofExisting(propertySource);
 		InvalidConfigDataPropertyException.throwOrWarn(this.logger, contributor);
-		then(this.logger).should().warn("Property 'spring.profiles' is invalid and should be replaced with "
-				+ "'spring.config.activate.on-profile' [origin: \"spring.profiles\" from property source \"mockProperties\"]");
+		then(this.logger).should()
+			.warn("Property 'spring.profiles' is invalid and should be replaced with "
+					+ "'spring.config.activate.on-profile' [origin: \"spring.profiles\" from property source \"mockProperties\"]");
 	}
 
 	@Test
@@ -172,8 +173,9 @@ class InvalidConfigDataPropertyExceptionTests {
 		propertySource.setProperty("spring.profiles[0]", "a");
 		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofExisting(propertySource);
 		InvalidConfigDataPropertyException.throwOrWarn(this.logger, contributor);
-		then(this.logger).should().warn("Property 'spring.profiles[0]' is invalid and should be replaced with "
-				+ "'spring.config.activate.on-profile' [origin: \"spring.profiles[0]\" from property source \"mockProperties\"]");
+		then(this.logger).should()
+			.warn("Property 'spring.profiles[0]' is invalid and should be replaced with "
+					+ "'spring.config.activate.on-profile' [origin: \"spring.profiles[0]\" from property source \"mockProperties\"]");
 	}
 
 	private static class TestConfigDataResource extends ConfigDataResource {

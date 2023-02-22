@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,15 +80,15 @@ class CassandraRepositoriesAutoConfigurationTests {
 	@Test
 	void enablingReactiveRepositoriesDisablesImperativeRepositories() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class)
-				.withPropertyValues("spring.data.cassandra.repositories.type=reactive")
-				.run((context) -> assertThat(context).doesNotHaveBean(CityCassandraRepository.class));
+			.withPropertyValues("spring.data.cassandra.repositories.type=reactive")
+			.run((context) -> assertThat(context).doesNotHaveBean(CityCassandraRepository.class));
 	}
 
 	@Test
 	void enablingNoRepositoriesDisablesImperativeRepositories() {
 		this.contextRunner.withUserConfiguration(DefaultConfiguration.class)
-				.withPropertyValues("spring.data.cassandra.repositories.type=none")
-				.run((context) -> assertThat(context).doesNotHaveBean(CityCassandraRepository.class));
+			.withPropertyValues("spring.data.cassandra.repositories.type=none")
+			.run((context) -> assertThat(context).doesNotHaveBean(CityCassandraRepository.class));
 	}
 
 	@SuppressWarnings("unchecked")

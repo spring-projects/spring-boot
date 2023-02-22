@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ class MainMethodTests {
 	@Test
 	void threadMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new MainMethod(null))
-				.withMessageContaining("Thread must not be null");
+			.withMessageContaining("Thread must not be null");
 	}
 
 	@Test
@@ -59,13 +59,13 @@ class MainMethodTests {
 	@Test
 	void missingArgsMainMethod() {
 		assertThatIllegalStateException().isThrownBy(() -> new TestThread(MissingArgs::main).test())
-				.withMessageContaining("Unable to find main method");
+			.withMessageContaining("Unable to find main method");
 	}
 
 	@Test
 	void nonStatic() {
 		assertThatIllegalStateException().isThrownBy(() -> new TestThread(() -> new NonStaticMain().main()).test())
-				.withMessageContaining("Unable to find main method");
+			.withMessageContaining("Unable to find main method");
 	}
 
 	static class TestThread extends Thread {

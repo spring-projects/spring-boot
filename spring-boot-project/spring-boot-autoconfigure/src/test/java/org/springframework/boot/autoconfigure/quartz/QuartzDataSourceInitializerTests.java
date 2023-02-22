@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,10 +47,10 @@ import static org.mockito.Mockito.mock;
 class QuartzDataSourceInitializerTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class))
-			.withPropertyValues("spring.datasource.url=" + String.format(
-					"jdbc:h2:mem:test-%s;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE", UUID.randomUUID().toString()));
+		.withConfiguration(
+				AutoConfigurations.of(DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class))
+		.withPropertyValues("spring.datasource.url=" + String
+			.format("jdbc:h2:mem:test-%s;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE", UUID.randomUUID().toString()));
 
 	@Test
 	void getDatabaseNameWithPlatformDoesNotTouchDataSource() {
@@ -65,24 +65,26 @@ class QuartzDataSourceInitializerTests {
 
 	@Test
 	void hashIsUsedAsACommentPrefixByDefault() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class).withPropertyValues(
-				"spring.quartz.jdbc.schema=classpath:org/springframework/boot/autoconfigure/quartz/tables_#_comments.sql")
-				.run(this::assertThatDataSourceHasBeenInitialized);
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+			.withPropertyValues(
+					"spring.quartz.jdbc.schema=classpath:org/springframework/boot/autoconfigure/quartz/tables_#_comments.sql")
+			.run(this::assertThatDataSourceHasBeenInitialized);
 	}
 
 	@Test
 	void doubleDashIsUsedAsACommentPrefixByDefault() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class).withPropertyValues(
-				"spring.quartz.jdbc.schema=classpath:org/springframework/boot/autoconfigure/quartz/tables_--_comments.sql")
-				.run(this::assertThatDataSourceHasBeenInitialized);
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+			.withPropertyValues(
+					"spring.quartz.jdbc.schema=classpath:org/springframework/boot/autoconfigure/quartz/tables_--_comments.sql")
+			.run(this::assertThatDataSourceHasBeenInitialized);
 	}
 
 	@Test
 	void commentPrefixCanBeCustomized() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class).withPropertyValues(
-				"spring.quartz.jdbc.comment-prefix=**",
-				"spring.quartz.jdbc.schema=classpath:org/springframework/boot/autoconfigure/quartz/tables_custom_comment_prefix.sql")
-				.run(this::assertThatDataSourceHasBeenInitialized);
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+			.withPropertyValues("spring.quartz.jdbc.comment-prefix=**",
+					"spring.quartz.jdbc.schema=classpath:org/springframework/boot/autoconfigure/quartz/tables_custom_comment_prefix.sql")
+			.run(this::assertThatDataSourceHasBeenInitialized);
 	}
 
 	private void assertThatDataSourceHasBeenInitialized(AssertableApplicationContext context) {

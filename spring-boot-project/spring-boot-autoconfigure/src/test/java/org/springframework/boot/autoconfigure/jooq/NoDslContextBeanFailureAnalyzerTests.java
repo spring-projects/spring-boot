@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,12 +45,11 @@ class NoDslContextBeanFailureAnalyzerTests {
 	@Test
 	void analysisWithR2dbcAutoConfiguration() {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
-				.run((context) -> {
-					NoDslContextBeanFailureAnalyzer failureAnalyzer = new NoDslContextBeanFailureAnalyzer(
-							context.getBeanFactory());
-					assertThat(failureAnalyzer.analyze(new NoSuchBeanDefinitionException(DSLContext.class)))
-							.isNotNull();
-				});
+			.run((context) -> {
+				NoDslContextBeanFailureAnalyzer failureAnalyzer = new NoDslContextBeanFailureAnalyzer(
+						context.getBeanFactory());
+				assertThat(failureAnalyzer.analyze(new NoSuchBeanDefinitionException(DSLContext.class))).isNotNull();
+			});
 	}
 
 }

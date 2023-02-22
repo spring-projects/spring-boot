@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,9 +52,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConnectionPoolMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withPropertyValues("spring.r2dbc.generate-unique-name=true").with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(ConnectionPoolMetricsAutoConfiguration.class))
-			.withUserConfiguration(BaseConfiguration.class);
+		.withPropertyValues("spring.r2dbc.generate-unique-name=true")
+		.with(MetricsRun.simple())
+		.withConfiguration(AutoConfigurations.of(ConnectionPoolMetricsAutoConfiguration.class))
+		.withUserConfiguration(BaseConfiguration.class);
 
 	@Test
 	void autoConfiguredDataSourceIsInstrumented() {
@@ -67,21 +68,23 @@ class ConnectionPoolMetricsAutoConfigurationTests {
 	@Test
 	void autoConfiguredDataSourceExposedAsConnectionFactoryTypeIsInstrumented() {
 		this.contextRunner
-				.withPropertyValues(
-						"spring.r2dbc.url:r2dbc:pool:h2:mem:///name?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE")
-				.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class)).run((context) -> {
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("r2dbc.pool.acquired").gauges()).hasSize(1);
-				});
+			.withPropertyValues(
+					"spring.r2dbc.url:r2dbc:pool:h2:mem:///name?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE")
+			.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
+			.run((context) -> {
+				MeterRegistry registry = context.getBean(MeterRegistry.class);
+				assertThat(registry.find("r2dbc.pool.acquired").gauges()).hasSize(1);
+			});
 	}
 
 	@Test
 	void connectionPoolInstrumentationCanBeDisabled() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
-				.withPropertyValues("management.metrics.enable.r2dbc=false").run((context) -> {
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("r2dbc.pool.acquired").gauge()).isNull();
-				});
+			.withPropertyValues("management.metrics.enable.r2dbc=false")
+			.run((context) -> {
+				MeterRegistry registry = context.getBean(MeterRegistry.class);
+				assertThat(registry.find("r2dbc.pool.acquired").gauge()).isNull();
+			});
 	}
 
 	@Test
@@ -89,7 +92,8 @@ class ConnectionPoolMetricsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(ConnectionFactoryConfiguration.class).run((context) -> {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			assertThat(registry.find("r2dbc.pool.acquired").gauges()).extracting(Meter::getId)
-					.extracting((id) -> id.getTag("name")).containsExactly("testConnectionPool");
+				.extracting((id) -> id.getTag("name"))
+				.containsExactly("testConnectionPool");
 		});
 	}
 
@@ -98,7 +102,8 @@ class ConnectionPoolMetricsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(WrappedConnectionPoolConfiguration.class).run((context) -> {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			assertThat(registry.find("r2dbc.pool.acquired").gauges()).extracting(Meter::getId)
-					.extracting((id) -> id.getTag("name")).containsExactly("wrappedConnectionPool");
+				.extracting((id) -> id.getTag("name"))
+				.containsExactly("wrappedConnectionPool");
 		});
 	}
 
@@ -107,7 +112,8 @@ class ConnectionPoolMetricsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TwoConnectionPoolsConfiguration.class).run((context) -> {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			assertThat(registry.find("r2dbc.pool.acquired").gauges()).extracting(Meter::getId)
-					.extracting((id) -> id.getTag("name")).containsExactlyInAnyOrder("firstPool", "secondPool");
+				.extracting((id) -> id.getTag("name"))
+				.containsExactlyInAnyOrder("firstPool", "secondPool");
 		});
 	}
 
@@ -128,7 +134,8 @@ class ConnectionPoolMetricsAutoConfigurationTests {
 		ConnectionFactory testConnectionPool() {
 			return new ConnectionPool(
 					ConnectionPoolConfiguration.builder(H2ConnectionFactory.inMemory("db-" + UUID.randomUUID(), "sa",
-							"", Collections.singletonMap(H2ConnectionOption.DB_CLOSE_DELAY, "-1"))).build());
+							"", Collections.singletonMap(H2ConnectionOption.DB_CLOSE_DELAY, "-1")))
+						.build());
 		}
 
 	}
@@ -138,12 +145,10 @@ class ConnectionPoolMetricsAutoConfigurationTests {
 
 		@Bean
 		ConnectionFactory wrappedConnectionPool() {
-			return new Wrapper(
-					new ConnectionPool(
-							ConnectionPoolConfiguration
-									.builder(H2ConnectionFactory.inMemory("db-" + UUID.randomUUID(), "sa", "",
-											Collections.singletonMap(H2ConnectionOption.DB_CLOSE_DELAY, "-1")))
-									.build()));
+			return new Wrapper(new ConnectionPool(
+					ConnectionPoolConfiguration.builder(H2ConnectionFactory.inMemory("db-" + UUID.randomUUID(), "sa",
+							"", Collections.singletonMap(H2ConnectionOption.DB_CLOSE_DELAY, "-1")))
+						.build()));
 		}
 
 		static class Wrapper implements ConnectionFactory, Wrapped<ConnectionFactory> {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,12 @@ class TaskExecutorBuilderTests {
 
 	@Test
 	void poolSettingsShouldApply() {
-		ThreadPoolTaskExecutor executor = this.builder.queueCapacity(10).corePoolSize(4).maxPoolSize(8)
-				.allowCoreThreadTimeOut(true).keepAlive(Duration.ofMinutes(1)).build();
+		ThreadPoolTaskExecutor executor = this.builder.queueCapacity(10)
+			.corePoolSize(4)
+			.maxPoolSize(8)
+			.allowCoreThreadTimeOut(true)
+			.keepAlive(Duration.ofMinutes(1))
+			.build();
 		assertThat(executor).hasFieldOrPropertyWithValue("queueCapacity", 10);
 		assertThat(executor.getCorePoolSize()).isEqualTo(4);
 		assertThat(executor.getMaxPoolSize()).isEqualTo(8);
@@ -81,14 +85,14 @@ class TaskExecutorBuilderTests {
 	@Test
 	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.customizers((TaskExecutorCustomizer[]) null))
-				.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.customizers((Set<TaskExecutorCustomizer>) null))
-				.withMessageContaining("Customizers must not be null");
+			.isThrownBy(() -> this.builder.customizers((Set<TaskExecutorCustomizer>) null))
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
@@ -102,19 +106,26 @@ class TaskExecutorBuilderTests {
 	void customizersShouldBeAppliedLast() {
 		TaskDecorator taskDecorator = mock(TaskDecorator.class);
 		ThreadPoolTaskExecutor executor = spy(new ThreadPoolTaskExecutor());
-		this.builder.queueCapacity(10).corePoolSize(4).maxPoolSize(8).allowCoreThreadTimeOut(true)
-				.keepAlive(Duration.ofMinutes(1)).awaitTermination(true).awaitTerminationPeriod(Duration.ofSeconds(30))
-				.threadNamePrefix("test-").taskDecorator(taskDecorator).additionalCustomizers((taskExecutor) -> {
-					then(taskExecutor).should().setQueueCapacity(10);
-					then(taskExecutor).should().setCorePoolSize(4);
-					then(taskExecutor).should().setMaxPoolSize(8);
-					then(taskExecutor).should().setAllowCoreThreadTimeOut(true);
-					then(taskExecutor).should().setKeepAliveSeconds(60);
-					then(taskExecutor).should().setWaitForTasksToCompleteOnShutdown(true);
-					then(taskExecutor).should().setAwaitTerminationSeconds(30);
-					then(taskExecutor).should().setThreadNamePrefix("test-");
-					then(taskExecutor).should().setTaskDecorator(taskDecorator);
-				});
+		this.builder.queueCapacity(10)
+			.corePoolSize(4)
+			.maxPoolSize(8)
+			.allowCoreThreadTimeOut(true)
+			.keepAlive(Duration.ofMinutes(1))
+			.awaitTermination(true)
+			.awaitTerminationPeriod(Duration.ofSeconds(30))
+			.threadNamePrefix("test-")
+			.taskDecorator(taskDecorator)
+			.additionalCustomizers((taskExecutor) -> {
+				then(taskExecutor).should().setQueueCapacity(10);
+				then(taskExecutor).should().setCorePoolSize(4);
+				then(taskExecutor).should().setMaxPoolSize(8);
+				then(taskExecutor).should().setAllowCoreThreadTimeOut(true);
+				then(taskExecutor).should().setKeepAliveSeconds(60);
+				then(taskExecutor).should().setWaitForTasksToCompleteOnShutdown(true);
+				then(taskExecutor).should().setAwaitTerminationSeconds(30);
+				then(taskExecutor).should().setThreadNamePrefix("test-");
+				then(taskExecutor).should().setTaskDecorator(taskDecorator);
+			});
 		this.builder.configure(executor);
 	}
 
@@ -123,7 +134,8 @@ class TaskExecutorBuilderTests {
 		TaskExecutorCustomizer customizer1 = mock(TaskExecutorCustomizer.class);
 		TaskExecutorCustomizer customizer2 = mock(TaskExecutorCustomizer.class);
 		ThreadPoolTaskExecutor executor = this.builder.customizers(customizer1)
-				.customizers(Collections.singleton(customizer2)).build();
+			.customizers(Collections.singleton(customizer2))
+			.build();
 		then(customizer1).shouldHaveNoInteractions();
 		then(customizer2).should().customize(executor);
 	}
@@ -131,23 +143,24 @@ class TaskExecutorBuilderTests {
 	@Test
 	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.additionalCustomizers((TaskExecutorCustomizer[]) null))
-				.withMessageContaining("Customizers must not be null");
+			.isThrownBy(() -> this.builder.additionalCustomizers((TaskExecutorCustomizer[]) null))
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.additionalCustomizers((Set<TaskExecutorCustomizer>) null))
-				.withMessageContaining("Customizers must not be null");
+			.isThrownBy(() -> this.builder.additionalCustomizers((Set<TaskExecutorCustomizer>) null))
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void additionalCustomizersShouldAddToExisting() {
 		TaskExecutorCustomizer customizer1 = mock(TaskExecutorCustomizer.class);
 		TaskExecutorCustomizer customizer2 = mock(TaskExecutorCustomizer.class);
-		ThreadPoolTaskExecutor executor = this.builder.customizers(customizer1).additionalCustomizers(customizer2)
-				.build();
+		ThreadPoolTaskExecutor executor = this.builder.customizers(customizer1)
+			.additionalCustomizers(customizer2)
+			.build();
 		then(customizer1).should().customize(executor);
 		then(customizer2).should().customize(executor);
 	}

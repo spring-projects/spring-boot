@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,8 +98,11 @@ public class HttpExchangeTracer {
 		if (!this.includes.contains(include)) {
 			return new LinkedHashMap<>();
 		}
-		return headersSupplier.get().entrySet().stream().filter((entry) -> headerPredicate.test(entry.getKey()))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+		return headersSupplier.get()
+			.entrySet()
+			.stream()
+			.filter((entry) -> headerPredicate.test(entry.getKey()))
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 	private long calculateTimeTaken(HttpTrace trace) {

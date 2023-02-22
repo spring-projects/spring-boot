@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,8 +61,9 @@ class ConfigDataLoadersTests {
 	void createWhenLoaderHasDeferredLogFactoryParameterInjectsDeferredLogFactory() {
 		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext, null,
 				Arrays.asList(DeferredLogFactoryConfigDataLoader.class.getName()));
-		assertThat(loaders).extracting("loaders").asList()
-				.satisfies(this::containsValidDeferredLogFactoryConfigDataLoader);
+		assertThat(loaders).extracting("loaders")
+			.asList()
+			.satisfies(this::containsValidDeferredLogFactoryConfigDataLoader);
 	}
 
 	private void containsValidDeferredLogFactoryConfigDataLoader(List<?> list) {
@@ -93,7 +94,7 @@ class ConfigDataLoadersTests {
 		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext, null,
 				Arrays.asList(LoggingConfigDataLoader.class.getName(), TestConfigDataLoader.class.getName()));
 		assertThatIllegalStateException().isThrownBy(() -> loaders.load(this.context, location))
-				.withMessageContaining("Multiple loaders found for resource 'test'");
+			.withMessageContaining("Multiple loaders found for resource 'test'");
 	}
 
 	@Test
@@ -102,7 +103,7 @@ class ConfigDataLoadersTests {
 		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext, null,
 				Arrays.asList(NonLoadableConfigDataLoader.class.getName()));
 		assertThatIllegalStateException().isThrownBy(() -> loaders.load(this.context, location))
-				.withMessage("No loader found for resource 'test'");
+			.withMessage("No loader found for resource 'test'");
 	}
 
 	@Test

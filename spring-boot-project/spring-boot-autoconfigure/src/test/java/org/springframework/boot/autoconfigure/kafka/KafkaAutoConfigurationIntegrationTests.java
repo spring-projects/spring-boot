@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,15 +105,18 @@ class KafkaAutoConfigurationIntegrationTests {
 				"spring.kafka.consumer.auto-offset-reset=earliest");
 		RetryTopicConfiguration configuration = this.context.getBean(RetryTopicConfiguration.class);
 		assertThat(configuration.getDestinationTopicProperties()).extracting(DestinationTopic.Properties::delay)
-				.containsExactly(0L, 100L, 200L, 300L, 300L, 0L);
+			.containsExactly(0L, 100L, 200L, 300L, 300L, 0L);
 		KafkaTemplate<String, String> template = this.context.getBean(KafkaTemplate.class);
 		template.send(TEST_RETRY_TOPIC, "foo", "bar");
 		RetryListener listener = this.context.getBean(RetryListener.class);
 		assertThat(listener.latch.await(30, TimeUnit.SECONDS)).isTrue();
-		assertThat(listener).extracting(RetryListener::getKey, RetryListener::getReceived).containsExactly("foo",
-				"bar");
-		assertThat(listener).extracting(RetryListener::getTopics).asList().hasSize(5).containsSequence("testRetryTopic",
-				"testRetryTopic-retry-0", "testRetryTopic-retry-1", "testRetryTopic-retry-2", "testRetryTopic-retry-3");
+		assertThat(listener).extracting(RetryListener::getKey, RetryListener::getReceived)
+			.containsExactly("foo", "bar");
+		assertThat(listener).extracting(RetryListener::getTopics)
+			.asList()
+			.hasSize(5)
+			.containsSequence("testRetryTopic", "testRetryTopic-retry-0", "testRetryTopic-retry-1",
+					"testRetryTopic-retry-2", "testRetryTopic-retry-3");
 	}
 
 	@Test

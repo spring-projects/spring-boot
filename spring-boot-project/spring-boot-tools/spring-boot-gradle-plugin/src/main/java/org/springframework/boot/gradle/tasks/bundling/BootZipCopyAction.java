@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ import org.springframework.util.StringUtils;
 class BootZipCopyAction implements CopyAction {
 
 	static final long CONSTANT_TIME_FOR_ZIP_ENTRIES = new GregorianCalendar(1980, Calendar.FEBRUARY, 1, 0, 0, 0)
-			.getTimeInMillis();
+		.getTimeInMillis();
 
 	private final File output;
 
@@ -322,8 +322,9 @@ class BootZipCopyAction implements CopyAction {
 			Attributes manifestAttributes = BootZipCopyAction.this.manifest.getAttributes();
 			String classPathIndex = (String) manifestAttributes.get("Spring-Boot-Classpath-Index");
 			if (classPathIndex != null) {
-				List<String> lines = this.writtenLibraries.stream().map((line) -> "- \"" + line + "\"")
-						.collect(Collectors.toList());
+				List<String> lines = this.writtenLibraries.stream()
+					.map((line) -> "- \"" + line + "\"")
+					.collect(Collectors.toList());
 				writeEntry(classPathIndex, ZipEntryContentWriter.fromLines(BootZipCopyAction.this.encoding, lines),
 						true);
 			}

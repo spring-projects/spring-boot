@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,9 +37,8 @@ class SpringApplicationRunnerTests {
 		given(configuration.getClasspath()).willReturn(new String[] { "foo", "bar" });
 		given(configuration.getLogLevel()).willReturn(Level.INFO);
 		assertThatExceptionOfType(RuntimeException.class)
-				.isThrownBy(
-						() -> new SpringApplicationRunner(configuration, new String[] { "foo", "bar" }).compileAndRun())
-				.withMessage("No classes found in '[foo, bar]'");
+			.isThrownBy(() -> new SpringApplicationRunner(configuration, new String[] { "foo", "bar" }).compileAndRun())
+			.withMessage("No classes found in '[foo, bar]'");
 	}
 
 }

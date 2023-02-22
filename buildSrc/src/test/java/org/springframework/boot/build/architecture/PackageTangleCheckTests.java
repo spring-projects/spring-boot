@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,10 +46,11 @@ class PackageTangleCheckTests {
 	void whenPackagesAreTangledTaskFailsAndWritesAReport() throws Exception {
 		prepareTask("tangled", (packageTangleCheck) -> {
 			assertThatExceptionOfType(GradleException.class)
-					.isThrownBy(() -> packageTangleCheck.checkForPackageTangles());
+				.isThrownBy(() -> packageTangleCheck.checkForPackageTangles());
 			assertThat(
 					new File(packageTangleCheck.getProject().getBuildDir(), "checkForPackageTangles/failure-report.txt")
-							.length()).isGreaterThan(0);
+						.length())
+				.isGreaterThan(0);
 		});
 	}
 
@@ -59,7 +60,8 @@ class PackageTangleCheckTests {
 			packageTangleCheck.checkForPackageTangles();
 			assertThat(
 					new File(packageTangleCheck.getProject().getBuildDir(), "checkForPackageTangles/failure-report.txt")
-							.length()).isEqualTo(0);
+						.length())
+				.isEqualTo(0);
 		});
 	}
 
@@ -68,8 +70,9 @@ class PackageTangleCheckTests {
 		projectDir.mkdirs();
 		copyClasses(classes, projectDir);
 		Project project = ProjectBuilder.builder().withProjectDir(projectDir).build();
-		PackageTangleCheck packageTangleCheck = project.getTasks().create("checkForPackageTangles",
-				PackageTangleCheck.class, (task) -> task.setClasses(project.files("classes")));
+		PackageTangleCheck packageTangleCheck = project.getTasks()
+			.create("checkForPackageTangles", PackageTangleCheck.class,
+					(task) -> task.setClasses(project.files("classes")));
 		callback.accept(packageTangleCheck);
 	}
 

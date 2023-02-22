@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,11 +90,12 @@ class LongTaskTimingHandlerInterceptorTests {
 	@Test
 	void asyncRequestThatThrowsUncheckedException() throws Exception {
 		MvcResult result = this.mvc.perform(get("/api/c1/completableFutureException"))
-				.andExpect(request().asyncStarted()).andReturn();
+			.andExpect(request().asyncStarted())
+			.andReturn();
 		assertThat(this.registry.get("my.long.request.exception").longTaskTimer().activeTasks()).isEqualTo(1);
 		assertThatExceptionOfType(NestedServletException.class)
-				.isThrownBy(() -> this.mvc.perform(asyncDispatch(result)))
-				.withRootCauseInstanceOf(RuntimeException.class);
+			.isThrownBy(() -> this.mvc.perform(asyncDispatch(result)))
+			.withRootCauseInstanceOf(RuntimeException.class);
 		assertThat(this.registry.get("my.long.request.exception").longTaskTimer().activeTasks()).isEqualTo(0);
 	}
 
@@ -103,8 +104,8 @@ class LongTaskTimingHandlerInterceptorTests {
 		AtomicReference<MvcResult> result = new AtomicReference<>();
 		Thread backgroundRequest = new Thread(() -> {
 			try {
-				result.set(
-						this.mvc.perform(get("/api/c1/callable/10")).andExpect(request().asyncStarted()).andReturn());
+				result
+					.set(this.mvc.perform(get("/api/c1/callable/10")).andExpect(request().asyncStarted()).andReturn());
 			}
 			catch (Exception ex) {
 				fail("Failed to execute async request", ex);
@@ -113,12 +114,12 @@ class LongTaskTimingHandlerInterceptorTests {
 		backgroundRequest.start();
 		this.callableBarrier.await();
 		assertThat(this.registry.get("my.long.request").tags("region", "test").longTaskTimer().activeTasks())
-				.isEqualTo(1);
+			.isEqualTo(1);
 		this.callableBarrier.await();
 		backgroundRequest.join();
 		this.mvc.perform(asyncDispatch(result.get())).andExpect(status().isOk());
 		assertThat(this.registry.get("my.long.request").tags("region", "test").longTaskTimer().activeTasks())
-				.isEqualTo(0);
+			.isEqualTo(0);
 	}
 
 	@Test
@@ -127,8 +128,8 @@ class LongTaskTimingHandlerInterceptorTests {
 		AtomicReference<MvcResult> result = new AtomicReference<>();
 		Thread backgroundRequest = new Thread(() -> {
 			try {
-				result.set(
-						this.mvc.perform(get("/api/c1/callable/10")).andExpect(request().asyncStarted()).andReturn());
+				result
+					.set(this.mvc.perform(get("/api/c1/callable/10")).andExpect(request().asyncStarted()).andReturn());
 			}
 			catch (Exception ex) {
 				fail("Failed to execute async request", ex);

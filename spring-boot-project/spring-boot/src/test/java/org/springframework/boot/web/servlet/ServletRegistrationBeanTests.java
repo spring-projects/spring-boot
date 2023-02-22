@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,34 +132,34 @@ class ServletRegistrationBeanTests {
 	void setServletMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.onStartup(this.servletContext))
-				.withMessageContaining("Servlet must not be null");
+			.withMessageContaining("Servlet must not be null");
 	}
 
 	@Test
 	void createServletMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ServletRegistrationBean<MockServlet>(null))
-				.withMessageContaining("Servlet must not be null");
+			.withMessageContaining("Servlet must not be null");
 	}
 
 	@Test
 	void setMappingMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet);
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.setUrlMappings(null))
-				.withMessageContaining("UrlMappings must not be null");
+			.withMessageContaining("UrlMappings must not be null");
 	}
 
 	@Test
 	void createMappingMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ServletRegistrationBean<>(this.servlet, (String[]) null))
-				.withMessageContaining("UrlMappings must not be null");
+			.isThrownBy(() -> new ServletRegistrationBean<>(this.servlet, (String[]) null))
+			.withMessageContaining("UrlMappings must not be null");
 	}
 
 	@Test
 	void addMappingMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet);
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.addUrlMappings((String[]) null))
-				.withMessageContaining("UrlMappings must not be null");
+			.withMessageContaining("UrlMappings must not be null");
 	}
 
 	@Test

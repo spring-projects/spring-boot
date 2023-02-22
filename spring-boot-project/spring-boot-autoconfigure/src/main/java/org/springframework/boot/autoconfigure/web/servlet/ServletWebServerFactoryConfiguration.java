@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,11 +75,11 @@ class ServletWebServerFactoryConfiguration {
 				ObjectProvider<TomcatProtocolHandlerCustomizer<?>> protocolHandlerCustomizers) {
 			TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
 			factory.getTomcatConnectorCustomizers()
-					.addAll(connectorCustomizers.orderedStream().collect(Collectors.toList()));
+				.addAll(connectorCustomizers.orderedStream().collect(Collectors.toList()));
 			factory.getTomcatContextCustomizers()
-					.addAll(contextCustomizers.orderedStream().collect(Collectors.toList()));
+				.addAll(contextCustomizers.orderedStream().collect(Collectors.toList()));
 			factory.getTomcatProtocolHandlerCustomizers()
-					.addAll(protocolHandlerCustomizers.orderedStream().collect(Collectors.toList()));
+				.addAll(protocolHandlerCustomizers.orderedStream().collect(Collectors.toList()));
 			return factory;
 		}
 
@@ -117,7 +117,7 @@ class ServletWebServerFactoryConfiguration {
 				ObjectProvider<UndertowBuilderCustomizer> builderCustomizers) {
 			UndertowServletWebServerFactory factory = new UndertowServletWebServerFactory();
 			factory.getDeploymentInfoCustomizers()
-					.addAll(deploymentInfoCustomizers.orderedStream().collect(Collectors.toList()));
+				.addAll(deploymentInfoCustomizers.orderedStream().collect(Collectors.toList()));
 			factory.getBuilderCustomizers().addAll(builderCustomizers.orderedStream().collect(Collectors.toList()));
 			return factory;
 		}

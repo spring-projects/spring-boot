@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,14 +45,14 @@ class CompositeDependencyManagementTests {
 		given(this.dependencyManagement1.getSpringBootVersion()).willReturn(null);
 		given(this.dependencyManagement2.getSpringBootVersion()).willReturn(null);
 		assertThat(new CompositeDependencyManagement(this.dependencyManagement1, this.dependencyManagement2)
-				.getSpringBootVersion()).isNull();
+			.getSpringBootVersion()).isNull();
 	}
 
 	@Test
 	void knownSpringBootVersion() {
 		given(this.dependencyManagement1.getSpringBootVersion()).willReturn("1.2.3");
 		assertThat(new CompositeDependencyManagement(this.dependencyManagement1, this.dependencyManagement2)
-				.getSpringBootVersion()).isEqualTo("1.2.3");
+			.getSpringBootVersion()).isEqualTo("1.2.3");
 	}
 
 	@Test
@@ -60,25 +60,25 @@ class CompositeDependencyManagementTests {
 		given(this.dependencyManagement1.find("artifact")).willReturn(null);
 		given(this.dependencyManagement2.find("artifact")).willReturn(null);
 		assertThat(new CompositeDependencyManagement(this.dependencyManagement1, this.dependencyManagement2)
-				.find("artifact")).isNull();
+			.find("artifact")).isNull();
 	}
 
 	@Test
 	void knownDependency() {
 		given(this.dependencyManagement1.find("artifact")).willReturn(new Dependency("test", "artifact", "1.2.3"));
 		assertThat(new CompositeDependencyManagement(this.dependencyManagement1, this.dependencyManagement2)
-				.find("artifact")).isEqualTo(new Dependency("test", "artifact", "1.2.3"));
+			.find("artifact")).isEqualTo(new Dependency("test", "artifact", "1.2.3"));
 	}
 
 	@Test
 	void getDependencies() {
 		given(this.dependencyManagement1.getDependencies())
-				.willReturn(Arrays.asList(new Dependency("test", "artifact", "1.2.3")));
+			.willReturn(Arrays.asList(new Dependency("test", "artifact", "1.2.3")));
 		given(this.dependencyManagement2.getDependencies())
-				.willReturn(Arrays.asList(new Dependency("test", "artifact", "1.2.4")));
+			.willReturn(Arrays.asList(new Dependency("test", "artifact", "1.2.4")));
 		assertThat(new CompositeDependencyManagement(this.dependencyManagement1, this.dependencyManagement2)
-				.getDependencies()).containsOnly(new Dependency("test", "artifact", "1.2.3"),
-						new Dependency("test", "artifact", "1.2.4"));
+			.getDependencies())
+			.containsOnly(new Dependency("test", "artifact", "1.2.3"), new Dependency("test", "artifact", "1.2.4"));
 	}
 
 }

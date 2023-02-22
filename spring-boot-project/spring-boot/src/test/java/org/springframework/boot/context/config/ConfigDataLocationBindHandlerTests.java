@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -126,13 +126,13 @@ class ConfigDataLocationBindHandlerTests {
 		ValueObject bound = binder.bind("test", VALUE_OBJECT, this.handler).get();
 		assertThat(bound.getLocation(0)).hasToString("a");
 		assertThat(bound.getLocation(0).getOrigin())
-				.hasToString("\"test.locations[0]\" from property source \"source\"");
+			.hasToString("\"test.locations[0]\" from property source \"source\"");
 		assertThat(bound.getLocation(1)).hasToString("b");
 		assertThat(bound.getLocation(1).getOrigin())
-				.hasToString("\"test.locations[1]\" from property source \"source\"");
+			.hasToString("\"test.locations[1]\" from property source \"source\"");
 		assertThat(bound.getLocation(2)).hasToString("c");
 		assertThat(bound.getLocation(2).getOrigin())
-				.hasToString("\"test.locations[2]\" from property source \"source\"");
+			.hasToString("\"test.locations[2]\" from property source \"source\"");
 	}
 
 	static class ValueObject {

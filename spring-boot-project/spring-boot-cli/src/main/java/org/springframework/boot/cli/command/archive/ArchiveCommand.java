@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,10 +110,14 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 		protected void doOptions() {
 			this.includeOption = option("include",
 					"Pattern applied to directories on the classpath to find files to include in the resulting ")
-							.withRequiredArg().withValuesSeparatedBy(",").defaultsTo("");
+				.withRequiredArg()
+				.withValuesSeparatedBy(",")
+				.defaultsTo("");
 			this.excludeOption = option("exclude", "Pattern applied to directories on the classpath to find files to "
-					+ "exclude from the resulting " + this.type).withRequiredArg().withValuesSeparatedBy(",")
-							.defaultsTo("");
+					+ "exclude from the resulting " + this.type)
+				.withRequiredArg()
+				.withValuesSeparatedBy(",")
+				.defaultsTo("");
 		}
 
 		@Override
@@ -150,7 +154,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 
 		private GroovyCompiler createCompiler(OptionSet options) {
 			List<RepositoryConfiguration> repositoryConfiguration = RepositoryConfigurationFactory
-					.createDefaultRepositoryConfiguration();
+				.createDefaultRepositoryConfiguration();
 			GroovyCompilerConfiguration configuration = new OptionSetGroovyCompilerConfiguration(options, this,
 					repositoryConfiguration);
 			GroovyCompiler groovyCompiler = new GroovyCompiler(configuration);
@@ -206,8 +210,8 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 		private void addManifest(JarWriter writer, Class<?>[] compiledClasses) throws IOException {
 			Manifest manifest = new Manifest();
 			manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
-			manifest.getMainAttributes().putValue(PackagedSpringApplicationLauncher.SOURCE_ENTRY,
-					commaDelimitedClassNames(compiledClasses));
+			manifest.getMainAttributes()
+				.putValue(PackagedSpringApplicationLauncher.SOURCE_ENTRY, commaDelimitedClassNames(compiledClasses));
 			writer.writeManifest(manifest);
 		}
 
@@ -226,7 +230,7 @@ abstract class ArchiveCommand extends OptionParsingCommand {
 			addClass(writer, PackagedSpringApplicationLauncher.class);
 			addClass(writer, SpringApplicationLauncher.class);
 			Resource[] resources = new PathMatchingResourcePatternResolver()
-					.getResources("org/springframework/boot/groovy/**");
+				.getResources("org/springframework/boot/groovy/**");
 			for (Resource resource : resources) {
 				String url = resource.getURL().toString();
 				addResource(writer, resource, url.substring(url.indexOf("org/springframework/boot/groovy/")));

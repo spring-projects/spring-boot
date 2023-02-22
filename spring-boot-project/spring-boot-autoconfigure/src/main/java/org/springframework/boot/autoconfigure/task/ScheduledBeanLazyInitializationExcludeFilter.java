@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ class ScheduledBeanLazyInitializationExcludeFilter implements LazyInitialization
 			Map<Method, Set<Scheduled>> annotatedMethods = MethodIntrospector.selectMethods(targetType,
 					(MethodIntrospector.MetadataLookup<Set<Scheduled>>) (method) -> {
 						Set<Scheduled> scheduledAnnotations = AnnotatedElementUtils
-								.getMergedRepeatableAnnotations(method, Scheduled.class, Schedules.class);
+							.getMergedRepeatableAnnotations(method, Scheduled.class, Schedules.class);
 						return (!scheduledAnnotations.isEmpty() ? scheduledAnnotations : null);
 					});
 			if (annotatedMethods.isEmpty()) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,13 +45,14 @@ class PluginXmlParserTests {
 		assertThat(plugin.getVersion()).isEqualTo("2.2.0.GRADLE-SNAPSHOT");
 		assertThat(plugin.getGoalPrefix()).isEqualTo("spring-boot");
 		assertThat(plugin.getMojos().stream().map(PluginXmlParser.Mojo::getGoal).collect(Collectors.toList()))
-				.containsExactly("build-info", "help", "repackage", "run", "start", "stop");
+			.containsExactly("build-info", "help", "repackage", "run", "start", "stop");
 	}
 
 	@Test
 	void parseNonExistingFileThrowException() {
 		assertThatThrownBy(() -> this.parser.parse(new File("src/test/resources/nonexistent.xml")))
-				.isInstanceOf(RuntimeException.class).hasCauseInstanceOf(FileNotFoundException.class);
+			.isInstanceOf(RuntimeException.class)
+			.hasCauseInstanceOf(FileNotFoundException.class);
 	}
 
 }

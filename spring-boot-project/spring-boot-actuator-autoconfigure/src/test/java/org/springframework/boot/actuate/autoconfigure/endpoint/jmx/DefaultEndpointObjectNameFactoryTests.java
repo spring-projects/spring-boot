@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,17 +94,18 @@ class DefaultEndpointObjectNameFactoryTests {
 	void generateObjectNameWithDuplicate() throws MalformedObjectNameException {
 		this.contextId = "testContext";
 		given(this.mBeanServer.queryNames(new ObjectName("org.springframework.boot:type=Endpoint,name=Test,*"), null))
-				.willReturn(Collections.singleton(new ObjectName("org.springframework.boot:type=Endpoint,name=Test")));
+			.willReturn(Collections.singleton(new ObjectName("org.springframework.boot:type=Endpoint,name=Test")));
 		ObjectName objectName = generateObjectName(endpoint(EndpointId.of("test")));
 		assertThat(objectName.toString())
-				.isEqualTo("org.springframework.boot:type=Endpoint,name=Test,context=testContext");
+			.isEqualTo("org.springframework.boot:type=Endpoint,name=Test,context=testContext");
 
 	}
 
 	private ObjectName generateObjectName(ExposableJmxEndpoint endpoint) {
 		try {
 			return new DefaultEndpointObjectNameFactory(this.properties, this.jmxProperties, this.mBeanServer,
-					this.contextId).getObjectName(endpoint);
+					this.contextId)
+				.getObjectName(endpoint);
 		}
 		catch (MalformedObjectNameException ex) {
 			throw new AssertionError("Invalid object name", ex);

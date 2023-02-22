@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,13 +38,13 @@ class NamedContributorTests {
 	@Test
 	void ofWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> NamedContributor.of(null, "two"))
-				.withMessage("Name must not be null");
+			.withMessage("Name must not be null");
 	}
 
 	@Test
 	void ofWhenContributorIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> NamedContributor.of("one", null))
-				.withMessage("Contributor must not be null");
+			.withMessage("Contributor must not be null");
 
 	}
 

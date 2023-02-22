@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,24 +58,30 @@ class GraphQlTagsTests {
 
 	@Test
 	void errorTypeShouldBeDefinedIfPresent() {
-		GraphQLError error = GraphqlErrorBuilder.newError().errorType(ErrorType.DataFetchingException)
-				.message("test error").build();
+		GraphQLError error = GraphqlErrorBuilder.newError()
+			.errorType(ErrorType.DataFetchingException)
+			.message("test error")
+			.build();
 		Tag errorTypeTag = GraphQlTags.errorType(error);
 		assertThat(errorTypeTag).isEqualTo(Tag.of("error.type", "DataFetchingException"));
 	}
 
 	@Test
 	void errorPathShouldUseJsonPathFormat() {
-		GraphQLError error = GraphqlErrorBuilder.newError().path(Arrays.asList("project", "name")).message("test error")
-				.build();
+		GraphQLError error = GraphqlErrorBuilder.newError()
+			.path(Arrays.asList("project", "name"))
+			.message("test error")
+			.build();
 		Tag errorPathTag = GraphQlTags.errorPath(error);
 		assertThat(errorPathTag).isEqualTo(Tag.of("error.path", "$.project.name"));
 	}
 
 	@Test
 	void errorPathShouldUseJsonPathFormatForIndices() {
-		GraphQLError error = GraphqlErrorBuilder.newError().path(Arrays.asList("issues", "42", "title"))
-				.message("test error").build();
+		GraphQLError error = GraphqlErrorBuilder.newError()
+			.path(Arrays.asList("issues", "42", "title"))
+			.message("test error")
+			.build();
 		Tag errorPathTag = GraphQlTags.errorPath(error);
 		assertThat(errorPathTag).isEqualTo(Tag.of("error.path", "$.issues[*].title"));
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,14 +59,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JerseyServerMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(JerseyServerMetricsAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(JerseyServerMetricsAutoConfiguration.class));
 
 	private final WebApplicationContextRunner webContextRunner = new WebApplicationContextRunner(
 			AnnotationConfigServletWebServerApplicationContext::new)
-					.withConfiguration(AutoConfigurations.of(JerseyAutoConfiguration.class,
-							JerseyServerMetricsAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
-							SimpleMetricsExportAutoConfiguration.class, MetricsAutoConfiguration.class))
-					.withUserConfiguration(ResourceConfiguration.class).withPropertyValues("server.port:0");
+		.withConfiguration(AutoConfigurations.of(JerseyAutoConfiguration.class,
+				JerseyServerMetricsAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
+				SimpleMetricsExportAutoConfiguration.class, MetricsAutoConfiguration.class))
+		.withUserConfiguration(ResourceConfiguration.class)
+		.withPropertyValues("server.port:0");
 
 	@Test
 	void shouldOnlyBeActiveInWebApplicationContext() {
@@ -76,13 +77,13 @@ class JerseyServerMetricsAutoConfigurationTests {
 	@Test
 	void shouldProvideAllNecessaryBeans() {
 		this.webContextRunner.run((context) -> assertThat(context).hasSingleBean(DefaultJerseyTagsProvider.class)
-				.hasSingleBean(ResourceConfigCustomizer.class));
+			.hasSingleBean(ResourceConfigCustomizer.class));
 	}
 
 	@Test
 	void shouldHonorExistingTagProvider() {
 		this.webContextRunner.withUserConfiguration(CustomJerseyTagsProviderConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(CustomJerseyTagsProvider.class));
+			.run((context) -> assertThat(context).hasSingleBean(CustomJerseyTagsProvider.class));
 	}
 
 	@Test
@@ -98,17 +99,18 @@ class JerseyServerMetricsAutoConfigurationTests {
 	@Test
 	void noHttpRequestsTimedWhenJerseyInstrumentationMissingFromClasspath() {
 		this.webContextRunner.withClassLoader(new FilteredClassLoader(MetricsApplicationEventListener.class))
-				.run((context) -> {
-					doRequest(context);
+			.run((context) -> {
+				doRequest(context);
 
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("http.server.requests").timer()).isNull();
-				});
+				MeterRegistry registry = context.getBean(MeterRegistry.class);
+				assertThat(registry.find("http.server.requests").timer()).isNull();
+			});
 	}
 
 	private static void doRequest(AssertableWebApplicationContext context) {
 		int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
-				.getWebServer().getPort();
+			.getWebServer()
+			.getPort();
 		RestTemplate restTemplate = new RestTemplate();
 		restTemplate.getForEntity(URI.create("http://localhost:" + port + "/users/3"), String.class);
 	}

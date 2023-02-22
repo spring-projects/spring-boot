@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ class AutoConfigureAnnotationProcessorTests {
 						+ "TestClassConfiguration$Nested,org.springframework.foo");
 		assertThat(properties).containsKey("org.springframework.boot.autoconfigureprocessor.TestClassConfiguration");
 		assertThat(properties)
-				.containsKey("org.springframework.boot.autoconfigureprocessor.TestClassConfiguration$Nested");
+			.containsKey("org.springframework.boot.autoconfigureprocessor.TestClassConfiguration$Nested");
 		assertThat(properties).containsEntry(
 				"org.springframework.boot.autoconfigureprocessor.TestClassConfiguration.ConditionalOnBean",
 				"java.io.OutputStream");
@@ -114,8 +114,8 @@ class AutoConfigureAnnotationProcessorTests {
 	@Test
 	void annotatedClassWithAutoConfiguration() throws Exception {
 		Properties properties = compile(TestAutoConfigurationConfiguration.class);
-		assertThat(properties).containsEntry(
-				"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationConfiguration", "");
+		assertThat(properties)
+			.containsEntry("org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationConfiguration", "");
 		assertThat(properties).containsEntry(
 				"org.springframework.boot.autoconfigureprocessor.TestAutoConfigurationConfiguration.AutoConfigureBefore",
 				"java.io.InputStream,test.before1,test.before2");

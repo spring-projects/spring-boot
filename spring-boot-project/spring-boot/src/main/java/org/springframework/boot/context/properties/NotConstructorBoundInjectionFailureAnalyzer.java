@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ class NotConstructorBoundInjectionFailureAnalyzer
 			Constructor<?> constructor = (Constructor<?>) injectionPoint.getMember();
 			Class<?> declaringClass = constructor.getDeclaringClass();
 			MergedAnnotation<ConfigurationProperties> configurationProperties = MergedAnnotations.from(declaringClass)
-					.get(ConfigurationProperties.class);
+				.get(ConfigurationProperties.class);
 			return configurationProperties.isPresent()
 					&& BindMethod.forType(constructor.getDeclaringClass()) == BindMethod.VALUE_OBJECT;
 		}

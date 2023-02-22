@@ -86,11 +86,11 @@ abstract class ReactiveWebServerFactoryConfiguration {
 				ObjectProvider<TomcatProtocolHandlerCustomizer<?>> protocolHandlerCustomizers) {
 			TomcatReactiveWebServerFactory factory = new TomcatReactiveWebServerFactory();
 			factory.getTomcatConnectorCustomizers()
-					.addAll(connectorCustomizers.orderedStream().collect(Collectors.toList()));
+				.addAll(connectorCustomizers.orderedStream().collect(Collectors.toList()));
 			factory.getTomcatContextCustomizers()
-					.addAll(contextCustomizers.orderedStream().collect(Collectors.toList()));
+				.addAll(contextCustomizers.orderedStream().collect(Collectors.toList()));
 			factory.getTomcatProtocolHandlerCustomizers()
-					.addAll(protocolHandlerCustomizers.orderedStream().collect(Collectors.toList()));
+				.addAll(protocolHandlerCustomizers.orderedStream().collect(Collectors.toList()));
 			return factory;
 		}
 

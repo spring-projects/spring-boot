@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -188,14 +188,14 @@ public class WebFluxAutoConfiguration {
 			}
 			if (!registry.hasMappingForPattern("/webjars/**")) {
 				ResourceHandlerRegistration registration = registry.addResourceHandler("/webjars/**")
-						.addResourceLocations("classpath:/META-INF/resources/webjars/");
+					.addResourceLocations("classpath:/META-INF/resources/webjars/");
 				configureResourceCaching(registration);
 				customizeResourceHandlerRegistration(registration);
 			}
 			String staticPathPattern = this.webFluxProperties.getStaticPathPattern();
 			if (!registry.hasMappingForPattern(staticPathPattern)) {
 				ResourceHandlerRegistration registration = registry.addResourceHandler(staticPathPattern)
-						.addResourceLocations(this.resourceProperties.getStaticLocations());
+					.addResourceLocations(this.resourceProperties.getStaticLocations());
 				configureResourceCaching(registration);
 				customizeResourceHandlerRegistration(registration);
 			}
@@ -204,7 +204,7 @@ public class WebFluxAutoConfiguration {
 		private void configureResourceCaching(ResourceHandlerRegistration registration) {
 			Duration cachePeriod = this.resourceProperties.getCache().getPeriod();
 			WebProperties.Resources.Cache.Cachecontrol cacheControl = this.resourceProperties.getCache()
-					.getCachecontrol();
+				.getCachecontrol();
 			if (cachePeriod != null && cacheControl.getMaxAge() == null) {
 				cacheControl.setMaxAge(cachePeriod);
 			}
@@ -257,8 +257,10 @@ public class WebFluxAutoConfiguration {
 		@Override
 		public FormattingConversionService webFluxConversionService() {
 			Format format = this.webFluxProperties.getFormat();
-			WebConversionService conversionService = new WebConversionService(new DateTimeFormatters()
-					.dateFormat(format.getDate()).timeFormat(format.getTime()).dateTimeFormat(format.getDateTime()));
+			WebConversionService conversionService = new WebConversionService(
+					new DateTimeFormatters().dateFormat(format.getDate())
+						.timeFormat(format.getTime())
+						.dateTimeFormat(format.getDateTime()));
 			addFormatters(conversionService);
 			return conversionService;
 		}
