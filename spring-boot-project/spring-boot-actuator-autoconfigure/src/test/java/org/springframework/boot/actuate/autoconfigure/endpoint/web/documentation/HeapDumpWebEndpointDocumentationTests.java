@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,17 +45,18 @@ class HeapDumpWebEndpointDocumentationTests extends MockMvcEndpointDocumentation
 
 	@Test
 	void heapDump() throws Exception {
-		this.mockMvc.perform(get("/actuator/heapdump")).andExpect(status().isOk())
-				.andDo(document("heapdump", new CurlRequestSnippet(CliDocumentation.multiLineFormat()) {
+		this.mockMvc.perform(get("/actuator/heapdump"))
+			.andExpect(status().isOk())
+			.andDo(document("heapdump", new CurlRequestSnippet(CliDocumentation.multiLineFormat()) {
 
-					@Override
-					protected Map<String, Object> createModel(Operation operation) {
-						Map<String, Object> model = super.createModel(operation);
-						model.put("options", "-O");
-						return model;
-					}
+				@Override
+				protected Map<String, Object> createModel(Operation operation) {
+					Map<String, Object> model = super.createModel(operation);
+					model.put("options", "-O");
+					return model;
+				}
 
-				}));
+			}));
 	}
 
 	@Configuration(proxyBeanMethods = false)

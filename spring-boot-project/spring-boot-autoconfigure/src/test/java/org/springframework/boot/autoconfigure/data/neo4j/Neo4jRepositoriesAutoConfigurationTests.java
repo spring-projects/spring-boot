@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,41 +50,44 @@ import static org.mockito.Mockito.mock;
 class Neo4jRepositoriesAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(MockedDriverConfiguration.class).withConfiguration(
-					AutoConfigurations.of(Neo4jDataAutoConfiguration.class, Neo4jRepositoriesAutoConfiguration.class));
+		.withUserConfiguration(MockedDriverConfiguration.class)
+		.withConfiguration(
+				AutoConfigurations.of(Neo4jDataAutoConfiguration.class, Neo4jRepositoriesAutoConfiguration.class));
 
 	@Test
 	void configurationWithDefaultRepositories() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(CityRepository.class));
+			.run((context) -> assertThat(context).hasSingleBean(CityRepository.class));
 	}
 
 	@Test
 	void configurationWithNoRepositories() {
-		this.contextRunner.withUserConfiguration(EmptyConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(Neo4jTransactionManager.class).doesNotHaveBean(Neo4jRepository.class));
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(Neo4jTransactionManager.class)
+				.doesNotHaveBean(Neo4jRepository.class));
 	}
 
 	@Test
 	void configurationWithDisabledRepositories() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.data.neo4j.repositories.type=none")
-				.run((context) -> assertThat(context).doesNotHaveBean(Neo4jRepository.class));
+			.withPropertyValues("spring.data.neo4j.repositories.type=none")
+			.run((context) -> assertThat(context).doesNotHaveBean(Neo4jRepository.class));
 	}
 
 	@Test
 	void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
 		this.contextRunner.withUserConfiguration(SortOfInvalidCustomConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(Neo4jTransactionManager.class)
-						.doesNotHaveBean(Neo4jRepository.class));
+			.run((context) -> assertThat(context).hasSingleBean(Neo4jTransactionManager.class)
+				.doesNotHaveBean(Neo4jRepository.class));
 	}
 
 	@Test
 	void shouldRespectAtEnableNeo4jRepositories() {
 		this.contextRunner.withUserConfiguration(SortOfInvalidCustomConfiguration.class, WithCustomRepositoryScan.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class)
-						.doesNotHaveBean(ReactiveCityRepository.class).hasSingleBean(CountryRepository.class)
-						.doesNotHaveBean(ReactiveCountryRepository.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class)
+				.doesNotHaveBean(ReactiveCityRepository.class)
+				.hasSingleBean(CountryRepository.class)
+				.doesNotHaveBean(ReactiveCountryRepository.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

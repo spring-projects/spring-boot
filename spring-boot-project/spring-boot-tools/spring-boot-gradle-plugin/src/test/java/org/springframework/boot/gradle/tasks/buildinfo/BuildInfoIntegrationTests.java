@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,17 +84,21 @@ class BuildInfoIntegrationTests {
 	@TestTemplate
 	void upToDateWhenExecutedTwiceWithFixedTime() {
 		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
+			.isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo").getOutcome())
-				.isEqualTo(TaskOutcome.UP_TO_DATE);
+			.isEqualTo(TaskOutcome.UP_TO_DATE);
 	}
 
 	@TestTemplate
 	void notUpToDateWhenExecutedTwiceWithFixedTimeAndChangedProjectVersion() {
-		assertThat(this.gradleBuild.scriptProperty("projectVersion", "0.1.0").build("buildInfo").task(":buildInfo")
-				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.scriptProperty("projectVersion", "0.2.0").build("buildInfo").task(":buildInfo")
-				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.scriptProperty("projectVersion", "0.1.0")
+			.build("buildInfo")
+			.task(":buildInfo")
+			.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.scriptProperty("projectVersion", "0.2.0")
+			.build("buildInfo")
+			.task(":buildInfo")
+			.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@TestTemplate
@@ -111,13 +115,13 @@ class BuildInfoIntegrationTests {
 	@TestTemplate
 	void reproducibleOutputWithFixedTime() throws IOException, InterruptedException {
 		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
+			.isEqualTo(TaskOutcome.SUCCESS);
 		File buildInfoProperties = new File(this.gradleBuild.getProjectDir(), "build/buildInfo/build-info.properties");
 		String firstHash = FileUtils.sha1Hash(buildInfoProperties);
 		assertThat(buildInfoProperties.delete()).isTrue();
 		Thread.sleep(1500);
 		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
+			.isEqualTo(TaskOutcome.SUCCESS);
 		String secondHash = FileUtils.sha1Hash(buildInfoProperties);
 		assertThat(firstHash).isEqualTo(secondHash);
 	}

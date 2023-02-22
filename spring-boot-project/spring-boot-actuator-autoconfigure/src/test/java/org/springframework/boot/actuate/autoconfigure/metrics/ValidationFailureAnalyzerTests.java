@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class ValidationFailureAnalyzerTests {
 	@Test
 	void analyzesMissingRequiredConfiguration() {
 		FailureAnalysis analysis = new ValidationFailureAnalyzer()
-				.analyze(createFailure(MissingAccountIdAndApiKeyConfiguration.class));
+			.analyze(createFailure(MissingAccountIdAndApiKeyConfiguration.class));
 		assertThat(analysis).isNotNull();
 		assertThat(analysis.getCause().getMessage()).contains("management.newrelic.metrics.export.apiKey was 'null'");
 		assertThat(analysis.getDescription()).isEqualTo(String.format("Invalid Micrometer configuration detected:%n%n"

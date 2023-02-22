@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ public class ValidationAutoConfiguration {
 			ObjectProvider<ValidationConfigurationCustomizer> customizers) {
 		LocalValidatorFactoryBean factoryBean = new LocalValidatorFactoryBean();
 		factoryBean.setConfigurationInitializer((configuration) -> customizers.orderedStream()
-				.forEach((customizer) -> customizer.customize(configuration)));
+			.forEach((customizer) -> customizer.customize(configuration)));
 		MessageInterpolatorFactory interpolatorFactory = new MessageInterpolatorFactory(applicationContext);
 		factoryBean.setMessageInterpolator(interpolatorFactory.getObject());
 		return factoryBean;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ class ConnectionInputStreamTests {
 		byte[] buffer = new byte[100];
 		ConnectionInputStream inputStream = new ConnectionInputStream(new ByteArrayInputStream(NO_BYTES));
 		assertThatIOException().isThrownBy(() -> inputStream.checkedRead(buffer, 0, buffer.length))
-				.withMessageContaining("End of stream");
+			.withMessageContaining("End of stream");
 	}
 
 	static class LimitedInputStream extends FilterInputStream {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,12 +43,12 @@ class UpgradeApplicator {
 	Path apply(Upgrade upgrade) throws IOException {
 		String buildFileContents = Files.readString(this.buildFile);
 		Matcher matcher = Pattern.compile("library\\(\"" + upgrade.getLibrary().getName() + "\", \"(.+)\"\\)")
-				.matcher(buildFileContents);
+			.matcher(buildFileContents);
 		if (!matcher.find()) {
 			matcher = Pattern
-					.compile("library\\(\"" + upgrade.getLibrary().getName() + "\"\\) \\{\\s+version\\(\"(.+)\"\\)",
-							Pattern.MULTILINE)
-					.matcher(buildFileContents);
+				.compile("library\\(\"" + upgrade.getLibrary().getName() + "\"\\) \\{\\s+version\\(\"(.+)\"\\)",
+						Pattern.MULTILINE)
+				.matcher(buildFileContents);
 			if (!matcher.find()) {
 				throw new IllegalStateException("Failed to find definition for library '"
 						+ upgrade.getLibrary().getName() + "' in bom '" + this.buildFile + "'");

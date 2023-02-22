@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -150,7 +150,7 @@ public class ProcessTestAotMojo extends AbstractAotMojo {
 				this.generatedClasses };
 		URL[] classPath = getClassPath(directories);
 		if (!includeJUnitPlatformLauncher || this.project.getArtifactMap()
-				.containsKey(JUNIT_PLATFORM_GROUP_ID + ":" + JUNIT_PLATFORM_LAUNCHER_ARTIFACT_ID)) {
+			.containsKey(JUNIT_PLATFORM_GROUP_ID + ":" + JUNIT_PLATFORM_LAUNCHER_ARTIFACT_ID)) {
 			return classPath;
 		}
 		return addJUnitPlatformLauncher(classPath);

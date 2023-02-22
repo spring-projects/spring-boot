@@ -35,13 +35,13 @@ class ConfigTreeConfigDataResourceTests {
 	@Test
 	void constructorWhenPathStringIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreeConfigDataResource((String) null))
-				.withMessage("Path must not be null");
+			.withMessage("Path must not be null");
 	}
 
 	@Test
 	void constructorWhenPathIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreeConfigDataResource((Path) null))
-				.withMessage("Path must not be null");
+			.withMessage("Path must not be null");
 	}
 
 	@Test

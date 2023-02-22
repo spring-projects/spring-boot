@@ -52,7 +52,7 @@ class ServletPathSampleActuatorApplicationTests {
 	@Test
 	void testHealth() {
 		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password")
-				.getForEntity("/spring/actuator/health", String.class);
+			.getForEntity("/spring/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}

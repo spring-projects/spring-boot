@@ -43,8 +43,11 @@ class DockerSpecTests {
 
 	@BeforeEach
 	void prepareDockerSpec(@TempDir File temp) {
-		this.dockerSpec = GradleProjectBuilder.builder().withProjectDir(temp).build().getObjects()
-				.newInstance(DockerSpec.class);
+		this.dockerSpec = GradleProjectBuilder.builder()
+			.withProjectDir(temp)
+			.build()
+			.getObjects()
+			.newInstance(DockerSpec.class);
 	}
 
 	@Test
@@ -53,8 +56,10 @@ class DockerSpecTests {
 		assertThat(dockerConfiguration.getHost()).isNull();
 		assertThat(dockerConfiguration.getBuilderRegistryAuthentication()).isNull();
 		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
-				.contains("\"username\" : \"\"").contains("\"password\" : \"\"").contains("\"email\" : \"\"")
-				.contains("\"serveraddress\" : \"\"");
+			.contains("\"username\" : \"\"")
+			.contains("\"password\" : \"\"")
+			.contains("\"email\" : \"\"")
+			.contains("\"serveraddress\" : \"\"");
 	}
 
 	@Test
@@ -70,8 +75,10 @@ class DockerSpecTests {
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isFalse();
 		assertThat(this.dockerSpec.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
 		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
-				.contains("\"username\" : \"\"").contains("\"password\" : \"\"").contains("\"email\" : \"\"")
-				.contains("\"serveraddress\" : \"\"");
+			.contains("\"username\" : \"\"")
+			.contains("\"password\" : \"\"")
+			.contains("\"email\" : \"\"")
+			.contains("\"serveraddress\" : \"\"");
 	}
 
 	@Test
@@ -85,8 +92,10 @@ class DockerSpecTests {
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isFalse();
 		assertThat(this.dockerSpec.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
 		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
-				.contains("\"username\" : \"\"").contains("\"password\" : \"\"").contains("\"email\" : \"\"")
-				.contains("\"serveraddress\" : \"\"");
+			.contains("\"username\" : \"\"")
+			.contains("\"password\" : \"\"")
+			.contains("\"email\" : \"\"")
+			.contains("\"serveraddress\" : \"\"");
 	}
 
 	@Test
@@ -101,8 +110,10 @@ class DockerSpecTests {
 		assertThat(dockerConfiguration.isBindHostToBuilder()).isTrue();
 		assertThat(this.dockerSpec.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
 		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
-				.contains("\"username\" : \"\"").contains("\"password\" : \"\"").contains("\"email\" : \"\"")
-				.contains("\"serveraddress\" : \"\"");
+			.contains("\"username\" : \"\"")
+			.contains("\"password\" : \"\"")
+			.contains("\"email\" : \"\"")
+			.contains("\"serveraddress\" : \"\"");
 	}
 
 	@Test
@@ -121,13 +132,15 @@ class DockerSpecTests {
 		});
 		DockerConfiguration dockerConfiguration = this.dockerSpec.asDockerConfiguration();
 		assertThat(decoded(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()))
-				.contains("\"username\" : \"user1\"").contains("\"password\" : \"secret1\"")
-				.contains("\"email\" : \"docker1@example.com\"")
-				.contains("\"serveraddress\" : \"https://docker1.example.com\"");
+			.contains("\"username\" : \"user1\"")
+			.contains("\"password\" : \"secret1\"")
+			.contains("\"email\" : \"docker1@example.com\"")
+			.contains("\"serveraddress\" : \"https://docker1.example.com\"");
 		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
-				.contains("\"username\" : \"user2\"").contains("\"password\" : \"secret2\"")
-				.contains("\"email\" : \"docker2@example.com\"")
-				.contains("\"serveraddress\" : \"https://docker2.example.com\"");
+			.contains("\"username\" : \"user2\"")
+			.contains("\"password\" : \"secret2\"")
+			.contains("\"email\" : \"docker2@example.com\"")
+			.contains("\"serveraddress\" : \"https://docker2.example.com\"");
 		assertThat(this.dockerSpec.asDockerConfiguration().getHost()).isNull();
 	}
 
@@ -139,7 +152,7 @@ class DockerSpecTests {
 			registry.getEmail().set("docker1@example.com");
 		});
 		assertThatExceptionOfType(GradleException.class).isThrownBy(this.dockerSpec::asDockerConfiguration)
-				.withMessageContaining("Invalid Docker builder registry configuration");
+			.withMessageContaining("Invalid Docker builder registry configuration");
 	}
 
 	@Test
@@ -150,7 +163,7 @@ class DockerSpecTests {
 			registry.getEmail().set("docker2@example.com");
 		});
 		assertThatExceptionOfType(GradleException.class).isThrownBy(this.dockerSpec::asDockerConfiguration)
-				.withMessageContaining("Invalid Docker publish registry configuration");
+			.withMessageContaining("Invalid Docker publish registry configuration");
 	}
 
 	@Test
@@ -159,9 +172,9 @@ class DockerSpecTests {
 		this.dockerSpec.publishRegistry((registry) -> registry.getToken().set("token2"));
 		DockerConfiguration dockerConfiguration = this.dockerSpec.asDockerConfiguration();
 		assertThat(decoded(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()))
-				.contains("\"identitytoken\" : \"token1\"");
+			.contains("\"identitytoken\" : \"token1\"");
 		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
-				.contains("\"identitytoken\" : \"token2\"");
+			.contains("\"identitytoken\" : \"token2\"");
 	}
 
 	@Test
@@ -172,7 +185,7 @@ class DockerSpecTests {
 			registry.getToken().set("token");
 		});
 		assertThatExceptionOfType(GradleException.class).isThrownBy(this.dockerSpec::asDockerConfiguration)
-				.withMessageContaining("Invalid Docker builder registry configuration");
+			.withMessageContaining("Invalid Docker builder registry configuration");
 	}
 
 	String decoded(String value) {

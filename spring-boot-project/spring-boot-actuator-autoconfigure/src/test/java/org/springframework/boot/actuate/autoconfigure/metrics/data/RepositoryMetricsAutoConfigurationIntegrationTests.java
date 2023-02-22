@@ -43,25 +43,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RepositoryMetricsAutoConfigurationIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-			.withConfiguration(
-					AutoConfigurations.of(HibernateJpaAutoConfiguration.class, JpaRepositoriesAutoConfiguration.class,
-							PropertyPlaceholderAutoConfiguration.class, RepositoryMetricsAutoConfiguration.class))
-			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, TestConfig.class);
+		.withConfiguration(
+				AutoConfigurations.of(HibernateJpaAutoConfiguration.class, JpaRepositoriesAutoConfiguration.class,
+						PropertyPlaceholderAutoConfiguration.class, RepositoryMetricsAutoConfiguration.class))
+		.withUserConfiguration(EmbeddedDataSourceConfiguration.class, TestConfig.class);
 
 	@Test
 	void repositoryMethodCallRecordsMetrics() {
 		this.contextRunner.run((context) -> {
 			context.getBean(CityRepository.class).count();
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
-			assertThat(registry.get("spring.data.repository.invocations").tag("repository", "CityRepository").timer()
-					.count()).isOne();
+			assertThat(registry.get("spring.data.repository.invocations")
+				.tag("repository", "CityRepository")
+				.timer()
+				.count()).isOne();
 		});
 	}
 
 	@Test
 	void doesNotPreventMeterBindersFromDependingUponSpringDataRepositories() {
 		this.contextRunner.withUserConfiguration(SpringDataRepositoryMeterBinderConfiguration.class)
-				.run((context) -> assertThat(context).hasNotFailed());
+			.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Configuration(proxyBeanMethods = false)

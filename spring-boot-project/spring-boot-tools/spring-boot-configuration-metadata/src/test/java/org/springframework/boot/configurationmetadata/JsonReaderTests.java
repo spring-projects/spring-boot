@@ -94,7 +94,7 @@ class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		ValueHint valueHint = hint.getValueHints().get(0);
 		assertThat(valueHint.getValue()).isEqualTo(42);
 		assertThat(valueHint.getDescription())
-				.isEqualTo("Because that's the answer to any question, choose it. \nReally.");
+			.isEqualTo("Because that's the answer to any question, choose it. \nReally.");
 		assertThat(valueHint.getShortDescription()).isEqualTo("Because that's the answer to any question, choose it.");
 		assertThat(hint.getValueProviders()).hasSize(1);
 		ValueProvider valueProvider = hint.getValueProviders().get(0);

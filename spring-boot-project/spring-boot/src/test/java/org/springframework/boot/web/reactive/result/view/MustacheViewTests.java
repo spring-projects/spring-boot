@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,9 +52,10 @@ class MustacheViewTests {
 		view.setCharset(StandardCharsets.UTF_8.displayName());
 		view.setApplicationContext(this.context);
 		view.render(Collections.singletonMap("World", "Spring"), MediaType.TEXT_HTML, exchange)
-				.block(Duration.ofSeconds(30));
+			.block(Duration.ofSeconds(30));
 		StepVerifier.create(exchange.getResponse().getBodyAsString())
-				.assertNext((body) -> assertThat(body).isEqualToIgnoringWhitespace("Hello Spring")).verifyComplete();
+			.assertNext((body) -> assertThat(body).isEqualToIgnoringWhitespace("Hello Spring"))
+			.verifyComplete();
 	}
 
 }

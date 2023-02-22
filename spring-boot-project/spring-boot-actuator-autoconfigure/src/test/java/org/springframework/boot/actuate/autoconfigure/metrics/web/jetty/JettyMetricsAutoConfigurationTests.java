@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,156 +56,157 @@ class JettyMetricsAutoConfigurationTests {
 	@Test
 	void autoConfiguresThreadPoolMetricsWithEmbeddedServletJetty() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-						ServletWebServerFactoryAutoConfiguration.class))
-				.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
-				.run((context) -> {
-					context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
-					assertThat(context).hasSingleBean(JettyServerThreadPoolMetricsBinder.class);
-					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-					assertThat(registry.find("jetty.threads.config.min").meter()).isNotNull();
-				});
+			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
+					ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
+			.run((context) -> {
+				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
+				assertThat(context).hasSingleBean(JettyServerThreadPoolMetricsBinder.class);
+				SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
+				assertThat(registry.find("jetty.threads.config.min").meter()).isNotNull();
+			});
 	}
 
 	@Test
 	void autoConfiguresThreadPoolMetricsWithEmbeddedReactiveJetty() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-						ReactiveWebServerFactoryAutoConfiguration.class))
-				.withUserConfiguration(ReactiveWebServerConfiguration.class, MeterRegistryConfiguration.class)
-				.run((context) -> {
-					context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
-					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-					assertThat(registry.find("jetty.threads.config.min").meter()).isNotNull();
-				});
+			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
+					ReactiveWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(ReactiveWebServerConfiguration.class, MeterRegistryConfiguration.class)
+			.run((context) -> {
+				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
+				SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
+				assertThat(registry.find("jetty.threads.config.min").meter()).isNotNull();
+			});
 	}
 
 	@Test
 	void allowsCustomJettyServerThreadPoolMetricsBinderToBeUsed() {
 		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class))
-				.withUserConfiguration(CustomJettyServerThreadPoolMetricsBinder.class, MeterRegistryConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(JettyServerThreadPoolMetricsBinder.class)
-						.hasBean("customJettyServerThreadPoolMetricsBinder"));
+			.withUserConfiguration(CustomJettyServerThreadPoolMetricsBinder.class, MeterRegistryConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(JettyServerThreadPoolMetricsBinder.class)
+				.hasBean("customJettyServerThreadPoolMetricsBinder"));
 	}
 
 	@Test
 	void autoConfiguresConnectionMetricsWithEmbeddedServletJetty() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-						ServletWebServerFactoryAutoConfiguration.class))
-				.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
-				.run((context) -> {
-					context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
-					assertThat(context).hasSingleBean(JettyConnectionMetricsBinder.class);
-					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-					assertThat(registry.find("jetty.connections.messages.in").meter()).isNotNull();
-				});
+			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
+					ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
+			.run((context) -> {
+				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
+				assertThat(context).hasSingleBean(JettyConnectionMetricsBinder.class);
+				SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
+				assertThat(registry.find("jetty.connections.messages.in").meter()).isNotNull();
+			});
 	}
 
 	@Test
 	void autoConfiguresConnectionMetricsWithEmbeddedReactiveJetty() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-						ReactiveWebServerFactoryAutoConfiguration.class))
-				.withUserConfiguration(ReactiveWebServerConfiguration.class, MeterRegistryConfiguration.class)
-				.run((context) -> {
-					context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
-					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-					assertThat(registry.find("jetty.connections.messages.in").meter()).isNotNull();
-				});
+			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
+					ReactiveWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(ReactiveWebServerConfiguration.class, MeterRegistryConfiguration.class)
+			.run((context) -> {
+				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
+				SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
+				assertThat(registry.find("jetty.connections.messages.in").meter()).isNotNull();
+			});
 	}
 
 	@Test
 	void allowsCustomJettyConnectionMetricsBinderToBeUsed() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-						ServletWebServerFactoryAutoConfiguration.class))
-				.withUserConfiguration(ServletWebServerConfiguration.class, CustomJettyConnectionMetricsBinder.class,
-						MeterRegistryConfiguration.class)
-				.run((context) -> {
-					context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
-					assertThat(context).hasSingleBean(JettyConnectionMetricsBinder.class)
-							.hasBean("customJettyConnectionMetricsBinder");
-					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-					assertThat(registry.find("jetty.connections.messages.in").tag("custom-tag-name", "custom-tag-value")
-							.meter()).isNotNull();
-				});
+			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
+					ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(ServletWebServerConfiguration.class, CustomJettyConnectionMetricsBinder.class,
+					MeterRegistryConfiguration.class)
+			.run((context) -> {
+				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
+				assertThat(context).hasSingleBean(JettyConnectionMetricsBinder.class)
+					.hasBean("customJettyConnectionMetricsBinder");
+				SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
+				assertThat(registry.find("jetty.connections.messages.in")
+					.tag("custom-tag-name", "custom-tag-value")
+					.meter()).isNotNull();
+			});
 	}
 
 	@Test
 	void autoConfiguresSslHandshakeMetricsWithEmbeddedServletJetty() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-						ServletWebServerFactoryAutoConfiguration.class))
-				.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
-				.withPropertyValues("server.ssl.enabled: true", "server.ssl.key-store: src/test/resources/test.jks",
-						"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
-				.run((context) -> {
-					context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
-					assertThat(context).hasSingleBean(JettySslHandshakeMetricsBinder.class);
-					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-					assertThat(registry.find("jetty.ssl.handshakes").meter()).isNotNull();
-				});
+			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
+					ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
+			.withPropertyValues("server.ssl.enabled: true", "server.ssl.key-store: src/test/resources/test.jks",
+					"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
+			.run((context) -> {
+				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
+				assertThat(context).hasSingleBean(JettySslHandshakeMetricsBinder.class);
+				SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
+				assertThat(registry.find("jetty.ssl.handshakes").meter()).isNotNull();
+			});
 	}
 
 	@Test
 	void autoConfiguresSslHandshakeMetricsWithEmbeddedReactiveJetty() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-						ReactiveWebServerFactoryAutoConfiguration.class))
-				.withUserConfiguration(ReactiveWebServerConfiguration.class, MeterRegistryConfiguration.class)
-				.withPropertyValues("server.ssl.enabled: true", "server.ssl.key-store: src/test/resources/test.jks",
-						"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
-				.run((context) -> {
-					context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
-					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-					assertThat(registry.find("jetty.ssl.handshakes").meter()).isNotNull();
-				});
+			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
+					ReactiveWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(ReactiveWebServerConfiguration.class, MeterRegistryConfiguration.class)
+			.withPropertyValues("server.ssl.enabled: true", "server.ssl.key-store: src/test/resources/test.jks",
+					"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
+			.run((context) -> {
+				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
+				SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
+				assertThat(registry.find("jetty.ssl.handshakes").meter()).isNotNull();
+			});
 	}
 
 	@Test
 	void allowsCustomJettySslHandshakeMetricsBinderToBeUsed() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-						ServletWebServerFactoryAutoConfiguration.class))
-				.withUserConfiguration(ServletWebServerConfiguration.class, CustomJettySslHandshakeMetricsBinder.class,
-						MeterRegistryConfiguration.class)
-				.withPropertyValues("server.ssl.enabled: true", "server.ssl.key-store: src/test/resources/test.jks",
-						"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
-				.run((context) -> {
-					context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
-					assertThat(context).hasSingleBean(JettySslHandshakeMetricsBinder.class)
-							.hasBean("customJettySslHandshakeMetricsBinder");
-					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
-					assertThat(registry.find("jetty.ssl.handshakes").tag("custom-tag-name", "custom-tag-value").meter())
-							.isNotNull();
-				});
+			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
+					ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(ServletWebServerConfiguration.class, CustomJettySslHandshakeMetricsBinder.class,
+					MeterRegistryConfiguration.class)
+			.withPropertyValues("server.ssl.enabled: true", "server.ssl.key-store: src/test/resources/test.jks",
+					"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
+			.run((context) -> {
+				context.publishEvent(createApplicationStartedEvent(context.getSourceApplicationContext()));
+				assertThat(context).hasSingleBean(JettySslHandshakeMetricsBinder.class)
+					.hasBean("customJettySslHandshakeMetricsBinder");
+				SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
+				assertThat(registry.find("jetty.ssl.handshakes").tag("custom-tag-name", "custom-tag-value").meter())
+					.isNotNull();
+			});
 
 		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class))
-				.withUserConfiguration(CustomJettySslHandshakeMetricsBinder.class, MeterRegistryConfiguration.class)
-				.withPropertyValues("server.ssl.enabled: true", "server.ssl.key-store: src/test/resources/test.jks",
-						"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
-				.run((context) -> assertThat(context).hasSingleBean(JettySslHandshakeMetricsBinder.class)
-						.hasBean("customJettySslHandshakeMetricsBinder"));
+			.withUserConfiguration(CustomJettySslHandshakeMetricsBinder.class, MeterRegistryConfiguration.class)
+			.withPropertyValues("server.ssl.enabled: true", "server.ssl.key-store: src/test/resources/test.jks",
+					"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
+			.run((context) -> assertThat(context).hasSingleBean(JettySslHandshakeMetricsBinder.class)
+				.hasBean("customJettySslHandshakeMetricsBinder"));
 	}
 
 	@Test
 	void doesNotAutoConfigureSslHandshakeMetricsWhenSslEnabledPropertyNotSpecified() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-						ServletWebServerFactoryAutoConfiguration.class))
-				.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(JettySslHandshakeMetricsBinder.class));
+			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
+					ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(JettySslHandshakeMetricsBinder.class));
 	}
 
 	@Test
 	void doesNotAutoConfigureSslHandshakeMetricsWhenSslEnabledPropertySetToFalse() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
-						ServletWebServerFactoryAutoConfiguration.class))
-				.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
-				.withPropertyValues("server.ssl.enabled: false")
-				.run((context) -> assertThat(context).doesNotHaveBean(JettySslHandshakeMetricsBinder.class));
+			.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
+					ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
+			.withPropertyValues("server.ssl.enabled: false")
+			.run((context) -> assertThat(context).doesNotHaveBean(JettySslHandshakeMetricsBinder.class));
 	}
 
 	private ApplicationStartedEvent createApplicationStartedEvent(ConfigurableApplicationContext context) {

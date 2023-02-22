@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ class BootRunIntegrationTests {
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput())
-				.contains("Main class name = com.example.bootrun.classpath.BootRunClasspathApplication");
+			.contains("Main class name = com.example.bootrun.classpath.BootRunClasspathApplication");
 	}
 
 	@TestTemplate
@@ -111,8 +111,9 @@ class BootRunIntegrationTests {
 		copyJvmArgsApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("-Dcom.bar=baz").contains("-Dcom.foo=bar")
-				.contains("-XX:TieredStopAtLevel=1");
+		assertThat(result.getOutput()).contains("-Dcom.bar=baz")
+			.contains("-Dcom.foo=bar")
+			.contains("-XX:TieredStopAtLevel=1");
 	}
 
 	@TestTemplate

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,9 @@ public class DataSourcePoolMetrics implements MeterBinder {
 			Function<DataSource, N> function) {
 		if (function.apply(this.dataSource) != null) {
 			Gauge.builder("jdbc.connections." + metricName, this.dataSource, (m) -> function.apply(m).doubleValue())
-					.tags(this.tags).description(description).register(registry);
+				.tags(this.tags)
+				.description(description)
+				.register(registry);
 		}
 	}
 

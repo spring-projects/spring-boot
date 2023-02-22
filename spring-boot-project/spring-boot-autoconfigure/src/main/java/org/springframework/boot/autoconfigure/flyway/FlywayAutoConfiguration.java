@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -163,7 +163,7 @@ public class FlywayAutoConfiguration {
 			}
 			if (properties.getUser() != null && dataSource != null) {
 				DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource)
-						.type(SimpleDriverDataSource.class);
+					.type(SimpleDriverDataSource.class);
 				applyCommonBuilderProperties(properties, builder);
 				return builder.build();
 			}
@@ -182,13 +182,16 @@ public class FlywayAutoConfiguration {
 		private void configureProperties(FluentConfiguration configuration, FlywayProperties properties) {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			String[] locations = new LocationResolver(configuration.getDataSource())
-					.resolveLocations(properties.getLocations()).toArray(new String[0]);
+				.resolveLocations(properties.getLocations())
+				.toArray(new String[0]);
 			map.from(properties.isFailOnMissingLocations()).to(configuration::failOnMissingLocations);
 			map.from(locations).to(configuration::locations);
 			map.from(properties.getEncoding()).to(configuration::encoding);
 			map.from(properties.getConnectRetries()).to(configuration::connectRetries);
-			map.from(properties.getConnectRetriesInterval()).as(Duration::getSeconds).as(Long::intValue)
-					.to(configuration::connectRetriesInterval);
+			map.from(properties.getConnectRetriesInterval())
+				.as(Duration::getSeconds)
+				.as(Long::intValue)
+				.to(configuration::connectRetriesInterval);
 			map.from(properties.getLockRetryCount()).to(configuration::lockRetryCount);
 			map.from(properties.getDefaultSchema()).to(configuration::defaultSchema);
 			map.from(properties.getSchemas()).as(StringUtils::toStringArray).to(configuration::schemas);
@@ -204,8 +207,9 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getPlaceholderSeparator()).to(configuration::placeholderSeparator);
 			map.from(properties.isPlaceholderReplacement()).to(configuration::placeholderReplacement);
 			map.from(properties.getSqlMigrationPrefix()).to(configuration::sqlMigrationPrefix);
-			map.from(properties.getSqlMigrationSuffixes()).as(StringUtils::toStringArray)
-					.to(configuration::sqlMigrationSuffixes);
+			map.from(properties.getSqlMigrationSuffixes())
+				.as(StringUtils::toStringArray)
+				.to(configuration::sqlMigrationSuffixes);
 			map.from(properties.getSqlMigrationSeparator()).to(configuration::sqlMigrationSeparator);
 			map.from(properties.getRepeatableSqlMigrationPrefix()).to(configuration::repeatableSqlMigrationPrefix);
 			map.from(properties.getTarget()).to(configuration::target);
@@ -219,13 +223,14 @@ public class FlywayAutoConfiguration {
 			map.from(properties.isSkipDefaultResolvers()).to(configuration::skipDefaultResolvers);
 			map.from(properties.isValidateMigrationNaming()).to(configuration::validateMigrationNaming);
 			map.from(properties.isValidateOnMigrate()).to(configuration::validateOnMigrate);
-			map.from(properties.getInitSqls()).whenNot(CollectionUtils::isEmpty)
-					.as((initSqls) -> StringUtils.collectionToDelimitedString(initSqls, "\n"))
-					.to(configuration::initSql);
+			map.from(properties.getInitSqls())
+				.whenNot(CollectionUtils::isEmpty)
+				.as((initSqls) -> StringUtils.collectionToDelimitedString(initSqls, "\n"))
+				.to(configuration::initSql);
 			map.from(properties.getScriptPlaceholderPrefix())
-					.to((prefix) -> configuration.scriptPlaceholderPrefix(prefix));
+				.to((prefix) -> configuration.scriptPlaceholderPrefix(prefix));
 			map.from(properties.getScriptPlaceholderSuffix())
-					.to((suffix) -> configuration.scriptPlaceholderSuffix(suffix));
+				.to((suffix) -> configuration.scriptPlaceholderSuffix(suffix));
 			// Flyway Teams properties
 			map.from(properties.getBatch()).to(configuration::batch);
 			map.from(properties.getDryRunOutput()).to(configuration::dryRunOutput);
@@ -240,12 +245,15 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getKerberosConfigFile()).to(configuration::kerberosConfigFile);
 			map.from(properties.getOracleKerberosCacheFile()).to(configuration::oracleKerberosCacheFile);
 			map.from(properties.getOutputQueryResults()).to(configuration::outputQueryResults);
-			map.from(properties.getSqlServerKerberosLoginFile()).whenNonNull()
-					.to((sqlServerKerberosLoginFile) -> configureSqlServerKerberosLoginFile(configuration,
-							sqlServerKerberosLoginFile));
+			map.from(properties.getSqlServerKerberosLoginFile())
+				.whenNonNull()
+				.to((sqlServerKerberosLoginFile) -> configureSqlServerKerberosLoginFile(configuration,
+						sqlServerKerberosLoginFile));
 			map.from(properties.getSkipExecutingMigrations()).to(configuration::skipExecutingMigrations);
-			map.from(properties.getIgnoreMigrationPatterns()).whenNot(List::isEmpty)
-					.as((patterns) -> patterns.toArray(new String[0])).to(configuration::ignoreMigrationPatterns);
+			map.from(properties.getIgnoreMigrationPatterns())
+				.whenNot(List::isEmpty)
+				.as((patterns) -> patterns.toArray(new String[0]))
+				.to(configuration::ignoreMigrationPatterns);
 			map.from(properties.getDetectEncoding()).to(configuration::detectEncoding);
 			map.from(properties.isExecuteInTransaction()).to(configuration::executeInTransaction);
 		}
@@ -253,7 +261,7 @@ public class FlywayAutoConfiguration {
 		private void configureSqlServerKerberosLoginFile(FluentConfiguration configuration,
 				String sqlServerKerberosLoginFile) {
 			SQLServerConfigurationExtension sqlServerConfigurationExtension = configuration.getPluginRegister()
-					.getPlugin(SQLServerConfigurationExtension.class);
+				.getPlugin(SQLServerConfigurationExtension.class);
 			Assert.state(sqlServerConfigurationExtension != null, "Flyway SQL Server extension missing");
 			sqlServerConfigurationExtension.setKerberosLoginFile(sqlServerKerberosLoginFile);
 		}

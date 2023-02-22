@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,13 +49,18 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 class HttpExchangesWebFilterIntegrationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withUserConfiguration(Config.class);
+		.withUserConfiguration(Config.class);
 
 	@Test
 	void exchangeForNotFoundResponseHas404Status() {
 		this.contextRunner.run((context) -> {
-			WebTestClient.bindToApplicationContext(context).build().get().uri("/").exchange().expectStatus()
-					.isNotFound();
+			WebTestClient.bindToApplicationContext(context)
+				.build()
+				.get()
+				.uri("/")
+				.exchange()
+				.expectStatus()
+				.isNotFound();
 			HttpExchangeRepository repository = context.getBean(HttpExchangeRepository.class);
 			assertThat(repository.findAll()).hasSize(1);
 			assertThat(repository.findAll().get(0).getResponse().getStatus()).isEqualTo(404);
@@ -65,8 +70,13 @@ class HttpExchangesWebFilterIntegrationTests {
 	@Test
 	void exchangeForMonoErrorWithRuntimeExceptionHas500Status() {
 		this.contextRunner.run((context) -> {
-			WebTestClient.bindToApplicationContext(context).build().get().uri("/mono-error").exchange().expectStatus()
-					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+			WebTestClient.bindToApplicationContext(context)
+				.build()
+				.get()
+				.uri("/mono-error")
+				.exchange()
+				.expectStatus()
+				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 			HttpExchangeRepository repository = context.getBean(HttpExchangeRepository.class);
 			assertThat(repository.findAll()).hasSize(1);
 			assertThat(repository.findAll().get(0).getResponse().getStatus()).isEqualTo(500);
@@ -76,8 +86,13 @@ class HttpExchangesWebFilterIntegrationTests {
 	@Test
 	void exchangeForThrownRuntimeExceptionHas500Status() {
 		this.contextRunner.run((context) -> {
-			WebTestClient.bindToApplicationContext(context).build().get().uri("/thrown").exchange().expectStatus()
-					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+			WebTestClient.bindToApplicationContext(context)
+				.build()
+				.get()
+				.uri("/thrown")
+				.exchange()
+				.expectStatus()
+				.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 			HttpExchangeRepository repository = context.getBean(HttpExchangeRepository.class);
 			assertThat(repository.findAll()).hasSize(1);
 			assertThat(repository.findAll().get(0).getResponse().getStatus()).isEqualTo(500);

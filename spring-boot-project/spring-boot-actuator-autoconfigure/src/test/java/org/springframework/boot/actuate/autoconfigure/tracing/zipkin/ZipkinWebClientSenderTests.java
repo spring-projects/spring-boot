@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,7 +113,7 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 		}
 		else {
 			assertThatThrownBy(() -> makeSyncRequest(Collections.emptyList()))
-					.hasMessageContaining("500 Internal Server Error");
+				.hasMessageContaining("500 Internal Server Error");
 		}
 
 		requestAssertions((request) -> assertThat(request.getMethod()).isEqualTo("POST"));
@@ -125,7 +125,7 @@ class ZipkinWebClientSenderTests extends ZipkinHttpSenderTests {
 		String uncompressed = "a".repeat(10000);
 		// This is gzip compressed 10000 times 'a'
 		byte[] compressed = Base64.getDecoder()
-				.decode("H4sIAAAAAAAA/+3BMQ0AAAwDIKFLj/k3UR8NcA8AAAAAAAAAAAADUsAZfeASJwAA");
+			.decode("H4sIAAAAAAAA/+3BMQ0AAAwDIKFLj/k3UR8NcA8AAAAAAAAAAAADUsAZfeASJwAA");
 
 		mockBackEnd.enqueue(new MockResponse());
 

@@ -40,7 +40,7 @@ class HealthTests {
 	@Test
 	void statusMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Health.Builder(null, null))
-				.withMessageContaining("Status must not be null");
+			.withMessageContaining("Status must not be null");
 	}
 
 	@Test

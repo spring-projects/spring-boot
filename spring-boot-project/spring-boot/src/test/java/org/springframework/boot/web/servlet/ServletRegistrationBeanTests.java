@@ -73,8 +73,9 @@ class ServletRegistrationBeanTests {
 			bean.setName("double-registration");
 			given(this.servletContext.addServlet(anyString(), any(Servlet.class))).willReturn(null);
 			bean.onStartup(this.servletContext);
-		}).isInstanceOf(IllegalStateException.class).hasMessage(
-				"Failed to register 'servlet double-registration' on the servlet context. Possibly already registered?");
+		}).isInstanceOf(IllegalStateException.class)
+			.hasMessage(
+					"Failed to register 'servlet double-registration' on the servlet context. Possibly already registered?");
 	}
 
 	@Test
@@ -132,34 +133,34 @@ class ServletRegistrationBeanTests {
 	void setServletMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.onStartup(this.servletContext))
-				.withMessageContaining("Servlet must not be null");
+			.withMessageContaining("Servlet must not be null");
 	}
 
 	@Test
 	void createServletMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ServletRegistrationBean<MockServlet>(null))
-				.withMessageContaining("Servlet must not be null");
+			.withMessageContaining("Servlet must not be null");
 	}
 
 	@Test
 	void setMappingMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet);
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.setUrlMappings(null))
-				.withMessageContaining("UrlMappings must not be null");
+			.withMessageContaining("UrlMappings must not be null");
 	}
 
 	@Test
 	void createMappingMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ServletRegistrationBean<>(this.servlet, (String[]) null))
-				.withMessageContaining("UrlMappings must not be null");
+			.isThrownBy(() -> new ServletRegistrationBean<>(this.servlet, (String[]) null))
+			.withMessageContaining("UrlMappings must not be null");
 	}
 
 	@Test
 	void addMappingMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>(this.servlet);
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.addUrlMappings((String[]) null))
-				.withMessageContaining("UrlMappings must not be null");
+			.withMessageContaining("UrlMappings must not be null");
 	}
 
 	@Test

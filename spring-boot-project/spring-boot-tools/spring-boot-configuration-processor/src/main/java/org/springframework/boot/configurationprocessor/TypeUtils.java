@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -234,7 +234,8 @@ class TypeUtils {
 		if (type.getKind() == TypeKind.DECLARED) {
 			DeclaredType declaredType = (DeclaredType) type;
 			DeclaredType freshType = (DeclaredType) this.env.getElementUtils()
-					.getTypeElement(this.types.asElement(type).toString()).asType();
+				.getTypeElement(this.types.asElement(type).toString())
+				.asType();
 			List<? extends TypeMirror> arguments = declaredType.getTypeArguments();
 			for (int i = 0; i < arguments.size(); i++) {
 				TypeMirror specificType = arguments.get(i);
@@ -267,9 +268,12 @@ class TypeUtils {
 			}
 			StringBuilder name = new StringBuilder();
 			name.append(qualifiedName);
-			name.append("<").append(
-					type.getTypeArguments().stream().map((t) -> visit(t, descriptor)).collect(Collectors.joining(",")))
-					.append(">");
+			name.append("<")
+				.append(type.getTypeArguments()
+					.stream()
+					.map((t) -> visit(t, descriptor))
+					.collect(Collectors.joining(",")))
+				.append(">");
 			return name.toString();
 		}
 
@@ -365,14 +369,19 @@ class TypeUtils {
 		}
 
 		TypeMirror resolveGeneric(String parameterName) {
-			return this.generics.entrySet().stream().filter((e) -> getParameterName(e.getKey()).equals(parameterName))
-					.findFirst().map(Entry::getValue).orElse(null);
+			return this.generics.entrySet()
+				.stream()
+				.filter((e) -> getParameterName(e.getKey()).equals(parameterName))
+				.findFirst()
+				.map(Entry::getValue)
+				.orElse(null);
 		}
 
 		private void registerIfNecessary(TypeMirror variable, TypeMirror resolution) {
 			if (variable instanceof TypeVariable typeVariable) {
-				if (this.generics.keySet().stream()
-						.noneMatch((candidate) -> getParameterName(candidate).equals(getParameterName(typeVariable)))) {
+				if (this.generics.keySet()
+					.stream()
+					.noneMatch((candidate) -> getParameterName(candidate).equals(getParameterName(typeVariable)))) {
 					this.generics.put(typeVariable, resolution);
 				}
 			}

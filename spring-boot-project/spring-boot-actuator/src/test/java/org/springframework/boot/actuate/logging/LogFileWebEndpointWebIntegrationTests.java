@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,14 +56,29 @@ class LogFileWebEndpointWebIntegrationTests {
 
 	@WebEndpointTest
 	void getRequestProducesResponseWithLogFile() {
-		this.client.get().uri("/actuator/logfile").exchange().expectStatus().isOk().expectHeader()
-				.contentType("text/plain; charset=UTF-8").expectBody(String.class).isEqualTo("--TEST--");
+		this.client.get()
+			.uri("/actuator/logfile")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType("text/plain; charset=UTF-8")
+			.expectBody(String.class)
+			.isEqualTo("--TEST--");
 	}
 
 	@WebEndpointTest
 	void getRequestThatAcceptsTextPlainProducesResponseWithLogFile() {
-		this.client.get().uri("/actuator/logfile").accept(MediaType.TEXT_PLAIN).exchange().expectStatus().isOk()
-				.expectHeader().contentType("text/plain; charset=UTF-8").expectBody(String.class).isEqualTo("--TEST--");
+		this.client.get()
+			.uri("/actuator/logfile")
+			.accept(MediaType.TEXT_PLAIN)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType("text/plain; charset=UTF-8")
+			.expectBody(String.class)
+			.isEqualTo("--TEST--");
 	}
 
 	@Configuration(proxyBeanMethods = false)

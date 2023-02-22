@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +59,8 @@ class WebFluxTagsTests {
 
 	@Test
 	void uriTagValueIsBestMatchingPatternWhenAvailable() {
-		this.exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
-				this.parser.parse("/spring/"));
+		this.exchange.getAttributes()
+			.put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, this.parser.parse("/spring/"));
 		this.exchange.getResponse().setStatusCode(HttpStatus.MOVED_PERMANENTLY);
 		Tag tag = WebFluxTags.uri(this.exchange);
 		assertThat(tag.getValue()).isEqualTo("/spring/");
@@ -76,8 +76,8 @@ class WebFluxTagsTests {
 
 	@Test
 	void uriTagValueWithBestMatchingPatternAndIgnoreTrailingSlashRemoveTrailingSlash() {
-		this.exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE,
-				this.parser.parse("/spring/"));
+		this.exchange.getAttributes()
+			.put(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, this.parser.parse("/spring/"));
 		Tag tag = WebFluxTags.uri(this.exchange, true);
 		assertThat(tag.getValue()).isEqualTo("/spring");
 	}

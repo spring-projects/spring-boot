@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,12 +47,14 @@ class TaskConfigurationAvoidanceTests {
 	@ArchTest
 	void noApisThatCauseEagerTaskConfigurationShouldBeCalled(JavaClasses classes) {
 		ProhibitedMethods prohibited = new ProhibitedMethods();
-		prohibited.on(TaskContainer.class).methodsNamed("create", "findByPath, getByPath").method("withType",
-				Class.class, Action.class);
+		prohibited.on(TaskContainer.class)
+			.methodsNamed("create", "findByPath, getByPath")
+			.method("withType", Class.class, Action.class);
 		prohibited.on(TaskCollection.class).methodsNamed("findByName", "getByName");
-		ArchRuleDefinition.noClasses().should()
-				.callMethodWhere(DescribedPredicate.describe("it would cause eager task configuration", prohibited))
-				.check(classes);
+		ArchRuleDefinition.noClasses()
+			.should()
+			.callMethodWhere(DescribedPredicate.describe("it would cause eager task configuration", prohibited))
+			.check(classes);
 	}
 
 	static class DoNotIncludeTests implements ImportOption {
@@ -99,7 +101,7 @@ class TaskConfigurationAvoidanceTests {
 
 			private ProhibitedConfigurer method(String name, Class<?>... parameterTypes) {
 				ProhibitedMethods.this.prohibited
-						.add(new ProhibitMethod(this.type, name, Arrays.asList(parameterTypes)));
+					.add(new ProhibitMethod(this.type, name, Arrays.asList(parameterTypes)));
 				return this;
 			}
 

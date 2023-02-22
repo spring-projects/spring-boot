@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SystemMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(SystemMetricsAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(SystemMetricsAutoConfiguration.class));
 
 	@Test
 	void autoConfiguresUptimeMetrics() {
@@ -54,8 +54,8 @@ class SystemMetricsAutoConfigurationTests {
 
 	@Test
 	void allowsCustomUptimeMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomUptimeMetricsConfiguration.class).run(
-				(context) -> assertThat(context).hasSingleBean(UptimeMetrics.class).hasBean("customUptimeMetrics"));
+		this.contextRunner.withUserConfiguration(CustomUptimeMetricsConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(UptimeMetrics.class).hasBean("customUptimeMetrics"));
 	}
 
 	@Test
@@ -66,8 +66,8 @@ class SystemMetricsAutoConfigurationTests {
 	@Test
 	void allowsCustomProcessorMetricsToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomProcessorMetricsConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class)
-						.hasBean("customProcessorMetrics"));
+			.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class)
+				.hasBean("customProcessorMetrics"));
 	}
 
 	@Test
@@ -78,8 +78,8 @@ class SystemMetricsAutoConfigurationTests {
 	@Test
 	void allowsCustomFileDescriptorMetricsToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomFileDescriptorMetricsConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(FileDescriptorMetrics.class)
-						.hasBean("customFileDescriptorMetrics"));
+			.run((context) -> assertThat(context).hasSingleBean(FileDescriptorMetrics.class)
+				.hasBean("customFileDescriptorMetrics"));
 	}
 
 	@Test
@@ -90,29 +90,31 @@ class SystemMetricsAutoConfigurationTests {
 	@Test
 	void allowsCustomDiskSpaceMetricsToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomDiskSpaceMetricsConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(DiskSpaceMetricsBinder.class)
-						.hasBean("customDiskSpaceMetrics"));
+			.run((context) -> assertThat(context).hasSingleBean(DiskSpaceMetricsBinder.class)
+				.hasBean("customDiskSpaceMetrics"));
 	}
 
 	@Test
 	void diskSpaceMetricsUsesDefaultPath() {
-		this.contextRunner
-				.run((context) -> assertThat(context).hasBean("diskSpaceMetrics").getBean(DiskSpaceMetricsBinder.class)
-						.hasFieldOrPropertyWithValue("paths", Collections.singletonList(new File("."))));
+		this.contextRunner.run((context) -> assertThat(context).hasBean("diskSpaceMetrics")
+			.getBean(DiskSpaceMetricsBinder.class)
+			.hasFieldOrPropertyWithValue("paths", Collections.singletonList(new File("."))));
 	}
 
 	@Test
 	void allowsDiskSpaceMetricsPathToBeConfiguredWithSinglePath() {
 		this.contextRunner.withPropertyValues("management.metrics.system.diskspace.paths:..")
-				.run((context) -> assertThat(context).hasBean("diskSpaceMetrics").getBean(DiskSpaceMetricsBinder.class)
-						.hasFieldOrPropertyWithValue("paths", Collections.singletonList(new File(".."))));
+			.run((context) -> assertThat(context).hasBean("diskSpaceMetrics")
+				.getBean(DiskSpaceMetricsBinder.class)
+				.hasFieldOrPropertyWithValue("paths", Collections.singletonList(new File(".."))));
 	}
 
 	@Test
 	void allowsDiskSpaceMetricsPathToBeConfiguredWithMultiplePaths() {
 		this.contextRunner.withPropertyValues("management.metrics.system.diskspace.paths:.,..")
-				.run((context) -> assertThat(context).hasBean("diskSpaceMetrics").getBean(DiskSpaceMetricsBinder.class)
-						.hasFieldOrPropertyWithValue("paths", Arrays.asList(new File("."), new File(".."))));
+			.run((context) -> assertThat(context).hasBean("diskSpaceMetrics")
+				.getBean(DiskSpaceMetricsBinder.class)
+				.hasFieldOrPropertyWithValue("paths", Arrays.asList(new File("."), new File(".."))));
 	}
 
 	@Configuration(proxyBeanMethods = false)

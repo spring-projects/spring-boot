@@ -64,12 +64,12 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withClassLoader(new FilteredClassLoader(HazelcastIndexedSessionRepository.class,
-					MongoIndexedSessionRepository.class, RedisIndexedSessionRepository.class))
-			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-					DataSourceTransactionManagerAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
-					SessionAutoConfiguration.class))
-			.withPropertyValues("spring.datasource.generate-unique-name=true");
+		.withClassLoader(new FilteredClassLoader(HazelcastIndexedSessionRepository.class,
+				MongoIndexedSessionRepository.class, RedisIndexedSessionRepository.class))
+		.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+				DataSourceTransactionManagerAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
+				SessionAutoConfiguration.class))
+		.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
 	void defaultConfig() {
@@ -79,7 +79,7 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 	@Test
 	void jdbcTakesPrecedenceOverMongoAndHazelcast() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(RedisIndexedSessionRepository.class))
-				.run(this::validateDefaultConfig);
+			.run(this::validateDefaultConfig);
 	}
 
 	private void validateDefaultConfig(AssertableWebApplicationContext context) {
@@ -90,7 +90,7 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 		assertThat(repository).hasFieldOrPropertyWithValue("tableName", "SPRING_SESSION");
 		assertThat(repository).hasFieldOrPropertyWithValue("cleanupCron", "0 * * * * *");
 		assertThat(context.getBean(JdbcSessionProperties.class).getInitializeSchema())
-				.isEqualTo(DatabaseInitializationMode.EMBEDDED);
+			.isEqualTo(DatabaseInitializationMode.EMBEDDED);
 		assertThat(context.getBean(JdbcOperations.class).queryForList("select * from SPRING_SESSION")).isEmpty();
 	}
 
@@ -110,9 +110,9 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 					JdbcIndexedSessionRepository.class);
 			assertThat(repository).hasFieldOrPropertyWithValue("tableName", "SPRING_SESSION");
 			assertThat(context.getBean(JdbcSessionProperties.class).getInitializeSchema())
-					.isEqualTo(DatabaseInitializationMode.NEVER);
-			assertThatExceptionOfType(BadSqlGrammarException.class).isThrownBy(
-					() -> context.getBean(JdbcOperations.class).queryForList("select * from SPRING_SESSION"));
+				.isEqualTo(DatabaseInitializationMode.NEVER);
+			assertThatExceptionOfType(BadSqlGrammarException.class)
+				.isThrownBy(() -> context.getBean(JdbcOperations.class).queryForList("select * from SPRING_SESSION"));
 		});
 	}
 
@@ -127,15 +127,17 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 
 	@Test
 	void customTableName() {
-		this.contextRunner.withPropertyValues("spring.session.jdbc.table-name=FOO_BAR",
-				"spring.session.jdbc.schema=classpath:session/custom-schema-h2.sql").run((context) -> {
-					JdbcIndexedSessionRepository repository = validateSessionRepository(context,
-							JdbcIndexedSessionRepository.class);
-					assertThat(repository).hasFieldOrPropertyWithValue("tableName", "FOO_BAR");
-					assertThat(context.getBean(JdbcSessionProperties.class).getInitializeSchema())
-							.isEqualTo(DatabaseInitializationMode.EMBEDDED);
-					assertThat(context.getBean(JdbcOperations.class).queryForList("select * from FOO_BAR")).isEmpty();
-				});
+		this.contextRunner
+			.withPropertyValues("spring.session.jdbc.table-name=FOO_BAR",
+					"spring.session.jdbc.schema=classpath:session/custom-schema-h2.sql")
+			.run((context) -> {
+				JdbcIndexedSessionRepository repository = validateSessionRepository(context,
+						JdbcIndexedSessionRepository.class);
+				assertThat(repository).hasFieldOrPropertyWithValue("tableName", "FOO_BAR");
+				assertThat(context.getBean(JdbcSessionProperties.class).getInitializeSchema())
+					.isEqualTo(DatabaseInitializationMode.EMBEDDED);
+				assertThat(context.getBean(JdbcOperations.class).queryForList("select * from FOO_BAR")).isEmpty();
+			});
 	}
 
 	@Test
@@ -174,9 +176,9 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 			DataSource sessionDataSource = context.getBean("sessionDataSource", DataSource.class);
 			assertThat(repository).extracting("jdbcOperations.dataSource").isEqualTo(sessionDataSource);
 			assertThat(context.getBean(JdbcSessionDataSourceScriptDatabaseInitializer.class))
-					.hasFieldOrPropertyWithValue("dataSource", sessionDataSource);
-			assertThatExceptionOfType(BadSqlGrammarException.class).isThrownBy(
-					() -> context.getBean(JdbcOperations.class).queryForList("select * from SPRING_SESSION"));
+				.hasFieldOrPropertyWithValue("dataSource", sessionDataSource);
+			assertThatExceptionOfType(BadSqlGrammarException.class)
+				.isThrownBy(() -> context.getBean(JdbcOperations.class).queryForList("select * from SPRING_SESSION"));
 		});
 	}
 
@@ -188,7 +190,7 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 			assertThat(sessionRepositoryNames).isNotEmpty();
 			for (String sessionRepositoryName : sessionRepositoryNames) {
 				assertThat(beanFactory.getBeanDefinition(sessionRepositoryName).getDependsOn())
-						.contains("jdbcSessionDataSourceScriptDatabaseInitializer");
+					.contains("jdbcSessionDataSourceScriptDatabaseInitializer");
 			}
 		});
 	}
@@ -196,52 +198,50 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 	@Test
 	void sessionRepositoryBeansDependOnFlyway() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
-				.withPropertyValues("spring.session.jdbc.initialize-schema=never").run((context) -> {
-					ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-					String[] sessionRepositoryNames = beanFactory
-							.getBeanNamesForType(JdbcIndexedSessionRepository.class);
-					assertThat(sessionRepositoryNames).isNotEmpty();
-					for (String sessionRepositoryName : sessionRepositoryNames) {
-						assertThat(beanFactory.getBeanDefinition(sessionRepositoryName).getDependsOn())
-								.contains("flyway", "flywayInitializer");
-					}
-				});
+			.withPropertyValues("spring.session.jdbc.initialize-schema=never")
+			.run((context) -> {
+				ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+				String[] sessionRepositoryNames = beanFactory.getBeanNamesForType(JdbcIndexedSessionRepository.class);
+				assertThat(sessionRepositoryNames).isNotEmpty();
+				for (String sessionRepositoryName : sessionRepositoryNames) {
+					assertThat(beanFactory.getBeanDefinition(sessionRepositoryName).getDependsOn()).contains("flyway",
+							"flywayInitializer");
+				}
+			});
 	}
 
 	@Test
 	void sessionRepositoryBeansDependOnLiquibase() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(LiquibaseAutoConfiguration.class))
-				.withPropertyValues("spring.session.jdbc.initialize-schema=never").run((context) -> {
-					ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-					String[] sessionRepositoryNames = beanFactory
-							.getBeanNamesForType(JdbcIndexedSessionRepository.class);
-					assertThat(sessionRepositoryNames).isNotEmpty();
-					for (String sessionRepositoryName : sessionRepositoryNames) {
-						assertThat(beanFactory.getBeanDefinition(sessionRepositoryName).getDependsOn())
-								.contains("liquibase");
-					}
-				});
+			.withPropertyValues("spring.session.jdbc.initialize-schema=never")
+			.run((context) -> {
+				ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+				String[] sessionRepositoryNames = beanFactory.getBeanNamesForType(JdbcIndexedSessionRepository.class);
+				assertThat(sessionRepositoryNames).isNotEmpty();
+				for (String sessionRepositoryName : sessionRepositoryNames) {
+					assertThat(beanFactory.getBeanDefinition(sessionRepositoryName).getDependsOn())
+						.contains("liquibase");
+				}
+			});
 	}
 
 	@Test
 	void whenTheUserDefinesTheirOwnJdbcSessionDatabaseInitializerThenTheAutoConfiguredInitializerBacksOff() {
 		this.contextRunner.withUserConfiguration(CustomJdbcSessionDatabaseInitializerConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-						DataSourceTransactionManagerAutoConfiguration.class))
-				.run((context) -> assertThat(context)
-						.hasSingleBean(JdbcSessionDataSourceScriptDatabaseInitializer.class)
-						.doesNotHaveBean("jdbcSessionDataSourceScriptDatabaseInitializer")
-						.hasBean("customInitializer"));
+			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+					DataSourceTransactionManagerAutoConfiguration.class))
+			.run((context) -> assertThat(context).hasSingleBean(JdbcSessionDataSourceScriptDatabaseInitializer.class)
+				.doesNotHaveBean("jdbcSessionDataSourceScriptDatabaseInitializer")
+				.hasBean("customInitializer"));
 	}
 
 	@Test
 	void whenTheUserDefinesTheirOwnDatabaseInitializerThenTheAutoConfiguredJdbcSessionInitializerRemains() {
 		this.contextRunner.withUserConfiguration(CustomDatabaseInitializerConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-						DataSourceTransactionManagerAutoConfiguration.class))
-				.run((context) -> assertThat(context)
-						.hasSingleBean(JdbcSessionDataSourceScriptDatabaseInitializer.class)
-						.hasBean("customInitializer"));
+			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+					DataSourceTransactionManagerAutoConfiguration.class))
+			.run((context) -> assertThat(context).hasSingleBean(JdbcSessionDataSourceScriptDatabaseInitializer.class)
+				.hasBean("customInitializer"));
 	}
 
 	@Test
@@ -253,12 +253,13 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 				DO UPDATE SET ATTRIBUTE_BYTES = EXCLUDED.ATTRIBUTE_BYTES
 				""";
 		this.contextRunner.withUserConfiguration(CustomJdbcIndexedSessionRepositoryCustomizerConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(JdbcSessionConfiguration.class)).run((context) -> {
-					JdbcIndexedSessionRepository repository = validateSessionRepository(context,
-							JdbcIndexedSessionRepository.class);
-					assertThat(repository).hasFieldOrPropertyWithValue("createSessionAttributeQuery",
-							expectedCreateSessionAttributeQuery);
-				});
+			.withConfiguration(AutoConfigurations.of(JdbcSessionConfiguration.class))
+			.run((context) -> {
+				JdbcIndexedSessionRepository repository = validateSessionRepository(context,
+						JdbcIndexedSessionRepository.class);
+				assertThat(repository).hasFieldOrPropertyWithValue("createSessionAttributeQuery",
+						expectedCreateSessionAttributeQuery);
+			});
 	}
 
 	@Configuration

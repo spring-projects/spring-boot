@@ -51,7 +51,7 @@ class CertificateParserTests {
 	void parseWithInvalidPathWillThrowException() {
 		String path = "file:///bad/path/cert.pem";
 		assertThatIllegalStateException().isThrownBy(() -> CertificateParser.parse("file:///bad/path/cert.pem"))
-				.withMessageContaining(path);
+			.withMessageContaining(path);
 	}
 
 }

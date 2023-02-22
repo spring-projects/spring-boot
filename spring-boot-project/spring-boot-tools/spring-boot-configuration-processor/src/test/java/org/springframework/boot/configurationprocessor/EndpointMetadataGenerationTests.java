@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,9 +69,10 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	void customPropertiesEndpoint() {
 		ConfigurationMetadata metadata = compile(CustomPropertiesEndpoint.class);
 		assertThat(metadata)
-				.has(Metadata.withGroup("management.endpoint.customprops").fromSource(CustomPropertiesEndpoint.class));
-		assertThat(metadata).has(Metadata.withProperty("management.endpoint.customprops.name").ofType(String.class)
-				.withDefaultValue("test"));
+			.has(Metadata.withGroup("management.endpoint.customprops").fromSource(CustomPropertiesEndpoint.class));
+		assertThat(metadata).has(Metadata.withProperty("management.endpoint.customprops.name")
+			.ofType(String.class)
+			.withDefaultValue("test"));
 		assertThat(metadata).has(enabledFlag("customprops", true));
 		assertThat(metadata).has(cacheTtl("customprops"));
 		assertThat(metadata.getItems()).hasSize(4);
@@ -90,7 +91,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	void camelCaseEndpoint() {
 		ConfigurationMetadata metadata = compile(CamelCaseEndpoint.class);
 		assertThat(metadata)
-				.has(Metadata.withGroup("management.endpoint.pascal-case").fromSource(CamelCaseEndpoint.class));
+			.has(Metadata.withGroup("management.endpoint.pascal-case").fromSource(CamelCaseEndpoint.class));
 		assertThat(metadata).has(enabledFlag("PascalCase", "pascal-case", true));
 		assertThat(metadata.getItems()).hasSize(2);
 	}
@@ -100,7 +101,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		TestProject project = new TestProject(IncrementalEndpoint.class);
 		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata)
-				.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
+			.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", true));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(3);
@@ -108,7 +109,7 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 				"id = \"incremental\", enableByDefault = false");
 		metadata = project.compile();
 		assertThat(metadata)
-				.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
+			.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", false));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(3);
@@ -119,14 +120,14 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		TestProject project = new TestProject(IncrementalEndpoint.class);
 		ConfigurationMetadata metadata = project.compile();
 		assertThat(metadata)
-				.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
+			.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", true));
 		assertThat(metadata).has(cacheTtl("incremental"));
 		assertThat(metadata.getItems()).hasSize(3);
 		project.replaceText(IncrementalEndpoint.class, "@Nullable String param", "String param");
 		metadata = project.compile();
 		assertThat(metadata)
-				.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
+			.has(Metadata.withGroup("management.endpoint.incremental").fromSource(IncrementalEndpoint.class));
 		assertThat(metadata).has(enabledFlag("incremental", true));
 		assertThat(metadata.getItems()).hasSize(2);
 	}
@@ -149,8 +150,8 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	private Metadata.MetadataItemCondition enabledFlag(String endpointId, String endpointSuffix, Boolean defaultValue) {
 		return Metadata.withEnabledFlag("management.endpoint." + endpointSuffix + ".enabled")
-				.withDefaultValue(defaultValue)
-				.withDescription(String.format("Whether to enable the %s endpoint.", endpointId));
+			.withDefaultValue(defaultValue)
+			.withDescription(String.format("Whether to enable the %s endpoint.", endpointId));
 	}
 
 	private Metadata.MetadataItemCondition enabledFlag(String endpointId, Boolean defaultValue) {
@@ -158,8 +159,10 @@ class EndpointMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	}
 
 	private Metadata.MetadataItemCondition cacheTtl(String endpointId) {
-		return Metadata.withProperty("management.endpoint." + endpointId + ".cache.time-to-live").ofType(Duration.class)
-				.withDefaultValue("0ms").withDescription("Maximum time that a response can be cached.");
+		return Metadata.withProperty("management.endpoint." + endpointId + ".cache.time-to-live")
+			.ofType(Duration.class)
+			.withDefaultValue("0ms")
+			.withDescription("Maximum time that a response can be cached.");
 	}
 
 }

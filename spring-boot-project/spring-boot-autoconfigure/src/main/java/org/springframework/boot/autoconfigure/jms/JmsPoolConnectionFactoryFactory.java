@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public class JmsPoolConnectionFactoryFactory {
 		pooledConnectionFactory.setBlockIfSessionPoolIsFull(this.properties.isBlockIfFull());
 		if (this.properties.getBlockIfFullTimeout() != null) {
 			pooledConnectionFactory
-					.setBlockIfSessionPoolIsFullTimeout(this.properties.getBlockIfFullTimeout().toMillis());
+				.setBlockIfSessionPoolIsFullTimeout(this.properties.getBlockIfFullTimeout().toMillis());
 		}
 		if (this.properties.getIdleTimeout() != null) {
 			pooledConnectionFactory.setConnectionIdleTimeout((int) this.properties.getIdleTimeout().toMillis());
@@ -56,7 +56,7 @@ public class JmsPoolConnectionFactoryFactory {
 		pooledConnectionFactory.setMaxSessionsPerConnection(this.properties.getMaxSessionsPerConnection());
 		if (this.properties.getTimeBetweenExpirationCheck() != null) {
 			pooledConnectionFactory
-					.setConnectionCheckInterval(this.properties.getTimeBetweenExpirationCheck().toMillis());
+				.setConnectionCheckInterval(this.properties.getTimeBetweenExpirationCheck().toMillis());
 		}
 		pooledConnectionFactory.setUseAnonymousProducers(this.properties.isUseAnonymousProducers());
 		return pooledConnectionFactory;

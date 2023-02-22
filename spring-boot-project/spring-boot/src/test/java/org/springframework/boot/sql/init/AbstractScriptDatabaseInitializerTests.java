@@ -69,7 +69,7 @@ public abstract class AbstractScriptDatabaseInitializerTests<T extends AbstractS
 		settings.setSchemaLocations(Arrays.asList("does-not-exist.sql"));
 		T initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThatIllegalStateException().isThrownBy(initializer::initializeDatabase)
-				.withMessage("No schema scripts found at location 'does-not-exist.sql'");
+			.withMessage("No schema scripts found at location 'does-not-exist.sql'");
 		assertThatDatabaseWasNotAccessed(initializer);
 	}
 
@@ -79,7 +79,7 @@ public abstract class AbstractScriptDatabaseInitializerTests<T extends AbstractS
 		settings.setDataLocations(Arrays.asList("does-not-exist.sql"));
 		T initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThatIllegalStateException().isThrownBy(initializer::initializeDatabase)
-				.withMessage("No data scripts found at location 'does-not-exist.sql'");
+			.withMessage("No data scripts found at location 'does-not-exist.sql'");
 		assertThatDatabaseWasNotAccessed(initializer);
 	}
 

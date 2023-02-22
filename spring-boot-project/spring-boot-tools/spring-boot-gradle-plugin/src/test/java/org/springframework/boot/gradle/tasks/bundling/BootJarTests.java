@@ -99,7 +99,7 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	void classpathIndexPointsToBootInfLibs() throws IOException {
 		try (JarFile jarFile = new JarFile(createPopulatedJar())) {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classpath-Index"))
-					.isEqualTo("BOOT-INF/classpath.idx");
+				.isEqualTo("BOOT-INF/classpath.idx");
 			assertThat(entryLines(jarFile, "BOOT-INF/classpath.idx")).containsExactly(
 					"- \"BOOT-INF/lib/first-library.jar\"", "- \"BOOT-INF/lib/second-library.jar\"",
 					"- \"BOOT-INF/lib/third-library-SNAPSHOT.jar\"", "- \"BOOT-INF/lib/fourth-library.jar\"",
@@ -208,7 +208,7 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	void javaVersionIsWrittenToManifest() throws IOException {
 		try (JarFile jarFile = new JarFile(createPopulatedJar())) {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Build-Jdk-Spec"))
-					.isEqualTo(JavaVersion.VERSION_17.getMajorVersion());
+				.isEqualTo(JavaVersion.VERSION_17.getMajorVersion());
 		}
 	}
 

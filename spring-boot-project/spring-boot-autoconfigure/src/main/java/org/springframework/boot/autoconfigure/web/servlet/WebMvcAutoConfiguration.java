@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -222,14 +222,14 @@ public class WebMvcAutoConfiguration {
 		@Override
 		public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
 			this.messageConvertersProvider
-					.ifAvailable((customConverters) -> converters.addAll(customConverters.getConverters()));
+				.ifAvailable((customConverters) -> converters.addAll(customConverters.getConverters()));
 		}
 
 		@Override
 		public void configureAsyncSupport(AsyncSupportConfigurer configurer) {
 			if (this.beanFactory.containsBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME)) {
 				Object taskExecutor = this.beanFactory
-						.getBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
+					.getBean(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
 				if (taskExecutor instanceof AsyncTaskExecutor asyncTaskExecutor) {
 					configurer.setTaskExecutor(asyncTaskExecutor);
 				}
@@ -243,7 +243,7 @@ public class WebMvcAutoConfiguration {
 		@Override
 		public void configurePathMatch(PathMatchConfigurer configurer) {
 			if (this.mvcProperties.getPathmatch()
-					.getMatchingStrategy() == WebMvcProperties.MatchingStrategy.ANT_PATH_MATCHER) {
+				.getMatchingStrategy() == WebMvcProperties.MatchingStrategy.ANT_PATH_MATCHER) {
 				configurer.setPathMatcher(new AntPathMatcher());
 				this.dispatcherServletPath.ifAvailable((dispatcherPath) -> {
 					String servletUrlMapping = dispatcherPath.getServletUrlMapping();
@@ -257,8 +257,10 @@ public class WebMvcAutoConfiguration {
 		}
 
 		private boolean singleDispatcherServlet() {
-			return this.servletRegistrations.stream().map(ServletRegistrationBean::getServlet)
-					.filter(DispatcherServlet.class::isInstance).count() == 1;
+			return this.servletRegistrations.stream()
+				.map(ServletRegistrationBean::getServlet)
+				.filter(DispatcherServlet.class::isInstance)
+				.count() == 1;
 		}
 
 		@Override
@@ -502,8 +504,10 @@ public class WebMvcAutoConfiguration {
 		@Override
 		public FormattingConversionService mvcConversionService() {
 			Format format = this.mvcProperties.getFormat();
-			WebConversionService conversionService = new WebConversionService(new DateTimeFormatters()
-					.dateFormat(format.getDate()).timeFormat(format.getTime()).dateTimeFormat(format.getDateTime()));
+			WebConversionService conversionService = new WebConversionService(
+					new DateTimeFormatters().dateFormat(format.getDate())
+						.timeFormat(format.getTime())
+						.dateTimeFormat(format.getDateTime()));
 			addFormatters(conversionService);
 			return conversionService;
 		}
@@ -543,7 +547,7 @@ public class WebMvcAutoConfiguration {
 		protected ExceptionHandlerExceptionResolver createExceptionHandlerExceptionResolver() {
 			if (this.mvcRegistrations != null) {
 				ExceptionHandlerExceptionResolver resolver = this.mvcRegistrations
-						.getExceptionHandlerExceptionResolver();
+					.getExceptionHandlerExceptionResolver();
 				if (resolver != null) {
 					return resolver;
 				}
@@ -665,7 +669,7 @@ public class WebMvcAutoConfiguration {
 
 		@SuppressWarnings("deprecation")
 		private static final String SKIP_ATTRIBUTE = org.springframework.web.accept.PathExtensionContentNegotiationStrategy.class
-				.getName() + ".SKIP";
+			.getName() + ".SKIP";
 
 		private final ContentNegotiationStrategy delegate;
 

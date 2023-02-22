@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -222,7 +222,7 @@ class ValueObjectBinder implements DataObjectBinder {
 			for (KParameter parameter : parameters) {
 				String name = getParameterName(parameter);
 				ResolvableType parameterType = ResolvableType
-						.forType(ReflectJvmMapping.getJavaType(parameter.getType()), type);
+					.forType(ReflectJvmMapping.getJavaType(parameter.getType()), type);
 				Annotation[] annotations = parameter.getAnnotations().toArray(ANNOTATION_ARRAY);
 				result.add(new ConstructorParameter(name, parameterType, annotations));
 			}
@@ -231,7 +231,9 @@ class ValueObjectBinder implements DataObjectBinder {
 
 		private String getParameterName(KParameter parameter) {
 			return MergedAnnotations.from(parameter, parameter.getAnnotations().toArray(ANNOTATION_ARRAY))
-					.get(Name.class).getValue(MergedAnnotation.VALUE, String.class).orElseGet(parameter::getName);
+				.get(Name.class)
+				.getValue(MergedAnnotation.VALUE, String.class)
+				.orElseGet(parameter::getName);
 		}
 
 		@Override
@@ -271,8 +273,10 @@ class ValueObjectBinder implements DataObjectBinder {
 			Parameter[] parameters = constructor.getParameters();
 			List<ConstructorParameter> result = new ArrayList<>(parameters.length);
 			for (int i = 0; i < parameters.length; i++) {
-				String name = MergedAnnotations.from(parameters[i]).get(Name.class)
-						.getValue(MergedAnnotation.VALUE, String.class).orElse(names[i]);
+				String name = MergedAnnotations.from(parameters[i])
+					.get(Name.class)
+					.getValue(MergedAnnotation.VALUE, String.class)
+					.orElse(names[i]);
 				ResolvableType parameterType = ResolvableType.forMethodParameter(new MethodParameter(constructor, i),
 						type);
 				Annotation[] annotations = parameters[i].getDeclaredAnnotations();

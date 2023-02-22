@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -326,7 +326,8 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 			try {
 				loaded = new LinkedHashMap<>();
 				for (Entry<?, ?> entry : PropertiesLoaderUtils
-						.loadProperties(new ClassPathResource(MIME_MAPPINGS_PROPERTIES, getClass())).entrySet()) {
+					.loadProperties(new ClassPathResource(MIME_MAPPINGS_PROPERTIES, getClass()))
+					.entrySet()) {
 					loaded.put((String) entry.getKey(),
 							new Mapping((String) entry.getKey(), (String) entry.getValue()));
 				}
@@ -394,8 +395,8 @@ public sealed class MimeMappings implements Iterable<MimeMappings.Mapping> {
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.resources().registerPattern(
-					"org/springframework/boot/web/server/" + DefaultMimeMappings.MIME_MAPPINGS_PROPERTIES);
+			hints.resources()
+				.registerPattern("org/springframework/boot/web/server/" + DefaultMimeMappings.MIME_MAPPINGS_PROPERTIES);
 		}
 
 	}

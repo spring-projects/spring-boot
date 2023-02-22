@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -236,7 +236,7 @@ public class EntityManagerFactoryBuilder {
 			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 			if (EntityManagerFactoryBuilder.this.persistenceUnitManager != null) {
 				entityManagerFactoryBean
-						.setPersistenceUnitManager(EntityManagerFactoryBuilder.this.persistenceUnitManager);
+					.setPersistenceUnitManager(EntityManagerFactoryBuilder.this.persistenceUnitManager);
 			}
 			if (this.persistenceUnit != null) {
 				entityManagerFactoryBean.setPersistenceUnitName(this.persistenceUnit);
@@ -268,8 +268,8 @@ public class EntityManagerFactoryBuilder {
 				entityManagerFactoryBean.setBootstrapExecutor(EntityManagerFactoryBuilder.this.bootstrapExecutor);
 			}
 			if (EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors != null) {
-				entityManagerFactoryBean.setPersistenceUnitPostProcessors(
-						EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors);
+				entityManagerFactoryBean
+					.setPersistenceUnitPostProcessors(EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors);
 			}
 			return entityManagerFactoryBean;
 		}

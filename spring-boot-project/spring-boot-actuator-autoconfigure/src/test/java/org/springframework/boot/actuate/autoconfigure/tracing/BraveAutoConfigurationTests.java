@@ -60,7 +60,7 @@ import static org.mockito.Mockito.mock;
 class BraveAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(BraveAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(BraveAutoConfiguration.class));
 
 	@Test
 	void shouldSupplyDefaultBeans() {
@@ -115,13 +115,13 @@ class BraveAutoConfigurationTests {
 	@Test
 	void shouldNotSupplyBeansIfBraveIsMissing() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("brave"))
-				.run((context) -> assertThat(context).doesNotHaveBean(BraveAutoConfiguration.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(BraveAutoConfiguration.class));
 	}
 
 	@Test
 	void shouldNotSupplyBeansIfMicrometerIsMissing() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer"))
-				.run((context) -> assertThat(context).doesNotHaveBean(BraveAutoConfiguration.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(BraveAutoConfiguration.class));
 	}
 
 	@Test
@@ -145,13 +145,13 @@ class BraveAutoConfigurationTests {
 	@Test
 	void shouldNotSupplyBeansIfTracingIsDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(BraveAutoConfiguration.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(BraveAutoConfiguration.class));
 	}
 
 	@Test
 	void shouldNotSupplyCorrelationScopeDecoratorIfBaggageDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean("correlationScopeDecorator"));
+			.run((context) -> assertThat(context).doesNotHaveBean("correlationScopeDecorator"));
 	}
 
 	@Test
@@ -165,40 +165,45 @@ class BraveAutoConfigurationTests {
 
 	@Test
 	void shouldSupplyB3WithoutBaggageIfBaggageDisabledAndB3Picked() {
-		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false",
-				"management.tracing.propagation.type=B3").run((context) -> {
-					assertThat(context).hasBean("propagationFactory");
-					assertThat(context.getBean(Factory.class)).hasToString("B3Propagation");
-					assertThat(context).doesNotHaveBean(BaggagePropagation.FactoryBuilder.class);
-				});
+		this.contextRunner
+			.withPropertyValues("management.tracing.baggage.enabled=false", "management.tracing.propagation.type=B3")
+			.run((context) -> {
+				assertThat(context).hasBean("propagationFactory");
+				assertThat(context.getBean(Factory.class)).hasToString("B3Propagation");
+				assertThat(context).doesNotHaveBean(BaggagePropagation.FactoryBuilder.class);
+			});
 	}
 
 	@Test
 	void shouldNotApplyCorrelationFieldsIfBaggageCorrelationDisabled() {
-		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation.enabled=false",
-				"management.tracing.baggage.correlation.fields=alpha,bravo").run((context) -> {
-					ScopeDecorator scopeDecorator = context.getBean(ScopeDecorator.class);
-					assertThat(scopeDecorator)
-							.extracting("fields", InstanceOfAssertFactories.array(SingleCorrelationField[].class))
-							.hasSize(2);
-				});
+		this.contextRunner
+			.withPropertyValues("management.tracing.baggage.correlation.enabled=false",
+					"management.tracing.baggage.correlation.fields=alpha,bravo")
+			.run((context) -> {
+				ScopeDecorator scopeDecorator = context.getBean(ScopeDecorator.class);
+				assertThat(scopeDecorator)
+					.extracting("fields", InstanceOfAssertFactories.array(SingleCorrelationField[].class))
+					.hasSize(2);
+			});
 	}
 
 	@Test
 	void shouldApplyCorrelationFieldsIfBaggageCorrelationEnabled() {
-		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation.enabled=true",
-				"management.tracing.baggage.correlation.fields=alpha,bravo").run((context) -> {
-					ScopeDecorator scopeDecorator = context.getBean(ScopeDecorator.class);
-					assertThat(scopeDecorator)
-							.extracting("fields", InstanceOfAssertFactories.array(SingleCorrelationField[].class))
-							.hasSize(4);
-				});
+		this.contextRunner
+			.withPropertyValues("management.tracing.baggage.correlation.enabled=true",
+					"management.tracing.baggage.correlation.fields=alpha,bravo")
+			.run((context) -> {
+				ScopeDecorator scopeDecorator = context.getBean(ScopeDecorator.class);
+				assertThat(scopeDecorator)
+					.extracting("fields", InstanceOfAssertFactories.array(SingleCorrelationField[].class))
+					.hasSize(4);
+			});
 	}
 
 	@Test
 	void shouldSupplyMdcCorrelationScopeDecoratorIfBaggageCorrelationDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation.enabled=false")
-				.run((context) -> assertThat(context).hasBean("mdcCorrelationScopeDecoratorBuilder"));
+			.run((context) -> assertThat(context).hasBean("mdcCorrelationScopeDecoratorBuilder"));
 	}
 
 	@Test
@@ -228,9 +233,9 @@ class BraveAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(SpanHandlerConfiguration.class).run((context) -> {
 			Tracing tracing = context.getBean(Tracing.class);
 			assertThat(tracing).extracting("tracer.spanHandler.delegate.handlers")
-					.asInstanceOf(InstanceOfAssertFactories.array(SpanHandler[].class))
-					.extracting((handler) -> (Class) handler.getClass())
-					.containsExactly(CompositeSpanHandler.class, AdditionalSpanHandler.class);
+				.asInstanceOf(InstanceOfAssertFactories.array(SpanHandler[].class))
+				.extracting((handler) -> (Class) handler.getClass())
+				.containsExactly(CompositeSpanHandler.class, AdditionalSpanHandler.class);
 		});
 	}
 
@@ -238,14 +243,17 @@ class BraveAutoConfigurationTests {
 	void compositeSpanHandlerUsesFilterPredicateAndReportersInOrder() {
 		this.contextRunner.withUserConfiguration(CompositeSpanHandlerComponentsConfiguration.class).run((context) -> {
 			CompositeSpanHandlerComponentsConfiguration components = context
-					.getBean(CompositeSpanHandlerComponentsConfiguration.class);
+				.getBean(CompositeSpanHandlerComponentsConfiguration.class);
 			CompositeSpanHandler composite = context.getBean(CompositeSpanHandler.class);
-			assertThat(composite).extracting("spanFilters").asList().containsExactly(components.filter1,
-					components.filter2);
-			assertThat(composite).extracting("filters").asList().containsExactly(components.predicate2,
-					components.predicate1);
-			assertThat(composite).extracting("reporters").asList().containsExactly(components.reporter1,
-					components.reporter3, components.reporter2);
+			assertThat(composite).extracting("spanFilters")
+				.asList()
+				.containsExactly(components.filter1, components.filter2);
+			assertThat(composite).extracting("filters")
+				.asList()
+				.containsExactly(components.predicate2, components.predicate1);
+			assertThat(composite).extracting("reporters")
+				.asList()
+				.containsExactly(components.reporter1, components.reporter3, components.reporter2);
 		});
 	}
 

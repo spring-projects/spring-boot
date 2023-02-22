@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ class FilteredClassLoaderTests {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader(
 				FilteredClassLoaderTests.class.getPackage().getName())) {
 			assertThatExceptionOfType(ClassNotFoundException.class)
-					.isThrownBy(() -> Class.forName(getClass().getName(), false, classLoader));
+				.isThrownBy(() -> Class.forName(getClass().getName(), false, classLoader));
 		}
 	}
 
@@ -52,7 +52,7 @@ class FilteredClassLoaderTests {
 	void loadClassWhenFilteredOnClassShouldThrowClassNotFound() throws Exception {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader(FilteredClassLoaderTests.class)) {
 			assertThatExceptionOfType(ClassNotFoundException.class)
-					.isThrownBy(() -> Class.forName(getClass().getName(), false, classLoader));
+				.isThrownBy(() -> Class.forName(getClass().getName(), false, classLoader));
 		}
 	}
 
@@ -117,7 +117,7 @@ class FilteredClassLoaderTests {
 		Class<FilteredClassLoaderTests> hiddenClass = FilteredClassLoaderTests.class;
 		try (FilteredClassLoader classLoader = new FilteredClassLoader(hiddenClass)) {
 			assertThatIllegalArgumentException()
-					.isThrownBy(() -> classLoader.publicDefineClass(hiddenClass.getName(), new byte[] {}, null));
+				.isThrownBy(() -> classLoader.publicDefineClass(hiddenClass.getName(), new byte[] {}, null));
 		}
 	}
 

@@ -39,13 +39,13 @@ class OperationMethodTests {
 	@Test
 	void createWhenMethodIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OperationMethod(null, OperationType.READ))
-				.withMessageContaining("Method must not be null");
+			.withMessageContaining("Method must not be null");
 	}
 
 	@Test
 	void createWhenOperationTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OperationMethod(this.exampleMethod, null))
-				.withMessageContaining("OperationType must not be null");
+			.withMessageContaining("OperationType must not be null");
 	}
 
 	@Test

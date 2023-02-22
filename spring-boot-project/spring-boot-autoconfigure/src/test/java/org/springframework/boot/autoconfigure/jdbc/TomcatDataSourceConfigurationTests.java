@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,11 +66,11 @@ class TomcatDataSourceConfigurationTests {
 	void testDataSourcePropertiesOverridden() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
 		TestPropertyValues
-				.of(PREFIX + "url:jdbc:h2:mem:testdb", PREFIX + "testWhileIdle:true", PREFIX + "testOnBorrow:true",
-						PREFIX + "testOnReturn:true", PREFIX + "timeBetweenEvictionRunsMillis:10000",
-						PREFIX + "minEvictableIdleTimeMillis:12345", PREFIX + "maxWait:1234",
-						PREFIX + "jdbcInterceptors:SlowQueryReport", PREFIX + "validationInterval:9999")
-				.applyTo(this.context);
+			.of(PREFIX + "url:jdbc:h2:mem:testdb", PREFIX + "testWhileIdle:true", PREFIX + "testOnBorrow:true",
+					PREFIX + "testOnReturn:true", PREFIX + "timeBetweenEvictionRunsMillis:10000",
+					PREFIX + "minEvictableIdleTimeMillis:12345", PREFIX + "maxWait:1234",
+					PREFIX + "jdbcInterceptors:SlowQueryReport", PREFIX + "validationInterval:9999")
+			.applyTo(this.context);
 		this.context.refresh();
 		org.apache.tomcat.jdbc.pool.DataSource ds = this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
 		assertThat(ds.getUrl()).isEqualTo("jdbc:h2:mem:testdb");

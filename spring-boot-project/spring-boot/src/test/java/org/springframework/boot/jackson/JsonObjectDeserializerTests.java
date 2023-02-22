@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,8 +68,8 @@ class JsonObjectDeserializerTests {
 	@Test
 	void nullSafeValueWhenClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.testDeserializer.testNullSafeValue(mock(JsonNode.class), null))
-				.withMessageContaining("Type must not be null");
+			.isThrownBy(() -> this.testDeserializer.testNullSafeValue(mock(JsonNode.class), null))
+			.withMessageContaining("Type must not be null");
 	}
 
 	@Test
@@ -147,15 +147,15 @@ class JsonObjectDeserializerTests {
 	@Test
 	void nullSafeValueWhenClassIsUnknownShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.testDeserializer.testNullSafeValue(mock(JsonNode.class), InputStream.class))
-				.withMessageContaining("Unsupported value type java.io.InputStream");
+			.isThrownBy(() -> this.testDeserializer.testNullSafeValue(mock(JsonNode.class), InputStream.class))
+			.withMessageContaining("Unsupported value type java.io.InputStream");
 
 	}
 
 	@Test
 	void getRequiredNodeWhenTreeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.testDeserializer.testGetRequiredNode(null, "test"))
-				.withMessageContaining("Tree must not be null");
+			.withMessageContaining("Tree must not be null");
 	}
 
 	@Test
@@ -163,7 +163,7 @@ class JsonObjectDeserializerTests {
 		JsonNode tree = mock(JsonNode.class);
 		given(tree.get("test")).willReturn(null);
 		assertThatIllegalStateException().isThrownBy(() -> this.testDeserializer.testGetRequiredNode(tree, "test"))
-				.withMessageContaining("Missing JSON field 'test'");
+			.withMessageContaining("Missing JSON field 'test'");
 	}
 
 	@Test
@@ -171,7 +171,7 @@ class JsonObjectDeserializerTests {
 		JsonNode tree = mock(JsonNode.class);
 		given(tree.get("test")).willReturn(NullNode.instance);
 		assertThatIllegalStateException().isThrownBy(() -> this.testDeserializer.testGetRequiredNode(tree, "test"))
-				.withMessageContaining("Missing JSON field 'test'");
+			.withMessageContaining("Missing JSON field 'test'");
 	}
 
 	@Test

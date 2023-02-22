@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,33 +36,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MyPropertiesTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(Config.class);
+		.withUserConfiguration(Config.class);
 
 	@Test
 	void bindWithDefaultUnit() {
 		this.contextRunner.withPropertyValues("my.session-timeout=40", "my.read-timeout=5000")
-				.run(assertBinding((properties) -> {
-					assertThat(properties.getSessionTimeout()).hasSeconds(40);
-					assertThat(properties.getReadTimeout()).hasMillis(5000);
-				}));
+			.run(assertBinding((properties) -> {
+				assertThat(properties.getSessionTimeout()).hasSeconds(40);
+				assertThat(properties.getReadTimeout()).hasMillis(5000);
+			}));
 	}
 
 	@Test
 	void bindWithExplicitUnit() {
 		this.contextRunner.withPropertyValues("my.session-timeout=1h", "my.read-timeout=5s")
-				.run(assertBinding((properties) -> {
-					assertThat(properties.getSessionTimeout()).hasMinutes(60);
-					assertThat(properties.getReadTimeout()).hasMillis(5000);
-				}));
+			.run(assertBinding((properties) -> {
+				assertThat(properties.getSessionTimeout()).hasMinutes(60);
+				assertThat(properties.getReadTimeout()).hasMillis(5000);
+			}));
 	}
 
 	@Test
 	void bindWithIso8601Format() {
 		this.contextRunner.withPropertyValues("my.session-timeout=PT15S", "my.read-timeout=PT0.5S")
-				.run(assertBinding((properties) -> {
-					assertThat(properties.getSessionTimeout()).hasSeconds(15);
-					assertThat(properties.getReadTimeout()).hasMillis(500);
-				}));
+			.run(assertBinding((properties) -> {
+				assertThat(properties.getSessionTimeout()).hasSeconds(15);
+				assertThat(properties.getReadTimeout()).hasMillis(500);
+			}));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertBinding(Consumer<MyProperties> properties) {

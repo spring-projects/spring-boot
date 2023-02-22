@@ -322,7 +322,7 @@ public class Library {
 						if (!line.startsWith("#")) {
 							String[] components = line.split(":");
 							Map<String, String> groupDependencies = this.dependencyVersions
-									.computeIfAbsent(components[0], (key) -> new HashMap<>());
+								.computeIfAbsent(components[0], (key) -> new HashMap<>());
 							groupDependencies.put(components[1], components[2]);
 						}
 					}
@@ -372,7 +372,7 @@ public class Library {
 						Matcher matcher = CONSTRAINT_PATTERN.matcher(line.trim());
 						if (matcher.matches()) {
 							Map<String, String> groupDependencies = this.dependencyVersions
-									.computeIfAbsent(matcher.group(1), (key) -> new HashMap<>());
+								.computeIfAbsent(matcher.group(1), (key) -> new HashMap<>());
 							groupDependencies.put(matcher.group(2), matcher.group(3));
 						}
 					}

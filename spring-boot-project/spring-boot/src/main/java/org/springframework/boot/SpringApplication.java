@@ -276,13 +276,15 @@ public class SpringApplication {
 	}
 
 	private Class<?> deduceMainApplicationClass() {
-		return StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE).walk(this::findMainClass)
-				.orElse(null);
+		return StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE)
+			.walk(this::findMainClass)
+			.orElse(null);
 	}
 
 	private Optional<Class<?>> findMainClass(Stream<StackFrame> stack) {
-		return stack.filter((frame) -> Objects.equals(frame.getMethodName(), "main")).findFirst()
-				.map(StackWalker.StackFrame::getDeclaringClass);
+		return stack.filter((frame) -> Objects.equals(frame.getMethodName(), "main"))
+			.findFirst()
+			.map(StackWalker.StackFrame::getDeclaringClass);
 	}
 
 	/**
@@ -364,7 +366,7 @@ public class SpringApplication {
 
 	private Class<? extends ConfigurableEnvironment> deduceEnvironmentClass() {
 		Class<? extends ConfigurableEnvironment> environmentType = this.applicationContextFactory
-				.getEnvironmentType(this.webApplicationType);
+			.getEnvironmentType(this.webApplicationType);
 		if (environmentType == null && this.applicationContextFactory != ApplicationContextFactory.DEFAULT) {
 			environmentType = ApplicationContextFactory.DEFAULT.getEnvironmentType(this.webApplicationType);
 		}
@@ -506,8 +508,8 @@ public class SpringApplication {
 			if (sources.contains(name)) {
 				PropertySource<?> source = sources.get(name);
 				CompositePropertySource composite = new CompositePropertySource(name);
-				composite.addPropertySource(
-						new SimpleCommandLinePropertySource("springApplicationCommandLineArgs", args));
+				composite
+					.addPropertySource(new SimpleCommandLinePropertySource("springApplicationCommandLineArgs", args));
 				composite.addPropertySource(source);
 				sources.replace(name, composite);
 			}
@@ -572,8 +574,8 @@ public class SpringApplication {
 	 */
 	protected void postProcessApplicationContext(ConfigurableApplicationContext context) {
 		if (this.beanNameGenerator != null) {
-			context.getBeanFactory().registerSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
-					this.beanNameGenerator);
+			context.getBeanFactory()
+				.registerSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR, this.beanNameGenerator);
 		}
 		if (this.resourceLoader != null) {
 			if (context instanceof GenericApplicationContext genericApplicationContext) {

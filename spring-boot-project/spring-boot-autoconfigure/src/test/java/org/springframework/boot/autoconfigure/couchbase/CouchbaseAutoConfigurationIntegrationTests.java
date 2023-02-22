@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,14 +51,16 @@ class CouchbaseAutoConfigurationIntegrationTests {
 
 	@Container
 	static final CouchbaseContainer couchbase = new CouchbaseContainer(DockerImageNames.couchbase())
-			.withCredentials("spring", "password").withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10))
-			.withBucket(new BucketDefinition(BUCKET_NAME).withPrimaryIndex(false));
+		.withCredentials("spring", "password")
+		.withStartupAttempts(5)
+		.withStartupTimeout(Duration.ofMinutes(10))
+		.withBucket(new BucketDefinition(BUCKET_NAME).withPrimaryIndex(false));
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class))
-			.withPropertyValues("spring.couchbase.connection-string: " + couchbase.getConnectionString(),
-					"spring.couchbase.username:spring", "spring.couchbase.password:password",
-					"spring.couchbase.bucket.name:" + BUCKET_NAME);
+		.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class))
+		.withPropertyValues("spring.couchbase.connection-string: " + couchbase.getConnectionString(),
+				"spring.couchbase.username:spring", "spring.couchbase.password:password",
+				"spring.couchbase.bucket.name:" + BUCKET_NAME);
 
 	@Test
 	void defaultConfiguration() {

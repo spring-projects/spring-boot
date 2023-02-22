@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ class MockitoTestExecutionListenerTests {
 		TestContext mockTestContext = mockTestContext(instance);
 		given(mockTestContext.getApplicationContext()).willReturn(this.applicationContext);
 		given(mockTestContext.getAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE))
-				.willReturn(Boolean.TRUE);
+			.willReturn(Boolean.TRUE);
 		this.listener.beforeTestMethod(mockTestContext);
 		then(this.postProcessor).should().inject(this.fieldCaptor.capture(), eq(instance), any(MockDefinition.class));
 		assertThat(this.fieldCaptor.getValue().getName()).isEqualTo("mockBean");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,9 @@ public class WebResourcesRuntimeHints implements RuntimeHintsRegistrar {
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		ClassLoader classLoaderToUse = (classLoader != null) ? classLoader : getClass().getClassLoader();
 		String[] locations = DEFAULT_LOCATIONS.stream()
-				.filter((candidate) -> classLoaderToUse.getResource(candidate) != null)
-				.map((location) -> location + "*").toArray(String[]::new);
+			.filter((candidate) -> classLoaderToUse.getResource(candidate) != null)
+			.map((location) -> location + "*")
+			.toArray(String[]::new);
 		if (locations.length > 0) {
 			hints.resources().registerPattern((hint) -> hint.includes(locations));
 		}

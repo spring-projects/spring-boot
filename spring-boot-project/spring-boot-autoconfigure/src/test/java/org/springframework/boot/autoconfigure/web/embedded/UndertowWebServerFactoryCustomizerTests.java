@@ -258,7 +258,7 @@ class UndertowWebServerFactoryCustomizerTests {
 			Object argument = invocation.getArgument(0);
 			Arrays.stream((argument instanceof UndertowBuilderCustomizer undertowCustomizer)
 					? new UndertowBuilderCustomizer[] { undertowCustomizer } : (UndertowBuilderCustomizer[]) argument)
-					.forEach((customizer) -> customizer.customize(builder));
+				.forEach((customizer) -> customizer.customize(builder));
 			return null;
 		}).given(factory).addBuilderCustomizers(any());
 		return factory;

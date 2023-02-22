@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,30 +42,32 @@ class DefaultGraphQlSchemaConditionTests {
 		this.contextRunner.withUserConfiguration(TestingConfiguration.class).run((context) -> {
 			didMatch(context);
 			assertThat(conditionReportMessage(context)).contains("@ConditionalOnGraphQlSchema found schemas")
-					.contains("@ConditionalOnGraphQlSchema did not find GraphQlSourceBuilderCustomizer");
+				.contains("@ConditionalOnGraphQlSchema did not find GraphQlSourceBuilderCustomizer");
 		});
 	}
 
 	@Test
 	void matchesWhenCustomizerIsDetected() {
 		this.contextRunner.withUserConfiguration(CustomCustomizerConfiguration.class, TestingConfiguration.class)
-				.withPropertyValues("spring.graphql.schema.locations=classpath:graphql/missing").run((context) -> {
-					didMatch(context);
-					assertThat(conditionReportMessage(context)).contains(
-							"@ConditionalOnGraphQlSchema did not find schema files in locations 'classpath:graphql/missing/'")
-							.contains("@ConditionalOnGraphQlSchema found customizer myBuilderCuystomizer");
-				});
+			.withPropertyValues("spring.graphql.schema.locations=classpath:graphql/missing")
+			.run((context) -> {
+				didMatch(context);
+				assertThat(conditionReportMessage(context)).contains(
+						"@ConditionalOnGraphQlSchema did not find schema files in locations 'classpath:graphql/missing/'")
+					.contains("@ConditionalOnGraphQlSchema found customizer myBuilderCuystomizer");
+			});
 	}
 
 	@Test
 	void doesNotMatchWhenBothAreMissing() {
 		this.contextRunner.withUserConfiguration(TestingConfiguration.class)
-				.withPropertyValues("spring.graphql.schema.locations=classpath:graphql/missing").run((context) -> {
-					assertThat(context).doesNotHaveBean("success");
-					assertThat(conditionReportMessage(context)).contains(
-							"@ConditionalOnGraphQlSchema did not find schema files in locations 'classpath:graphql/missing/'")
-							.contains("@ConditionalOnGraphQlSchema did not find GraphQlSourceBuilderCustomizer");
-				});
+			.withPropertyValues("spring.graphql.schema.locations=classpath:graphql/missing")
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean("success");
+				assertThat(conditionReportMessage(context)).contains(
+						"@ConditionalOnGraphQlSchema did not find schema files in locations 'classpath:graphql/missing/'")
+					.contains("@ConditionalOnGraphQlSchema did not find GraphQlSourceBuilderCustomizer");
+			});
 	}
 
 	private void didMatch(AssertableApplicationContext context) {
@@ -75,7 +77,9 @@ class DefaultGraphQlSchemaConditionTests {
 
 	private String conditionReportMessage(AssertableApplicationContext context) {
 		Collection<ConditionEvaluationReport.ConditionAndOutcomes> conditionAndOutcomes = ConditionEvaluationReport
-				.get(context.getSourceApplicationContext().getBeanFactory()).getConditionAndOutcomesBySource().values();
+			.get(context.getSourceApplicationContext().getBeanFactory())
+			.getConditionAndOutcomesBySource()
+			.values();
 		return conditionAndOutcomes.iterator().next().iterator().next().getOutcome().getMessage();
 	}
 

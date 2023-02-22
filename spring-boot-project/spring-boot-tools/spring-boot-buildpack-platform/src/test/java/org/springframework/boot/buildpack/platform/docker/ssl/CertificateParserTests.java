@@ -74,7 +74,7 @@ class CertificateParserTests {
 	void parseWithInvalidPathWillThrowException() throws URISyntaxException {
 		Path path = Paths.get(new URI("file:///bad/path/cert.pem"));
 		assertThatIllegalStateException().isThrownBy(() -> CertificateParser.parse(path))
-				.withMessageContaining(path.toString());
+			.withMessageContaining(path.toString());
 	}
 
 }

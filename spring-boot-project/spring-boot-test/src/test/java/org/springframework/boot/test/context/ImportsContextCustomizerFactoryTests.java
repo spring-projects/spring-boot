@@ -77,8 +77,8 @@ class ImportsContextCustomizerFactoryTests {
 	@Test
 	void getContextCustomizerWhenClassHasBeanMethodsShouldThrowException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.factory.createContextCustomizer(TestWithImportAndBeanMethod.class, null))
-				.withMessageContaining("Test classes cannot include @Bean methods");
+			.isThrownBy(() -> this.factory.createContextCustomizer(TestWithImportAndBeanMethod.class, null))
+			.withMessageContaining("Test classes cannot include @Bean methods");
 	}
 
 	@Test
@@ -93,7 +93,7 @@ class ImportsContextCustomizerFactoryTests {
 	@Test
 	void selfAnnotatingAnnotationDoesNotCauseStackOverflow() {
 		assertThat(this.factory.createContextCustomizer(TestWithImportAndSelfAnnotatingAnnotation.class, null))
-				.isNotNull();
+			.isNotNull();
 	}
 
 	static class TestWithNoImport {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,50 +78,87 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner(
 			AnnotationConfigReactiveWebServerApplicationContext::new)
-					.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class,
-							HttpHandlerAutoConfiguration.class, ReactiveWebServerFactoryAutoConfiguration.class))
-					.withUserConfiguration(TestEndpointConfiguration.class).withPropertyValues("server.port=0");
+		.withConfiguration(AutoConfigurations.of(WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class,
+				ReactiveWebServerFactoryAutoConfiguration.class))
+		.withUserConfiguration(TestEndpointConfiguration.class)
+		.withPropertyValues("server.port=0");
 
 	@Test
 	void operationWithSecurityInterceptorForbidden() {
 		given(tokenValidator.validate(any())).willReturn(Mono.empty());
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.RESTRICTED));
-		this.contextRunner.run(withWebTestClient((client) -> client.get().uri("/cfApplication/test")
-				.accept(MediaType.APPLICATION_JSON).header("Authorization", "bearer " + mockAccessToken()).exchange()
-				.expectStatus().isEqualTo(HttpStatus.FORBIDDEN)));
+		this.contextRunner.run(withWebTestClient((client) -> client.get()
+			.uri("/cfApplication/test")
+			.accept(MediaType.APPLICATION_JSON)
+			.header("Authorization", "bearer " + mockAccessToken())
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.FORBIDDEN)));
 	}
 
 	@Test
 	void operationWithSecurityInterceptorSuccess() {
 		given(tokenValidator.validate(any())).willReturn(Mono.empty());
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.FULL));
-		this.contextRunner.run(withWebTestClient((client) -> client.get().uri("/cfApplication/test")
-				.accept(MediaType.APPLICATION_JSON).header("Authorization", "bearer " + mockAccessToken()).exchange()
-				.expectStatus().isEqualTo(HttpStatus.OK)));
+		this.contextRunner.run(withWebTestClient((client) -> client.get()
+			.uri("/cfApplication/test")
+			.accept(MediaType.APPLICATION_JSON)
+			.header("Authorization", "bearer " + mockAccessToken())
+			.exchange()
+			.expectStatus()
+			.isEqualTo(HttpStatus.OK)));
 	}
 
 	@Test
 	void responseToOptionsRequestIncludesCorsHeaders() {
-		this.contextRunner.run(withWebTestClient((client) -> client.options().uri("/cfApplication/test")
-				.accept(MediaType.APPLICATION_JSON).header("Access-Control-Request-Method", "POST")
-				.header("Origin", "https://example.com").exchange().expectStatus().isOk().expectHeader()
-				.valueEquals("Access-Control-Allow-Origin", "https://example.com").expectHeader()
-				.valueEquals("Access-Control-Allow-Methods", "GET,POST")));
+		this.contextRunner.run(withWebTestClient((client) -> client.options()
+			.uri("/cfApplication/test")
+			.accept(MediaType.APPLICATION_JSON)
+			.header("Access-Control-Request-Method", "POST")
+			.header("Origin", "https://example.com")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.valueEquals("Access-Control-Allow-Origin", "https://example.com")
+			.expectHeader()
+			.valueEquals("Access-Control-Allow-Methods", "GET,POST")));
 	}
 
 	@Test
 	void linksToOtherEndpointsWithFullAccess() {
 		given(tokenValidator.validate(any())).willReturn(Mono.empty());
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.FULL));
-		this.contextRunner
-				.run(withWebTestClient((client) -> client.get().uri("/cfApplication").accept(MediaType.APPLICATION_JSON)
-						.header("Authorization", "bearer " + mockAccessToken()).exchange().expectStatus().isOk()
-						.expectBody().jsonPath("_links.length()").isEqualTo(5).jsonPath("_links.self.href").isNotEmpty()
-						.jsonPath("_links.self.templated").isEqualTo(false).jsonPath("_links.info.href").isNotEmpty()
-						.jsonPath("_links.info.templated").isEqualTo(false).jsonPath("_links.env.href").isNotEmpty()
-						.jsonPath("_links.env.templated").isEqualTo(false).jsonPath("_links.test.href").isNotEmpty()
-						.jsonPath("_links.test.templated").isEqualTo(false).jsonPath("_links.test-part.href")
-						.isNotEmpty().jsonPath("_links.test-part.templated").isEqualTo(true)));
+		this.contextRunner.run(withWebTestClient((client) -> client.get()
+			.uri("/cfApplication")
+			.accept(MediaType.APPLICATION_JSON)
+			.header("Authorization", "bearer " + mockAccessToken())
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("_links.length()")
+			.isEqualTo(5)
+			.jsonPath("_links.self.href")
+			.isNotEmpty()
+			.jsonPath("_links.self.templated")
+			.isEqualTo(false)
+			.jsonPath("_links.info.href")
+			.isNotEmpty()
+			.jsonPath("_links.info.templated")
+			.isEqualTo(false)
+			.jsonPath("_links.env.href")
+			.isNotEmpty()
+			.jsonPath("_links.env.templated")
+			.isEqualTo(false)
+			.jsonPath("_links.test.href")
+			.isNotEmpty()
+			.jsonPath("_links.test.templated")
+			.isEqualTo(false)
+			.jsonPath("_links.test-part.href")
+			.isNotEmpty()
+			.jsonPath("_links.test-part.templated")
+			.isEqualTo(true)));
 	}
 
 	@Test
@@ -129,31 +166,55 @@ class CloudFoundryWebFluxEndpointIntegrationTests {
 		CloudFoundryAuthorizationException exception = new CloudFoundryAuthorizationException(Reason.INVALID_TOKEN,
 				"invalid-token");
 		willThrow(exception).given(tokenValidator).validate(any());
-		this.contextRunner.run(withWebTestClient((client) -> client.get().uri("/cfApplication")
-				.accept(MediaType.APPLICATION_JSON).header("Authorization", "bearer " + mockAccessToken()).exchange()
-				.expectStatus().isUnauthorized()));
+		this.contextRunner.run(withWebTestClient((client) -> client.get()
+			.uri("/cfApplication")
+			.accept(MediaType.APPLICATION_JSON)
+			.header("Authorization", "bearer " + mockAccessToken())
+			.exchange()
+			.expectStatus()
+			.isUnauthorized()));
 	}
 
 	@Test
 	void linksToOtherEndpointsWithRestrictedAccess() {
 		given(tokenValidator.validate(any())).willReturn(Mono.empty());
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(Mono.just(AccessLevel.RESTRICTED));
-		this.contextRunner
-				.run(withWebTestClient((client) -> client.get().uri("/cfApplication").accept(MediaType.APPLICATION_JSON)
-						.header("Authorization", "bearer " + mockAccessToken()).exchange().expectStatus().isOk()
-						.expectBody().jsonPath("_links.length()").isEqualTo(2).jsonPath("_links.self.href").isNotEmpty()
-						.jsonPath("_links.self.templated").isEqualTo(false).jsonPath("_links.info.href").isNotEmpty()
-						.jsonPath("_links.info.templated").isEqualTo(false).jsonPath("_links.env").doesNotExist()
-						.jsonPath("_links.test").doesNotExist().jsonPath("_links.test-part").doesNotExist()));
+		this.contextRunner.run(withWebTestClient((client) -> client.get()
+			.uri("/cfApplication")
+			.accept(MediaType.APPLICATION_JSON)
+			.header("Authorization", "bearer " + mockAccessToken())
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("_links.length()")
+			.isEqualTo(2)
+			.jsonPath("_links.self.href")
+			.isNotEmpty()
+			.jsonPath("_links.self.templated")
+			.isEqualTo(false)
+			.jsonPath("_links.info.href")
+			.isNotEmpty()
+			.jsonPath("_links.info.templated")
+			.isEqualTo(false)
+			.jsonPath("_links.env")
+			.doesNotExist()
+			.jsonPath("_links.test")
+			.doesNotExist()
+			.jsonPath("_links.test-part")
+			.doesNotExist()));
 	}
 
 	private ContextConsumer<AssertableReactiveWebApplicationContext> withWebTestClient(
 			Consumer<WebTestClient> clientConsumer) {
 		return (context) -> {
 			int port = ((AnnotationConfigReactiveWebServerApplicationContext) context.getSourceApplicationContext())
-					.getWebServer().getPort();
-			clientConsumer.accept(WebTestClient.bindToServer().baseUrl("http://localhost:" + port)
-					.responseTimeout(Duration.ofMinutes(5)).build());
+				.getWebServer()
+				.getPort();
+			clientConsumer.accept(WebTestClient.bindToServer()
+				.baseUrl("http://localhost:" + port)
+				.responseTimeout(Duration.ofMinutes(5))
+				.build());
 		};
 	}
 

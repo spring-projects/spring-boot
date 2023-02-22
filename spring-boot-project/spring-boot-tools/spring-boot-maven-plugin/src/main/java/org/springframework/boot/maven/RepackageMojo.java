@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -300,9 +300,9 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		else {
 			String artifactId = (this.classifier != null) ? "artifact with classifier " + this.classifier
 					: "main artifact";
-			getLog().info(
-					String.format("Replacing %s %s with repackaged archive, adding nested dependencies in BOOT-INF/.",
-							artifactId, source.getFile()));
+			getLog()
+				.info(String.format("Replacing %s %s with repackaged archive, adding nested dependencies in BOOT-INF/.",
+						artifactId, source.getFile()));
 			getLog().info("The original artifact has been renamed to " + original);
 			source.setFile(target);
 		}

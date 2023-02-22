@@ -33,7 +33,7 @@ class BuildpackReferenceTests {
 	@Test
 	void ofWhenValueIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackReference.of(""))
-				.withMessage("Value must not be empty");
+			.withMessage("Value must not be empty");
 	}
 
 	@Test

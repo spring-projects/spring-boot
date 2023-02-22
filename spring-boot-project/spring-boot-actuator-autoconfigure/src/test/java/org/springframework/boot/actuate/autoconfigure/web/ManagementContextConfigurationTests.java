@@ -34,7 +34,7 @@ class ManagementContextConfigurationTests {
 	@Test
 	void proxyBeanMethodsIsEnabledByDefault() {
 		AnnotationAttributes attributes = AnnotatedElementUtils
-				.getMergedAnnotationAttributes(DefaultManagementContextConfiguration.class, Configuration.class);
+			.getMergedAnnotationAttributes(DefaultManagementContextConfiguration.class, Configuration.class);
 		assertThat(attributes).containsEntry("proxyBeanMethods", true);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +79,9 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
 		ReactiveJwtDecoder jwtDecoder() {
 			NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = NimbusReactiveJwtDecoder
-					.withJwkSetUri(this.properties.getJwkSetUri()).jwsAlgorithms(this::jwsAlgorithms).build();
+				.withJwkSetUri(this.properties.getJwkSetUri())
+				.jwsAlgorithms(this::jwsAlgorithms)
+				.build();
 			String issuerUri = this.properties.getIssuerUri();
 			Supplier<OAuth2TokenValidator<Jwt>> defaultValidator = (issuerUri != null)
 					? () -> JwtValidators.createDefaultWithIssuer(issuerUri) : JwtValidators::createDefault;
@@ -110,9 +112,10 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		@Conditional(KeyValueCondition.class)
 		NimbusReactiveJwtDecoder jwtDecoderByPublicKeyValue() throws Exception {
 			RSAPublicKey publicKey = (RSAPublicKey) KeyFactory.getInstance("RSA")
-					.generatePublic(new X509EncodedKeySpec(getKeySpec(this.properties.readPublicKey())));
+				.generatePublic(new X509EncodedKeySpec(getKeySpec(this.properties.readPublicKey())));
 			NimbusReactiveJwtDecoder jwtDecoder = NimbusReactiveJwtDecoder.withPublicKey(publicKey)
-					.signatureAlgorithm(SignatureAlgorithm.from(exactlyOneAlgorithm())).build();
+				.signatureAlgorithm(SignatureAlgorithm.from(exactlyOneAlgorithm()))
+				.build();
 			jwtDecoder.setJwtValidator(getValidators(JwtValidators::createDefault));
 			return jwtDecoder;
 		}
@@ -138,7 +141,7 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		SupplierReactiveJwtDecoder jwtDecoderByIssuerUri() {
 			return new SupplierReactiveJwtDecoder(() -> {
 				NimbusReactiveJwtDecoder jwtDecoder = (NimbusReactiveJwtDecoder) ReactiveJwtDecoders
-						.fromIssuerLocation(this.properties.getIssuerUri());
+					.fromIssuerLocation(this.properties.getIssuerUri());
 				jwtDecoder.setJwtValidator(
 						getValidators(() -> JwtValidators.createDefaultWithIssuer(this.properties.getIssuerUri())));
 				return jwtDecoder;

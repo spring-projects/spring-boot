@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ class ZipFileTarArchiveTests {
 	@Test
 	void createWhenZipIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ZipFileTarArchive(null, Owner.ROOT))
-				.withMessage("Zip must not be null");
+			.withMessage("Zip must not be null");
 	}
 
 	@Test
@@ -54,7 +54,7 @@ class ZipFileTarArchiveTests {
 		File file = new File(this.tempDir, "test.zip");
 		writeTestZip(file);
 		assertThatIllegalArgumentException().isThrownBy(() -> new ZipFileTarArchive(file, null))
-				.withMessage("Owner must not be null");
+			.withMessage("Owner must not be null");
 	}
 
 	@Test

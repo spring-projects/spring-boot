@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,13 +61,13 @@ class RootUriTemplateHandlerTests {
 	@Test
 	void createWithNullRootUriShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RootUriTemplateHandler((String) null))
-				.withMessageContaining("RootUri must not be null");
+			.withMessageContaining("RootUri must not be null");
 	}
 
 	@Test
 	void createWithNullHandlerShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RootUriTemplateHandler("https://example.com", null))
-				.withMessageContaining("Handler must not be null");
+			.withMessageContaining("Handler must not be null");
 	}
 
 	@Test

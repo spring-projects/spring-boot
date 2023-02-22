@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,7 +114,7 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 			ObjectProvider<JCachePropertiesCustomizer> cachePropertiesCustomizers, CacheProperties cacheProperties) {
 		Properties properties = new Properties();
 		cachePropertiesCustomizers.orderedStream()
-				.forEach((customizer) -> customizer.customize(cacheProperties, properties));
+			.forEach((customizer) -> customizer.customize(cacheProperties, properties));
 		return properties;
 	}
 

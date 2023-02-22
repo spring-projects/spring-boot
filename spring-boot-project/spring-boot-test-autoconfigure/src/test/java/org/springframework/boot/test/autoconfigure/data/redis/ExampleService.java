@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class ExampleService {
 
 	public boolean hasRecord(PersonHash personHash) {
 		return this.operations.execute((RedisConnection connection) -> connection.keyCommands()
-				.exists(("persons:" + personHash.getId()).getBytes(CHARSET)));
+			.exists(("persons:" + personHash.getId()).getBytes(CHARSET)));
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ class ManagementDifferentPortAndEndpointWithExceptionHandlerSampleActuatorApplic
 	@Test
 	void testExceptionHandlerRestControllerEndpoint() {
 		ResponseEntity<String> entity = new TestRestTemplate("user", "password")
-				.getForEntity("http://localhost:" + this.managementPort + "/actuator/exception", String.class);
+			.getForEntity("http://localhost:" + this.managementPort + "/actuator/exception", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.I_AM_A_TEAPOT);
 		assertThat(entity.getBody()).isEqualTo("this is a custom exception body");
 	}

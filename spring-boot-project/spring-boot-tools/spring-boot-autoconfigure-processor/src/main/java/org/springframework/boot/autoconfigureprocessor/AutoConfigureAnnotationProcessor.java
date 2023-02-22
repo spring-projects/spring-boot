@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,25 +84,25 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 	private void addConditionPropertyGenerators(List<PropertyGenerator> generators) {
 		String annotationPackage = "org.springframework.boot.autoconfigure.condition";
 		generators.add(PropertyGenerator.of(annotationPackage, "ConditionalOnClass")
-				.withAnnotation(new OnClassConditionValueExtractor()));
+			.withAnnotation(new OnClassConditionValueExtractor()));
 		generators.add(PropertyGenerator.of(annotationPackage, "ConditionalOnBean")
-				.withAnnotation(new OnBeanConditionValueExtractor()));
+			.withAnnotation(new OnBeanConditionValueExtractor()));
 		generators.add(PropertyGenerator.of(annotationPackage, "ConditionalOnSingleCandidate")
-				.withAnnotation(new OnBeanConditionValueExtractor()));
+			.withAnnotation(new OnBeanConditionValueExtractor()));
 		generators.add(PropertyGenerator.of(annotationPackage, "ConditionalOnWebApplication")
-				.withAnnotation(ValueExtractor.allFrom("type")));
+			.withAnnotation(ValueExtractor.allFrom("type")));
 	}
 
 	private void addAutoConfigurePropertyGenerators(List<PropertyGenerator> generators) {
 		String annotationPackage = "org.springframework.boot.autoconfigure";
 		generators.add(PropertyGenerator.of(annotationPackage, "AutoConfigureBefore", true)
-				.withAnnotation(ValueExtractor.allFrom("value", "name"))
-				.withAnnotation("AutoConfiguration", ValueExtractor.allFrom("before", "beforeName")));
+			.withAnnotation(ValueExtractor.allFrom("value", "name"))
+			.withAnnotation("AutoConfiguration", ValueExtractor.allFrom("before", "beforeName")));
 		generators.add(PropertyGenerator.of(annotationPackage, "AutoConfigureAfter", true)
-				.withAnnotation(ValueExtractor.allFrom("value", "name"))
-				.withAnnotation("AutoConfiguration", ValueExtractor.allFrom("after", "afterName")));
+			.withAnnotation(ValueExtractor.allFrom("value", "name"))
+			.withAnnotation("AutoConfiguration", ValueExtractor.allFrom("after", "afterName")));
 		generators.add(PropertyGenerator.of(annotationPackage, "AutoConfigureOrder")
-				.withAnnotation(ValueExtractor.allFrom("value")));
+			.withAnnotation(ValueExtractor.allFrom("value")));
 	}
 
 	@Override
@@ -207,7 +207,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 			Object value = annotationValue.getValue();
 			if (value instanceof List) {
 				return ((List<AnnotationValue>) value).stream()
-						.map((annotation) -> extractValue(annotation.getValue()));
+					.map((annotation) -> extractValue(annotation.getValue()));
 			}
 			return Stream.of(extractValue(value));
 		}
@@ -248,7 +248,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		public List<Object> getValues(AnnotationMirror annotation) {
 			Map<String, AnnotationValue> attributes = new LinkedHashMap<>();
 			annotation.getElementValues()
-					.forEach((key, value) -> attributes.put(key.getSimpleName().toString(), value));
+				.forEach((key, value) -> attributes.put(key.getSimpleName().toString(), value));
 			if (attributes.containsKey("name")) {
 				return Collections.emptyList();
 			}
@@ -274,8 +274,9 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		}
 
 		private int compare(Object o1, Object o2) {
-			return Comparator.comparing(this::isSpringClass).thenComparing(String.CASE_INSENSITIVE_ORDER)
-					.compare(o1.toString(), o2.toString());
+			return Comparator.comparing(this::isSpringClass)
+				.thenComparing(String.CASE_INSENSITIVE_ORDER)
+				.compare(o1.toString(), o2.toString());
 		}
 
 		private boolean isSpringClass(String type) {

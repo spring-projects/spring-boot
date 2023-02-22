@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,9 +96,9 @@ class BuildpackResolversTests extends AbstractJsonTests {
 	void resolveAllWithInvalidLocatorThrowsException() {
 		BuildpackReference reference = BuildpackReference.of("unknown-buildpack@0.0.1");
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> BuildpackResolvers.resolveAll(this.resolverContext, Collections.singleton(reference)))
-				.withMessageContaining("Invalid buildpack reference")
-				.withMessageContaining("'unknown-buildpack@0.0.1'");
+			.isThrownBy(() -> BuildpackResolvers.resolveAll(this.resolverContext, Collections.singleton(reference)))
+			.withMessageContaining("Invalid buildpack reference")
+			.withMessageContaining("'unknown-buildpack@0.0.1'");
 	}
 
 }

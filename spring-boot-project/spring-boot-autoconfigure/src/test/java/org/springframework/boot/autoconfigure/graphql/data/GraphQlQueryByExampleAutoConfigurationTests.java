@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,18 +46,21 @@ class GraphQlQueryByExampleAutoConfigurationTests {
 	private static final Book book = new Book("42", "Test title", 42, "Test Author");
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(GraphQlAutoConfiguration.class, GraphQlQueryByExampleAutoConfiguration.class))
-			.withUserConfiguration(MockRepositoryConfig.class)
-			.withPropertyValues("spring.main.web-application-type=reactive");
+		.withConfiguration(
+				AutoConfigurations.of(GraphQlAutoConfiguration.class, GraphQlQueryByExampleAutoConfiguration.class))
+		.withUserConfiguration(MockRepositoryConfig.class)
+		.withPropertyValues("spring.main.web-application-type=reactive");
 
 	@Test
 	void shouldRegisterDataFetcherForQueryByExampleRepositories() {
 		this.contextRunner.run((context) -> {
 			ExecutionGraphQlService graphQlService = context.getBean(ExecutionGraphQlService.class);
 			ExecutionGraphQlServiceTester graphQlTester = ExecutionGraphQlServiceTester.create(graphQlService);
-			graphQlTester.document("{ bookById(id: 1) {name}}").execute().path("bookById.name").entity(String.class)
-					.isEqualTo("Test title");
+			graphQlTester.document("{ bookById(id: 1) {name}}")
+				.execute()
+				.path("bookById.name")
+				.entity(String.class)
+				.isEqualTo("Test title");
 		});
 	}
 

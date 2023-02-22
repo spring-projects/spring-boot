@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ public class GsonAutoConfiguration {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(properties::getGenerateNonExecutableJson).toCall(builder::generateNonExecutableJson);
 			map.from(properties::getExcludeFieldsWithoutExposeAnnotation)
-					.toCall(builder::excludeFieldsWithoutExposeAnnotation);
+				.toCall(builder::excludeFieldsWithoutExposeAnnotation);
 			map.from(properties::getSerializeNulls).whenTrue().toCall(builder::serializeNulls);
 			map.from(properties::getEnableComplexMapKeySerialization).toCall(builder::enableComplexMapKeySerialization);
 			map.from(properties::getDisableInnerClassSerialization).toCall(builder::disableInnerClassSerialization);

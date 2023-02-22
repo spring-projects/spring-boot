@@ -47,14 +47,15 @@ class ApplicationContextRequestMatcherTests {
 	@Test
 	void createWhenContextClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestApplicationContextRequestMatcher<>(null))
-				.withMessageContaining("Context class must not be null");
+			.withMessageContaining("Context class must not be null");
 	}
 
 	@Test
 	void matchesWhenContextClassIsApplicationContextShouldProvideContext() {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		assertThat(new TestApplicationContextRequestMatcher<>(ApplicationContext.class)
-				.callMatchesAndReturnProvidedContext(context).get()).isEqualTo(context);
+			.callMatchesAndReturnProvidedContext(context)
+			.get()).isEqualTo(context);
 	}
 
 	@Test
@@ -62,14 +63,15 @@ class ApplicationContextRequestMatcherTests {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		context.registerSingleton("existingBean", ExistingBean.class);
 		assertThat(new TestApplicationContextRequestMatcher<>(ExistingBean.class)
-				.callMatchesAndReturnProvidedContext(context).get()).isEqualTo(context.getBean(ExistingBean.class));
+			.callMatchesAndReturnProvidedContext(context)
+			.get()).isEqualTo(context.getBean(ExistingBean.class));
 	}
 
 	@Test
 	void matchesWhenContextClassIsBeanThatDoesNotExistShouldSupplyException() {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		Supplier<ExistingBean> supplier = new TestApplicationContextRequestMatcher<>(ExistingBean.class)
-				.callMatchesAndReturnProvidedContext(context);
+			.callMatchesAndReturnProvidedContext(context);
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(supplier::get);
 	}
 

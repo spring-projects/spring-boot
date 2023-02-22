@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -153,7 +153,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 		}
 		locations.add("log4j2.xml");
 		String propertyDefinedLocation = new PropertiesUtil(new Properties())
-				.getStringProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY);
+			.getStringProperty(ConfigurationFactory.CONFIGURATION_FILE_PROPERTY);
 		if (propertyDefinedLocation != null) {
 			locations.add(propertyDefinedLocation);
 		}
@@ -258,7 +258,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private List<String> getOverrides(LoggingInitializationContext initializationContext) {
 		BindResult<List<String>> overrides = Binder.get(initializationContext.getEnvironment())
-				.bind("logging.log4j2.config.override", Bindable.listOf(String.class));
+			.bind("logging.log4j2.config.override", Bindable.listOf(String.class));
 		return overrides.orElse(Collections.emptyList());
 	}
 
@@ -308,7 +308,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			return new ConfigurationSource(url.openStream(), ResourceUtils.getFile(url));
 		}
 		AuthorizationProvider authorizationProvider = ConfigurationFactory
-				.authorizationProvider(PropertiesUtil.getProperties());
+			.authorizationProvider(PropertiesUtil.getProperties());
 		SslConfiguration sslConfiguration = url.getProtocol().equals("https")
 				? SslConfigurationFactory.getSslConfiguration() : null;
 		URLConnection connection = UrlConnectionFactory.createConnection(url, 0, sslConfiguration,
@@ -381,8 +381,8 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private void setLogLevel(String loggerName, LoggerConfig logger, Level level) {
 		if (logger == null) {
-			getLoggerContext().getConfiguration().addLogger(loggerName,
-					new LevelSetLoggerConfig(loggerName, level, true));
+			getLoggerContext().getConfiguration()
+				.addLogger(loggerName, new LevelSetLoggerConfig(loggerName, level, true));
 		}
 		else {
 			logger.setLevel(level);
@@ -504,7 +504,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	public static class Factory implements LoggingSystemFactory {
 
 		private static final boolean PRESENT = ClassUtils
-				.isPresent("org.apache.logging.log4j.core.impl.Log4jContextFactory", Factory.class.getClassLoader());
+			.isPresent("org.apache.logging.log4j.core.impl.Log4jContextFactory", Factory.class.getClassLoader());
 
 		@Override
 		public LoggingSystem getLoggingSystem(ClassLoader classLoader) {

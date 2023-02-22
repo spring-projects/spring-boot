@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -239,8 +239,8 @@ class Lifecycle implements Closeable {
 		}
 		try {
 			TarArchive applicationContent = this.request.getApplicationContent(this.builder.getBuildOwner());
-			return this.docker.container().create(config,
-					ContainerContent.of(applicationContent, Directory.APPLICATION));
+			return this.docker.container()
+				.create(config, ContainerContent.of(applicationContent, Directory.APPLICATION));
 		}
 		finally {
 			this.applicationVolumePopulated = true;

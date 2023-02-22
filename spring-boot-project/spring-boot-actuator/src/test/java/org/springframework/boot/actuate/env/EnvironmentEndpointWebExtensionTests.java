@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,7 +86,7 @@ class EnvironmentEndpointWebExtensionTests {
 
 	private void verifyPrefixed(SecurityContext securityContext, boolean showUnsanitized) {
 		given(this.delegate.getEnvironmentEntryDescriptor("test", showUnsanitized))
-				.willReturn(new EnvironmentEntryDescriptor(null, Collections.emptyList(), Collections.emptyList()));
+			.willReturn(new EnvironmentEntryDescriptor(null, Collections.emptyList(), Collections.emptyList()));
 		this.webExtension.environmentEntry(securityContext, "test");
 		then(this.delegate).should().getEnvironmentEntryDescriptor("test", showUnsanitized);
 	}

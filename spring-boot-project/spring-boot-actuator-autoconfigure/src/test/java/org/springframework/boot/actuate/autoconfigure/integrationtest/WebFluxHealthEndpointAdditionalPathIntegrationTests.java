@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,14 +45,14 @@ class WebFluxHealthEndpointAdditionalPathIntegrationTests extends
 
 	WebFluxHealthEndpointAdditionalPathIntegrationTests() {
 		super(new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, CodecsAutoConfiguration.class,
-						WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class,
-						EndpointAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
-						DiskSpaceHealthContributorAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-						ManagementContextAutoConfiguration.class, ReactiveWebServerFactoryAutoConfiguration.class,
-						ReactiveManagementContextAutoConfiguration.class, BeansEndpointAutoConfiguration.class))
-				.withInitializer(new ServerPortInfoApplicationContextInitializer())
-				.withPropertyValues("server.port=0"));
+			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, CodecsAutoConfiguration.class,
+					WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class, EndpointAutoConfiguration.class,
+					HealthEndpointAutoConfiguration.class, DiskSpaceHealthContributorAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class,
+					ReactiveWebServerFactoryAutoConfiguration.class, ReactiveManagementContextAutoConfiguration.class,
+					BeansEndpointAutoConfiguration.class))
+			.withInitializer(new ServerPortInfoApplicationContextInitializer())
+			.withPropertyValues("server.port=0"));
 	}
 
 }

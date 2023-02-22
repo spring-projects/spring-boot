@@ -93,7 +93,8 @@ class ObservationRegistryConfigurer {
 	@SuppressWarnings("unchecked")
 	private void customize(ObservationRegistry registry) {
 		LambdaSafe.callbacks(ObservationRegistryCustomizer.class, asOrderedList(this.customizers), registry)
-				.withLogger(ObservationRegistryConfigurer.class).invoke((customizer) -> customizer.customize(registry));
+			.withLogger(ObservationRegistryConfigurer.class)
+			.invoke((customizer) -> customizer.customize(registry));
 	}
 
 	private <T> List<T> asOrderedList(ObjectProvider<T> provider) {

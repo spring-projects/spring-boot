@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,13 +47,13 @@ class EndpointMediaTypesTests {
 	@Test
 	void createWhenProducedIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new EndpointMediaTypes(null, Collections.emptyList()))
-				.withMessageContaining("Produced must not be null");
+			.withMessageContaining("Produced must not be null");
 	}
 
 	@Test
 	void createWhenConsumedIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new EndpointMediaTypes(Collections.emptyList(), null))
-				.withMessageContaining("Consumed must not be null");
+			.withMessageContaining("Consumed must not be null");
 	}
 
 	@Test

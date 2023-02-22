@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 abstract class AbstractCacheAutoConfigurationTests {
 
 	protected final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class));
 
 	protected <T extends CacheManager> T getCacheManager(AssertableApplicationContext loaded, Class<T> type) {
 		CacheManager cacheManager = loaded.getBean(CacheManager.class);
@@ -62,7 +62,7 @@ abstract class AbstractCacheAutoConfigurationTests {
 			CacheManager cacheManager = getCacheManager(context, CacheManager.class);
 			List<String> expected = new ArrayList<>(Arrays.asList(expectedCustomizerNames));
 			Map<String, CacheManagerTestCustomizer> customizer = context
-					.getBeansOfType(CacheManagerTestCustomizer.class);
+				.getBeansOfType(CacheManagerTestCustomizer.class);
 			customizer.forEach((key, value) -> {
 				if (expected.contains(key)) {
 					expected.remove(key);

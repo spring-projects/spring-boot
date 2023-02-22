@@ -47,10 +47,10 @@ class KafkaPropertiesTests {
 	@Test
 	void isolationLevelEnumConsistentWithKafkaVersion() {
 		org.apache.kafka.common.IsolationLevel[] original = org.apache.kafka.common.IsolationLevel.values();
-		assertThat(original).extracting(Enum::name).containsExactly(IsolationLevel.READ_UNCOMMITTED.name(),
-				IsolationLevel.READ_COMMITTED.name());
-		assertThat(original).extracting("id").containsExactly(IsolationLevel.READ_UNCOMMITTED.id(),
-				IsolationLevel.READ_COMMITTED.id());
+		assertThat(original).extracting(Enum::name)
+			.containsExactly(IsolationLevel.READ_UNCOMMITTED.name(), IsolationLevel.READ_COMMITTED.name());
+		assertThat(original).extracting("id")
+			.containsExactly(IsolationLevel.READ_UNCOMMITTED.id(), IsolationLevel.READ_COMMITTED.id());
 		assertThat(original).hasSameSizeAs(IsolationLevel.values());
 	}
 
@@ -88,7 +88,7 @@ class KafkaPropertiesTests {
 		properties.getSsl().setKeyStoreKey("-----BEGIN");
 		properties.getSsl().setKeyStoreLocation(new ClassPathResource("ksLoc"));
 		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
-				.isThrownBy(properties::buildConsumerProperties);
+			.isThrownBy(properties::buildConsumerProperties);
 	}
 
 	@Test
@@ -97,7 +97,7 @@ class KafkaPropertiesTests {
 		properties.getSsl().setTrustStoreLocation(new ClassPathResource("tsLoc"));
 		properties.getSsl().setTrustStoreCertificates("-----BEGIN");
 		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
-				.isThrownBy(properties::buildConsumerProperties);
+			.isThrownBy(properties::buildConsumerProperties);
 	}
 
 	@Test

@@ -35,19 +35,19 @@ class ApiVersionTests {
 	@Test
 	void parseWhenVersionIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ApiVersion.parse(null))
-				.withMessage("Value must not be empty");
+			.withMessage("Value must not be empty");
 	}
 
 	@Test
 	void parseWhenVersionIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ApiVersion.parse(""))
-				.withMessage("Value must not be empty");
+			.withMessage("Value must not be empty");
 	}
 
 	@Test
 	void parseWhenVersionDoesNotMatchPatternThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ApiVersion.parse("bad"))
-				.withMessage("Malformed version number 'bad'");
+			.withMessage("Malformed version number 'bad'");
 	}
 
 	@Test
@@ -65,8 +65,8 @@ class ApiVersionTests {
 	@Test
 	void assertSupportsWhenDoesNotSupportThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ApiVersion.parse("1.2").assertSupports(ApiVersion.parse("1.3")))
-				.withMessage("Detected platform API version '1.3' does not match supported version '1.2'");
+			.isThrownBy(() -> ApiVersion.parse("1.2").assertSupports(ApiVersion.parse("1.3")))
+			.withMessage("Detected platform API version '1.3' does not match supported version '1.2'");
 	}
 
 	@Test
@@ -129,7 +129,7 @@ class ApiVersionTests {
 
 	private boolean supportsAny(String v1, String... others) {
 		return ApiVersion.parse(v1)
-				.supportsAny(Arrays.stream(others).map(ApiVersion::parse).toArray(ApiVersion[]::new));
+			.supportsAny(Arrays.stream(others).map(ApiVersion::parse).toArray(ApiVersion[]::new));
 	}
 
 }

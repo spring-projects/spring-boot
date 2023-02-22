@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,9 +48,9 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 class RestTemplateObservationConfigurationWithoutMetricsTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withBean(ObservationRegistry.class, TestObservationRegistry::create)
-			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
-					RestTemplateAutoConfiguration.class, HttpClientObservationsAutoConfiguration.class));
+		.withBean(ObservationRegistry.class, TestObservationRegistry::create)
+		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
+				RestTemplateAutoConfiguration.class, HttpClientObservationsAutoConfiguration.class));
 
 	@Test
 	void restTemplateCreatedWithBuilderIsInstrumented() {
@@ -59,7 +59,7 @@ class RestTemplateObservationConfigurationWithoutMetricsTests {
 			restTemplate.getForEntity("/projects/{project}", Void.class, "spring-boot");
 			TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
 			TestObservationRegistryAssert.assertThat(registry)
-					.hasObservationWithNameEqualToIgnoringCase("http.client.requests");
+				.hasObservationWithNameEqualToIgnoringCase("http.client.requests");
 		});
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,9 @@ class HealthEndpointReactiveWebExtensionConfiguration {
 				WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups groups) {
 			Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
 			ExposableWebEndpoint health = webEndpoints.stream()
-					.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID)).findFirst().get();
+				.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
+				.findFirst()
+				.get();
 			return new AdditionalHealthEndpointPathsWebFluxHandlerMapping(new EndpointMapping(""), health,
 					groups.getAllWithAdditionalPath(WebServerNamespace.SERVER));
 		}

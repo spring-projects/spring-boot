@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,14 +102,18 @@ public abstract class AbstractEndpointDocumentationTests {
 
 	protected FieldDescriptor parentIdField() {
 		return fieldWithPath("contexts.*.parentId").description("Id of the parent application context, if any.")
-				.optional().type(JsonFieldType.STRING);
+			.optional()
+			.type(JsonFieldType.STRING);
 	}
 
 	@SuppressWarnings("unchecked")
 	private <T> Map<String, Object> select(Map<String, Object> candidates, Predicate<T> filter) {
 		Map<String, Object> selected = new HashMap<>();
-		candidates.entrySet().stream().filter((candidate) -> filter.test((T) candidate)).limit(3)
-				.forEach((entry) -> selected.put(entry.getKey(), entry.getValue()));
+		candidates.entrySet()
+			.stream()
+			.filter((candidate) -> filter.test((T) candidate))
+			.limit(3)
+			.forEach((entry) -> selected.put(entry.getKey(), entry.getValue()));
 		return selected;
 	}
 
@@ -135,7 +139,7 @@ public abstract class AbstractEndpointDocumentationTests {
 				public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 					if (bean instanceof EndpointObjectMapper) {
 						return (EndpointObjectMapper) () -> ((EndpointObjectMapper) bean).get()
-								.enable(SerializationFeature.INDENT_OUTPUT);
+							.enable(SerializationFeature.INDENT_OUTPUT);
 					}
 					return bean;
 				}

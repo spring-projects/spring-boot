@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,7 +96,8 @@ class Connection {
 		this.outputStream.writeHeaders("HTTP/1.1 101 Switching Protocols", "Upgrade: websocket", "Connection: Upgrade",
 				"Sec-WebSocket-Accept: " + accept);
 		new Frame("{\"command\":\"hello\",\"protocols\":[\"http://livereload.com/protocols/official-7\"],"
-				+ "\"serverName\":\"spring-boot\"}").write(this.outputStream);
+				+ "\"serverName\":\"spring-boot\"}")
+			.write(this.outputStream);
 		while (this.running) {
 			readWebSocketFrame();
 		}

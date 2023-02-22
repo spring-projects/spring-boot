@@ -186,7 +186,7 @@ class OriginTrackedResourceTests {
 		Resource resource = mock(WritableResource.class);
 		Resource tracked = OriginTrackedResource.of(resource, this.origin);
 		assertThat(tracked).isInstanceOf(WritableResource.class)
-				.isExactlyInstanceOf(OriginTrackedWritableResource.class);
+			.isExactlyInstanceOf(OriginTrackedWritableResource.class);
 	}
 
 }

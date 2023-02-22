@@ -42,9 +42,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RSocketSecurityAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ReactiveUserDetailsServiceAutoConfiguration.class,
-					RSocketSecurityAutoConfiguration.class, RSocketMessagingAutoConfiguration.class,
-					RSocketStrategiesAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ReactiveUserDetailsServiceAutoConfiguration.class,
+				RSocketSecurityAutoConfiguration.class, RSocketMessagingAutoConfiguration.class,
+				RSocketStrategiesAutoConfiguration.class));
 
 	@Test
 	void autoConfigurationEnablesRSocketSecurity() {
@@ -54,7 +54,7 @@ class RSocketSecurityAutoConfigurationTests {
 	@Test
 	void autoConfigurationIsConditionalOnSecuritySocketAcceptorInterceptorClass() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(SecuritySocketAcceptorInterceptor.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(RSocketSecurity.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(RSocketSecurity.class));
 	}
 
 	@Test
@@ -66,7 +66,7 @@ class RSocketSecurityAutoConfigurationTests {
 			server.interceptors((registry) -> registry.forSocketAcceptor((interceptors) -> {
 				assertThat(interceptors).isNotEmpty();
 				assertThat(interceptors)
-						.anyMatch((interceptor) -> interceptor instanceof SecuritySocketAcceptorInterceptor);
+					.anyMatch((interceptor) -> interceptor instanceof SecuritySocketAcceptorInterceptor);
 			}));
 		});
 	}
@@ -77,7 +77,7 @@ class RSocketSecurityAutoConfigurationTests {
 			assertThat(context).hasSingleBean(RSocketMessageHandler.class);
 			RSocketMessageHandler handler = context.getBean(RSocketMessageHandler.class);
 			assertThat(handler.getArgumentResolverConfigurer().getCustomResolvers())
-					.anyMatch((customResolver) -> customResolver instanceof AuthenticationPrincipalArgumentResolver);
+				.anyMatch((customResolver) -> customResolver instanceof AuthenticationPrincipalArgumentResolver);
 		});
 	}
 

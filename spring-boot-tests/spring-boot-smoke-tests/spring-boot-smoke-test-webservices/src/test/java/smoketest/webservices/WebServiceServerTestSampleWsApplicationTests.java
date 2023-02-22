@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,8 +64,8 @@ class WebServiceServerTestSampleWsApplicationTests {
 		StreamSource source = new StreamSource(new StringReader(request));
 		this.client.sendRequest(RequestCreators.withPayload(source)).andExpect(ResponseMatchers.noFault());
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-		then(this.service).should().bookHoliday(dateFormat.parse("2013-10-20"), dateFormat.parse("2013-11-22"),
-				"John Doe");
+		then(this.service).should()
+			.bookHoliday(dateFormat.parse("2013-10-20"), dateFormat.parse("2013-11-22"), "John Doe");
 	}
 
 }

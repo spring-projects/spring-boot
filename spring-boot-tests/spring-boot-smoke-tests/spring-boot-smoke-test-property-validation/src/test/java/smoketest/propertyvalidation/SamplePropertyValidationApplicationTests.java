@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,15 +57,17 @@ class SamplePropertyValidationApplicationTests {
 	void bindInvalidHost() {
 		this.context.register(SamplePropertyValidationApplication.class);
 		TestPropertyValues.of("sample.host:xxxxxx", "sample.port:9090").applyTo(this.context);
-		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh).havingRootCause()
-				.isInstanceOf(BindValidationException.class);
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh)
+			.havingRootCause()
+			.isInstanceOf(BindValidationException.class);
 	}
 
 	@Test
 	void bindNullHost() {
 		this.context.register(SamplePropertyValidationApplication.class);
-		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh).havingRootCause()
-				.isInstanceOf(BindValidationException.class);
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(this.context::refresh)
+			.havingRootCause()
+			.isInstanceOf(BindValidationException.class);
 	}
 
 	@Test

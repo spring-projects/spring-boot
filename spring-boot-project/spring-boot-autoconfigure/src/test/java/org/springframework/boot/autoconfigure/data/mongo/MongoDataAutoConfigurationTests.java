@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,8 +62,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MongoDataAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class,
-					MongoAutoConfiguration.class, MongoDataAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class,
+				MongoAutoConfiguration.class, MongoDataAutoConfiguration.class));
 
 	@Test
 	void templateExists() {
@@ -94,7 +94,7 @@ class MongoDataAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomConversionsConfig.class).run((context) -> {
 			MongoTemplate template = context.getBean(MongoTemplate.class);
 			assertThat(template.getConverter().getConversionService().canConvert(MongoClient.class, Boolean.class))
-					.isTrue();
+				.isTrue();
 		});
 	}
 
@@ -125,15 +125,15 @@ class MongoDataAutoConfigurationTests {
 
 	@Test
 	void customFieldNamingStrategy() {
-		this.contextRunner.withPropertyValues(
-				"spring.data.mongodb.field-naming-strategy:" + CamelCaseAbbreviatingFieldNamingStrategy.class.getName())
-				.run((context) -> {
-					MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
-					FieldNamingStrategy fieldNamingStrategy = (FieldNamingStrategy) ReflectionTestUtils
-							.getField(mappingContext, "fieldNamingStrategy");
-					assertThat(fieldNamingStrategy.getClass())
-							.isEqualTo(CamelCaseAbbreviatingFieldNamingStrategy.class);
-				});
+		this.contextRunner
+			.withPropertyValues("spring.data.mongodb.field-naming-strategy:"
+					+ CamelCaseAbbreviatingFieldNamingStrategy.class.getName())
+			.run((context) -> {
+				MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
+				FieldNamingStrategy fieldNamingStrategy = (FieldNamingStrategy) ReflectionTestUtils
+					.getField(mappingContext, "fieldNamingStrategy");
+				assertThat(fieldNamingStrategy.getClass()).isEqualTo(CamelCaseAbbreviatingFieldNamingStrategy.class);
+			});
 	}
 
 	@Test
@@ -155,8 +155,8 @@ class MongoDataAutoConfigurationTests {
 	@Test
 	void interfaceFieldNamingStrategy() {
 		this.contextRunner
-				.withPropertyValues("spring.data.mongodb.field-naming-strategy:" + FieldNamingStrategy.class.getName())
-				.run((context) -> assertThat(context).getFailure().isInstanceOf(BeanCreationException.class));
+			.withPropertyValues("spring.data.mongodb.field-naming-strategy:" + FieldNamingStrategy.class.getName())
+			.run((context) -> assertThat(context).getFailure().isInstanceOf(BeanCreationException.class));
 	}
 
 	@Test
@@ -183,7 +183,7 @@ class MongoDataAutoConfigurationTests {
 	@Test
 	void backsOffIfMongoClientBeanIsNotPresent() {
 		ApplicationContextRunner runner = new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(MongoDataAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(MongoDataAutoConfiguration.class));
 		runner.run((context) -> assertThat(context).doesNotHaveBean(MongoTemplate.class));
 	}
 
@@ -206,7 +206,7 @@ class MongoDataAutoConfigurationTests {
 	@Test
 	void autoConfiguresIfUserProvidesMongoDatabaseFactoryButNoClient() {
 		this.contextRunner.withUserConfiguration(MongoDatabaseFactoryConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(MongoTemplate.class));
+			.run((context) -> assertThat(context).hasSingleBean(MongoTemplate.class));
 	}
 
 	private static void assertDomainTypesDiscovered(MongoMappingContext mappingContext, Class<?>... types) {

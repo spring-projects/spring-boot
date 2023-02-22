@@ -50,8 +50,8 @@ class SpringIterableConfigurationPropertySourceTests {
 	@Test
 	void createWhenPropertySourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new SpringIterableConfigurationPropertySource(null, mock(PropertyMapper.class)))
-				.withMessageContaining("PropertySource must not be null");
+			.isThrownBy(() -> new SpringIterableConfigurationPropertySource(null, mock(PropertyMapper.class)))
+			.withMessageContaining("PropertySource must not be null");
 	}
 
 	@Test
@@ -70,8 +70,9 @@ class SpringIterableConfigurationPropertySourceTests {
 		mapper2.addFromPropertySource("key2", "my.key2b");
 		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
 				propertySource, mapper1, mapper2);
-		assertThat(adapter.iterator()).toIterable().extracting(Object::toString).containsExactly("my.key1", "my.key2a",
-				"my.key4");
+		assertThat(adapter.iterator()).toIterable()
+			.extracting(Object::toString)
+			.containsExactly("my.key1", "my.key2a", "my.key4");
 	}
 
 	@Test
@@ -116,7 +117,7 @@ class SpringIterableConfigurationPropertySourceTests {
 		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
 				propertySource, mapper);
 		assertThat(adapter.getConfigurationProperty(name).getOrigin())
-				.hasToString("\"key\" from property source \"test\"");
+			.hasToString("\"key\" from property source \"test\"");
 	}
 
 	@Test
@@ -143,11 +144,11 @@ class SpringIterableConfigurationPropertySourceTests {
 		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
 				propertySource, DefaultPropertyMapper.INSTANCE);
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("foo")))
-				.isEqualTo(ConfigurationPropertyState.PRESENT);
+			.isEqualTo(ConfigurationPropertyState.PRESENT);
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("faf")))
-				.isEqualTo(ConfigurationPropertyState.ABSENT);
+			.isEqualTo(ConfigurationPropertyState.ABSENT);
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("fof")))
-				.isEqualTo(ConfigurationPropertyState.ABSENT);
+			.isEqualTo(ConfigurationPropertyState.ABSENT);
 	}
 
 	@Test
@@ -160,11 +161,11 @@ class SpringIterableConfigurationPropertySourceTests {
 		SpringIterableConfigurationPropertySource adapter = new SpringIterableConfigurationPropertySource(
 				propertySource, SystemEnvironmentPropertyMapper.INSTANCE);
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("foo.bar-baz")))
-				.isEqualTo(ConfigurationPropertyState.PRESENT);
+			.isEqualTo(ConfigurationPropertyState.PRESENT);
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("foo.alpha-bravo")))
-				.isEqualTo(ConfigurationPropertyState.PRESENT);
+			.isEqualTo(ConfigurationPropertyState.PRESENT);
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("foo.blah")))
-				.isEqualTo(ConfigurationPropertyState.ABSENT);
+			.isEqualTo(ConfigurationPropertyState.ABSENT);
 	}
 
 	@Test

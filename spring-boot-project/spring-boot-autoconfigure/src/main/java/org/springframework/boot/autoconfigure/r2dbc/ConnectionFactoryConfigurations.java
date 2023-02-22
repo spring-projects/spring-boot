@@ -58,13 +58,14 @@ abstract class ConnectionFactoryConfigurations {
 			List<ConnectionFactoryOptionsBuilderCustomizer> optionsCustomizers) {
 		try {
 			return org.springframework.boot.r2dbc.ConnectionFactoryBuilder
-					.withOptions(new ConnectionFactoryOptionsInitializer().initialize(properties,
-							() -> EmbeddedDatabaseConnection.get(classLoader)))
-					.configure((options) -> {
-						for (ConnectionFactoryOptionsBuilderCustomizer optionsCustomizer : optionsCustomizers) {
-							optionsCustomizer.customize(options);
-						}
-					}).build();
+				.withOptions(new ConnectionFactoryOptionsInitializer().initialize(properties,
+						() -> EmbeddedDatabaseConnection.get(classLoader)))
+				.configure((options) -> {
+					for (ConnectionFactoryOptionsBuilderCustomizer optionsCustomizer : optionsCustomizers) {
+						optionsCustomizer.customize(options);
+					}
+				})
+				.build();
 		}
 		catch (IllegalStateException ex) {
 			String message = ex.getMessage();
@@ -134,8 +135,8 @@ abstract class ConnectionFactoryConfigurations {
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-			BindResult<Pool> pool = Binder.get(context.getEnvironment()).bind("spring.r2dbc.pool",
-					Bindable.of(Pool.class));
+			BindResult<Pool> pool = Binder.get(context.getEnvironment())
+				.bind("spring.r2dbc.pool", Bindable.of(Pool.class));
 			if (hasPoolUrl(context.getEnvironment())) {
 				if (pool.isBound()) {
 					throw new MultipleConnectionPoolConfigurationsException();

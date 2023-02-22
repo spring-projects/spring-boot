@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,12 +54,12 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 
 	private Mono<ReactiveRedisConnection> getConnection() {
 		return Mono.fromSupplier(this.connectionFactory::getReactiveConnection)
-				.subscribeOn(Schedulers.boundedElastic());
+			.subscribeOn(Schedulers.boundedElastic());
 	}
 
 	private Mono<Health> doHealthCheck(Health.Builder builder, ReactiveRedisConnection connection) {
 		return getHealth(builder, connection).onErrorResume((ex) -> Mono.just(builder.down(ex).build()))
-				.flatMap((health) -> connection.closeLater().thenReturn(health));
+			.flatMap((health) -> connection.closeLater().thenReturn(health));
 	}
 
 	private Mono<Health> getHealth(Health.Builder builder, ReactiveRedisConnection connection) {

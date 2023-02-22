@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class WavefrontPropertiesTests {
 		sut.setApiToken(null);
 		assertThat(sut.getEffectiveUri()).isEqualTo(URI.create("http://localhost:2878"));
 		assertThatThrownBy(sut::getApiTokenOrThrow).isInstanceOf(InvalidConfigurationPropertyValueException.class)
-				.hasMessageContaining("management.wavefront.api-token");
+			.hasMessageContaining("management.wavefront.api-token");
 	}
 
 }

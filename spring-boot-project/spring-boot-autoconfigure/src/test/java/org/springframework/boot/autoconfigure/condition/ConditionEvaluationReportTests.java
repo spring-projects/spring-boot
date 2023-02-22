@@ -98,7 +98,7 @@ class ConditionEvaluationReportTests {
 		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory.getParentBeanFactory());
 		assertThat(this.report).isSameAs(ConditionEvaluationReport.get(this.beanFactory));
 		assertThat(this.report.getParent()).isSameAs(ConditionEvaluationReport
-				.get((ConfigurableListableBeanFactory) this.beanFactory.getParentBeanFactory()));
+			.get((ConfigurableListableBeanFactory) this.beanFactory.getParentBeanFactory()));
 	}
 
 	@Test
@@ -163,7 +163,7 @@ class ConditionEvaluationReportTests {
 	@SuppressWarnings("resource")
 	void springBootConditionPopulatesReport() {
 		ConditionEvaluationReport report = ConditionEvaluationReport
-				.get(new AnnotationConfigApplicationContext(Config.class).getBeanFactory());
+			.get(new AnnotationConfigApplicationContext(Config.class).getBeanFactory());
 		assertThat(report.getConditionAndOutcomesBySource().size()).isNotZero();
 	}
 
@@ -245,7 +245,7 @@ class ConditionEvaluationReportTests {
 				"org.springframework.boot.autoconfigure.condition.config.first.SampleAutoConfiguration",
 				"org.springframework.boot.autoconfigure.condition.config.second.SampleAutoConfiguration");
 		assertThat(reportMessage)
-				.doesNotContain("org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration");
+			.doesNotContain("org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration");
 		context.close();
 	}
 

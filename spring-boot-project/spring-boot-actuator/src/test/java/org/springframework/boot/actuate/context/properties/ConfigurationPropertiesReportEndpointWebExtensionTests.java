@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ class ConfigurationPropertiesReportEndpointWebExtensionTests {
 
 	private void verifyPrefixed(SecurityContext securityContext, boolean showUnsanitized) {
 		given(this.delegate.getConfigurationProperties("test", showUnsanitized))
-				.willReturn(new ConfigurationPropertiesDescriptor(Collections.emptyMap()));
+			.willReturn(new ConfigurationPropertiesDescriptor(Collections.emptyMap()));
 		this.webExtension.configurationPropertiesWithPrefix(securityContext, "test");
 		then(this.delegate).should().getConfigurationProperties("test", showUnsanitized);
 	}

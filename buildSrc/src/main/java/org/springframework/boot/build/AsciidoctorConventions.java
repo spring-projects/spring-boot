@@ -72,8 +72,9 @@ class AsciidoctorConventions {
 			makeAllWarningsFatal(project);
 			upgradeAsciidoctorJVersion(project);
 			createAsciidoctorExtensionsConfiguration(project);
-			project.getTasks().withType(AbstractAsciidoctorTask.class,
-					(asciidoctorTask) -> configureAsciidoctorTask(project, asciidoctorTask));
+			project.getTasks()
+				.withType(AbstractAsciidoctorTask.class,
+						(asciidoctorTask) -> configureAsciidoctorTask(project, asciidoctorTask));
 		});
 	}
 
@@ -87,12 +88,14 @@ class AsciidoctorConventions {
 
 	private void createAsciidoctorExtensionsConfiguration(Project project) {
 		project.getConfigurations().create(EXTENSIONS_CONFIGURATION_NAME, (configuration) -> {
-			project.getConfigurations().matching((candidate) -> "dependencyManagement".equals(candidate.getName()))
-					.all(configuration::extendsFrom);
-			configuration.getDependencies().add(project.getDependencies()
+			project.getConfigurations()
+				.matching((candidate) -> "dependencyManagement".equals(candidate.getName()))
+				.all(configuration::extendsFrom);
+			configuration.getDependencies()
+				.add(project.getDependencies()
 					.create("io.spring.asciidoctor.backends:spring-asciidoctor-backends:0.0.4"));
 			configuration.getDependencies()
-					.add(project.getDependencies().create("org.asciidoctor:asciidoctorj-pdf:1.5.3"));
+				.add(project.getDependencies().create("org.asciidoctor:asciidoctorj-pdf:1.5.3"));
 		});
 	}
 
@@ -140,13 +143,15 @@ class AsciidoctorConventions {
 
 	private Sync createSyncDocumentationSourceTask(Project project, AbstractAsciidoctorTask asciidoctorTask) {
 		Sync syncDocumentationSource = project.getTasks()
-				.create("syncDocumentationSourceFor" + StringUtils.capitalize(asciidoctorTask.getName()), Sync.class);
+			.create("syncDocumentationSourceFor" + StringUtils.capitalize(asciidoctorTask.getName()), Sync.class);
 		File syncedSource = new File(project.getBuildDir(), "docs/src/" + asciidoctorTask.getName());
 		syncDocumentationSource.setDestinationDir(syncedSource);
 		syncDocumentationSource.from("src/docs/");
 		asciidoctorTask.dependsOn(syncDocumentationSource);
-		asciidoctorTask.getInputs().dir(syncedSource).withPathSensitivity(PathSensitivity.RELATIVE)
-				.withPropertyName("synced source");
+		asciidoctorTask.getInputs()
+			.dir(syncedSource)
+			.withPathSensitivity(PathSensitivity.RELATIVE)
+			.withPropertyName("synced source");
 		asciidoctorTask.setSourceDir(project.relativePath(new File(syncedSource, "asciidoc/")));
 		return syncDocumentationSource;
 	}

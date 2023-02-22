@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class ManagementPortAndPathJerseyApplicationTests extends AbstractJerseySecureTe
 	@Test
 	void testMissing() {
 		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin")
-				.getForEntity("http://localhost:" + this.managementPort + "/management/actuator/missing", String.class);
+			.getForEntity("http://localhost:" + this.managementPort + "/management/actuator/missing", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 

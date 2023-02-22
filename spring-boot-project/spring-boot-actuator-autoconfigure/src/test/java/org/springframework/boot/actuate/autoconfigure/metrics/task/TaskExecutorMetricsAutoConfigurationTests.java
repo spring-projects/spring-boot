@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,30 +48,32 @@ import static org.mockito.Mockito.mock;
 class TaskExecutorMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(TaskExecutorMetricsAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(TaskExecutorMetricsAutoConfiguration.class));
 
 	@Test
 	void taskExecutorUsingAutoConfigurationIsInstrumented() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
-				.run((context) -> {
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
-					assertThat(meters).singleElement().satisfies(
+			.run((context) -> {
+				MeterRegistry registry = context.getBean(MeterRegistry.class);
+				Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
+				assertThat(meters).singleElement()
+					.satisfies(
 							(meter) -> assertThat(meter.getId().getTag("name")).isEqualTo("applicationTaskExecutor"));
-					assertThatExceptionOfType(MeterNotFoundException.class)
-							.isThrownBy(() -> registry.get("executor").timer());
-				});
+				assertThatExceptionOfType(MeterNotFoundException.class)
+					.isThrownBy(() -> registry.get("executor").timer());
+			});
 	}
 
 	@Test
 	void taskExecutorsWithCustomNamesAreInstrumented() {
 		this.contextRunner.withBean("firstTaskExecutor", Executor.class, ThreadPoolTaskExecutor::new)
-				.withBean("customName", ThreadPoolTaskExecutor.class, ThreadPoolTaskExecutor::new).run((context) -> {
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
-					assertThat(meters).map((meter) -> meter.getId().getTag("name"))
-							.containsExactlyInAnyOrder("firstTaskExecutor", "customName");
-				});
+			.withBean("customName", ThreadPoolTaskExecutor.class, ThreadPoolTaskExecutor::new)
+			.run((context) -> {
+				MeterRegistry registry = context.getBean(MeterRegistry.class);
+				Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
+				assertThat(meters).map((meter) -> meter.getId().getTag("name"))
+					.containsExactlyInAnyOrder("firstTaskExecutor", "customName");
+			});
 	}
 
 	@Test
@@ -79,46 +81,51 @@ class TaskExecutorMetricsAutoConfigurationTests {
 		ThreadPoolTaskExecutor unavailableTaskExecutor = mock(ThreadPoolTaskExecutor.class);
 		given(unavailableTaskExecutor.getThreadPoolExecutor()).willThrow(new IllegalStateException("Test"));
 		this.contextRunner.withBean("firstTaskExecutor", ThreadPoolTaskExecutor.class, ThreadPoolTaskExecutor::new)
-				.withBean("customName", ThreadPoolTaskExecutor.class, () -> unavailableTaskExecutor).run((context) -> {
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
-					assertThat(meters).singleElement().satisfies(
-							(meter) -> assertThat(meter.getId().getTag("name")).isEqualTo("firstTaskExecutor"));
-				});
+			.withBean("customName", ThreadPoolTaskExecutor.class, () -> unavailableTaskExecutor)
+			.run((context) -> {
+				MeterRegistry registry = context.getBean(MeterRegistry.class);
+				Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
+				assertThat(meters).singleElement()
+					.satisfies((meter) -> assertThat(meter.getId().getTag("name")).isEqualTo("firstTaskExecutor"));
+			});
 	}
 
 	@Test
 	void taskExecutorInstrumentationCanBeDisabled() {
 		this.contextRunner.withPropertyValues("management.metrics.enable.executor=false")
-				.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class)).run((context) -> {
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("executor.completed").tags("name", "applicationTaskExecutor")
-							.functionCounter()).isNull();
-				});
+			.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+			.run((context) -> {
+				MeterRegistry registry = context.getBean(MeterRegistry.class);
+				assertThat(
+						registry.find("executor.completed").tags("name", "applicationTaskExecutor").functionCounter())
+					.isNull();
+			});
 	}
 
 	@Test
 	void taskSchedulerUsingAutoConfigurationIsInstrumented() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class))
-				.withUserConfiguration(SchedulingTestConfiguration.class).run((context) -> {
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
-					assertThat(meters).singleElement()
-							.satisfies((meter) -> assertThat(meter.getId().getTag("name")).isEqualTo("taskScheduler"));
-					assertThatExceptionOfType(MeterNotFoundException.class)
-							.isThrownBy(() -> registry.get("executor").timer());
-				});
+			.withUserConfiguration(SchedulingTestConfiguration.class)
+			.run((context) -> {
+				MeterRegistry registry = context.getBean(MeterRegistry.class);
+				Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
+				assertThat(meters).singleElement()
+					.satisfies((meter) -> assertThat(meter.getId().getTag("name")).isEqualTo("taskScheduler"));
+				assertThatExceptionOfType(MeterNotFoundException.class)
+					.isThrownBy(() -> registry.get("executor").timer());
+			});
 	}
 
 	@Test
 	void taskSchedulersWithCustomNamesAreInstrumented() {
 		this.contextRunner.withBean("firstTaskScheduler", Executor.class, ThreadPoolTaskScheduler::new)
-				.withBean("customName", ThreadPoolTaskScheduler.class, ThreadPoolTaskScheduler::new).run((context) -> {
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
-					assertThat(meters).map((meter) -> meter.getId().getTag("name"))
-							.containsExactlyInAnyOrder("firstTaskScheduler", "customName");
-				});
+			.withBean("customName", ThreadPoolTaskScheduler.class, ThreadPoolTaskScheduler::new)
+			.run((context) -> {
+				MeterRegistry registry = context.getBean(MeterRegistry.class);
+				Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
+				assertThat(meters).map((meter) -> meter.getId().getTag("name"))
+					.containsExactlyInAnyOrder("firstTaskScheduler", "customName");
+			});
 	}
 
 	@Test
@@ -126,23 +133,25 @@ class TaskExecutorMetricsAutoConfigurationTests {
 		ThreadPoolTaskScheduler unavailableTaskExecutor = mock(ThreadPoolTaskScheduler.class);
 		given(unavailableTaskExecutor.getScheduledThreadPoolExecutor()).willThrow(new IllegalStateException("Test"));
 		this.contextRunner.withBean("firstTaskScheduler", ThreadPoolTaskScheduler.class, ThreadPoolTaskScheduler::new)
-				.withBean("customName", ThreadPoolTaskScheduler.class, () -> unavailableTaskExecutor).run((context) -> {
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
-					assertThat(meters).singleElement().satisfies(
-							(meter) -> assertThat(meter.getId().getTag("name")).isEqualTo("firstTaskScheduler"));
-				});
+			.withBean("customName", ThreadPoolTaskScheduler.class, () -> unavailableTaskExecutor)
+			.run((context) -> {
+				MeterRegistry registry = context.getBean(MeterRegistry.class);
+				Collection<FunctionCounter> meters = registry.get("executor.completed").functionCounters();
+				assertThat(meters).singleElement()
+					.satisfies((meter) -> assertThat(meter.getId().getTag("name")).isEqualTo("firstTaskScheduler"));
+			});
 	}
 
 	@Test
 	void taskSchedulerInstrumentationCanBeDisabled() {
 		this.contextRunner.withPropertyValues("management.metrics.enable.executor=false")
-				.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class))
-				.withUserConfiguration(SchedulingTestConfiguration.class).run((context) -> {
-					MeterRegistry registry = context.getBean(MeterRegistry.class);
-					assertThat(registry.find("executor.completed").tags("name", "taskScheduler").functionCounter())
-							.isNull();
-				});
+			.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class))
+			.withUserConfiguration(SchedulingTestConfiguration.class)
+			.run((context) -> {
+				MeterRegistry registry = context.getBean(MeterRegistry.class);
+				assertThat(registry.find("executor.completed").tags("name", "taskScheduler").functionCounter())
+					.isNull();
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -111,8 +111,9 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 		}
 
 		private static boolean isAutowiredPresent(Class<?> type) {
-			if (Stream.of(type.getDeclaredConstructors()).map(MergedAnnotations::from)
-					.anyMatch((annotations) -> annotations.isPresent(Autowired.class))) {
+			if (Stream.of(type.getDeclaredConstructors())
+				.map(MergedAnnotations::from)
+				.anyMatch((annotations) -> annotations.isPresent(Autowired.class))) {
 				return true;
 			}
 			Class<?> userClass = ClassUtils.getUserClass(type);
@@ -124,7 +125,8 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 				return new Constructor<?>[0];
 			}
 			return Arrays.stream(type.getDeclaredConstructors())
-					.filter((constructor) -> isNonSynthetic(constructor, type)).toArray(Constructor[]::new);
+				.filter((constructor) -> isNonSynthetic(constructor, type))
+				.toArray(Constructor[]::new);
 		}
 
 		private static boolean isInnerClass(Class<?> type) {

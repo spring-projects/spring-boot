@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,27 +41,31 @@ class ThymeleafTemplateAvailabilityProviderTests {
 	@Test
 	void availabilityOfTemplateInDefaultLocation() {
 		assertThat(this.provider.isTemplateAvailable("home", this.environment, getClass().getClassLoader(),
-				this.resourceLoader)).isTrue();
+				this.resourceLoader))
+			.isTrue();
 	}
 
 	@Test
 	void availabilityOfTemplateThatDoesNotExist() {
 		assertThat(this.provider.isTemplateAvailable("whatever", this.environment, getClass().getClassLoader(),
-				this.resourceLoader)).isFalse();
+				this.resourceLoader))
+			.isFalse();
 	}
 
 	@Test
 	void availabilityOfTemplateWithCustomPrefix() {
 		this.environment.setProperty("spring.thymeleaf.prefix", "classpath:/custom-templates/");
 		assertThat(this.provider.isTemplateAvailable("custom", this.environment, getClass().getClassLoader(),
-				this.resourceLoader)).isTrue();
+				this.resourceLoader))
+			.isTrue();
 	}
 
 	@Test
 	void availabilityOfTemplateWithCustomSuffix() {
 		this.environment.setProperty("spring.thymeleaf.suffix", ".thymeleaf");
 		assertThat(this.provider.isTemplateAvailable("suffixed", this.environment, getClass().getClassLoader(),
-				this.resourceLoader)).isTrue();
+				this.resourceLoader))
+			.isTrue();
 	}
 
 }

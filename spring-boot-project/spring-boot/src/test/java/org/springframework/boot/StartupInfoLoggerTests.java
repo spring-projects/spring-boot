@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,9 +60,9 @@ class StartupInfoLoggerTests {
 			ArgumentCaptor<Object> captor = ArgumentCaptor.forClass(Object.class);
 			then(this.log).should().info(captor.capture());
 			assertThat(captor.getValue().toString())
-					.contains("Starting AOT-processed " + getClass().getSimpleName() + " using Java "
-							+ System.getProperty("java.version") + " with PID " + new ApplicationPid() + " (started by "
-							+ System.getProperty("user.name") + " in " + System.getProperty("user.dir") + ")");
+				.contains("Starting AOT-processed " + getClass().getSimpleName() + " using Java "
+						+ System.getProperty("java.version") + " with PID " + new ApplicationPid() + " (started by "
+						+ System.getProperty("user.name") + " in " + System.getProperty("user.dir") + ")");
 
 		}
 		finally {

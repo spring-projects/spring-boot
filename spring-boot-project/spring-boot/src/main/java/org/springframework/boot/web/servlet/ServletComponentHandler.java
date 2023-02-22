@@ -70,7 +70,7 @@ abstract class ServletComponentHandler {
 
 	void handle(AnnotatedBeanDefinition beanDefinition, BeanDefinitionRegistry registry) {
 		Map<String, Object> attributes = beanDefinition.getMetadata()
-				.getAnnotationAttributes(this.annotationType.getName());
+			.getAnnotationAttributes(this.annotationType.getName());
 		if (attributes != null) {
 			doHandle(attributes, beanDefinition, registry);
 		}

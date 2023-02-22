@@ -64,7 +64,7 @@ class ConfigTreeConfigDataLoaderTests {
 		File missing = this.directory.resolve("missing").toFile();
 		ConfigTreeConfigDataResource location = new ConfigTreeConfigDataResource(missing.toString());
 		assertThatExceptionOfType(ConfigDataResourceNotFoundException.class)
-				.isThrownBy(() -> this.loader.load(this.loaderContext, location));
+			.isThrownBy(() -> this.loader.load(this.loaderContext, location));
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,8 +114,12 @@ public class MetricsEndpoint {
 
 	private Collection<Meter> findFirstMatchingMeters(CompositeMeterRegistry composite, String name,
 			Iterable<Tag> tags) {
-		return composite.getRegistries().stream().map((registry) -> findFirstMatchingMeters(registry, name, tags))
-				.filter((matching) -> !matching.isEmpty()).findFirst().orElse(Collections.emptyList());
+		return composite.getRegistries()
+			.stream()
+			.map((registry) -> findFirstMatchingMeters(registry, name, tags))
+			.filter((matching) -> !matching.isEmpty())
+			.findFirst()
+			.orElse(Collections.emptyList());
 	}
 
 	private Map<Statistic, Double> getSamples(Collection<Meter> meters) {
@@ -125,8 +129,9 @@ public class MetricsEndpoint {
 	}
 
 	private void mergeMeasurements(Map<Statistic, Double> samples, Meter meter) {
-		meter.measure().forEach((measurement) -> samples.merge(measurement.getStatistic(), measurement.getValue(),
-				mergeFunction(measurement.getStatistic())));
+		meter.measure()
+			.forEach((measurement) -> samples.merge(measurement.getStatistic(), measurement.getValue(),
+					mergeFunction(measurement.getStatistic())));
 	}
 
 	private BiFunction<Double, Double, Double> mergeFunction(Statistic statistic) {

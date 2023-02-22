@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,12 +37,15 @@ public class CachingConnectionFactoryConfigurer extends AbstractConnectionFactor
 	public void configure(CachingConnectionFactory connectionFactory, RabbitProperties rabbitProperties) {
 		PropertyMapper map = PropertyMapper.get();
 		map.from(rabbitProperties::isPublisherReturns).to(connectionFactory::setPublisherReturns);
-		map.from(rabbitProperties::getPublisherConfirmType).whenNonNull()
-				.to(connectionFactory::setPublisherConfirmType);
+		map.from(rabbitProperties::getPublisherConfirmType)
+			.whenNonNull()
+			.to(connectionFactory::setPublisherConfirmType);
 		RabbitProperties.Cache.Channel channel = rabbitProperties.getCache().getChannel();
 		map.from(channel::getSize).whenNonNull().to(connectionFactory::setChannelCacheSize);
-		map.from(channel::getCheckoutTimeout).whenNonNull().as(Duration::toMillis)
-				.to(connectionFactory::setChannelCheckoutTimeout);
+		map.from(channel::getCheckoutTimeout)
+			.whenNonNull()
+			.as(Duration::toMillis)
+			.to(connectionFactory::setChannelCheckoutTimeout);
 		RabbitProperties.Cache.Connection connection = rabbitProperties.getCache().getConnection();
 		map.from(connection::getMode).whenNonNull().to(connectionFactory::setCacheMode);
 		map.from(connection::getSize).whenNonNull().to(connectionFactory::setConnectionCacheSize);

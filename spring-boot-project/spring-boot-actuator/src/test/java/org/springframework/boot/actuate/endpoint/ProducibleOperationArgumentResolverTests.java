@@ -67,9 +67,9 @@ class ProducibleOperationArgumentResolverTests {
 	@Test
 	void whenSingleValueIsAcceptableThenMatchingEnumValueIsReturned() {
 		assertThat(new ProducibleOperationArgumentResolver(acceptHeader(V2_JSON)).resolve(ApiVersion.class))
-				.isEqualTo(ApiVersion.V2);
+			.isEqualTo(ApiVersion.V2);
 		assertThat(new ProducibleOperationArgumentResolver(acceptHeader(V3_JSON)).resolve(ApiVersion.class))
-				.isEqualTo(ApiVersion.V3);
+			.isEqualTo(ApiVersion.V3);
 	}
 
 	@Test
@@ -90,7 +90,7 @@ class ProducibleOperationArgumentResolverTests {
 	@Test
 	void whenMultipleDefaultsThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> resolve(acceptHeader("one/one"), WithMultipleDefaults.class))
-				.withMessageContaining("Multiple default values");
+			.withMessageContaining("Multiple default values");
 	}
 
 	private Supplier<List<String>> acceptHeader(String... types) {

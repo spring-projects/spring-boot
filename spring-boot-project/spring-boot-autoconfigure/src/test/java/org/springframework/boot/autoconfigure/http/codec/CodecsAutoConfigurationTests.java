@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CodecsAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CodecsAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(CodecsAutoConfiguration.class));
 
 	@Test
 	void autoConfigShouldProvideALoggingRequestDetailsCustomizer() {
@@ -86,17 +86,17 @@ class CodecsAutoConfigurationTests {
 	@Test
 	void jacksonCodecCustomizerIsAutoConfiguredWhenObjectMapperIsPresent() {
 		this.contextRunner.withUserConfiguration(ObjectMapperConfiguration.class)
-				.run((context) -> assertThat(context).hasBean("jacksonCodecCustomizer"));
+			.run((context) -> assertThat(context).hasBean("jacksonCodecCustomizer"));
 	}
 
 	@Test
 	void userProvidedCustomizerCanOverrideJacksonCodecCustomizer() {
 		this.contextRunner.withUserConfiguration(ObjectMapperConfiguration.class, CodecCustomizerConfiguration.class)
-				.run((context) -> {
-					List<CodecCustomizer> codecCustomizers = context.getBean(CodecCustomizers.class).codecCustomizers;
-					assertThat(codecCustomizers).hasSize(3);
-					assertThat(codecCustomizers.get(2)).isInstanceOf(TestCodecCustomizer.class);
-				});
+			.run((context) -> {
+				List<CodecCustomizer> codecCustomizers = context.getBean(CodecCustomizers.class).codecCustomizers;
+				assertThat(codecCustomizers).hasSize(3);
+				assertThat(codecCustomizers.get(2)).isInstanceOf(TestCodecCustomizer.class);
+			});
 	}
 
 	@Test

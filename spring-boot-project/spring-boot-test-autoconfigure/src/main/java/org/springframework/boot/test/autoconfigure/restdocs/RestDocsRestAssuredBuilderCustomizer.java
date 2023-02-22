@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ class RestDocsRestAssuredBuilderCustomizer implements InitializingBean {
 		PropertyMapper map = PropertyMapper.get();
 		String host = this.properties.getUriHost();
 		map.from(this.properties::getUriScheme)
-				.when((scheme) -> StringUtils.hasText(scheme) && StringUtils.hasText(host))
-				.to((scheme) -> this.delegate.baseUri(scheme + "://" + host));
+			.when((scheme) -> StringUtils.hasText(scheme) && StringUtils.hasText(host))
+			.to((scheme) -> this.delegate.baseUri(scheme + "://" + host));
 		map.from(this.properties::getUriPort).whenNonNull().to(this.delegate::port);
 	}
 

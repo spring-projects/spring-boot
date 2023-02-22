@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class HikariDataSourceConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
-			.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName());
+		.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+		.withPropertyValues("spring.datasource.type=" + HikariDataSource.class.getName());
 
 	@Test
 	void testDataSourceExists() {
@@ -48,25 +48,27 @@ class HikariDataSourceConfigurationTests {
 
 	@Test
 	void testDataSourcePropertiesOverridden() {
-		this.contextRunner.withPropertyValues("spring.datasource.hikari.jdbc-url=jdbc:foo//bar/spam",
-				"spring.datasource.hikari.max-lifetime=1234").run((context) -> {
-					HikariDataSource ds = context.getBean(HikariDataSource.class);
-					assertThat(ds.getJdbcUrl()).isEqualTo("jdbc:foo//bar/spam");
-					assertThat(ds.getMaxLifetime()).isEqualTo(1234);
-				});
+		this.contextRunner
+			.withPropertyValues("spring.datasource.hikari.jdbc-url=jdbc:foo//bar/spam",
+					"spring.datasource.hikari.max-lifetime=1234")
+			.run((context) -> {
+				HikariDataSource ds = context.getBean(HikariDataSource.class);
+				assertThat(ds.getJdbcUrl()).isEqualTo("jdbc:foo//bar/spam");
+				assertThat(ds.getMaxLifetime()).isEqualTo(1234);
+			});
 	}
 
 	@Test
 	void testDataSourceGenericPropertiesOverridden() {
 		this.contextRunner
-				.withPropertyValues(
-						"spring.datasource.hikari.data-source-properties.dataSourceClassName=org.h2.JDBCDataSource")
-				.run((context) -> {
-					HikariDataSource ds = context.getBean(HikariDataSource.class);
-					assertThat(ds.getDataSourceProperties().getProperty("dataSourceClassName"))
-							.isEqualTo("org.h2.JDBCDataSource");
+			.withPropertyValues(
+					"spring.datasource.hikari.data-source-properties.dataSourceClassName=org.h2.JDBCDataSource")
+			.run((context) -> {
+				HikariDataSource ds = context.getBean(HikariDataSource.class);
+				assertThat(ds.getDataSourceProperties().getProperty("dataSourceClassName"))
+					.isEqualTo("org.h2.JDBCDataSource");
 
-				});
+			});
 	}
 
 	@Test
@@ -89,11 +91,11 @@ class HikariDataSourceConfigurationTests {
 	@Test
 	void poolNameTakesPrecedenceOverName() {
 		this.contextRunner
-				.withPropertyValues("spring.datasource.name=myDS", "spring.datasource.hikari.pool-name=myHikariDS")
-				.run((context) -> {
-					HikariDataSource ds = context.getBean(HikariDataSource.class);
-					assertThat(ds.getPoolName()).isEqualTo("myHikariDS");
-				});
+			.withPropertyValues("spring.datasource.name=myDS", "spring.datasource.hikari.pool-name=myHikariDS")
+			.run((context) -> {
+				HikariDataSource ds = context.getBean(HikariDataSource.class);
+				assertThat(ds.getPoolName()).isEqualTo("myHikariDS");
+			});
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,21 +43,21 @@ class LocalHostUriTemplateHandlerTests {
 	@Test
 	void createWhenEnvironmentIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LocalHostUriTemplateHandler(null))
-				.withMessageContaining("Environment must not be null");
+			.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
 	void createWhenSchemeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new LocalHostUriTemplateHandler(new MockEnvironment(), null))
-				.withMessageContaining("Scheme must not be null");
+			.isThrownBy(() -> new LocalHostUriTemplateHandler(new MockEnvironment(), null))
+			.withMessageContaining("Scheme must not be null");
 	}
 
 	@Test
 	void createWhenHandlerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new LocalHostUriTemplateHandler(new MockEnvironment(), "http", null))
-				.withMessageContaining("Handler must not be null");
+			.isThrownBy(() -> new LocalHostUriTemplateHandler(new MockEnvironment(), "http", null))
+			.withMessageContaining("Handler must not be null");
 	}
 
 	@Test

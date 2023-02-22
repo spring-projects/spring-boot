@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,9 +37,9 @@ class RestDocumentationContextProviderRegistrar implements ImportBeanDefinitionR
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		Map<String, Object> annotationAttributes = importingClassMetadata
-				.getAnnotationAttributes(AutoConfigureRestDocs.class.getName());
+			.getAnnotationAttributes(AutoConfigureRestDocs.class.getName());
 		BeanDefinitionBuilder definitionBuilder = BeanDefinitionBuilder
-				.genericBeanDefinition(ManualRestDocumentation.class);
+			.genericBeanDefinition(ManualRestDocumentation.class);
 		String outputDir = (String) annotationAttributes.get("outputDir");
 		if (StringUtils.hasText(outputDir)) {
 			definitionBuilder.addConstructorArgValue(outputDir);

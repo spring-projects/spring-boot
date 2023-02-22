@@ -73,10 +73,10 @@ class ArrayBinderTests {
 		BindHandler handler = mockBindHandler();
 		this.binder.bind("foo", INTEGER_LIST, handler);
 		InOrder inOrder = inOrder(handler);
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo[0]")), eq(Bindable.of(Integer.class)),
-				any(), eq(1));
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(INTEGER_LIST), any(),
-				isA(List.class));
+		inOrder.verify(handler)
+			.onSuccess(eq(ConfigurationPropertyName.of("foo[0]")), eq(Bindable.of(Integer.class)), any(), eq(1));
+		inOrder.verify(handler)
+			.onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(INTEGER_LIST), any(), isA(List.class));
 	}
 
 	@Test
@@ -141,14 +141,14 @@ class ArrayBinderTests {
 		source.put("foo[3]", "3");
 		this.sources.add(source);
 		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.binder.bind("foo", INTEGER_ARRAY))
-				.satisfies((ex) -> {
-					Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
-							.getUnboundProperties();
-					assertThat(unbound).hasSize(1);
-					ConfigurationProperty property = unbound.iterator().next();
-					assertThat(property.getName()).hasToString("foo[3]");
-					assertThat(property.getValue()).isEqualTo("3");
-				});
+			.satisfies((ex) -> {
+				Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
+					.getUnboundProperties();
+				assertThat(unbound).hasSize(1);
+				ConfigurationProperty property = unbound.iterator().next();
+				assertThat(property.getName()).hasToString("foo[3]");
+				assertThat(property.getValue()).isEqualTo("3");
+			});
 	}
 
 	@Test
@@ -204,10 +204,10 @@ class ArrayBinderTests {
 		Bindable<Integer[]> target = INTEGER_ARRAY;
 		this.binder.bind("foo", target, handler);
 		InOrder inOrder = inOrder(handler);
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo[0]")), eq(Bindable.of(Integer.class)),
-				any(), eq(1));
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(target), any(),
-				isA(Integer[].class));
+		inOrder.verify(handler)
+			.onSuccess(eq(ConfigurationPropertyName.of("foo[0]")), eq(Bindable.of(Integer.class)), any(), eq(1));
+		inOrder.verify(handler)
+			.onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(target), any(), isA(Integer[].class));
 	}
 
 	@Test

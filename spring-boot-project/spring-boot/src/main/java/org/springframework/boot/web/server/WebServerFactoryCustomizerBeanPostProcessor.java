@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,8 +68,8 @@ public class WebServerFactoryCustomizerBeanPostProcessor implements BeanPostProc
 	@SuppressWarnings("unchecked")
 	private void postProcessBeforeInitialization(WebServerFactory webServerFactory) {
 		LambdaSafe.callbacks(WebServerFactoryCustomizer.class, getCustomizers(), webServerFactory)
-				.withLogger(WebServerFactoryCustomizerBeanPostProcessor.class)
-				.invoke((customizer) -> customizer.customize(webServerFactory));
+			.withLogger(WebServerFactoryCustomizerBeanPostProcessor.class)
+			.invoke((customizer) -> customizer.customize(webServerFactory));
 	}
 
 	private Collection<WebServerFactoryCustomizer<?>> getCustomizers() {

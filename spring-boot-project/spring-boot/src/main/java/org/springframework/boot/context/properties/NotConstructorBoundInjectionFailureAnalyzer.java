@@ -64,7 +64,7 @@ class NotConstructorBoundInjectionFailureAnalyzer
 		if (injectionPoint != null && injectionPoint.getMember() instanceof Constructor<?> constructor) {
 			Class<?> declaringClass = constructor.getDeclaringClass();
 			MergedAnnotation<ConfigurationProperties> configurationProperties = MergedAnnotations.from(declaringClass)
-					.get(ConfigurationProperties.class);
+				.get(ConfigurationProperties.class);
 			return configurationProperties.isPresent()
 					&& BindMethod.get(constructor.getDeclaringClass()) == BindMethod.VALUE_OBJECT;
 		}

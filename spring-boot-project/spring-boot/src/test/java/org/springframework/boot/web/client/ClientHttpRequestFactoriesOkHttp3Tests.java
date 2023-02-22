@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,13 +47,13 @@ class ClientHttpRequestFactoriesOkHttp3Tests
 	@Test
 	void okHttp3IsBeingUsed() {
 		assertThat(new File(OkHttpClient.class.getProtectionDomain().getCodeSource().getLocation().getFile()).getName())
-				.startsWith("okhttp-3.");
+			.startsWith("okhttp-3.");
 	}
 
 	@Test
 	void getFailsWhenBufferRequestBodyIsEnabled() {
 		assertThatIllegalStateException().isThrownBy(() -> ClientHttpRequestFactories
-				.get(ClientHttpRequestFactorySettings.DEFAULTS.withBufferRequestBody(true)));
+			.get(ClientHttpRequestFactorySettings.DEFAULTS.withBufferRequestBody(true)));
 	}
 
 	@Override

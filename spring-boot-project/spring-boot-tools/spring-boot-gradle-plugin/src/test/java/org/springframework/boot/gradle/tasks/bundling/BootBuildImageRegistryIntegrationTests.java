@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ class BootBuildImageRegistryIntegrationTests {
 
 	@Container
 	static final RegistryContainer registry = new RegistryContainer().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(3));
+		.withStartupTimeout(Duration.ofMinutes(3));
 
 	String registryAddress;
 
@@ -72,9 +72,10 @@ class BootBuildImageRegistryIntegrationTests {
 		String imageName = this.registryAddress + "/" + repoName;
 		BuildResult result = this.gradleBuild.build("bootBuildImage", "--imageName=" + imageName);
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("Building image").contains("Successfully built image")
-				.contains("Pushing image '" + imageName + ":latest" + "'")
-				.contains("Pushed image '" + imageName + ":latest" + "'");
+		assertThat(result.getOutput()).contains("Building image")
+			.contains("Successfully built image")
+			.contains("Pushing image '" + imageName + ":latest" + "'")
+			.contains("Pushed image '" + imageName + ":latest" + "'");
 		ImageReference imageReference = ImageReference.of(imageName);
 		Image pulledImage = new DockerApi().image().pull(imageReference, UpdateListener.none());
 		assertThat(pulledImage).isNotNull();

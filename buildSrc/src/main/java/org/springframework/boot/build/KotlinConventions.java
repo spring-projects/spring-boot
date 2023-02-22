@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,9 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile;
 class KotlinConventions {
 
 	void apply(Project project) {
-		project.getPlugins().withId("org.jetbrains.kotlin.jvm",
-				(plugin) -> project.getTasks().withType(KotlinCompile.class, this::configure));
+		project.getPlugins()
+			.withId("org.jetbrains.kotlin.jvm",
+					(plugin) -> project.getTasks().withType(KotlinCompile.class, this::configure));
 	}
 
 	private void configure(KotlinCompile compile) {

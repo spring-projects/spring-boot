@@ -32,25 +32,25 @@ class StringSequenceTests {
 	@Test
 	void createWhenSourceIsNullShouldThrowException() {
 		assertThatNullPointerException().isThrownBy(() -> new StringSequence(null))
-				.withMessage("Source must not be null");
+			.withMessage("Source must not be null");
 	}
 
 	@Test
 	void createWithIndexWhenSourceIsNullShouldThrowException() {
 		assertThatNullPointerException().isThrownBy(() -> new StringSequence(null, 0, 0))
-				.withMessage("Source must not be null");
+			.withMessage("Source must not be null");
 	}
 
 	@Test
 	void createWhenStartIsLessThanZeroShouldThrowException() {
 		assertThatExceptionOfType(StringIndexOutOfBoundsException.class)
-				.isThrownBy(() -> new StringSequence("x", -1, 0));
+			.isThrownBy(() -> new StringSequence("x", -1, 0));
 	}
 
 	@Test
 	void createWhenEndIsGreaterThanLengthShouldThrowException() {
 		assertThatExceptionOfType(StringIndexOutOfBoundsException.class)
-				.isThrownBy(() -> new StringSequence("x", 0, 2));
+			.isThrownBy(() -> new StringSequence("x", 0, 2));
 	}
 
 	@Test

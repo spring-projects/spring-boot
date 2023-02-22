@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ class ControllerEndpointHandlerMappingTests {
 		ControllerEndpointHandlerMapping mapping = createMapping("", first, second);
 		assertThat(getHandler(mapping, HttpMethod.GET, "/first")).isEqualTo(handlerOf(first.getController(), "get"));
 		assertThat(getHandler(mapping, HttpMethod.POST, "/second"))
-				.isEqualTo(handlerOf(second.getController(), "save"));
+			.isEqualTo(handlerOf(second.getController(), "save"));
 		assertThat(getHandler(mapping, HttpMethod.GET, "/third")).isNull();
 	}
 
@@ -67,9 +67,9 @@ class ControllerEndpointHandlerMappingTests {
 		ExposableControllerEndpoint second = secondEndpoint();
 		ControllerEndpointHandlerMapping mapping = createMapping("actuator", first, second);
 		assertThat(getHandler(mapping, HttpMethod.GET, "/actuator/first"))
-				.isEqualTo(handlerOf(first.getController(), "get"));
+			.isEqualTo(handlerOf(first.getController(), "get"));
 		assertThat(getHandler(mapping, HttpMethod.POST, "/actuator/second"))
-				.isEqualTo(handlerOf(second.getController(), "save"));
+			.isEqualTo(handlerOf(second.getController(), "save"));
 		assertThat(getHandler(mapping, HttpMethod.GET, "/first")).isNull();
 		assertThat(getHandler(mapping, HttpMethod.GET, "/second")).isNull();
 	}
@@ -79,7 +79,7 @@ class ControllerEndpointHandlerMappingTests {
 		ExposableControllerEndpoint pathless = pathlessEndpoint();
 		ControllerEndpointHandlerMapping mapping = createMapping("actuator", pathless);
 		assertThat(getHandler(mapping, HttpMethod.GET, "/actuator/pathless"))
-				.isEqualTo(handlerOf(pathless.getController(), "get"));
+			.isEqualTo(handlerOf(pathless.getController(), "get"));
 		assertThat(getHandler(mapping, HttpMethod.GET, "/pathless")).isNull();
 		assertThat(getHandler(mapping, HttpMethod.GET, "/")).isNull();
 	}
@@ -89,7 +89,7 @@ class ControllerEndpointHandlerMappingTests {
 		ExposableControllerEndpoint first = firstEndpoint();
 		ControllerEndpointHandlerMapping mapping = createMapping("actuator", first);
 		assertThatExceptionOfType(MethodNotAllowedException.class)
-				.isThrownBy(() -> getHandler(mapping, HttpMethod.POST, "/actuator/first"));
+			.isThrownBy(() -> getHandler(mapping, HttpMethod.POST, "/actuator/first"));
 	}
 
 	private Object getHandler(ControllerEndpointHandlerMapping mapping, HttpMethod method, String requestURI) {

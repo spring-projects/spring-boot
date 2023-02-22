@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,20 +49,20 @@ class ConditionalOnJavaTests {
 	@EnabledOnJre(JRE.JAVA_17)
 	void doesNotMatchIfBetterVersionIsRequired() {
 		this.contextRunner.withUserConfiguration(Java18Required.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
 	@EnabledOnJre(JRE.JAVA_18)
 	void doesNotMatchIfLowerIsRequired() {
 		this.contextRunner.withUserConfiguration(OlderThan18Required.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
 	void matchesIfVersionIsInRange() {
 		this.contextRunner.withUserConfiguration(Java17Required.class)
-				.run((context) -> assertThat(context).hasSingleBean(String.class));
+			.run((context) -> assertThat(context).hasSingleBean(String.class));
 	}
 
 	@Test

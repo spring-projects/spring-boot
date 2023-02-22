@@ -59,7 +59,7 @@ class ShutdownSampleActuatorApplicationTests {
 	@DirtiesContext
 	void testShutdown() {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(this.restTemplate.withBasicAuth("user", "password")
-				.postForEntity("/actuator/shutdown", null, Map.class));
+			.postForEntity("/actuator/shutdown", null, Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(((String) entity.getBody().get("message"))).contains("Shutting down");
 	}

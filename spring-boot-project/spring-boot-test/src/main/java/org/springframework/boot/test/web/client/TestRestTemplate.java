@@ -964,12 +964,12 @@ public class TestRestTemplate {
 	private URI resolveUri(RequestEntity<?> entity) {
 		if (entity instanceof UriTemplateRequestEntity<?> templatedUriEntity) {
 			if (templatedUriEntity.getVars() != null) {
-				return this.restTemplate.getUriTemplateHandler().expand(templatedUriEntity.getUriTemplate(),
-						templatedUriEntity.getVars());
+				return this.restTemplate.getUriTemplateHandler()
+					.expand(templatedUriEntity.getUriTemplate(), templatedUriEntity.getVars());
 			}
 			else if (templatedUriEntity.getVarsMap() != null) {
-				return this.restTemplate.getUriTemplateHandler().expand(templatedUriEntity.getUriTemplate(),
-						templatedUriEntity.getVarsMap());
+				return this.restTemplate.getUriTemplateHandler()
+					.expand(templatedUriEntity.getUriTemplate(), templatedUriEntity.getVarsMap());
 			}
 			throw new IllegalStateException(
 					"No variables specified for URI template: " + templatedUriEntity.getUriTemplate());
@@ -1046,7 +1046,8 @@ public class TestRestTemplate {
 			}
 			if (readTimeout != null) {
 				SocketConfig socketConfig = SocketConfig.custom()
-						.setSoTimeout((int) readTimeout.toMillis(), TimeUnit.MILLISECONDS).build();
+					.setSoTimeout((int) readTimeout.toMillis(), TimeUnit.MILLISECONDS)
+					.build();
 				builder.setDefaultSocketConfig(socketConfig);
 			}
 			return builder.build();
@@ -1055,9 +1056,11 @@ public class TestRestTemplate {
 		private SSLConnectionSocketFactory createSocketFactory()
 				throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
 			SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
-					.build();
-			return SSLConnectionSocketFactoryBuilder.create().setSslContext(sslContext)
-					.setTlsVersions(TLS.V_1_3, TLS.V_1_2).build();
+				.build();
+			return SSLConnectionSocketFactoryBuilder.create()
+				.setSslContext(sslContext)
+				.setTlsVersions(TLS.V_1_3, TLS.V_1_2)
+				.build();
 		}
 
 		@Override

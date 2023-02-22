@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,32 +52,33 @@ class CassandraAutoConfigurationWithPasswordAuthenticationIntegrationTests {
 
 	@Container
 	static final CassandraContainer cassandra = new PasswordAuthenticatorCassandraContainer().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(10)).waitingFor(new CassandraWaitStrategy());
+		.withStartupTimeout(Duration.ofMinutes(10))
+		.waitingFor(new CassandraWaitStrategy());
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class)).withPropertyValues(
-					"spring.cassandra.contact-points:" + cassandra.getHost() + ":" + cassandra.getFirstMappedPort(),
-					"spring.cassandra.local-datacenter=datacenter1", "spring.cassandra.connection.connect-timeout=60s",
-					"spring.cassandra.connection.init-query-timeout=60s", "spring.cassandra.request.timeout=60s");
+		.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class))
+		.withPropertyValues(
+				"spring.cassandra.contact-points:" + cassandra.getHost() + ":" + cassandra.getFirstMappedPort(),
+				"spring.cassandra.local-datacenter=datacenter1", "spring.cassandra.connection.connect-timeout=60s",
+				"spring.cassandra.connection.init-query-timeout=60s", "spring.cassandra.request.timeout=60s");
 
 	@Test
 	void authenticationWithValidUsernameAndPassword() {
 		this.contextRunner
-				.withPropertyValues("spring.cassandra.username=cassandra", "spring.cassandra.password=cassandra")
-				.run((context) -> {
-					SimpleStatement select = SimpleStatement.newInstance("SELECT release_version FROM system.local")
-							.setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
-					assertThat(context.getBean(CqlSession.class).execute(select).one()).isNotNull();
-				});
+			.withPropertyValues("spring.cassandra.username=cassandra", "spring.cassandra.password=cassandra")
+			.run((context) -> {
+				SimpleStatement select = SimpleStatement.newInstance("SELECT release_version FROM system.local")
+					.setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
+				assertThat(context.getBean(CqlSession.class).execute(select).one()).isNotNull();
+			});
 	}
 
 	@Test
 	void authenticationWithInvalidCredentials() {
 		this.contextRunner
-				.withPropertyValues("spring.cassandra.username=not-a-user",
-						"spring.cassandra.password=invalid-password")
-				.run((context) -> assertThatThrownBy(() -> context.getBean(CqlSession.class))
-						.hasMessageContaining("Authentication error"));
+			.withPropertyValues("spring.cassandra.username=not-a-user", "spring.cassandra.password=invalid-password")
+			.run((context) -> assertThatThrownBy(() -> context.getBean(CqlSession.class))
+				.hasMessageContaining("Authentication error"));
 	}
 
 	static final class PasswordAuthenticatorCassandraContainer extends CassandraContainer {
@@ -112,9 +113,10 @@ class CassandraAutoConfigurationWithPasswordAuthenticationIntegrationTests {
 
 		private CqlSessionBuilder cqlSessionBuilder() {
 			return CqlSession.builder()
-					.addContactPoint(new InetSocketAddress(this.waitStrategyTarget.getHost(),
-							this.waitStrategyTarget.getFirstMappedPort()))
-					.withLocalDatacenter("datacenter1").withAuthCredentials("cassandra", "cassandra");
+				.addContactPoint(new InetSocketAddress(this.waitStrategyTarget.getHost(),
+						this.waitStrategyTarget.getFirstMappedPort()))
+				.withLocalDatacenter("datacenter1")
+				.withAuthCredentials("cassandra", "cassandra");
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,7 +103,7 @@ class TestPropertyValuesTests {
 		TestPropertyValues.of("FOO_BAR=BAZ").applyTo(this.environment, Type.SYSTEM_ENVIRONMENT);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("BAZ");
 		assertThat(this.environment.getPropertySources()
-				.contains("test-" + StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME)).isTrue();
+			.contains("test-" + StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME)).isTrue();
 	}
 
 	@Test
@@ -118,7 +118,7 @@ class TestPropertyValuesTests {
 		TestPropertyValues.of("foo.bar=baz", "hello.world=hi").applyTo(this.environment, Type.MAP, "other");
 		TestPropertyValues.of("FOO_BAR=BAZ").applyTo(this.environment, Type.SYSTEM_ENVIRONMENT, "other");
 		assertThat(this.environment.getPropertySources().get("other"))
-				.isInstanceOf(SystemEnvironmentPropertySource.class);
+			.isInstanceOf(SystemEnvironmentPropertySource.class);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("BAZ");
 		assertThat(this.environment.getProperty("hello.world")).isNull();
 	}
@@ -133,8 +133,10 @@ class TestPropertyValuesTests {
 
 	@Test
 	void andShouldChainAndAddSingleKeyValue() {
-		TestPropertyValues.of("foo.bar=baz").and("hello.world=hi").and("bling.blah=bing").applyTo(this.environment,
-				Type.MAP);
+		TestPropertyValues.of("foo.bar=baz")
+			.and("hello.world=hi")
+			.and("bling.blah=bing")
+			.applyTo(this.environment, Type.MAP);
 		assertThat(this.environment.getProperty("foo.bar")).isEqualTo("baz");
 		assertThat(this.environment.getProperty("hello.world")).isEqualTo("hi");
 		assertThat(this.environment.getProperty("bling.blah")).isEqualTo("bing");
@@ -151,7 +153,7 @@ class TestPropertyValuesTests {
 	@Test
 	void applyToSystemPropertiesWithRunnableShouldSetSystemProperties() {
 		TestPropertyValues.of("foo=bar")
-				.applyToSystemProperties(() -> assertThat(System.getProperty("foo")).isEqualTo("bar"));
+			.applyToSystemProperties(() -> assertThat(System.getProperty("foo")).isEqualTo("bar"));
 	}
 
 	@Test

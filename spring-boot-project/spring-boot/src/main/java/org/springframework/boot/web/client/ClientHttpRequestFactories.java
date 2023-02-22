@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -148,9 +148,11 @@ public final class ClientHttpRequestFactories {
 
 		private static HttpClient createHttpClient(Duration readTimeout) {
 			SocketConfig socketConfig = SocketConfig.custom()
-					.setSoTimeout((int) readTimeout.toMillis(), TimeUnit.MILLISECONDS).build();
+				.setSoTimeout((int) readTimeout.toMillis(), TimeUnit.MILLISECONDS)
+				.build();
 			PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
-					.setDefaultSocketConfig(socketConfig).build();
+				.setDefaultSocketConfig(socketConfig)
+				.build();
 			return HttpClientBuilder.create().setConnectionManager(connectionManager).build();
 		}
 
@@ -209,7 +211,7 @@ public final class ClientHttpRequestFactories {
 			map.from(settings::connectTimeout).to((connectTimeout) -> setConnectTimeout(unwrapped, connectTimeout));
 			map.from(settings::readTimeout).to((readTimeout) -> setReadTimeout(unwrapped, readTimeout));
 			map.from(settings::bufferRequestBody)
-					.to((bufferRequestBody) -> setBufferRequestBody(unwrapped, bufferRequestBody));
+				.to((bufferRequestBody) -> setBufferRequestBody(unwrapped, bufferRequestBody));
 		}
 
 		private static ClientHttpRequestFactory unwrapRequestFactoryIfNecessary(
@@ -248,10 +250,10 @@ public final class ClientHttpRequestFactories {
 				Class<?>... parameters) {
 			Method method = ReflectionUtils.findMethod(requestFactory.getClass(), methodName, parameters);
 			Assert.state(method != null, () -> "Request factory %s does not have a suitable %s method"
-					.formatted(requestFactory.getClass().getName(), methodName));
+				.formatted(requestFactory.getClass().getName(), methodName));
 			Assert.state(!method.isAnnotationPresent(Deprecated.class),
 					() -> "Request factory %s has the %s method marked as deprecated"
-							.formatted(requestFactory.getClass().getName(), methodName));
+						.formatted(requestFactory.getClass().getName(), methodName));
 			return method;
 		}
 

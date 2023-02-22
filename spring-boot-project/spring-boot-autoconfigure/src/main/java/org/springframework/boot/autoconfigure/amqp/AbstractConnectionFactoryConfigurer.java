@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,9 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
 		PropertyMapper map = PropertyMapper.get();
 		map.from(this.rabbitProperties::determineAddresses).to(connectionFactory::setAddresses);
-		map.from(this.rabbitProperties::getAddressShuffleMode).whenNonNull()
-				.to(connectionFactory::setAddressShuffleMode);
+		map.from(this.rabbitProperties::getAddressShuffleMode)
+			.whenNonNull()
+			.to(connectionFactory::setAddressShuffleMode);
 		map.from(this.connectionNameStrategy).whenNonNull().to(connectionFactory::setConnectionNameStrategy);
 		configure(connectionFactory, this.rabbitProperties);
 	}

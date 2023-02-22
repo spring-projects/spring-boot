@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class HttpExchangesAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HttpExchangesAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(HttpExchangesAutoConfiguration.class));
 
 	@Test
 	void autoConfigurationIsDisabledByDefault() {
@@ -63,37 +63,38 @@ class HttpExchangesAutoConfigurationTests {
 	@Test
 	void usesUserProvidedWebFilterWhenReactiveContext() {
 		new ReactiveWebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(HttpExchangesAutoConfiguration.class))
-				.withUserConfiguration(CustomHttpExchangesRepositoryConfiguration.class)
-				.withUserConfiguration(CustomWebFilterConfiguration.class).run((context) -> {
-					assertThat(context).hasSingleBean(HttpExchangesWebFilter.class);
-					assertThat(context.getBean(HttpExchangesWebFilter.class))
-							.isInstanceOf(CustomHttpExchangesWebFilter.class);
-				});
+			.withConfiguration(AutoConfigurations.of(HttpExchangesAutoConfiguration.class))
+			.withUserConfiguration(CustomHttpExchangesRepositoryConfiguration.class)
+			.withUserConfiguration(CustomWebFilterConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(HttpExchangesWebFilter.class);
+				assertThat(context.getBean(HttpExchangesWebFilter.class))
+					.isInstanceOf(CustomHttpExchangesWebFilter.class);
+			});
 	}
 
 	@Test
 	void configuresServletFilter() {
 		this.contextRunner.withUserConfiguration(CustomHttpExchangesRepositoryConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(HttpExchangesFilter.class));
+			.run((context) -> assertThat(context).hasSingleBean(HttpExchangesFilter.class));
 	}
 
 	@Test
 	void usesUserProvidedServletFilter() {
 		this.contextRunner.withUserConfiguration(CustomHttpExchangesRepositoryConfiguration.class)
-				.withUserConfiguration(CustomFilterConfiguration.class).run((context) -> {
-					assertThat(context).hasSingleBean(HttpExchangesFilter.class);
-					assertThat(context.getBean(HttpExchangesFilter.class))
-							.isInstanceOf(CustomHttpExchangesFilter.class);
-				});
+			.withUserConfiguration(CustomFilterConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(HttpExchangesFilter.class);
+				assertThat(context.getBean(HttpExchangesFilter.class)).isInstanceOf(CustomHttpExchangesFilter.class);
+			});
 	}
 
 	@Test
 	void backsOffWhenNotRecording() {
 		this.contextRunner.withUserConfiguration(CustomHttpExchangesRepositoryConfiguration.class)
-				.withPropertyValues("management.httpexchanges.recording.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(InMemoryHttpExchangeRepository.class)
-						.doesNotHaveBean(HttpExchangesFilter.class));
+			.withPropertyValues("management.httpexchanges.recording.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(InMemoryHttpExchangeRepository.class)
+				.doesNotHaveBean(HttpExchangesFilter.class));
 	}
 
 	static class CustomHttpExchangesRepository implements HttpExchangeRepository {

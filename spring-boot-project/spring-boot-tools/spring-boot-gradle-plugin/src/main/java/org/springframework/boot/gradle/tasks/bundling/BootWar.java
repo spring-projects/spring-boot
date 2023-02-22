@@ -165,7 +165,7 @@ public abstract class BootWar extends War implements BootArchive {
 	public void providedClasspath(Object... classpath) {
 		FileCollection existingClasspath = this.providedClasspath;
 		this.providedClasspath = getProject()
-				.files((existingClasspath != null) ? existingClasspath : Collections.emptyList(), classpath);
+			.files((existingClasspath != null) ? existingClasspath : Collections.emptyList(), classpath);
 	}
 
 	/**

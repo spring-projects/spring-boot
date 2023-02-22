@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,34 +37,34 @@ import static org.assertj.core.api.Assertions.assertThat;
 class HealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class));
 
 	@Test
 	void runWhenNoOtherIndicatorsCreatesPingHealthIndicator() {
 		this.contextRunner.run((context) -> assertThat(context).getBean(HealthIndicator.class)
-				.isInstanceOf(PingHealthIndicator.class));
+			.isInstanceOf(PingHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenHasDefinedIndicatorCreatesPingHealthIndicator() {
 		this.contextRunner.withUserConfiguration(CustomHealthIndicatorConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(PingHealthIndicator.class)
-						.hasSingleBean(CustomHealthIndicator.class));
+			.run((context) -> assertThat(context).hasSingleBean(PingHealthIndicator.class)
+				.hasSingleBean(CustomHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenHasDefaultsDisabledDoesNotCreatePingHealthIndicator() {
 		this.contextRunner.withUserConfiguration(CustomHealthIndicatorConfiguration.class)
-				.withPropertyValues("management.health.defaults.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(HealthIndicator.class));
+			.withPropertyValues("management.health.defaults.enabled:false")
+			.run((context) -> assertThat(context).doesNotHaveBean(HealthIndicator.class));
 
 	}
 
 	@Test
 	void runWhenHasDefaultsDisabledAndPingIndicatorEnabledCreatesPingHealthIndicator() {
 		this.contextRunner.withUserConfiguration(CustomHealthIndicatorConfiguration.class)
-				.withPropertyValues("management.health.defaults.enabled:false", "management.health.ping.enabled:true")
-				.run((context) -> assertThat(context).hasSingleBean(PingHealthIndicator.class));
+			.withPropertyValues("management.health.defaults.enabled:false", "management.health.ping.enabled:true")
+			.run((context) -> assertThat(context).hasSingleBean(PingHealthIndicator.class));
 
 	}
 

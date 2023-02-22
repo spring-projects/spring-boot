@@ -48,7 +48,7 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		AnnotationAttributes annotationAttributes = AnnotationAttributes
-				.fromMap(metadata.getAnnotationAttributes(this.annotationType.getName()));
+			.fromMap(metadata.getAnnotationAttributes(this.annotationType.getName()));
 		String endpointName = annotationAttributes.getString("value");
 		ConditionOutcome outcome = getEndpointOutcome(context, endpointName);
 		if (outcome != null) {
@@ -63,7 +63,7 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 		if (environment.containsProperty(enabledProperty)) {
 			boolean match = environment.getProperty(enabledProperty, Boolean.class, true);
 			return new ConditionOutcome(match, ConditionMessage.forCondition(this.annotationType)
-					.because(this.prefix + endpointName + ".enabled is " + match));
+				.because(this.prefix + endpointName + ".enabled is " + match));
 		}
 		return null;
 	}
@@ -79,9 +79,9 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 	 */
 	protected ConditionOutcome getDefaultOutcome(ConditionContext context, AnnotationAttributes annotationAttributes) {
 		boolean match = Boolean
-				.parseBoolean(context.getEnvironment().getProperty(this.prefix + "defaults.enabled", "true"));
+			.parseBoolean(context.getEnvironment().getProperty(this.prefix + "defaults.enabled", "true"));
 		return new ConditionOutcome(match, ConditionMessage.forCondition(this.annotationType)
-				.because(this.prefix + "defaults.enabled is considered " + match));
+			.because(this.prefix + "defaults.enabled is considered " + match));
 	}
 
 }

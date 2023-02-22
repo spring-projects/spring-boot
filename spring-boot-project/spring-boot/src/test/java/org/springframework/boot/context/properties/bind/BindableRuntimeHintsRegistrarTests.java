@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ class BindableRuntimeHintsRegistrarTests {
 		BindableRuntimeHintsRegistrar registrar = new BindableRuntimeHintsRegistrar();
 		registrar.registerHints(runtimeHints);
 		assertThat(RuntimeHintsPredicates.reflection().onType(BoundConfigurationProperties.class))
-				.rejects(runtimeHints);
+			.rejects(runtimeHints);
 	}
 
 	@Test
@@ -145,7 +145,7 @@ class BindableRuntimeHintsRegistrarTests {
 		RuntimeHints runtimeHints = registerHints(Immutable.class);
 		List<TypeHint> typeHints = runtimeHints.reflection().typeHints().toList();
 		assertThat(typeHints)
-				.anySatisfy(valueObjectBinding(Immutable.class, Immutable.class.getDeclaredConstructors()[0]));
+			.anySatisfy(valueObjectBinding(Immutable.class, Immutable.class.getDeclaredConstructors()[0]));
 		assertThat(typeHints).hasSize(1);
 	}
 
@@ -173,55 +173,58 @@ class BindableRuntimeHintsRegistrarTests {
 	void registerHintsWhenHasNestedTypeNotUsedIsIgnored() {
 		RuntimeHints runtimeHints = registerHints(WithNested.class);
 		assertThat(runtimeHints.reflection().getTypeHint(WithNested.class))
-				.satisfies(javaBeanBinding(WithNested.class));
+			.satisfies(javaBeanBinding(WithNested.class));
 	}
 
 	@Test
 	void registerHintsWhenWhenHasNestedExternalType() {
 		RuntimeHints runtimeHints = registerHints(WithExternalNested.class);
 		assertThat(runtimeHints.reflection().typeHints()).anySatisfy(javaBeanBinding(WithExternalNested.class))
-				.anySatisfy(javaBeanBinding(SampleType.class)).anySatisfy(javaBeanBinding(SampleType.Nested.class))
-				.hasSize(3);
+			.anySatisfy(javaBeanBinding(SampleType.class))
+			.anySatisfy(javaBeanBinding(SampleType.Nested.class))
+			.hasSize(3);
 	}
 
 	@Test
 	void registerHintsWhenWhenHasRecursiveType() {
 		RuntimeHints runtimeHints = registerHints(WithRecursive.class);
 		assertThat(runtimeHints.reflection().typeHints()).anySatisfy(javaBeanBinding(WithRecursive.class))
-				.anySatisfy(javaBeanBinding(Recursive.class)).hasSize(2);
+			.anySatisfy(javaBeanBinding(Recursive.class))
+			.hasSize(2);
 	}
 
 	@Test
 	void registerHintsWhenValueObjectWithRecursiveType() {
 		RuntimeHints runtimeHints = registerHints(ImmutableWithRecursive.class);
 		assertThat(runtimeHints.reflection().typeHints())
-				.anySatisfy(valueObjectBinding(ImmutableWithRecursive.class,
-						ImmutableWithRecursive.class.getDeclaredConstructors()[0]))
-				.anySatisfy(valueObjectBinding(ImmutableRecursive.class,
-						ImmutableRecursive.class.getDeclaredConstructors()[0]))
-				.hasSize(2);
+			.anySatisfy(valueObjectBinding(ImmutableWithRecursive.class,
+					ImmutableWithRecursive.class.getDeclaredConstructors()[0]))
+			.anySatisfy(
+					valueObjectBinding(ImmutableRecursive.class, ImmutableRecursive.class.getDeclaredConstructors()[0]))
+			.hasSize(2);
 	}
 
 	@Test
 	void registerHintsWhenHasWellKnownTypes() {
 		RuntimeHints runtimeHints = registerHints(WithWellKnownTypes.class);
 		assertThat(runtimeHints.reflection().typeHints()).anySatisfy(javaBeanBinding(WithWellKnownTypes.class))
-				.hasSize(1);
+			.hasSize(1);
 	}
 
 	@Test
 	void registerHintsWhenHasCrossReference() {
 		RuntimeHints runtimeHints = registerHints(WithCrossReference.class);
 		assertThat(runtimeHints.reflection().typeHints()).anySatisfy(javaBeanBinding(WithCrossReference.class))
-				.anySatisfy(javaBeanBinding(CrossReferenceA.class)).anySatisfy(javaBeanBinding(CrossReferenceB.class))
-				.hasSize(3);
+			.anySatisfy(javaBeanBinding(CrossReferenceA.class))
+			.anySatisfy(javaBeanBinding(CrossReferenceB.class))
+			.hasSize(3);
 	}
 
 	@Test
 	void pregisterHintsWhenHasUnresolvedGeneric() {
 		RuntimeHints runtimeHints = registerHints(WithGeneric.class);
 		assertThat(runtimeHints.reflection().typeHints()).anySatisfy(javaBeanBinding(WithGeneric.class))
-				.anySatisfy(javaBeanBinding(GenericObject.class));
+			.anySatisfy(javaBeanBinding(GenericObject.class));
 	}
 
 	@Test
@@ -237,7 +240,7 @@ class BindableRuntimeHintsRegistrarTests {
 		assertThat(RuntimeHintsPredicates.reflection().onType(TripleNested.class)).accepts(runtimeHints);
 		assertThat(RuntimeHintsPredicates.reflection().onType(TripleNested.DoubleNested.class)).accepts(runtimeHints);
 		assertThat(RuntimeHintsPredicates.reflection().onType(TripleNested.DoubleNested.Nested.class))
-				.accepts(runtimeHints);
+			.accepts(runtimeHints);
 	}
 
 	private Consumer<TypeHint> javaBeanBinding(Class<?> type) {
@@ -267,7 +270,7 @@ class BindableRuntimeHintsRegistrarTests {
 		return (executableHint) -> {
 			assertThat(executableHint.getName()).isEqualTo("<init>");
 			assertThat(Arrays.stream(constructor.getParameterTypes()).map(TypeReference::of).toList())
-					.isEqualTo(executableHint.getParameterTypes());
+				.isEqualTo(executableHint.getParameterTypes());
 		};
 	}
 

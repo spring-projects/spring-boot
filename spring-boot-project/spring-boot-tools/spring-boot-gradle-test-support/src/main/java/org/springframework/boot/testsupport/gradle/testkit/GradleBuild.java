@@ -226,8 +226,9 @@ public class GradleBuild {
 		if (repository.exists()) {
 			FileSystemUtils.copyRecursively(repository, new File(this.projectDir, "repository"));
 		}
-		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
-				.withPluginClasspath(pluginClasspath());
+		GradleRunner gradleRunner = GradleRunner.create()
+			.withProjectDir(this.projectDir)
+			.withPluginClasspath(pluginClasspath());
 		if (this.dsl != Dsl.KOTLIN && !this.configurationCache) {
 			// see https://github.com/gradle/gradle/issues/6862
 			gradleRunner.withDebug(true);
@@ -303,14 +304,17 @@ public class GradleBuild {
 
 	private String getProperty(File propertiesFile, String key) {
 		try {
-			assertThat(propertiesFile).withFailMessage("Expecting properties file to exist at path '%s'",
-					propertiesFile.getCanonicalFile()).exists();
+			assertThat(propertiesFile)
+				.withFailMessage("Expecting properties file to exist at path '%s'", propertiesFile.getCanonicalFile())
+				.exists();
 			Properties properties = new Properties();
 			try (FileInputStream input = new FileInputStream(propertiesFile)) {
 				properties.load(input);
 				String value = properties.getProperty(key);
-				assertThat(value).withFailMessage("Expecting properties file '%s' to contain the key '%s'",
-						propertiesFile.getCanonicalFile(), key).isNotEmpty();
+				assertThat(value)
+					.withFailMessage("Expecting properties file '%s' to contain the key '%s'",
+							propertiesFile.getCanonicalFile(), key)
+					.isNotEmpty();
 				return value;
 			}
 		}

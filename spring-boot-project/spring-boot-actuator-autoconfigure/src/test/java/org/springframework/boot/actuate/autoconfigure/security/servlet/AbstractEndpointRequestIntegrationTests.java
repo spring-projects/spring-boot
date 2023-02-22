@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,8 +68,12 @@ abstract class AbstractEndpointRequestIntegrationTests {
 		getContextRunner().withPropertyValues("spring.security.user.password=password").run((context) -> {
 			WebTestClient webTestClient = getWebTestClient(context);
 			webTestClient.get().uri("/actuator/e2").exchange().expectStatus().isUnauthorized();
-			webTestClient.get().uri("/actuator/e2").header("Authorization", getBasicAuth()).exchange().expectStatus()
-					.isOk();
+			webTestClient.get()
+				.uri("/actuator/e2")
+				.header("Authorization", getBasicAuth())
+				.exchange()
+				.expectStatus()
+				.isOk();
 		});
 	}
 
@@ -78,8 +82,11 @@ abstract class AbstractEndpointRequestIntegrationTests {
 		getContextRunner().run((context) -> {
 			WebTestClient webTestClient = getWebTestClient(context);
 			webTestClient.get().uri("/actuator").exchange().expectStatus().isOk();
-			webTestClient.get().uri("/actuator/").exchange().expectStatus()
-					.isEqualTo(expectedStatusWithTrailingSlash());
+			webTestClient.get()
+				.uri("/actuator/")
+				.exchange()
+				.expectStatus()
+				.isEqualTo(expectedStatusWithTrailingSlash());
 		});
 	}
 
@@ -89,10 +96,10 @@ abstract class AbstractEndpointRequestIntegrationTests {
 
 	protected final WebApplicationContextRunner getContextRunner() {
 		return createContextRunner().withPropertyValues("management.endpoints.web.exposure.include=*")
-				.withUserConfiguration(BaseConfiguration.class, SecurityConfiguration.class).withConfiguration(
-						AutoConfigurations.of(JacksonAutoConfiguration.class, SecurityAutoConfiguration.class,
-								UserDetailsServiceAutoConfiguration.class, EndpointAutoConfiguration.class,
-								WebEndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class));
+			.withUserConfiguration(BaseConfiguration.class, SecurityConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, SecurityAutoConfiguration.class,
+					UserDetailsServiceAutoConfiguration.class, EndpointAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class));
 
 	}
 
@@ -100,9 +107,12 @@ abstract class AbstractEndpointRequestIntegrationTests {
 
 	protected WebTestClient getWebTestClient(AssertableWebApplicationContext context) {
 		int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
-				.getWebServer().getPort();
-		return WebTestClient.bindToServer().baseUrl("http://localhost:" + port).responseTimeout(Duration.ofMinutes(5))
-				.build();
+			.getWebServer()
+			.getPort();
+		return WebTestClient.bindToServer()
+			.baseUrl("http://localhost:" + port)
+			.responseTimeout(Duration.ofMinutes(5))
+			.build();
 	}
 
 	String getBasicAuth() {

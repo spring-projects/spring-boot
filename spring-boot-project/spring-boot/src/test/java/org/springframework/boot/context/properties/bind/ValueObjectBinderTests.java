@@ -82,7 +82,7 @@ class ValueObjectBinderTests {
 		source.put("enum-value", "foo-bar");
 		this.sources.add(source);
 		ExampleValueBean bean = this.binder.bind(ConfigurationPropertyName.of(""), Bindable.of(ExampleValueBean.class))
-				.get();
+			.get();
 		assertThat(bean.getIntValue()).isEqualTo(12);
 		assertThat(bean.getLongValue()).isEqualTo(34);
 		assertThat(bean.isBooleanValue()).isTrue();
@@ -136,7 +136,8 @@ class ValueObjectBinderTests {
 		source.put("foo.int-value", "12");
 		this.sources.add(source);
 		MultipleConstructorsOnlyOneNotPrivateBean bean = this.binder
-				.bind("foo", Bindable.of(MultipleConstructorsOnlyOneNotPrivateBean.class)).get();
+			.bind("foo", Bindable.of(MultipleConstructorsOnlyOneNotPrivateBean.class))
+			.get();
 		bean = bean.withString("test");
 		assertThat(bean.getIntValue()).isEqualTo(12);
 		assertThat(bean.getStringValue()).isEqualTo("test");
@@ -192,7 +193,7 @@ class ValueObjectBinderTests {
 		source.put("foo.date", "2014-04-01");
 		this.sources.add(source);
 		ConverterAnnotatedExampleBean bean = this.binder.bind("foo", Bindable.of(ConverterAnnotatedExampleBean.class))
-				.get();
+			.get();
 		assertThat(bean.getDate()).hasToString("2014-04-01");
 	}
 
@@ -202,7 +203,7 @@ class ValueObjectBinderTests {
 		source.put("foo.bar", "hello");
 		this.sources.add(source);
 		ConverterAnnotatedExampleBean bean = this.binder.bind("foo", Bindable.of(ConverterAnnotatedExampleBean.class))
-				.get();
+			.get();
 		assertThat(bean.getDate()).hasToString("2019-05-10");
 	}
 
@@ -212,7 +213,8 @@ class ValueObjectBinderTests {
 		source.put("foo.property", "test");
 		this.sources.add(source);
 		ExamplePackagePrivateConstructorBean bound = this.binder
-				.bind("foo", Bindable.of(ExamplePackagePrivateConstructorBean.class)).get();
+			.bind("foo", Bindable.of(ExamplePackagePrivateConstructorBean.class))
+			.get();
 		assertThat(bound.getProperty()).isEqualTo("test");
 	}
 
@@ -254,7 +256,7 @@ class ValueObjectBinderTests {
 		this.sources.add(source);
 		Bindable<ValidatingConstructorBean> target = Bindable.of(ValidatingConstructorBean.class);
 		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.binder.bind("foo", target))
-				.satisfies(this::noConfigurationProperty);
+			.satisfies(this::noConfigurationProperty);
 	}
 
 	@Test
@@ -264,9 +266,10 @@ class ValueObjectBinderTests {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value.bar", "baz");
 		this.sources.add(source);
-		GenericValue<Map<String, String>> bean = this.binder.bind("foo", Bindable
+		GenericValue<Map<String, String>> bean = this.binder
+			.bind("foo", Bindable
 				.<GenericValue<Map<String, String>>>of(ResolvableType.forClassWithGenerics(GenericValue.class, type)))
-				.get();
+			.get();
 		assertThat(bean.getValue()).containsEntry("bar", "baz");
 	}
 
@@ -281,9 +284,9 @@ class ValueObjectBinderTests {
 	@Test
 	void bindWhenJavaLangParameterWithEmptyDefaultValueShouldThrowException() {
 		assertThatExceptionOfType(BindException.class)
-				.isThrownBy(() -> this.binder.bindOrCreate("foo",
-						Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForJavaLangTypes.class)))
-				.withStackTraceContaining("Parameter of type java.lang.String must have a non-empty default value.");
+			.isThrownBy(() -> this.binder.bindOrCreate("foo",
+					Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForJavaLangTypes.class)))
+			.withStackTraceContaining("Parameter of type java.lang.String must have a non-empty default value.");
 	}
 
 	@Test
@@ -317,18 +320,18 @@ class ValueObjectBinderTests {
 	@Test
 	void bindWhenEnumParameterWithEmptyDefaultValueShouldThrowException() {
 		assertThatExceptionOfType(BindException.class)
-				.isThrownBy(() -> this.binder.bindOrCreate("foo",
-						Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForEnumTypes.class)))
-				.withStackTraceContaining(
-						"Parameter of type org.springframework.boot.context.properties.bind.ValueObjectBinderTests$NestedConstructorBeanWithEmptyDefaultValueForEnumTypes$Foo must have a non-empty default value.");
+			.isThrownBy(() -> this.binder.bindOrCreate("foo",
+					Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForEnumTypes.class)))
+			.withStackTraceContaining(
+					"Parameter of type org.springframework.boot.context.properties.bind.ValueObjectBinderTests$NestedConstructorBeanWithEmptyDefaultValueForEnumTypes$Foo must have a non-empty default value.");
 	}
 
 	@Test
 	void bindWhenPrimitiveParameterWithEmptyDefaultValueShouldThrowException() {
 		assertThatExceptionOfType(BindException.class)
-				.isThrownBy(() -> this.binder.bindOrCreate("foo",
-						Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForPrimitiveTypes.class)))
-				.withStackTraceContaining("Parameter of type int must have a non-empty default value.");
+			.isThrownBy(() -> this.binder.bindOrCreate("foo",
+					Bindable.of(NestedConstructorBeanWithEmptyDefaultValueForPrimitiveTypes.class)))
+			.withStackTraceContaining("Parameter of type int must have a non-empty default value.");
 	}
 
 	@Test
@@ -380,7 +383,7 @@ class ValueObjectBinderTests {
 				ClassLoader cl = compiled.getClassLoader();
 				Object bean = this.binder.bind("test.record", Class.forName("RecordProperties", true, cl)).get();
 				assertThat(bean).hasFieldOrPropertyWithValue("property1", "value-from-config-1")
-						.hasFieldOrPropertyWithValue("property2", "default-value-2");
+					.hasFieldOrPropertyWithValue("property2", "default-value-2");
 			}
 			catch (ClassNotFoundException ex) {
 				fail("Expected generated class 'RecordProperties' not found", ex);

@@ -59,8 +59,8 @@ class CustomContainerWebSocketsApplicationTests {
 	void echoEndpoint() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(ClientConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class)
-						.properties("websocket.uri:ws://localhost:" + this.port + "/ws/echo/websocket")
-						.run("--spring.main.web-application-type=none");
+			.properties("websocket.uri:ws://localhost:" + this.port + "/ws/echo/websocket")
+			.run("--spring.main.web-application-type=none");
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
 		AtomicReference<String> messagePayloadReference = context.getBean(ClientConfiguration.class).messagePayload;
 		context.close();
@@ -72,8 +72,8 @@ class CustomContainerWebSocketsApplicationTests {
 	void reverseEndpoint() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(ClientConfiguration.class,
 				PropertyPlaceholderAutoConfiguration.class)
-						.properties("websocket.uri:ws://localhost:" + this.port + "/ws/reverse")
-						.run("--spring.main.web-application-type=none");
+			.properties("websocket.uri:ws://localhost:" + this.port + "/ws/reverse")
+			.run("--spring.main.web-application-type=none");
 		long count = context.getBean(ClientConfiguration.class).latch.getCount();
 		AtomicReference<String> messagePayloadReference = context.getBean(ClientConfiguration.class).messagePayload;
 		context.close();

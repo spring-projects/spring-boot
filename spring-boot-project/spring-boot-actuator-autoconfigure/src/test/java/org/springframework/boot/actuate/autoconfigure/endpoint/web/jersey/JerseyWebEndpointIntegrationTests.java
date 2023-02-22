@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,19 +47,20 @@ class JerseyWebEndpointIntegrationTests {
 	@Test
 	void whenJerseyIsConfiguredToUseAFilterThenResourceRegistrationSucceeds() {
 		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(JerseySameManagementContextConfiguration.class,
-						JerseyAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
-						EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-						JerseyWebEndpointManagementContextConfiguration.class))
-				.withUserConfiguration(ResourceConfigConfiguration.class)
-				.withClassLoader(new FilteredClassLoader(DispatcherServlet.class))
-				.withPropertyValues("spring.jersey.type=filter", "server.port=0").run((context) -> {
-					assertThat(context).hasNotFailed();
-					Set<Resource> resources = context.getBean(ResourceConfig.class).getResources();
-					assertThat(resources).hasSize(1);
-					Resource resource = resources.iterator().next();
-					assertThat(resource.getPath()).isEqualTo("/actuator");
-				});
+			.withConfiguration(
+					AutoConfigurations.of(JerseySameManagementContextConfiguration.class, JerseyAutoConfiguration.class,
+							ServletWebServerFactoryAutoConfiguration.class, EndpointAutoConfiguration.class,
+							WebEndpointAutoConfiguration.class, JerseyWebEndpointManagementContextConfiguration.class))
+			.withUserConfiguration(ResourceConfigConfiguration.class)
+			.withClassLoader(new FilteredClassLoader(DispatcherServlet.class))
+			.withPropertyValues("spring.jersey.type=filter", "server.port=0")
+			.run((context) -> {
+				assertThat(context).hasNotFailed();
+				Set<Resource> resources = context.getBean(ResourceConfig.class).getResources();
+				assertThat(resources).hasSize(1);
+				Resource resource = resources.iterator().next();
+				assertThat(resource.getPath()).isEqualTo("/actuator");
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

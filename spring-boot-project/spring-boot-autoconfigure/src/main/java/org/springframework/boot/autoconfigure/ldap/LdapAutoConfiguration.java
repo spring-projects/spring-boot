@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,8 +58,8 @@ public class LdapAutoConfiguration {
 		propertyMapper.from(properties.getAnonymousReadOnly()).to(source::setAnonymousReadOnly);
 		propertyMapper.from(properties.getBase()).to(source::setBase);
 		propertyMapper.from(properties.determineUrls(environment)).to(source::setUrls);
-		propertyMapper.from(properties.getBaseEnvironment()).to(
-				(baseEnvironment) -> source.setBaseEnvironmentProperties(Collections.unmodifiableMap(baseEnvironment)));
+		propertyMapper.from(properties.getBaseEnvironment())
+			.to((baseEnvironment) -> source.setBaseEnvironmentProperties(Collections.unmodifiableMap(baseEnvironment)));
 		return source;
 	}
 
@@ -70,10 +70,10 @@ public class LdapAutoConfiguration {
 		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		LdapTemplate ldapTemplate = new LdapTemplate(contextSource);
 		propertyMapper.from(template.isIgnorePartialResultException())
-				.to(ldapTemplate::setIgnorePartialResultException);
+			.to(ldapTemplate::setIgnorePartialResultException);
 		propertyMapper.from(template.isIgnoreNameNotFoundException()).to(ldapTemplate::setIgnoreNameNotFoundException);
 		propertyMapper.from(template.isIgnoreSizeLimitExceededException())
-				.to(ldapTemplate::setIgnoreSizeLimitExceededException);
+			.to(ldapTemplate::setIgnoreSizeLimitExceededException);
 		return ldapTemplate;
 	}
 

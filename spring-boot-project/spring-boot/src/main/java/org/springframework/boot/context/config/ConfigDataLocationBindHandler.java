@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,9 @@ class ConfigDataLocationBindHandler extends AbstractBindHandler {
 			return withOrigin(context, location);
 		}
 		if (result instanceof List) {
-			List<Object> list = ((List<Object>) result).stream().filter(Objects::nonNull)
-					.collect(Collectors.toCollection(ArrayList::new));
+			List<Object> list = ((List<Object>) result).stream()
+				.filter(Objects::nonNull)
+				.collect(Collectors.toCollection(ArrayList::new));
 			for (int i = 0; i < list.size(); i++) {
 				Object element = list.get(i);
 				if (element instanceof ConfigDataLocation location) {
@@ -56,8 +57,9 @@ class ConfigDataLocationBindHandler extends AbstractBindHandler {
 			return list;
 		}
 		if (result instanceof ConfigDataLocation[] unfilteredLocations) {
-			ConfigDataLocation[] locations = Arrays.stream(unfilteredLocations).filter(Objects::nonNull)
-					.toArray(ConfigDataLocation[]::new);
+			ConfigDataLocation[] locations = Arrays.stream(unfilteredLocations)
+				.filter(Objects::nonNull)
+				.toArray(ConfigDataLocation[]::new);
 			for (int i = 0; i < locations.length; i++) {
 				locations[i] = withOrigin(context, locations[i]);
 			}

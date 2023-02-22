@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,14 +31,20 @@ class GreetingControllerTests {
 
 	@Test
 	void shouldGreetWithSpecificName() {
-		this.graphQlTester.document("{ greeting(name: \"Alice\") } ").execute().path("greeting").entity(String.class)
-				.isEqualTo("Hello, Alice!");
+		this.graphQlTester.document("{ greeting(name: \"Alice\") } ")
+			.execute()
+			.path("greeting")
+			.entity(String.class)
+			.isEqualTo("Hello, Alice!");
 	}
 
 	@Test
 	void shouldGreetWithDefaultName() {
-		this.graphQlTester.document("{ greeting } ").execute().path("greeting").entity(String.class)
-				.isEqualTo("Hello, Spring!");
+		this.graphQlTester.document("{ greeting } ")
+			.execute()
+			.path("greeting")
+			.entity(String.class)
+			.isEqualTo("Hello, Spring!");
 	}
 
 }

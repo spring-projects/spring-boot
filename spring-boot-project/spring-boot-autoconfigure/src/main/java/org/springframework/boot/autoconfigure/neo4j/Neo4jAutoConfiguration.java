@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,8 +84,8 @@ public class Neo4jAutoConfiguration {
 		boolean hasKerberosTicket = StringUtils.hasText(kerberosTicket);
 
 		if (hasUsername && hasKerberosTicket) {
-			throw new IllegalStateException(String.format(
-					"Cannot specify both username ('%s') and kerberos ticket ('%s')", username, kerberosTicket));
+			throw new IllegalStateException(String
+				.format("Cannot specify both username ('%s') and kerberos ticket ('%s')", username, kerberosTicket));
 		}
 		if (hasUsername && hasPassword) {
 			return AuthTokens.basic(username, password, realm);

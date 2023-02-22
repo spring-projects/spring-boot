@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,13 +50,14 @@ class SampleRSocketApplicationTests {
 	@Test
 	void rSocketEndpoint() {
 		RSocketRequester requester = this.builder
-				.rsocketStrategies((builder) -> builder.encoder(new SimpleAuthenticationEncoder()))
-				.setupMetadata(new UsernamePasswordMetadata("user", "password"),
-						MimeTypeUtils.parseMimeType(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION.getString()))
-				.tcp("localhost", this.port);
+			.rsocketStrategies((builder) -> builder.encoder(new SimpleAuthenticationEncoder()))
+			.setupMetadata(new UsernamePasswordMetadata("user", "password"),
+					MimeTypeUtils.parseMimeType(WellKnownMimeType.MESSAGE_RSOCKET_AUTHENTICATION.getString()))
+			.tcp("localhost", this.port);
 		Mono<Project> result = requester.route("find.project.spring-boot").retrieveMono(Project.class);
-		StepVerifier.create(result).assertNext((project) -> assertThat(project.getName()).isEqualTo("spring-boot"))
-				.verifyComplete();
+		StepVerifier.create(result)
+			.assertNext((project) -> assertThat(project.getName()).isEqualTo("spring-boot"))
+			.verifyComplete();
 	}
 
 }

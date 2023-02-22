@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,9 +66,9 @@ import static org.assertj.core.api.Assertions.fail;
 class JobLauncherApplicationRunnerTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-					TransactionAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class))
-			.withUserConfiguration(BatchConfiguration.class);
+		.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class,
+				DataSourceTransactionManagerAutoConfiguration.class))
+		.withUserConfiguration(BatchConfiguration.class);
 
 	@Test
 	void basicExecution() {
@@ -98,8 +98,9 @@ class JobLauncherApplicationRunnerTests {
 			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
 			Job job = jobLauncherContext.jobBuilder()
-					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
-					.incrementer(new RunIdIncrementer()).build();
+				.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
+				.incrementer(new RunIdIncrementer())
+				.build();
 			jobLauncherContext.runner.execute(job, new JobParameters());
 			jobLauncherContext.runner.execute(job, new JobParametersBuilder().addLong("run.id", 1L).toJobParameters());
 			assertThat(jobLauncherContext.jobInstances()).hasSize(1);
@@ -112,8 +113,8 @@ class JobLauncherApplicationRunnerTests {
 			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
 			Job job = jobLauncherContext.jobBuilder()
-					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
-					.build();
+				.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
+				.build();
 			// start a job instance
 			JobParameters jobParameters = new JobParametersBuilder().addString("name", "foo").toJobParameters();
 			jobLauncherContext.runner.execute(job, jobParameters);
@@ -130,9 +131,11 @@ class JobLauncherApplicationRunnerTests {
 		this.contextRunner.run((context) -> {
 			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
-			Job job = jobLauncherContext.jobBuilder().preventRestart()
-					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
-					.incrementer(new RunIdIncrementer()).build();
+			Job job = jobLauncherContext.jobBuilder()
+				.preventRestart()
+				.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
+				.incrementer(new RunIdIncrementer())
+				.build();
 			jobLauncherContext.runner.execute(job, new JobParameters());
 			jobLauncherContext.runner.execute(job, new JobParameters());
 			// A failed job that is not restartable does not re-use the job params of
@@ -153,10 +156,12 @@ class JobLauncherApplicationRunnerTests {
 			PlatformTransactionManager transactionManager = context.getBean(PlatformTransactionManager.class);
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
 			Job job = jobLauncherContext.jobBuilder()
-					.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
-					.incrementer(new RunIdIncrementer()).build();
-			JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false).addLong("foo", 2L, false)
-					.toJobParameters();
+				.start(jobLauncherContext.stepBuilder().tasklet(throwingTasklet(), transactionManager).build())
+				.incrementer(new RunIdIncrementer())
+				.build();
+			JobParameters jobParameters = new JobParametersBuilder().addLong("id", 1L, false)
+				.addLong("foo", 2L, false)
+				.toJobParameters();
 			jobLauncherContext.runner.execute(job, jobParameters);
 			assertThat(jobLauncherContext.jobInstances()).hasSize(1);
 			// try to re-run a failed execution with non identifying parameters

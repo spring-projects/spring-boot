@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -199,8 +199,11 @@ public class JettyWebServer implements WebServer {
 	}
 
 	private String getContextPath() {
-		return Arrays.stream(this.server.getHandlers()).map(this::findContextHandler).filter(Objects::nonNull)
-				.map(ContextHandler::getContextPath).collect(Collectors.joining(" "));
+		return Arrays.stream(this.server.getHandlers())
+			.map(this::findContextHandler)
+			.filter(Objects::nonNull)
+			.map(ContextHandler::getContextPath)
+			.collect(Collectors.joining(" "));
 	}
 
 	private ContextHandler findContextHandler(Handler handler) {

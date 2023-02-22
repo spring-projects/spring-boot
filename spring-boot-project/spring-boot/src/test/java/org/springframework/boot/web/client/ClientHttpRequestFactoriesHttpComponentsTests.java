@@ -48,7 +48,8 @@ class ClientHttpRequestFactoriesHttpComponentsTests
 		HttpClient httpClient = requestFactory.getHttpClient();
 		Object connectionManager = ReflectionTestUtils.getField(httpClient, "connManager");
 		SocketConfig socketConfig = ((Resolver<HttpRoute, SocketConfig>) ReflectionTestUtils.getField(connectionManager,
-				"socketConfigResolver")).resolve(null);
+				"socketConfigResolver"))
+			.resolve(null);
 		return socketConfig.getSoTimeout().toMilliseconds();
 	}
 

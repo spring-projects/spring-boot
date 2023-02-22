@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ public class HttpExchangesWebFilter implements WebFilter, Ordered {
 		Mono<?> principal = exchange.getPrincipal().cast(Object.class).defaultIfEmpty(NONE);
 		Mono<Object> session = exchange.getSession().cast(Object.class).defaultIfEmpty(NONE);
 		return Mono.zip(PrincipalAndSession::new, principal, session)
-				.flatMap((principalAndSession) -> filter(exchange, chain, principalAndSession));
+			.flatMap((principalAndSession) -> filter(exchange, chain, principalAndSession));
 	}
 
 	private Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain,

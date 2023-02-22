@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,21 +34,21 @@ class ContainerContentTests {
 	@Test
 	void ofWhenArchiveIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ContainerContent.of(null))
-				.withMessage("Archive must not be null");
+			.withMessage("Archive must not be null");
 	}
 
 	@Test
 	void ofWhenDestinationPathIsNullThrowsException() {
 		TarArchive archive = mock(TarArchive.class);
 		assertThatIllegalArgumentException().isThrownBy(() -> ContainerContent.of(archive, null))
-				.withMessage("DestinationPath must not be empty");
+			.withMessage("DestinationPath must not be empty");
 	}
 
 	@Test
 	void ofWhenDestinationPathIsEmptyThrowsException() {
 		TarArchive archive = mock(TarArchive.class);
 		assertThatIllegalArgumentException().isThrownBy(() -> ContainerContent.of(archive, ""))
-				.withMessage("DestinationPath must not be empty");
+			.withMessage("DestinationPath must not be empty");
 	}
 
 	@Test

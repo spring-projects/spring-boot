@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,34 +54,36 @@ class ReactiveElasticsearchRepositoriesAutoConfigurationTests {
 
 	@Container
 	static ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())
-			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
+		.withStartupAttempts(5)
+		.withStartupTimeout(Duration.ofMinutes(10));
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ElasticsearchClientAutoConfiguration.class,
-					ElasticsearchRestClientAutoConfiguration.class,
-					ReactiveElasticsearchRepositoriesAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class,
-					ReactiveElasticsearchClientAutoConfiguration.class))
-			.withPropertyValues(
-					"spring.elasticsearch.uris=" + elasticsearch.getHost() + ":" + elasticsearch.getFirstMappedPort(),
-					"spring.elasticsearch.socket-timeout=30s")
-			.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO));
+		.withConfiguration(AutoConfigurations.of(ElasticsearchClientAutoConfiguration.class,
+				ElasticsearchRestClientAutoConfiguration.class,
+				ReactiveElasticsearchRepositoriesAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class,
+				ReactiveElasticsearchClientAutoConfiguration.class))
+		.withPropertyValues(
+				"spring.elasticsearch.uris=" + elasticsearch.getHost() + ":" + elasticsearch.getFirstMappedPort(),
+				"spring.elasticsearch.socket-timeout=30s")
+		.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO));
 
 	@Test
 	void testDefaultRepositoryConfiguration() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(ReactiveCityRepository.class).hasSingleBean(ReactiveElasticsearchTemplate.class));
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveCityRepository.class)
+				.hasSingleBean(ReactiveElasticsearchTemplate.class));
 	}
 
 	@Test
 	void testNoRepositoryConfiguration() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(ReactiveElasticsearchTemplate.class));
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveElasticsearchTemplate.class));
 	}
 
 	@Test
 	void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		this.contextRunner.withUserConfiguration(CustomizedConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(CityReactiveElasticsearchDbRepository.class));
+			.run((context) -> assertThat(context).hasSingleBean(CityReactiveElasticsearchDbRepository.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

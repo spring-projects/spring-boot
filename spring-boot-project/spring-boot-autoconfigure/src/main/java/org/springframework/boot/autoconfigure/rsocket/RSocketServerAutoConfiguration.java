@@ -109,7 +109,7 @@ public class RSocketServerAutoConfiguration {
 		RSocketServerCustomizer frameDecoderRSocketServerCustomizer(RSocketMessageHandler rSocketMessageHandler) {
 			return (server) -> {
 				if (rSocketMessageHandler.getRSocketStrategies()
-						.dataBufferFactory() instanceof NettyDataBufferFactory) {
+					.dataBufferFactory() instanceof NettyDataBufferFactory) {
 					server.payloadDecoder(PayloadDecoder.ZERO_COPY);
 				}
 			};

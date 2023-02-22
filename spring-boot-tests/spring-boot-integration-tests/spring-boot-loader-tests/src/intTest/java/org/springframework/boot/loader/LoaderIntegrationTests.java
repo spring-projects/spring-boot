@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,16 +54,19 @@ class LoaderIntegrationTests {
 		try (GenericContainer<?> container = createContainer(javaRuntime)) {
 			container.start();
 			System.out.println(this.output.toUtf8String());
-			assertThat(this.output.toUtf8String()).contains(">>>>> 287649 BYTES from").doesNotContain("WARNING:")
-					.doesNotContain("illegal").doesNotContain("jar written to temp");
+			assertThat(this.output.toUtf8String()).contains(">>>>> 287649 BYTES from")
+				.doesNotContain("WARNING:")
+				.doesNotContain("illegal")
+				.doesNotContain("jar written to temp");
 		}
 	}
 
 	private GenericContainer<?> createContainer(JavaRuntime javaRuntime) {
-		return javaRuntime.getContainer().withLogConsumer(this.output)
-				.withCopyFileToContainer(MountableFile.forHostPath(findApplication().toPath()), "/app.jar")
-				.withStartupCheckStrategy(new OneShotStartupCheckStrategy().withTimeout(Duration.ofMinutes(5)))
-				.withCommand("java", "-jar", "app.jar");
+		return javaRuntime.getContainer()
+			.withLogConsumer(this.output)
+			.withCopyFileToContainer(MountableFile.forHostPath(findApplication().toPath()), "/app.jar")
+			.withStartupCheckStrategy(new OneShotStartupCheckStrategy().withTimeout(Duration.ofMinutes(5)))
+			.withCommand("java", "-jar", "app.jar");
 	}
 
 	private File findApplication() {
@@ -116,7 +119,7 @@ class LoaderIntegrationTests {
 
 		static JavaRuntime oracleJdk17() {
 			ImageFromDockerfile image = new ImageFromDockerfile("spring-boot-loader/oracle-jdk-17")
-					.withFileFromFile("Dockerfile", new File("src/intTest/resources/conf/oracle-jdk-17/Dockerfile"));
+				.withFileFromFile("Dockerfile", new File("src/intTest/resources/conf/oracle-jdk-17/Dockerfile"));
 			return new JavaRuntime("Oracle JDK 17", JavaVersion.SEVENTEEN, () -> new GenericContainer<>(image));
 		}
 

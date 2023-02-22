@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,13 +38,13 @@ class SharedObjectMapperTests {
 		assertThat(mapper).isNotNull();
 		assertThat(mapper.getRegisteredModuleIds()).contains(new ParameterNamesModule().getTypeId());
 		assertThat(SerializationFeature.INDENT_OUTPUT
-				.enabledIn(mapper.getSerializationConfig().getSerializationFeatures())).isTrue();
+			.enabledIn(mapper.getSerializationConfig().getSerializationFeatures())).isTrue();
 		assertThat(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES
-				.enabledIn(mapper.getDeserializationConfig().getDeserializationFeatures())).isFalse();
+			.enabledIn(mapper.getDeserializationConfig().getDeserializationFeatures())).isFalse();
 		assertThat(mapper.getSerializationConfig().getPropertyNamingStrategy())
-				.isEqualTo(PropertyNamingStrategies.LOWER_CAMEL_CASE);
+			.isEqualTo(PropertyNamingStrategies.LOWER_CAMEL_CASE);
 		assertThat(mapper.getDeserializationConfig().getPropertyNamingStrategy())
-				.isEqualTo(PropertyNamingStrategies.LOWER_CAMEL_CASE);
+			.isEqualTo(PropertyNamingStrategies.LOWER_CAMEL_CASE);
 	}
 
 }

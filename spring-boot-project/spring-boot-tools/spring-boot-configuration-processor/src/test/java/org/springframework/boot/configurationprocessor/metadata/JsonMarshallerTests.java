@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,8 +55,11 @@ class JsonMarshallerTests {
 		JsonMarshaller marshaller = new JsonMarshaller();
 		marshaller.write(metadata, outputStream);
 		ConfigurationMetadata read = marshaller.read(new ByteArrayInputStream(outputStream.toByteArray()));
-		assertThat(read).has(Metadata.withProperty("a.b", StringBuffer.class).fromSource(InputStream.class)
-				.withDescription("desc").withDefaultValue("x").withDeprecation("Deprecation comment", "b.c.d"));
+		assertThat(read).has(Metadata.withProperty("a.b", StringBuffer.class)
+			.fromSource(InputStream.class)
+			.withDescription("desc")
+			.withDefaultValue("x")
+			.withDeprecation("Deprecation comment", "b.c.d"));
 		assertThat(read).has(Metadata.withProperty("b.c.d"));
 		assertThat(read).has(Metadata.withProperty("c").withDefaultValue(123));
 		assertThat(read).has(Metadata.withProperty("d").withDefaultValue(true));
@@ -126,10 +129,10 @@ class JsonMarshallerTests {
 				null, null, null));
 		metadata.add(ItemMetadata.newProperty("com.example.bravo", "aaa", "java.lang.Integer", "com.example.Bar", null,
 				null, null, null));
-		metadata.add(
-				ItemMetadata.newProperty("com.example.alpha", "ddd", null, "com.example.Bar", null, null, null, null));
-		metadata.add(
-				ItemMetadata.newProperty("com.example.alpha", "ccc", null, "com.example.Foo", null, null, null, null));
+		metadata
+			.add(ItemMetadata.newProperty("com.example.alpha", "ddd", null, "com.example.Bar", null, null, null, null));
+		metadata
+			.add(ItemMetadata.newProperty("com.example.alpha", "ccc", null, "com.example.Foo", null, null, null, null));
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		JsonMarshaller marshaller = new JsonMarshaller();
 		marshaller.write(metadata, outputStream);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,31 +67,31 @@ class AdditionalHealthEndpointPathTests {
 	@Test
 	void fromPathWithMultipleSegmentsShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> AdditionalHealthEndpointPath.from("server:/my-path/my-sub-path"));
+			.isThrownBy(() -> AdditionalHealthEndpointPath.from("server:/my-path/my-sub-path"));
 	}
 
 	@Test
 	void fromPathWithMultipleSegmentsNotStartingWithSlashShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> AdditionalHealthEndpointPath.from("server:my-path/my-sub-path"));
+			.isThrownBy(() -> AdditionalHealthEndpointPath.from("server:my-path/my-sub-path"));
 	}
 
 	@Test
 	void pathsWithTheSameNamespaceAndValueAreEqual() {
 		assertThat(AdditionalHealthEndpointPath.from("server:/my-path"))
-				.isEqualTo(AdditionalHealthEndpointPath.from("server:/my-path"));
+			.isEqualTo(AdditionalHealthEndpointPath.from("server:/my-path"));
 	}
 
 	@Test
 	void pathsWithTheDifferentNamespaceAndSameValueAreNotEqual() {
 		assertThat(AdditionalHealthEndpointPath.from("server:/my-path"))
-				.isNotEqualTo((AdditionalHealthEndpointPath.from("management:/my-path")));
+			.isNotEqualTo((AdditionalHealthEndpointPath.from("management:/my-path")));
 	}
 
 	@Test
 	void pathsWithTheSameNamespaceAndValuesWithNoSlashAreEqual() {
 		assertThat(AdditionalHealthEndpointPath.from("server:/my-path"))
-				.isEqualTo((AdditionalHealthEndpointPath.from("server:my-path")));
+			.isEqualTo((AdditionalHealthEndpointPath.from("server:my-path")));
 	}
 
 	@Test
@@ -102,13 +102,13 @@ class AdditionalHealthEndpointPathTests {
 	@Test
 	void ofWithNullPathShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> AdditionalHealthEndpointPath.of(WebServerNamespace.SERVER, null));
+			.isThrownBy(() -> AdditionalHealthEndpointPath.of(WebServerNamespace.SERVER, null));
 	}
 
 	@Test
 	void ofWithMultipleSegmentValueShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> AdditionalHealthEndpointPath.of(WebServerNamespace.SERVER, "/my-path/my-subpath"));
+			.isThrownBy(() -> AdditionalHealthEndpointPath.of(WebServerNamespace.SERVER, "/my-path/my-subpath"));
 	}
 
 	@Test

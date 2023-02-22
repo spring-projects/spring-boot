@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,19 +44,19 @@ class ConditionalOnExpressionTests {
 	@Test
 	void expressionIsTrue() {
 		this.contextRunner.withUserConfiguration(BasicConfiguration.class)
-				.run((context) -> assertThat(context.getBean("foo")).isEqualTo("foo"));
+			.run((context) -> assertThat(context.getBean("foo")).isEqualTo("foo"));
 	}
 
 	@Test
 	void expressionEvaluatesToTrueRegistersBean() {
 		this.contextRunner.withUserConfiguration(MissingConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean("foo"));
+			.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
 
 	@Test
 	void expressionEvaluatesToFalseDoesNotRegisterBean() {
 		this.contextRunner.withUserConfiguration(NullConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean("foo"));
+			.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class ConditionalOnExpressionTests {
 	private AnnotatedTypeMetadata mockMetaData(String value) {
 		AnnotatedTypeMetadata metadata = mock(AnnotatedTypeMetadata.class);
 		given(metadata.getAnnotationAttributes(ConditionalOnExpression.class.getName()))
-				.willReturn(Collections.singletonMap("value", value));
+			.willReturn(Collections.singletonMap("value", value));
 		return metadata;
 	}
 

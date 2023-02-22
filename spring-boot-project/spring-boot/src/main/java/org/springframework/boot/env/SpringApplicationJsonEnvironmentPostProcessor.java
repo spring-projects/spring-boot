@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,8 +93,11 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		MutablePropertySources propertySources = environment.getPropertySources();
-		propertySources.stream().map(JsonPropertyValue::get).filter(Objects::nonNull).findFirst()
-				.ifPresent((v) -> processJson(environment, v));
+		propertySources.stream()
+			.map(JsonPropertyValue::get)
+			.filter(Objects::nonNull)
+			.findFirst()
+			.ifPresent((v) -> processJson(environment, v));
 	}
 
 	private void processJson(ConfigurableEnvironment environment, JsonPropertyValue propertyValue) {
@@ -160,8 +163,9 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 	private String findPropertySource(MutablePropertySources sources) {
 		if (ClassUtils.isPresent(SERVLET_ENVIRONMENT_CLASS, null)) {
 			PropertySource<?> servletPropertySource = sources.stream()
-					.filter((source) -> SERVLET_ENVIRONMENT_PROPERTY_SOURCES.contains(source.getName())).findFirst()
-					.orElse(null);
+				.filter((source) -> SERVLET_ENVIRONMENT_PROPERTY_SOURCES.contains(source.getName()))
+				.findFirst()
+				.orElse(null);
 			if (servletPropertySource != null) {
 				return servletPropertySource.getName();
 			}

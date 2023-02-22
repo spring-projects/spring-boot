@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,8 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 		HttpClientBuilder builder = HttpClients.custom();
 		if (host.isSecure()) {
 			PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
-					.setSSLSocketFactory(getSecureConnectionSocketFactory(host, sslContextFactory)).build();
+				.setSSLSocketFactory(getSecureConnectionSocketFactory(host, sslContextFactory))
+				.build();
 			builder.setConnectionManager(connectionManager);
 		}
 		String scheme = host.isSecure() ? "https" : "http";

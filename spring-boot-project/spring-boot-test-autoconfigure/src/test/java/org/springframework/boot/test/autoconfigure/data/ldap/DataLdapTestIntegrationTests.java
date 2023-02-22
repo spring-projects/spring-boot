@@ -57,15 +57,15 @@ class DataLdapTestIntegrationTests {
 		Optional<ExampleEntry> entry = this.exampleRepository.findOne(ldapQuery);
 		assertThat(entry).isPresent();
 		assertThat(entry.get().getDn())
-				.isEqualTo(LdapUtils.newLdapName("cn=Bob Smith,ou=company1,c=Sweden,dc=spring,dc=org"));
+			.isEqualTo(LdapUtils.newLdapName("cn=Bob Smith,ou=company1,c=Sweden,dc=spring,dc=org"));
 		assertThat(this.ldapTemplate.findOne(ldapQuery, ExampleEntry.class).getDn())
-				.isEqualTo(LdapUtils.newLdapName("cn=Bob Smith,ou=company1,c=Sweden,dc=spring,dc=org"));
+			.isEqualTo(LdapUtils.newLdapName("cn=Bob Smith,ou=company1,c=Sweden,dc=spring,dc=org"));
 	}
 
 	@Test
 	void didNotInjectExampleService() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
+			.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
 	}
 
 }

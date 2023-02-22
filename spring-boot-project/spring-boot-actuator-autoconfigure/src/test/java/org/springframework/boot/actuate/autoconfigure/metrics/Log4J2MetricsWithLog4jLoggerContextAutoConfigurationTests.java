@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,21 +38,21 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Log4J2MetricsWithLog4jLoggerContextAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(Log4J2MetricsAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(Log4J2MetricsAutoConfiguration.class));
 
 	@Test
 	void autoConfiguresLog4J2Metrics() {
 		assertThat(LogManager.getContext().getClass().getName())
-				.isEqualTo("org.apache.logging.log4j.core.LoggerContext");
+			.isEqualTo("org.apache.logging.log4j.core.LoggerContext");
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(Log4j2Metrics.class));
 	}
 
 	@Test
 	void allowsCustomLog4J2MetricsToBeUsed() {
 		assertThat(LogManager.getContext().getClass().getName())
-				.isEqualTo("org.apache.logging.log4j.core.LoggerContext");
-		this.contextRunner.withUserConfiguration(CustomLog4J2MetricsConfiguration.class).run(
-				(context) -> assertThat(context).hasSingleBean(Log4j2Metrics.class).hasBean("customLog4J2Metrics"));
+			.isEqualTo("org.apache.logging.log4j.core.LoggerContext");
+		this.contextRunner.withUserConfiguration(CustomLog4J2MetricsConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(Log4j2Metrics.class).hasBean("customLog4J2Metrics"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

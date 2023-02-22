@@ -53,7 +53,7 @@ class DirectorySnapshotTests {
 	@Test
 	void directoryMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DirectorySnapshot(null))
-				.withMessageContaining("Directory must not be null");
+			.withMessageContaining("Directory must not be null");
 	}
 
 	@Test
@@ -61,7 +61,7 @@ class DirectorySnapshotTests {
 		File file = new File(this.tempDir, "file");
 		file.createNewFile();
 		assertThatIllegalArgumentException().isThrownBy(() -> new DirectorySnapshot(file))
-				.withMessageContaining("Directory '" + file + "' must not be a file");
+			.withMessageContaining("Directory '" + file + "' must not be a file");
 	}
 
 	@Test
@@ -103,14 +103,14 @@ class DirectorySnapshotTests {
 	@Test
 	void getChangedFilesSnapshotMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.initialSnapshot.getChangedFiles(null, null))
-				.withMessageContaining("Snapshot must not be null");
+			.withMessageContaining("Snapshot must not be null");
 	}
 
 	@Test
 	void getChangedFilesSnapshotMustBeTheSameSourceDirectory() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> this.initialSnapshot.getChangedFiles(new DirectorySnapshot(createTestDirectoryStructure()), null))
-				.withMessageContaining("Snapshot source directory must be '" + this.directory + "'");
+			.withMessageContaining("Snapshot source directory must be '" + this.directory + "'");
 	}
 
 	@Test

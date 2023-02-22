@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,12 +41,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(BaseConfiguration.class, OpenTelemetryConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(BaseConfiguration.class, OpenTelemetryConfiguration.class));
 
 	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.withUserConfiguration(SenderConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(ZipkinSpanExporter.class));
+			.run((context) -> assertThat(context).hasSingleBean(ZipkinSpanExporter.class));
 	}
 
 	@Test
@@ -57,8 +57,8 @@ class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 	@Test
 	void shouldNotSupplyZipkinSpanExporterIfNotOnClasspath() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("io.opentelemetry.exporter.zipkin"))
-				.withUserConfiguration(SenderConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(ZipkinSpanExporter.class));
+			.withUserConfiguration(SenderConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(ZipkinSpanExporter.class));
 
 	}
 

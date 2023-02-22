@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ class MyJsonAssertJTests {
 	void someTest() throws Exception {
 		SomeObject value = new SomeObject(0.152f);
 		assertThat(this.json.write(value)).extractingJsonPathNumberValue("@.test.numberValue")
-				.satisfies((number) -> assertThat(number.floatValue()).isCloseTo(0.15f, within(0.01f)));
+			.satisfies((number) -> assertThat(number.floatValue()).isCloseTo(0.15f, within(0.01f)));
 	}
 	// end::code[]
 

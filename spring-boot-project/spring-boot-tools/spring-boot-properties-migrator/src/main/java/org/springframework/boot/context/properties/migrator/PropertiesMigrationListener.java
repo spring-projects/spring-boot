@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ class PropertiesMigrationListener implements ApplicationListener<SpringApplicati
 	private ConfigurationMetadataRepository loadRepository(ConfigurationMetadataRepositoryJsonBuilder builder)
 			throws IOException {
 		Resource[] resources = new PathMatchingResourcePatternResolver()
-				.getResources("classpath*:/META-INF/spring-configuration-metadata.json");
+			.getResources("classpath*:/META-INF/spring-configuration-metadata.json");
 		for (Resource resource : resources) {
 			try (InputStream inputStream = resource.getInputStream()) {
 				builder.withJsonResource(inputStream);

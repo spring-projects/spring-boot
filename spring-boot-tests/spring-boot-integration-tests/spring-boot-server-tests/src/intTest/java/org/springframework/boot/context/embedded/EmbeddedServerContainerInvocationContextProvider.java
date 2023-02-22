@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,16 +82,17 @@ class EmbeddedServerContainerInvocationContextProvider
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 		EmbeddedServletContainerTest annotation = context.getRequiredTestClass()
-				.getAnnotation(EmbeddedServletContainerTest.class);
-		return CONTAINERS.stream().map((container) -> getApplication(annotation, container))
-				.flatMap((builder) -> provideTestTemplateInvocationContexts(annotation, builder));
+			.getAnnotation(EmbeddedServletContainerTest.class);
+		return CONTAINERS.stream()
+			.map((container) -> getApplication(annotation, container))
+			.flatMap((builder) -> provideTestTemplateInvocationContexts(annotation, builder));
 	}
 
 	private Stream<EmbeddedServletContainerInvocationContext> provideTestTemplateInvocationContexts(
 			EmbeddedServletContainerTest annotation, Application application) {
 		return Stream.of(annotation.launchers())
-				.map((launcherClass) -> getAbstractApplicationLauncher(application, launcherClass))
-				.map((launcher) -> provideTestTemplateInvocationContext(application, launcher));
+			.map((launcherClass) -> getAbstractApplicationLauncher(application, launcherClass))
+			.map((launcher) -> provideTestTemplateInvocationContext(application, launcher));
 	}
 
 	private EmbeddedServletContainerInvocationContext provideTestTemplateInvocationContext(Application application,
@@ -186,8 +187,8 @@ class EmbeddedServerContainerInvocationContextProvider
 		@Override
 		public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) {
 			RestTemplate rest = new RestTemplate(new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
-					.setRetryStrategy(new DefaultHttpRequestRetryStrategy(10, TimeValue.of(1, TimeUnit.SECONDS)))
-					.build()));
+				.setRetryStrategy(new DefaultHttpRequestRetryStrategy(10, TimeValue.of(1, TimeUnit.SECONDS)))
+				.build()));
 			rest.setErrorHandler(new ResponseErrorHandler() {
 
 				@Override

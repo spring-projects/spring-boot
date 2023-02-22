@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ class AutoConfigureWebServiceClientWebServiceTemplateIntegrationTests {
 	@Test
 	void webServiceTemplateTest() {
 		this.server.expect(payload(new StringSource("<request/>")))
-				.andRespond(withPayload(new StringSource("<response/>")));
+			.andRespond(withPayload(new StringSource("<response/>")));
 		this.webServiceTemplate.marshalSendAndReceive("https://example.com", new Request());
 	}
 

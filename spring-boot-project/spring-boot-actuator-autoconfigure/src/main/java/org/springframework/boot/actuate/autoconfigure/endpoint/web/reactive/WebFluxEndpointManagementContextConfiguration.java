@@ -118,7 +118,9 @@ public class WebFluxEndpointManagementContextConfiguration {
 			WebEndpointsSupplier webEndpointsSupplier, HealthEndpointGroups groups) {
 		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
 		ExposableWebEndpoint health = webEndpoints.stream()
-				.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID)).findFirst().get();
+			.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
+			.findFirst()
+			.get();
 		return new AdditionalHealthEndpointPathsWebFluxHandlerMapping(new EndpointMapping(""), health,
 				groups.getAllWithAdditionalPath(WebServerNamespace.MANAGEMENT));
 	}
@@ -149,7 +151,7 @@ public class WebFluxEndpointManagementContextConfiguration {
 	static class ServerCodecConfigurerEndpointObjectMapperBeanPostProcessor implements BeanPostProcessor {
 
 		private static final List<MediaType> MEDIA_TYPES = Collections
-				.unmodifiableList(Arrays.asList(MediaType.APPLICATION_JSON, new MediaType("application", "*+json")));
+			.unmodifiableList(Arrays.asList(MediaType.APPLICATION_JSON, new MediaType("application", "*+json")));
 
 		private final Supplier<EndpointObjectMapper> endpointObjectMapper;
 

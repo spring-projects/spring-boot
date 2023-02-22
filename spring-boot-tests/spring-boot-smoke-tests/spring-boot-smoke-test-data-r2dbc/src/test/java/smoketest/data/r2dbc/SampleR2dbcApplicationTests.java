@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,12 @@ class SampleR2dbcApplicationTests {
 
 	@Test
 	void citiesEndpointReturnInitialState() {
-		this.webClient.get().uri("/cities").exchange().expectBody().jsonPath("$[*].id")
-				.isEqualTo(new JSONArray().appendElement(2000).appendElement(2001));
+		this.webClient.get()
+			.uri("/cities")
+			.exchange()
+			.expectBody()
+			.jsonPath("$[*].id")
+			.isEqualTo(new JSONArray().appendElement(2000).appendElement(2001));
 	}
 
 	@Test
@@ -51,9 +55,16 @@ class SampleR2dbcApplicationTests {
 
 	@Test
 	void healthEndpointHasR2dbcEntry() {
-		this.webClient.get().uri("/actuator/health").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("components.r2dbc.status").isEqualTo("UP").jsonPath("components.r2dbc.details.database")
-				.isEqualTo("H2");
+		this.webClient.get()
+			.uri("/actuator/health")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("components.r2dbc.status")
+			.isEqualTo("UP")
+			.jsonPath("components.r2dbc.details.database")
+			.isEqualTo("H2");
 	}
 
 	@Test

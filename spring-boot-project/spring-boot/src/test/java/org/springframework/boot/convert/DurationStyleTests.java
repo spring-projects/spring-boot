@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ class DurationStyleTests {
 	@Test
 	void detectAndParseWhenValueIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> DurationStyle.detectAndParse(null))
-				.withMessageContaining("Value must not be null");
+			.withMessageContaining("Value must not be null");
 	}
 
 	@Test
@@ -124,7 +124,7 @@ class DurationStyleTests {
 	@Test
 	void detectAndParseWhenBadFormatShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> DurationStyle.detectAndParse("10foo"))
-				.withMessageContaining("'10foo' is not a valid duration");
+			.withMessageContaining("'10foo' is not a valid duration");
 	}
 
 	@Test
@@ -159,7 +159,7 @@ class DurationStyleTests {
 	@Test
 	void detectWhenUnknownShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> DurationStyle.detect("bad"))
-				.withMessageContaining("'bad' is not a valid duration");
+			.withMessageContaining("'bad' is not a valid duration");
 	}
 
 	@Test
@@ -191,7 +191,7 @@ class DurationStyleTests {
 	@Test
 	void parseIso8601WhenSimpleShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> DurationStyle.ISO8601.parse("10d"))
-				.withMessageContaining("'10d' is not a valid ISO-8601 duration");
+			.withMessageContaining("'10d' is not a valid ISO-8601 duration");
 	}
 
 	@Test
@@ -208,13 +208,13 @@ class DurationStyleTests {
 	@Test
 	void parseSimpleWhenUnknownUnitShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> DurationStyle.SIMPLE.parse("10mb"))
-				.satisfies((ex) -> assertThat(ex.getCause().getMessage()).isEqualTo("Unknown unit 'mb'"));
+			.satisfies((ex) -> assertThat(ex.getCause().getMessage()).isEqualTo("Unknown unit 'mb'"));
 	}
 
 	@Test
 	void parseSimpleWhenIso8601ShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> DurationStyle.SIMPLE.parse("PT10H"))
-				.withMessageContaining("'PT10H' is not a valid simple duration");
+			.withMessageContaining("'PT10H' is not a valid simple duration");
 	}
 
 	@Test

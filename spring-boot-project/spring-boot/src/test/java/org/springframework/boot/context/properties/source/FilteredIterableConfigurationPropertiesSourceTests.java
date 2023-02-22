@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,9 @@ class FilteredIterableConfigurationPropertiesSourceTests extends FilteredConfigu
 	void iteratorShouldFilterNames() {
 		MockConfigurationPropertySource source = (MockConfigurationPropertySource) createTestSource();
 		IterableConfigurationPropertySource filtered = source.filter(this::noBrackets);
-		assertThat(filtered.iterator()).toIterable().extracting(ConfigurationPropertyName::toString)
-				.containsExactly("a", "b", "c");
+		assertThat(filtered.iterator()).toIterable()
+			.extracting(ConfigurationPropertyName::toString)
+			.containsExactly("a", "b", "c");
 	}
 
 	@Override
@@ -49,9 +50,9 @@ class FilteredIterableConfigurationPropertiesSourceTests extends FilteredConfigu
 		source.put("faf.bar[0]", "1");
 		IterableConfigurationPropertySource filtered = source.filter(this::noBrackets);
 		assertThat(filtered.containsDescendantOf(ConfigurationPropertyName.of("foo")))
-				.isEqualTo(ConfigurationPropertyState.PRESENT);
+			.isEqualTo(ConfigurationPropertyState.PRESENT);
 		assertThat(filtered.containsDescendantOf(ConfigurationPropertyName.of("faf")))
-				.isEqualTo(ConfigurationPropertyState.ABSENT);
+			.isEqualTo(ConfigurationPropertyState.ABSENT);
 	}
 
 	private boolean noBrackets(ConfigurationPropertyName name) {

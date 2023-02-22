@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,14 +49,14 @@ class SessionAutoConfigurationMongoTests extends AbstractSessionAutoConfiguratio
 
 	@Container
 	static final MongoDBContainer mongoDB = new MongoDBContainer(DockerImageNames.mongo()).withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(5));
+		.withStartupTimeout(Duration.ofMinutes(5));
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withClassLoader(new FilteredClassLoader(HazelcastIndexedSessionRepository.class,
-					JdbcIndexedSessionRepository.class, RedisIndexedSessionRepository.class))
-			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-					SessionAutoConfiguration.class))
-			.withPropertyValues("spring.data.mongodb.uri=" + mongoDB.getReplicaSetUrl());
+		.withClassLoader(new FilteredClassLoader(HazelcastIndexedSessionRepository.class,
+				JdbcIndexedSessionRepository.class, RedisIndexedSessionRepository.class))
+		.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
+				SessionAutoConfiguration.class))
+		.withPropertyValues("spring.data.mongodb.uri=" + mongoDB.getReplicaSetUrl());
 
 	@Test
 	void defaultConfig() {
@@ -66,13 +66,13 @@ class SessionAutoConfigurationMongoTests extends AbstractSessionAutoConfiguratio
 	@Test
 	void defaultConfigWithCustomTimeout() {
 		this.contextRunner.withPropertyValues("spring.session.timeout=1m")
-				.run(validateSpringSessionUsesMongo("sessions", Duration.ofMinutes(1)));
+			.run(validateSpringSessionUsesMongo("sessions", Duration.ofMinutes(1)));
 	}
 
 	@Test
 	void mongoSessionStoreWithCustomizations() {
 		this.contextRunner.withPropertyValues("spring.session.mongodb.collection-name=foo")
-				.run(validateSpringSessionUsesMongo("foo"));
+			.run(validateSpringSessionUsesMongo("foo"));
 	}
 
 	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesMongo(String collectionName) {

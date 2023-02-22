@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ public abstract class ApplicationContextRequestMatcher<C> implements RequestMatc
 	@Override
 	public final boolean matches(HttpServletRequest request) {
 		WebApplicationContext webApplicationContext = WebApplicationContextUtils
-				.getRequiredWebApplicationContext(request.getServletContext());
+			.getRequiredWebApplicationContext(request.getServletContext());
 		if (ignoreApplicationContext(webApplicationContext)) {
 			return false;
 		}

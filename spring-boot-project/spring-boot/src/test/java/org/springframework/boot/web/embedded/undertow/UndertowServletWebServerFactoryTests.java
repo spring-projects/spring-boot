@@ -96,15 +96,15 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 	void setNullBuilderCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setBuilderCustomizers(null))
-				.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void addNullAddBuilderCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null))
-				.withMessageContaining("Customizers must not be null");
+			.isThrownBy(() -> factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null))
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
@@ -125,15 +125,15 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 	void setNullDeploymentInfoCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setDeploymentInfoCustomizers(null))
-				.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void addNullAddDeploymentInfoCustomizersThrows() {
 		UndertowServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> factory.addDeploymentInfoCustomizers((UndertowDeploymentInfoCustomizer[]) null))
-				.withMessageContaining("Customizers must not be null");
+			.isThrownBy(() -> factory.addDeploymentInfoCustomizers((UndertowDeploymentInfoCustomizer[]) null))
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
@@ -231,23 +231,23 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 	@Override
 	protected void addConnector(int port, AbstractServletWebServerFactory factory) {
 		((UndertowServletWebServerFactory) factory)
-				.addBuilderCustomizers((builder) -> builder.addHttpListener(port, "0.0.0.0"));
+			.addBuilderCustomizers((builder) -> builder.addHttpListener(port, "0.0.0.0"));
 	}
 
 	@Test
 	void sslRestrictedProtocolsEmptyCipherFailure() {
 		assertThatIOException()
-				.isThrownBy(() -> testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.2" },
-						new String[] { "TLS_EMPTY_RENEGOTIATION_INFO_SCSV" }))
-				.isInstanceOfAny(SSLException.class, SSLHandshakeException.class, SocketException.class);
+			.isThrownBy(() -> testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.2" },
+					new String[] { "TLS_EMPTY_RENEGOTIATION_INFO_SCSV" }))
+			.isInstanceOfAny(SSLException.class, SSLHandshakeException.class, SocketException.class);
 	}
 
 	@Test
 	void sslRestrictedProtocolsECDHETLS1Failure() {
 		assertThatIOException()
-				.isThrownBy(() -> testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1" },
-						new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" }))
-				.isInstanceOfAny(SSLException.class, SocketException.class);
+			.isThrownBy(() -> testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1" },
+					new String[] { "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256" }))
+			.isInstanceOfAny(SSLException.class, SocketException.class);
 	}
 
 	@Test
@@ -265,9 +265,9 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 	@Test
 	void sslRestrictedProtocolsRSATLS11Failure() {
 		assertThatIOException()
-				.isThrownBy(() -> testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.1" },
-						new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" }))
-				.isInstanceOfAny(SSLException.class, SocketException.class);
+			.isThrownBy(() -> testRestrictedSSLProtocolsAndCipherSuites(new String[] { "TLSv1.1" },
+					new String[] { "TLS_RSA_WITH_AES_128_CBC_SHA256" }))
+			.isInstanceOfAny(SSLException.class, SocketException.class);
 	}
 
 	@Override
@@ -291,14 +291,16 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 
 	@Override
 	protected Map<String, String> getActualMimeMappings() {
-		return ((UndertowServletWebServer) this.webServer).getDeploymentManager().getDeployment()
-				.getMimeExtensionMappings();
+		return ((UndertowServletWebServer) this.webServer).getDeploymentManager()
+			.getDeployment()
+			.getMimeExtensionMappings();
 	}
 
 	@Override
 	protected Charset getCharset(Locale locale) {
-		DeploymentInfo info = ((UndertowServletWebServer) this.webServer).getDeploymentManager().getDeployment()
-				.getDeploymentInfo();
+		DeploymentInfo info = ((UndertowServletWebServer) this.webServer).getDeploymentManager()
+			.getDeployment()
+			.getDeploymentInfo();
 		String charsetName = info.getLocaleCharsetMapping().get(locale.toString());
 		return (charsetName != null) ? Charset.forName(charsetName) : null;
 	}

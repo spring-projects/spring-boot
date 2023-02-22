@@ -129,12 +129,14 @@ public abstract class UpgradeDependencies extends DefaultTask {
 						existingUpgradeIssue.label(Arrays.asList("type: task", "status: superseded"));
 					}
 				}
-				if (new ProcessBuilder().command("git", "add", modified.toFile().getAbsolutePath()).start()
-						.waitFor() != 0) {
+				if (new ProcessBuilder().command("git", "add", modified.toFile().getAbsolutePath())
+					.start()
+					.waitFor() != 0) {
 					throw new IllegalStateException("git add failed");
 				}
-				if (new ProcessBuilder().command("git", "commit", "-m", commitMessage(upgrade, issueNumber)).start()
-						.waitFor() != 0) {
+				if (new ProcessBuilder().command("git", "commit", "-m", commitMessage(upgrade, issueNumber))
+					.start()
+					.waitFor() != 0) {
 					throw new IllegalStateException("git commit failed");
 				}
 			}
@@ -175,7 +177,8 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	private Milestone determineMilestone(GitHubRepository repository) {
 		List<Milestone> milestones = repository.getMilestones();
 		java.util.Optional<Milestone> matchingMilestone = milestones.stream()
-				.filter((milestone) -> milestone.getName().equals(getMilestone().get())).findFirst();
+			.filter((milestone) -> milestone.getName().equals(getMilestone().get()))
+			.findFirst();
 		if (!matchingMilestone.isPresent()) {
 			throw new InvalidUserDataException("Unknown milestone: " + getMilestone().get());
 		}
@@ -185,8 +188,9 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	private Issue findExistingUpgradeIssue(List<Issue> existingUpgradeIssues, Upgrade upgrade) {
 		String toMatch = "Upgrade to " + upgrade.getLibrary().getName();
 		for (Issue existingUpgradeIssue : existingUpgradeIssues) {
-			if (existingUpgradeIssue.getTitle().substring(0, existingUpgradeIssue.getTitle().lastIndexOf(' '))
-					.equals(toMatch)) {
+			if (existingUpgradeIssue.getTitle()
+				.substring(0, existingUpgradeIssue.getTitle().lastIndexOf(' '))
+				.equals(toMatch)) {
 				return existingUpgradeIssue;
 			}
 		}
@@ -197,8 +201,8 @@ public abstract class UpgradeDependencies extends DefaultTask {
 	private List<Upgrade> resolveUpgrades() {
 		List<Upgrade> upgrades = new InteractiveUpgradeResolver(getServices().get(UserInputHandler.class),
 				new MultithreadedLibraryUpdateResolver(new MavenMetadataVersionResolver(getRepositoryUris().get()),
-						this.bom.getUpgrade().getPolicy(), getThreads().get())).resolveUpgrades(
-								matchingLibraries(getLibraries().getOrNull()), this.bom.getLibraries());
+						this.bom.getUpgrade().getPolicy(), getThreads().get()))
+			.resolveUpgrades(matchingLibraries(getLibraries().getOrNull()), this.bom.getLibraries());
 		return upgrades;
 	}
 
@@ -207,8 +211,10 @@ public abstract class UpgradeDependencies extends DefaultTask {
 			return this.bom.getLibraries();
 		}
 		Predicate<String> libraryPredicate = Pattern.compile(pattern).asPredicate();
-		List<Library> matchingLibraries = this.bom.getLibraries().stream()
-				.filter((library) -> libraryPredicate.test(library.getName())).toList();
+		List<Library> matchingLibraries = this.bom.getLibraries()
+			.stream()
+			.filter((library) -> libraryPredicate.test(library.getName()))
+			.toList();
 		if (matchingLibraries.isEmpty()) {
 			throw new InvalidUserDataException("No libraries matched '" + pattern + "'");
 		}

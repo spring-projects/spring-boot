@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ class SharedMetadataReaderFactoryContextInitializerTests {
 		SpringApplication application = new SpringApplication(TestConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		List<ApplicationContextInitializer<?>> initializers = (List<ApplicationContextInitializer<?>>) ReflectionTestUtils
-				.getField(application, "initializers");
+			.getField(application, "initializers");
 		// Simulate what would happen if an initializer was added using spring.factories
 		// and happened to be loaded first
 		initializers.add(0, new Initializer());
@@ -72,7 +72,8 @@ class SharedMetadataReaderFactoryContextInitializerTests {
 		ConfigurationClassPostProcessor configurationAnnotationPostProcessor = mock(
 				ConfigurationClassPostProcessor.class);
 		BeanDefinition beanDefinition = BeanDefinitionBuilder
-				.genericBeanDefinition(ConfigurationClassPostProcessor.class).getBeanDefinition();
+			.genericBeanDefinition(ConfigurationClassPostProcessor.class)
+			.getBeanDefinition();
 		((AbstractBeanDefinition) beanDefinition).setInstanceSupplier(() -> configurationAnnotationPostProcessor);
 		registry.registerBeanDefinition(AnnotationConfigUtils.CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME,
 				beanDefinition);
@@ -83,10 +84,10 @@ class SharedMetadataReaderFactoryContextInitializerTests {
 		ConfigurationClassPostProcessor bean = context.getBean(ConfigurationClassPostProcessor.class);
 		assertThat(bean).isSameAs(configurationAnnotationPostProcessor);
 		ArgumentCaptor<MetadataReaderFactory> metadataReaderFactory = ArgumentCaptor
-				.forClass(MetadataReaderFactory.class);
+			.forClass(MetadataReaderFactory.class);
 		then(configurationAnnotationPostProcessor).should().setMetadataReaderFactory(metadataReaderFactory.capture());
 		assertThat(metadataReaderFactory.getValue())
-				.isInstanceOf(ConcurrentReferenceCachingMetadataReaderFactory.class);
+			.isInstanceOf(ConcurrentReferenceCachingMetadataReaderFactory.class);
 	}
 
 	static class TestConfig {

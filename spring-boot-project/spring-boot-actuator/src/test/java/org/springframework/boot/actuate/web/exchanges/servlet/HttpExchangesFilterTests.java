@@ -88,7 +88,9 @@ class HttpExchangesFilterTests {
 		this.filter.doFilter(request, new MockHttpServletResponse(), new MockFilterChain());
 		assertThat(this.repository.findAll()).hasSize(1);
 		org.springframework.boot.actuate.web.exchanges.HttpExchange.Principal recordedPrincipal = this.repository
-				.findAll().get(0).getPrincipal();
+			.findAll()
+			.get(0)
+			.getPrincipal();
 		assertThat(recordedPrincipal).isNotNull();
 		assertThat(recordedPrincipal.getName()).isEqualTo("alice");
 	}
@@ -104,10 +106,11 @@ class HttpExchangesFilterTests {
 						throw new IOException();
 					}
 
-				}))).satisfies((ex) -> {
-					assertThat(this.repository.findAll()).hasSize(1);
-					assertThat(this.repository.findAll().get(0).getResponse().getStatus()).isEqualTo(500);
-				});
+				})))
+			.satisfies((ex) -> {
+				assertThat(this.repository.findAll()).hasSize(1);
+				assertThat(this.repository.findAll().get(0).getResponse().getStatus()).isEqualTo(500);
+			});
 	}
 
 	@Test

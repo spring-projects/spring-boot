@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 	@Test
 	void configurationPropertiesBeanRegistrationAotProcessorIsRegistered() {
 		assertThat(AotServices.factories().load(BeanRegistrationAotProcessor.class))
-				.anyMatch(ConfigurationPropertiesBeanRegistrationAotProcessor.class::isInstance);
+			.anyMatch(ConfigurationPropertiesBeanRegistrationAotProcessor.class::isInstance);
 	}
 
 	@Test
@@ -65,7 +65,7 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(String.class);
 		this.beanFactory.registerBeanDefinition("test", beanDefinition);
 		BeanRegistrationAotContribution contribution = this.processor
-				.processAheadOfTime(RegisteredBean.of(this.beanFactory, "test"));
+			.processAheadOfTime(RegisteredBean.of(this.beanFactory, "test"));
 		assertThat(contribution).isNull();
 	}
 
@@ -148,7 +148,7 @@ class ConfigurationPropertiesBeanRegistrationAotProcessorTests {
 		TestCompiler.forSystem().with(generationContext).compile((compiled) -> {
 			GenericApplicationContext freshApplicationContext = new GenericApplicationContext();
 			ApplicationContextInitializer<GenericApplicationContext> initializer = compiled
-					.getInstance(ApplicationContextInitializer.class, className.toString());
+				.getInstance(ApplicationContextInitializer.class, className.toString());
 			initializer.initialize(freshApplicationContext);
 			freshContext.accept(freshApplicationContext);
 		});

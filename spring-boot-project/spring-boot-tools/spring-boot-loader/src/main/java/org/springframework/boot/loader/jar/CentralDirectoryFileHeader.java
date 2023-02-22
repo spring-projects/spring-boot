@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -162,8 +162,10 @@ final class CentralDirectoryFileHeader implements FileHeader {
 		int hour = getChronoValue((datetime >> 11) & 0x1f, ChronoField.HOUR_OF_DAY);
 		int minute = getChronoValue((datetime >> 5) & 0x3f, ChronoField.MINUTE_OF_HOUR);
 		int second = getChronoValue((datetime << 1) & 0x3e, ChronoField.SECOND_OF_MINUTE);
-		return ZonedDateTime.of(year, month, day, hour, minute, second, 0, ZoneId.systemDefault()).toInstant()
-				.truncatedTo(ChronoUnit.SECONDS).toEpochMilli();
+		return ZonedDateTime.of(year, month, day, hour, minute, second, 0, ZoneId.systemDefault())
+			.toInstant()
+			.truncatedTo(ChronoUnit.SECONDS)
+			.toEpochMilli();
 	}
 
 	long getCrc() {

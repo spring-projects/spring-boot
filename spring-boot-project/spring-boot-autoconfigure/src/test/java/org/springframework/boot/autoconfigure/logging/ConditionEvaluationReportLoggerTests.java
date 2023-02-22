@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,8 @@ class ConditionEvaluationReportLoggerTests {
 	@Test
 	void supportsOnlyInfoAndDebugLogLevels() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ConditionEvaluationReportLogger(LogLevel.TRACE, () -> null))
-				.withMessageContaining("LogLevel must be INFO or DEBUG");
+			.isThrownBy(() -> new ConditionEvaluationReportLogger(LogLevel.TRACE, () -> null))
+			.withMessageContaining("LogLevel must be INFO or DEBUG");
 	}
 
 	@Test
@@ -110,7 +110,7 @@ class ConditionEvaluationReportLoggerTests {
 
 	private void withDebugLogging(Runnable runnable) {
 		Logger logger = ((LoggerContext) LoggerFactory.getILoggerFactory())
-				.getLogger(ConditionEvaluationReportLogger.class);
+			.getLogger(ConditionEvaluationReportLogger.class);
 		Level currentLevel = logger.getLevel();
 		logger.setLevel(Level.DEBUG);
 		try {

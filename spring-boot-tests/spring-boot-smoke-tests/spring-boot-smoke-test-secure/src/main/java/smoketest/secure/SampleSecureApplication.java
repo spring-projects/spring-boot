@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,8 +36,9 @@ public class SampleSecureApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("user", "N/A",
-				AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER")));
+		SecurityContextHolder.getContext()
+			.setAuthentication(new UsernamePasswordAuthenticationToken("user", "N/A",
+					AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER")));
 		try {
 			System.out.println(this.service.secure());
 		}

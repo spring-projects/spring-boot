@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -246,10 +246,17 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 		Object trace = error.get("trace");
 		Object requestId = error.get("requestId");
 		builder.append("<html><body><h1>Whitelabel Error Page</h1>")
-				.append("<p>This application has no configured error view, so you are seeing this as a fallback.</p>")
-				.append("<div id='created'>").append(timestamp).append("</div>").append("<div>[").append(requestId)
-				.append("] There was an unexpected error (type=").append(htmlEscape(error.get("error")))
-				.append(", status=").append(htmlEscape(error.get("status"))).append(").</div>");
+			.append("<p>This application has no configured error view, so you are seeing this as a fallback.</p>")
+			.append("<div id='created'>")
+			.append(timestamp)
+			.append("</div>")
+			.append("<div>[")
+			.append(requestId)
+			.append("] There was an unexpected error (type=")
+			.append(htmlEscape(error.get("error")))
+			.append(", status=")
+			.append(htmlEscape(error.get("status")))
+			.append(").</div>");
 		if (message != null) {
 			builder.append("<div>").append(htmlEscape(message)).append("</div>");
 		}
@@ -291,10 +298,11 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 		}
 		this.errorAttributes.storeErrorInformation(throwable, exchange);
 		ServerRequest request = ServerRequest.create(exchange, this.messageReaders);
-		return getRoutingFunction(this.errorAttributes).route(request).switchIfEmpty(Mono.error(throwable))
-				.flatMap((handler) -> handler.handle(request))
-				.doOnNext((response) -> logError(request, response, throwable))
-				.flatMap((response) -> write(exchange, response));
+		return getRoutingFunction(this.errorAttributes).route(request)
+			.switchIfEmpty(Mono.error(throwable))
+			.flatMap((handler) -> handler.handle(request))
+			.doOnNext((response) -> logError(request, response, throwable))
+			.flatMap((response) -> write(exchange, response));
 	}
 
 	private boolean isDisconnectedClientError(Throwable ex) {

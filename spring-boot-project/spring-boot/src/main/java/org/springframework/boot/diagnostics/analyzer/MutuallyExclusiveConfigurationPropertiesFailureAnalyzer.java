@@ -71,15 +71,17 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzer
 
 	private List<Descriptor> getDescriptors(String propertyName) {
 		return getPropertySources().filter((source) -> source.containsProperty(propertyName))
-				.map((source) -> Descriptor.get(source, propertyName)).toList();
+			.map((source) -> Descriptor.get(source, propertyName))
+			.toList();
 	}
 
 	private Stream<PropertySource<?>> getPropertySources() {
 		if (this.environment == null) {
 			return Stream.empty();
 		}
-		return this.environment.getPropertySources().stream()
-				.filter((source) -> !ConfigurationPropertySources.isAttachedConfigurationPropertySource(source));
+		return this.environment.getPropertySources()
+			.stream()
+			.filter((source) -> !ConfigurationPropertySources.isAttachedConfigurationPropertySource(source));
 	}
 
 	private void appendDetails(StringBuilder message, MutuallyExclusiveConfigurationPropertiesException cause,
@@ -87,7 +89,7 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzer
 		descriptors.sort(Comparator.comparing((descriptor) -> descriptor.propertyName));
 		message.append(String.format("The following configuration properties are mutually exclusive:%n%n"));
 		sortedStrings(cause.getMutuallyExclusiveNames())
-				.forEach((name) -> message.append(String.format("\t%s%n", name)));
+			.forEach((name) -> message.append(String.format("\t%s%n", name)));
 		message.append(String.format("%n"));
 		message.append(
 				String.format("However, more than one of those properties has been configured at the same time:%n%n"));

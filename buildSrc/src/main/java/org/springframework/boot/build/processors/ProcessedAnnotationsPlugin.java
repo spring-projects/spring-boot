@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2022 the original author or authors.
+ * Copyright 2022-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,9 @@ public class ProcessedAnnotationsPlugin implements Plugin<Project> {
 	@Override
 	public void apply(Project project) {
 		project.getPlugins().apply(AptEclipsePlugin.class);
-		project.getExtensions().getByType(EclipseModel.class).synchronizationTasks("eclipseJdtApt", "eclipseJdt",
-				"eclipseFactorypath");
+		project.getExtensions()
+			.getByType(EclipseModel.class)
+			.synchronizationTasks("eclipseJdtApt", "eclipseJdt", "eclipseFactorypath");
 	}
 
 }

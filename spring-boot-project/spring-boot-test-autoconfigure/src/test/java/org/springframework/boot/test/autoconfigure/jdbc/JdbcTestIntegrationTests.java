@@ -73,7 +73,7 @@ class JdbcTestIntegrationTests {
 	@Test
 	void didNotInjectExampleRepository() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(ExampleRepository.class));
+			.isThrownBy(() -> this.applicationContext.getBean(ExampleRepository.class));
 	}
 
 	@Test

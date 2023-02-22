@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,14 +72,14 @@ class DataRedisTestIntegrationTests {
 		PersonHash savedEntity = this.exampleRepository.save(personHash);
 		assertThat(savedEntity.getId()).isNotNull();
 		assertThat(this.operations.execute((RedisConnection connection) -> connection.keyCommands()
-				.exists(("persons:" + savedEntity.getId()).getBytes(CHARSET)))).isTrue();
+			.exists(("persons:" + savedEntity.getId()).getBytes(CHARSET)))).isTrue();
 		this.exampleRepository.deleteAll();
 	}
 
 	@Test
 	void didNotInjectExampleService() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
+			.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
 	}
 
 }

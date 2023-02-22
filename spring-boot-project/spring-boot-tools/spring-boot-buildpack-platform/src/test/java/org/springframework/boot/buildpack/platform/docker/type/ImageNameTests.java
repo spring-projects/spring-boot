@@ -118,7 +118,7 @@ class ImageNameTests {
 	@Test
 	void ofWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageName.of(null))
-				.withMessage("Value must not be empty");
+			.withMessage("Value must not be empty");
 	}
 
 	@Test
@@ -129,20 +129,23 @@ class ImageNameTests {
 	@Test
 	void ofWhenContainsUppercaseThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageName.of("Test"))
-				.withMessageContaining("Unable to parse name").withMessageContaining("Test");
+			.withMessageContaining("Unable to parse name")
+			.withMessageContaining("Test");
 	}
 
 	@Test
 	void ofWhenNameIncludesTagThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageName.of("ubuntu:latest"))
-				.withMessageContaining("Unable to parse name").withMessageContaining(":latest");
+			.withMessageContaining("Unable to parse name")
+			.withMessageContaining(":latest");
 	}
 
 	@Test
 	void ofWhenNameIncludeDigestThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> ImageName.of("ubuntu@sha256:47bfdb88c3ae13e488167607973b7688f69d9e8c142c2045af343ec199649c09"))
-				.withMessageContaining("Unable to parse name").withMessageContaining("@sha256:47b");
+			.withMessageContaining("Unable to parse name")
+			.withMessageContaining("@sha256:47b");
 	}
 
 	@Test

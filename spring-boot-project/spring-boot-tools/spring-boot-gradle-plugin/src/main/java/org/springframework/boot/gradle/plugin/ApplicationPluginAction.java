@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,10 +49,10 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		DistributionContainer distributions = project.getExtensions().getByType(DistributionContainer.class);
 		Distribution distribution = distributions.create("boot");
 		distribution.getDistributionBaseName()
-				.convention((project.provider(() -> javaApplication.getApplicationName() + "-boot")));
-		TaskProvider<CreateStartScripts> bootStartScripts = project.getTasks().register("bootStartScripts",
-				CreateStartScripts.class,
-				(task) -> configureCreateStartScripts(project, javaApplication, distribution, task));
+			.convention((project.provider(() -> javaApplication.getApplicationName() + "-boot")));
+		TaskProvider<CreateStartScripts> bootStartScripts = project.getTasks()
+			.register("bootStartScripts", CreateStartScripts.class,
+					(task) -> configureCreateStartScripts(project, javaApplication, distribution, task));
 		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
 		binCopySpec.setFileMode(0755);
 		distribution.getContents().with(binCopySpec);
@@ -61,19 +61,19 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 	private void configureCreateStartScripts(Project project, JavaApplication javaApplication,
 			Distribution distribution, CreateStartScripts createStartScripts) {
 		createStartScripts
-				.setDescription("Generates OS-specific start scripts to run the project as a Spring Boot application.");
+			.setDescription("Generates OS-specific start scripts to run the project as a Spring Boot application.");
 		((TemplateBasedScriptGenerator) createStartScripts.getUnixStartScriptGenerator())
-				.setTemplate(project.getResources().getText().fromString(loadResource("/unixStartScript.txt")));
+			.setTemplate(project.getResources().getText().fromString(loadResource("/unixStartScript.txt")));
 		((TemplateBasedScriptGenerator) createStartScripts.getWindowsStartScriptGenerator())
-				.setTemplate(project.getResources().getText().fromString(loadResource("/windowsStartScript.txt")));
+			.setTemplate(project.getResources().getText().fromString(loadResource("/windowsStartScript.txt")));
 		project.getConfigurations().all((configuration) -> {
 			if ("bootArchives".equals(configuration.getName())) {
 				distribution.getContents().with(artifactFilesToLibCopySpec(project, configuration));
 				createStartScripts.setClasspath(configuration.getArtifacts().getFiles());
 			}
 		});
-		createStartScripts.getConventionMapping().map("outputDir",
-				() -> new File(project.getBuildDir(), "bootScripts"));
+		createStartScripts.getConventionMapping()
+			.map("outputDir", () -> new File(project.getBuildDir(), "bootScripts"));
 		createStartScripts.getConventionMapping().map("applicationName", javaApplication::getApplicationName);
 		createStartScripts.getConventionMapping().map("defaultJvmOpts", javaApplication::getApplicationDefaultJvmArgs);
 	}

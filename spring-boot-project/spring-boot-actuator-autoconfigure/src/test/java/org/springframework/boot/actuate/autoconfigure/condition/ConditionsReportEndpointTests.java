@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,10 @@ class ConditionsReportEndpointTests {
 	@Test
 	void invoke() {
 		new ApplicationContextRunner().withUserConfiguration(Config.class).run((context) -> {
-			ContextConditionsDescriptor report = context.getBean(ConditionsReportEndpoint.class).conditions()
-					.getContexts().get(context.getId());
+			ContextConditionsDescriptor report = context.getBean(ConditionsReportEndpoint.class)
+				.conditions()
+				.getContexts()
+				.get(context.getId());
 			assertThat(report.getPositiveMatches()).isEmpty();
 			assertThat(report.getNegativeMatches()).containsKey("a");
 			assertThat(report.getUnconditionalClasses()).contains("b");

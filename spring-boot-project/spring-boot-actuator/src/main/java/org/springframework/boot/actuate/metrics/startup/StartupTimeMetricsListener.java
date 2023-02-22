@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,8 +116,10 @@ public class StartupTimeMetricsListener implements SmartApplicationListener {
 			SpringApplication springApplication) {
 		if (timeTaken != null) {
 			Iterable<Tag> tags = createTagsFrom(springApplication);
-			TimeGauge.builder(name, timeTaken::toMillis, TimeUnit.MILLISECONDS).tags(tags).description(description)
-					.register(this.meterRegistry);
+			TimeGauge.builder(name, timeTaken::toMillis, TimeUnit.MILLISECONDS)
+				.tags(tags)
+				.description(description)
+				.register(this.meterRegistry);
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,25 +48,25 @@ class ZipkinAutoConfigurationIntegrationTests {
 	@Test
 	void zipkinsUseOfRestTemplateDoesNotCauseACycle() {
 		configure(new WebApplicationContextRunner())
-				.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class))
-				.run((context) -> assertThat(context).hasNotFailed());
+			.withConfiguration(AutoConfigurations.of(RestTemplateAutoConfiguration.class))
+			.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
 	void zipkinsUseOfWebClientDoesNotCauseACycle() {
 		configure(new ReactiveWebApplicationContextRunner())
-				.withConfiguration(AutoConfigurations.of(WebClientAutoConfiguration.class))
-				.run((context) -> assertThat(context).hasNotFailed());
+			.withConfiguration(AutoConfigurations.of(WebClientAutoConfiguration.class))
+			.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	<SELF extends AbstractApplicationContextRunner<SELF, C, A>, C extends ConfigurableApplicationContext, A extends ApplicationContextAssertProvider<C>> AbstractApplicationContextRunner<SELF, C, A> configure(
 			AbstractApplicationContextRunner<SELF, ?, ?> runner) {
 		return runner
-				.withConfiguration(AutoConfigurations.of(MicrometerTracingAutoConfiguration.class,
-						ObservationAutoConfiguration.class, BraveAutoConfiguration.class, ZipkinAutoConfiguration.class,
-						HttpClientObservationsAutoConfiguration.class, MetricsAutoConfiguration.class,
-						SimpleMetricsExportAutoConfiguration.class))
-				.withClassLoader(new FilteredClassLoader(URLConnectionSender.class));
+			.withConfiguration(AutoConfigurations.of(MicrometerTracingAutoConfiguration.class,
+					ObservationAutoConfiguration.class, BraveAutoConfiguration.class, ZipkinAutoConfiguration.class,
+					HttpClientObservationsAutoConfiguration.class, MetricsAutoConfiguration.class,
+					SimpleMetricsExportAutoConfiguration.class))
+			.withClassLoader(new FilteredClassLoader(URLConnectionSender.class));
 	}
 
 }

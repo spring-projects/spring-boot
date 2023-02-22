@@ -97,7 +97,7 @@ import static org.mockito.Mockito.mock;
 class IntegrationAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class));
 
 	@Test
 	void integrationIsAvailable() {
@@ -118,7 +118,7 @@ class IntegrationAutoConfigurationTests {
 	@Test
 	void noMBeanServerAvailable() {
 		ApplicationContextRunner contextRunnerWithoutJmx = new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(IntegrationAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(IntegrationAutoConfiguration.class));
 		contextRunnerWithoutJmx.run((context) -> {
 			assertThat(context).hasSingleBean(TestGateway.class);
 			assertThat(context).hasSingleBean(IntegrationComponentScanConfiguration.class);
@@ -128,8 +128,8 @@ class IntegrationAutoConfigurationTests {
 	@Test
 	void parentContext() {
 		this.contextRunner.run((context) -> this.contextRunner.withParent(context)
-				.withPropertyValues("spring.jmx.default_domain=org.foo")
-				.run((child) -> assertThat(child).hasSingleBean(HeaderChannelRegistry.class)));
+			.withPropertyValues("spring.jmx.default_domain=org.foo")
+			.run((child) -> assertThat(child).hasSingleBean(HeaderChannelRegistry.class)));
 	}
 
 	@Test
@@ -153,143 +153,144 @@ class IntegrationAutoConfigurationTests {
 	@Test
 	void customizeJmxDomain() {
 		this.contextRunner.withPropertyValues("spring.jmx.enabled=true", "spring.jmx.default_domain=org.foo")
-				.run((context) -> {
-					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
-					assertThat(mBeanServer.getDomains()).contains("org.foo").doesNotContain(
-							"org.springframework.integration", "org.springframework.integration.monitor");
-				});
+			.run((context) -> {
+				MBeanServer mBeanServer = context.getBean(MBeanServer.class);
+				assertThat(mBeanServer.getDomains()).contains("org.foo")
+					.doesNotContain("org.springframework.integration", "org.springframework.integration.monitor");
+			});
 	}
 
 	@Test
 	void primaryExporterIsAllowed() {
 		this.contextRunner.withPropertyValues("spring.jmx.enabled=true")
-				.withUserConfiguration(CustomMBeanExporter.class).run((context) -> {
-					assertThat(context).getBeans(MBeanExporter.class).hasSize(2);
-					assertThat(context.getBean(MBeanExporter.class)).isSameAs(context.getBean("myMBeanExporter"));
-				});
+			.withUserConfiguration(CustomMBeanExporter.class)
+			.run((context) -> {
+				assertThat(context).getBeans(MBeanExporter.class).hasSize(2);
+				assertThat(context.getBean(MBeanExporter.class)).isSameAs(context.getBean("myMBeanExporter"));
+			});
 	}
 
 	@Test
 	void integrationJdbcDataSourceInitializerEnabled() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
-						JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class))
-				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"spring.integration.jdbc.initialize-schema=always")
-				.run((context) -> {
-					IntegrationProperties properties = context.getBean(IntegrationProperties.class);
-					assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.ALWAYS);
-					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
-					assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
-					assertThat(jdbc.queryForList("select * from INT_GROUP_TO_MESSAGE")).isEmpty();
-					assertThat(jdbc.queryForList("select * from INT_MESSAGE_GROUP")).isEmpty();
-					assertThat(jdbc.queryForList("select * from INT_LOCK")).isEmpty();
-					assertThat(jdbc.queryForList("select * from INT_CHANNEL_MESSAGE")).isEmpty();
-				});
+			.withConfiguration(AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
+					JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class))
+			.withPropertyValues("spring.datasource.generate-unique-name=true",
+					"spring.integration.jdbc.initialize-schema=always")
+			.run((context) -> {
+				IntegrationProperties properties = context.getBean(IntegrationProperties.class);
+				assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.ALWAYS);
+				JdbcOperations jdbc = context.getBean(JdbcOperations.class);
+				assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
+				assertThat(jdbc.queryForList("select * from INT_GROUP_TO_MESSAGE")).isEmpty();
+				assertThat(jdbc.queryForList("select * from INT_MESSAGE_GROUP")).isEmpty();
+				assertThat(jdbc.queryForList("select * from INT_LOCK")).isEmpty();
+				assertThat(jdbc.queryForList("select * from INT_CHANNEL_MESSAGE")).isEmpty();
+			});
 	}
 
 	@Test
 	void whenIntegrationJdbcDataSourceInitializerIsEnabledThenFlywayCanBeUsed() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
-						JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class,
-						FlywayAutoConfiguration.class))
-				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"spring.integration.jdbc.initialize-schema=always")
-				.run((context) -> {
-					IntegrationProperties properties = context.getBean(IntegrationProperties.class);
-					assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.ALWAYS);
-					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
-					assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
-					assertThat(jdbc.queryForList("select * from INT_GROUP_TO_MESSAGE")).isEmpty();
-					assertThat(jdbc.queryForList("select * from INT_MESSAGE_GROUP")).isEmpty();
-					assertThat(jdbc.queryForList("select * from INT_LOCK")).isEmpty();
-					assertThat(jdbc.queryForList("select * from INT_CHANNEL_MESSAGE")).isEmpty();
-				});
+			.withConfiguration(AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
+					JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class,
+					FlywayAutoConfiguration.class))
+			.withPropertyValues("spring.datasource.generate-unique-name=true",
+					"spring.integration.jdbc.initialize-schema=always")
+			.run((context) -> {
+				IntegrationProperties properties = context.getBean(IntegrationProperties.class);
+				assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.ALWAYS);
+				JdbcOperations jdbc = context.getBean(JdbcOperations.class);
+				assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
+				assertThat(jdbc.queryForList("select * from INT_GROUP_TO_MESSAGE")).isEmpty();
+				assertThat(jdbc.queryForList("select * from INT_MESSAGE_GROUP")).isEmpty();
+				assertThat(jdbc.queryForList("select * from INT_LOCK")).isEmpty();
+				assertThat(jdbc.queryForList("select * from INT_CHANNEL_MESSAGE")).isEmpty();
+			});
 	}
 
 	@Test
 	void integrationJdbcDataSourceInitializerDisabled() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
-						JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class))
-				.withPropertyValues("spring.datasource.generate-unique-name=true",
-						"spring.integration.jdbc.initialize-schema=never")
-				.run((context) -> {
-					assertThat(context).doesNotHaveBean(IntegrationDataSourceScriptDatabaseInitializer.class);
-					IntegrationProperties properties = context.getBean(IntegrationProperties.class);
-					assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.NEVER);
-					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
-					assertThatExceptionOfType(BadSqlGrammarException.class)
-							.isThrownBy(() -> jdbc.queryForList("select * from INT_MESSAGE"));
-				});
+			.withConfiguration(AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
+					JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class))
+			.withPropertyValues("spring.datasource.generate-unique-name=true",
+					"spring.integration.jdbc.initialize-schema=never")
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(IntegrationDataSourceScriptDatabaseInitializer.class);
+				IntegrationProperties properties = context.getBean(IntegrationProperties.class);
+				assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.NEVER);
+				JdbcOperations jdbc = context.getBean(JdbcOperations.class);
+				assertThatExceptionOfType(BadSqlGrammarException.class)
+					.isThrownBy(() -> jdbc.queryForList("select * from INT_MESSAGE"));
+			});
 	}
 
 	@Test
 	void integrationJdbcDataSourceInitializerEnabledByDefaultWithEmbeddedDb() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
-						JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class))
-				.withPropertyValues("spring.datasource.generate-unique-name=true").run((context) -> {
-					IntegrationProperties properties = context.getBean(IntegrationProperties.class);
-					assertThat(properties.getJdbc().getInitializeSchema())
-							.isEqualTo(DatabaseInitializationMode.EMBEDDED);
-					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
-					assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
-				});
+			.withConfiguration(AutoConfigurations.of(DataSourceTransactionManagerAutoConfiguration.class,
+					JdbcTemplateAutoConfiguration.class, IntegrationAutoConfiguration.class))
+			.withPropertyValues("spring.datasource.generate-unique-name=true")
+			.run((context) -> {
+				IntegrationProperties properties = context.getBean(IntegrationProperties.class);
+				assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.EMBEDDED);
+				JdbcOperations jdbc = context.getBean(JdbcOperations.class);
+				assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
+			});
 	}
 
 	@Test
 	void rsocketSupportEnabled() {
 		this.contextRunner.withUserConfiguration(RSocketServerConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(RSocketServerAutoConfiguration.class,
-						RSocketStrategiesAutoConfiguration.class, RSocketMessagingAutoConfiguration.class,
-						RSocketRequesterAutoConfiguration.class, IntegrationAutoConfiguration.class))
-				.withPropertyValues("spring.rsocket.server.port=0", "spring.integration.rsocket.client.port=0",
-						"spring.integration.rsocket.client.host=localhost",
-						"spring.integration.rsocket.server.message-mapping-enabled=true")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ClientRSocketConnector.class).hasBean("clientRSocketConnector")
-							.hasSingleBean(ServerRSocketConnector.class)
-							.hasSingleBean(ServerRSocketMessageHandler.class)
-							.hasSingleBean(RSocketMessageHandler.class);
+			.withConfiguration(AutoConfigurations.of(RSocketServerAutoConfiguration.class,
+					RSocketStrategiesAutoConfiguration.class, RSocketMessagingAutoConfiguration.class,
+					RSocketRequesterAutoConfiguration.class, IntegrationAutoConfiguration.class))
+			.withPropertyValues("spring.rsocket.server.port=0", "spring.integration.rsocket.client.port=0",
+					"spring.integration.rsocket.client.host=localhost",
+					"spring.integration.rsocket.server.message-mapping-enabled=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ClientRSocketConnector.class)
+					.hasBean("clientRSocketConnector")
+					.hasSingleBean(ServerRSocketConnector.class)
+					.hasSingleBean(ServerRSocketMessageHandler.class)
+					.hasSingleBean(RSocketMessageHandler.class);
 
-					ServerRSocketMessageHandler serverRSocketMessageHandler = context
-							.getBean(ServerRSocketMessageHandler.class);
-					assertThat(context).getBean(RSocketMessageHandler.class).isSameAs(serverRSocketMessageHandler);
+				ServerRSocketMessageHandler serverRSocketMessageHandler = context
+					.getBean(ServerRSocketMessageHandler.class);
+				assertThat(context).getBean(RSocketMessageHandler.class).isSameAs(serverRSocketMessageHandler);
 
-					ClientRSocketConnector clientRSocketConnector = context.getBean(ClientRSocketConnector.class);
-					ClientTransport clientTransport = (ClientTransport) new DirectFieldAccessor(clientRSocketConnector)
-							.getPropertyValue("clientTransport");
+				ClientRSocketConnector clientRSocketConnector = context.getBean(ClientRSocketConnector.class);
+				ClientTransport clientTransport = (ClientTransport) new DirectFieldAccessor(clientRSocketConnector)
+					.getPropertyValue("clientTransport");
 
-					assertThat(clientTransport).isInstanceOf(TcpClientTransport.class);
-				});
+				assertThat(clientTransport).isInstanceOf(TcpClientTransport.class);
+			});
 	}
 
 	@Test
 	void taskSchedulerIsNotOverridden() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class))
-				.withPropertyValues("spring.task.scheduling.thread-name-prefix=integration-scheduling-",
-						"spring.task.scheduling.pool.size=3")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(TaskScheduler.class);
-					assertThat(context).getBean(IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME, TaskScheduler.class)
-							.hasFieldOrPropertyWithValue("threadNamePrefix", "integration-scheduling-")
-							.hasFieldOrPropertyWithValue("scheduledExecutor.corePoolSize", 3);
-				});
+			.withPropertyValues("spring.task.scheduling.thread-name-prefix=integration-scheduling-",
+					"spring.task.scheduling.pool.size=3")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(TaskScheduler.class);
+				assertThat(context).getBean(IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME, TaskScheduler.class)
+					.hasFieldOrPropertyWithValue("threadNamePrefix", "integration-scheduling-")
+					.hasFieldOrPropertyWithValue("scheduledExecutor.corePoolSize", 3);
+			});
 	}
 
 	@Test
 	void taskSchedulerCanBeCustomized() {
 		TaskScheduler customTaskScheduler = mock(TaskScheduler.class);
 		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class))
-				.withBean(IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME, TaskScheduler.class,
-						() -> customTaskScheduler)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(TaskScheduler.class);
-					assertThat(context).getBean(IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME)
-							.isSameAs(customTaskScheduler);
-				});
+			.withBean(IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME, TaskScheduler.class, () -> customTaskScheduler)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(TaskScheduler.class);
+				assertThat(context).getBean(IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME)
+					.isSameAs(customTaskScheduler);
+			});
 	}
 
 	@Test
@@ -301,21 +302,20 @@ class IntegrationAutoConfigurationTests {
 				"spring.integration.endpoint.throw-exception-on-late-reply=true",
 				"spring.integration.endpoint.read-only-headers=ignoredHeader",
 				"spring.integration.endpoint.no-auto-startup=notStartedEndpoint,_org.springframework.integration.errorLogger")
-				.run((context) -> {
-					assertThat(context)
-							.hasSingleBean(org.springframework.integration.context.IntegrationProperties.class);
-					org.springframework.integration.context.IntegrationProperties integrationProperties = context
-							.getBean(org.springframework.integration.context.IntegrationProperties.class);
-					assertThat(integrationProperties.isChannelsAutoCreate()).isFalse();
-					assertThat(integrationProperties.getChannelsMaxUnicastSubscribers()).isEqualTo(2);
-					assertThat(integrationProperties.getChannelsMaxBroadcastSubscribers()).isEqualTo(3);
-					assertThat(integrationProperties.isErrorChannelRequireSubscribers()).isFalse();
-					assertThat(integrationProperties.isErrorChannelIgnoreFailures()).isFalse();
-					assertThat(integrationProperties.isMessagingTemplateThrowExceptionOnLateReply()).isTrue();
-					assertThat(integrationProperties.getReadOnlyHeaders()).containsOnly("ignoredHeader");
-					assertThat(integrationProperties.getNoAutoStartupEndpoints()).containsOnly("notStartedEndpoint",
-							"_org.springframework.integration.errorLogger");
-				});
+			.run((context) -> {
+				assertThat(context).hasSingleBean(org.springframework.integration.context.IntegrationProperties.class);
+				org.springframework.integration.context.IntegrationProperties integrationProperties = context
+					.getBean(org.springframework.integration.context.IntegrationProperties.class);
+				assertThat(integrationProperties.isChannelsAutoCreate()).isFalse();
+				assertThat(integrationProperties.getChannelsMaxUnicastSubscribers()).isEqualTo(2);
+				assertThat(integrationProperties.getChannelsMaxBroadcastSubscribers()).isEqualTo(3);
+				assertThat(integrationProperties.isErrorChannelRequireSubscribers()).isFalse();
+				assertThat(integrationProperties.isErrorChannelIgnoreFailures()).isFalse();
+				assertThat(integrationProperties.isMessagingTemplateThrowExceptionOnLateReply()).isTrue();
+				assertThat(integrationProperties.getReadOnlyHeaders()).containsOnly("ignoredHeader");
+				assertThat(integrationProperties.getNoAutoStartupEndpoints()).containsOnly("notStartedEndpoint",
+						"_org.springframework.integration.errorLogger");
+			});
 	}
 
 	@Test
@@ -324,23 +324,23 @@ class IntegrationAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(org.springframework.integration.context.IntegrationProperties.class);
 			org.springframework.integration.context.IntegrationProperties integrationProperties = context
-					.getBean(org.springframework.integration.context.IntegrationProperties.class);
+				.getBean(org.springframework.integration.context.IntegrationProperties.class);
 			assertThat(integrationProperties.isChannelsAutoCreate())
-					.isEqualTo(defaultIntegrationProperties.isChannelsAutoCreate());
+				.isEqualTo(defaultIntegrationProperties.isChannelsAutoCreate());
 			assertThat(integrationProperties.getChannelsMaxUnicastSubscribers())
-					.isEqualTo(defaultIntegrationProperties.getChannelsMaxBroadcastSubscribers());
+				.isEqualTo(defaultIntegrationProperties.getChannelsMaxBroadcastSubscribers());
 			assertThat(integrationProperties.getChannelsMaxBroadcastSubscribers())
-					.isEqualTo(defaultIntegrationProperties.getChannelsMaxBroadcastSubscribers());
+				.isEqualTo(defaultIntegrationProperties.getChannelsMaxBroadcastSubscribers());
 			assertThat(integrationProperties.isErrorChannelRequireSubscribers())
-					.isEqualTo(defaultIntegrationProperties.isErrorChannelIgnoreFailures());
+				.isEqualTo(defaultIntegrationProperties.isErrorChannelIgnoreFailures());
 			assertThat(integrationProperties.isErrorChannelIgnoreFailures())
-					.isEqualTo(defaultIntegrationProperties.isErrorChannelIgnoreFailures());
+				.isEqualTo(defaultIntegrationProperties.isErrorChannelIgnoreFailures());
 			assertThat(integrationProperties.isMessagingTemplateThrowExceptionOnLateReply())
-					.isEqualTo(defaultIntegrationProperties.isMessagingTemplateThrowExceptionOnLateReply());
+				.isEqualTo(defaultIntegrationProperties.isMessagingTemplateThrowExceptionOnLateReply());
 			assertThat(integrationProperties.getReadOnlyHeaders())
-					.isEqualTo(defaultIntegrationProperties.getReadOnlyHeaders());
+				.isEqualTo(defaultIntegrationProperties.getReadOnlyHeaders());
 			assertThat(integrationProperties.getNoAutoStartupEndpoints())
-					.isEqualTo(defaultIntegrationProperties.getNoAutoStartupEndpoints());
+				.isEqualTo(defaultIntegrationProperties.getNoAutoStartupEndpoints());
 		});
 	}
 
@@ -348,55 +348,51 @@ class IntegrationAutoConfigurationTests {
 	void integrationGlobalPropertiesUserBeanOverridesAutoConfiguration() {
 		org.springframework.integration.context.IntegrationProperties userIntegrationProperties = new org.springframework.integration.context.IntegrationProperties();
 		this.contextRunner.withPropertyValues()
-				.withBean(IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME,
-						org.springframework.integration.context.IntegrationProperties.class,
-						() -> userIntegrationProperties)
-				.run((context) -> {
-					assertThat(context)
-							.hasSingleBean(org.springframework.integration.context.IntegrationProperties.class);
-					assertThat(context.getBean(org.springframework.integration.context.IntegrationProperties.class))
-							.isSameAs(userIntegrationProperties);
-				});
+			.withBean(IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME,
+					org.springframework.integration.context.IntegrationProperties.class,
+					() -> userIntegrationProperties)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(org.springframework.integration.context.IntegrationProperties.class);
+				assertThat(context.getBean(org.springframework.integration.context.IntegrationProperties.class))
+					.isSameAs(userIntegrationProperties);
+			});
 	}
 
 	@Test
 	void integrationGlobalPropertiesFromSpringIntegrationPropertiesFile() {
 		this.contextRunner
-				.withPropertyValues("spring.integration.channel.auto-create=false",
-						"spring.integration.endpoint.read-only-headers=ignoredHeader")
-				.withInitializer((applicationContext) -> new IntegrationPropertiesEnvironmentPostProcessor()
-						.postProcessEnvironment(applicationContext.getEnvironment(), null))
-				.run((context) -> {
-					assertThat(context)
-							.hasSingleBean(org.springframework.integration.context.IntegrationProperties.class);
-					org.springframework.integration.context.IntegrationProperties integrationProperties = context
-							.getBean(org.springframework.integration.context.IntegrationProperties.class);
-					assertThat(integrationProperties.isChannelsAutoCreate()).isFalse();
-					assertThat(integrationProperties.getReadOnlyHeaders()).containsOnly("ignoredHeader");
-					// See META-INF/spring.integration.properties
-					assertThat(integrationProperties.getNoAutoStartupEndpoints()).containsOnly("testService*");
-				});
+			.withPropertyValues("spring.integration.channel.auto-create=false",
+					"spring.integration.endpoint.read-only-headers=ignoredHeader")
+			.withInitializer((applicationContext) -> new IntegrationPropertiesEnvironmentPostProcessor()
+				.postProcessEnvironment(applicationContext.getEnvironment(), null))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(org.springframework.integration.context.IntegrationProperties.class);
+				org.springframework.integration.context.IntegrationProperties integrationProperties = context
+					.getBean(org.springframework.integration.context.IntegrationProperties.class);
+				assertThat(integrationProperties.isChannelsAutoCreate()).isFalse();
+				assertThat(integrationProperties.getReadOnlyHeaders()).containsOnly("ignoredHeader");
+				// See META-INF/spring.integration.properties
+				assertThat(integrationProperties.getNoAutoStartupEndpoints()).containsOnly("testService*");
+			});
 	}
 
 	@Test
 	void whenTheUserDefinesTheirOwnIntegrationDatabaseInitializerThenTheAutoConfiguredInitializerBacksOff() {
 		this.contextRunner.withUserConfiguration(CustomIntegrationDatabaseInitializerConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-						DataSourceTransactionManagerAutoConfiguration.class))
-				.run((context) -> assertThat(context)
-						.hasSingleBean(IntegrationDataSourceScriptDatabaseInitializer.class)
-						.doesNotHaveBean("integrationDataSourceScriptDatabaseInitializer")
-						.hasBean("customInitializer"));
+			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+					DataSourceTransactionManagerAutoConfiguration.class))
+			.run((context) -> assertThat(context).hasSingleBean(IntegrationDataSourceScriptDatabaseInitializer.class)
+				.doesNotHaveBean("integrationDataSourceScriptDatabaseInitializer")
+				.hasBean("customInitializer"));
 	}
 
 	@Test
 	void whenTheUserDefinesTheirOwnDatabaseInitializerThenTheAutoConfiguredIntegrationInitializerRemains() {
 		this.contextRunner.withUserConfiguration(CustomDatabaseInitializerConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
-						DataSourceTransactionManagerAutoConfiguration.class))
-				.run((context) -> assertThat(context)
-						.hasSingleBean(IntegrationDataSourceScriptDatabaseInitializer.class)
-						.hasBean("customInitializer"));
+			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+					DataSourceTransactionManagerAutoConfiguration.class))
+			.run((context) -> assertThat(context).hasSingleBean(IntegrationDataSourceScriptDatabaseInitializer.class)
+				.hasBean("customInitializer"));
 	}
 
 	@Test
@@ -417,93 +413,99 @@ class IntegrationAutoConfigurationTests {
 	@Test
 	void whenCustomPollerPropertiesAreSetThenTheyAreReflectedInPollerMetadata() {
 		this.contextRunner.withUserConfiguration(PollingConsumerConfiguration.class)
-				.withPropertyValues("spring.integration.poller.cron=* * * ? * *",
-						"spring.integration.poller.max-messages-per-poll=1",
-						"spring.integration.poller.receive-timeout=10s")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(PollerMetadata.class);
-					PollerMetadata metadata = context.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class);
-					assertThat(metadata.getMaxMessagesPerPoll()).isOne();
-					assertThat(metadata.getReceiveTimeout()).isEqualTo(10000L);
-					assertThat(metadata.getTrigger()).asInstanceOf(InstanceOfAssertFactories.type(CronTrigger.class))
-							.satisfies((trigger) -> assertThat(trigger.getExpression()).isEqualTo("* * * ? * *"));
-				});
+			.withPropertyValues("spring.integration.poller.cron=* * * ? * *",
+					"spring.integration.poller.max-messages-per-poll=1",
+					"spring.integration.poller.receive-timeout=10s")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(PollerMetadata.class);
+				PollerMetadata metadata = context.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class);
+				assertThat(metadata.getMaxMessagesPerPoll()).isOne();
+				assertThat(metadata.getReceiveTimeout()).isEqualTo(10000L);
+				assertThat(metadata.getTrigger()).asInstanceOf(InstanceOfAssertFactories.type(CronTrigger.class))
+					.satisfies((trigger) -> assertThat(trigger.getExpression()).isEqualTo("* * * ? * *"));
+			});
 	}
 
 	@Test
 	void whenPollerPropertiesForMultipleTriggerTypesAreSetThenRefreshFails() {
 		this.contextRunner
-				.withPropertyValues("spring.integration.poller.cron=* * * ? * *",
-						"spring.integration.poller.fixed-delay=1s")
-				.run((context) -> assertThat(context).hasFailed().getFailure()
-						.hasRootCauseExactlyInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class)
-						.rootCause()
-						.asInstanceOf(
-								InstanceOfAssertFactories.type(MutuallyExclusiveConfigurationPropertiesException.class))
-						.satisfies((ex) -> {
-							assertThat(ex.getConfiguredNames()).containsExactlyInAnyOrder(
-									"spring.integration.poller.cron", "spring.integration.poller.fixed-delay");
-							assertThat(ex.getMutuallyExclusiveNames()).containsExactlyInAnyOrder(
-									"spring.integration.poller.cron", "spring.integration.poller.fixed-delay",
-									"spring.integration.poller.fixed-rate");
-						}));
+			.withPropertyValues("spring.integration.poller.cron=* * * ? * *",
+					"spring.integration.poller.fixed-delay=1s")
+			.run((context) -> assertThat(context).hasFailed()
+				.getFailure()
+				.hasRootCauseExactlyInstanceOf(MutuallyExclusiveConfigurationPropertiesException.class)
+				.rootCause()
+				.asInstanceOf(InstanceOfAssertFactories.type(MutuallyExclusiveConfigurationPropertiesException.class))
+				.satisfies((ex) -> {
+					assertThat(ex.getConfiguredNames()).containsExactlyInAnyOrder("spring.integration.poller.cron",
+							"spring.integration.poller.fixed-delay");
+					assertThat(ex.getMutuallyExclusiveNames()).containsExactlyInAnyOrder(
+							"spring.integration.poller.cron", "spring.integration.poller.fixed-delay",
+							"spring.integration.poller.fixed-rate");
+				}));
 
 	}
 
 	@Test
 	void whenFixedDelayPollerPropertyIsSetThenItIsReflectedAsFixedDelayPropertyOfPeriodicTrigger() {
 		this.contextRunner.withUserConfiguration(PollingConsumerConfiguration.class)
-				.withPropertyValues("spring.integration.poller.fixed-delay=5000").run((context) -> {
-					assertThat(context).hasSingleBean(PollerMetadata.class);
-					PollerMetadata metadata = context.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class);
-					assertThat(metadata.getTrigger())
-							.asInstanceOf(InstanceOfAssertFactories.type(PeriodicTrigger.class))
-							.satisfies((trigger) -> {
-								assertThat(trigger.getPeriodDuration()).isEqualTo(Duration.ofSeconds(5));
-								assertThat(trigger.isFixedRate()).isFalse();
-							});
-				});
+			.withPropertyValues("spring.integration.poller.fixed-delay=5000")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(PollerMetadata.class);
+				PollerMetadata metadata = context.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class);
+				assertThat(metadata.getTrigger()).asInstanceOf(InstanceOfAssertFactories.type(PeriodicTrigger.class))
+					.satisfies((trigger) -> {
+						assertThat(trigger.getPeriodDuration()).isEqualTo(Duration.ofSeconds(5));
+						assertThat(trigger.isFixedRate()).isFalse();
+					});
+			});
 	}
 
 	@Test
 	void whenFixedRatePollerPropertyIsSetThenItIsReflectedAsFixedRatePropertyOfPeriodicTrigger() {
 		this.contextRunner.withUserConfiguration(PollingConsumerConfiguration.class)
-				.withPropertyValues("spring.integration.poller.fixed-rate=5000").run((context) -> {
-					assertThat(context).hasSingleBean(PollerMetadata.class);
-					PollerMetadata metadata = context.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class);
-					assertThat(metadata.getTrigger())
-							.asInstanceOf(InstanceOfAssertFactories.type(PeriodicTrigger.class))
-							.satisfies((trigger) -> {
-								assertThat(trigger.getPeriodDuration()).isEqualTo(Duration.ofSeconds(5));
-								assertThat(trigger.isFixedRate()).isTrue();
-							});
-				});
+			.withPropertyValues("spring.integration.poller.fixed-rate=5000")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(PollerMetadata.class);
+				PollerMetadata metadata = context.getBean(PollerMetadata.DEFAULT_POLLER, PollerMetadata.class);
+				assertThat(metadata.getTrigger()).asInstanceOf(InstanceOfAssertFactories.type(PeriodicTrigger.class))
+					.satisfies((trigger) -> {
+						assertThat(trigger.getPeriodDuration()).isEqualTo(Duration.ofSeconds(5));
+						assertThat(trigger.isFixedRate()).isTrue();
+					});
+			});
 	}
 
 	@Test
 	void integrationManagementLoggingIsEnabledByDefault() {
-		this.contextRunner.withBean(DirectChannel.class, DirectChannel::new).run((context) -> assertThat(context)
-				.getBean(DirectChannel.class).extracting(DirectChannel::isLoggingEnabled).isEqualTo(true));
+		this.contextRunner.withBean(DirectChannel.class, DirectChannel::new)
+			.run((context) -> assertThat(context).getBean(DirectChannel.class)
+				.extracting(DirectChannel::isLoggingEnabled)
+				.isEqualTo(true));
 	}
 
 	@Test
 	void integrationManagementLoggingCanBeDisabled() {
 		this.contextRunner.withPropertyValues("spring.integration.management.defaultLoggingEnabled=false")
-				.withBean(DirectChannel.class, DirectChannel::new).run((context) -> assertThat(context)
-						.getBean(DirectChannel.class).extracting(DirectChannel::isLoggingEnabled).isEqualTo(false));
+			.withBean(DirectChannel.class, DirectChannel::new)
+			.run((context) -> assertThat(context).getBean(DirectChannel.class)
+				.extracting(DirectChannel::isLoggingEnabled)
+				.isEqualTo(false));
 
 	}
 
 	@Test
 	void integrationManagementInstrumentedWithObservation() {
 		this.contextRunner.withPropertyValues("spring.integration.management.observation-patterns=testHandler")
-				.withBean("testHandler", LoggingHandler.class, () -> new LoggingHandler("warn"))
-				.withBean(ObservationRegistry.class, ObservationRegistry::create)
-				.withBean(BridgeHandler.class, BridgeHandler::new).run((context) -> {
-					assertThat(context).getBean("testHandler").extracting("observationRegistry").isNotNull();
-					assertThat(context).getBean(BridgeHandler.class).extracting("observationRegistry")
-							.isEqualTo(ObservationRegistry.NOOP);
-				});
+			.withBean("testHandler", LoggingHandler.class, () -> new LoggingHandler("warn"))
+			.withBean(ObservationRegistry.class, ObservationRegistry::create)
+			.withBean(BridgeHandler.class, BridgeHandler::new)
+			.run((context) -> {
+				assertThat(context).getBean("testHandler").extracting("observationRegistry").isNotNull();
+				assertThat(context).getBean(BridgeHandler.class)
+					.extracting("observationRegistry")
+					.isEqualTo(ObservationRegistry.NOOP);
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

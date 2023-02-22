@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -361,8 +361,9 @@ public class JacksonAutoConfiguration {
 		}
 
 		private void registerPropertyNamingStrategyHints(ReflectionHints hints, Class<?> type) {
-			Stream.of(type.getDeclaredFields()).filter(this::isPropertyNamingStrategyField)
-					.forEach(hints::registerField);
+			Stream.of(type.getDeclaredFields())
+				.filter(this::isPropertyNamingStrategyField)
+				.forEach(hints::registerField);
 		}
 
 		private boolean isPropertyNamingStrategyField(Field candidate) {

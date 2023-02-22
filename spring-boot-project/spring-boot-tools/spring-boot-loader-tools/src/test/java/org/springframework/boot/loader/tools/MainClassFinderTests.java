@@ -85,8 +85,8 @@ class MainClassFinderTests {
 		this.testJarFile.addClass("a/b/c/E.class", ClassWithMainMethod.class);
 		try (JarFile jarFile = this.testJarFile.getJarFile()) {
 			assertThatIllegalStateException().isThrownBy(() -> MainClassFinder.findSingleMainClass(jarFile, ""))
-					.withMessageContaining(
-							"Unable to find a single main class from the following candidates [a.B, a.b.c.E]");
+				.withMessageContaining(
+						"Unable to find a single main class from the following candidates [a.B, a.b.c.E]");
 		}
 	}
 
@@ -142,9 +142,8 @@ class MainClassFinderTests {
 		this.testJarFile.addClass("a/B.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("a/b/c/E.class", ClassWithMainMethod.class);
 		assertThatIllegalStateException()
-				.isThrownBy(() -> MainClassFinder.findSingleMainClass(this.testJarFile.getJarSource()))
-				.withMessageContaining(
-						"Unable to find a single main class from the following candidates [a.B, a.b.c.E]");
+			.isThrownBy(() -> MainClassFinder.findSingleMainClass(this.testJarFile.getJarSource()))
+			.withMessageContaining("Unable to find a single main class from the following candidates [a.B, a.b.c.E]");
 	}
 
 	@Test

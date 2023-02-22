@@ -74,11 +74,11 @@ import org.springframework.util.StringUtils;
 class BootZipCopyAction implements CopyAction {
 
 	static final long CONSTANT_TIME_FOR_ZIP_ENTRIES = new GregorianCalendar(1980, Calendar.FEBRUARY, 1, 0, 0, 0)
-			.getTimeInMillis();
+		.getTimeInMillis();
 
 	private static final Pattern REACHABILITY_METADATA_PROPERTIES_LOCATION_PATTERN = Pattern
-			.compile(ReachabilityMetadataProperties.REACHABILITY_METADATA_PROPERTIES_LOCATION_TEMPLATE.formatted(".*",
-					".*", ".*"));
+		.compile(ReachabilityMetadataProperties.REACHABILITY_METADATA_PROPERTIES_LOCATION_TEMPLATE.formatted(".*", ".*",
+				".*"));
 
 	private final File output;
 
@@ -352,14 +352,14 @@ class BootZipCopyAction implements CopyAction {
 			Set<String> excludes = new LinkedHashSet<>();
 			for (Map.Entry<String, FileCopyDetails> entry : this.writtenLibraries.entrySet()) {
 				DependencyDescriptor descriptor = BootZipCopyAction.this.resolvedDependencies
-						.find(entry.getValue().getFile());
+					.find(entry.getValue().getFile());
 				LibraryCoordinates coordinates = (descriptor != null) ? descriptor.getCoordinates() : null;
 				FileCopyDetails propertiesFile = (coordinates != null) ? this.reachabilityMetadataProperties
-						.get(ReachabilityMetadataProperties.getLocation(coordinates)) : null;
+					.get(ReachabilityMetadataProperties.getLocation(coordinates)) : null;
 				if (propertiesFile != null) {
 					try (InputStream inputStream = propertiesFile.open()) {
 						ReachabilityMetadataProperties properties = ReachabilityMetadataProperties
-								.fromInputStream(inputStream);
+							.fromInputStream(inputStream);
 						if (properties.isOverridden()) {
 							excludes.add(entry.getKey());
 						}

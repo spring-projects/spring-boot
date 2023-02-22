@@ -67,8 +67,8 @@ class CloudFoundryWebEndpointDiscovererTests {
 				if (endpoint.getEndpointId().equals(EndpointId.of("health"))) {
 					WebOperation operation = findMainReadOperation(endpoint);
 					assertThat(operation
-							.invoke(new InvocationContext(mock(SecurityContext.class), Collections.emptyMap())))
-									.isEqualTo("cf");
+						.invoke(new InvocationContext(mock(SecurityContext.class), Collections.emptyMap())))
+						.isEqualTo("cf");
 				}
 			}
 		});
@@ -78,8 +78,9 @@ class CloudFoundryWebEndpointDiscovererTests {
 	void shouldRegisterHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new CloudFoundryWebEndpointDiscovererRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
-		assertThat(RuntimeHintsPredicates.reflection().onType(CloudFoundryEndpointFilter.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(CloudFoundryEndpointFilter.class)
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(runtimeHints);
 	}
 
 	private WebOperation findMainReadOperation(ExposableWebEndpoint endpoint) {

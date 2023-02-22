@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,9 +47,9 @@ class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
 	@Test
 	void shouldCreateInstancesForReactiveAndImperativeRepositories() {
 		new ApplicationContextRunner()
-				.withUserConfiguration(ImperativeAndReactiveConfiguration.class, BaseConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(CityRepository.class)
-						.hasSingleBean(ReactiveCityRepository.class));
+			.withUserConfiguration(ImperativeAndReactiveConfiguration.class, BaseConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(CityRepository.class)
+				.hasSingleBean(ReactiveCityRepository.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

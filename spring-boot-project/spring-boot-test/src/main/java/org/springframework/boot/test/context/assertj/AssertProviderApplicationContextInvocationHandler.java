@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,9 +96,9 @@ class AssertProviderApplicationContextInvocationHandler implements InvocationHan
 					+ this.startupFailure.getClass().getName() + "]";
 		}
 		ToStringCreator builder = new ToStringCreator(this.applicationContext)
-				.append("id", this.applicationContext.getId())
-				.append("applicationName", this.applicationContext.getApplicationName())
-				.append("beanDefinitionCount", this.applicationContext.getBeanDefinitionCount());
+			.append("id", this.applicationContext.getId())
+			.append("applicationName", this.applicationContext.getApplicationName())
+			.append("beanDefinitionCount", this.applicationContext.getBeanDefinitionCount());
 		return "Started application " + builder;
 	}
 

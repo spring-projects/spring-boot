@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ import static org.mockito.Mockito.mock;
 class H2ConsoleAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(H2ConsoleAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(H2ConsoleAutoConfiguration.class));
 
 	@Test
 	void consoleIsDisabledByDefault() {
@@ -77,67 +77,72 @@ class H2ConsoleAutoConfigurationTests {
 	@Test
 	void customPathMustBeginWithASlash() {
 		this.contextRunner.withPropertyValues("spring.h2.console.enabled=true", "spring.h2.console.path=custom")
-				.run((context) -> {
-					assertThat(context).hasFailed();
-					assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class).cause()
-							.isInstanceOf(ConfigurationPropertiesBindException.class).cause()
-							.isInstanceOf(BindException.class)
-							.hasMessageContaining("Failed to bind properties under 'spring.h2.console'");
-				});
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class)
+					.cause()
+					.isInstanceOf(ConfigurationPropertiesBindException.class)
+					.cause()
+					.isInstanceOf(BindException.class)
+					.hasMessageContaining("Failed to bind properties under 'spring.h2.console'");
+			});
 	}
 
 	@Test
 	void customPathWithTrailingSlash() {
 		this.contextRunner.withPropertyValues("spring.h2.console.enabled=true", "spring.h2.console.path=/custom/")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ServletRegistrationBean.class);
-					ServletRegistrationBean<?> registrationBean = context.getBean(ServletRegistrationBean.class);
-					assertThat(registrationBean.getUrlMappings()).contains("/custom/*");
-				});
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ServletRegistrationBean.class);
+				ServletRegistrationBean<?> registrationBean = context.getBean(ServletRegistrationBean.class);
+				assertThat(registrationBean.getUrlMappings()).contains("/custom/*");
+			});
 	}
 
 	@Test
 	void customPath() {
 		this.contextRunner.withPropertyValues("spring.h2.console.enabled=true", "spring.h2.console.path=/custom")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ServletRegistrationBean.class);
-					ServletRegistrationBean<?> registrationBean = context.getBean(ServletRegistrationBean.class);
-					assertThat(registrationBean.getUrlMappings()).contains("/custom/*");
-				});
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ServletRegistrationBean.class);
+				ServletRegistrationBean<?> registrationBean = context.getBean(ServletRegistrationBean.class);
+				assertThat(registrationBean.getUrlMappings()).contains("/custom/*");
+			});
 	}
 
 	@Test
 	void customInitParameters() {
-		this.contextRunner.withPropertyValues("spring.h2.console.enabled=true", "spring.h2.console.settings.trace=true",
-				"spring.h2.console.settings.web-allow-others=true",
-				"spring.h2.console.settings.web-admin-password=abcd").run((context) -> {
-					assertThat(context).hasSingleBean(ServletRegistrationBean.class);
-					ServletRegistrationBean<?> registrationBean = context.getBean(ServletRegistrationBean.class);
-					assertThat(registrationBean.getUrlMappings()).contains("/h2-console/*");
-					assertThat(registrationBean.getInitParameters()).containsEntry("trace", "");
-					assertThat(registrationBean.getInitParameters()).containsEntry("webAllowOthers", "");
-					assertThat(registrationBean.getInitParameters()).containsEntry("webAdminPassword", "abcd");
-				});
+		this.contextRunner
+			.withPropertyValues("spring.h2.console.enabled=true", "spring.h2.console.settings.trace=true",
+					"spring.h2.console.settings.web-allow-others=true",
+					"spring.h2.console.settings.web-admin-password=abcd")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ServletRegistrationBean.class);
+				ServletRegistrationBean<?> registrationBean = context.getBean(ServletRegistrationBean.class);
+				assertThat(registrationBean.getUrlMappings()).contains("/h2-console/*");
+				assertThat(registrationBean.getInitParameters()).containsEntry("trace", "");
+				assertThat(registrationBean.getInitParameters()).containsEntry("webAllowOthers", "");
+				assertThat(registrationBean.getInitParameters()).containsEntry("webAdminPassword", "abcd");
+			});
 	}
 
 	@Test
 	@ExtendWith(OutputCaptureExtension.class)
 	void singleDataSourceUrlIsLoggedWhenOnlyOneAvailable(CapturedOutput output) {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withPropertyValues("spring.h2.console.enabled=true").run((context) -> {
-					try (Connection connection = context.getBean(DataSource.class).getConnection()) {
-						assertThat(output).contains("H2 console available at '/h2-console'. Database available at '"
-								+ connection.getMetaData().getURL() + "'");
-					}
-				});
+			.withPropertyValues("spring.h2.console.enabled=true")
+			.run((context) -> {
+				try (Connection connection = context.getBean(DataSource.class).getConnection()) {
+					assertThat(output).contains("H2 console available at '/h2-console'. Database available at '"
+							+ connection.getMetaData().getURL() + "'");
+				}
+			});
 	}
 
 	@Test
 	@ExtendWith(OutputCaptureExtension.class)
 	void noDataSourceIsLoggedWhenNoneAvailable(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(FailingDataSourceConfiguration.class)
-				.withPropertyValues("spring.h2.console.enabled=true")
-				.run((context) -> assertThat(output).doesNotContain("H2 console available"));
+			.withPropertyValues("spring.h2.console.enabled=true")
+			.run((context) -> assertThat(output).doesNotContain("H2 console available"));
 	}
 
 	@Test
@@ -145,16 +150,17 @@ class H2ConsoleAutoConfigurationTests {
 	void allDataSourceUrlsAreLoggedWhenMultipleAvailable(CapturedOutput output) {
 		ClassLoader webAppClassLoader = new URLClassLoader(new URL[0]);
 		this.contextRunner.withClassLoader(webAppClassLoader)
-				.withUserConfiguration(FailingDataSourceConfiguration.class, MultiDataSourceConfiguration.class)
-				.withPropertyValues("spring.h2.console.enabled=true").run((context) -> assertThat(output).contains(
-						"H2 console available at '/h2-console'. Databases available at 'someJdbcUrl', 'anotherJdbcUrl'"));
+			.withUserConfiguration(FailingDataSourceConfiguration.class, MultiDataSourceConfiguration.class)
+			.withPropertyValues("spring.h2.console.enabled=true")
+			.run((context) -> assertThat(output).contains(
+					"H2 console available at '/h2-console'. Databases available at 'someJdbcUrl', 'anotherJdbcUrl'"));
 	}
 
 	@Test
 	void h2ConsoleShouldNotFailIfDatabaseConnectionFails() {
 		this.contextRunner.withUserConfiguration(FailingDataSourceConfiguration.class)
-				.withPropertyValues("spring.h2.console.enabled=true")
-				.run((context) -> assertThat(context.isRunning()).isTrue());
+			.withPropertyValues("spring.h2.console.enabled=true")
+			.run((context) -> assertThat(context.isRunning()).isTrue());
 	}
 
 	@Configuration(proxyBeanMethods = false)

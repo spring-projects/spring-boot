@@ -58,13 +58,14 @@ class SampleSecureApplicationTests {
 	@Test
 	void secure() {
 		assertThatExceptionOfType(AuthenticationException.class)
-				.isThrownBy(() -> SampleSecureApplicationTests.this.service.secure());
+			.isThrownBy(() -> SampleSecureApplicationTests.this.service.secure());
 	}
 
 	@Test
 	void authenticated() {
-		SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken("user", "N/A",
-				AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER")));
+		SecurityContextHolder.getContext()
+			.setAuthentication(new UsernamePasswordAuthenticationToken("user", "N/A",
+					AuthorityUtils.commaSeparatedStringToAuthorityList("ROLE_USER")));
 		assertThat(this.service.secure()).isEqualTo("Hello Security");
 	}
 
@@ -78,7 +79,7 @@ class SampleSecureApplicationTests {
 	void denied() {
 		SecurityContextHolder.getContext().setAuthentication(this.authentication);
 		assertThatExceptionOfType(AccessDeniedException.class)
-				.isThrownBy(() -> SampleSecureApplicationTests.this.service.denied());
+			.isThrownBy(() -> SampleSecureApplicationTests.this.service.denied());
 	}
 
 }

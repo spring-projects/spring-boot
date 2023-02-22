@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,30 +35,30 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AvailabilityHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ApplicationAvailabilityAutoConfiguration.class,
-					AvailabilityHealthContributorAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ApplicationAvailabilityAutoConfiguration.class,
+				AvailabilityHealthContributorAutoConfiguration.class));
 
 	@Test
 	void probesWhenNotKubernetesAddsNoBeans() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
-				.doesNotHaveBean(LivenessStateHealthIndicator.class)
-				.doesNotHaveBean(ReadinessStateHealthIndicator.class));
+			.doesNotHaveBean(LivenessStateHealthIndicator.class)
+			.doesNotHaveBean(ReadinessStateHealthIndicator.class));
 	}
 
 	@Test
 	void livenessIndicatorWhenPropertyEnabledAddsBeans() {
 		this.contextRunner.withPropertyValues("management.health.livenessState.enabled=true")
-				.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
-						.hasSingleBean(LivenessStateHealthIndicator.class)
-						.doesNotHaveBean(ReadinessStateHealthIndicator.class));
+			.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
+				.hasSingleBean(LivenessStateHealthIndicator.class)
+				.doesNotHaveBean(ReadinessStateHealthIndicator.class));
 	}
 
 	@Test
 	void readinessIndicatorWhenPropertyEnabledAddsBeans() {
 		this.contextRunner.withPropertyValues("management.health.readinessState.enabled=true")
-				.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
-						.hasSingleBean(ReadinessStateHealthIndicator.class)
-						.doesNotHaveBean(LivenessStateHealthIndicator.class));
+			.run((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
+				.hasSingleBean(ReadinessStateHealthIndicator.class)
+				.doesNotHaveBean(LivenessStateHealthIndicator.class));
 	}
 
 }

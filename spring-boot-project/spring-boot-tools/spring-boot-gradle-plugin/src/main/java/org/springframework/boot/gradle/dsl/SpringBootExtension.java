@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,8 +91,9 @@ public class SpringBootExtension {
 				this::configureBuildInfoTask);
 		this.project.getPlugins().withType(JavaPlugin.class, (plugin) -> {
 			tasks.named(JavaPlugin.CLASSES_TASK_NAME).configure((task) -> task.dependsOn(bootBuildInfo));
-			bootBuildInfo.configure((buildInfo) -> buildInfo.getProperties().getArtifact()
-					.convention(this.project.provider(() -> determineArtifactBaseName())));
+			bootBuildInfo.configure((buildInfo) -> buildInfo.getProperties()
+				.getArtifact()
+				.convention(this.project.provider(() -> determineArtifactBaseName())));
 		});
 		if (configurer != null) {
 			bootBuildInfo.configure(configurer);
@@ -102,13 +103,18 @@ public class SpringBootExtension {
 	private void configureBuildInfoTask(BuildInfo task) {
 		task.setGroup(BasePlugin.BUILD_GROUP);
 		task.setDescription("Generates a META-INF/build-info.properties file.");
-		task.getDestinationDir().convention(this.project.getLayout()
+		task.getDestinationDir()
+			.convention(this.project.getLayout()
 				.dir(this.project.provider(() -> new File(determineMainSourceSetResourcesOutputDir(), "META-INF"))));
 	}
 
 	private File determineMainSourceSetResourcesOutputDir() {
-		return this.project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
-				.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getOutput().getResourcesDir();
+		return this.project.getExtensions()
+			.getByType(JavaPluginExtension.class)
+			.getSourceSets()
+			.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+			.getOutput()
+			.getResourcesDir();
 	}
 
 	private String determineArtifactBaseName() {

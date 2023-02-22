@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,8 +70,8 @@ public class EncodePasswordCommand extends OptionParsingCommand {
 	@Override
 	public Collection<HelpExample> getExamples() {
 		List<HelpExample> examples = new ArrayList<>();
-		examples.add(
-				new HelpExample("To encode a password with the default encoder", "spring encodepassword mypassword"));
+		examples
+			.add(new HelpExample("To encode a password with the default encoder", "spring encodepassword mypassword"));
 		examples.add(new HelpExample("To encode a password with pbkdf2", "spring encodepassword -a pbkdf2 mypassword"));
 		return examples;
 	}
@@ -83,7 +83,7 @@ public class EncodePasswordCommand extends OptionParsingCommand {
 		@Override
 		protected void options() {
 			this.algorithm = option(Arrays.asList("algorithm", "a"), "The algorithm to use").withRequiredArg()
-					.defaultsTo("default");
+				.defaultsTo("default");
 		}
 
 		@Override

@@ -39,7 +39,7 @@ class StackIdTests {
 	@Test
 	void fromImageWhenImageIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> StackId.fromImage(null))
-				.withMessage("Image must not be null");
+			.withMessage("Image must not be null");
 	}
 
 	@Test
@@ -48,7 +48,7 @@ class StackIdTests {
 		ImageConfig imageConfig = mock(ImageConfig.class);
 		given(image.getConfig()).willReturn(imageConfig);
 		assertThatIllegalStateException().isThrownBy(() -> StackId.fromImage(image))
-				.withMessage("Missing 'io.buildpacks.stack.id' stack label");
+			.withMessage("Missing 'io.buildpacks.stack.id' stack label");
 	}
 
 	@Test

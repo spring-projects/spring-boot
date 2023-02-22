@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,9 +46,9 @@ class NotConstructorBoundInjectionFailureAnalyzerTests {
 				+ " is annotated with @" + ConstructorBinding.class.getSimpleName()
 				+ " but it is defined as a regular bean which caused dependency injection to fail.");
 		assertThat(analysis.getAction())
-				.isEqualTo("Update your configuration so that " + ConstructorBoundProperties.class.getSimpleName()
-						+ " is defined via @" + ConfigurationPropertiesScan.class.getSimpleName() + " or @"
-						+ EnableConfigurationProperties.class.getSimpleName() + ".");
+			.isEqualTo("Update your configuration so that " + ConstructorBoundProperties.class.getSimpleName()
+					+ " is defined via @" + ConfigurationPropertiesScan.class.getSimpleName() + " or @"
+					+ EnableConfigurationProperties.class.getSimpleName() + ".");
 	}
 
 	@Test

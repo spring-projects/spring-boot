@@ -119,7 +119,7 @@ public abstract class DynamicRegistrationBean<D extends Registration.Dynamic> ex
 			}
 			throw new IllegalStateException(
 					"Failed to register '%s' on the servlet context. Possibly already registered?"
-							.formatted(description));
+						.formatted(description));
 		}
 		configure(registration);
 	}

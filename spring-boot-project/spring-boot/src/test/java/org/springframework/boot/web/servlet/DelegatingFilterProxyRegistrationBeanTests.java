@@ -51,13 +51,13 @@ class DelegatingFilterProxyRegistrationBeanTests extends AbstractFilterRegistrat
 	@Test
 	void targetBeanNameMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DelegatingFilterProxyRegistrationBean(null))
-				.withMessageContaining("TargetBeanName must not be null or empty");
+			.withMessageContaining("TargetBeanName must not be null or empty");
 	}
 
 	@Test
 	void targetBeanNameMustNotBeEmpty() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DelegatingFilterProxyRegistrationBean(""))
-				.withMessageContaining("TargetBeanName must not be null or empty");
+			.withMessageContaining("TargetBeanName must not be null or empty");
 	}
 
 	@Test
@@ -87,9 +87,10 @@ class DelegatingFilterProxyRegistrationBeanTests extends AbstractFilterRegistrat
 
 	@Test
 	void createServletRegistrationBeanMustNotBeNull() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> new DelegatingFilterProxyRegistrationBean("mockFilter", (ServletRegistrationBean<?>[]) null))
-				.withMessageContaining("ServletRegistrationBeans must not be null");
+		assertThatIllegalArgumentException()
+			.isThrownBy(
+					() -> new DelegatingFilterProxyRegistrationBean("mockFilter", (ServletRegistrationBean<?>[]) null))
+			.withMessageContaining("ServletRegistrationBeans must not be null");
 	}
 
 	@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,12 +98,12 @@ class BannerTests {
 		this.context = application.run();
 		Banner printedBanner = (Banner) this.context.getBean("springBootBanner");
 		assertThat(printedBanner).hasFieldOrPropertyWithValue("banner", banner);
-		then(banner).should().printBanner(any(Environment.class), this.sourceClassCaptor.capture(),
-				any(PrintStream.class));
+		then(banner).should()
+			.printBanner(any(Environment.class), this.sourceClassCaptor.capture(), any(PrintStream.class));
 		reset(banner);
 		printedBanner.printBanner(this.context.getEnvironment(), null, System.out);
-		then(banner).should().printBanner(any(Environment.class), eq(this.sourceClassCaptor.getValue()),
-				any(PrintStream.class));
+		then(banner).should()
+			.printBanner(any(Environment.class), eq(this.sourceClassCaptor.getValue()), any(PrintStream.class));
 	}
 
 	@Test

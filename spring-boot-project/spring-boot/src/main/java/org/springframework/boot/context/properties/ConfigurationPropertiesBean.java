@@ -307,7 +307,7 @@ public final class ConfigurationPropertiesBean {
 		}
 		if (!annotation.isPresent() && AopUtils.isAopProxy(instance)) {
 			annotation = MergedAnnotations.from(AopUtils.getTargetClass(instance), SearchStrategy.TYPE_HIERARCHY)
-					.get(annotationType);
+				.get(annotationType);
 		}
 		return annotation.isPresent() ? annotation.synthesize() : null;
 	}

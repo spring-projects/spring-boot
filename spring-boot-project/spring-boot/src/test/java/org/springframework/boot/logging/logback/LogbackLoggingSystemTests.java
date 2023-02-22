@@ -142,7 +142,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		initialize(this.initializationContext, null, null);
 		assertThat(org.jboss.logging.Logger.getLogger(getClass()).getClass().getName())
-				.isEqualTo("org.jboss.logging.Slf4jLocationAwareLogger");
+			.isEqualTo("org.jboss.logging.Slf4jLocationAwareLogger");
 	}
 
 	@Test
@@ -185,8 +185,10 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		initialize(this.initializationContext, "classpath:logback-nondefault.xml",
 				getLogFile(tmpDir() + "/tmp.log", null));
 		this.logger.info("Hello world");
-		assertThat(output).doesNotContain("DEBUG").contains("Hello world").contains(tmpDir() + "/tmp.log")
-				.endsWith("BOOTBOOT");
+		assertThat(output).doesNotContain("DEBUG")
+			.contains("Hello world")
+			.contains(tmpDir() + "/tmp.log")
+			.endsWith("BOOTBOOT");
 		assertThat(new File(tmpDir() + "/tmp.log")).doesNotExist();
 	}
 
@@ -196,8 +198,8 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		try {
 			this.loggingSystem.beforeInitialize();
 			initialize(this.initializationContext, null, null);
-			assertThat(output).contains(
-					"Ignoring 'logback.configurationFile' system property. Please use 'logging.config' instead.");
+			assertThat(output)
+				.contains("Ignoring 'logback.configurationFile' system property. Please use 'logging.config' instead.");
 		}
 		finally {
 			System.clearProperty("logback.configurationFile");
@@ -208,7 +210,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	void testNonexistentConfigLocation() {
 		this.loggingSystem.beforeInitialize();
 		assertThatIllegalStateException()
-				.isThrownBy(() -> initialize(this.initializationContext, "classpath:logback-nonexistent.xml", null));
+			.isThrownBy(() -> initialize(this.initializationContext, "classpath:logback-nonexistent.xml", null));
 	}
 
 	@Test
@@ -256,7 +258,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
 		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(getClass().getName());
 		assertThat(configuration)
-				.isEqualTo(new LoggerConfiguration(getClass().getName(), LogLevel.DEBUG, LogLevel.DEBUG));
+			.isEqualTo(new LoggerConfiguration(getClass().getName(), LogLevel.DEBUG, LogLevel.DEBUG));
 	}
 
 	@Test
@@ -275,7 +277,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		logger.setLevel(Level.ALL);
 		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(getClass().getName());
 		assertThat(configuration)
-				.isEqualTo(new LoggerConfiguration(getClass().getName(), LogLevel.TRACE, LogLevel.TRACE));
+			.isEqualTo(new LoggerConfiguration(getClass().getName(), LogLevel.TRACE, LogLevel.TRACE));
 	}
 
 	@Test
@@ -581,7 +583,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		initialize(loggingInitializationContext, null, null);
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(output, "Hello world"))
-				.containsPattern("\\d{4}-\\d{2}\\-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}([-+]\\d{2}:\\d{2}|Z)");
+			.containsPattern("\\d{4}-\\d{2}\\-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}([-+]\\d{2}:\\d{2}|Z)");
 	}
 
 	@Test
@@ -623,8 +625,9 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 			File file = new File(tmpDir(), "logback-test.log");
 			LogFile logFile = getLogFile(file.getPath(), null);
 			initialize(this.initializationContext, null, logFile);
-			assertThat(output).contains("LevelChangePropagator").contains("SizeAndTimeBasedFNATP")
-					.contains("DebugLogbackConfigurator");
+			assertThat(output).contains("LevelChangePropagator")
+				.contains("SizeAndTimeBasedFNATP")
+				.contains("DebugLogbackConfigurator");
 		}
 		finally {
 			System.clearProperty("logback.debug");
@@ -659,7 +662,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void whenContextHasNoAotContributionThenProcessAheadOfTimeReturnsNull() {
 		BeanFactoryInitializationAotContribution contribution = this.loggingSystem
-				.processAheadOfTime(new DefaultListableBeanFactory());
+			.processAheadOfTime(new DefaultListableBeanFactory());
 		assertThat(contribution).isNull();
 	}
 
@@ -669,7 +672,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		context.putObject(BeanFactoryInitializationAotContribution.class.getName(),
 				mock(BeanFactoryInitializationAotContribution.class));
 		BeanFactoryInitializationAotContribution contribution = this.loggingSystem
-				.processAheadOfTime(new DefaultListableBeanFactory());
+			.processAheadOfTime(new DefaultListableBeanFactory());
 		assertThat(context.getObject(BeanFactoryInitializationAotContribution.class.getName())).isNull();
 		assertThat(contribution).isNotNull();
 	}
@@ -707,7 +710,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.beforeInitialize();
 		initialize(this.initializationContext, "classpath:logback-custom-rules.xml", null);
 		assertThat(output).doesNotContain("Ignoring unknown property [rule1] in [ch.qos.logback.classic.LoggerContext]")
-				.doesNotContain("Ignoring unknown property [rule2] in [ch.qos.logback.classic.LoggerContext]");
+			.doesNotContain("Ignoring unknown property [rule2] in [ch.qos.logback.classic.LoggerContext]");
 	}
 
 	@Test // gh-33610
@@ -746,8 +749,10 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	private String getLineWithText(CharSequence output, CharSequence outputSearch) {
-		return Arrays.stream(output.toString().split("\\r?\\n")).filter((line) -> line.contains(outputSearch))
-				.findFirst().orElse(null);
+		return Arrays.stream(output.toString().split("\\r?\\n"))
+			.filter((line) -> line.contains(outputSearch))
+			.findFirst()
+			.orElse(null);
 	}
 
 }

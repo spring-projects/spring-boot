@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,8 @@ class HttpWebServiceMessageSenderBuilderOkHttp3IntegrationTests {
 	@Test
 	void buildWithCustomTimeouts() {
 		WebServiceMessageSender messageSender = this.builder.setConnectTimeout(Duration.ofSeconds(5))
-				.setReadTimeout(Duration.ofSeconds(2)).build();
+			.setReadTimeout(Duration.ofSeconds(2))
+			.build();
 		OkHttp3ClientHttpRequestFactory factory = assertOkHttp3RequestFactory(messageSender);
 		OkHttpClient client = (OkHttpClient) ReflectionTestUtils.getField(factory, "client");
 		assertThat(client).isNotNull();

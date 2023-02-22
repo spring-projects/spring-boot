@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,15 +90,15 @@ class WebServiceTemplateBuilderTests {
 	@Test
 	void messageSendersWhenSendersAreAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.messageSenders((WebServiceMessageSender[]) null))
-				.withMessageContaining("MessageSenders must not be null");
+			.isThrownBy(() -> this.builder.messageSenders((WebServiceMessageSender[]) null))
+			.withMessageContaining("MessageSenders must not be null");
 	}
 
 	@Test
 	void messageSendersCollectionWhenSendersAreAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.messageSenders((Collection<? extends WebServiceMessageSender>) null))
-				.withMessageContaining("MessageSenders must not be null");
+			.isThrownBy(() -> this.builder.messageSenders((Collection<? extends WebServiceMessageSender>) null))
+			.withMessageContaining("MessageSenders must not be null");
 	}
 
 	@Test
@@ -110,29 +110,32 @@ class WebServiceTemplateBuilderTests {
 	@Test
 	void messageSendersShouldReplaceExisting() {
 		WebServiceTemplate template = this.builder.messageSenders(new ClientHttpRequestMessageSender())
-				.messageSenders(this.messageSender).build();
+			.messageSenders(this.messageSender)
+			.build();
 		assertThat(template.getMessageSenders()).containsOnly(this.messageSender);
 	}
 
 	@Test
 	void additionalMessageSendersWhenSendersAreAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.additionalMessageSenders((WebServiceMessageSender[]) null))
-				.withMessageContaining("MessageSenders must not be null");
+			.isThrownBy(() -> this.builder.additionalMessageSenders((WebServiceMessageSender[]) null))
+			.withMessageContaining("MessageSenders must not be null");
 	}
 
 	@Test
 	void additionalMessageSendersCollectionWhenSendersAreAreNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> this.builder.additionalMessageSenders((Collection<? extends WebServiceMessageSender>) null))
-				.withMessageContaining("MessageSenders must not be null");
+		assertThatIllegalArgumentException()
+			.isThrownBy(
+					() -> this.builder.additionalMessageSenders((Collection<? extends WebServiceMessageSender>) null))
+			.withMessageContaining("MessageSenders must not be null");
 	}
 
 	@Test
 	void additionalMessageSendersShouldAddToExisting() {
 		ClientHttpRequestMessageSender httpMessageSender = new ClientHttpRequestMessageSender();
 		WebServiceTemplate template = this.builder.messageSenders(httpMessageSender)
-				.additionalMessageSenders(this.messageSender).build();
+			.additionalMessageSenders(this.messageSender)
+			.build();
 		assertThat(template.getMessageSenders()).containsOnly(httpMessageSender, this.messageSender);
 	}
 
@@ -146,14 +149,14 @@ class WebServiceTemplateBuilderTests {
 	@Test
 	void interceptorsWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.interceptors((ClientInterceptor[]) null))
-				.withMessageContaining("Interceptors must not be null");
+			.withMessageContaining("Interceptors must not be null");
 	}
 
 	@Test
 	void interceptorsCollectionWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.interceptors((Collection<? extends ClientInterceptor>) null))
-				.withMessageContaining("Interceptors must not be null");
+			.isThrownBy(() -> this.builder.interceptors((Collection<? extends ClientInterceptor>) null))
+			.withMessageContaining("Interceptors must not be null");
 	}
 
 	@Test
@@ -165,29 +168,31 @@ class WebServiceTemplateBuilderTests {
 	@Test
 	void interceptorsShouldReplaceExisting() {
 		WebServiceTemplate template = this.builder.interceptors(mock(ClientInterceptor.class))
-				.interceptors(Collections.singleton(this.interceptor)).build();
+			.interceptors(Collections.singleton(this.interceptor))
+			.build();
 		assertThat(template.getInterceptors()).containsOnly(this.interceptor);
 	}
 
 	@Test
 	void additionalInterceptorsWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.additionalInterceptors((ClientInterceptor[]) null))
-				.withMessageContaining("Interceptors must not be null");
+			.isThrownBy(() -> this.builder.additionalInterceptors((ClientInterceptor[]) null))
+			.withMessageContaining("Interceptors must not be null");
 	}
 
 	@Test
 	void additionalInterceptorsCollectionWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.additionalInterceptors((Set<ClientInterceptor>) null))
-				.withMessageContaining("Interceptors must not be null");
+			.isThrownBy(() -> this.builder.additionalInterceptors((Set<ClientInterceptor>) null))
+			.withMessageContaining("Interceptors must not be null");
 	}
 
 	@Test
 	void additionalInterceptorsShouldAddToExisting() {
 		ClientInterceptor interceptor = mock(ClientInterceptor.class);
-		WebServiceTemplate template = this.builder.interceptors(interceptor).additionalInterceptors(this.interceptor)
-				.build();
+		WebServiceTemplate template = this.builder.interceptors(interceptor)
+			.additionalInterceptors(this.interceptor)
+			.build();
 		assertThat(template.getInterceptors()).containsOnly(interceptor, this.interceptor);
 	}
 
@@ -204,15 +209,15 @@ class WebServiceTemplateBuilderTests {
 	@Test
 	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.customizers((WebServiceTemplateCustomizer[]) null))
-				.withMessageContaining("Customizers must not be null");
+			.isThrownBy(() -> this.builder.customizers((WebServiceTemplateCustomizer[]) null))
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.customizers((Collection<? extends WebServiceTemplateCustomizer>) null))
-				.withMessageContaining("Customizers must not be null");
+			.isThrownBy(() -> this.builder.customizers((Collection<? extends WebServiceTemplateCustomizer>) null))
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
@@ -235,7 +240,8 @@ class WebServiceTemplateBuilderTests {
 		WebServiceTemplateCustomizer customizer1 = mock(WebServiceTemplateCustomizer.class);
 		WebServiceTemplateCustomizer customizer2 = mock(WebServiceTemplateCustomizer.class);
 		WebServiceTemplate template = this.builder.customizers(customizer1)
-				.customizers(Collections.singleton(customizer2)).build();
+			.customizers(Collections.singleton(customizer2))
+			.build();
 		then(customizer1).shouldHaveNoInteractions();
 		then(customizer2).should().customize(template);
 	}
@@ -243,15 +249,16 @@ class WebServiceTemplateBuilderTests {
 	@Test
 	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.additionalCustomizers((WebServiceTemplateCustomizer[]) null))
-				.withMessageContaining("Customizers must not be null");
+			.isThrownBy(() -> this.builder.additionalCustomizers((WebServiceTemplateCustomizer[]) null))
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> this.builder.additionalCustomizers((Collection<? extends WebServiceTemplateCustomizer>) null))
-				.withMessageContaining("Customizers must not be null");
+		assertThatIllegalArgumentException()
+			.isThrownBy(
+					() -> this.builder.additionalCustomizers((Collection<? extends WebServiceTemplateCustomizer>) null))
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test

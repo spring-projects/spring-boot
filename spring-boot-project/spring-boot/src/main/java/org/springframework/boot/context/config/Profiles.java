@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,10 +57,10 @@ public class Profiles implements Iterable<String> {
 	public static final String INCLUDE_PROFILES_PROPERTY_NAME = "spring.profiles.include";
 
 	static final ConfigurationPropertyName INCLUDE_PROFILES = ConfigurationPropertyName
-			.of(Profiles.INCLUDE_PROFILES_PROPERTY_NAME);
+		.of(Profiles.INCLUDE_PROFILES_PROPERTY_NAME);
 
 	private static final Bindable<MultiValueMap<String, String>> STRING_STRINGS_MAP = Bindable
-			.of(ResolvableType.forClassWithGenerics(MultiValueMap.class, String.class, String.class));
+		.of(ResolvableType.forClassWithGenerics(MultiValueMap.class, String.class, String.class));
 
 	private static final Bindable<Set<String>> STRING_SET = Bindable.setOf(String.class);
 

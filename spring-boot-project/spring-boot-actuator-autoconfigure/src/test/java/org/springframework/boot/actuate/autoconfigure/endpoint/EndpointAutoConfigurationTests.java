@@ -47,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class EndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(EndpointAutoConfiguration.class));
 
 	@Test
 	void mapShouldUseConfigurationConverter() {

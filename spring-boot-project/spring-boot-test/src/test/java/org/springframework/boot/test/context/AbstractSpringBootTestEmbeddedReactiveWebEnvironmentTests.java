@@ -69,8 +69,15 @@ abstract class AbstractSpringBootTestEmbeddedReactiveWebEnvironmentTests {
 	@Test
 	void runAndTestHttpEndpoint() {
 		assertThat(this.port).isNotEqualTo(8080).isNotZero();
-		WebTestClient.bindToServer().baseUrl("http://localhost:" + this.port).responseTimeout(Duration.ofMinutes(5))
-				.build().get().uri("/").exchange().expectBody(String.class).isEqualTo("Hello World");
+		WebTestClient.bindToServer()
+			.baseUrl("http://localhost:" + this.port)
+			.responseTimeout(Duration.ofMinutes(5))
+			.build()
+			.get()
+			.uri("/")
+			.exchange()
+			.expectBody(String.class)
+			.isEqualTo("Hello World");
 	}
 
 	@Test

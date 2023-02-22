@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,7 +98,7 @@ class MultipartAutoConfigurationTests {
 		assertThat(this.context.getBeansOfType(MultipartResolver.class)).hasSize(1);
 		verifyServletWorks();
 		assertThat(this.context.getBean(StandardServletMultipartResolver.class))
-				.isSameAs(this.context.getBean(DispatcherServlet.class).getMultipartResolver());
+			.isSameAs(this.context.getBean(DispatcherServlet.class).getMultipartResolver());
 	}
 
 	static Stream<Arguments> webServerWithNoMultipartConfigurationArguments() {
@@ -115,7 +115,7 @@ class MultipartAutoConfigurationTests {
 		this.context.getBean(MultipartConfigElement.class);
 		verifyServletWorks();
 		assertThat(this.context.getBean(StandardServletMultipartResolver.class))
-				.isSameAs(this.context.getBean(DispatcherServlet.class).getMultipartResolver());
+			.isSameAs(this.context.getBean(DispatcherServlet.class).getMultipartResolver());
 	}
 
 	static Stream<Arguments> webServerWithAutomatedMultipartConfigurationArguments() {
@@ -131,7 +131,7 @@ class MultipartAutoConfigurationTests {
 		this.context.getBean(MultipartConfigElement.class);
 		verifyServletWorks();
 		assertThat(this.context.getBean(StandardServletMultipartResolver.class))
-				.isSameAs(this.context.getBean(DispatcherServlet.class).getMultipartResolver());
+			.isSameAs(this.context.getBean(DispatcherServlet.class).getMultipartResolver());
 	}
 
 	@Test
@@ -152,7 +152,7 @@ class MultipartAutoConfigurationTests {
 		this.context.refresh();
 		this.context.getBean(MultipartProperties.class);
 		assertThat(this.context.getBeansOfType(MultipartConfigElement.class))
-				.hasSize(expectedNumberOfMultipartConfigElementBeans);
+			.hasSize(expectedNumberOfMultipartConfigElementBeans);
 	}
 
 	@Test
@@ -171,7 +171,7 @@ class MultipartAutoConfigurationTests {
 		this.context.register(WebServerWithNothing.class, BaseConfiguration.class);
 		this.context.refresh();
 		StandardServletMultipartResolver multipartResolver = this.context
-				.getBean(StandardServletMultipartResolver.class);
+			.getBean(StandardServletMultipartResolver.class);
 		assertThat(multipartResolver).hasFieldOrPropertyWithValue("resolveLazily", true);
 	}
 
@@ -179,8 +179,8 @@ class MultipartAutoConfigurationTests {
 	void configureMultipartProperties() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		TestPropertyValues
-				.of("spring.servlet.multipart.max-file-size=2048KB", "spring.servlet.multipart.max-request-size=15MB")
-				.applyTo(this.context);
+			.of("spring.servlet.multipart.max-file-size=2048KB", "spring.servlet.multipart.max-request-size=15MB")
+			.applyTo(this.context);
 		this.context.register(WebServerWithNothing.class, BaseConfiguration.class);
 		this.context.refresh();
 		MultipartConfigElement multipartConfigElement = this.context.getBean(MultipartConfigElement.class);
@@ -192,8 +192,8 @@ class MultipartAutoConfigurationTests {
 	void configureMultipartPropertiesWithRawLongValues() {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		TestPropertyValues
-				.of("spring.servlet.multipart.max-file-size=512", "spring.servlet.multipart.max-request-size=2048")
-				.applyTo(this.context);
+			.of("spring.servlet.multipart.max-file-size=512", "spring.servlet.multipart.max-request-size=2048")
+			.applyTo(this.context);
 		this.context.register(WebServerWithNothing.class, BaseConfiguration.class);
 		this.context.refresh();
 		MultipartConfigElement multipartConfigElement = this.context.getBean(MultipartConfigElement.class);
@@ -203,8 +203,8 @@ class MultipartAutoConfigurationTests {
 
 	private void verify404() throws Exception {
 		HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-		ClientHttpRequest request = requestFactory.createRequest(
-				new URI("http://localhost:" + this.context.getWebServer().getPort() + "/"), HttpMethod.GET);
+		ClientHttpRequest request = requestFactory
+			.createRequest(new URI("http://localhost:" + this.context.getWebServer().getPort() + "/"), HttpMethod.GET);
 		try (ClientHttpResponse response = request.execute()) {
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		}

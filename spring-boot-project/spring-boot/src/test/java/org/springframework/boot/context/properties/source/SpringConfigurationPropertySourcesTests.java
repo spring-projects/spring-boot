@@ -43,7 +43,7 @@ class SpringConfigurationPropertySourcesTests {
 	@Test
 	void createWhenPropertySourcesIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new SpringConfigurationPropertySources(null))
-				.withMessageContaining("Sources must not be null");
+			.withMessageContaining("Sources must not be null");
 	}
 
 	@Test
@@ -82,8 +82,8 @@ class SpringConfigurationPropertySourcesTests {
 	@Test
 	void shouldNotAdaptSystemEnvironmentPropertyOverrideSource() {
 		MutablePropertySources sources = new MutablePropertySources();
-		sources.addLast(
-				new SystemEnvironmentPropertySource("override", Collections.singletonMap("server.port", "1234")));
+		sources
+			.addLast(new SystemEnvironmentPropertySource("override", Collections.singletonMap("server.port", "1234")));
 		Iterator<ConfigurationPropertySource> iterator = new SpringConfigurationPropertySources(sources).iterator();
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("server.port");
 		assertThat(iterator.next().getConfigurationProperty(name).getValue()).isEqualTo("1234");
@@ -112,7 +112,7 @@ class SpringConfigurationPropertySourcesTests {
 		assertThat(iterator.next().getConfigurationProperty(name).getValue()).isEqualTo("1234");
 		assertThat(iterator.next().getConfigurationProperty(name).getValue()).isEqualTo("4567");
 		assertThat(iterator.next().getConfigurationProperty(ConfigurationPropertyName.of("a")).getValue())
-				.isEqualTo("b");
+			.isEqualTo("b");
 		assertThat(iterator.hasNext()).isFalse();
 	}
 

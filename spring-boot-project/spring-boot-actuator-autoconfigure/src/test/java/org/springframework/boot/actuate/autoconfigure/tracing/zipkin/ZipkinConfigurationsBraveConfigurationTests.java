@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,12 +40,12 @@ import static org.mockito.Mockito.mock;
 class ZipkinConfigurationsBraveConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(BraveConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(BraveConfiguration.class));
 
 	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.withUserConfiguration(ReporterConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(ZipkinSpanHandler.class));
+			.run((context) -> assertThat(context).hasSingleBean(ZipkinSpanHandler.class));
 	}
 
 	@Test
@@ -56,27 +56,27 @@ class ZipkinConfigurationsBraveConfigurationTests {
 	@Test
 	void shouldNotSupplyIfZipkinReporterBraveIsNotOnClasspath() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("zipkin2.reporter.brave"))
-				.withUserConfiguration(ReporterConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(ZipkinSpanHandler.class));
+			.withUserConfiguration(ReporterConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(ZipkinSpanHandler.class));
 
 	}
 
 	@Test
 	void shouldBackOffOnCustomBeans() {
 		this.contextRunner.withUserConfiguration(ReporterConfiguration.class, CustomConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasBean("customZipkinSpanHandler");
-					assertThat(context).hasSingleBean(ZipkinSpanHandler.class);
-				});
+			.run((context) -> {
+				assertThat(context).hasBean("customZipkinSpanHandler");
+				assertThat(context).hasSingleBean(ZipkinSpanHandler.class);
+			});
 	}
 
 	@Test
 	void shouldSupplyZipkinSpanHandlerWithCustomSpanHandler() {
 		this.contextRunner.withUserConfiguration(ReporterConfiguration.class, CustomSpanHandlerConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasBean("customSpanHandler");
-					assertThat(context).hasSingleBean(ZipkinSpanHandler.class);
-				});
+			.run((context) -> {
+				assertThat(context).hasBean("customSpanHandler");
+				assertThat(context).hasSingleBean(ZipkinSpanHandler.class);
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

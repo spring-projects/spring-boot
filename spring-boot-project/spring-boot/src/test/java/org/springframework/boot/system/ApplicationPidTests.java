@@ -49,7 +49,7 @@ class ApplicationPidTests {
 	void throwIllegalStateWritingMissingPid() {
 		ApplicationPid pid = new ApplicationPid(null);
 		assertThatIllegalStateException().isThrownBy(() -> pid.write(new File(this.tempDir, "pid")))
-				.withMessageContaining("No PID available");
+			.withMessageContaining("No PID available");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,8 +52,8 @@ class SubversionConfigDataLoader implements ConfigDataLoader<SubversionConfigDat
 	@Override
 	public ConfigData load(ConfigDataLoaderContext context, SubversionConfigDataResource resource)
 			throws IOException, ConfigDataLocationNotFoundException {
-		context.getBootstrapContext().registerIfAbsent(SubversionServerCertificate.class,
-				InstanceSupplier.of(resource.getServerCertificate()));
+		context.getBootstrapContext()
+			.registerIfAbsent(SubversionServerCertificate.class, InstanceSupplier.of(resource.getServerCertificate()));
 		SubversionClient client = context.getBootstrapContext().get(SubversionClient.class);
 		String loaded = client.load(resource.getLocation());
 		PropertySource<?> propertySource = new MapPropertySource("svn", Collections.singletonMap("svn", loaded));
@@ -61,8 +61,9 @@ class SubversionConfigDataLoader implements ConfigDataLoader<SubversionConfigDat
 	}
 
 	private static void onBootstrapContextClosed(BootstrapContextClosedEvent event) {
-		event.getApplicationContext().getBeanFactory().registerSingleton("subversionClient",
-				event.getBootstrapContext().get(SubversionClient.class));
+		event.getApplicationContext()
+			.getBeanFactory()
+			.registerSingleton("subversionClient", event.getBootstrapContext().get(SubversionClient.class));
 	}
 
 }

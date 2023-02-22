@@ -84,18 +84,28 @@ public class JettyWebServerFactoryCustomizer
 		PropertyMapper propertyMapper = PropertyMapper.get();
 		propertyMapper.from(threadProperties::getAcceptors).whenNonNull().to(factory::setAcceptors);
 		propertyMapper.from(threadProperties::getSelectors).whenNonNull().to(factory::setSelectors);
-		propertyMapper.from(properties::getMaxHttpRequestHeaderSize).whenNonNull().asInt(DataSize::toBytes)
-				.when(this::isPositive).to((maxHttpRequestHeaderSize) -> factory
-						.addServerCustomizers(new MaxHttpRequestHeaderSizeCustomizer(maxHttpRequestHeaderSize)));
-		propertyMapper.from(jettyProperties::getMaxHttpResponseHeaderSize).whenNonNull().asInt(DataSize::toBytes)
-				.when(this::isPositive).to((maxHttpResponseHeaderSize) -> factory
-						.addServerCustomizers(new MaxHttpResponseHeaderSizeCustomizer(maxHttpResponseHeaderSize)));
-		propertyMapper.from(jettyProperties::getMaxHttpFormPostSize).asInt(DataSize::toBytes).when(this::isPositive)
-				.to((maxHttpFormPostSize) -> customizeMaxHttpFormPostSize(factory, maxHttpFormPostSize));
-		propertyMapper.from(jettyProperties::getConnectionIdleTimeout).whenNonNull()
-				.to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
-		propertyMapper.from(jettyProperties::getAccesslog).when(ServerProperties.Jetty.Accesslog::isEnabled)
-				.to((accesslog) -> customizeAccessLog(factory, accesslog));
+		propertyMapper.from(properties::getMaxHttpRequestHeaderSize)
+			.whenNonNull()
+			.asInt(DataSize::toBytes)
+			.when(this::isPositive)
+			.to((maxHttpRequestHeaderSize) -> factory
+				.addServerCustomizers(new MaxHttpRequestHeaderSizeCustomizer(maxHttpRequestHeaderSize)));
+		propertyMapper.from(jettyProperties::getMaxHttpResponseHeaderSize)
+			.whenNonNull()
+			.asInt(DataSize::toBytes)
+			.when(this::isPositive)
+			.to((maxHttpResponseHeaderSize) -> factory
+				.addServerCustomizers(new MaxHttpResponseHeaderSizeCustomizer(maxHttpResponseHeaderSize)));
+		propertyMapper.from(jettyProperties::getMaxHttpFormPostSize)
+			.asInt(DataSize::toBytes)
+			.when(this::isPositive)
+			.to((maxHttpFormPostSize) -> customizeMaxHttpFormPostSize(factory, maxHttpFormPostSize));
+		propertyMapper.from(jettyProperties::getConnectionIdleTimeout)
+			.whenNonNull()
+			.to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
+		propertyMapper.from(jettyProperties::getAccesslog)
+			.when(ServerProperties.Jetty.Accesslog::isEnabled)
+			.to((accesslog) -> customizeAccessLog(factory, accesslog));
 	}
 
 	private boolean isPositive(Integer value) {
@@ -217,7 +227,7 @@ public class JettyWebServerFactoryCustomizer
 		private void customize(ConnectionFactory factory) {
 			if (factory instanceof HttpConfiguration.ConnectionFactory) {
 				((HttpConfiguration.ConnectionFactory) factory).getHttpConfiguration()
-						.setRequestHeaderSize(this.maxRequestHeaderSize);
+					.setRequestHeaderSize(this.maxRequestHeaderSize);
 			}
 		}
 
@@ -243,7 +253,7 @@ public class JettyWebServerFactoryCustomizer
 		private void customize(ConnectionFactory factory) {
 			if (factory instanceof HttpConfiguration.ConnectionFactory) {
 				((HttpConfiguration.ConnectionFactory) factory).getHttpConfiguration()
-						.setResponseHeaderSize(this.maxResponseHeaderSize);
+					.setResponseHeaderSize(this.maxResponseHeaderSize);
 			}
 		}
 

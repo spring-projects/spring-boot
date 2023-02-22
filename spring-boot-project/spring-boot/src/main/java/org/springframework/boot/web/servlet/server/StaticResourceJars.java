@@ -47,7 +47,8 @@ class StaticResourceJars {
 		}
 		else {
 			return getUrlsFrom(Stream.of(ManagementFactory.getRuntimeMXBean().getClassPath().split(File.pathSeparator))
-					.map(this::toUrl).toArray(URL[]::new));
+				.map(this::toUrl)
+				.toArray(URL[]::new));
 		}
 	}
 

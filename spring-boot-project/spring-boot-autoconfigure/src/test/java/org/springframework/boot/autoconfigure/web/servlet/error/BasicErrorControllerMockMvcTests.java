@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,9 +100,11 @@ class BasicErrorControllerMockMvcTests {
 	@Test
 	void testErrorWithNoContentResponseStatus() throws Exception {
 		MvcResult result = this.mockMvc.perform(get("/noContent").accept("some/thing"))
-				.andExpect(status().isNoContent()).andReturn();
+			.andExpect(status().isNoContent())
+			.andReturn();
 		MvcResult response = this.mockMvc.perform(new ErrorDispatcher(result, "/error"))
-				.andExpect(status().isNoContent()).andReturn();
+			.andExpect(status().isNoContent())
+			.andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).isEmpty();
 	}
@@ -123,7 +125,8 @@ class BasicErrorControllerMockMvcTests {
 	@Test
 	void testDirectAccessForBrowserClient() throws Exception {
 		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().is5xxServerError()).andReturn();
+			.andExpect(status().is5xxServerError())
+			.andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("ERROR_BEAN");
 	}

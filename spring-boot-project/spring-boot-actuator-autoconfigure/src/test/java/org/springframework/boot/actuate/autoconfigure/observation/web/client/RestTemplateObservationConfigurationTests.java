@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,14 +62,14 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 class RestTemplateObservationConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withBean(ObservationRegistry.class, TestObservationRegistry::create)
-			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
-					RestTemplateAutoConfiguration.class, HttpClientObservationsAutoConfiguration.class));
+		.withBean(ObservationRegistry.class, TestObservationRegistry::create)
+		.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
+				RestTemplateAutoConfiguration.class, HttpClientObservationsAutoConfiguration.class));
 
 	@Test
 	void contributesCustomizerBean() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ObservationRestTemplateCustomizer.class)
-				.doesNotHaveBean(DefaultRestTemplateExchangeTagsProvider.class));
+			.doesNotHaveBean(DefaultRestTemplateExchangeTagsProvider.class));
 	}
 
 	@Test
@@ -79,7 +79,7 @@ class RestTemplateObservationConfigurationTests {
 			restTemplate.getForEntity("/projects/{project}", Void.class, "spring-boot");
 			TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
 			TestObservationRegistryAssert.assertThat(registry)
-					.hasObservationWithNameEqualToIgnoringCase("http.client.requests");
+				.hasObservationWithNameEqualToIgnoringCase("http.client.requests");
 		});
 	}
 
@@ -87,26 +87,26 @@ class RestTemplateObservationConfigurationTests {
 	void restTemplateCreatedWithBuilderUsesCustomConventionName() {
 		final String observationName = "test.metric.name";
 		this.contextRunner.withPropertyValues("management.observations.http.client.requests.name=" + observationName)
-				.run((context) -> {
-					RestTemplate restTemplate = buildRestTemplate(context);
-					restTemplate.getForEntity("/projects/{project}", Void.class, "spring-boot");
-					TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
-					TestObservationRegistryAssert.assertThat(registry)
-							.hasObservationWithNameEqualToIgnoringCase(observationName);
-				});
+			.run((context) -> {
+				RestTemplate restTemplate = buildRestTemplate(context);
+				restTemplate.getForEntity("/projects/{project}", Void.class, "spring-boot");
+				TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
+				TestObservationRegistryAssert.assertThat(registry)
+					.hasObservationWithNameEqualToIgnoringCase(observationName);
+			});
 	}
 
 	@Test
 	void restTemplateCreatedWithBuilderUsesCustomMetricName() {
 		final String metricName = "test.metric.name";
 		this.contextRunner.withPropertyValues("management.metrics.web.client.request.metric-name=" + metricName)
-				.run((context) -> {
-					RestTemplate restTemplate = buildRestTemplate(context);
-					restTemplate.getForEntity("/projects/{project}", Void.class, "spring-boot");
-					TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
-					TestObservationRegistryAssert.assertThat(registry)
-							.hasObservationWithNameEqualToIgnoringCase(metricName);
-				});
+			.run((context) -> {
+				RestTemplate restTemplate = buildRestTemplate(context);
+				restTemplate.getForEntity("/projects/{project}", Void.class, "spring-boot");
+				TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
+				TestObservationRegistryAssert.assertThat(registry)
+					.hasObservationWithNameEqualToIgnoringCase(metricName);
+			});
 	}
 
 	@Test
@@ -115,8 +115,10 @@ class RestTemplateObservationConfigurationTests {
 			RestTemplate restTemplate = buildRestTemplate(context);
 			restTemplate.getForEntity("/projects/{project}", Void.class, "spring-boot");
 			TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
-			TestObservationRegistryAssert.assertThat(registry).hasObservationWithNameEqualTo("http.client.requests")
-					.that().hasLowCardinalityKeyValue("project", "spring-boot");
+			TestObservationRegistryAssert.assertThat(registry)
+				.hasObservationWithNameEqualTo("http.client.requests")
+				.that()
+				.hasLowCardinalityKeyValue("project", "spring-boot");
 		});
 	}
 
@@ -126,40 +128,43 @@ class RestTemplateObservationConfigurationTests {
 			RestTemplate restTemplate = buildRestTemplate(context);
 			restTemplate.getForEntity("/projects/{project}", Void.class, "spring-boot");
 			TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
-			TestObservationRegistryAssert.assertThat(registry).hasObservationWithNameEqualTo("http.client.requests")
-					.that().hasLowCardinalityKeyValue("project", "spring-boot");
+			TestObservationRegistryAssert.assertThat(registry)
+				.hasObservationWithNameEqualTo("http.client.requests")
+				.that()
+				.hasLowCardinalityKeyValue("project", "spring-boot");
 		});
 	}
 
 	@Test
 	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput output) {
-		this.contextRunner.with(MetricsRun.simple()).withPropertyValues("management.metrics.web.client.max-uri-tags=2")
-				.run((context) -> {
-					RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class).build();
-					MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
-					for (int i = 0; i < 3; i++) {
-						server.expect(requestTo("/test/" + i)).andRespond(withStatus(HttpStatus.OK));
-					}
-					for (int i = 0; i < 3; i++) {
-						restTemplate.getForObject("/test/" + i, String.class);
-					}
-					TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
-					TestObservationRegistryAssert.assertThat(registry)
-							.hasNumberOfObservationsWithNameEqualTo("http.client.requests", 3);
-					MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
-					assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(2);
-					assertThat(output).contains("Reached the maximum number of URI tags for 'http.client.requests'.")
-							.contains("Are you using 'uriVariables'?");
-				});
+		this.contextRunner.with(MetricsRun.simple())
+			.withPropertyValues("management.metrics.web.client.max-uri-tags=2")
+			.run((context) -> {
+				RestTemplate restTemplate = context.getBean(RestTemplateBuilder.class).build();
+				MockRestServiceServer server = MockRestServiceServer.createServer(restTemplate);
+				for (int i = 0; i < 3; i++) {
+					server.expect(requestTo("/test/" + i)).andRespond(withStatus(HttpStatus.OK));
+				}
+				for (int i = 0; i < 3; i++) {
+					restTemplate.getForObject("/test/" + i, String.class);
+				}
+				TestObservationRegistry registry = context.getBean(TestObservationRegistry.class);
+				TestObservationRegistryAssert.assertThat(registry)
+					.hasNumberOfObservationsWithNameEqualTo("http.client.requests", 3);
+				MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+				assertThat(meterRegistry.find("http.client.requests").timers()).hasSize(2);
+				assertThat(output).contains("Reached the maximum number of URI tags for 'http.client.requests'.")
+					.contains("Are you using 'uriVariables'?");
+			});
 	}
 
 	@Test
 	void backsOffWhenRestTemplateBuilderIsMissing() {
 		new ApplicationContextRunner().with(MetricsRun.simple())
-				.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
-						HttpClientObservationsAutoConfiguration.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(DefaultRestTemplateExchangeTagsProvider.class)
-						.doesNotHaveBean(ObservationRestTemplateCustomizer.class));
+			.withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
+					HttpClientObservationsAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(DefaultRestTemplateExchangeTagsProvider.class)
+				.doesNotHaveBean(ObservationRestTemplateCustomizer.class));
 	}
 
 	private RestTemplate buildRestTemplate(AssertableApplicationContext context) {

@@ -42,8 +42,8 @@ class SpringConfigurationPropertySourceTests {
 	@Test
 	void createWhenPropertySourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new SpringConfigurationPropertySource(null, mock(PropertyMapper.class)))
-				.withMessageContaining("PropertySource must not be null");
+			.isThrownBy(() -> new SpringConfigurationPropertySource(null, mock(PropertyMapper.class)))
+			.withMessageContaining("PropertySource must not be null");
 	}
 
 	@Test
@@ -94,13 +94,13 @@ class SpringConfigurationPropertySourceTests {
 		SpringConfigurationPropertySource adapter = new SpringConfigurationPropertySource(propertySource,
 				DefaultPropertyMapper.INSTANCE);
 		assertThat(adapter.containsDescendantOf(ConfigurationPropertyName.of("foo")))
-				.isEqualTo(ConfigurationPropertyState.UNKNOWN);
+			.isEqualTo(ConfigurationPropertyState.UNKNOWN);
 	}
 
 	@Test
 	void fromWhenPropertySourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> SpringConfigurationPropertySource.from(null))
-				.withMessageContaining("Source must not be null");
+			.withMessageContaining("Source must not be null");
 	}
 
 	@Test
@@ -114,7 +114,7 @@ class SpringConfigurationPropertySourceTests {
 
 		};
 		assertThat(SpringConfigurationPropertySource.from(propertySource))
-				.isNotInstanceOf(IterableConfigurationPropertySource.class);
+			.isNotInstanceOf(IterableConfigurationPropertySource.class);
 
 	}
 
@@ -130,7 +130,7 @@ class SpringConfigurationPropertySourceTests {
 		};
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
 		assertThat(SpringConfigurationPropertySource.from(propertySource))
-				.isNotInstanceOf(IterableConfigurationPropertySource.class);
+			.isNotInstanceOf(IterableConfigurationPropertySource.class);
 	}
 
 	@Test
@@ -140,13 +140,13 @@ class SpringConfigurationPropertySourceTests {
 		source.put("barBaz", "Boot");
 		PropertySource<?> propertySource = new MapPropertySource("test", source);
 		assertThat(SpringConfigurationPropertySource.from(propertySource))
-				.isInstanceOf(IterableConfigurationPropertySource.class);
+			.isInstanceOf(IterableConfigurationPropertySource.class);
 	}
 
 	@Test
 	void containsDescendantOfWhenRandomSourceAndRandomPropertyReturnsPresent() {
 		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
-				.from(new RandomValuePropertySource());
+			.from(new RandomValuePropertySource());
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("random");
 		assertThat(source.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.ABSENT);
 		assertThat(source.getConfigurationProperty(name)).isNull();
@@ -155,7 +155,7 @@ class SpringConfigurationPropertySourceTests {
 	@Test
 	void containsDescendantOfWhenRandomSourceAndRandomPrefixedPropertyReturnsPresent() {
 		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
-				.from(new RandomValuePropertySource());
+			.from(new RandomValuePropertySource());
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("random.int");
 		assertThat(source.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.PRESENT);
 		assertThat(source.getConfigurationProperty(name)).isNotNull();
@@ -164,7 +164,7 @@ class SpringConfigurationPropertySourceTests {
 	@Test
 	void containsDescendantOfWhenRandomSourceWithDifferentNameAndRandomPrefixedPropertyReturnsPresent() {
 		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
-				.from(new RandomValuePropertySource("different"));
+			.from(new RandomValuePropertySource("different"));
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("random.int");
 		assertThat(source.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.PRESENT);
 		assertThat(source.getConfigurationProperty(name)).isNotNull();
@@ -173,7 +173,7 @@ class SpringConfigurationPropertySourceTests {
 	@Test
 	void containsDescendantOfWhenRandomSourceAndNonRandomPropertyReturnsAbsent() {
 		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
-				.from(new RandomValuePropertySource());
+			.from(new RandomValuePropertySource());
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("abandon.int");
 		assertThat(source.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.ABSENT);
 		assertThat(source.getConfigurationProperty(name)).isNull();
@@ -182,7 +182,7 @@ class SpringConfigurationPropertySourceTests {
 	@Test
 	void containsDescendantOfWhenWrappedRandomSourceAndRandomPropertyReturnsPresent() {
 		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
-				.from(new RandomWrapperPropertySource());
+			.from(new RandomWrapperPropertySource());
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("cachedrandom");
 		assertThat(source.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.ABSENT);
 		assertThat(source.getConfigurationProperty(name)).isNull();
@@ -191,7 +191,7 @@ class SpringConfigurationPropertySourceTests {
 	@Test
 	void containsDescendantOfWhenWrappedRandomSourceAndRandomPrefixedPropertyReturnsPresent() {
 		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
-				.from(new RandomWrapperPropertySource());
+			.from(new RandomWrapperPropertySource());
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("cachedrandom.something.int");
 		assertThat(source.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.ABSENT);
 		assertThat(source.getConfigurationProperty(name)).isNull();
@@ -200,7 +200,7 @@ class SpringConfigurationPropertySourceTests {
 	@Test
 	void containsDescendantOfWhenWrappedRandomSourceWithMatchingNameAndRandomPrefixedPropertyReturnsPresent() {
 		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
-				.from(new RandomWrapperPropertySource("cachedrandom"));
+			.from(new RandomWrapperPropertySource("cachedrandom"));
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("cachedrandom.something.int");
 		assertThat(source.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.PRESENT);
 		assertThat(source.getConfigurationProperty(name)).isNotNull();
@@ -209,7 +209,7 @@ class SpringConfigurationPropertySourceTests {
 	@Test
 	void containsDescendantOfWhenWrappedRandomSourceAndRandomDashPrefixedPropertyReturnsPresent() {
 		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
-				.from(new RandomWrapperPropertySource());
+			.from(new RandomWrapperPropertySource());
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("cached-random.something.int");
 		assertThat(source.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.ABSENT);
 		assertThat(source.getConfigurationProperty(name)).isNull();
@@ -218,7 +218,7 @@ class SpringConfigurationPropertySourceTests {
 	@Test
 	void containsDescendantOfWhenWrappedRandomSourceAndNonRandomPropertyReturnsAbsent() {
 		SpringConfigurationPropertySource source = SpringConfigurationPropertySource
-				.from(new RandomWrapperPropertySource());
+			.from(new RandomWrapperPropertySource());
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("abandon.something.int");
 		assertThat(source.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.ABSENT);
 		assertThat(source.getConfigurationProperty(name)).isNull();

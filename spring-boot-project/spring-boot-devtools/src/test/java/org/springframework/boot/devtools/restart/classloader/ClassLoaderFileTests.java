@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,25 +35,25 @@ class ClassLoaderFileTests {
 	@Test
 	void kindMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFile(null, null))
-				.withMessageContaining("Kind must not be null");
+			.withMessageContaining("Kind must not be null");
 	}
 
 	@Test
 	void addedContentsMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFile(Kind.ADDED, null))
-				.withMessageContaining("Contents must not be null");
+			.withMessageContaining("Contents must not be null");
 	}
 
 	@Test
 	void modifiedContentsMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFile(Kind.MODIFIED, null))
-				.withMessageContaining("Contents must not be null");
+			.withMessageContaining("Contents must not be null");
 	}
 
 	@Test
 	void deletedContentsMustBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFile(Kind.DELETED, new byte[10]))
-				.withMessageContaining("Contents must be null");
+			.withMessageContaining("Contents must be null");
 	}
 
 	@Test

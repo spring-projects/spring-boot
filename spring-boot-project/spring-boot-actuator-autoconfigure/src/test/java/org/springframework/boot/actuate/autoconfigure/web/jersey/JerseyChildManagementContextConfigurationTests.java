@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,20 +44,20 @@ import static org.mockito.Mockito.mock;
 class JerseyChildManagementContextConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withUserConfiguration(JerseyChildManagementContextConfiguration.class);
+		.withUserConfiguration(JerseyChildManagementContextConfiguration.class);
 
 	@Test
 	void autoConfigurationIsConditionalOnServletWebApplication() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(JerseySameManagementContextConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(JerseySameManagementContextConfiguration.class));
 		contextRunner
-				.run((context) -> assertThat(context).doesNotHaveBean(JerseySameManagementContextConfiguration.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(JerseySameManagementContextConfiguration.class));
 	}
 
 	@Test
 	void autoConfigurationIsConditionalOnClassResourceConfig() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(ResourceConfig.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(JerseySameManagementContextConfiguration.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(JerseySameManagementContextConfiguration.class));
 	}
 
 	@Test
@@ -88,7 +88,7 @@ class JerseyChildManagementContextConfigurationTests {
 			assertThat(context).hasSingleBean(ResourceConfig.class);
 			ResourceConfig config = context.getBean(ResourceConfig.class);
 			ManagementContextResourceConfigCustomizer customizer = context
-					.getBean(ManagementContextResourceConfigCustomizer.class);
+				.getBean(ManagementContextResourceConfigCustomizer.class);
 			then(customizer).should().customize(config);
 		});
 	}

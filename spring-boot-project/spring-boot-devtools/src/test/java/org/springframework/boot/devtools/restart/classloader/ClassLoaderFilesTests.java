@@ -43,13 +43,13 @@ class ClassLoaderFilesTests {
 	@Test
 	void addFileNameMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.files.addFile(null, mock(ClassLoaderFile.class)))
-				.withMessageContaining("Name must not be null");
+			.withMessageContaining("Name must not be null");
 	}
 
 	@Test
 	void addFileFileMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.files.addFile("test", null))
-				.withMessageContaining("File must not be null");
+			.withMessageContaining("File must not be null");
 	}
 
 	@Test
@@ -153,7 +153,7 @@ class ClassLoaderFilesTests {
 	@Test
 	void classLoaderFilesMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFiles(null))
-				.withMessageContaining("ClassLoaderFiles must not be null");
+			.withMessageContaining("ClassLoaderFiles must not be null");
 	}
 
 	@Test

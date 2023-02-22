@@ -40,13 +40,13 @@ class LayerTests {
 	@Test
 	void ofWhenLayoutIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Layer.of((IOConsumer<Layout>) null))
-				.withMessage("Layout must not be null");
+			.withMessage("Layout must not be null");
 	}
 
 	@Test
 	void fromTarArchiveWhenTarArchiveIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Layer.fromTarArchive(null))
-				.withMessage("TarArchive must not be null");
+			.withMessage("TarArchive must not be null");
 	}
 
 	@Test
@@ -56,7 +56,7 @@ class LayerTests {
 			layout.file("/directory/file", Owner.ROOT, Content.of("test"));
 		});
 		assertThat(layer.getId())
-				.hasToString("sha256:d03a34f73804698c875eb56ff694fc2fceccc69b645e4adceb004ed13588613b");
+			.hasToString("sha256:d03a34f73804698c875eb56ff694fc2fceccc69b645e4adceb004ed13588613b");
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		layer.writeTo(outputStream);
 		try (TarArchiveInputStream tarStream = new TarArchiveInputStream(

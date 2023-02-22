@@ -72,7 +72,7 @@ public abstract class AbstractHttpClientMockTests {
 		mockHttpEntity(response, content, contentType);
 		mockStatus(response, 200);
 		given(this.http.executeOpen(any(HttpHost.class), argThat(getForMetadata(serviceCapabilities)), isNull()))
-				.willReturn(response);
+			.willReturn(response);
 	}
 
 	protected byte[] readClasspathResource(String contentPath) throws IOException {
@@ -113,7 +113,7 @@ public abstract class AbstractHttpClientMockTests {
 			given(entity.getContent()).willReturn(new ByteArrayInputStream(content));
 			Header contentTypeHeader = (contentType != null) ? new BasicHeader("Content-Type", contentType) : null;
 			given(entity.getContentType())
-					.willReturn((contentTypeHeader != null) ? contentTypeHeader.getValue() : null);
+				.willReturn((contentTypeHeader != null) ? contentTypeHeader.getValue() : null);
 			given(response.getEntity()).willReturn(entity);
 			return entity;
 		}

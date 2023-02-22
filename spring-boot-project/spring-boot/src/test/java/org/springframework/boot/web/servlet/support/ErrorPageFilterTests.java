@@ -91,7 +91,7 @@ class ErrorPageFilterTests {
 		this.filter.doFilter(this.request, this.response, this.chain);
 		assertThat(((HttpServletResponse) this.chain.getResponse()).getStatus()).isEqualTo(201);
 		assertThat(((HttpServletResponse) ((HttpServletResponseWrapper) this.chain.getResponse()).getResponse())
-				.getStatus()).isEqualTo(201);
+			.getStatus()).isEqualTo(201);
 		assertThat(this.response.isCommitted()).isTrue();
 	}
 
@@ -397,12 +397,12 @@ class ErrorPageFilterTests {
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus()).isEqualTo(500);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)).isEqualTo(500);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE))
-				.isEqualTo("Required request parameter 'test' for method parameter type string is not present");
+			.isEqualTo("Required request parameter 'test' for method parameter type string is not present");
 		Map<String, Object> requestAttributes = getAttributesForDispatch("/500");
 		assertThat(requestAttributes).containsEntry(RequestDispatcher.ERROR_EXCEPTION_TYPE,
 				MissingServletRequestParameterException.class);
 		assertThat(requestAttributes.get(RequestDispatcher.ERROR_EXCEPTION))
-				.isInstanceOf(MissingServletRequestParameterException.class);
+			.isInstanceOf(MissingServletRequestParameterException.class);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE)).isNull();
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION)).isNull();
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI)).isEqualTo("/test/path");

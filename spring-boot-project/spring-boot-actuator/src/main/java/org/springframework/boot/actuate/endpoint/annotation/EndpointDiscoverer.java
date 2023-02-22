@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -148,7 +148,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 	private void addExtensionBeans(Collection<EndpointBean> endpointBeans) {
 		Map<EndpointId, EndpointBean> byId = endpointBeans.stream()
-				.collect(Collectors.toMap(EndpointBean::getId, Function.identity()));
+			.collect(Collectors.toMap(EndpointBean::getId, Function.identity()));
 		String[] beanNames = BeanFactoryUtils.beanNamesForAnnotationIncludingAncestors(this.applicationContext,
 				EndpointExtension.class);
 		for (String beanName : beanNames) {
@@ -190,8 +190,10 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		EndpointId id = endpointBean.getId();
 		addOperations(indexed, id, endpointBean.getBean(), false);
 		if (endpointBean.getExtensions().size() > 1) {
-			String extensionBeans = endpointBean.getExtensions().stream().map(ExtensionBean::getBeanName)
-					.collect(Collectors.joining(", "));
+			String extensionBeans = endpointBean.getExtensions()
+				.stream()
+				.map(ExtensionBean::getBeanName)
+				.collect(Collectors.joining(", "));
 			throw new IllegalStateException("Found multiple extensions for the endpoint bean "
 					+ endpointBean.getBeanName() + " (" + extensionBeans + ")");
 		}
@@ -222,12 +224,16 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 	}
 
 	private void assertNoDuplicateOperations(EndpointBean endpointBean, MultiValueMap<OperationKey, O> indexed) {
-		List<OperationKey> duplicates = indexed.entrySet().stream().filter((entry) -> entry.getValue().size() > 1)
-				.map(Map.Entry::getKey).toList();
+		List<OperationKey> duplicates = indexed.entrySet()
+			.stream()
+			.filter((entry) -> entry.getValue().size() > 1)
+			.map(Map.Entry::getKey)
+			.toList();
 		if (!duplicates.isEmpty()) {
 			Set<ExtensionBean> extensions = endpointBean.getExtensions();
-			String extensionBeanNames = extensions.stream().map(ExtensionBean::getBeanName)
-					.collect(Collectors.joining(", "));
+			String extensionBeanNames = extensions.stream()
+				.map(ExtensionBean::getBeanName)
+				.collect(Collectors.joining(", "));
 			throw new IllegalStateException("Unable to map duplicate endpoint operations: " + duplicates.toString()
 					+ " to " + endpointBean.getBeanName()
 					+ (extensions.isEmpty() ? "" : " (" + extensionBeanNames + ")"));
@@ -296,8 +302,10 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 	@SuppressWarnings("unchecked")
 	private boolean isFilterMatch(EndpointFilter<E> filter, E endpoint) {
-		return LambdaSafe.callback(EndpointFilter.class, filter, endpoint).withLogger(EndpointDiscoverer.class)
-				.invokeAnd((f) -> f.match(endpoint)).get();
+		return LambdaSafe.callback(EndpointFilter.class, filter, endpoint)
+			.withLogger(EndpointDiscoverer.class)
+			.invokeAnd((f) -> f.match(endpoint))
+			.get();
 	}
 
 	private E getFilterEndpoint(EndpointBean endpointBean) {
@@ -409,7 +417,7 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 
 		EndpointBean(Environment environment, String beanName, Class<?> beanType, Supplier<Object> beanSupplier) {
 			MergedAnnotation<Endpoint> annotation = MergedAnnotations.from(beanType, SearchStrategy.TYPE_HIERARCHY)
-					.get(Endpoint.class);
+				.get(Endpoint.class);
 			String id = annotation.getString("id");
 			Assert.state(StringUtils.hasText(id),
 					() -> "No @Endpoint id attribute specified for " + beanType.getName());
@@ -430,8 +438,10 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 		}
 
 		private Class<?> getFilter(Class<?> type) {
-			return MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY).get(FilteredEndpoint.class)
-					.getValue(MergedAnnotation.VALUE, Class.class).orElse(null);
+			return MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY)
+				.get(FilteredEndpoint.class)
+				.getValue(MergedAnnotation.VALUE, Class.class)
+				.orElse(null);
 		}
 
 		String getBeanName() {
@@ -480,10 +490,12 @@ public abstract class EndpointDiscoverer<E extends ExposableEndpoint<O>, O exten
 			this.beanType = beanType;
 			this.beanSupplier = beanSupplier;
 			MergedAnnotation<EndpointExtension> extensionAnnotation = MergedAnnotations
-					.from(beanType, SearchStrategy.TYPE_HIERARCHY).get(EndpointExtension.class);
+				.from(beanType, SearchStrategy.TYPE_HIERARCHY)
+				.get(EndpointExtension.class);
 			Class<?> endpointType = extensionAnnotation.getClass("endpoint");
 			MergedAnnotation<Endpoint> endpointAnnotation = MergedAnnotations
-					.from(endpointType, SearchStrategy.TYPE_HIERARCHY).get(Endpoint.class);
+				.from(endpointType, SearchStrategy.TYPE_HIERARCHY)
+				.get(Endpoint.class);
 			Assert.state(endpointAnnotation.isPresent(),
 					() -> "Extension " + endpointType.getName() + " does not specify an endpoint");
 			this.endpointId = EndpointId.of(environment, endpointAnnotation.getString("id"));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -144,7 +144,7 @@ class ApplicationPidFileWriterTests {
 			System.setProperty("PID_FAIL_ON_WRITE_ERROR", "true");
 			ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 			assertThatIllegalStateException().isThrownBy(() -> listener.onApplicationEvent(EVENT))
-					.withMessageContaining("Cannot create pid file");
+				.withMessageContaining("Cannot create pid file");
 		});
 	}
 
@@ -154,7 +154,7 @@ class ApplicationPidFileWriterTests {
 			SpringApplicationEvent event = createPreparedEvent("spring.pid.fail-on-write-error", "true");
 			ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 			assertThatIllegalStateException().isThrownBy(() -> listener.onApplicationEvent(event))
-					.withMessageContaining("Cannot create pid file");
+				.withMessageContaining("Cannot create pid file");
 		});
 	}
 

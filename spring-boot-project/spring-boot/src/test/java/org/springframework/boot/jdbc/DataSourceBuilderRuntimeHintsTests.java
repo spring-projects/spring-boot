@@ -38,18 +38,20 @@ class DataSourceBuilderRuntimeHintsTests {
 	@Test
 	void shouldRegisterDataSourceConstructors() {
 		ReflectionHints hints = registerHints();
-		Stream.of(com.mchange.v2.c3p0.ComboPooledDataSource.class, org.h2.jdbcx.JdbcDataSource.class,
-				com.zaxxer.hikari.HikariDataSource.class, org.apache.commons.dbcp2.BasicDataSource.class,
-				oracle.jdbc.datasource.OracleDataSource.class, oracle.ucp.jdbc.PoolDataSource.class,
-				org.postgresql.ds.PGSimpleDataSource.class,
-				org.springframework.jdbc.datasource.SimpleDriverDataSource.class,
-				org.apache.tomcat.jdbc.pool.DataSource.class).forEach((dataSourceType) -> {
-					TypeHint typeHint = hints.getTypeHint(dataSourceType);
-					assertThat(typeHint).withFailMessage(() -> "No hints found for data source type " + dataSourceType)
-							.isNotNull();
-					Set<MemberCategory> memberCategories = typeHint.getMemberCategories();
-					assertThat(memberCategories).containsExactly(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
-				});
+		Stream
+			.of(com.mchange.v2.c3p0.ComboPooledDataSource.class, org.h2.jdbcx.JdbcDataSource.class,
+					com.zaxxer.hikari.HikariDataSource.class, org.apache.commons.dbcp2.BasicDataSource.class,
+					oracle.jdbc.datasource.OracleDataSource.class, oracle.ucp.jdbc.PoolDataSource.class,
+					org.postgresql.ds.PGSimpleDataSource.class,
+					org.springframework.jdbc.datasource.SimpleDriverDataSource.class,
+					org.apache.tomcat.jdbc.pool.DataSource.class)
+			.forEach((dataSourceType) -> {
+				TypeHint typeHint = hints.getTypeHint(dataSourceType);
+				assertThat(typeHint).withFailMessage(() -> "No hints found for data source type " + dataSourceType)
+					.isNotNull();
+				Set<MemberCategory> memberCategories = typeHint.getMemberCategories();
+				assertThat(memberCategories).containsExactly(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
+			});
 	}
 
 	private ReflectionHints registerHints() {

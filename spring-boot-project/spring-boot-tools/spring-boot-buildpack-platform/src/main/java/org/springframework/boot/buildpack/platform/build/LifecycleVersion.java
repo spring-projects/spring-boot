@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,8 @@ import org.springframework.util.Assert;
 class LifecycleVersion implements Comparable<LifecycleVersion> {
 
 	private static final Comparator<LifecycleVersion> COMPARATOR = Comparator.comparingInt(LifecycleVersion::getMajor)
-			.thenComparingInt(LifecycleVersion::getMinor).thenComparing(LifecycleVersion::getPatch);
+		.thenComparingInt(LifecycleVersion::getMinor)
+		.thenComparing(LifecycleVersion::getPatch);
 
 	private final int major;
 

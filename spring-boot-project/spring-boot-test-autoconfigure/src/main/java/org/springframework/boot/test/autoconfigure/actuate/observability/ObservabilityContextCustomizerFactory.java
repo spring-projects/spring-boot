@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,8 +82,10 @@ class ObservabilityContextCustomizerFactory implements ContextCustomizerFactory 
 		public void customizeContext(ConfigurableApplicationContext context,
 				MergedContextConfiguration mergedContextConfiguration) {
 			if (this.disableMetrics) {
-				TestPropertyValues.of("management.defaults.metrics.export.enabled=false",
-						"management.simple.metrics.export.enabled=true").applyTo(context);
+				TestPropertyValues
+					.of("management.defaults.metrics.export.enabled=false",
+							"management.simple.metrics.export.enabled=true")
+					.applyTo(context);
 			}
 			if (this.disableTracing) {
 				TestPropertyValues.of("management.tracing.enabled=false").applyTo(context);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,17 +43,18 @@ class WebTestClientContextCustomizerTests {
 	@Test
 	void whenContextIsNotABeanDefinitionRegistryWebTestClientIsRegistered() {
 		new ApplicationContextRunner(TestApplicationContext::new)
-				.withInitializer(this::applyWebTestClientContextCustomizer)
-				.run((context) -> assertThat(context).hasSingleBean(WebTestClient.class));
+			.withInitializer(this::applyWebTestClientContextCustomizer)
+			.run((context) -> assertThat(context).hasSingleBean(WebTestClient.class));
 	}
 
 	@Test
 	void whenUsingAotGeneratedArtifactsWebTestClientIsNotRegistered() {
 		new ApplicationContextRunner().withSystemProperties("spring.aot.enabled:true")
-				.withInitializer(this::applyWebTestClientContextCustomizer).run((context) -> {
-					assertThat(context).doesNotHaveBean(WebTestClientRegistrar.class);
-					assertThat(context).doesNotHaveBean(WebTestClient.class);
-				});
+			.withInitializer(this::applyWebTestClientContextCustomizer)
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(WebTestClientRegistrar.class);
+				assertThat(context).doesNotHaveBean(WebTestClient.class);
+			});
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
