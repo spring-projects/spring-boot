@@ -29,20 +29,23 @@ import org.springframework.web.context.WebApplicationContext;
  * deployment.
  *
  * @author Madhura Bhave
+ * @see ConditionalOnWarDeployment
+ * @see ConditionalOnNotWarDeployment
  */
 class OnWarDeploymentCondition extends SpringBootCondition {
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
+		boolean required = metadata.isAnnotated(ConditionalOnWarDeployment.class.getName());
 		ResourceLoader resourceLoader = context.getResourceLoader();
 		if (resourceLoader instanceof WebApplicationContext) {
 			WebApplicationContext applicationContext = (WebApplicationContext) resourceLoader;
 			ServletContext servletContext = applicationContext.getServletContext();
 			if (servletContext != null) {
-				return ConditionOutcome.match("Application is deployed as a WAR file.");
+				return new ConditionOutcome(required, "Application is deployed as a WAR file.");
 			}
 		}
-		return ConditionOutcome.noMatch(ConditionMessage.forCondition(ConditionalOnWarDeployment.class)
+		return new ConditionOutcome(!required, ConditionMessage.forCondition(ConditionalOnWarDeployment.class)
 			.because("the application is not deployed as a WAR file."));
 	}
 
