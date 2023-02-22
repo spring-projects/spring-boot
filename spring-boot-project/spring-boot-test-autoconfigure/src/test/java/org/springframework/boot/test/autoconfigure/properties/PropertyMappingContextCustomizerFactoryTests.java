@@ -92,9 +92,9 @@ class PropertyMappingContextCustomizerFactoryTests {
 		context.register(ConfigMapping.class);
 		customizer.customizeContext(context, null);
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(context::refresh)
-				.withMessageContaining("The @PropertyMapping annotation "
-						+ "@PropertyMappingContextCustomizerFactoryTests.TypeMappingAnnotation "
-						+ "cannot be used in combination with the @Component annotation @Configuration");
+			.withMessageContaining("The @PropertyMapping annotation "
+					+ "@PropertyMappingContextCustomizerFactoryTests.TypeMappingAnnotation "
+					+ "cannot be used in combination with the @Component annotation @Configuration");
 	}
 
 	@NoMappingAnnotation

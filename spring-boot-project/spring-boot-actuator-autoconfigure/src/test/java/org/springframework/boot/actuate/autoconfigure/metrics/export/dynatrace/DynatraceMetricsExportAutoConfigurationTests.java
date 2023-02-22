@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DynatraceMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(DynatraceMetricsExportAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(DynatraceMetricsExportAutoConfiguration.class));
 
 	@Test
 	void backsOffWithoutAClock() {
@@ -50,56 +50,61 @@ class DynatraceMetricsExportAutoConfigurationTests {
 	@Test
 	void failsWithADeviceIdWithoutAUri() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.dynatrace.metrics.export.v1.device-id:dev-1")
-				.run((context) -> assertThat(context).hasFailed());
+			.withPropertyValues("management.dynatrace.metrics.export.v1.device-id:dev-1")
+			.run((context) -> assertThat(context).hasFailed());
 	}
 
 	@Test
 	void autoConfiguresConfigAndMeterRegistry() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).with(v1MandatoryProperties())
-				.run((context) -> assertThat(context).hasSingleBean(DynatraceMeterRegistry.class)
-						.hasSingleBean(DynatraceConfig.class));
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.with(v1MandatoryProperties())
+			.run((context) -> assertThat(context).hasSingleBean(DynatraceMeterRegistry.class)
+				.hasSingleBean(DynatraceConfig.class));
 	}
 
 	@Test
 	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.defaults.metrics.export.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(DynatraceMeterRegistry.class)
-						.doesNotHaveBean(DynatraceConfig.class));
+			.withPropertyValues("management.defaults.metrics.export.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(DynatraceMeterRegistry.class)
+				.doesNotHaveBean(DynatraceConfig.class));
 	}
 
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.dynatrace.metrics.export.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(DynatraceMeterRegistry.class)
-						.doesNotHaveBean(DynatraceConfig.class));
+			.withPropertyValues("management.dynatrace.metrics.export.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(DynatraceMeterRegistry.class)
+				.doesNotHaveBean(DynatraceConfig.class));
 	}
 
 	@Test
 	void allowsCustomConfigToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(DynatraceMeterRegistry.class)
-						.hasSingleBean(DynatraceConfig.class).hasBean("customConfig"));
+			.run((context) -> assertThat(context).hasSingleBean(DynatraceMeterRegistry.class)
+				.hasSingleBean(DynatraceConfig.class)
+				.hasBean("customConfig"));
 	}
 
 	@Test
 	void allowsCustomRegistryToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).with(v1MandatoryProperties())
-				.run((context) -> assertThat(context).hasSingleBean(DynatraceMeterRegistry.class)
-						.hasBean("customRegistry").hasSingleBean(DynatraceConfig.class));
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
+			.with(v1MandatoryProperties())
+			.run((context) -> assertThat(context).hasSingleBean(DynatraceMeterRegistry.class)
+				.hasBean("customRegistry")
+				.hasSingleBean(DynatraceConfig.class));
 	}
 
 	@Test
 	void stopsMeterRegistryForV1ApiWhenContextIsClosed() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).with(v1MandatoryProperties())
-				.run((context) -> {
-					DynatraceMeterRegistry registry = context.getBean(DynatraceMeterRegistry.class);
-					assertThat(registry.isClosed()).isFalse();
-					context.close();
-					assertThat(registry.isClosed()).isTrue();
-				});
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.with(v1MandatoryProperties())
+			.run((context) -> {
+				DynatraceMeterRegistry registry = context.getBean(DynatraceMeterRegistry.class);
+				assertThat(registry.isClosed()).isFalse();
+				context.close();
+				assertThat(registry.isClosed()).isTrue();
+			});
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,9 +45,9 @@ class ConfigDataLocationRuntimeHintsTests {
 		RuntimeHints hints = new RuntimeHints();
 		new TestConfigDataLocationRuntimeHints().registerHints(hints, null);
 		assertThat(hints.resources().resourcePatternHints()).singleElement()
-				.satisfies(includes("application*.properties", "application*.xml", "application*.yaml",
-						"application*.yml", "config/application*.properties", "config/application*.xml",
-						"config/application*.yaml", "config/application*.yml"));
+			.satisfies(includes("application*.properties", "application*.xml", "application*.yaml", "application*.yml",
+					"config/application*.properties", "config/application*.xml", "config/application*.yaml",
+					"config/application*.yml"));
 	}
 
 	@Test
@@ -61,8 +61,8 @@ class ConfigDataLocationRuntimeHintsTests {
 
 		}.registerHints(hints, null);
 		assertThat(hints.resources().resourcePatternHints()).singleElement()
-				.satisfies(includes("test*.properties", "test*.xml", "test*.yaml", "test*.yml",
-						"config/test*.properties", "config/test*.xml", "config/test*.yaml", "config/test*.yml"));
+			.satisfies(includes("test*.properties", "test*.xml", "test*.yaml", "test*.yml", "config/test*.properties",
+					"config/test*.xml", "config/test*.yaml", "config/test*.yml"));
 	}
 
 	@Test
@@ -75,8 +75,8 @@ class ConfigDataLocationRuntimeHintsTests {
 			}
 		}.registerHints(hints, null);
 		assertThat(hints.resources().resourcePatternHints()).singleElement()
-				.satisfies(includes("config/application*.properties", "config/application*.xml",
-						"config/application*.yaml", "config/application*.yml"));
+			.satisfies(includes("config/application*.properties", "config/application*.xml", "config/application*.yaml",
+					"config/application*.yml"));
 	}
 
 	@Test
@@ -89,7 +89,7 @@ class ConfigDataLocationRuntimeHintsTests {
 			}
 		}.registerHints(hints, null);
 		assertThat(hints.resources().resourcePatternHints()).singleElement()
-				.satisfies(includes("application*.conf", "config/application*.conf"));
+			.satisfies(includes("application*.conf", "config/application*.conf"));
 	}
 
 	@Test

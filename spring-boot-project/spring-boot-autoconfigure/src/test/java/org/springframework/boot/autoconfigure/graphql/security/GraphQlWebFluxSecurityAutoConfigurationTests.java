@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2022 the original author or authors.
+ * Copyright 2020-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,26 +64,34 @@ class GraphQlWebFluxSecurityAutoConfigurationTests {
 	private static final String BASE_URL = "https://spring.example.org/graphql";
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class,
-					CodecsAutoConfiguration.class, JacksonAutoConfiguration.class, GraphQlAutoConfiguration.class,
-					GraphQlWebFluxAutoConfiguration.class, GraphQlWebFluxSecurityAutoConfiguration.class,
-					ReactiveSecurityAutoConfiguration.class))
-			.withUserConfiguration(DataFetchersConfiguration.class, SecurityConfig.class)
-			.withPropertyValues("spring.main.web-application-type=reactive");
+		.withConfiguration(AutoConfigurations.of(HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class,
+				CodecsAutoConfiguration.class, JacksonAutoConfiguration.class, GraphQlAutoConfiguration.class,
+				GraphQlWebFluxAutoConfiguration.class, GraphQlWebFluxSecurityAutoConfiguration.class,
+				ReactiveSecurityAutoConfiguration.class))
+		.withUserConfiguration(DataFetchersConfiguration.class, SecurityConfig.class)
+		.withPropertyValues("spring.main.web-application-type=reactive");
 
 	@Test
 	void contributesExceptionResolver() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).hasSingleBean(ReactiveSecurityDataFetcherExceptionResolver.class));
+		this.contextRunner
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveSecurityDataFetcherExceptionResolver.class));
 	}
 
 	@Test
 	void anonymousUserShouldBeUnauthorized() {
 		testWithWebClient((client) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author }}";
-			client.post().uri("").bodyValue("{  \"query\": \"" + query + "\"}").exchange().expectStatus().isOk()
-					.expectBody().jsonPath("data.bookById.name").doesNotExist()
-					.jsonPath("errors[0].extensions.classification").isEqualTo(ErrorType.UNAUTHORIZED.toString());
+			client.post()
+				.uri("")
+				.bodyValue("{  \"query\": \"" + query + "\"}")
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody()
+				.jsonPath("data.bookById.name")
+				.doesNotExist()
+				.jsonPath("errors[0].extensions.classification")
+				.isEqualTo(ErrorType.UNAUTHORIZED.toString());
 		});
 	}
 
@@ -91,20 +99,31 @@ class GraphQlWebFluxSecurityAutoConfigurationTests {
 	void authenticatedUserShouldGetData() {
 		testWithWebClient((client) -> {
 			String query = "{ bookById(id: \\\"book-1\\\"){ id name pageCount author }}";
-			client.post().uri("").headers((headers) -> headers.setBasicAuth("rob", "rob"))
-					.bodyValue("{  \"query\": \"" + query + "\"}").exchange().expectStatus().isOk().expectBody()
-					.jsonPath("data.bookById.name").isEqualTo("GraphQL for beginners")
-					.jsonPath("errors[0].extensions.classification").doesNotExist();
+			client.post()
+				.uri("")
+				.headers((headers) -> headers.setBasicAuth("rob", "rob"))
+				.bodyValue("{  \"query\": \"" + query + "\"}")
+				.exchange()
+				.expectStatus()
+				.isOk()
+				.expectBody()
+				.jsonPath("data.bookById.name")
+				.isEqualTo("GraphQL for beginners")
+				.jsonPath("errors[0].extensions.classification")
+				.doesNotExist();
 		});
 	}
 
 	private void testWithWebClient(Consumer<WebTestClient> consumer) {
 		this.contextRunner.run((context) -> {
-			WebTestClient client = WebTestClient.bindToApplicationContext(context).configureClient()
-					.defaultHeaders((headers) -> {
-						headers.setContentType(MediaType.APPLICATION_JSON);
-						headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-					}).baseUrl(BASE_URL).build();
+			WebTestClient client = WebTestClient.bindToApplicationContext(context)
+				.configureClient()
+				.defaultHeaders((headers) -> {
+					headers.setContentType(MediaType.APPLICATION_JSON);
+					headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+				})
+				.baseUrl(BASE_URL)
+				.build();
 			consumer.accept(client);
 		});
 	}
@@ -114,8 +133,8 @@ class GraphQlWebFluxSecurityAutoConfigurationTests {
 
 		@Bean
 		RuntimeWiringConfigurer bookDataFetcher(BookService bookService) {
-			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query").dataFetcher("bookById",
-					(env) -> bookService.getBookdById(env.getArgument("id"))));
+			return (builder) -> builder.type(TypeRuntimeWiring.newTypeWiring("Query")
+				.dataFetcher("bookById", (env) -> bookService.getBookdById(env.getArgument("id"))));
 		}
 
 		@Bean
@@ -143,10 +162,11 @@ class GraphQlWebFluxSecurityAutoConfigurationTests {
 		@Bean
 		SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http) {
 			return http.csrf((spec) -> spec.disable())
-					// Demonstrate that method security works
-					// Best practice to use both for defense in depth
-					.authorizeExchange((requests) -> requests.anyExchange().permitAll()).httpBasic(withDefaults())
-					.build();
+				// Demonstrate that method security works
+				// Best practice to use both for defense in depth
+				.authorizeExchange((requests) -> requests.anyExchange().permitAll())
+				.httpBasic(withDefaults())
+				.build();
 		}
 
 		@Bean

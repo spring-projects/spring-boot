@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -144,8 +144,9 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		@Override
 		public void beforeEach(ExtensionContext extensionContext) throws Exception {
 			List<Class<?>> configurationClasses = Stream
-					.of(extensionContext.getRequiredTestClass().getDeclaredClasses()).filter(this::isConfiguration)
-					.collect(Collectors.toCollection(ArrayList::new));
+				.of(extensionContext.getRequiredTestClass().getDeclaredClasses())
+				.filter(this::isConfiguration)
+				.collect(Collectors.toCollection(ArrayList::new));
 			this.context = this.contextFactory.apply(configurationClasses);
 		}
 
@@ -191,13 +192,17 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 			DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(
 					"http://localhost:" + determinePort());
 			uriBuilderFactory.setEncodingMode(EncodingMode.NONE);
-			return WebTestClient.bindToServer().uriBuilderFactory(uriBuilderFactory).responseTimeout(TIMEOUT)
-					.codecs((codecs) -> codecs.defaultCodecs().maxInMemorySize(-1)).filter((request, next) -> {
-						if (HttpMethod.GET == request.method()) {
-							return next.exchange(request).retry(10);
-						}
-						return next.exchange(request);
-					}).build();
+			return WebTestClient.bindToServer()
+				.uriBuilderFactory(uriBuilderFactory)
+				.responseTimeout(TIMEOUT)
+				.codecs((codecs) -> codecs.defaultCodecs().maxInMemorySize(-1))
+				.filter((request, next) -> {
+					if (HttpMethod.GET == request.method()) {
+						return next.exchange(request).retry(10);
+					}
+					return next.exchange(request);
+				})
+				.build();
 		}
 
 		private int determinePort() {

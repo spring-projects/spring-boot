@@ -79,22 +79,23 @@ class SecurityAutoConfigurationTests {
 	@Test
 	void enableWebSecurityIsConditionalOnClass() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.security.config"))
-				.run((context) -> assertThat(context).doesNotHaveBean("springSecurityFilterChain"));
+			.run((context) -> assertThat(context).doesNotHaveBean("springSecurityFilterChain"));
 	}
 
 	@Test
 	void filterChainBeanIsConditionalOnClassSecurityFilterChain() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(SecurityFilterChain.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(SecurityFilterChain.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(SecurityFilterChain.class));
 	}
 
 	@Test
 	void securityConfigurerBacksOffWhenOtherSecurityFilterChainBeanPresent() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(WebMvcAutoConfiguration.class))
-				.withUserConfiguration(TestSecurityFilterChainConfig.class).run((context) -> {
-					assertThat(context.getBeansOfType(SecurityFilterChain.class)).hasSize(1);
-					assertThat(context.containsBean("testSecurityFilterChain")).isTrue();
-				});
+			.withUserConfiguration(TestSecurityFilterChainConfig.class)
+			.run((context) -> {
+				assertThat(context.getBeansOfType(SecurityFilterChain.class)).hasSize(1);
+				assertThat(context.containsBean("testSecurityFilterChain")).isTrue();
+			});
 	}
 
 	@Test
@@ -110,40 +111,42 @@ class SecurityAutoConfigurationTests {
 	@Test
 	void defaultAuthenticationEventPublisherRegistered() {
 		this.contextRunner.run((context) -> assertThat(context.getBean(AuthenticationEventPublisher.class))
-				.isInstanceOf(DefaultAuthenticationEventPublisher.class));
+			.isInstanceOf(DefaultAuthenticationEventPublisher.class));
 	}
 
 	@Test
 	void defaultAuthenticationEventPublisherIsConditionalOnMissingBean() {
 		this.contextRunner.withUserConfiguration(AuthenticationEventPublisherConfiguration.class)
-				.run((context) -> assertThat(context.getBean(AuthenticationEventPublisher.class)).isInstanceOf(
-						AuthenticationEventPublisherConfiguration.TestAuthenticationEventPublisher.class));
+			.run((context) -> assertThat(context.getBean(AuthenticationEventPublisher.class))
+				.isInstanceOf(AuthenticationEventPublisherConfiguration.TestAuthenticationEventPublisher.class));
 	}
 
 	@Test
 	void testDefaultFilterOrder() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
-				.run((context) -> assertThat(
-						context.getBean("securityFilterChainRegistration", DelegatingFilterProxyRegistrationBean.class)
-								.getOrder()).isEqualTo(OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100));
+			.run((context) -> assertThat(
+					context.getBean("securityFilterChainRegistration", DelegatingFilterProxyRegistrationBean.class)
+						.getOrder())
+				.isEqualTo(OrderedFilter.REQUEST_WRAPPER_FILTER_MAX_ORDER - 100));
 	}
 
 	@Test
 	void testCustomFilterOrder() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
-				.withPropertyValues("spring.security.filter.order:12345")
-				.run((context) -> assertThat(
-						context.getBean("securityFilterChainRegistration", DelegatingFilterProxyRegistrationBean.class)
-								.getOrder()).isEqualTo(12345));
+			.withPropertyValues("spring.security.filter.order:12345")
+			.run((context) -> assertThat(
+					context.getBean("securityFilterChainRegistration", DelegatingFilterProxyRegistrationBean.class)
+						.getOrder())
+				.isEqualTo(12345));
 	}
 
 	@Test
 	void testJpaCoexistsHappily() {
 		this.contextRunner.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:testsecdb")
-				.withUserConfiguration(EntityConfiguration.class)
-				.withConfiguration(
-						AutoConfigurations.of(HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class))
-				.run((context) -> assertThat(context.getBean(JpaTransactionManager.class)).isNotNull());
+			.withUserConfiguration(EntityConfiguration.class)
+			.withConfiguration(
+					AutoConfigurations.of(HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class))
+			.run((context) -> assertThat(context.getBean(JpaTransactionManager.class)).isNotNull());
 		// This can fail if security @Conditionals force early instantiation of the
 		// HibernateJpaAutoConfiguration (e.g. the EntityManagerFactory is not found)
 	}
@@ -151,60 +154,59 @@ class SecurityAutoConfigurationTests {
 	@Test
 	void testSecurityEvaluationContextExtensionSupport() {
 		this.contextRunner
-				.run((context) -> assertThat(context).getBean(SecurityEvaluationContextExtension.class).isNotNull());
+			.run((context) -> assertThat(context).getBean(SecurityEvaluationContextExtension.class).isNotNull());
 	}
 
 	@Test
 	void defaultFilterDispatcherTypes() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
-				.run((context) -> {
-					DelegatingFilterProxyRegistrationBean bean = context.getBean("securityFilterChainRegistration",
-							DelegatingFilterProxyRegistrationBean.class);
-					assertThat(bean)
-							.extracting("dispatcherTypes", InstanceOfAssertFactories.iterable(DispatcherType.class))
-							.containsExactlyInAnyOrderElementsOf(EnumSet.allOf(DispatcherType.class));
-				});
+			.run((context) -> {
+				DelegatingFilterProxyRegistrationBean bean = context.getBean("securityFilterChainRegistration",
+						DelegatingFilterProxyRegistrationBean.class);
+				assertThat(bean).extracting("dispatcherTypes", InstanceOfAssertFactories.iterable(DispatcherType.class))
+					.containsExactlyInAnyOrderElementsOf(EnumSet.allOf(DispatcherType.class));
+			});
 	}
 
 	@Test
 	void customFilterDispatcherTypes() {
 		this.contextRunner.withPropertyValues("spring.security.filter.dispatcher-types:INCLUDE,ERROR")
-				.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class)).run((context) -> {
-					DelegatingFilterProxyRegistrationBean bean = context.getBean("securityFilterChainRegistration",
-							DelegatingFilterProxyRegistrationBean.class);
-					assertThat(bean)
-							.extracting("dispatcherTypes", InstanceOfAssertFactories.iterable(DispatcherType.class))
-							.containsOnly(DispatcherType.INCLUDE, DispatcherType.ERROR);
-				});
+			.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
+			.run((context) -> {
+				DelegatingFilterProxyRegistrationBean bean = context.getBean("securityFilterChainRegistration",
+						DelegatingFilterProxyRegistrationBean.class);
+				assertThat(bean).extracting("dispatcherTypes", InstanceOfAssertFactories.iterable(DispatcherType.class))
+					.containsOnly(DispatcherType.INCLUDE, DispatcherType.ERROR);
+			});
 	}
 
 	@Test
 	void emptyFilterDispatcherTypesDoNotThrowException() {
 		this.contextRunner.withPropertyValues("spring.security.filter.dispatcher-types:")
-				.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class)).run((context) -> {
-					DelegatingFilterProxyRegistrationBean bean = context.getBean("securityFilterChainRegistration",
-							DelegatingFilterProxyRegistrationBean.class);
-					assertThat(bean)
-							.extracting("dispatcherTypes", InstanceOfAssertFactories.iterable(DispatcherType.class))
-							.isEmpty();
-				});
+			.withConfiguration(AutoConfigurations.of(SecurityFilterAutoConfiguration.class))
+			.run((context) -> {
+				DelegatingFilterProxyRegistrationBean bean = context.getBean("securityFilterChainRegistration",
+						DelegatingFilterProxyRegistrationBean.class);
+				assertThat(bean).extracting("dispatcherTypes", InstanceOfAssertFactories.iterable(DispatcherType.class))
+					.isEmpty();
+			});
 	}
 
 	@Test
 	void whenAConfigurationPropertyBindingConverterIsDefinedThenBindingToAnRsaKeySucceeds() {
 		this.contextRunner.withUserConfiguration(ConverterConfiguration.class, PropertiesConfiguration.class)
-				.withPropertyValues("jwt.public-key=classpath:public-key-location")
-				.run((context) -> assertThat(context.getBean(JwtProperties.class).getPublicKey()).isNotNull());
+			.withPropertyValues("jwt.public-key=classpath:public-key-location")
+			.run((context) -> assertThat(context.getBean(JwtProperties.class).getPublicKey()).isNotNull());
 	}
 
 	@Test
 	void whenTheBeanFactoryHasAConversionServiceAndAConfigurationPropertyBindingConverterIsDefinedThenBindingToAnRsaKeySucceeds() {
 		this.contextRunner
-				.withInitializer(
-						(context) -> context.getBeanFactory().setConversionService(new ApplicationConversionService()))
-				.withUserConfiguration(ConverterConfiguration.class, PropertiesConfiguration.class)
-				.withPropertyValues("jwt.public-key=classpath:public-key-location")
-				.run((context) -> assertThat(context.getBean(JwtProperties.class).getPublicKey()).isNotNull());
+			.withInitializer(
+					(context) -> context.getBeanFactory().setConversionService(new ApplicationConversionService()))
+			.withUserConfiguration(ConverterConfiguration.class, PropertiesConfiguration.class)
+			.withPropertyValues("jwt.public-key=classpath:public-key-location")
+			.run((context) -> assertThat(context.getBean(JwtProperties.class).getPublicKey()).isNotNull());
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -243,7 +245,8 @@ class SecurityAutoConfigurationTests {
 		@Bean
 		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
 			return http.securityMatcher("/**")
-					.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated()).build();
+				.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
+				.build();
 
 		}
 

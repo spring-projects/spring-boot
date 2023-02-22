@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,33 +42,35 @@ class ManagementContextConfigurationImportSelectorTests {
 	@Test
 	void selectImportsShouldOrderResult() {
 		String[] imports = new TestManagementContextConfigurationsImportSelector(C.class, A.class, D.class, B.class)
-				.selectImports(AnnotationMetadata.introspect(EnableChildContext.class));
+			.selectImports(AnnotationMetadata.introspect(EnableChildContext.class));
 		assertThat(imports).containsExactly(A.class.getName(), B.class.getName(), C.class.getName(), D.class.getName());
 	}
 
 	@Test
 	void selectImportsFiltersChildOnlyConfigurationWhenUsingSameContext() {
 		String[] imports = new TestManagementContextConfigurationsImportSelector(ChildOnly.class, SameOnly.class,
-				A.class).selectImports(AnnotationMetadata.introspect(EnableSameContext.class));
+				A.class)
+			.selectImports(AnnotationMetadata.introspect(EnableSameContext.class));
 		assertThat(imports).containsExactlyInAnyOrder(SameOnly.class.getName(), A.class.getName());
 	}
 
 	@Test
 	void selectImportsFiltersSameOnlyConfigurationWhenUsingChildContext() {
 		String[] imports = new TestManagementContextConfigurationsImportSelector(ChildOnly.class, SameOnly.class,
-				A.class).selectImports(AnnotationMetadata.introspect(EnableChildContext.class));
+				A.class)
+			.selectImports(AnnotationMetadata.introspect(EnableChildContext.class));
 		assertThat(imports).containsExactlyInAnyOrder(ChildOnly.class.getName(), A.class.getName());
 	}
 
 	@Test
 	void selectImportsLoadsFromResources() {
 		String[] imports = new ManagementContextConfigurationImportSelector()
-				.selectImports(AnnotationMetadata.introspect(EnableChildContext.class));
+			.selectImports(AnnotationMetadata.introspect(EnableChildContext.class));
 		Set<String> expected = new HashSet<>();
 		ImportCandidates
-				.load(ManagementContextConfiguration.class,
-						ManagementContextConfigurationImportSelectorTests.class.getClassLoader())
-				.forEach(expected::add);
+			.load(ManagementContextConfiguration.class,
+					ManagementContextConfigurationImportSelectorTests.class.getClassLoader())
+			.forEach(expected::add);
 		// Remove JerseySameManagementContextConfiguration, as it specifies
 		// ManagementContextType.SAME and we asked for ManagementContextType.CHILD
 		expected.remove(

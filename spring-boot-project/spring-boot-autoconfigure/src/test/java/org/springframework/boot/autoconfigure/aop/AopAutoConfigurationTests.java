@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,18 +46,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AopAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(AopAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(AopAutoConfiguration.class));
 
 	@Test
 	void aopDisabled() {
-		this.contextRunner.withUserConfiguration(TestConfiguration.class).withPropertyValues("spring.aop.auto:false")
-				.run((context) -> {
-					TestAspect aspect = context.getBean(TestAspect.class);
-					assertThat(aspect.isCalled()).isFalse();
-					TestBean bean = context.getBean(TestBean.class);
-					bean.foo();
-					assertThat(aspect.isCalled()).isFalse();
-				});
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+			.withPropertyValues("spring.aop.auto:false")
+			.run((context) -> {
+				TestAspect aspect = context.getBean(TestAspect.class);
+				assertThat(aspect.isCalled()).isFalse();
+				TestBean bean = context.getBean(TestBean.class);
+				bean.foo();
+				assertThat(aspect.isCalled()).isFalse();
+			});
 	}
 
 	@Test
@@ -68,13 +69,15 @@ class AopAutoConfigurationTests {
 	@Test
 	void aopWithEnabledProxyTargetClass() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.aop.proxy-target-class:true").run(proxyTargetClassEnabled());
+			.withPropertyValues("spring.aop.proxy-target-class:true")
+			.run(proxyTargetClassEnabled());
 	}
 
 	@Test
 	void aopWithDisabledProxyTargetClass() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.aop.proxy-target-class:false").run(proxyTargetClassDisabled());
+			.withPropertyValues("spring.aop.proxy-target-class:false")
+			.run(proxyTargetClassDisabled());
 	}
 
 	@Test
@@ -86,11 +89,11 @@ class AopAutoConfigurationTests {
 	@Test
 	void whenGlobalMethodSecurityIsEnabledAndAspectJIsNotAvailableThenClassProxyingIsStillUsedByDefault() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(Advice.class))
-				.withUserConfiguration(ExampleController.class, EnableGlobalMethodSecurityConfiguration.class)
-				.run((context) -> {
-					ExampleController exampleController = context.getBean(ExampleController.class);
-					assertThat(AopUtils.isCglibProxy(exampleController)).isTrue();
-				});
+			.withUserConfiguration(ExampleController.class, EnableGlobalMethodSecurityConfiguration.class)
+			.run((context) -> {
+				ExampleController exampleController = context.getBean(ExampleController.class);
+				assertThat(AopUtils.isCglibProxy(exampleController)).isTrue();
+			});
 	}
 
 	private ContextConsumer<AssertableApplicationContext> proxyTargetClassEnabled() {

@@ -153,7 +153,9 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		Assert.state(mergedConfig.getParent() == null,
 				() -> "UseMainMethod.%s cannot be used with @ContextHierarchy tests".formatted(useMainMethod));
 		Class<?> springBootConfiguration = Arrays.stream(mergedConfig.getClasses())
-				.filter(this::isSpringBootConfiguration).findFirst().orElse(null);
+			.filter(this::isSpringBootConfiguration)
+			.findFirst()
+			.orElse(null);
 		Assert.state(springBootConfiguration != null || useMainMethod == UseMainMethod.WHEN_AVAILABLE,
 				"Cannot use main method as no @SpringBootConfiguration-annotated class is available");
 		Method mainMethod = (springBootConfiguration != null)
@@ -174,7 +176,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 
 	private boolean isSpringBootConfiguration(Class<?> candidate) {
 		return MergedAnnotations.from(candidate, SearchStrategy.TYPE_HIERARCHY)
-				.isPresent(SpringBootConfiguration.class);
+			.isPresent(SpringBootConfiguration.class);
 	}
 
 	private void configure(MergedContextConfiguration mergedConfig, SpringApplication application) {
@@ -296,7 +298,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		}
 		initializers.addAll(application.getInitializers());
 		for (Class<? extends ApplicationContextInitializer<?>> initializerClass : mergedConfig
-				.getContextInitializerClasses()) {
+			.getContextInitializerClasses()) {
 			initializers.add(BeanUtils.instantiateClass(initializerClass));
 		}
 		if (mergedConfig.getParent() != null) {
@@ -554,7 +556,8 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 				throw ex;
 			}
 			List<ApplicationContext> rootContexts = this.contexts.stream()
-					.filter((context) -> context.getParent() == null).toList();
+				.filter((context) -> context.getParent() == null)
+				.toList();
 			Assert.state(!rootContexts.isEmpty(), "No root application context located");
 			Assert.state(rootContexts.size() == 1, "No unique root application context located");
 			return rootContexts.get(0);

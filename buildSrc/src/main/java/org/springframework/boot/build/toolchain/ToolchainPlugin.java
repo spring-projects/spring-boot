@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,16 +52,18 @@ public class ToolchainPlugin implements Plugin<Project> {
 			disableToolchainTasks(project);
 		}
 		else {
-			JavaToolchainSpec toolchainSpec = project.getExtensions().getByType(JavaPluginExtension.class)
-					.getToolchain();
+			JavaToolchainSpec toolchainSpec = project.getExtensions()
+				.getByType(JavaPluginExtension.class)
+				.getToolchain();
 			toolchainSpec.getLanguageVersion().set(toolchain.getJavaVersion());
 			configureTestToolchain(project, toolchain);
 		}
 	}
 
 	private boolean isJavaVersionSupported(ToolchainExtension toolchain, JavaLanguageVersion toolchainVersion) {
-		return toolchain.getMaximumCompatibleJavaVersion().map((version) -> version.canCompileOrRun(toolchainVersion))
-				.getOrElse(true);
+		return toolchain.getMaximumCompatibleJavaVersion()
+			.map((version) -> version.canCompileOrRun(toolchainVersion))
+			.getOrElse(true);
 	}
 
 	private void disableToolchainTasks(Project project) {

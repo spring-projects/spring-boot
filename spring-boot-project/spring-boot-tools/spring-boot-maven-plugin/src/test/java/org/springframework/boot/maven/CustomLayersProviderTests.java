@@ -52,8 +52,9 @@ class CustomLayersProviderTests {
 	@Test
 	void getLayerResolverWhenDocumentValid() throws Exception {
 		CustomLayers layers = this.customLayersProvider.getLayers(getDocument("layers.xml"));
-		assertThat(layers).extracting("name").containsExactly("my-deps", "my-dependencies-name",
-				"snapshot-dependencies", "my-resources", "configuration", "application");
+		assertThat(layers).extracting("name")
+			.containsExactly("my-deps", "my-dependencies-name", "snapshot-dependencies", "my-resources",
+					"configuration", "application");
 		Library snapshot = mockLibrary("test-SNAPSHOT.jar", "org.foo", "1.0.0-SNAPSHOT");
 		Library groupId = mockLibrary("my-library", "com.acme", null);
 		Library otherDependency = mockLibrary("other-library", "org.foo", null);
@@ -81,7 +82,7 @@ class CustomLayersProviderTests {
 		Library library = mockLibrary("my-library", "com.acme", null);
 		assertThat(layers.getLayer(library)).hasToString("my-deps");
 		assertThatIllegalStateException().isThrownBy(() -> layers.getLayer("application.yml"))
-				.withMessageContaining("match any layer");
+			.withMessageContaining("match any layer");
 	}
 
 	@Test
@@ -90,7 +91,7 @@ class CustomLayersProviderTests {
 		Library library = mockLibrary("my-library", "com.acme", null);
 		assertThat(layers.getLayer("application.yml")).hasToString("my-layer");
 		assertThatIllegalStateException().isThrownBy(() -> layers.getLayer(library))
-				.withMessageContaining("match any layer");
+			.withMessageContaining("match any layer");
 	}
 
 	private Document getDocument(String resourceName) throws Exception {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,8 @@ class CacheMetricsRegistrarTests {
 		CacheMetricsRegistrar registrar = new CacheMetricsRegistrar(this.meterRegistry,
 				Collections.singleton(new CaffeineCacheMeterBinderProvider()));
 		assertThat(registrar.bindCacheToRegistry(
-				new TransactionAwareCacheDecorator(new CaffeineCache("test", Caffeine.newBuilder().build())))).isTrue();
+				new TransactionAwareCacheDecorator(new CaffeineCache("test", Caffeine.newBuilder().build()))))
+			.isTrue();
 		assertThat(this.meterRegistry.get("cache.gets").tags("name", "test").meter()).isNotNull();
 	}
 

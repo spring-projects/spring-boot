@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		Environment environment = context.getEnvironment();
 		MergedAnnotation<ConditionalOnAvailableEndpoint> conditionAnnotation = metadata.getAnnotations()
-				.get(ConditionalOnAvailableEndpoint.class);
+			.get(ConditionalOnAvailableEndpoint.class);
 		Class<?> target = getTarget(context, metadata, conditionAnnotation);
 		MergedAnnotation<Endpoint> endpointAnnotation = getEndpointAnnotation(target);
 		return getMatchOutcome(environment, conditionAnnotation, endpointAnnotation);
@@ -134,8 +134,8 @@ class OnAvailableEndpointCondition extends SpringBootCondition {
 		}
 		Boolean userDefinedDefault = isEnabledByDefault(environment);
 		if (userDefinedDefault != null) {
-			return new ConditionOutcome(userDefinedDefault, message.because(
-					"no property " + key + " found so using user defined default from " + ENABLED_BY_DEFAULT_KEY));
+			return new ConditionOutcome(userDefinedDefault, message
+				.because("no property " + key + " found so using user defined default from " + ENABLED_BY_DEFAULT_KEY));
 		}
 		boolean endpointDefault = endpointAnnotation.getBoolean("enableByDefault");
 		return new ConditionOutcome(endpointDefault,

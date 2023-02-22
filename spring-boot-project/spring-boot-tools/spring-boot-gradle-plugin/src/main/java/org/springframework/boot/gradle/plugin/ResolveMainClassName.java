@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,8 +130,13 @@ public class ResolveMainClassName extends DefaultTask {
 		if (configuredMainClass != null) {
 			return configuredMainClass;
 		}
-		return getClasspath().filter(File::isDirectory).getFiles().stream().map(this::findMainClass)
-				.filter(Objects::nonNull).findFirst().orElse("");
+		return getClasspath().filter(File::isDirectory)
+			.getFiles()
+			.stream()
+			.map(this::findMainClass)
+			.filter(Objects::nonNull)
+			.findFirst()
+			.orElse("");
 	}
 
 	private String findMainClass(File file) {

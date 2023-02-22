@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,13 +63,13 @@ class PropertyMapperTests {
 	@Test
 	void fromWhenSupplierIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.map.from((Supplier<?>) null))
-				.withMessageContaining("Supplier must not be null");
+			.withMessageContaining("Supplier must not be null");
 	}
 
 	@Test
 	void toWhenConsumerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.map.from(() -> "").to(null))
-				.withMessageContaining("Consumer must not be null");
+			.withMessageContaining("Consumer must not be null");
 	}
 
 	@Test
@@ -89,7 +89,7 @@ class PropertyMapperTests {
 	@Test
 	void asWhenAdapterIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.map.from(() -> "").as(null))
-				.withMessageContaining("Adapter must not be null");
+			.withMessageContaining("Adapter must not be null");
 	}
 
 	@Test
@@ -186,8 +186,12 @@ class PropertyMapperTests {
 	@Test
 	void whenWhenCombinedWithAsUsesSourceValue() {
 		Count<String> source = new Count<>(() -> "123");
-		Long result = this.map.from(source).when("123"::equals).as(Integer::valueOf).when((v) -> v == 123)
-				.as(Integer::longValue).toInstance(Long::valueOf);
+		Long result = this.map.from(source)
+			.when("123"::equals)
+			.as(Integer::valueOf)
+			.when((v) -> v == 123)
+			.as(Integer::longValue)
+			.toInstance(Long::valueOf);
 		assertThat(result).isEqualTo(123);
 		assertThat(source.getCount()).isOne();
 	}

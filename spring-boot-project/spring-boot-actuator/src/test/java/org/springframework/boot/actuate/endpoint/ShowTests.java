@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,7 +91,7 @@ class ShowTests {
 		Authentication authentication = mock(Authentication.class);
 		given(securityContext.getPrincipal()).willReturn(authentication);
 		given(authentication.getAuthorities())
-				.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("other")));
+			.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("other")));
 		assertThat(Show.WHEN_AUTHORIZED.isShown(securityContext, Collections.singleton("admin"))).isFalse();
 	}
 
@@ -101,7 +101,7 @@ class ShowTests {
 		Authentication authentication = mock(Authentication.class);
 		given(securityContext.getPrincipal()).willReturn(authentication);
 		given(authentication.getAuthorities())
-				.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("admin")));
+			.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("admin")));
 		assertThat(Show.WHEN_AUTHORIZED.isShown(securityContext, Collections.singleton("admin"))).isTrue();
 	}
 

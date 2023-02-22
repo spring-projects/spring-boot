@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -135,7 +135,7 @@ public class LiquibaseAutoConfiguration {
 			}
 			if (properties.getUser() != null && dataSource != null) {
 				DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource)
-						.type(SimpleDriverDataSource.class);
+					.type(SimpleDriverDataSource.class);
 				applyCommonBuilderProperties(properties, builder);
 				return builder.build();
 			}

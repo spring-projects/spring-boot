@@ -100,8 +100,8 @@ abstract class AbstractLaunchScriptIntegrationTests {
 
 		private LaunchScriptTestContainer(String os, String version, String scriptsDir, String testScript) {
 			super(new ImageFromDockerfile("spring-boot-launch-script/" + os.toLowerCase() + "-" + version)
-					.withFileFromFile("Dockerfile",
-							new File("src/intTest/resources/conf/" + os + "/" + version + "/Dockerfile")));
+				.withFileFromFile("Dockerfile",
+						new File("src/intTest/resources/conf/" + os + "/" + version + "/Dockerfile")));
 			withCopyFileToContainer(MountableFile.forHostPath(findApplication().getAbsolutePath()), "/app.jar");
 			withCopyFileToContainer(
 					MountableFile.forHostPath("src/intTest/resources/scripts/" + scriptsDir + "test-functions.sh"),

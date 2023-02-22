@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,14 +44,15 @@ class JacksonRuntimeHintsTests {
 	@Test
 	void shouldRegisterSerializerConstructors() {
 		ReflectionHints hints = registerHints();
-		Stream.of(AtomicBooleanSerializer.class, AtomicIntegerSerializer.class, AtomicLongSerializer.class,
-				FileSerializer.class, ClassSerializer.class, TokenBufferSerializer.class).forEach((serializer) -> {
-					TypeHint typeHint = hints.getTypeHint(serializer);
-					assertThat(typeHint).withFailMessage(() -> "No hints found for serializer " + serializer)
-							.isNotNull();
-					Set<MemberCategory> memberCategories = typeHint.getMemberCategories();
-					assertThat(memberCategories).containsExactly(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
-				});
+		Stream
+			.of(AtomicBooleanSerializer.class, AtomicIntegerSerializer.class, AtomicLongSerializer.class,
+					FileSerializer.class, ClassSerializer.class, TokenBufferSerializer.class)
+			.forEach((serializer) -> {
+				TypeHint typeHint = hints.getTypeHint(serializer);
+				assertThat(typeHint).withFailMessage(() -> "No hints found for serializer " + serializer).isNotNull();
+				Set<MemberCategory> memberCategories = typeHint.getMemberCategories();
+				assertThat(memberCategories).containsExactly(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
+			});
 	}
 
 	private ReflectionHints registerHints() {

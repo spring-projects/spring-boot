@@ -115,12 +115,12 @@ class ImageReferenceTests {
 	@Test
 	void ofNameAndDigest() {
 		ImageReference reference = ImageReference
-				.of("ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+			.of("ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 		assertThat(reference.getDomain()).isEqualTo("docker.io");
 		assertThat(reference.getName()).isEqualTo("library/ubuntu");
 		assertThat(reference.getTag()).isNull();
 		assertThat(reference.getDigest())
-				.isEqualTo("sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+			.isEqualTo("sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 		assertThat(reference).hasToString(
 				"docker.io/library/ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 	}
@@ -128,25 +128,25 @@ class ImageReferenceTests {
 	@Test
 	void ofNameAndTagAndDigest() {
 		ImageReference reference = ImageReference
-				.of("ubuntu:bionic@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+			.of("ubuntu:bionic@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 		assertThat(reference.getDomain()).isEqualTo("docker.io");
 		assertThat(reference.getName()).isEqualTo("library/ubuntu");
 		assertThat(reference.getTag()).isEqualTo("bionic");
 		assertThat(reference.getDigest())
-				.isEqualTo("sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+			.isEqualTo("sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 		assertThat(reference).hasToString(
 				"docker.io/library/ubuntu:bionic@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 	}
 
 	@Test
 	void ofCustomDomainAndPortWithTag() {
-		ImageReference reference = ImageReference.of(
-				"example.com:8080/canonical/ubuntu:bionic@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+		ImageReference reference = ImageReference
+			.of("example.com:8080/canonical/ubuntu:bionic@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 		assertThat(reference.getDomain()).isEqualTo("example.com:8080");
 		assertThat(reference.getName()).isEqualTo("canonical/ubuntu");
 		assertThat(reference.getTag()).isEqualTo("bionic");
 		assertThat(reference.getDigest())
-				.isEqualTo("sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+			.isEqualTo("sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 		assertThat(reference).hasToString(
 				"example.com:8080/canonical/ubuntu:bionic@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 	}
@@ -174,9 +174,9 @@ class ImageReferenceTests {
 	@Test
 	void ofWhenHasIllegalCharacter() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> ImageReference
-						.of("registry.example.com/example/example-app:1.6.0-dev.2.uncommitted+wip.foo.c75795d"))
-				.withMessageContaining("Unable to parse image reference");
+			.isThrownBy(() -> ImageReference
+				.of("registry.example.com/example/example-app:1.6.0-dev.2.uncommitted+wip.foo.c75795d"))
+			.withMessageContaining("Unable to parse image reference");
 	}
 
 	@Test
@@ -219,15 +219,16 @@ class ImageReferenceTests {
 	@Test
 	void randomWherePrefixIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageReference.random(null))
-				.withMessage("Prefix must not be null");
+			.withMessage("Prefix must not be null");
 	}
 
 	@Test
 	void inTaggedFormWhenHasDigestThrowsException() {
 		ImageReference reference = ImageReference
-				.of("ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
-		assertThatIllegalStateException().isThrownBy(() -> reference.inTaggedForm()).withMessage(
-				"Image reference 'docker.io/library/ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d' cannot contain a digest");
+			.of("ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+		assertThatIllegalStateException().isThrownBy(() -> reference.inTaggedForm())
+			.withMessage(
+					"Image reference 'docker.io/library/ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d' cannot contain a digest");
 	}
 
 	@Test
@@ -245,7 +246,7 @@ class ImageReferenceTests {
 	@Test
 	void inTaggedOrDigestFormWhenHasDigestUsesDigest() {
 		ImageReference reference = ImageReference
-				.of("ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+			.of("ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 		assertThat(reference.inTaggedOrDigestForm()).hasToString(
 				"docker.io/library/ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 	}

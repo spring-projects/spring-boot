@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,36 +64,40 @@ class WarPluginAction implements PluginApplicationAction {
 	}
 
 	private void classifyWarTask(Project project) {
-		project.getTasks().named(WarPlugin.WAR_TASK_NAME, War.class)
-				.configure((war) -> war.getArchiveClassifier().convention("plain"));
+		project.getTasks()
+			.named(WarPlugin.WAR_TASK_NAME, War.class)
+			.configure((war) -> war.getArchiveClassifier().convention("plain"));
 	}
 
 	private TaskProvider<BootWar> configureBootWarTask(Project project) {
 		Configuration developmentOnly = project.getConfigurations()
-				.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
+			.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
 		Configuration productionRuntimeClasspath = project.getConfigurations()
-				.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
-		Callable<FileCollection> classpath = () -> project.getExtensions().getByType(SourceSetContainer.class)
-				.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath()
-				.minus(providedRuntimeConfiguration(project)).minus((developmentOnly.minus(productionRuntimeClasspath)))
-				.filter(new JarTypeFileSpec());
+			.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+		Callable<FileCollection> classpath = () -> project.getExtensions()
+			.getByType(SourceSetContainer.class)
+			.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
+			.getRuntimeClasspath()
+			.minus(providedRuntimeConfiguration(project))
+			.minus((developmentOnly.minus(productionRuntimeClasspath)))
+			.filter(new JarTypeFileSpec());
 		TaskProvider<ResolveMainClassName> resolveMainClassName = project.getTasks()
-				.named(SpringBootPlugin.RESOLVE_MAIN_CLASS_NAME_TASK_NAME, ResolveMainClassName.class);
-		TaskProvider<BootWar> bootWarProvider = project.getTasks().register(SpringBootPlugin.BOOT_WAR_TASK_NAME,
-				BootWar.class, (bootWar) -> {
-					bootWar.setGroup(BasePlugin.BUILD_GROUP);
-					bootWar.setDescription("Assembles an executable war archive containing webapp"
-							+ " content, and the main classes and their dependencies.");
-					bootWar.providedClasspath(providedRuntimeConfiguration(project));
-					bootWar.setClasspath(classpath);
-					Provider<String> manifestStartClass = project
-							.provider(() -> (String) bootWar.getManifest().getAttributes().get("Start-Class"));
-					bootWar.getMainClass()
-							.convention(resolveMainClassName.flatMap((resolver) -> manifestStartClass.isPresent()
-									? manifestStartClass : resolveMainClassName.get().readMainClassName()));
-					bootWar.getTargetJavaVersion()
-							.set(project.provider(() -> javaPluginExtension(project).getTargetCompatibility()));
-				});
+			.named(SpringBootPlugin.RESOLVE_MAIN_CLASS_NAME_TASK_NAME, ResolveMainClassName.class);
+		TaskProvider<BootWar> bootWarProvider = project.getTasks()
+			.register(SpringBootPlugin.BOOT_WAR_TASK_NAME, BootWar.class, (bootWar) -> {
+				bootWar.setGroup(BasePlugin.BUILD_GROUP);
+				bootWar.setDescription("Assembles an executable war archive containing webapp"
+						+ " content, and the main classes and their dependencies.");
+				bootWar.providedClasspath(providedRuntimeConfiguration(project));
+				bootWar.setClasspath(classpath);
+				Provider<String> manifestStartClass = project
+					.provider(() -> (String) bootWar.getManifest().getAttributes().get("Start-Class"));
+				bootWar.getMainClass()
+					.convention(resolveMainClassName.flatMap((resolver) -> manifestStartClass.isPresent()
+							? manifestStartClass : resolveMainClassName.get().readMainClassName()));
+				bootWar.getTargetJavaVersion()
+					.set(project.provider(() -> javaPluginExtension(project).getTargetCompatibility()));
+			});
 		bootWarProvider.map(War::getClasspath);
 		return bootWarProvider;
 	}
@@ -104,8 +108,9 @@ class WarPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureBootBuildImageTask(Project project, TaskProvider<BootWar> bootWar) {
-		project.getTasks().named(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME, BootBuildImage.class)
-				.configure((buildImage) -> buildImage.getArchiveFile().set(bootWar.get().getArchiveFile()));
+		project.getTasks()
+			.named(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME, BootBuildImage.class)
+			.configure((buildImage) -> buildImage.getArchiveFile().set(bootWar.get().getArchiveFile()));
 	}
 
 	private void configureArtifactPublication(TaskProvider<BootWar> bootWar) {

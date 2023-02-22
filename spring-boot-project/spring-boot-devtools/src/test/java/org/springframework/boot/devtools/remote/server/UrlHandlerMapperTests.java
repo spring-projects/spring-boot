@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,19 +40,19 @@ class UrlHandlerMapperTests {
 	@Test
 	void requestUriMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new UrlHandlerMapper(null, this.handler))
-				.withMessageContaining("URL must not be empty");
+			.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	void requestUriMustNotBeEmpty() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new UrlHandlerMapper("", this.handler))
-				.withMessageContaining("URL must not be empty");
+			.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	void requestUrlMustStartWithSlash() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new UrlHandlerMapper("tunnel", this.handler))
-				.withMessageContaining("URL must start with '/'");
+			.withMessageContaining("URL must start with '/'");
 	}
 
 	@Test

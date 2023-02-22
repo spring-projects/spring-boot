@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,8 +79,10 @@ public class CodecsAutoConfiguration {
 				PropertyMapper map = PropertyMapper.get();
 				CodecConfigurer.DefaultCodecs defaultCodecs = configurer.defaultCodecs();
 				defaultCodecs.enableLoggingRequestDetails(codecProperties.isLogRequestDetails());
-				map.from(codecProperties.getMaxInMemorySize()).whenNonNull().asInt(DataSize::toBytes)
-						.to(defaultCodecs::maxInMemorySize);
+				map.from(codecProperties.getMaxInMemorySize())
+					.whenNonNull()
+					.asInt(DataSize::toBytes)
+					.to(defaultCodecs::maxInMemorySize);
 			};
 		}
 

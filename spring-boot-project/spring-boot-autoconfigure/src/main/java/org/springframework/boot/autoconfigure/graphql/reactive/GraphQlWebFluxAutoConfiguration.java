@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,8 @@ public class GraphQlWebFluxAutoConfiguration {
 
 	@SuppressWarnings("removal")
 	private static final RequestPredicate SUPPORTS_MEDIATYPES = accept(MediaType.APPLICATION_GRAPHQL_RESPONSE,
-			MediaType.APPLICATION_JSON, MediaType.APPLICATION_GRAPHQL).and(contentType(MediaType.APPLICATION_JSON));
+			MediaType.APPLICATION_JSON, MediaType.APPLICATION_GRAPHQL)
+		.and(contentType(MediaType.APPLICATION_JSON));
 
 	private static final Log logger = LogFactory.getLog(GraphQlWebFluxAutoConfiguration.class);
 

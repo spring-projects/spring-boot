@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,9 +48,10 @@ class OnPropertyCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		List<AnnotationAttributes> allAnnotationAttributes = metadata.getAnnotations()
-				.stream(ConditionalOnProperty.class.getName())
-				.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getMetaTypes))
-				.map(MergedAnnotation::asAnnotationAttributes).toList();
+			.stream(ConditionalOnProperty.class.getName())
+			.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getMetaTypes))
+			.map(MergedAnnotation::asAnnotationAttributes)
+			.toList();
 		List<ConditionMessage> noMatch = new ArrayList<>();
 		List<ConditionMessage> match = new ArrayList<>();
 		for (AnnotationAttributes annotationAttributes : allAnnotationAttributes) {
@@ -70,15 +71,16 @@ class OnPropertyCondition extends SpringBootCondition {
 		spec.collectProperties(resolver, missingProperties, nonMatchingProperties);
 		if (!missingProperties.isEmpty()) {
 			return ConditionOutcome.noMatch(ConditionMessage.forCondition(ConditionalOnProperty.class, spec)
-					.didNotFind("property", "properties").items(Style.QUOTE, missingProperties));
+				.didNotFind("property", "properties")
+				.items(Style.QUOTE, missingProperties));
 		}
 		if (!nonMatchingProperties.isEmpty()) {
 			return ConditionOutcome.noMatch(ConditionMessage.forCondition(ConditionalOnProperty.class, spec)
-					.found("different value in property", "different value in properties")
-					.items(Style.QUOTE, nonMatchingProperties));
+				.found("different value in property", "different value in properties")
+				.items(Style.QUOTE, nonMatchingProperties));
 		}
 		return ConditionOutcome
-				.match(ConditionMessage.forCondition(ConditionalOnProperty.class, spec).because("matched"));
+			.match(ConditionMessage.forCondition(ConditionalOnProperty.class, spec).because("matched"));
 	}
 
 	private static class Spec {

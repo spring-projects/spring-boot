@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,8 @@ class SslBuilderCustomizerTests {
 		ssl.setKeyStore("src/test/resources/test.jks");
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
 		KeyManager[] keyManagers = ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null);
-		Class<?> name = Class.forName(
-				"org.springframework.boot.web.embedded.undertow.SslBuilderCustomizer$ConfigurableAliasKeyManager");
+		Class<?> name = Class
+			.forName("org.springframework.boot.web.embedded.undertow.SslBuilderCustomizer$ConfigurableAliasKeyManager");
 		assertThat(keyManagers[0]).isNotInstanceOf(name);
 	}
 
@@ -63,9 +63,9 @@ class SslBuilderCustomizerTests {
 		ssl.setKeyStoreProvider("com.example.KeyStoreProvider");
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null))
-				.withCauseInstanceOf(NoSuchProviderException.class)
-				.withMessageContaining("com.example.KeyStoreProvider");
+			.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null))
+			.withCauseInstanceOf(NoSuchProviderException.class)
+			.withMessageContaining("com.example.KeyStoreProvider");
 	}
 
 	@Test
@@ -76,9 +76,9 @@ class SslBuilderCustomizerTests {
 		ssl.setTrustStoreProvider("com.example.TrustStoreProvider");
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getTrustManagers", ssl, null))
-				.withCauseInstanceOf(NoSuchProviderException.class)
-				.withMessageContaining("com.example.TrustStoreProvider");
+			.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getTrustManagers", ssl, null))
+			.withCauseInstanceOf(NoSuchProviderException.class)
+			.withMessageContaining("com.example.TrustStoreProvider");
 	}
 
 	@Test
@@ -86,8 +86,9 @@ class SslBuilderCustomizerTests {
 		Ssl ssl = new Ssl();
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null))
-				.withCauseInstanceOf(WebServerException.class).withMessageContaining("Could not load key store 'null'");
+			.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null))
+			.withCauseInstanceOf(WebServerException.class)
+			.withMessageContaining("Could not load key store 'null'");
 	}
 
 	@Test
@@ -99,9 +100,9 @@ class SslBuilderCustomizerTests {
 		ssl.setKeyPassword("password");
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null))
-				.withCauseInstanceOf(IllegalArgumentException.class)
-				.withMessageContaining("Input keystore location is not valid for keystore type 'PKCS11'");
+			.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null))
+			.withCauseInstanceOf(IllegalArgumentException.class)
+			.withMessageContaining("Input keystore location is not valid for keystore type 'PKCS11'");
 	}
 
 	@Test
@@ -112,7 +113,7 @@ class SslBuilderCustomizerTests {
 		ssl.setKeyStorePassword("1234");
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
 		assertThatNoException()
-				.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null));
+			.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null));
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ class EnableConfigurationPropertiesRegistrarTests {
 	void typeWithDefaultConstructorShouldRegisterRootBeanDefinition() {
 		register(TestConfiguration.class);
 		BeanDefinition definition = this.beanFactory
-				.getBeanDefinition("foo-" + getClass().getName() + "$FooProperties");
+			.getBeanDefinition("foo-" + getClass().getName() + "$FooProperties");
 		assertThat(definition).satisfies(configurationPropertiesBeanDefinition(BindMethod.JAVA_BEAN));
 	}
 
@@ -64,7 +64,7 @@ class EnableConfigurationPropertiesRegistrarTests {
 	void constructorBoundPropertiesShouldRegisterConfigurationPropertiesBeanDefinition() {
 		register(TestConfiguration.class);
 		BeanDefinition definition = this.beanFactory
-				.getBeanDefinition("bar-" + getClass().getName() + "$BarProperties");
+			.getBeanDefinition("bar-" + getClass().getName() + "$BarProperties");
 		assertThat(definition).satisfies(configurationPropertiesBeanDefinition(BindMethod.VALUE_OBJECT));
 	}
 
@@ -72,15 +72,15 @@ class EnableConfigurationPropertiesRegistrarTests {
 	void typeWithMultipleConstructorsShouldRegisterGenericBeanDefinition() {
 		register(TestConfiguration.class);
 		BeanDefinition definition = this.beanFactory
-				.getBeanDefinition("bing-" + getClass().getName() + "$BingProperties");
+			.getBeanDefinition("bing-" + getClass().getName() + "$BingProperties");
 		assertThat(definition).satisfies(configurationPropertiesBeanDefinition(BindMethod.JAVA_BEAN));
 	}
 
 	@Test
 	void typeWithNoAnnotationShouldFail() {
 		assertThatIllegalStateException().isThrownBy(() -> register(InvalidConfiguration.class))
-				.withMessageContaining("No ConfigurationProperties annotation found")
-				.withMessageContaining(EnableConfigurationPropertiesRegistrar.class.getName());
+			.withMessageContaining("No ConfigurationProperties annotation found")
+			.withMessageContaining(EnableConfigurationPropertiesRegistrar.class.getName());
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,8 +69,8 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 		List<FailureAnalyzer> analyzers = springFactoriesLoader.load(FailureAnalyzer.class,
 				getArgumentResolver(context), FailureHandler.logging(logger));
 		List<FailureAnalyzer> awareAnalyzers = analyzers.stream()
-				.filter((analyzer) -> analyzer instanceof BeanFactoryAware || analyzer instanceof EnvironmentAware)
-				.toList();
+			.filter((analyzer) -> analyzer instanceof BeanFactoryAware || analyzer instanceof EnvironmentAware)
+			.toList();
 		if (!awareAnalyzers.isEmpty()) {
 			String awareAnalyzerNames = StringUtils.collectionToCommaDelimitedString(
 					awareAnalyzers.stream().map((analyzer) -> analyzer.getClass().getName()).toList());

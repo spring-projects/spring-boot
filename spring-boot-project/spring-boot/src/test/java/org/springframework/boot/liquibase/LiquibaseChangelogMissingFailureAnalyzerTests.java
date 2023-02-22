@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,10 +43,10 @@ class LiquibaseChangelogMissingFailureAnalyzerTests {
 	void changelogParseExceptionDueToChangelogNotPresent() {
 		FailureAnalysis analysis = performAnalysis();
 		assertThat(analysis.getDescription())
-				.isEqualTo("Liquibase failed to start because no changelog could be found at '"
-						+ "classpath:/db/changelog/db.changelog-master.yaml'.");
+			.isEqualTo("Liquibase failed to start because no changelog could be found at '"
+					+ "classpath:/db/changelog/db.changelog-master.yaml'.");
 		assertThat(analysis.getAction())
-				.isEqualTo("Make sure a Liquibase changelog is present at the configured path.");
+			.isEqualTo("Make sure a Liquibase changelog is present at the configured path.");
 	}
 
 	private FailureAnalysis performAnalysis() {

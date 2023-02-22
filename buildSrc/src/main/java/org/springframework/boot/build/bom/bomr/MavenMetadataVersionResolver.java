@@ -75,10 +75,12 @@ final class MavenMetadataVersionResolver implements VersionResolver {
 		URI url = repositoryUrl.resolve(groupId.replace('.', '/') + "/" + artifactId + "/maven-metadata.xml");
 		try {
 			String metadata = this.rest.getForObject(url, String.class);
-			Document metadataDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-					.parse(new InputSource(new StringReader(metadata)));
-			NodeList versionNodes = (NodeList) XPathFactory.newInstance().newXPath()
-					.evaluate("/metadata/versioning/versions/version", metadataDocument, XPathConstants.NODESET);
+			Document metadataDocument = DocumentBuilderFactory.newInstance()
+				.newDocumentBuilder()
+				.parse(new InputSource(new StringReader(metadata)));
+			NodeList versionNodes = (NodeList) XPathFactory.newInstance()
+				.newXPath()
+				.evaluate("/metadata/versioning/versions/version", metadataDocument, XPathConstants.NODESET);
 			for (int i = 0; i < versionNodes.getLength(); i++) {
 				versions.add(versionNodes.item(i).getTextContent());
 			}

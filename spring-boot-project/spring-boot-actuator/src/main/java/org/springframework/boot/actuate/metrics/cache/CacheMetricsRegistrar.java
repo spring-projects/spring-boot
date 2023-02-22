@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,9 +72,11 @@ public class CacheMetricsRegistrar {
 	private MeterBinder getMeterBinder(Cache cache, Tags tags) {
 		Tags cacheTags = tags.and(getAdditionalTags(cache));
 		return LambdaSafe.callbacks(CacheMeterBinderProvider.class, this.binderProviders, cache)
-				.withLogger(CacheMetricsRegistrar.class)
-				.invokeAnd((binderProvider) -> binderProvider.getMeterBinder(cache, cacheTags)).filter(Objects::nonNull)
-				.findFirst().orElse(null);
+			.withLogger(CacheMetricsRegistrar.class)
+			.invokeAnd((binderProvider) -> binderProvider.getMeterBinder(cache, cacheTags))
+			.filter(Objects::nonNull)
+			.findFirst()
+			.orElse(null);
 	}
 
 	/**

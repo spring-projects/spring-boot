@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ class ConfigDataLocationRuntimeHints implements RuntimeHintsRegistrar {
 	protected List<String> getExtensions(ClassLoader classLoader) {
 		List<String> extensions = new ArrayList<>();
 		List<PropertySourceLoader> propertySourceLoaders = getSpringFactoriesLoader(classLoader)
-				.load(PropertySourceLoader.class);
+			.load(PropertySourceLoader.class);
 		for (PropertySourceLoader propertySourceLoader : propertySourceLoaders) {
 			for (String fileExtension : propertySourceLoader.getFileExtensions()) {
 				String candidate = "." + fileExtension;

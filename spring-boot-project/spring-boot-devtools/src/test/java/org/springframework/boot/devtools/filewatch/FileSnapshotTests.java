@@ -47,7 +47,7 @@ class FileSnapshotTests {
 	@Test
 	void fileMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new FileSnapshot(null))
-				.withMessageContaining("File must not be null");
+			.withMessageContaining("File must not be null");
 	}
 
 	@Test
@@ -55,7 +55,7 @@ class FileSnapshotTests {
 		File file = new File(this.tempDir, "file");
 		file.mkdir();
 		assertThatIllegalArgumentException().isThrownBy(() -> new FileSnapshot(file))
-				.withMessageContaining("File must not be a directory");
+			.withMessageContaining("File must not be a directory");
 	}
 
 	@Test

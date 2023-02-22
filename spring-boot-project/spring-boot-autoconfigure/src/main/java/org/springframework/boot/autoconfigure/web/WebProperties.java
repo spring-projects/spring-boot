@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -574,12 +574,15 @@ public class WebProperties {
 					map.from(this::getCachePublic).whenTrue().toCall(control::cachePublic);
 					map.from(this::getCachePrivate).whenTrue().toCall(control::cachePrivate);
 					map.from(this::getProxyRevalidate).whenTrue().toCall(control::proxyRevalidate);
-					map.from(this::getStaleWhileRevalidate).whenNonNull()
-							.to((duration) -> control.staleWhileRevalidate(duration.getSeconds(), TimeUnit.SECONDS));
-					map.from(this::getStaleIfError).whenNonNull()
-							.to((duration) -> control.staleIfError(duration.getSeconds(), TimeUnit.SECONDS));
-					map.from(this::getSMaxAge).whenNonNull()
-							.to((duration) -> control.sMaxAge(duration.getSeconds(), TimeUnit.SECONDS));
+					map.from(this::getStaleWhileRevalidate)
+						.whenNonNull()
+						.to((duration) -> control.staleWhileRevalidate(duration.getSeconds(), TimeUnit.SECONDS));
+					map.from(this::getStaleIfError)
+						.whenNonNull()
+						.to((duration) -> control.staleIfError(duration.getSeconds(), TimeUnit.SECONDS));
+					map.from(this::getSMaxAge)
+						.whenNonNull()
+						.to((duration) -> control.sMaxAge(duration.getSeconds(), TimeUnit.SECONDS));
 					// check if cacheControl remained untouched
 					if (control.getHeaderValue() == null) {
 						return null;

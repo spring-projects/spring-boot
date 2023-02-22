@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,8 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		errorAttributes.put("path", request.path());
 		Throwable error = getError(request);
 		MergedAnnotation<ResponseStatus> responseStatusAnnotation = MergedAnnotations
-				.from(error.getClass(), SearchStrategy.TYPE_HIERARCHY).get(ResponseStatus.class);
+			.from(error.getClass(), SearchStrategy.TYPE_HIERARCHY)
+			.get(ResponseStatus.class);
 		HttpStatus errorStatus = determineHttpStatus(error, responseStatusAnnotation);
 		errorAttributes.put("status", errorStatus.value());
 		errorAttributes.put("error", errorStatus.getReasonPhrase());
@@ -153,7 +154,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 		Optional<Object> error = request.attribute(ERROR_INTERNAL_ATTRIBUTE);
 		error.ifPresent((value) -> request.attributes().putIfAbsent(ErrorAttributes.ERROR_ATTRIBUTE, value));
 		return (Throwable) error
-				.orElseThrow(() -> new IllegalStateException("Missing exception attribute in ServerWebExchange"));
+			.orElseThrow(() -> new IllegalStateException("Missing exception attribute in ServerWebExchange"));
 	}
 
 	@Override

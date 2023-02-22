@@ -56,8 +56,10 @@ class OriginTrackedPropertiesLoaderTests {
 	void compareToJavaProperties() throws Exception {
 		Properties java = PropertiesLoaderUtils.loadProperties(this.resource);
 		Properties ours = new Properties();
-		new OriginTrackedPropertiesLoader(this.resource).load(false).get(0).asMap()
-				.forEach((k, v) -> ours.put(k, v.getValue()));
+		new OriginTrackedPropertiesLoader(this.resource).load(false)
+			.get(0)
+			.asMap()
+			.forEach((k, v) -> ours.put(k, v.getValue()));
 		assertThat(ours).isEqualTo(java);
 	}
 
@@ -94,7 +96,7 @@ class OriginTrackedPropertiesLoaderTests {
 		// gh-12716
 		ClassPathResource resource = new ClassPathResource("test-properties-malformed-unicode.properties", getClass());
 		assertThatIllegalStateException().isThrownBy(() -> new OriginTrackedPropertiesLoader(resource).load())
-				.withMessageContaining("Malformed \\uxxxx encoding");
+			.withMessageContaining("Malformed \\uxxxx encoding");
 	}
 
 	@Test

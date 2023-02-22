@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	@Test
 	void getReturnsRequestFactoryOfExpectedType() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories
-				.get(ClientHttpRequestFactorySettings.DEFAULTS);
+			.get(ClientHttpRequestFactorySettings.DEFAULTS);
 		assertThat(requestFactory).isInstanceOf(this.requestFactoryType);
 	}
 
@@ -64,7 +64,7 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	@SuppressWarnings("unchecked")
 	void getReturnsRequestFactoryWithConfiguredConnectTimeout() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories
-				.get(ClientHttpRequestFactorySettings.DEFAULTS.withConnectTimeout(Duration.ofSeconds(60)));
+			.get(ClientHttpRequestFactorySettings.DEFAULTS.withConnectTimeout(Duration.ofSeconds(60)));
 		assertThat(connectTimeout((T) requestFactory)).isEqualTo(Duration.ofSeconds(60).toMillis());
 	}
 
@@ -72,7 +72,7 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	@SuppressWarnings("unchecked")
 	void getReturnsRequestFactoryWithConfiguredReadTimeout() {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories
-				.get(ClientHttpRequestFactorySettings.DEFAULTS.withReadTimeout(Duration.ofSeconds(120)));
+			.get(ClientHttpRequestFactorySettings.DEFAULTS.withReadTimeout(Duration.ofSeconds(120)));
 		assertThat(readTimeout((T) requestFactory)).isEqualTo(Duration.ofSeconds(120).toMillis());
 	}
 

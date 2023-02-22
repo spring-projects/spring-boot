@@ -38,8 +38,9 @@ public class SampleAntApplicationIT {
 	@Test
 	void runJar() throws Exception {
 		File libs = new File("build/ant/libs");
-		Process process = new JavaExecutable().processBuilder("-jar", "spring-boot-smoke-test-ant.jar").directory(libs)
-				.start();
+		Process process = new JavaExecutable().processBuilder("-jar", "spring-boot-smoke-test-ant.jar")
+			.directory(libs)
+			.start();
 		process.waitFor(5, TimeUnit.MINUTES);
 		assertThat(process.exitValue()).isZero();
 		String output = FileCopyUtils.copyToString(new InputStreamReader(process.getInputStream()));

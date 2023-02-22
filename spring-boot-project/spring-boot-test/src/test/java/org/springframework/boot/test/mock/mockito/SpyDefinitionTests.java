@@ -42,7 +42,7 @@ class SpyDefinitionTests {
 	@Test
 	void classToSpyMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new SpyDefinition(null, null, null, true, null))
-				.withMessageContaining("TypeToSpy must not be null");
+			.withMessageContaining("TypeToSpy must not be null");
 	}
 
 	@Test
@@ -81,14 +81,14 @@ class SpyDefinitionTests {
 	void createSpyWhenNullInstanceShouldThrowException() {
 		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE, MockReset.BEFORE, true, null);
 		assertThatIllegalArgumentException().isThrownBy(() -> definition.createSpy(null))
-				.withMessageContaining("Instance must not be null");
+			.withMessageContaining("Instance must not be null");
 	}
 
 	@Test
 	void createSpyWhenWrongInstanceShouldThrowException() {
 		SpyDefinition definition = new SpyDefinition("name", REAL_SERVICE_TYPE, MockReset.BEFORE, true, null);
 		assertThatIllegalArgumentException().isThrownBy(() -> definition.createSpy(new ExampleServiceCaller(null)))
-				.withMessageContaining("must be an instance of");
+			.withMessageContaining("must be an instance of");
 	}
 
 	@Test

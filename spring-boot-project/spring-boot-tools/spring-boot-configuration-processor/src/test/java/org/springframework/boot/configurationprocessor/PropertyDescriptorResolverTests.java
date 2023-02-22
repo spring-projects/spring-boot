@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,13 +73,13 @@ class PropertyDescriptorResolverTests {
 					PropertyDescriptorResolver resolver = new PropertyDescriptorResolver(metadataEnv);
 					assertThat(resolver.resolve(type, null).map(PropertyDescriptor::getName)).containsExactly("third",
 							"second", "first");
-					assertThat(resolver.resolve(type, null).map(
-							(descriptor) -> descriptor.getGetter().getEnclosingElement().getSimpleName().toString()))
-									.containsExactly("HierarchicalProperties", "HierarchicalPropertiesParent",
-											"HierarchicalPropertiesParent");
 					assertThat(resolver.resolve(type, null)
-							.map((descriptor) -> descriptor.resolveItemMetadata("test", metadataEnv))
-							.map(ItemMetadata::getDefaultValue)).containsExactly("three", "two", "one");
+						.map((descriptor) -> descriptor.getGetter().getEnclosingElement().getSimpleName().toString()))
+						.containsExactly("HierarchicalProperties", "HierarchicalPropertiesParent",
+								"HierarchicalPropertiesParent");
+					assertThat(resolver.resolve(type, null)
+						.map((descriptor) -> descriptor.resolveItemMetadata("test", metadataEnv))
+						.map(ItemMetadata::getDefaultValue)).containsExactly("three", "two", "one");
 				});
 	}
 
@@ -112,7 +112,7 @@ class PropertyDescriptorResolverTests {
 		process(ImmutableDeducedConstructorBindingProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("theName", "flag")));
 		process(ImmutableDeducedConstructorBindingProperties.class, properties((stream) -> assertThat(stream)
-				.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
+			.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
 	@Test
@@ -120,7 +120,7 @@ class PropertyDescriptorResolverTests {
 		process(ImmutableSimpleProperties.class, propertyNames(
 				(stream) -> assertThat(stream).containsExactly("theName", "flag", "comparator", "counter")));
 		process(ImmutableSimpleProperties.class, properties((stream) -> assertThat(stream)
-				.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
+			.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
 	@Test
@@ -128,14 +128,14 @@ class PropertyDescriptorResolverTests {
 		process(ImmutableClassConstructorBindingProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("name", "description")));
 		process(ImmutableClassConstructorBindingProperties.class, properties((stream) -> assertThat(stream)
-				.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
+			.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
 	@Test
 	void propertiesWithAutowiredConstructor() {
 		process(AutowiredProperties.class, propertyNames((stream) -> assertThat(stream).containsExactly("theName")));
 		process(AutowiredProperties.class, properties((stream) -> assertThat(stream)
-				.allMatch((predicate) -> predicate instanceof JavaBeanPropertyDescriptor)));
+			.allMatch((predicate) -> predicate instanceof JavaBeanPropertyDescriptor)));
 	}
 
 	@Test
@@ -143,7 +143,7 @@ class PropertyDescriptorResolverTests {
 		process(ImmutableMultiConstructorProperties.class,
 				propertyNames((stream) -> assertThat(stream).containsExactly("name", "description")));
 		process(ImmutableMultiConstructorProperties.class, properties((stream) -> assertThat(stream)
-				.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
+			.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
 	@Test
@@ -154,7 +154,7 @@ class PropertyDescriptorResolverTests {
 				propertyNames((stream) -> assertThat(stream).containsExactly("name", "description")));
 		process(org.springframework.boot.configurationsample.immutable.DeprecatedImmutableMultiConstructorProperties.class,
 				properties((stream) -> assertThat(stream)
-						.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
+					.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
 	}
 
 	@Test
@@ -197,8 +197,10 @@ class PropertyDescriptorResolverTests {
 				internalConsumer, new MetadataGenerationEnvironmentFactory());
 		SourceFile targetSource = SourceFile.forTestClass(target);
 		List<SourceFile> additionalSource = additionalClasses.stream().map(SourceFile::forTestClass).toList();
-		TestCompiler compiler = TestCompiler.forSystem().withProcessors(processor).withSources(targetSource)
-				.withSources(additionalSource);
+		TestCompiler compiler = TestCompiler.forSystem()
+			.withProcessors(processor)
+			.withSources(targetSource)
+			.withSources(additionalSource);
 		compiler.compile((compiled) -> {
 		});
 	}

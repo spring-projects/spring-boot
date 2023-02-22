@@ -36,7 +36,7 @@ class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractConfigurat
 	@Test
 	void nullResource() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> ConfigurationMetadataRepositoryJsonBuilder.create().withJsonResource(null));
+			.isThrownBy(() -> ConfigurationMetadataRepositoryJsonBuilder.create().withJsonResource(null));
 	}
 
 	@Test
@@ -105,7 +105,7 @@ class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractConfigurat
 			assertThat(group.getSources().get("org.acme.Foo2").getProperties()).containsOnlyKeys("spring.foo.enabled",
 					"spring.foo.type");
 			assertThat(group.getSources().get("org.springframework.boot.FooProperties").getProperties())
-					.containsOnlyKeys("spring.foo.name", "spring.foo.counter");
+				.containsOnlyKeys("spring.foo.name", "spring.foo.counter");
 		}
 	}
 
@@ -123,7 +123,7 @@ class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractConfigurat
 			assertThat(group.getSources().get("org.acme.Foo").getProperties()).containsOnlyKeys("spring.foo.name",
 					"spring.foo.description", "spring.foo.enabled", "spring.foo.type");
 			assertThat(group.getSources().get("org.springframework.boot.FooProperties").getProperties())
-					.containsOnlyKeys("spring.foo.name", "spring.foo.counter");
+				.containsOnlyKeys("spring.foo.name", "spring.foo.counter");
 		}
 	}
 

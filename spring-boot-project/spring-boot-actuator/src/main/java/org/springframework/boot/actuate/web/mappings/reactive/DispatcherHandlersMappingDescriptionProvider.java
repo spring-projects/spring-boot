@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,8 +61,8 @@ import org.springframework.web.util.pattern.PathPattern;
 public class DispatcherHandlersMappingDescriptionProvider implements MappingDescriptionProvider {
 
 	private static final List<HandlerMappingDescriptionProvider<? extends HandlerMapping>> descriptionProviders = Arrays
-			.asList(new RequestMappingInfoHandlerMappingDescriptionProvider(),
-					new UrlHandlerMappingDescriptionProvider(), new RouterFunctionMappingDescriptionProvider());
+		.asList(new RequestMappingInfoHandlerMappingDescriptionProvider(), new UrlHandlerMappingDescriptionProvider(),
+				new RouterFunctionMappingDescriptionProvider());
 
 	@Override
 	public String getMappingName() {
@@ -73,7 +73,7 @@ public class DispatcherHandlersMappingDescriptionProvider implements MappingDesc
 	public Map<String, List<DispatcherHandlerMappingDescription>> describeMappings(ApplicationContext context) {
 		Map<String, List<DispatcherHandlerMappingDescription>> mappings = new HashMap<>();
 		context.getBeansOfType(DispatcherHandler.class)
-				.forEach((name, handler) -> mappings.put(name, describeMappings(handler)));
+			.forEach((name, handler) -> mappings.put(name, describeMappings(handler)));
 		return mappings;
 	}
 

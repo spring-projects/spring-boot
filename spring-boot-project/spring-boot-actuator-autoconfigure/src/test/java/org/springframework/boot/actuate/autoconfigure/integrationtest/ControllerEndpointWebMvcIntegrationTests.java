@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,18 +74,18 @@ class ControllerEndpointWebMvcIntegrationTests {
 		this.context.register(SecureConfiguration.class, ExampleController.class);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/actuator/example").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isUnauthorized());
+			.andExpect(status().isUnauthorized());
 	}
 
 	@Test
 	void endpointsCanBeAccessed() throws Exception {
 		TestSecurityContextHolder.getContext()
-				.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
+			.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.register(SecureConfiguration.class, ExampleController.class);
 		TestPropertyValues
-				.of("management.endpoints.web.base-path:/management", "management.endpoints.web.exposure.include=*")
-				.applyTo(this.context);
+			.of("management.endpoints.web.base-path:/management", "management.endpoints.web.exposure.include=*")
+			.applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/example")).andExpect(status().isOk());
 	}

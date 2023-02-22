@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -275,7 +275,7 @@ class MetadataGenerationEnvironment {
 	Map<String, Object> getAnnotationElementValues(AnnotationMirror annotation) {
 		Map<String, Object> values = new LinkedHashMap<>();
 		annotation.getElementValues()
-				.forEach((name, value) -> values.put(name.getSimpleName().toString(), getAnnotationValue(value)));
+			.forEach((name, value) -> values.put(name.getSimpleName().toString(), getAnnotationValue(value)));
 		return values;
 	}
 
@@ -306,8 +306,10 @@ class MetadataGenerationEnvironment {
 	}
 
 	Set<TypeElement> getEndpointAnnotationElements() {
-		return this.endpointAnnotations.stream().map(this.elements::getTypeElement).filter(Objects::nonNull)
-				.collect(Collectors.toSet());
+		return this.endpointAnnotations.stream()
+			.map(this.elements::getTypeElement)
+			.filter(Objects::nonNull)
+			.collect(Collectors.toSet());
 	}
 
 	AnnotationMirror getReadOperationAnnotation(Element element) {

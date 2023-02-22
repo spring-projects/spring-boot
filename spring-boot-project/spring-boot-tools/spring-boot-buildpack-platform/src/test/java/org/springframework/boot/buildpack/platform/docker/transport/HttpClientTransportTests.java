@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -264,10 +264,10 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(getClass().getResourceAsStream("errors.json"));
 		given(this.statusLine.getStatusCode()).willReturn(404);
 		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
-				.satisfies((ex) -> {
-					assertThat(ex.getErrors()).hasSize(2);
-					assertThat(ex.getResponseMessage()).isNull();
-				});
+			.satisfies((ex) -> {
+				assertThat(ex.getErrors()).hasSize(2);
+				assertThat(ex.getResponseMessage()).isNull();
+			});
 	}
 
 	@Test
@@ -275,10 +275,10 @@ class HttpClientTransportTests {
 		givenClientWillReturnResponse();
 		given(this.statusLine.getStatusCode()).willReturn(500);
 		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
-				.satisfies((ex) -> {
-					assertThat(ex.getErrors()).isNull();
-					assertThat(ex.getResponseMessage()).isNull();
-				});
+			.satisfies((ex) -> {
+				assertThat(ex.getErrors()).isNull();
+				assertThat(ex.getResponseMessage()).isNull();
+			});
 	}
 
 	@Test
@@ -287,10 +287,10 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(getClass().getResourceAsStream("message.json"));
 		given(this.statusLine.getStatusCode()).willReturn(500);
 		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
-				.satisfies((ex) -> {
-					assertThat(ex.getErrors()).isNull();
-					assertThat(ex.getResponseMessage().getMessage()).contains("test message");
-				});
+			.satisfies((ex) -> {
+				assertThat(ex.getErrors()).isNull();
+				assertThat(ex.getResponseMessage().getMessage()).contains("test message");
+			});
 	}
 
 	@Test
@@ -299,18 +299,18 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.statusLine.getStatusCode()).willReturn(500);
 		assertThatExceptionOfType(DockerEngineException.class).isThrownBy(() -> this.http.get(this.uri))
-				.satisfies((ex) -> {
-					assertThat(ex.getErrors()).isNull();
-					assertThat(ex.getResponseMessage()).isNull();
-				});
+			.satisfies((ex) -> {
+				assertThat(ex.getErrors()).isNull();
+				assertThat(ex.getResponseMessage()).isNull();
+			});
 	}
 
 	@Test
 	void executeWhenClientThrowsIOExceptionRethrowsAsDockerException() throws IOException {
 		given(this.client.execute(any(HttpHost.class), any(HttpRequest.class)))
-				.willThrow(new IOException("test IO exception"));
+			.willThrow(new IOException("test IO exception"));
 		assertThatExceptionOfType(DockerConnectionException.class).isThrownBy(() -> this.http.get(this.uri))
-				.satisfies((ex) -> assertThat(ex.getMessage()).contains("test IO exception"));
+			.satisfies((ex) -> assertThat(ex.getMessage()).contains("test IO exception"));
 	}
 
 	private String writeToString(HttpEntity entity) throws IOException {

@@ -56,33 +56,37 @@ import static org.mockito.Mockito.mock;
 class CustomHibernateJpaAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withPropertyValues("spring.datasource.generate-unique-name=true")
-			.withUserConfiguration(TestConfiguration.class).withConfiguration(
-					AutoConfigurations.of(DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class));
+		.withPropertyValues("spring.datasource.generate-unique-name=true")
+		.withUserConfiguration(TestConfiguration.class)
+		.withConfiguration(
+				AutoConfigurations.of(DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class));
 
 	@Test
 	void namingStrategyDelegatorTakesPrecedence() {
-		this.contextRunner.withPropertyValues("spring.jpa.properties.hibernate.ejb.naming_strategy_delegator:"
-				+ "org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator").run((context) -> {
-					JpaProperties jpaProperties = context.getBean(JpaProperties.class);
-					HibernateProperties hibernateProperties = context.getBean(HibernateProperties.class);
-					Map<String, Object> properties = hibernateProperties
-							.determineHibernateProperties(jpaProperties.getProperties(), new HibernateSettings());
-					assertThat(properties).doesNotContainKey("hibernate.ejb.naming_strategy");
-				});
+		this.contextRunner
+			.withPropertyValues("spring.jpa.properties.hibernate.ejb.naming_strategy_delegator:"
+					+ "org.hibernate.cfg.naming.ImprovedNamingStrategyDelegator")
+			.run((context) -> {
+				JpaProperties jpaProperties = context.getBean(JpaProperties.class);
+				HibernateProperties hibernateProperties = context.getBean(HibernateProperties.class);
+				Map<String, Object> properties = hibernateProperties
+					.determineHibernateProperties(jpaProperties.getProperties(), new HibernateSettings());
+				assertThat(properties).doesNotContainKey("hibernate.ejb.naming_strategy");
+			});
 	}
 
 	@Test
 	void namingStrategyBeansAreUsed() {
 		this.contextRunner.withUserConfiguration(NamingStrategyConfiguration.class)
-				.withPropertyValues("spring.datasource.url:jdbc:h2:mem:naming-strategy-beans").run((context) -> {
-					HibernateJpaConfiguration jpaConfiguration = context.getBean(HibernateJpaConfiguration.class);
-					Map<String, Object> hibernateProperties = jpaConfiguration.getVendorProperties();
-					assertThat(hibernateProperties).containsEntry("hibernate.implicit_naming_strategy",
-							NamingStrategyConfiguration.implicitNamingStrategy);
-					assertThat(hibernateProperties).containsEntry("hibernate.physical_naming_strategy",
-							NamingStrategyConfiguration.physicalNamingStrategy);
-				});
+			.withPropertyValues("spring.datasource.url:jdbc:h2:mem:naming-strategy-beans")
+			.run((context) -> {
+				HibernateJpaConfiguration jpaConfiguration = context.getBean(HibernateJpaConfiguration.class);
+				Map<String, Object> hibernateProperties = jpaConfiguration.getVendorProperties();
+				assertThat(hibernateProperties).containsEntry("hibernate.implicit_naming_strategy",
+						NamingStrategyConfiguration.implicitNamingStrategy);
+				assertThat(hibernateProperties).containsEntry("hibernate.physical_naming_strategy",
+						NamingStrategyConfiguration.physicalNamingStrategy);
+			});
 	}
 
 	@Test

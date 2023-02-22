@@ -49,7 +49,7 @@ class AvailabilityProbesHealthEndpointGroupsPostProcessorTests {
 		names.add("liveness");
 		given(groups.getNames()).willReturn(names);
 		assertThat(this.postProcessor.postProcessHealthEndpointGroups(groups))
-				.isInstanceOf(AvailabilityProbesHealthEndpointGroups.class);
+			.isInstanceOf(AvailabilityProbesHealthEndpointGroups.class);
 	}
 
 	@Test
@@ -60,7 +60,7 @@ class AvailabilityProbesHealthEndpointGroupsPostProcessorTests {
 		names.add("readiness");
 		given(groups.getNames()).willReturn(names);
 		assertThat(this.postProcessor.postProcessHealthEndpointGroups(groups))
-				.isInstanceOf(AvailabilityProbesHealthEndpointGroups.class);
+			.isInstanceOf(AvailabilityProbesHealthEndpointGroups.class);
 	}
 
 	@Test
@@ -72,7 +72,7 @@ class AvailabilityProbesHealthEndpointGroupsPostProcessorTests {
 		names.add("boot");
 		given(groups.getNames()).willReturn(names);
 		assertThat(this.postProcessor.postProcessHealthEndpointGroups(groups))
-				.isInstanceOf(AvailabilityProbesHealthEndpointGroups.class);
+			.isInstanceOf(AvailabilityProbesHealthEndpointGroups.class);
 	}
 
 	@Test

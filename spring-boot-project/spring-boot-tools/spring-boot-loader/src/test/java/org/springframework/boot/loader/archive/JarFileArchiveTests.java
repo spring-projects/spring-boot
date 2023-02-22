@@ -136,7 +136,7 @@ class JarFileArchiveTests {
 		setup(true);
 		try (Archive nestedArchive = this.archive.getNestedArchive(getEntriesMap(this.archive).get("nested.jar"));
 				Archive anotherNestedArchive = this.archive
-						.getNestedArchive(getEntriesMap(this.archive).get("another-nested.jar"))) {
+					.getNestedArchive(getEntriesMap(this.archive).get("another-nested.jar"))) {
 			File nested = new File(nestedArchive.getUrl().toURI());
 			File anotherNested = new File(anotherNestedArchive.getUrl().toURI());
 			assertThat(nested).hasParent(anotherNested.getParent());

@@ -52,20 +52,20 @@ class ConfigTreePropertySourceTests {
 	@Test
 	void createWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreePropertySource(null, this.directory))
-				.withMessageContaining("name must contain");
+			.withMessageContaining("name must contain");
 	}
 
 	@Test
 	void createWhenSourceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreePropertySource("test", null))
-				.withMessage("Property source must not be null");
+			.withMessage("Property source must not be null");
 	}
 
 	@Test
 	void createWhenSourceDoesNotExistThrowsException() {
 		Path missing = this.directory.resolve("missing");
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreePropertySource("test", missing))
-				.withMessage("Directory '" + missing + "' does not exist");
+			.withMessage("Directory '" + missing + "' does not exist");
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class ConfigTreePropertySourceTests {
 		Path file = this.directory.resolve("file");
 		FileCopyUtils.copy("test".getBytes(StandardCharsets.UTF_8), file.toFile());
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreePropertySource("test", file))
-				.withMessage("File '" + file + "' is not a directory");
+			.withMessage("File '" + file + "' is not a directory");
 	}
 
 	@Test
@@ -135,7 +135,7 @@ class ConfigTreePropertySourceTests {
 		Path b = this.directory.resolve("b");
 		Files.delete(b);
 		assertThatIllegalStateException().isThrownBy(() -> propertySource.getProperty("b").toString())
-				.withMessage("The property file '" + b + "' no longer exists");
+			.withMessage("The property file '" + b + "' no longer exists");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,333 +49,386 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithoutRepackageTheArchiveIsRepackagedOnTheFly(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
-				.prepare(this::writeLongNameResource).execute((project) -> {
-					File jar = new File(project, "target/build-image-0.0.1.BUILD-SNAPSHOT.jar");
-					assertThat(jar).isFile();
-					File original = new File(project, "target/build-image-0.0.1.BUILD-SNAPSHOT.jar.original");
-					assertThat(original).doesNotExist();
-					assertThat(buildLog(project)).contains("Building image")
-							.contains("docker.io/library/build-image:0.0.1.BUILD-SNAPSHOT")
-							.contains("---> Test Info buildpack building").contains("---> Test Info buildpack done")
-							.contains("Successfully built image");
-					removeImage("build-image", "0.0.1.BUILD-SNAPSHOT");
-				});
+		mavenBuild.project("build-image")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.prepare(this::writeLongNameResource)
+			.execute((project) -> {
+				File jar = new File(project, "target/build-image-0.0.1.BUILD-SNAPSHOT.jar");
+				assertThat(jar).isFile();
+				File original = new File(project, "target/build-image-0.0.1.BUILD-SNAPSHOT.jar.original");
+				assertThat(original).doesNotExist();
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image:0.0.1.BUILD-SNAPSHOT")
+					.contains("---> Test Info buildpack building")
+					.contains("---> Test Info buildpack done")
+					.contains("Successfully built image");
+				removeImage("build-image", "0.0.1.BUILD-SNAPSHOT");
+			});
 	}
 
 	@TestTemplate
 	void whenBuildImageIsInvokedOnTheCommandLineWithoutRepackageTheArchiveIsRepackagedOnTheFly(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-cmd-line").goals("spring-boot:build-image")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
-				.prepare(this::writeLongNameResource).execute((project) -> {
-					File jar = new File(project, "target/build-image-cmd-line-0.0.1.BUILD-SNAPSHOT.jar");
-					assertThat(jar).isFile();
-					File original = new File(project, "target/build-image-cmd-line-0.0.1.BUILD-SNAPSHOT.jar.original");
-					assertThat(original).doesNotExist();
-					assertThat(buildLog(project)).contains("Building image")
-							.contains("docker.io/library/build-image-cmd-line:0.0.1.BUILD-SNAPSHOT")
-							.contains("---> Test Info buildpack building").contains("---> Test Info buildpack done")
-							.contains("Successfully built image");
-					removeImage("build-image-cmd-line", "0.0.1.BUILD-SNAPSHOT");
-				});
+		mavenBuild.project("build-image-cmd-line")
+			.goals("spring-boot:build-image")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.prepare(this::writeLongNameResource)
+			.execute((project) -> {
+				File jar = new File(project, "target/build-image-cmd-line-0.0.1.BUILD-SNAPSHOT.jar");
+				assertThat(jar).isFile();
+				File original = new File(project, "target/build-image-cmd-line-0.0.1.BUILD-SNAPSHOT.jar.original");
+				assertThat(original).doesNotExist();
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-cmd-line:0.0.1.BUILD-SNAPSHOT")
+					.contains("---> Test Info buildpack building")
+					.contains("---> Test Info buildpack done")
+					.contains("Successfully built image");
+				removeImage("build-image-cmd-line", "0.0.1.BUILD-SNAPSHOT");
+			});
 	}
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithClassifierWithoutRepackageTheArchiveIsRepackagedOnTheFly(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-classifier").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
-				.prepare(this::writeLongNameResource).execute((project) -> {
-					File jar = new File(project, "target/build-image-classifier-0.0.1.BUILD-SNAPSHOT.jar");
-					assertThat(jar).isFile();
-					File classifier = new File(project, "target/build-image-classifier-0.0.1.BUILD-SNAPSHOT-test.jar");
-					assertThat(classifier).doesNotExist();
-					assertThat(buildLog(project)).contains("Building image")
-							.contains("docker.io/library/build-image-classifier:0.0.1.BUILD-SNAPSHOT")
-							.contains("---> Test Info buildpack building").contains("---> Test Info buildpack done")
-							.contains("Successfully built image");
-					removeImage("build-image-classifier", "0.0.1.BUILD-SNAPSHOT");
-				});
+		mavenBuild.project("build-image-classifier")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.prepare(this::writeLongNameResource)
+			.execute((project) -> {
+				File jar = new File(project, "target/build-image-classifier-0.0.1.BUILD-SNAPSHOT.jar");
+				assertThat(jar).isFile();
+				File classifier = new File(project, "target/build-image-classifier-0.0.1.BUILD-SNAPSHOT-test.jar");
+				assertThat(classifier).doesNotExist();
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-classifier:0.0.1.BUILD-SNAPSHOT")
+					.contains("---> Test Info buildpack building")
+					.contains("---> Test Info buildpack done")
+					.contains("Successfully built image");
+				removeImage("build-image-classifier", "0.0.1.BUILD-SNAPSHOT");
+			});
 	}
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithClassifierSourceWithoutRepackageTheArchiveIsRepackagedOnTheFly(
 			MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-classifier-source").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
-				.prepare(this::writeLongNameResource).execute((project) -> {
-					File jar = new File(project, "target/build-image-classifier-source-0.0.1.BUILD-SNAPSHOT-test.jar");
-					assertThat(jar).isFile();
-					File original = new File(project,
-							"target/build-image-classifier-source-0.0.1.BUILD-SNAPSHOT-test.jar.original");
-					assertThat(original).doesNotExist();
-					assertThat(buildLog(project)).contains("Building image")
-							.contains("docker.io/library/build-image-classifier-source:0.0.1.BUILD-SNAPSHOT")
-							.contains("---> Test Info buildpack building").contains("---> Test Info buildpack done")
-							.contains("Successfully built image");
-					removeImage("build-image-classifier-source", "0.0.1.BUILD-SNAPSHOT");
-				});
+		mavenBuild.project("build-image-classifier-source")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.prepare(this::writeLongNameResource)
+			.execute((project) -> {
+				File jar = new File(project, "target/build-image-classifier-source-0.0.1.BUILD-SNAPSHOT-test.jar");
+				assertThat(jar).isFile();
+				File original = new File(project,
+						"target/build-image-classifier-source-0.0.1.BUILD-SNAPSHOT-test.jar.original");
+				assertThat(original).doesNotExist();
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-classifier-source:0.0.1.BUILD-SNAPSHOT")
+					.contains("---> Test Info buildpack building")
+					.contains("---> Test Info buildpack done")
+					.contains("Successfully built image");
+				removeImage("build-image-classifier-source", "0.0.1.BUILD-SNAPSHOT");
+			});
 	}
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithRepackageTheExistingArchiveIsUsed(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-with-repackage").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
-				.prepare(this::writeLongNameResource).execute((project) -> {
-					File jar = new File(project, "target/build-image-with-repackage-0.0.1.BUILD-SNAPSHOT.jar");
-					assertThat(jar).isFile();
-					File original = new File(project,
-							"target/build-image-with-repackage-0.0.1.BUILD-SNAPSHOT.jar.original");
-					assertThat(original).isFile();
-					assertThat(buildLog(project)).contains("Building image")
-							.contains("docker.io/library/build-image-with-repackage:0.0.1.BUILD-SNAPSHOT")
-							.contains("---> Test Info buildpack building").contains("---> Test Info buildpack done")
-							.contains("Successfully built image");
-					removeImage("build-image-with-repackage", "0.0.1.BUILD-SNAPSHOT");
-				});
+		mavenBuild.project("build-image-with-repackage")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.prepare(this::writeLongNameResource)
+			.execute((project) -> {
+				File jar = new File(project, "target/build-image-with-repackage-0.0.1.BUILD-SNAPSHOT.jar");
+				assertThat(jar).isFile();
+				File original = new File(project,
+						"target/build-image-with-repackage-0.0.1.BUILD-SNAPSHOT.jar.original");
+				assertThat(original).isFile();
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-with-repackage:0.0.1.BUILD-SNAPSHOT")
+					.contains("---> Test Info buildpack building")
+					.contains("---> Test Info buildpack done")
+					.contains("Successfully built image");
+				removeImage("build-image-with-repackage", "0.0.1.BUILD-SNAPSHOT");
+			});
 	}
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithClassifierAndRepackageTheExistingArchiveIsUsed(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-classifier-with-repackage").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
-				.prepare(this::writeLongNameResource).execute((project) -> {
-					File jar = new File(project,
-							"target/build-image-classifier-with-repackage-0.0.1.BUILD-SNAPSHOT.jar");
-					assertThat(jar).isFile();
-					File original = new File(project,
-							"target/build-image-classifier-with-repackage-0.0.1.BUILD-SNAPSHOT-test.jar");
-					assertThat(original).isFile();
-					assertThat(buildLog(project)).contains("Building image")
-							.contains("docker.io/library/build-image-classifier-with-repackage:0.0.1.BUILD-SNAPSHOT")
-							.contains("---> Test Info buildpack building").contains("---> Test Info buildpack done")
-							.contains("Successfully built image");
-					removeImage("build-image-classifier-with-repackage", "0.0.1.BUILD-SNAPSHOT");
-				});
+		mavenBuild.project("build-image-classifier-with-repackage")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.prepare(this::writeLongNameResource)
+			.execute((project) -> {
+				File jar = new File(project, "target/build-image-classifier-with-repackage-0.0.1.BUILD-SNAPSHOT.jar");
+				assertThat(jar).isFile();
+				File original = new File(project,
+						"target/build-image-classifier-with-repackage-0.0.1.BUILD-SNAPSHOT-test.jar");
+				assertThat(original).isFile();
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-classifier-with-repackage:0.0.1.BUILD-SNAPSHOT")
+					.contains("---> Test Info buildpack building")
+					.contains("---> Test Info buildpack done")
+					.contains("Successfully built image");
+				removeImage("build-image-classifier-with-repackage", "0.0.1.BUILD-SNAPSHOT");
+			});
 	}
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithClassifierSourceAndRepackageTheExistingArchiveIsUsed(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-classifier-source-with-repackage").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
-				.prepare(this::writeLongNameResource).execute((project) -> {
-					File jar = new File(project,
-							"target/build-image-classifier-source-with-repackage-0.0.1.BUILD-SNAPSHOT-test.jar");
-					assertThat(jar).isFile();
-					File original = new File(project,
-							"target/build-image-classifier-source-with-repackage-0.0.1.BUILD-SNAPSHOT-test.jar.original");
-					assertThat(original).isFile();
-					assertThat(buildLog(project)).contains("Building image").contains(
-							"docker.io/library/build-image-classifier-source-with-repackage:0.0.1.BUILD-SNAPSHOT")
-							.contains("---> Test Info buildpack building").contains("---> Test Info buildpack done")
-							.contains("Successfully built image");
-					removeImage("build-image-classifier-source-with-repackage", "0.0.1.BUILD-SNAPSHOT");
-				});
+		mavenBuild.project("build-image-classifier-source-with-repackage")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.prepare(this::writeLongNameResource)
+			.execute((project) -> {
+				File jar = new File(project,
+						"target/build-image-classifier-source-with-repackage-0.0.1.BUILD-SNAPSHOT-test.jar");
+				assertThat(jar).isFile();
+				File original = new File(project,
+						"target/build-image-classifier-source-with-repackage-0.0.1.BUILD-SNAPSHOT-test.jar.original");
+				assertThat(original).isFile();
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-classifier-source-with-repackage:0.0.1.BUILD-SNAPSHOT")
+					.contains("---> Test Info buildpack building")
+					.contains("---> Test Info buildpack done")
+					.contains("Successfully built image");
+				removeImage("build-image-classifier-source-with-repackage", "0.0.1.BUILD-SNAPSHOT");
+			});
 	}
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithWarPackaging(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-war-packaging").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
-				.prepare(this::writeLongNameResource).execute((project) -> {
-					File war = new File(project, "target/build-image-war-packaging-0.0.1.BUILD-SNAPSHOT.war");
-					assertThat(war).isFile();
-					File original = new File(project,
-							"target/build-image-war-packaging-0.0.1.BUILD-SNAPSHOT.war.original");
-					assertThat(original).doesNotExist();
-					assertThat(buildLog(project)).contains("Building image")
-							.contains("docker.io/library/build-image-war-packaging:0.0.1.BUILD-SNAPSHOT")
-							.contains("---> Test Info buildpack building").contains("---> Test Info buildpack done")
-							.contains("Successfully built image");
-					removeImage("build-image-war-packaging", "0.0.1.BUILD-SNAPSHOT");
-				});
+		mavenBuild.project("build-image-war-packaging")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.prepare(this::writeLongNameResource)
+			.execute((project) -> {
+				File war = new File(project, "target/build-image-war-packaging-0.0.1.BUILD-SNAPSHOT.war");
+				assertThat(war).isFile();
+				File original = new File(project, "target/build-image-war-packaging-0.0.1.BUILD-SNAPSHOT.war.original");
+				assertThat(original).doesNotExist();
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-war-packaging:0.0.1.BUILD-SNAPSHOT")
+					.contains("---> Test Info buildpack building")
+					.contains("---> Test Info buildpack done")
+					.contains("Successfully built image");
+				removeImage("build-image-war-packaging", "0.0.1.BUILD-SNAPSHOT");
+			});
 	}
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithCustomImageName(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-custom-name").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
-				.systemProperty("spring-boot.build-image.imageName", "example.com/test/property-ignored:pom-preferred")
-				.execute((project) -> {
-					File jar = new File(project, "target/build-image-custom-name-0.0.1.BUILD-SNAPSHOT.jar");
-					assertThat(jar).isFile();
-					File original = new File(project,
-							"target/build-image-custom-name-0.0.1.BUILD-SNAPSHOT.jar.original");
-					assertThat(original).doesNotExist();
-					assertThat(buildLog(project)).contains("Building image")
-							.contains("example.com/test/build-image:0.0.1.BUILD-SNAPSHOT")
-							.contains("---> Test Info buildpack building").contains("---> Test Info buildpack done")
-							.contains("Successfully built image");
-					removeImage("example.com/test/build-image", "0.0.1.BUILD-SNAPSHOT");
-				});
+		mavenBuild.project("build-image-custom-name")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.systemProperty("spring-boot.build-image.imageName", "example.com/test/property-ignored:pom-preferred")
+			.execute((project) -> {
+				File jar = new File(project, "target/build-image-custom-name-0.0.1.BUILD-SNAPSHOT.jar");
+				assertThat(jar).isFile();
+				File original = new File(project, "target/build-image-custom-name-0.0.1.BUILD-SNAPSHOT.jar.original");
+				assertThat(original).doesNotExist();
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("example.com/test/build-image:0.0.1.BUILD-SNAPSHOT")
+					.contains("---> Test Info buildpack building")
+					.contains("---> Test Info buildpack done")
+					.contains("Successfully built image");
+				removeImage("example.com/test/build-image", "0.0.1.BUILD-SNAPSHOT");
+			});
 	}
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithCommandLineParameters(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
-				.systemProperty("spring-boot.build-image.imageName", "example.com/test/cmd-property-name:v1")
-				.systemProperty("spring-boot.build-image.builder",
-						"projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.1")
-				.systemProperty("spring-boot.build-image.runImage",
-						"projects.registry.vmware.com/springboot/run:tiny-cnb")
-				.execute((project) -> {
-					assertThat(buildLog(project)).contains("Building image")
-							.contains("example.com/test/cmd-property-name:v1")
-							.contains("---> Test Info buildpack building").contains("---> Test Info buildpack done")
-							.contains("Successfully built image");
-					removeImage("example.com/test/cmd-property-name", "v1");
-				});
+		mavenBuild.project("build-image")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.systemProperty("spring-boot.build-image.imageName", "example.com/test/cmd-property-name:v1")
+			.systemProperty("spring-boot.build-image.builder",
+					"projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.1")
+			.systemProperty("spring-boot.build-image.runImage", "projects.registry.vmware.com/springboot/run:tiny-cnb")
+			.execute((project) -> {
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("example.com/test/cmd-property-name:v1")
+					.contains("---> Test Info buildpack building")
+					.contains("---> Test Info buildpack done")
+					.contains("Successfully built image");
+				removeImage("example.com/test/cmd-property-name", "v1");
+			});
 	}
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithCustomBuilderImageAndRunImage(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-custom-builder").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT").execute((project) -> {
-					assertThat(buildLog(project)).contains("Building image")
-							.contains("docker.io/library/build-image-v2-builder:0.0.1.BUILD-SNAPSHOT")
-							.contains("---> Test Info buildpack building").contains("---> Test Info buildpack done")
-							.contains("Successfully built image");
-					removeImage("docker.io/library/build-image-v2-builder", "0.0.1.BUILD-SNAPSHOT");
-				});
+		mavenBuild.project("build-image-custom-builder")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.execute((project) -> {
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-v2-builder:0.0.1.BUILD-SNAPSHOT")
+					.contains("---> Test Info buildpack building")
+					.contains("---> Test Info buildpack done")
+					.contains("Successfully built image");
+				removeImage("docker.io/library/build-image-v2-builder", "0.0.1.BUILD-SNAPSHOT");
+			});
 	}
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithEmptyEnvEntry(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-empty-env-entry").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
-				.prepare(this::writeLongNameResource).execute((project) -> {
-					assertThat(buildLog(project)).contains("Building image")
-							.contains("docker.io/library/build-image-empty-env-entry:0.0.1.BUILD-SNAPSHOT")
-							.contains("---> Test Info buildpack building").contains("---> Test Info buildpack done")
-							.contains("Successfully built image");
-					removeImage("build-image-empty-env-entry", "0.0.1.BUILD-SNAPSHOT");
-				});
+		mavenBuild.project("build-image-empty-env-entry")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.prepare(this::writeLongNameResource)
+			.execute((project) -> {
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-empty-env-entry:0.0.1.BUILD-SNAPSHOT")
+					.contains("---> Test Info buildpack building")
+					.contains("---> Test Info buildpack done")
+					.contains("Successfully built image");
+				removeImage("build-image-empty-env-entry", "0.0.1.BUILD-SNAPSHOT");
+			});
 	}
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithZipPackaging(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-zip-packaging").goals("package").prepare(this::writeLongNameResource)
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT").execute((project) -> {
-					File jar = new File(project, "target/build-image-zip-packaging-0.0.1.BUILD-SNAPSHOT.jar");
-					assertThat(jar).isFile();
-					assertThat(buildLog(project)).contains("Building image")
-							.contains("docker.io/library/build-image-zip-packaging:0.0.1.BUILD-SNAPSHOT")
-							.contains("Main-Class: org.springframework.boot.loader.PropertiesLauncher")
-							.contains("Successfully built image");
-					removeImage("build-image-zip-packaging", "0.0.1.BUILD-SNAPSHOT");
-				});
+		mavenBuild.project("build-image-zip-packaging")
+			.goals("package")
+			.prepare(this::writeLongNameResource)
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.execute((project) -> {
+				File jar = new File(project, "target/build-image-zip-packaging-0.0.1.BUILD-SNAPSHOT.jar");
+				assertThat(jar).isFile();
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-zip-packaging:0.0.1.BUILD-SNAPSHOT")
+					.contains("Main-Class: org.springframework.boot.loader.PropertiesLauncher")
+					.contains("Successfully built image");
+				removeImage("build-image-zip-packaging", "0.0.1.BUILD-SNAPSHOT");
+			});
 	}
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithBuildpacks(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-custom-buildpacks").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT").execute((project) -> {
-					assertThat(buildLog(project)).contains("Building image")
-							.contains("docker.io/library/build-image-custom-buildpacks:0.0.1.BUILD-SNAPSHOT")
-							.contains("Successfully built image");
-					removeImage("build-image-custom-buildpacks", "0.0.1.BUILD-SNAPSHOT");
-				});
+		mavenBuild.project("build-image-custom-buildpacks")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.execute((project) -> {
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-custom-buildpacks:0.0.1.BUILD-SNAPSHOT")
+					.contains("Successfully built image");
+				removeImage("build-image-custom-buildpacks", "0.0.1.BUILD-SNAPSHOT");
+			});
 	}
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithBinding(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-bindings").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT").execute((project) -> {
-					assertThat(buildLog(project)).contains("Building image")
-							.contains("docker.io/library/build-image-bindings:0.0.1.BUILD-SNAPSHOT")
-							.contains("binding: ca-certificates/type=ca-certificates")
-							.contains("binding: ca-certificates/test.crt=---certificate one---")
-							.contains("Successfully built image");
-					removeImage("build-image-bindings", "0.0.1.BUILD-SNAPSHOT");
-				});
+		mavenBuild.project("build-image-bindings")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.execute((project) -> {
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-bindings:0.0.1.BUILD-SNAPSHOT")
+					.contains("binding: ca-certificates/type=ca-certificates")
+					.contains("binding: ca-certificates/test.crt=---certificate one---")
+					.contains("Successfully built image");
+				removeImage("build-image-bindings", "0.0.1.BUILD-SNAPSHOT");
+			});
 	}
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithNetworkModeNone(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-network").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT").execute((project) -> {
-					assertThat(buildLog(project)).contains("Building image")
-							.contains("docker.io/library/build-image-network:0.0.1.BUILD-SNAPSHOT")
-							.contains("Network status: curl failed").contains("Successfully built image");
-					removeImage("build-image-network", "0.0.1.BUILD-SNAPSHOT");
-				});
+		mavenBuild.project("build-image-network")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.execute((project) -> {
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-network:0.0.1.BUILD-SNAPSHOT")
+					.contains("Network status: curl failed")
+					.contains("Successfully built image");
+				removeImage("build-image-network", "0.0.1.BUILD-SNAPSHOT");
+			});
 	}
 
 	@TestTemplate
 	void whenBuildImageIsInvokedOnMultiModuleProjectWithPackageGoal(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-multi-module").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT").execute((project) -> {
-					assertThat(buildLog(project)).contains("Building image")
-							.contains("docker.io/library/build-image-multi-module-app:0.0.1.BUILD-SNAPSHOT")
-							.contains("Successfully built image");
-					removeImage("build-image-multi-module-app", "0.0.1.BUILD-SNAPSHOT");
-				});
+		mavenBuild.project("build-image-multi-module")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.execute((project) -> {
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-multi-module-app:0.0.1.BUILD-SNAPSHOT")
+					.contains("Successfully built image");
+				removeImage("build-image-multi-module-app", "0.0.1.BUILD-SNAPSHOT");
+			});
 	}
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithTags(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-tags").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT").execute((project) -> {
-					assertThat(buildLog(project)).contains("Building image")
-							.contains("docker.io/library/build-image-tags:0.0.1.BUILD-SNAPSHOT")
-							.contains("Successfully built image").contains("docker.io/library/build-image-tags:latest")
-							.contains("Successfully created image tag");
-					removeImage("build-image-tags", "0.0.1.BUILD-SNAPSHOT");
-					removeImage("build-image-tags", "latest");
-				});
+		mavenBuild.project("build-image-tags")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.execute((project) -> {
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-tags:0.0.1.BUILD-SNAPSHOT")
+					.contains("Successfully built image")
+					.contains("docker.io/library/build-image-tags:latest")
+					.contains("Successfully created image tag");
+				removeImage("build-image-tags", "0.0.1.BUILD-SNAPSHOT");
+				removeImage("build-image-tags", "latest");
+			});
 	}
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithVolumeCaches(MavenBuild mavenBuild) {
 		String testBuildId = randomString();
-		mavenBuild.project("build-image-caches").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
-				.systemProperty("test-build-id", testBuildId).execute((project) -> {
-					assertThat(buildLog(project)).contains("Building image")
-							.contains("docker.io/library/build-image-caches:0.0.1.BUILD-SNAPSHOT")
-							.contains("Successfully built image");
-					removeImage("build-image-caches", "0.0.1.BUILD-SNAPSHOT");
-					deleteVolumes("cache-" + testBuildId + ".build", "cache-" + testBuildId + ".launch");
-				});
+		mavenBuild.project("build-image-caches")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.systemProperty("test-build-id", testBuildId)
+			.execute((project) -> {
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-caches:0.0.1.BUILD-SNAPSHOT")
+					.contains("Successfully built image");
+				removeImage("build-image-caches", "0.0.1.BUILD-SNAPSHOT");
+				deleteVolumes("cache-" + testBuildId + ".build", "cache-" + testBuildId + ".launch");
+			});
 	}
 
 	@TestTemplate
 	void failsWhenBuildImageIsInvokedOnMultiModuleProjectWithBuildImageGoal(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-multi-module").goals("spring-boot:build-image")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT").executeAndFail(
-						(project) -> assertThat(buildLog(project)).contains("Error packaging archive for image"));
+		mavenBuild.project("build-image-multi-module")
+			.goals("spring-boot:build-image")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.executeAndFail((project) -> assertThat(buildLog(project)).contains("Error packaging archive for image"));
 	}
 
 	@TestTemplate
 	void failsWhenBuilderFails(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-builder-error").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
-				.executeAndFail((project) -> assertThat(buildLog(project)).contains("Building image")
-						.contains("---> Test Info buildpack building").contains("Forced builder failure")
-						.containsPattern("Builder lifecycle '.*' failed with status code"));
+		mavenBuild.project("build-image-builder-error")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.executeAndFail((project) -> assertThat(buildLog(project)).contains("Building image")
+				.contains("---> Test Info buildpack building")
+				.contains("Forced builder failure")
+				.containsPattern("Builder lifecycle '.*' failed with status code"));
 	}
 
 	@TestTemplate
 	void failsWithBuildpackNotInBuilder(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-bad-buildpack").goals("package")
-				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
-				.executeAndFail((project) -> assertThat(buildLog(project))
-						.contains("'urn:cnb:builder:example/does-not-exist:0.0.1' not found in builder"));
+		mavenBuild.project("build-image-bad-buildpack")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.executeAndFail((project) -> assertThat(buildLog(project))
+				.contains("'urn:cnb:builder:example/does-not-exist:0.0.1' not found in builder"));
 	}
 
 	@TestTemplate
 	void failsWhenFinalNameIsMisconfigured(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-final-name").goals("package")
-				.executeAndFail((project) -> assertThat(buildLog(project)).contains("final-name.jar.original")
-						.contains("is required for building an image"));
+		mavenBuild.project("build-image-final-name")
+			.goals("package")
+			.executeAndFail((project) -> assertThat(buildLog(project)).contains("final-name.jar.original")
+				.contains("is required for building an image"));
 	}
 
 	@TestTemplate
 	void failsWhenCachesAreConfiguredTwice(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-caches-multiple").goals("package")
-				.executeAndFail((project) -> assertThat(buildLog(project))
-						.contains("Each image building cache can be configured only once"));
+		mavenBuild.project("build-image-caches-multiple")
+			.goals("package")
+			.executeAndFail((project) -> assertThat(buildLog(project))
+				.contains("Each image building cache can be configured only once"));
 	}
 
 	private void writeLongNameResource(File project) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ class DevToolPropertiesIntegrationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = getContext(application::run);
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.context.getBean(MyBean.class));
+			.isThrownBy(() -> this.context.getBean(MyBean.class));
 	}
 
 	@Test
@@ -109,10 +109,10 @@ class DevToolPropertiesIntegrationTests {
 		ConfigurableEnvironment environment = this.context.getEnvironment();
 		String includeStackTrace = environment.getProperty("server.error.include-stacktrace");
 		assertThat(includeStackTrace)
-				.isEqualTo(ErrorProperties.IncludeAttribute.ALWAYS.toString().toLowerCase(Locale.ENGLISH));
+			.isEqualTo(ErrorProperties.IncludeAttribute.ALWAYS.toString().toLowerCase(Locale.ENGLISH));
 		String includeMessage = environment.getProperty("server.error.include-message");
 		assertThat(includeMessage)
-				.isEqualTo(ErrorProperties.IncludeAttribute.ALWAYS.toString().toLowerCase(Locale.ENGLISH));
+			.isEqualTo(ErrorProperties.IncludeAttribute.ALWAYS.toString().toLowerCase(Locale.ENGLISH));
 	}
 
 	protected ConfigurableApplicationContext getContext(Supplier<ConfigurableApplicationContext> supplier)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,192 +72,196 @@ class HttpExchangeTests {
 	void getTimestampReturnsTimestamp() {
 		Instant now = Instant.now();
 		Clock clock = Clock.fixed(now, ZoneId.systemDefault());
-		HttpExchange exchange = HttpExchange.start(clock, createRequest()).finish(createResponse(), NO_PRINCIPAL,
-				NO_SESSION_ID, Include.defaultIncludes());
+		HttpExchange exchange = HttpExchange.start(clock, createRequest())
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID, Include.defaultIncludes());
 		assertThat(exchange.getTimestamp()).isEqualTo(now);
 	}
 
 	@Test
 	void getRequestUriReturnsUri() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(), NO_PRINCIPAL,
-				NO_SESSION_ID, Include.defaultIncludes());
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID, Include.defaultIncludes());
 		assertThat(exchange.getRequest().getUri()).isEqualTo(URI.create("https://api.example.com"));
 	}
 
 	@Test
 	void getRequestRemoteAddressWhenUsingDefaultIncludesReturnsNull() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(), NO_PRINCIPAL,
-				NO_SESSION_ID, Include.defaultIncludes());
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID, Include.defaultIncludes());
 		assertThat(exchange.getRequest().getRemoteAddress()).isNull();
 	}
 
 	@Test
 	void getRequestRemoteAddressWhenIncludedReturnsRemoteAddress() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(), NO_PRINCIPAL,
-				NO_SESSION_ID, Include.REMOTE_ADDRESS);
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID, Include.REMOTE_ADDRESS);
 		assertThat(exchange.getRequest().getRemoteAddress()).isEqualTo("127.0.0.1");
 	}
 
 	@Test
 	void getRequestMethodReturnsHttpMethod() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(), NO_PRINCIPAL,
-				NO_SESSION_ID, Include.defaultIncludes());
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID, Include.defaultIncludes());
 		assertThat(exchange.getRequest().getMethod()).isEqualTo("GET");
 	}
 
 	@Test
 	void getRequestHeadersWhenUsingDefaultIncludesReturnsHeaders() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(), NO_PRINCIPAL,
-				NO_SESSION_ID, Include.defaultIncludes());
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID, Include.defaultIncludes());
 		assertThat(exchange.getRequest().getHeaders()).containsOnlyKeys(HttpHeaders.ACCEPT);
 	}
 
 	@Test
 	void getRequestHeadersWhenIncludedReturnsHeaders() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(), NO_PRINCIPAL,
-				NO_SESSION_ID, Include.REQUEST_HEADERS);
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID, Include.REQUEST_HEADERS);
 		assertThat(exchange.getRequest().getHeaders()).containsOnlyKeys(HttpHeaders.ACCEPT);
 	}
 
 	@Test
 	void getRequestHeadersWhenNotIncludedReturnsEmptyHeaders() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(), NO_PRINCIPAL,
-				NO_SESSION_ID);
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID);
 		assertThat(exchange.getRequest().getHeaders()).isEmpty();
 	}
 
 	@Test
 	void getRequestHeadersWhenUsingDefaultIncludesFiltersAuthorizeHeader() {
-		HttpExchange exchange = HttpExchange.start(createRequest(AUTHORIZATION_HEADER)).finish(createResponse(),
-				NO_PRINCIPAL, NO_SESSION_ID, Include.defaultIncludes());
+		HttpExchange exchange = HttpExchange.start(createRequest(AUTHORIZATION_HEADER))
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID, Include.defaultIncludes());
 		assertThat(exchange.getRequest().getHeaders()).isEmpty();
 	}
 
 	@Test
 	void getRequestHeadersWhenIncludesAuthorizationHeaderReturnsHeaders() {
-		HttpExchange exchange = HttpExchange.start(createRequest(AUTHORIZATION_HEADER)).finish(createResponse(),
-				NO_PRINCIPAL, NO_SESSION_ID, Include.REQUEST_HEADERS, Include.AUTHORIZATION_HEADER);
+		HttpExchange exchange = HttpExchange.start(createRequest(AUTHORIZATION_HEADER))
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID, Include.REQUEST_HEADERS,
+					Include.AUTHORIZATION_HEADER);
 		assertThat(exchange.getRequest().getHeaders()).containsOnlyKeys(HttpHeaders.AUTHORIZATION);
 	}
 
 	@Test
 	void getRequestHeadersWhenIncludesAuthorizationHeaderAndInDifferentCaseReturnsHeaders() {
-		HttpExchange exchange = HttpExchange.start(createRequest(mixedCase(AUTHORIZATION_HEADER))).finish(
-				createResponse(), NO_PRINCIPAL, NO_SESSION_ID, Include.REQUEST_HEADERS, Include.AUTHORIZATION_HEADER);
+		HttpExchange exchange = HttpExchange.start(createRequest(mixedCase(AUTHORIZATION_HEADER)))
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID, Include.REQUEST_HEADERS,
+					Include.AUTHORIZATION_HEADER);
 		assertThat(exchange.getRequest().getHeaders()).containsOnlyKeys(mixedCase(HttpHeaders.AUTHORIZATION));
 	}
 
 	@Test
 	void getRequestHeadersWhenUsingDefaultIncludesFiltersCookieHeader() {
-		HttpExchange exchange = HttpExchange.start(createRequest(COOKIE_HEADER)).finish(createResponse(), NO_PRINCIPAL,
-				NO_SESSION_ID, Include.defaultIncludes());
+		HttpExchange exchange = HttpExchange.start(createRequest(COOKIE_HEADER))
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID, Include.defaultIncludes());
 		assertThat(exchange.getRequest().getHeaders()).isEmpty();
 	}
 
 	@Test
 	void getRequestHeadersWhenIncludesCookieHeaderReturnsHeaders() {
-		HttpExchange exchange = HttpExchange.start(createRequest(COOKIE_HEADER)).finish(createResponse(), NO_PRINCIPAL,
-				NO_SESSION_ID, Include.REQUEST_HEADERS, Include.COOKIE_HEADERS);
+		HttpExchange exchange = HttpExchange.start(createRequest(COOKIE_HEADER))
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID, Include.REQUEST_HEADERS, Include.COOKIE_HEADERS);
 		assertThat(exchange.getRequest().getHeaders()).containsOnlyKeys(HttpHeaders.COOKIE);
 	}
 
 	@Test
 	void getRequestHeadersWhenIncludesCookieHeaderAndInDifferentCaseReturnsHeaders() {
-		HttpExchange exchange = HttpExchange.start(createRequest(mixedCase(COOKIE_HEADER))).finish(createResponse(),
-				NO_PRINCIPAL, NO_SESSION_ID, Include.REQUEST_HEADERS, Include.COOKIE_HEADERS);
+		HttpExchange exchange = HttpExchange.start(createRequest(mixedCase(COOKIE_HEADER)))
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID, Include.REQUEST_HEADERS, Include.COOKIE_HEADERS);
 		assertThat(exchange.getRequest().getHeaders()).containsOnlyKeys(mixedCase(HttpHeaders.COOKIE));
 	}
 
 	@Test
 	void getResponseStatusReturnsStatus() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(), NO_PRINCIPAL,
-				NO_SESSION_ID, Include.REMOTE_ADDRESS);
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID, Include.REMOTE_ADDRESS);
 		assertThat(exchange.getResponse().getStatus()).isEqualTo(204);
 	}
 
 	@Test
 	void getResponseHeadersWhenUsingDefaultIncludesReturnsHeaders() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(), NO_PRINCIPAL,
-				NO_SESSION_ID, Include.defaultIncludes());
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID, Include.defaultIncludes());
 		assertThat(exchange.getResponse().getHeaders()).containsOnlyKeys(HttpHeaders.CONTENT_TYPE);
 	}
 
 	@Test
 	void getResponseHeadersWhenNotIncludedReturnsEmptyHeaders() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(), NO_PRINCIPAL,
-				NO_SESSION_ID);
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID);
 		assertThat(exchange.getResponse().getHeaders()).isEmpty();
 	}
 
 	@Test
 	void getResponseHeadersIncludedReturnsHeaders() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(), NO_PRINCIPAL,
-				NO_SESSION_ID, Include.RESPONSE_HEADERS);
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID, Include.RESPONSE_HEADERS);
 		assertThat(exchange.getResponse().getHeaders()).containsOnlyKeys(HttpHeaders.CONTENT_TYPE);
 	}
 
 	@Test
 	void getResponseHeadersWhenUsingDefaultIncludesFiltersSetCookieHeader() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(SET_COOKIE_HEADER),
-				NO_PRINCIPAL, NO_SESSION_ID, Include.defaultIncludes());
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(SET_COOKIE_HEADER), NO_PRINCIPAL, NO_SESSION_ID, Include.defaultIncludes());
 		assertThat(exchange.getResponse().getHeaders()).isEmpty();
 	}
 
 	@Test
 	void getResponseHeadersWhenIncludesCookieHeaderReturnsHeaders() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(SET_COOKIE_HEADER),
-				NO_PRINCIPAL, NO_SESSION_ID, Include.RESPONSE_HEADERS, Include.COOKIE_HEADERS);
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(SET_COOKIE_HEADER), NO_PRINCIPAL, NO_SESSION_ID, Include.RESPONSE_HEADERS,
+					Include.COOKIE_HEADERS);
 		assertThat(exchange.getResponse().getHeaders()).containsKey(HttpHeaders.SET_COOKIE);
 	}
 
 	@Test
 	void getResponseHeadersWhenIncludesCookieHeaderAndInDifferentCaseReturnsHeaders() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(mixedCase(SET_COOKIE_HEADER)),
-				NO_PRINCIPAL, NO_SESSION_ID, Include.RESPONSE_HEADERS, Include.COOKIE_HEADERS);
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(mixedCase(SET_COOKIE_HEADER)), NO_PRINCIPAL, NO_SESSION_ID, Include.RESPONSE_HEADERS,
+					Include.COOKIE_HEADERS);
 		assertThat(exchange.getResponse().getHeaders()).containsKey(mixedCase(HttpHeaders.SET_COOKIE));
 	}
 
 	@Test
 	void getPrincipalWhenUsingDefaultIncludesReturnsNull() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(), WITH_PRINCIPAL,
-				NO_SESSION_ID, Include.defaultIncludes());
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(), WITH_PRINCIPAL, NO_SESSION_ID, Include.defaultIncludes());
 		assertThat(exchange.getPrincipal()).isNull();
 	}
 
 	@Test
 	void getPrincipalWhenIncludesPrincipalReturnsPrincipal() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(), WITH_PRINCIPAL,
-				NO_SESSION_ID, Include.PRINCIPAL);
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(), WITH_PRINCIPAL, NO_SESSION_ID, Include.PRINCIPAL);
 		assertThat(exchange.getPrincipal()).isNotNull();
 		assertThat(exchange.getPrincipal().getName()).isEqualTo("alice");
 	}
 
 	@Test
 	void getSessionIdWhenUsingDefaultIncludesReturnsNull() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(), NO_PRINCIPAL,
-				WITH_SESSION_ID, Include.defaultIncludes());
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(), NO_PRINCIPAL, WITH_SESSION_ID, Include.defaultIncludes());
 		assertThat(exchange.getSession()).isNull();
 	}
 
 	@Test
 	void getSessionIdWhenIncludesSessionReturnsSessionId() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(), NO_PRINCIPAL,
-				WITH_SESSION_ID, Include.SESSION_ID);
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(), NO_PRINCIPAL, WITH_SESSION_ID, Include.SESSION_ID);
 		assertThat(exchange.getSession()).isNotNull();
 		assertThat(exchange.getSession().getId()).isEqualTo("JSESSION_123");
 	}
 
 	@Test
 	void getTimeTakenWhenUsingDefaultIncludesReturnsTimeTaken() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(), NO_PRINCIPAL,
-				NO_SESSION_ID, Include.defaultIncludes());
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID, Include.defaultIncludes());
 		assertThat(exchange.getTimeTaken()).isNotNull();
 	}
 
 	@Test
 	void getTimeTakenWhenNotIncludedReturnsNull() {
-		HttpExchange exchange = HttpExchange.start(createRequest()).finish(createResponse(), NO_PRINCIPAL,
-				NO_SESSION_ID);
+		HttpExchange exchange = HttpExchange.start(createRequest())
+			.finish(createResponse(), NO_PRINCIPAL, NO_SESSION_ID);
 		assertThat(exchange.getTimeTaken()).isNull();
 	}
 
@@ -266,8 +270,8 @@ class HttpExchangeTests {
 		Duration duration = Duration.ofSeconds(1);
 		Clock startClock = Clock.fixed(Instant.now(), ZoneId.systemDefault());
 		Clock finishClock = Clock.offset(startClock, duration);
-		HttpExchange exchange = HttpExchange.start(startClock, createRequest()).finish(finishClock, createResponse(),
-				NO_PRINCIPAL, NO_SESSION_ID, Include.TIME_TAKEN);
+		HttpExchange exchange = HttpExchange.start(startClock, createRequest())
+			.finish(finishClock, createResponse(), NO_PRINCIPAL, NO_SESSION_ID, Include.TIME_TAKEN);
 		assertThat(exchange.getTimeTaken()).isEqualTo(duration);
 	}
 
@@ -281,7 +285,7 @@ class HttpExchangeTests {
 		responseHeaders.set(HttpHeaders.SET_COOKIE, "test=test");
 		responseHeaders.setContentLength(0);
 		HttpExchange exchange = HttpExchange.start(createRequest(requestHeaders))
-				.finish(createResponse(responseHeaders), NO_PRINCIPAL, NO_SESSION_ID, Include.defaultIncludes());
+			.finish(createResponse(responseHeaders), NO_PRINCIPAL, NO_SESSION_ID, Include.defaultIncludes());
 		assertThat(exchange.getTimeTaken()).isNotNull();
 		assertThat(exchange.getPrincipal()).isNull();
 		assertThat(exchange.getSession()).isNull();

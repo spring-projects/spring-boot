@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,8 +58,11 @@ public class SampleMethodSecurityApplication implements WebMvcConfigurer {
 		@Bean
 		public InMemoryUserDetailsManager inMemoryUserDetailsManager() {
 			return new InMemoryUserDetailsManager(
-					User.withDefaultPasswordEncoder().username("admin").password("admin")
-							.roles("ADMIN", "USER", "ACTUATOR").build(),
+					User.withDefaultPasswordEncoder()
+						.username("admin")
+						.password("admin")
+						.roles("ADMIN", "USER", "ACTUATOR")
+						.build(),
 					User.withDefaultPasswordEncoder().username("user").password("user").roles("USER").build());
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,8 @@ class ServletWebServerServletContextListenerTests {
 		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext(
 				ServletListenerRegistrationBeanConfiguration.class, configuration);
 		ServletContextListener servletContextListener = (ServletContextListener) context
-				.getBean("registration", ServletListenerRegistrationBean.class).getListener();
+			.getBean("registration", ServletListenerRegistrationBean.class)
+			.getListener();
 		then(servletContextListener).should().contextInitialized(any(ServletContextEvent.class));
 		context.close();
 	}

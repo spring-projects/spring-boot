@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ class OnMetricsExportEnabledCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		AnnotationAttributes annotationAttributes = AnnotationAttributes
-				.fromMap(metadata.getAnnotationAttributes(ConditionalOnEnabledMetricsExport.class.getName()));
+			.fromMap(metadata.getAnnotationAttributes(ConditionalOnEnabledMetricsExport.class.getName()));
 		String endpointName = annotationAttributes.getString("value");
 		ConditionOutcome outcome = getProductOutcome(context, endpointName);
 		if (outcome != null) {
@@ -55,7 +55,7 @@ class OnMetricsExportEnabledCondition extends SpringBootCondition {
 		if (environment.containsProperty(enabledProperty)) {
 			boolean match = environment.getProperty(enabledProperty, Boolean.class, true);
 			return new ConditionOutcome(match, ConditionMessage.forCondition(ConditionalOnEnabledMetricsExport.class)
-					.because(enabledProperty + " is " + match));
+				.because(enabledProperty + " is " + match));
 		}
 		return null;
 	}
@@ -70,7 +70,7 @@ class OnMetricsExportEnabledCondition extends SpringBootCondition {
 	private ConditionOutcome getDefaultOutcome(ConditionContext context) {
 		boolean match = Boolean.parseBoolean(context.getEnvironment().getProperty(DEFAULT_PROPERTY_NAME, "true"));
 		return new ConditionOutcome(match, ConditionMessage.forCondition(ConditionalOnEnabledMetricsExport.class)
-				.because(DEFAULT_PROPERTY_NAME + " is considered " + match));
+			.because(DEFAULT_PROPERTY_NAME + " is considered " + match));
 	}
 
 }

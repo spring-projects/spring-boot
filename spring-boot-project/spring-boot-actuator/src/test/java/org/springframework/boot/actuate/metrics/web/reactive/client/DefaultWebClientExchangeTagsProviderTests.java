@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,8 @@ class DefaultWebClientExchangeTagsProviderTests {
 	@BeforeEach
 	void setup() {
 		this.request = ClientRequest.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot"))
-				.attribute(URI_TEMPLATE_ATTRIBUTE, "https://example.org/projects/{project}").build();
+			.attribute(URI_TEMPLATE_ATTRIBUTE, "https://example.org/projects/{project}")
+			.build();
 		this.response = mock(ClientResponse.class);
 		given(this.response.statusCode()).willReturn(HttpStatus.OK);
 	}
@@ -68,7 +69,8 @@ class DefaultWebClientExchangeTagsProviderTests {
 	@Test
 	void tagsWhenNoUriTemplateShouldProvideUriPath() {
 		ClientRequest request = ClientRequest
-				.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot")).build();
+			.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot"))
+			.build();
 		Iterable<Tag> tags = this.tagsProvider.tags(request, this.response, null);
 		assertThat(tags).containsExactlyInAnyOrder(Tag.of("method", "GET"), Tag.of("uri", "/projects/spring-boot"),
 				Tag.of("client.name", "example.org"), Tag.of("status", "200"), Tag.of("outcome", "SUCCESS"));

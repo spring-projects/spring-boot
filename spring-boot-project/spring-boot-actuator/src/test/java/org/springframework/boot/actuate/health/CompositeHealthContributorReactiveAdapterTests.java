@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,14 +34,14 @@ class CompositeHealthContributorReactiveAdapterTests {
 	@Test
 	void createWhenDelegateIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new CompositeHealthContributorReactiveAdapter(null))
-				.withMessage("Delegate must not be null");
+			.withMessage("Delegate must not be null");
 	}
 
 	@Test
 	void iteratorWhenDelegateContainsHealthIndicatorAdaptsDelegate() {
 		HealthIndicator indicator = () -> Health.up().withDetail("spring", "boot").build();
 		CompositeHealthContributor delegate = CompositeHealthContributor
-				.fromMap(Collections.singletonMap("test", indicator));
+			.fromMap(Collections.singletonMap("test", indicator));
 		CompositeHealthContributorReactiveAdapter adapter = new CompositeHealthContributorReactiveAdapter(delegate);
 		Iterator<NamedContributor<ReactiveHealthContributor>> iterator = adapter.iterator();
 		assertThat(iterator.hasNext()).isTrue();
@@ -57,9 +57,9 @@ class CompositeHealthContributorReactiveAdapterTests {
 	void iteratorWhenDelegateContainsCompositeHealthContributorAdaptsDelegate() {
 		HealthIndicator indicator = () -> Health.up().withDetail("spring", "boot").build();
 		CompositeHealthContributor composite = CompositeHealthContributor
-				.fromMap(Collections.singletonMap("test1", indicator));
+			.fromMap(Collections.singletonMap("test1", indicator));
 		CompositeHealthContributor delegate = CompositeHealthContributor
-				.fromMap(Collections.singletonMap("test2", composite));
+			.fromMap(Collections.singletonMap("test2", composite));
 		CompositeHealthContributorReactiveAdapter adapter = new CompositeHealthContributorReactiveAdapter(delegate);
 		Iterator<NamedContributor<ReactiveHealthContributor>> iterator = adapter.iterator();
 		assertThat(iterator.hasNext()).isTrue();
@@ -67,7 +67,7 @@ class CompositeHealthContributorReactiveAdapterTests {
 		assertThat(adapted.getName()).isEqualTo("test2");
 		assertThat(adapted.getContributor()).isInstanceOf(CompositeReactiveHealthContributor.class);
 		ReactiveHealthContributor nested = ((CompositeReactiveHealthContributor) adapted.getContributor())
-				.getContributor("test1");
+			.getContributor("test1");
 		Health health = ((ReactiveHealthIndicator) nested).getHealth(true).block();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).containsEntry("spring", "boot");
@@ -77,7 +77,7 @@ class CompositeHealthContributorReactiveAdapterTests {
 	void getContributorAdaptsDelegate() {
 		HealthIndicator indicator = () -> Health.up().withDetail("spring", "boot").build();
 		CompositeHealthContributor delegate = CompositeHealthContributor
-				.fromMap(Collections.singletonMap("test", indicator));
+			.fromMap(Collections.singletonMap("test", indicator));
 		CompositeHealthContributorReactiveAdapter adapter = new CompositeHealthContributorReactiveAdapter(delegate);
 		ReactiveHealthContributor adapted = adapter.getContributor("test");
 		Health health = ((ReactiveHealthIndicator) adapted).getHealth(true).block();

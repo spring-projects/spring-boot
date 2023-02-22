@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,9 +136,9 @@ class BaggagePropagationIntegrationTests {
 			@Override
 			public ApplicationContextRunner get() {
 				return new ApplicationContextRunner()
-						.withConfiguration(AutoConfigurations.of(BraveAutoConfiguration.class)).withPropertyValues(
-								"management.tracing.baggage.remote-fields=x-vcap-request-id,country-code,bp",
-								"management.tracing.baggage.correlation.fields=country-code,bp");
+					.withConfiguration(AutoConfigurations.of(BraveAutoConfiguration.class))
+					.withPropertyValues("management.tracing.baggage.remote-fields=x-vcap-request-id,country-code,bp",
+							"management.tracing.baggage.correlation.fields=country-code,bp");
 			}
 		},
 
@@ -146,10 +146,9 @@ class BaggagePropagationIntegrationTests {
 			@Override
 			public ApplicationContextRunner get() {
 				return new ApplicationContextRunner()
-						.withConfiguration(AutoConfigurations.of(OpenTelemetryAutoConfiguration.class))
-						.withPropertyValues(
-								"management.tracing.baggage.remote-fields=x-vcap-request-id,country-code,bp",
-								"management.tracing.baggage.correlation.fields=country-code,bp");
+					.withConfiguration(AutoConfigurations.of(OpenTelemetryAutoConfiguration.class))
+					.withPropertyValues("management.tracing.baggage.remote-fields=x-vcap-request-id,country-code,bp",
+							"management.tracing.baggage.correlation.fields=country-code,bp");
 			}
 		},
 
@@ -157,10 +156,10 @@ class BaggagePropagationIntegrationTests {
 			@Override
 			public ApplicationContextRunner get() {
 				return new ApplicationContextRunner()
-						.withConfiguration(AutoConfigurations.of(BraveAutoConfiguration.class))
-						.withPropertyValues("management.tracing.propagation.type=B3",
-								"management.tracing.baggage.remote-fields=x-vcap-request-id,country-code,bp",
-								"management.tracing.baggage.correlation.fields=country-code,bp");
+					.withConfiguration(AutoConfigurations.of(BraveAutoConfiguration.class))
+					.withPropertyValues("management.tracing.propagation.type=B3",
+							"management.tracing.baggage.remote-fields=x-vcap-request-id,country-code,bp",
+							"management.tracing.baggage.correlation.fields=country-code,bp");
 			}
 		},
 
@@ -168,10 +167,10 @@ class BaggagePropagationIntegrationTests {
 			@Override
 			public ApplicationContextRunner get() {
 				return new ApplicationContextRunner()
-						.withConfiguration(AutoConfigurations.of(OpenTelemetryAutoConfiguration.class))
-						.withPropertyValues("management.tracing.propagation.type=B3",
-								"management.tracing.baggage.remote-fields=x-vcap-request-id,country-code,bp",
-								"management.tracing.baggage.correlation.fields=country-code,bp");
+					.withConfiguration(AutoConfigurations.of(OpenTelemetryAutoConfiguration.class))
+					.withPropertyValues("management.tracing.propagation.type=B3",
+							"management.tracing.baggage.remote-fields=x-vcap-request-id,country-code,bp",
+							"management.tracing.baggage.correlation.fields=country-code,bp");
 			}
 		}
 

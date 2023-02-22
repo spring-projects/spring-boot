@@ -111,8 +111,8 @@ class SampleActuatorApplicationTests {
 
 	@Test
 	void testErrorPage() {
-		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password").getForEntity("/foo",
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password")
+			.getForEntity("/foo", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		String body = entity.getBody();
 		assertThat(body).contains("\"error\":");
@@ -123,8 +123,8 @@ class SampleActuatorApplicationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		HttpEntity<?> request = new HttpEntity<Void>(headers);
-		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password").exchange("/foo",
-				HttpMethod.GET, request, String.class);
+		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password")
+			.exchange("/foo", HttpMethod.GET, request, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		String body = entity.getBody();
 		assertThat(body).as("Body was null").isNotNull();

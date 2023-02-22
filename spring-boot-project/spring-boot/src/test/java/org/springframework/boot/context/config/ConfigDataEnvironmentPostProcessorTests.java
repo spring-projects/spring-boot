@@ -92,8 +92,8 @@ class ConfigDataEnvironmentPostProcessorTests {
 		this.application.setAdditionalProfiles("dev");
 		willReturn(this.configDataEnvironment).given(this.postProcessor).getConfigDataEnvironment(any(), any(), any());
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
-		then(this.postProcessor).should().getConfigDataEnvironment(any(), any(),
-				this.additionalProfilesCaptor.capture());
+		then(this.postProcessor).should()
+			.getConfigDataEnvironment(any(), any(), this.additionalProfilesCaptor.capture());
 		then(this.configDataEnvironment).should().processAndApply();
 		assertThat(this.additionalProfilesCaptor.getValue()).containsExactly("dev");
 	}
@@ -118,7 +118,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 		assertThat(listener.getAddedPropertySources()).isNotEmpty();
 		assertThat(listener.getProfiles().getActive()).containsExactly("dev");
 		assertThat(listener.getAddedPropertySources().stream().anyMatch((added) -> hasDevProfile(added.getResource())))
-				.isTrue();
+			.isTrue();
 	}
 
 	private boolean hasDevProfile(ConfigDataResource resource) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,8 +71,10 @@ public class RabbitConnectionFactoryBeanConfigurer {
 		map.from(this.rabbitProperties::determineUsername).whenNonNull().to(factory::setUsername);
 		map.from(this.rabbitProperties::determinePassword).whenNonNull().to(factory::setPassword);
 		map.from(this.rabbitProperties::determineVirtualHost).whenNonNull().to(factory::setVirtualHost);
-		map.from(this.rabbitProperties::getRequestedHeartbeat).whenNonNull().asInt(Duration::getSeconds)
-				.to(factory::setRequestedHeartbeat);
+		map.from(this.rabbitProperties::getRequestedHeartbeat)
+			.whenNonNull()
+			.asInt(Duration::getSeconds)
+			.to(factory::setRequestedHeartbeat);
 		map.from(this.rabbitProperties::getRequestedChannelMax).to(factory::setRequestedChannelMax);
 		RabbitProperties.Ssl ssl = this.rabbitProperties.getSsl();
 		if (ssl.determineEnabled()) {
@@ -87,13 +89,17 @@ public class RabbitConnectionFactoryBeanConfigurer {
 			map.from(ssl::getTrustStorePassword).to(factory::setTrustStorePassphrase);
 			map.from(ssl::getTrustStoreAlgorithm).whenNonNull().to(factory::setTrustStoreAlgorithm);
 			map.from(ssl::isValidateServerCertificate)
-					.to((validate) -> factory.setSkipServerCertificateValidation(!validate));
+				.to((validate) -> factory.setSkipServerCertificateValidation(!validate));
 			map.from(ssl::getVerifyHostname).to(factory::setEnableHostnameVerification);
 		}
-		map.from(this.rabbitProperties::getConnectionTimeout).whenNonNull().asInt(Duration::toMillis)
-				.to(factory::setConnectionTimeout);
-		map.from(this.rabbitProperties::getChannelRpcTimeout).whenNonNull().asInt(Duration::toMillis)
-				.to(factory::setChannelRpcTimeout);
+		map.from(this.rabbitProperties::getConnectionTimeout)
+			.whenNonNull()
+			.asInt(Duration::toMillis)
+			.to(factory::setConnectionTimeout);
+		map.from(this.rabbitProperties::getChannelRpcTimeout)
+			.whenNonNull()
+			.asInt(Duration::toMillis)
+			.to(factory::setChannelRpcTimeout);
 		map.from(this.credentialsProvider).whenNonNull().to(factory::setCredentialsProvider);
 		map.from(this.credentialsRefreshService).whenNonNull().to(factory::setCredentialsRefreshService);
 	}

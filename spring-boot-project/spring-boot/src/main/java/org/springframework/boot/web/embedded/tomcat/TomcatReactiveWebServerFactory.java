@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -211,8 +211,9 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	@SuppressWarnings("unchecked")
 	private void invokeProtocolHandlerCustomizers(ProtocolHandler protocolHandler) {
-		LambdaSafe.callbacks(TomcatProtocolHandlerCustomizer.class, this.tomcatProtocolHandlerCustomizers,
-				protocolHandler).invoke((customizer) -> customizer.customize(protocolHandler));
+		LambdaSafe
+			.callbacks(TomcatProtocolHandlerCustomizer.class, this.tomcatProtocolHandlerCustomizers, protocolHandler)
+			.invoke((customizer) -> customizer.customize(protocolHandler));
 	}
 
 	private void customizeProtocol(AbstractProtocol<?> protocol) {

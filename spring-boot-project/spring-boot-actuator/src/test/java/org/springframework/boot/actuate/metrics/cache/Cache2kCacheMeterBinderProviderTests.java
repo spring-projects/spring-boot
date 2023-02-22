@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ class Cache2kCacheMeterBinderProviderTests {
 	@Test
 	void cache2kCacheProvider() {
 		SpringCache2kCacheManager cacheManager = new SpringCache2kCacheManager()
-				.addCaches((builder) -> builder.name("test"));
+			.addCaches((builder) -> builder.name("test"));
 		MeterBinder meterBinder = new Cache2kCacheMeterBinderProvider().getMeterBinder(cacheManager.getCache("test"),
 				Collections.emptyList());
 		assertThat(meterBinder).isInstanceOf(Cache2kCacheMetrics.class);

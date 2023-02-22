@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -156,21 +156,21 @@ abstract class AbstractSampleActuatorCustomSecurityTests {
 	@Test
 	void actuatorCustomMvcSecureEndpointWithAnonymous() {
 		ResponseEntity<String> entity = restTemplate()
-				.getForEntity(getManagementPath() + "/actuator/example/echo?text={t}", String.class, "test");
+			.getForEntity(getManagementPath() + "/actuator/example/echo?text={t}", String.class, "test");
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void actuatorCustomMvcSecureEndpointWithUnauthorizedUser() {
 		ResponseEntity<String> entity = userRestTemplate()
-				.getForEntity(getManagementPath() + "/actuator/example/echo?text={t}", String.class, "test");
+			.getForEntity(getManagementPath() + "/actuator/example/echo?text={t}", String.class, "test");
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
 	@Test
 	void actuatorCustomMvcSecureEndpointWithAuthorizedUser() {
 		ResponseEntity<String> entity = adminRestTemplate()
-				.getForEntity(getManagementPath() + "/actuator/example/echo?text={t}", String.class, "test");
+			.getForEntity(getManagementPath() + "/actuator/example/echo?text={t}", String.class, "test");
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("test");
 		assertThat(entity.getHeaders().getFirst("echo")).isEqualTo("test");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,12 +80,14 @@ class OperationReflectiveProcessorTests {
 	}
 
 	private void assertHintsForDto() {
-		assertThat(RuntimeHintsPredicates.reflection().onType(Dto.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-						.accepts(this.runtimeHints);
-		assertThat(RuntimeHintsPredicates.reflection().onType(NestedDto.class)
-				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
-						.accepts(this.runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(Dto.class)
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
+			.accepts(this.runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(NestedDto.class)
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
+			.accepts(this.runtimeHints);
 	}
 
 	private void runProcessor(Method method) {

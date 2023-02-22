@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,7 +104,8 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		List<String> missing = filter(requiredBeanTypes, ClassNameFilter.MISSING, getBeanClassLoader());
 		if (!missing.isEmpty()) {
 			ConditionMessage message = ConditionMessage.forCondition(annotation)
-					.didNotFind("required type", "required types").items(Style.QUOTE, missing);
+				.didNotFind("required type", "required types")
+				.items(Style.QUOTE, missing);
 			return ConditionOutcome.noMatch(message);
 		}
 		return null;
@@ -121,8 +122,9 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 				String reason = createOnBeanNoMatchReason(matchResult);
 				return ConditionOutcome.noMatch(spec.message().because(reason));
 			}
-			matchMessage = spec.message(matchMessage).found("bean", "beans").items(Style.QUOTE,
-					matchResult.getNamesOfAllMatches());
+			matchMessage = spec.message(matchMessage)
+				.found("bean", "beans")
+				.items(Style.QUOTE, matchResult.getNamesOfAllMatches());
 		}
 		if (metadata.isAnnotated(ConditionalOnSingleCandidate.class.getName())) {
 			Spec<ConditionalOnSingleCandidate> spec = new SingleCandidateSpec(context, metadata, annotations);
@@ -138,16 +140,16 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 				List<String> primaryBeans = getPrimaryBeans(context.getBeanFactory(), allBeans,
 						spec.getStrategy() == SearchStrategy.ALL);
 				if (primaryBeans.isEmpty()) {
-					return ConditionOutcome.noMatch(
-							spec.message().didNotFind("a primary bean from beans").items(Style.QUOTE, allBeans));
+					return ConditionOutcome
+						.noMatch(spec.message().didNotFind("a primary bean from beans").items(Style.QUOTE, allBeans));
 				}
 				if (primaryBeans.size() > 1) {
 					return ConditionOutcome
-							.noMatch(spec.message().found("multiple primary beans").items(Style.QUOTE, primaryBeans));
+						.noMatch(spec.message().found("multiple primary beans").items(Style.QUOTE, primaryBeans));
 				}
 				matchMessage = spec.message(matchMessage)
-						.found("a single primary bean '" + primaryBeans.get(0) + "' from beans")
-						.items(Style.QUOTE, allBeans);
+					.found("a single primary bean '" + primaryBeans.get(0) + "' from beans")
+					.items(Style.QUOTE, allBeans);
 			}
 		}
 		if (metadata.isAnnotated(ConditionalOnMissingBean.class.getName())) {
@@ -418,8 +420,8 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		Spec(ConditionContext context, AnnotatedTypeMetadata metadata, MergedAnnotations annotations,
 				Class<A> annotationType) {
 			MultiValueMap<String, Object> attributes = annotations.stream(annotationType)
-					.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getMetaTypes))
-					.collect(MergedAnnotationCollectors.toMultiValueMap(Adapt.CLASS_TO_STRING));
+				.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getMetaTypes))
+				.collect(MergedAnnotationCollectors.toMultiValueMap(Adapt.CLASS_TO_STRING));
 			MergedAnnotation<A> annotation = annotations.get(annotationType);
 			this.classLoader = context.getClassLoader();
 			this.annotationType = annotationType;
@@ -567,7 +569,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 		private boolean isBeanMethod(Method method) {
 			return method != null && MergedAnnotations.from(method, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
-					.isPresent(Bean.class);
+				.isPresent(Bean.class);
 		}
 
 		private SearchStrategy getStrategy() {

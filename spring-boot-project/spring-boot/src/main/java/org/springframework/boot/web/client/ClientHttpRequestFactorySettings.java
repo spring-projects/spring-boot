@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.springframework.http.client.ClientHttpRequestFactory;
 
 /**
  * Settings that can be applied when creating a {@link ClientHttpRequestFactory}.
+ *
  * @param connectTimeout the connect timeout
  * @param readTimeout the read timeout
  * @param bufferRequestBody if request body buffering is used

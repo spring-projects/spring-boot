@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,15 +67,15 @@ class XADataSourceAutoConfigurationTests {
 	@Test
 	void createNonEmbeddedFromXAProperties() {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(XADataSourceAutoConfiguration.class))
-				.withUserConfiguration(FromProperties.class)
-				.withClassLoader(new FilteredClassLoader("org.h2.Driver", "org.hsqldb.jdbcDriver"))
-				.withPropertyValues("spring.datasource.xa.data-source-class-name:com.ibm.db2.jcc.DB2XADataSource",
-						"spring.datasource.xa.properties.user:test", "spring.datasource.xa.properties.password:secret")
-				.run((context) -> {
-					MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);
-					XADataSource xaDataSource = wrapper.getXaDataSource();
-					assertThat(xaDataSource).isInstanceOf(DB2XADataSource.class);
-				});
+			.withUserConfiguration(FromProperties.class)
+			.withClassLoader(new FilteredClassLoader("org.h2.Driver", "org.hsqldb.jdbcDriver"))
+			.withPropertyValues("spring.datasource.xa.data-source-class-name:com.ibm.db2.jcc.DB2XADataSource",
+					"spring.datasource.xa.properties.user:test", "spring.datasource.xa.properties.password:secret")
+			.run((context) -> {
+				MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);
+				XADataSource xaDataSource = wrapper.getXaDataSource();
+				assertThat(xaDataSource).isInstanceOf(DB2XADataSource.class);
+			});
 	}
 
 	@Test

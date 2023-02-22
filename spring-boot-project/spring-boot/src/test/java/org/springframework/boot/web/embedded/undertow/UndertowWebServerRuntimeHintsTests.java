@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,12 +43,12 @@ class UndertowWebServerRuntimeHintsTests {
 		assertThat(reflectionOnField("io.undertow.Undertow$ListenerConfig", "type")).accepts(runtimeHints);
 		assertThat(reflectionOnField("io.undertow.Undertow$ListenerConfig", "port")).accepts(runtimeHints);
 		assertThat(reflectionOnField("io.undertow.protocols.ssl.UndertowAcceptingSslChannel", "ssl"))
-				.accepts(runtimeHints);
+			.accepts(runtimeHints);
 	}
 
 	private FieldHintPredicate reflectionOnField(String className, String fieldName) throws ClassNotFoundException {
 		return RuntimeHintsPredicates.reflection()
-				.onField(ReflectionUtils.findField(Class.forName(className), fieldName));
+			.onField(ReflectionUtils.findField(Class.forName(className), fieldName));
 	}
 
 }

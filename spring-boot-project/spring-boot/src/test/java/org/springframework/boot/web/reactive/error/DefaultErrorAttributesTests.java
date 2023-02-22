@@ -64,8 +64,8 @@ class DefaultErrorAttributesTests {
 		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
 		ServerRequest request = ServerRequest.create(exchange, this.readers);
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.errorAttributes.getErrorAttributes(request, ErrorAttributeOptions.defaults()))
-				.withMessageContaining("Missing exception attribute in ServerWebExchange");
+			.isThrownBy(() -> this.errorAttributes.getErrorAttributes(request, ErrorAttributeOptions.defaults()))
+			.withMessageContaining("Missing exception attribute in ServerWebExchange");
 	}
 
 	@Test
@@ -243,9 +243,9 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, ex),
 				ErrorAttributeOptions.of(Include.MESSAGE, Include.BINDING_ERRORS));
 		assertThat(attributes.get("message")).asString()
-				.startsWith("Validation failed for argument at index 0 in method: "
-						+ "int org.springframework.boot.web.reactive.error.DefaultErrorAttributesTests"
-						+ ".method(java.lang.String), with 1 error(s)");
+			.startsWith("Validation failed for argument at index 0 in method: "
+					+ "int org.springframework.boot.web.reactive.error.DefaultErrorAttributesTests"
+					+ ".method(java.lang.String), with 1 error(s)");
 		assertThat(attributes).containsEntry("errors", bindingResult.getAllErrors());
 	}
 

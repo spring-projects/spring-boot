@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -151,77 +151,91 @@ public class CassandraAutoConfiguration {
 	private Config mapConfig(CassandraProperties properties) {
 		CassandraDriverOptions options = new CassandraDriverOptions();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(properties.getSessionName()).whenHasText()
-				.to((sessionName) -> options.add(DefaultDriverOption.SESSION_NAME, sessionName));
+		map.from(properties.getSessionName())
+			.whenHasText()
+			.to((sessionName) -> options.add(DefaultDriverOption.SESSION_NAME, sessionName));
 		map.from(properties::getUsername)
-				.to((username) -> options.add(DefaultDriverOption.AUTH_PROVIDER_USER_NAME, username)
-						.add(DefaultDriverOption.AUTH_PROVIDER_PASSWORD, properties.getPassword()));
+			.to((username) -> options.add(DefaultDriverOption.AUTH_PROVIDER_USER_NAME, username)
+				.add(DefaultDriverOption.AUTH_PROVIDER_PASSWORD, properties.getPassword()));
 		map.from(properties::getCompression)
-				.to((compression) -> options.add(DefaultDriverOption.PROTOCOL_COMPRESSION, compression));
+			.to((compression) -> options.add(DefaultDriverOption.PROTOCOL_COMPRESSION, compression));
 		mapConnectionOptions(properties, options);
 		mapPoolingOptions(properties, options);
 		mapRequestOptions(properties, options);
 		mapControlConnectionOptions(properties, options);
 		map.from(mapContactPoints(properties))
-				.to((contactPoints) -> options.add(DefaultDriverOption.CONTACT_POINTS, contactPoints));
-		map.from(properties.getLocalDatacenter()).whenHasText().to(
-				(localDatacenter) -> options.add(DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER, localDatacenter));
+			.to((contactPoints) -> options.add(DefaultDriverOption.CONTACT_POINTS, contactPoints));
+		map.from(properties.getLocalDatacenter())
+			.whenHasText()
+			.to((localDatacenter) -> options.add(DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER, localDatacenter));
 		return options.build();
 	}
 
 	private void mapConnectionOptions(CassandraProperties properties, CassandraDriverOptions options) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Connection connectionProperties = properties.getConnection();
-		map.from(connectionProperties::getConnectTimeout).asInt(Duration::toMillis)
-				.to((connectTimeout) -> options.add(DefaultDriverOption.CONNECTION_CONNECT_TIMEOUT, connectTimeout));
-		map.from(connectionProperties::getInitQueryTimeout).asInt(Duration::toMillis).to(
-				(initQueryTimeout) -> options.add(DefaultDriverOption.CONNECTION_INIT_QUERY_TIMEOUT, initQueryTimeout));
+		map.from(connectionProperties::getConnectTimeout)
+			.asInt(Duration::toMillis)
+			.to((connectTimeout) -> options.add(DefaultDriverOption.CONNECTION_CONNECT_TIMEOUT, connectTimeout));
+		map.from(connectionProperties::getInitQueryTimeout)
+			.asInt(Duration::toMillis)
+			.to((initQueryTimeout) -> options.add(DefaultDriverOption.CONNECTION_INIT_QUERY_TIMEOUT, initQueryTimeout));
 	}
 
 	private void mapPoolingOptions(CassandraProperties properties, CassandraDriverOptions options) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		CassandraProperties.Pool poolProperties = properties.getPool();
-		map.from(poolProperties::getIdleTimeout).asInt(Duration::toMillis)
-				.to((idleTimeout) -> options.add(DefaultDriverOption.HEARTBEAT_TIMEOUT, idleTimeout));
-		map.from(poolProperties::getHeartbeatInterval).asInt(Duration::toMillis)
-				.to((heartBeatInterval) -> options.add(DefaultDriverOption.HEARTBEAT_INTERVAL, heartBeatInterval));
+		map.from(poolProperties::getIdleTimeout)
+			.asInt(Duration::toMillis)
+			.to((idleTimeout) -> options.add(DefaultDriverOption.HEARTBEAT_TIMEOUT, idleTimeout));
+		map.from(poolProperties::getHeartbeatInterval)
+			.asInt(Duration::toMillis)
+			.to((heartBeatInterval) -> options.add(DefaultDriverOption.HEARTBEAT_INTERVAL, heartBeatInterval));
 	}
 
 	private void mapRequestOptions(CassandraProperties properties, CassandraDriverOptions options) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Request requestProperties = properties.getRequest();
-		map.from(requestProperties::getTimeout).asInt(Duration::toMillis)
-				.to(((timeout) -> options.add(DefaultDriverOption.REQUEST_TIMEOUT, timeout)));
+		map.from(requestProperties::getTimeout)
+			.asInt(Duration::toMillis)
+			.to(((timeout) -> options.add(DefaultDriverOption.REQUEST_TIMEOUT, timeout)));
 		map.from(requestProperties::getConsistency)
-				.to(((consistency) -> options.add(DefaultDriverOption.REQUEST_CONSISTENCY, consistency)));
-		map.from(requestProperties::getSerialConsistency).to(
-				(serialConsistency) -> options.add(DefaultDriverOption.REQUEST_SERIAL_CONSISTENCY, serialConsistency));
+			.to(((consistency) -> options.add(DefaultDriverOption.REQUEST_CONSISTENCY, consistency)));
+		map.from(requestProperties::getSerialConsistency)
+			.to((serialConsistency) -> options.add(DefaultDriverOption.REQUEST_SERIAL_CONSISTENCY, serialConsistency));
 		map.from(requestProperties::getPageSize)
-				.to((pageSize) -> options.add(DefaultDriverOption.REQUEST_PAGE_SIZE, pageSize));
+			.to((pageSize) -> options.add(DefaultDriverOption.REQUEST_PAGE_SIZE, pageSize));
 		Throttler throttlerProperties = requestProperties.getThrottler();
-		map.from(throttlerProperties::getType).as(ThrottlerType::type)
-				.to((type) -> options.add(DefaultDriverOption.REQUEST_THROTTLER_CLASS, type));
+		map.from(throttlerProperties::getType)
+			.as(ThrottlerType::type)
+			.to((type) -> options.add(DefaultDriverOption.REQUEST_THROTTLER_CLASS, type));
 		map.from(throttlerProperties::getMaxQueueSize)
-				.to((maxQueueSize) -> options.add(DefaultDriverOption.REQUEST_THROTTLER_MAX_QUEUE_SIZE, maxQueueSize));
-		map.from(throttlerProperties::getMaxConcurrentRequests).to((maxConcurrentRequests) -> options
-				.add(DefaultDriverOption.REQUEST_THROTTLER_MAX_CONCURRENT_REQUESTS, maxConcurrentRequests));
-		map.from(throttlerProperties::getMaxRequestsPerSecond).to((maxRequestsPerSecond) -> options
-				.add(DefaultDriverOption.REQUEST_THROTTLER_MAX_REQUESTS_PER_SECOND, maxRequestsPerSecond));
-		map.from(throttlerProperties::getDrainInterval).asInt(Duration::toMillis).to(
-				(drainInterval) -> options.add(DefaultDriverOption.REQUEST_THROTTLER_DRAIN_INTERVAL, drainInterval));
+			.to((maxQueueSize) -> options.add(DefaultDriverOption.REQUEST_THROTTLER_MAX_QUEUE_SIZE, maxQueueSize));
+		map.from(throttlerProperties::getMaxConcurrentRequests)
+			.to((maxConcurrentRequests) -> options.add(DefaultDriverOption.REQUEST_THROTTLER_MAX_CONCURRENT_REQUESTS,
+					maxConcurrentRequests));
+		map.from(throttlerProperties::getMaxRequestsPerSecond)
+			.to((maxRequestsPerSecond) -> options.add(DefaultDriverOption.REQUEST_THROTTLER_MAX_REQUESTS_PER_SECOND,
+					maxRequestsPerSecond));
+		map.from(throttlerProperties::getDrainInterval)
+			.asInt(Duration::toMillis)
+			.to((drainInterval) -> options.add(DefaultDriverOption.REQUEST_THROTTLER_DRAIN_INTERVAL, drainInterval));
 	}
 
 	private void mapControlConnectionOptions(CassandraProperties properties, CassandraDriverOptions options) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Controlconnection controlProperties = properties.getControlconnection();
-		map.from(controlProperties::getTimeout).asInt(Duration::toMillis)
-				.to((timeout) -> options.add(DefaultDriverOption.CONTROL_CONNECTION_TIMEOUT, timeout));
+		map.from(controlProperties::getTimeout)
+			.asInt(Duration::toMillis)
+			.to((timeout) -> options.add(DefaultDriverOption.CONTROL_CONNECTION_TIMEOUT, timeout));
 	}
 
 	private List<String> mapContactPoints(CassandraProperties properties) {
 		if (properties.getContactPoints() != null) {
-			return properties.getContactPoints().stream()
-					.map((candidate) -> formatContactPoint(candidate, properties.getPort())).toList();
+			return properties.getContactPoints()
+				.stream()
+				.map((candidate) -> formatContactPoint(candidate, properties.getPort()))
+				.toList();
 		}
 		return null;
 	}

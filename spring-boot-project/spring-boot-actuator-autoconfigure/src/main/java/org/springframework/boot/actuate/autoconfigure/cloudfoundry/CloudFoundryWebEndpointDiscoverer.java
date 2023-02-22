@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,8 +73,11 @@ public class CloudFoundryWebEndpointDiscoverer extends WebEndpointDiscoverer {
 	}
 
 	private boolean isHealthEndpointExtension(Class<?> extensionBeanType) {
-		return MergedAnnotations.from(extensionBeanType).get(EndpointWebExtension.class)
-				.getValue("endpoint", Class.class).map(HealthEndpoint.class::isAssignableFrom).orElse(false);
+		return MergedAnnotations.from(extensionBeanType)
+			.get(EndpointWebExtension.class)
+			.getValue("endpoint", Class.class)
+			.map(HealthEndpoint.class::isAssignableFrom)
+			.orElse(false);
 	}
 
 	private boolean isCloudFoundryHealthEndpointExtension(Class<?> extensionBeanType) {
@@ -85,8 +88,8 @@ public class CloudFoundryWebEndpointDiscoverer extends WebEndpointDiscoverer {
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.reflection().registerType(CloudFoundryEndpointFilter.class,
-					MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+			hints.reflection()
+				.registerType(CloudFoundryEndpointFilter.class, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
 		}
 
 	}

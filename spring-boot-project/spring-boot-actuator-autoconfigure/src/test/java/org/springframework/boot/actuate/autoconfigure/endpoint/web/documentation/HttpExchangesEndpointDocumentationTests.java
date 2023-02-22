@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,41 +66,44 @@ class HttpExchangesEndpointDocumentationTests extends MockMvcEndpointDocumentati
 		given(request.getUri()).willReturn(URI.create("https://api.example.com"));
 		given(request.getMethod()).willReturn("GET");
 		given(request.getHeaders())
-				.willReturn(Collections.singletonMap(HttpHeaders.ACCEPT, Arrays.asList("application/json")));
+			.willReturn(Collections.singletonMap(HttpHeaders.ACCEPT, Arrays.asList("application/json")));
 		RecordableHttpResponse response = mock(RecordableHttpResponse.class);
 		given(response.getStatus()).willReturn(200);
 		given(response.getHeaders())
-				.willReturn(Collections.singletonMap(HttpHeaders.CONTENT_TYPE, Arrays.asList("application/json")));
+			.willReturn(Collections.singletonMap(HttpHeaders.CONTENT_TYPE, Arrays.asList("application/json")));
 		Principal principal = mock(Principal.class);
 		given(principal.getName()).willReturn("alice");
 		Instant instant = Instant.parse("2022-12-22T13:43:41.00Z");
 		Clock start = Clock.fixed(instant, ZoneId.systemDefault());
 		Clock end = Clock.offset(start, Duration.ofMillis(23));
-		HttpExchange exchange = HttpExchange.start(start, request).finish(end, response, () -> principal,
-				() -> UUID.randomUUID().toString(), EnumSet.allOf(Include.class));
+		HttpExchange exchange = HttpExchange.start(start, request)
+			.finish(end, response, () -> principal, () -> UUID.randomUUID().toString(), EnumSet.allOf(Include.class));
 		given(this.repository.findAll()).willReturn(Arrays.asList(exchange));
-		this.mockMvc.perform(get("/actuator/httpexchanges")).andExpect(status().isOk()).andDo(document("httpexchanges",
-				responseFields(fieldWithPath("exchanges").description("An array of HTTP request-response exchanges."),
-						fieldWithPath("exchanges.[].timestamp").description("Timestamp of when the exchange occurred."),
-						fieldWithPath("exchanges.[].principal").description("Principal of the exchange, if any.")
-								.optional(),
-						fieldWithPath("exchanges.[].principal.name").description("Name of the principal.").optional(),
-						fieldWithPath("exchanges.[].request.method").description("HTTP method of the request."),
-						fieldWithPath("exchanges.[].request.remoteAddress")
-								.description("Remote address from which the request was received, if known.").optional()
-								.type(JsonFieldType.STRING),
-						fieldWithPath("exchanges.[].request.uri").description("URI of the request."),
-						fieldWithPath("exchanges.[].request.headers")
-								.description("Headers of the request, keyed by header name."),
-						fieldWithPath("exchanges.[].request.headers.*.[]").description("Values of the header"),
-						fieldWithPath("exchanges.[].response.status").description("Status of the response"),
-						fieldWithPath("exchanges.[].response.headers")
-								.description("Headers of the response, keyed by header name."),
-						fieldWithPath("exchanges.[].response.headers.*.[]").description("Values of the header"),
-						fieldWithPath("exchanges.[].session")
-								.description("Session associated with the exchange, if any.").optional(),
-						fieldWithPath("exchanges.[].session.id").description("ID of the session."),
-						fieldWithPath("exchanges.[].timeTaken").description("Time taken to handle the exchange."))));
+		this.mockMvc.perform(get("/actuator/httpexchanges"))
+			.andExpect(status().isOk())
+			.andDo(document("httpexchanges", responseFields(
+					fieldWithPath("exchanges").description("An array of HTTP request-response exchanges."),
+					fieldWithPath("exchanges.[].timestamp").description("Timestamp of when the exchange occurred."),
+					fieldWithPath("exchanges.[].principal").description("Principal of the exchange, if any.")
+						.optional(),
+					fieldWithPath("exchanges.[].principal.name").description("Name of the principal.").optional(),
+					fieldWithPath("exchanges.[].request.method").description("HTTP method of the request."),
+					fieldWithPath("exchanges.[].request.remoteAddress")
+						.description("Remote address from which the request was received, if known.")
+						.optional()
+						.type(JsonFieldType.STRING),
+					fieldWithPath("exchanges.[].request.uri").description("URI of the request."),
+					fieldWithPath("exchanges.[].request.headers")
+						.description("Headers of the request, keyed by header name."),
+					fieldWithPath("exchanges.[].request.headers.*.[]").description("Values of the header"),
+					fieldWithPath("exchanges.[].response.status").description("Status of the response"),
+					fieldWithPath("exchanges.[].response.headers")
+						.description("Headers of the response, keyed by header name."),
+					fieldWithPath("exchanges.[].response.headers.*.[]").description("Values of the header"),
+					fieldWithPath("exchanges.[].session").description("Session associated with the exchange, if any.")
+						.optional(),
+					fieldWithPath("exchanges.[].session.id").description("ID of the session."),
+					fieldWithPath("exchanges.[].timeTaken").description("Time taken to handle the exchange."))));
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,7 +128,7 @@ class SpringApplicationShutdownHookTests {
 	void addHandlerActionWhenNullThrowsException() {
 		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
 		assertThatIllegalArgumentException().isThrownBy(() -> shutdownHook.getHandlers().add(null))
-				.withMessage("Action must not be null");
+			.withMessage("Action must not be null");
 	}
 
 	@Test
@@ -137,14 +137,14 @@ class SpringApplicationShutdownHookTests {
 		shutdownHook.run();
 		Runnable handlerAction = new TestHandlerAction(new ArrayList<>());
 		assertThatIllegalStateException().isThrownBy(() -> shutdownHook.getHandlers().add(handlerAction))
-				.withMessage("Shutdown in progress");
+			.withMessage("Shutdown in progress");
 	}
 
 	@Test
 	void removeHandlerActionWhenNullThrowsException() {
 		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
 		assertThatIllegalArgumentException().isThrownBy(() -> shutdownHook.getHandlers().remove(null))
-				.withMessage("Action must not be null");
+			.withMessage("Action must not be null");
 	}
 
 	@Test
@@ -154,7 +154,7 @@ class SpringApplicationShutdownHookTests {
 		shutdownHook.getHandlers().add(handlerAction);
 		shutdownHook.run();
 		assertThatIllegalStateException().isThrownBy(() -> shutdownHook.getHandlers().remove(handlerAction))
-				.withMessage("Shutdown in progress");
+			.withMessage("Shutdown in progress");
 	}
 
 	@Test
@@ -164,7 +164,7 @@ class SpringApplicationShutdownHookTests {
 		shutdownHook.registerApplicationContext(context);
 		context.refresh();
 		assertThatThrownBy(() -> shutdownHook.deregisterFailedApplicationContext(context))
-				.isInstanceOf(IllegalStateException.class);
+			.isInstanceOf(IllegalStateException.class);
 		assertThat(shutdownHook.isApplicationContextRegistered(context)).isTrue();
 	}
 

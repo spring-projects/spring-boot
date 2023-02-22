@@ -160,7 +160,7 @@ class CommandRunnerTests {
 	@Test
 	void exceptionMessages() {
 		assertThat(new NoSuchCommandException("name").getMessage())
-				.isEqualTo("'name' is not a valid command. See 'help'.");
+			.isEqualTo("'name' is not a valid command. See 'help'.");
 	}
 
 	@Test
@@ -172,13 +172,13 @@ class CommandRunnerTests {
 	@Test
 	void helpNoCommand() {
 		assertThatExceptionOfType(NoHelpCommandArgumentsException.class)
-				.isThrownBy(() -> this.commandRunner.run("help"));
+			.isThrownBy(() -> this.commandRunner.run("help"));
 	}
 
 	@Test
 	void helpUnknownCommand() {
 		assertThatExceptionOfType(NoSuchCommandException.class)
-				.isThrownBy(() -> this.commandRunner.run("help", "missing"));
+			.isThrownBy(() -> this.commandRunner.run("help", "missing"));
 	}
 
 	private enum Call {

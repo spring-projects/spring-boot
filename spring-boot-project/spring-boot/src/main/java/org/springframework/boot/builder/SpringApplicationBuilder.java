@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -194,8 +194,9 @@ public class SpringApplicationBuilder {
 		child.sources(sources);
 
 		// Copy environment stuff from parent to child
-		child.properties(this.defaultProperties).environment(this.environment)
-				.additionalProfiles(this.additionalProfiles);
+		child.properties(this.defaultProperties)
+			.environment(this.environment)
+			.additionalProfiles(this.additionalProfiles);
 		child.parent = this;
 
 		// It's not possible if embedded web server are enabled to support web contexts as
@@ -221,7 +222,8 @@ public class SpringApplicationBuilder {
 	public SpringApplicationBuilder parent(Class<?>... sources) {
 		if (this.parent == null) {
 			this.parent = new SpringApplicationBuilder(sources).web(WebApplicationType.NONE)
-					.properties(this.defaultProperties).environment(this.environment);
+				.properties(this.defaultProperties)
+				.environment(this.environment);
 		}
 		else {
 			this.parent.sources(sources);

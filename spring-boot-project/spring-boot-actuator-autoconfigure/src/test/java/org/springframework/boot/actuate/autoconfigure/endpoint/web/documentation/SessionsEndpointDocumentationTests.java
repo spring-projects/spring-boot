@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTes
 			fieldWithPath("creationTime").description("Timestamp of when the session was created."),
 			fieldWithPath("lastAccessedTime").description("Timestamp of when the session was last accessed."),
 			fieldWithPath("maxInactiveInterval")
-					.description("Maximum permitted period of inactivity, in seconds, before the session will expire."),
+				.description("Maximum permitted period of inactivity, in seconds, before the session will expire."),
 			fieldWithPath("expired").description("Whether the session has expired."));
 
 	@MockBean
@@ -84,24 +84,27 @@ class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTes
 		sessions.put(sessionTwo.getId(), sessionTwo);
 		sessions.put(sessionThree.getId(), sessionThree);
 		given(this.sessionRepository.findByPrincipalName("alice")).willReturn(sessions);
-		this.mockMvc.perform(get("/actuator/sessions").param("username", "alice")).andExpect(status().isOk())
-				.andDo(document("sessions/username",
-						responseFields(fieldWithPath("sessions").description("Sessions for the given username."))
-								.andWithPrefix("sessions.[].", sessionFields),
-						queryParameters(parameterWithName("username").description("Name of the user."))));
+		this.mockMvc.perform(get("/actuator/sessions").param("username", "alice"))
+			.andExpect(status().isOk())
+			.andDo(document("sessions/username",
+					responseFields(fieldWithPath("sessions").description("Sessions for the given username."))
+						.andWithPrefix("sessions.[].", sessionFields),
+					queryParameters(parameterWithName("username").description("Name of the user."))));
 	}
 
 	@Test
 	void sessionWithId() throws Exception {
 		given(this.sessionRepository.findById(sessionTwo.getId())).willReturn(sessionTwo);
-		this.mockMvc.perform(get("/actuator/sessions/{id}", sessionTwo.getId())).andExpect(status().isOk())
-				.andDo(document("sessions/id", responseFields(sessionFields)));
+		this.mockMvc.perform(get("/actuator/sessions/{id}", sessionTwo.getId()))
+			.andExpect(status().isOk())
+			.andDo(document("sessions/id", responseFields(sessionFields)));
 	}
 
 	@Test
 	void deleteASession() throws Exception {
-		this.mockMvc.perform(delete("/actuator/sessions/{id}", sessionTwo.getId())).andExpect(status().isNoContent())
-				.andDo(document("sessions/delete"));
+		this.mockMvc.perform(delete("/actuator/sessions/{id}", sessionTwo.getId()))
+			.andExpect(status().isNoContent())
+			.andDo(document("sessions/delete"));
 		then(this.sessionRepository).should().deleteById(sessionTwo.getId());
 	}
 

@@ -64,13 +64,13 @@ abstract class HealthEndpointSupportTests<S extends HealthEndpointSupport<C, T>,
 	@Test
 	void createWhenRegistryIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> create(null, this.groups))
-				.withMessage("Registry must not be null");
+			.withMessage("Registry must not be null");
 	}
 
 	@Test
 	void createWhenGroupsIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> create(this.registry, null))
-				.withMessage("Groups must not be null");
+			.withMessage("Groups must not be null");
 	}
 
 	@Test

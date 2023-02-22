@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,29 +76,29 @@ class DelayedLiveReloadTriggerTests {
 	@Test
 	void liveReloadServerMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DelayedLiveReloadTrigger(null, this.requestFactory, URL))
-				.withMessageContaining("LiveReloadServer must not be null");
+			.isThrownBy(() -> new DelayedLiveReloadTrigger(null, this.requestFactory, URL))
+			.withMessageContaining("LiveReloadServer must not be null");
 	}
 
 	@Test
 	void requestFactoryMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, null, URL))
-				.withMessageContaining("RequestFactory must not be null");
+			.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, null, URL))
+			.withMessageContaining("RequestFactory must not be null");
 	}
 
 	@Test
 	void urlMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, null))
-				.withMessageContaining("URL must not be empty");
+			.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, null))
+			.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	void urlMustNotBeEmpty() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, ""))
-				.withMessageContaining("URL must not be empty");
+			.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, ""))
+			.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
@@ -108,7 +108,7 @@ class DelayedLiveReloadTriggerTests {
 		given(this.errorResponse.getStatusCode()).willReturn(HttpStatus.INTERNAL_SERVER_ERROR);
 		given(this.okResponse.getStatusCode()).willReturn(HttpStatus.OK);
 		given(this.requestFactory.createRequest(new URI(URL), HttpMethod.GET)).willThrow(new IOException())
-				.willReturn(this.errorRequest, this.okRequest);
+			.willReturn(this.errorRequest, this.okRequest);
 		long startTime = System.currentTimeMillis();
 		this.trigger.setTimings(10, 200, 30000);
 		this.trigger.run();

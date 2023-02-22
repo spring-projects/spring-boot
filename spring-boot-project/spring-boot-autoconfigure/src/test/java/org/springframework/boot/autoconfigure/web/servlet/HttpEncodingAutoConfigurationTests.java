@@ -70,7 +70,7 @@ class HttpEncodingAutoConfigurationTests {
 	void disableConfiguration() {
 		load(EmptyConfiguration.class, "server.servlet.encoding.enabled:false");
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.context.getBean(CharacterEncodingFilter.class));
+			.isThrownBy(() -> this.context.getBean(CharacterEncodingFilter.class));
 	}
 
 	@Test
@@ -143,8 +143,8 @@ class HttpEncodingAutoConfigurationTests {
 		Map<String, WebServerFactoryCustomizer<?>> beans = getWebServerFactoryCustomizerBeans();
 		assertThat(beans).hasSize(1);
 		assertThat(this.context.getBean(MockServletWebServerFactory.class).getLocaleCharsetMappings()).hasSize(2)
-				.containsEntry(Locale.ENGLISH, StandardCharsets.UTF_8)
-				.containsEntry(Locale.FRANCE, StandardCharsets.UTF_8);
+			.containsEntry(Locale.ENGLISH, StandardCharsets.UTF_8)
+			.containsEntry(Locale.FRANCE, StandardCharsets.UTF_8);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

@@ -37,11 +37,11 @@ class LogUpdateEventTests {
 		List<LogUpdateEvent> events = readAll("log-update-event.stream");
 		assertThat(events).hasSize(7);
 		assertThat(events.get(0))
-				.hasToString("Analyzing image '307c032c4ceaa6330b6c02af945a1fe56a8c3c27c28268574b217c1d38b093cf'");
+			.hasToString("Analyzing image '307c032c4ceaa6330b6c02af945a1fe56a8c3c27c28268574b217c1d38b093cf'");
 		assertThat(events.get(1))
-				.hasToString("Writing metadata for uncached layer 'org.cloudfoundry.openjdk:openjdk-jre'");
+			.hasToString("Writing metadata for uncached layer 'org.cloudfoundry.openjdk:openjdk-jre'");
 		assertThat(events.get(2))
-				.hasToString("Using cached launch layer 'org.cloudfoundry.jvmapplication:executable-jar'");
+			.hasToString("Using cached launch layer 'org.cloudfoundry.jvmapplication:executable-jar'");
 	}
 
 	@Test

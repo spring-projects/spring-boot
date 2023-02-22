@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ class InitializrServiceTests extends AbstractHttpClientMockTests {
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		request.getDependencies().add("foo:bar");
 		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
-				.withMessageContaining(jsonMessage);
+			.withMessageContaining(jsonMessage);
 	}
 
 	@Test
@@ -85,7 +85,7 @@ class InitializrServiceTests extends AbstractHttpClientMockTests {
 		mockProjectGenerationError(400, null);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
-				.withMessageContaining("unexpected 400 error");
+			.withMessageContaining("unexpected 400 error");
 	}
 
 	@Test
@@ -96,7 +96,7 @@ class InitializrServiceTests extends AbstractHttpClientMockTests {
 		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
-				.withMessageContaining("No content received from server");
+			.withMessageContaining("No content received from server");
 	}
 
 	@Test
@@ -105,7 +105,7 @@ class InitializrServiceTests extends AbstractHttpClientMockTests {
 		mockMetadataGetError(500, jsonMessage);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
-				.withMessageContaining(jsonMessage);
+			.withMessageContaining(jsonMessage);
 	}
 
 	@Test
@@ -116,7 +116,7 @@ class InitializrServiceTests extends AbstractHttpClientMockTests {
 		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
-				.withMessageContaining("Invalid content received from server");
+			.withMessageContaining("Invalid content received from server");
 	}
 
 	@Test
@@ -126,7 +126,7 @@ class InitializrServiceTests extends AbstractHttpClientMockTests {
 		given(this.http.execute(isA(HttpGet.class))).willReturn(response);
 		ProjectGenerationRequest request = new ProjectGenerationRequest();
 		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.invoker.generate(request))
-				.withMessageContaining("No content received from server");
+			.withMessageContaining("No content received from server");
 	}
 
 	private ProjectGenerationResponse generateProject(ProjectGenerationRequest request,

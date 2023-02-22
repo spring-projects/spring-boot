@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class ConditionalOnClassTests {
 	@Test
 	void testVanillaOnClassCondition() {
 		this.contextRunner.withUserConfiguration(BasicConfiguration.class, FooConfiguration.class)
-				.run(this::hasBarBean);
+			.run(this::hasBarBean);
 	}
 
 	@Test
@@ -57,7 +57,7 @@ class ConditionalOnClassTests {
 	@Test
 	void testOnClassConditionWithXml() {
 		this.contextRunner.withUserConfiguration(BasicConfiguration.class, XmlConfiguration.class)
-				.run(this::hasBarBean);
+			.run(this::hasBarBean);
 	}
 
 	@Test
@@ -69,8 +69,9 @@ class ConditionalOnClassTests {
 	void onClassConditionOutputShouldNotContainConditionalOnMissingClassInMessage() {
 		this.contextRunner.withUserConfiguration(BasicConfiguration.class).run((context) -> {
 			Collection<ConditionEvaluationReport.ConditionAndOutcomes> conditionAndOutcomes = ConditionEvaluationReport
-					.get(context.getSourceApplicationContext().getBeanFactory()).getConditionAndOutcomesBySource()
-					.values();
+				.get(context.getSourceApplicationContext().getBeanFactory())
+				.getConditionAndOutcomesBySource()
+				.values();
 			String message = conditionAndOutcomes.iterator().next().iterator().next().getOutcome().getMessage();
 			assertThat(message).doesNotContain("@ConditionalOnMissingClass did not find unwanted class");
 		});

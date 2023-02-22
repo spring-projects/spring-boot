@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,8 +62,11 @@ class Saml2RelyingPartyRegistrationConfiguration {
 
 	@Bean
 	RelyingPartyRegistrationRepository relyingPartyRegistrationRepository(Saml2RelyingPartyProperties properties) {
-		List<RelyingPartyRegistration> registrations = properties.getRegistration().entrySet().stream()
-				.map(this::asRegistration).toList();
+		List<RelyingPartyRegistration> registrations = properties.getRegistration()
+			.entrySet()
+			.stream()
+			.map(this::asRegistration)
+			.toList();
 		return new InMemoryRelyingPartyRegistrationRepository(registrations);
 	}
 
@@ -73,19 +76,30 @@ class Saml2RelyingPartyRegistrationConfiguration {
 
 	private RelyingPartyRegistration asRegistration(String id, Registration properties) {
 		boolean usingMetadata = StringUtils.hasText(properties.getAssertingparty().getMetadataUri());
-		Builder builder = (usingMetadata) ? RelyingPartyRegistrations
-				.fromMetadataLocation(properties.getAssertingparty().getMetadataUri()).registrationId(id)
+		Builder builder = (usingMetadata)
+				? RelyingPartyRegistrations.fromMetadataLocation(properties.getAssertingparty().getMetadataUri())
+					.registrationId(id)
 				: RelyingPartyRegistration.withRegistrationId(id);
 		builder.assertionConsumerServiceLocation(properties.getAcs().getLocation());
 		builder.assertionConsumerServiceBinding(properties.getAcs().getBinding());
 		builder.assertingPartyDetails(mapAssertingParty(properties.getAssertingparty(), usingMetadata));
-		builder.signingX509Credentials((credentials) -> properties.getSigning().getCredentials().stream()
-				.map(this::asSigningCredential).forEach(credentials::add));
-		builder.decryptionX509Credentials((credentials) -> properties.getDecryption().getCredentials().stream()
-				.map(this::asDecryptionCredential).forEach(credentials::add));
-		builder.assertingPartyDetails((details) -> details
-				.verificationX509Credentials((credentials) -> properties.getAssertingparty().getVerification()
-						.getCredentials().stream().map(this::asVerificationCredential).forEach(credentials::add)));
+		builder.signingX509Credentials((credentials) -> properties.getSigning()
+			.getCredentials()
+			.stream()
+			.map(this::asSigningCredential)
+			.forEach(credentials::add));
+		builder.decryptionX509Credentials((credentials) -> properties.getDecryption()
+			.getCredentials()
+			.stream()
+			.map(this::asDecryptionCredential)
+			.forEach(credentials::add));
+		builder.assertingPartyDetails(
+				(details) -> details.verificationX509Credentials((credentials) -> properties.getAssertingparty()
+					.getVerification()
+					.getCredentials()
+					.stream()
+					.map(this::asVerificationCredential)
+					.forEach(credentials::add)));
 		builder.singleLogoutServiceLocation(properties.getSinglelogout().getUrl());
 		builder.singleLogoutServiceResponseLocation(properties.getSinglelogout().getResponseUrl());
 		builder.singleLogoutServiceBinding(properties.getSinglelogout().getBinding());
@@ -103,8 +117,9 @@ class Saml2RelyingPartyRegistrationConfiguration {
 			map.from(assertingParty::getEntityId).to(details::entityId);
 			map.from(assertingParty.getSinglesignon()::getBinding).to(details::singleSignOnServiceBinding);
 			map.from(assertingParty.getSinglesignon()::getUrl).to(details::singleSignOnServiceLocation);
-			map.from(assertingParty.getSinglesignon()::isSignRequest).when((signRequest) -> !usingMetadata)
-					.to(details::wantAuthnRequestsSigned);
+			map.from(assertingParty.getSinglesignon()::isSignRequest)
+				.when((signRequest) -> !usingMetadata)
+				.to(details::wantAuthnRequestsSigned);
 			map.from(assertingParty.getSinglelogout()::getUrl).to(details::singleLogoutServiceLocation);
 			map.from(assertingParty.getSinglelogout()::getResponseUrl).to(details::singleLogoutServiceResponseLocation);
 			map.from(assertingParty.getSinglelogout()::getBinding).to(details::singleLogoutServiceBinding);

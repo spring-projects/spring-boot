@@ -58,12 +58,12 @@ class ConversionServiceParameterValueMapperTests {
 		given(conversionService.convert(any(), any())).willThrow(error);
 		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(conversionService);
 		assertThatExceptionOfType(ParameterMappingException.class)
-				.isThrownBy(() -> mapper.mapParameterValue(new TestOperationParameter(Integer.class), "123"))
-				.satisfies((ex) -> {
-					assertThat(ex.getValue()).isEqualTo("123");
-					assertThat(ex.getParameter().getType()).isEqualTo(Integer.class);
-					assertThat(ex.getCause()).isEqualTo(error);
-				});
+			.isThrownBy(() -> mapper.mapParameterValue(new TestOperationParameter(Integer.class), "123"))
+			.satisfies((ex) -> {
+				assertThat(ex.getValue()).isEqualTo("123");
+				assertThat(ex.getParameter().getType()).isEqualTo(Integer.class);
+				assertThat(ex.getCause()).isEqualTo(error);
+			});
 	}
 
 	@Test
@@ -79,7 +79,7 @@ class ConversionServiceParameterValueMapperTests {
 		ConversionService conversionService = new DefaultConversionService();
 		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(conversionService);
 		assertThatExceptionOfType(ParameterMappingException.class).isThrownBy(() -> mapper
-				.mapParameterValue(new TestOperationParameter(OffsetDateTime.class), "2011-12-03T10:15:30+01:00"));
+			.mapParameterValue(new TestOperationParameter(OffsetDateTime.class), "2011-12-03T10:15:30+01:00"));
 	}
 
 	static class TestOperationParameter implements OperationParameter {

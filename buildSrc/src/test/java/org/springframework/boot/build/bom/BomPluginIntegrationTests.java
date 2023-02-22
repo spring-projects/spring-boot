@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -319,8 +319,12 @@ class BomPluginIntegrationTests {
 	// }
 
 	private BuildResult runGradle(String... args) {
-		return GradleRunner.create().withDebug(true).withProjectDir(this.projectDir).withArguments(args)
-				.withPluginClasspath().build();
+		return GradleRunner.create()
+			.withDebug(true)
+			.withProjectDir(this.projectDir)
+			.withArguments(args)
+			.withPluginClasspath()
+			.build();
 	}
 
 	private void generatePom(Consumer<NodeAssert> consumer) {

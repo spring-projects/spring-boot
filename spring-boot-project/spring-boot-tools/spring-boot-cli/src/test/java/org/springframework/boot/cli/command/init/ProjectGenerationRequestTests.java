@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,21 +57,21 @@ class ProjectGenerationRequestTests {
 		this.request.setServiceUrl(customServerUrl);
 		this.request.getDependencies().add("security");
 		assertThat(this.request.generateUrl(createDefaultMetadata()))
-				.isEqualTo(new URI(customServerUrl + "/starter.zip?dependencies=security&type=test-type"));
+			.isEqualTo(new URI(customServerUrl + "/starter.zip?dependencies=security&type=test-type"));
 	}
 
 	@Test
 	void customBootVersion() {
 		this.request.setBootVersion("1.2.0.RELEASE");
 		assertThat(this.request.generateUrl(createDefaultMetadata()))
-				.isEqualTo(createDefaultUrl("?type=test-type&bootVersion=1.2.0.RELEASE"));
+			.isEqualTo(createDefaultUrl("?type=test-type&bootVersion=1.2.0.RELEASE"));
 	}
 
 	@Test
 	void singleDependency() {
 		this.request.getDependencies().add("web");
 		assertThat(this.request.generateUrl(createDefaultMetadata()))
-				.isEqualTo(createDefaultUrl("?dependencies=web&type=test-type"));
+			.isEqualTo(createDefaultUrl("?dependencies=web&type=test-type"));
 	}
 
 	@Test
@@ -79,21 +79,21 @@ class ProjectGenerationRequestTests {
 		this.request.getDependencies().add("web");
 		this.request.getDependencies().add("data-jpa");
 		assertThat(this.request.generateUrl(createDefaultMetadata()))
-				.isEqualTo(createDefaultUrl("?dependencies=web%2Cdata-jpa&type=test-type"));
+			.isEqualTo(createDefaultUrl("?dependencies=web%2Cdata-jpa&type=test-type"));
 	}
 
 	@Test
 	void customJavaVersion() {
 		this.request.setJavaVersion("1.8");
 		assertThat(this.request.generateUrl(createDefaultMetadata()))
-				.isEqualTo(createDefaultUrl("?type=test-type&javaVersion=1.8"));
+			.isEqualTo(createDefaultUrl("?type=test-type&javaVersion=1.8"));
 	}
 
 	@Test
 	void customPackageName() {
 		this.request.setPackageName("demo.foo");
 		assertThat(this.request.generateUrl(createDefaultMetadata()))
-				.isEqualTo(createDefaultUrl("?packageName=demo.foo&type=test-type"));
+			.isEqualTo(createDefaultUrl("?packageName=demo.foo&type=test-type"));
 	}
 
 	@Test
@@ -110,14 +110,14 @@ class ProjectGenerationRequestTests {
 	void customPackaging() {
 		this.request.setPackaging("war");
 		assertThat(this.request.generateUrl(createDefaultMetadata()))
-				.isEqualTo(createDefaultUrl("?type=test-type&packaging=war"));
+			.isEqualTo(createDefaultUrl("?type=test-type&packaging=war"));
 	}
 
 	@Test
 	void customLanguage() {
 		this.request.setLanguage("groovy");
 		assertThat(this.request.generateUrl(createDefaultMetadata()))
-				.isEqualTo(createDefaultUrl("?type=test-type&language=groovy"));
+			.isEqualTo(createDefaultUrl("?type=test-type&language=groovy"));
 	}
 
 	@Test
@@ -127,29 +127,29 @@ class ProjectGenerationRequestTests {
 		this.request.setVersion("1.0.1-SNAPSHOT");
 		this.request.setDescription("Spring Boot Test");
 		assertThat(this.request.generateUrl(createDefaultMetadata()))
-				.isEqualTo(createDefaultUrl("?groupId=org.acme&artifactId=sample&version=1.0.1-SNAPSHOT"
-						+ "&description=Spring+Boot+Test&type=test-type"));
+			.isEqualTo(createDefaultUrl("?groupId=org.acme&artifactId=sample&version=1.0.1-SNAPSHOT"
+					+ "&description=Spring+Boot+Test&type=test-type"));
 	}
 
 	@Test
 	void outputCustomizeArtifactId() {
 		this.request.setOutput("my-project");
 		assertThat(this.request.generateUrl(createDefaultMetadata()))
-				.isEqualTo(createDefaultUrl("?artifactId=my-project&type=test-type"));
+			.isEqualTo(createDefaultUrl("?artifactId=my-project&type=test-type"));
 	}
 
 	@Test
 	void outputArchiveCustomizeArtifactId() {
 		this.request.setOutput("my-project.zip");
 		assertThat(this.request.generateUrl(createDefaultMetadata()))
-				.isEqualTo(createDefaultUrl("?artifactId=my-project&type=test-type"));
+			.isEqualTo(createDefaultUrl("?artifactId=my-project&type=test-type"));
 	}
 
 	@Test
 	void outputArchiveWithDotsCustomizeArtifactId() {
 		this.request.setOutput("my.nice.project.zip");
 		assertThat(this.request.generateUrl(createDefaultMetadata()))
-				.isEqualTo(createDefaultUrl("?artifactId=my.nice.project&type=test-type"));
+			.isEqualTo(createDefaultUrl("?artifactId=my.nice.project&type=test-type"));
 	}
 
 	@Test
@@ -157,7 +157,7 @@ class ProjectGenerationRequestTests {
 		this.request.setOutput("my-project");
 		this.request.setArtifactId("my-id");
 		assertThat(this.request.generateUrl(createDefaultMetadata()))
-				.isEqualTo(createDefaultUrl("?artifactId=my-id&type=test-type"));
+			.isEqualTo(createDefaultUrl("?artifactId=my-id&type=test-type"));
 	}
 
 	@Test
@@ -165,7 +165,7 @@ class ProjectGenerationRequestTests {
 		InitializrServiceMetadata metadata = readMetadata();
 		setBuildAndFormat("does-not-exist", null);
 		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.request.generateUrl(metadata))
-				.withMessageContaining("does-not-exist");
+			.withMessageContaining("does-not-exist");
 	}
 
 	@Test
@@ -173,7 +173,8 @@ class ProjectGenerationRequestTests {
 		InitializrServiceMetadata metadata = readMetadata("types-conflict");
 		setBuildAndFormat("gradle", null);
 		assertThatExceptionOfType(ReportableException.class).isThrownBy(() -> this.request.generateUrl(metadata))
-				.withMessageContaining("gradle-project").withMessageContaining("gradle-project-2");
+			.withMessageContaining("gradle-project")
+			.withMessageContaining("gradle-project-2");
 	}
 
 	@Test
@@ -195,14 +196,14 @@ class ProjectGenerationRequestTests {
 	void invalidType() {
 		this.request.setType("does-not-exist");
 		assertThatExceptionOfType(ReportableException.class)
-				.isThrownBy(() -> this.request.generateUrl(createDefaultMetadata()));
+			.isThrownBy(() -> this.request.generateUrl(createDefaultMetadata()));
 	}
 
 	@Test
 	void noTypeAndNoDefault() {
 		assertThatExceptionOfType(ReportableException.class)
-				.isThrownBy(() -> this.request.generateUrl(readMetadata("types-conflict")))
-				.withMessageContaining("no default is defined");
+			.isThrownBy(() -> this.request.generateUrl(readMetadata("types-conflict")))
+			.withMessageContaining("no default is defined");
 	}
 
 	private static URI createUrl(String actionAndParam) {

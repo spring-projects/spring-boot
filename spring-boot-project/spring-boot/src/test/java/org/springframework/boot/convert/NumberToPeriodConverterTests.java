@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,7 @@ class NumberToPeriodConverterTests {
 		TypeDescriptor targetType = mock(TypeDescriptor.class);
 		if (defaultUnit != null) {
 			PeriodUnit unitAnnotation = AnnotationUtils
-					.synthesizeAnnotation(Collections.singletonMap("value", defaultUnit), PeriodUnit.class, null);
+				.synthesizeAnnotation(Collections.singletonMap("value", defaultUnit), PeriodUnit.class, null);
 			given(targetType.getAnnotation(PeriodUnit.class)).willReturn(unitAnnotation);
 		}
 		given(targetType.getType()).willReturn((Class) Period.class);

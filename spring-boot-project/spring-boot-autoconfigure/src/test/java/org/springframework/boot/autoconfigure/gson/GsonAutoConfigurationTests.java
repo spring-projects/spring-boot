@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GsonAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(GsonAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(GsonAutoConfiguration.class));
 
 	@Test
 	void gsonRegistration() {
@@ -70,10 +70,10 @@ class GsonAutoConfigurationTests {
 	@Test
 	void excludeFieldsWithoutExposeAnnotation() {
 		this.contextRunner.withPropertyValues("spring.gson.exclude-fields-without-expose-annotation:true")
-				.run((context) -> {
-					Gson gson = context.getBean(Gson.class);
-					assertThat(gson.toJson(new DataObject())).isEqualTo("{}");
-				});
+			.run((context) -> {
+				Gson gson = context.getBean(Gson.class);
+				assertThat(gson.toJson(new DataObject())).isEqualTo("{}");
+			});
 	}
 
 	@Test
@@ -95,12 +95,12 @@ class GsonAutoConfigurationTests {
 	@Test
 	void enableComplexMapKeySerialization() {
 		this.contextRunner.withPropertyValues("spring.gson.enable-complex-map-key-serialization:true")
-				.run((context) -> {
-					Gson gson = context.getBean(Gson.class);
-					Map<DataObject, String> original = new LinkedHashMap<>();
-					original.put(new DataObject(), "a");
-					assertThat(gson.toJson(original)).isEqualTo("[[{\"data\":1},\"a\"]]");
-				});
+			.run((context) -> {
+				Gson gson = context.getBean(Gson.class);
+				Map<DataObject, String> original = new LinkedHashMap<>();
+				original.put(new DataObject(), "a");
+				assertThat(gson.toJson(original)).isEqualTo("[[{\"data\":1},\"a\"]]");
+			});
 	}
 
 	@Test
@@ -124,10 +124,10 @@ class GsonAutoConfigurationTests {
 	@Test
 	void withLongSerializationPolicy() {
 		this.contextRunner.withPropertyValues("spring.gson.long-serialization-policy:" + LongSerializationPolicy.STRING)
-				.run((context) -> {
-					Gson gson = context.getBean(Gson.class);
-					assertThat(gson.toJson(new DataObject())).isEqualTo("{\"data\":\"1\"}");
-				});
+			.run((context) -> {
+				Gson gson = context.getBean(Gson.class);
+				assertThat(gson.toJson(new DataObject())).isEqualTo("{\"data\":\"1\"}");
+			});
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +79,8 @@ class ZipkinConfigurations {
 		ZipkinRestTemplateSender restTemplateSender(ZipkinProperties properties,
 				ObjectProvider<ZipkinRestTemplateBuilderCustomizer> customizers) {
 			RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder()
-					.setConnectTimeout(properties.getConnectTimeout()).setReadTimeout(properties.getReadTimeout());
+				.setConnectTimeout(properties.getConnectTimeout())
+				.setReadTimeout(properties.getReadTimeout());
 			restTemplateBuilder = applyCustomizers(restTemplateBuilder, customizers);
 			return new ZipkinRestTemplateSender(properties.getEndpoint(), restTemplateBuilder.build());
 		}
@@ -87,7 +88,7 @@ class ZipkinConfigurations {
 		private RestTemplateBuilder applyCustomizers(RestTemplateBuilder restTemplateBuilder,
 				ObjectProvider<ZipkinRestTemplateBuilderCustomizer> customizers) {
 			Iterable<ZipkinRestTemplateBuilderCustomizer> orderedCustomizers = () -> customizers.orderedStream()
-					.iterator();
+				.iterator();
 			RestTemplateBuilder currentBuilder = restTemplateBuilder;
 			for (ZipkinRestTemplateBuilderCustomizer customizer : orderedCustomizers) {
 				currentBuilder = customizer.customize(currentBuilder);

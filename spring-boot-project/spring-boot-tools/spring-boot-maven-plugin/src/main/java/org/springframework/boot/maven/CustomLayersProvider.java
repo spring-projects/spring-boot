@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,13 +130,15 @@ class CustomLayersProvider {
 		List<String> excludes = getChildNodeTextContent(element, "exclude");
 		Element includeModuleDependencies = getChildElement(element, "includeModuleDependencies");
 		Element excludeModuleDependencies = getChildElement(element, "excludeModuleDependencies");
-		List<ContentFilter<Library>> includeFilters = includes.stream().map(filterFactory)
-				.collect(Collectors.toCollection(ArrayList::new));
+		List<ContentFilter<Library>> includeFilters = includes.stream()
+			.map(filterFactory)
+			.collect(Collectors.toCollection(ArrayList::new));
 		if (includeModuleDependencies != null) {
 			includeFilters.add(Library::isLocal);
 		}
-		List<ContentFilter<Library>> excludeFilters = excludes.stream().map(filterFactory)
-				.collect(Collectors.toCollection(ArrayList::new));
+		List<ContentFilter<Library>> excludeFilters = excludes.stream()
+			.map(filterFactory)
+			.collect(Collectors.toCollection(ArrayList::new));
 		if (excludeModuleDependencies != null) {
 			excludeFilters.add(Library::isLocal);
 		}

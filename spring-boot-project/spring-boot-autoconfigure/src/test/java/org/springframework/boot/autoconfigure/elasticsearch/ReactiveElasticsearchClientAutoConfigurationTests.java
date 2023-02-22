@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 class ReactiveElasticsearchClientAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ReactiveElasticsearchClientAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ReactiveElasticsearchClientAutoConfiguration.class));
 
 	@Test
 	void configureWithoutRestClientShouldBackOff() {
@@ -47,14 +47,14 @@ class ReactiveElasticsearchClientAutoConfigurationTests {
 	@Test
 	void configureWithRestClientShouldCreateTransportAndClient() {
 		this.contextRunner.withUserConfiguration(RestClientConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(ReactiveElasticsearchClient.class));
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveElasticsearchClient.class));
 	}
 
 	@Test
 	void configureWhenCustomClientShouldBackOff() {
 		this.contextRunner.withUserConfiguration(RestClientConfiguration.class, CustomClientConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(ReactiveElasticsearchClient.class)
-						.hasBean("customClient"));
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveElasticsearchClient.class)
+				.hasBean("customClient"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

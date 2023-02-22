@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ public class MockMvcWebDriverAutoConfiguration {
 	@ConditionalOnBean(MockMvc.class)
 	public MockMvcHtmlUnitDriverBuilder mockMvcHtmlUnitDriverBuilder(MockMvc mockMvc, Environment environment) {
 		return MockMvcHtmlUnitDriverBuilder.mockMvcSetup(mockMvc)
-				.withDelegate(new LocalHostWebConnectionHtmlUnitDriver(environment, BrowserVersion.CHROME));
+			.withDelegate(new LocalHostWebConnectionHtmlUnitDriver(environment, BrowserVersion.CHROME));
 	}
 
 	@Bean

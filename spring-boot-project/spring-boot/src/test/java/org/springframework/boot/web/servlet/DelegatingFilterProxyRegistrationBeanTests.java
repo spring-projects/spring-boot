@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,13 +51,13 @@ class DelegatingFilterProxyRegistrationBeanTests extends AbstractFilterRegistrat
 	@Test
 	void targetBeanNameMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DelegatingFilterProxyRegistrationBean(null))
-				.withMessageContaining("TargetBeanName must not be null or empty");
+			.withMessageContaining("TargetBeanName must not be null or empty");
 	}
 
 	@Test
 	void targetBeanNameMustNotBeEmpty() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DelegatingFilterProxyRegistrationBean(""))
-				.withMessageContaining("TargetBeanName must not be null or empty");
+			.withMessageContaining("TargetBeanName must not be null or empty");
 	}
 
 	@Test
@@ -88,9 +88,8 @@ class DelegatingFilterProxyRegistrationBeanTests extends AbstractFilterRegistrat
 	@Test
 	void createServletRegistrationBeanMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> new DelegatingFilterProxyRegistrationBean("mockFilter", (ServletRegistrationBean[]) null))
-				.withMessageContaining("ServletRegistrationBeans must not be null");
+			.isThrownBy(() -> new DelegatingFilterProxyRegistrationBean("mockFilter", (ServletRegistrationBean[]) null))
+			.withMessageContaining("ServletRegistrationBeans must not be null");
 	}
 
 	@Override

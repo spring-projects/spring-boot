@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,9 +63,10 @@ public class RunMojo extends AbstractRunMojo {
 	@Override
 	protected void run(JavaProcessExecutor processExecutor, File workingDirectory, List<String> args,
 			Map<String, String> environmentVariables) throws MojoExecutionException, MojoFailureException {
-		processExecutor.withRunProcessCustomizer(
-				(runProcess) -> Runtime.getRuntime().addShutdownHook(new Thread(new RunProcessKiller(runProcess))))
-				.run(workingDirectory, args, environmentVariables);
+		processExecutor
+			.withRunProcessCustomizer(
+					(runProcess) -> Runtime.getRuntime().addShutdownHook(new Thread(new RunProcessKiller(runProcess))))
+			.run(workingDirectory, args, environmentVariables);
 	}
 
 	private static final class RunProcessKiller implements Runnable {

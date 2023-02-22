@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,22 +49,40 @@ class MetricsEndpointWebIntegrationTests {
 	@WebEndpointTest
 	@SuppressWarnings("unchecked")
 	void listNames(WebTestClient client) throws IOException {
-		String responseBody = client.get().uri("/actuator/metrics").exchange().expectStatus().isOk()
-				.expectBody(String.class).returnResult().getResponseBody();
+		String responseBody = client.get()
+			.uri("/actuator/metrics")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody(String.class)
+			.returnResult()
+			.getResponseBody();
 		Map<String, List<String>> names = this.mapper.readValue(responseBody, Map.class);
 		assertThat(names.get("names")).containsOnlyOnce("jvm.memory.used");
 	}
 
 	@WebEndpointTest
 	void selectByName(WebTestClient client) {
-		client.get().uri("/actuator/metrics/jvm.memory.used").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("$.name").isEqualTo("jvm.memory.used");
+		client.get()
+			.uri("/actuator/metrics/jvm.memory.used")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("$.name")
+			.isEqualTo("jvm.memory.used");
 	}
 
 	@WebEndpointTest
 	void selectByTag(WebTestClient client) {
-		client.get().uri("/actuator/metrics/jvm.memory.used?tag=id:Compressed%20Class%20Space").exchange()
-				.expectStatus().isOk().expectBody().jsonPath("$.name").isEqualTo("jvm.memory.used");
+		client.get()
+			.uri("/actuator/metrics/jvm.memory.used?tag=id:Compressed%20Class%20Space")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("$.name")
+			.isEqualTo("jvm.memory.used");
 	}
 
 	@Configuration(proxyBeanMethods = false)

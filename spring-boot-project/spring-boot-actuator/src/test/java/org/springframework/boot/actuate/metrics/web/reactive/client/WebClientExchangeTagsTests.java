@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,8 @@ class WebClientExchangeTagsTests {
 	@BeforeEach
 	void setup() {
 		this.request = ClientRequest.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot"))
-				.attribute(URI_TEMPLATE_ATTRIBUTE, "https://example.org/projects/{project}").build();
+			.attribute(URI_TEMPLATE_ATTRIBUTE, "https://example.org/projects/{project}")
+			.build();
 		this.response = mock(ClientResponse.class);
 	}
 
@@ -69,23 +70,25 @@ class WebClientExchangeTagsTests {
 	@Test
 	void uriWhenRelativeTemplateIsAvailableShouldReturnTemplate() {
 		this.request = ClientRequest.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot"))
-				.attribute(URI_TEMPLATE_ATTRIBUTE, "/projects/{project}").build();
+			.attribute(URI_TEMPLATE_ATTRIBUTE, "/projects/{project}")
+			.build();
 		assertThat(WebClientExchangeTags.uri(this.request)).isEqualTo(Tag.of("uri", "/projects/{project}"));
 	}
 
 	@Test
 	void uriWhenTemplateIsMissingShouldReturnPath() {
 		this.request = ClientRequest.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot"))
-				.build();
+			.build();
 		assertThat(WebClientExchangeTags.uri(this.request)).isEqualTo(Tag.of("uri", "/projects/spring-boot"));
 	}
 
 	@Test
 	void uriWhenTemplateIsMissingShouldReturnPathWithQueryParams() {
 		this.request = ClientRequest
-				.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot?section=docs")).build();
+			.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot?section=docs"))
+			.build();
 		assertThat(WebClientExchangeTags.uri(this.request))
-				.isEqualTo(Tag.of("uri", "/projects/spring-boot?section=docs"));
+			.isEqualTo(Tag.of("uri", "/projects/spring-boot?section=docs"));
 	}
 
 	@Test
@@ -107,7 +110,7 @@ class WebClientExchangeTagsTests {
 	@Test
 	void statusWhenClientException() {
 		assertThat(WebClientExchangeTags.status(null, new IllegalArgumentException()))
-				.isEqualTo(Tag.of("status", "CLIENT_ERROR"));
+			.isEqualTo(Tag.of("status", "CLIENT_ERROR"));
 	}
 
 	@Test

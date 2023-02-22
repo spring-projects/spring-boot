@@ -63,8 +63,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class WebFluxObservationAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.with(MetricsRun.simple()).withConfiguration(AutoConfigurations.of(ObservationAutoConfiguration.class,
-					WebFluxObservationAutoConfiguration.class));
+		.with(MetricsRun.simple())
+		.withConfiguration(
+				AutoConfigurations.of(ObservationAutoConfiguration.class, WebFluxObservationAutoConfiguration.class));
 
 	@Test
 	void shouldProvideWebFluxObservationFilter() {
@@ -86,8 +87,9 @@ class WebFluxObservationAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomTagsProviderConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(ServerHttpObservationFilter.class);
 			assertThat(context).hasSingleBean(WebFluxTagsProvider.class);
-			assertThat(context).getBean(ServerHttpObservationFilter.class).extracting("observationConvention")
-					.isInstanceOf(ServerRequestObservationConventionAdapter.class);
+			assertThat(context).getBean(ServerHttpObservationFilter.class)
+				.extracting("observationConvention")
+				.isInstanceOf(ServerRequestObservationConventionAdapter.class);
 		});
 	}
 
@@ -96,8 +98,9 @@ class WebFluxObservationAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomTagsContributorConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(ServerHttpObservationFilter.class);
 			assertThat(context).hasSingleBean(WebFluxTagsContributor.class);
-			assertThat(context).getBean(ServerHttpObservationFilter.class).extracting("observationConvention")
-					.isInstanceOf(ServerRequestObservationConventionAdapter.class);
+			assertThat(context).getBean(ServerHttpObservationFilter.class)
+				.extracting("observationConvention")
+				.isInstanceOf(ServerRequestObservationConventionAdapter.class);
 		});
 	}
 
@@ -105,63 +108,65 @@ class WebFluxObservationAutoConfigurationTests {
 	void shouldUseCustomConventionWhenAvailable() {
 		this.contextRunner.withUserConfiguration(CustomConventionConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(ServerHttpObservationFilter.class);
-			assertThat(context).getBean(ServerHttpObservationFilter.class).extracting("observationConvention")
-					.isInstanceOf(CustomConvention.class);
+			assertThat(context).getBean(ServerHttpObservationFilter.class)
+				.extracting("observationConvention")
+				.isInstanceOf(CustomConvention.class);
 		});
 	}
 
 	@Test
 	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestController.class)
-				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
-						ObservationAutoConfiguration.class, WebFluxAutoConfiguration.class))
-				.withPropertyValues("management.metrics.web.server.max-uri-tags=2").run((context) -> {
-					MeterRegistry registry = getInitializedMeterRegistry(context);
-					assertThat(registry.get("http.server.requests").meters()).hasSizeLessThanOrEqualTo(2);
-					assertThat(output).contains("Reached the maximum number of URI tags for 'http.server.requests'");
-				});
+			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, ObservationAutoConfiguration.class,
+					WebFluxAutoConfiguration.class))
+			.withPropertyValues("management.metrics.web.server.max-uri-tags=2")
+			.run((context) -> {
+				MeterRegistry registry = getInitializedMeterRegistry(context);
+				assertThat(registry.get("http.server.requests").meters()).hasSizeLessThanOrEqualTo(2);
+				assertThat(output).contains("Reached the maximum number of URI tags for 'http.server.requests'");
+			});
 	}
 
 	@Test
 	@Deprecated(since = "3.0.0", forRemoval = true)
 	void afterMaxUrisReachedFurtherUrisAreDeniedWhenUsingCustomMetricName(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestController.class)
-				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
-						ObservationAutoConfiguration.class, WebFluxAutoConfiguration.class))
-				.withPropertyValues("management.metrics.web.server.max-uri-tags=2",
-						"management.metrics.web.server.request.metric-name=my.http.server.requests")
-				.run((context) -> {
-					MeterRegistry registry = getInitializedMeterRegistry(context);
-					assertThat(registry.get("my.http.server.requests").meters()).hasSizeLessThanOrEqualTo(2);
-					assertThat(output).contains("Reached the maximum number of URI tags for 'my.http.server.requests'");
-				});
+			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, ObservationAutoConfiguration.class,
+					WebFluxAutoConfiguration.class))
+			.withPropertyValues("management.metrics.web.server.max-uri-tags=2",
+					"management.metrics.web.server.request.metric-name=my.http.server.requests")
+			.run((context) -> {
+				MeterRegistry registry = getInitializedMeterRegistry(context);
+				assertThat(registry.get("my.http.server.requests").meters()).hasSizeLessThanOrEqualTo(2);
+				assertThat(output).contains("Reached the maximum number of URI tags for 'my.http.server.requests'");
+			});
 	}
 
 	@Test
 	void afterMaxUrisReachedFurtherUrisAreDeniedWhenUsingCustomObservationName(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestController.class)
-				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
-						ObservationAutoConfiguration.class, WebFluxAutoConfiguration.class))
-				.withPropertyValues("management.metrics.web.server.max-uri-tags=2",
-						"management.observations.http.server.requests.name=my.http.server.requests")
-				.run((context) -> {
-					MeterRegistry registry = getInitializedMeterRegistry(context);
-					assertThat(registry.get("my.http.server.requests").meters()).hasSizeLessThanOrEqualTo(2);
-					assertThat(output).contains("Reached the maximum number of URI tags for 'my.http.server.requests'");
-				});
+			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, ObservationAutoConfiguration.class,
+					WebFluxAutoConfiguration.class))
+			.withPropertyValues("management.metrics.web.server.max-uri-tags=2",
+					"management.observations.http.server.requests.name=my.http.server.requests")
+			.run((context) -> {
+				MeterRegistry registry = getInitializedMeterRegistry(context);
+				assertThat(registry.get("my.http.server.requests").meters()).hasSizeLessThanOrEqualTo(2);
+				assertThat(output).contains("Reached the maximum number of URI tags for 'my.http.server.requests'");
+			});
 	}
 
 	@Test
 	void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestController.class)
-				.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class,
-						ObservationAutoConfiguration.class, WebFluxAutoConfiguration.class))
-				.withPropertyValues("management.metrics.web.server.max-uri-tags=5").run((context) -> {
-					MeterRegistry registry = getInitializedMeterRegistry(context);
-					assertThat(registry.get("http.server.requests").meters()).hasSize(3);
-					assertThat(output)
-							.doesNotContain("Reached the maximum number of URI tags for 'http.server.requests'");
-				});
+			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, ObservationAutoConfiguration.class,
+					WebFluxAutoConfiguration.class))
+			.withPropertyValues("management.metrics.web.server.max-uri-tags=5")
+			.run((context) -> {
+				MeterRegistry registry = getInitializedMeterRegistry(context);
+				assertThat(registry.get("http.server.requests").meters()).hasSize(3);
+				assertThat(output).doesNotContain("Reached the maximum number of URI tags for 'http.server.requests'");
+			});
 	}
 
 	private MeterRegistry getInitializedMeterRegistry(AssertableReactiveWebApplicationContext context)

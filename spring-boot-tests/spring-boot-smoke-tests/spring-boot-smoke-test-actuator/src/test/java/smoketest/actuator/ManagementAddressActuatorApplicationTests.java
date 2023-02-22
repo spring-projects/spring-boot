@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class ManagementAddressActuatorApplicationTests {
 	@Test
 	void testHealth() {
 		ResponseEntity<String> entity = new TestRestTemplate().withBasicAuth("user", "password")
-				.getForEntity("http://localhost:" + this.managementPort + "/admin/actuator/health", String.class);
+			.getForEntity("http://localhost:" + this.managementPort + "/admin/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}

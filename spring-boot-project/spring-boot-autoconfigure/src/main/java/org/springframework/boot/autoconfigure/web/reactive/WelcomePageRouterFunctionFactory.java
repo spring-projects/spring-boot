@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,8 +53,11 @@ final class WelcomePageRouterFunctionFactory {
 	}
 
 	private Resource getWelcomePage(ResourceLoader resourceLoader, String[] staticLocations) {
-		return Arrays.stream(staticLocations).map((location) -> getIndexHtml(resourceLoader, location))
-				.filter(this::isReadable).findFirst().orElse(null);
+		return Arrays.stream(staticLocations)
+			.map((location) -> getIndexHtml(resourceLoader, location))
+			.filter(this::isReadable)
+			.findFirst()
+			.orElse(null);
 	}
 
 	private Resource getIndexHtml(ResourceLoader resourceLoader, String location) {

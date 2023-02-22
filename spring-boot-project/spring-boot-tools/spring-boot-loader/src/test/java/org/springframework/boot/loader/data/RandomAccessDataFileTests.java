@@ -79,14 +79,14 @@ class RandomAccessDataFileTests {
 	@Test
 	void fileNotNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RandomAccessDataFile(null))
-				.withMessageContaining("File must not be null");
+			.withMessageContaining("File must not be null");
 	}
 
 	@Test
 	void fileExists() {
 		File file = new File("/does/not/exist");
 		assertThatIllegalArgumentException().isThrownBy(() -> new RandomAccessDataFile(file))
-				.withMessageContaining(String.format("File %s must exist", file.getAbsolutePath()));
+			.withMessageContaining(String.format("File %s must exist", file.getAbsolutePath()));
 	}
 
 	@Test
@@ -127,13 +127,13 @@ class RandomAccessDataFileTests {
 	@Test
 	void inputStreamReadNullBytes() {
 		assertThatNullPointerException().isThrownBy(() -> this.inputStream.read(null))
-				.withMessage("Bytes must not be null");
+			.withMessage("Bytes must not be null");
 	}
 
 	@Test
 	void inputStreamReadNullBytesWithOffset() {
 		assertThatNullPointerException().isThrownBy(() -> this.inputStream.read(null, 0, 1))
-				.withMessage("Bytes must not be null");
+			.withMessage("Bytes must not be null");
 	}
 
 	@Test
@@ -286,7 +286,7 @@ class RandomAccessDataFileTests {
 		for (int i = 0; i < 100; i++) {
 			results.add(executorService.submit(() -> {
 				InputStream subsectionInputStream = RandomAccessDataFileTests.this.file.getSubsection(0, 256)
-						.getInputStream();
+					.getInputStream();
 				byte[] b = new byte[256];
 				subsectionInputStream.read(b);
 				return Arrays.equals(b, BYTES);

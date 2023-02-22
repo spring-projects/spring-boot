@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,12 +53,13 @@ class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConf
 
 	@Container
 	public static RedisContainer redis = new RedisContainer().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(10));
+		.withStartupTimeout(Duration.ofMinutes(10));
 
 	protected final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withClassLoader(new FilteredClassLoader(ReactiveMongoSessionRepository.class)).withConfiguration(
-					AutoConfigurations.of(SessionAutoConfiguration.class, WebSessionIdResolverAutoConfiguration.class,
-							RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class));
+		.withClassLoader(new FilteredClassLoader(ReactiveMongoSessionRepository.class))
+		.withConfiguration(
+				AutoConfigurations.of(SessionAutoConfiguration.class, WebSessionIdResolverAutoConfiguration.class,
+						RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class));
 
 	@Test
 	void defaultConfig() {
@@ -94,28 +95,30 @@ class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConf
 	@Test
 	void redisSessionStoreWithCustomizations() {
 		this.contextRunner
-				.withPropertyValues("spring.session.redis.namespace=foo",
-						"spring.session.redis.save-mode=on-get-attribute")
-				.run(validateSpringSessionUsesRedis("foo:", SaveMode.ON_GET_ATTRIBUTE));
+			.withPropertyValues("spring.session.redis.namespace=foo", "spring.session.redis.save-mode=on-get-attribute")
+			.run(validateSpringSessionUsesRedis("foo:", SaveMode.ON_GET_ATTRIBUTE));
 	}
 
 	@Test
 	void sessionCookieConfigurationIsAppliedToAutoConfiguredWebSessionIdResolver() {
-		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues(
-				"spring.data.redis.host=" + redis.getHost(), "spring.data.redis.port=" + redis.getFirstMappedPort(),
-				"server.reactive.session.cookie.name:JSESSIONID", "server.reactive.session.cookie.domain:.example.com",
-				"server.reactive.session.cookie.path:/example", "server.reactive.session.cookie.max-age:60",
-				"server.reactive.session.cookie.http-only:false", "server.reactive.session.cookie.secure:false",
-				"server.reactive.session.cookie.same-site:strict").run(assertExchangeWithSession((exchange) -> {
-					List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
-					assertThat(cookies).isNotEmpty();
-					assertThat(cookies).allMatch((cookie) -> cookie.getDomain().equals(".example.com"));
-					assertThat(cookies).allMatch((cookie) -> cookie.getPath().equals("/example"));
-					assertThat(cookies).allMatch((cookie) -> cookie.getMaxAge().equals(Duration.ofSeconds(60)));
-					assertThat(cookies).allMatch((cookie) -> !cookie.isHttpOnly());
-					assertThat(cookies).allMatch((cookie) -> !cookie.isSecure());
-					assertThat(cookies).allMatch((cookie) -> cookie.getSameSite().equals("Strict"));
-				}));
+		this.contextRunner.withUserConfiguration(Config.class)
+			.withPropertyValues("spring.data.redis.host=" + redis.getHost(),
+					"spring.data.redis.port=" + redis.getFirstMappedPort(),
+					"server.reactive.session.cookie.name:JSESSIONID",
+					"server.reactive.session.cookie.domain:.example.com",
+					"server.reactive.session.cookie.path:/example", "server.reactive.session.cookie.max-age:60",
+					"server.reactive.session.cookie.http-only:false", "server.reactive.session.cookie.secure:false",
+					"server.reactive.session.cookie.same-site:strict")
+			.run(assertExchangeWithSession((exchange) -> {
+				List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
+				assertThat(cookies).isNotEmpty();
+				assertThat(cookies).allMatch((cookie) -> cookie.getDomain().equals(".example.com"));
+				assertThat(cookies).allMatch((cookie) -> cookie.getPath().equals("/example"));
+				assertThat(cookies).allMatch((cookie) -> cookie.getMaxAge().equals(Duration.ofSeconds(60)));
+				assertThat(cookies).allMatch((cookie) -> !cookie.isHttpOnly());
+				assertThat(cookies).allMatch((cookie) -> !cookie.isSecure());
+				assertThat(cookies).allMatch((cookie) -> cookie.getSameSite().equals("Strict"));
+			}));
 	}
 
 	private ContextConsumer<AssertableReactiveWebApplicationContext> validateSpringSessionUsesRedis(String namespace,

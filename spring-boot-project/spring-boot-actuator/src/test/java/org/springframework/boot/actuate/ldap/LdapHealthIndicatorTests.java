@@ -54,7 +54,7 @@ class LdapHealthIndicatorTests {
 	void ldapIsDown() {
 		LdapTemplate ldapTemplate = mock(LdapTemplate.class);
 		given(ldapTemplate.executeReadOnly((ContextExecutor<String>) any()))
-				.willThrow(new CommunicationException(new javax.naming.CommunicationException("Connection failed")));
+			.willThrow(new CommunicationException(new javax.naming.CommunicationException("Connection failed")));
 		LdapHealthIndicator healthIndicator = new LdapHealthIndicator(ldapTemplate);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);

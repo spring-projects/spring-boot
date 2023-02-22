@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,9 +63,14 @@ class RestAssuredRestDocsAutoConfigurationIntegrationTests {
 	@Test
 	void defaultSnippetsAreWritten() {
 		given(this.documentationSpec)
-				.filter(document("default-snippets",
-						preprocessRequest(modifyUris().scheme("https").host("api.example.com").removePort())))
-				.when().port(this.port).get("/").then().assertThat().statusCode(is(200));
+			.filter(document("default-snippets",
+					preprocessRequest(modifyUris().scheme("https").host("api.example.com").removePort())))
+			.when()
+			.port(this.port)
+			.get("/")
+			.then()
+			.assertThat()
+			.statusCode(is(200));
 		File defaultSnippetsDir = new File(this.generatedSnippets, "default-snippets");
 		assertThat(defaultSnippetsDir).exists();
 		assertThat(contentOf(new File(defaultSnippetsDir, "curl-request.adoc"))).contains("'https://api.example.com/'");

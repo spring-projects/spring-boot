@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AuditAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(AuditAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(AuditAutoConfiguration.class));
 
 	@Test
 	void autoConfigurationIsDisabledByDefault() {
@@ -66,34 +66,34 @@ class AuditAutoConfigurationTests {
 	@Test
 	void ownAuthenticationAuditListener() {
 		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
-				.withUserConfiguration(CustomAuthenticationAuditListenerConfiguration.class)
-				.run((context) -> assertThat(context.getBean(AbstractAuthenticationAuditListener.class))
-						.isInstanceOf(TestAuthenticationAuditListener.class));
+			.withUserConfiguration(CustomAuthenticationAuditListenerConfiguration.class)
+			.run((context) -> assertThat(context.getBean(AbstractAuthenticationAuditListener.class))
+				.isInstanceOf(TestAuthenticationAuditListener.class));
 	}
 
 	@Test
 	void ownAuthorizationAuditListener() {
 		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
-				.withUserConfiguration(CustomAuthorizationAuditListenerConfiguration.class)
-				.run((context) -> assertThat(context.getBean(AbstractAuthorizationAuditListener.class))
-						.isInstanceOf(TestAuthorizationAuditListener.class));
+			.withUserConfiguration(CustomAuthorizationAuditListenerConfiguration.class)
+			.run((context) -> assertThat(context.getBean(AbstractAuthorizationAuditListener.class))
+				.isInstanceOf(TestAuthorizationAuditListener.class));
 	}
 
 	@Test
 	void ownAuditListener() {
 		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
-				.withUserConfiguration(CustomAuditListenerConfiguration.class)
-				.run((context) -> assertThat(context.getBean(AbstractAuditListener.class))
-						.isInstanceOf(TestAuditListener.class));
+			.withUserConfiguration(CustomAuditListenerConfiguration.class)
+			.run((context) -> assertThat(context.getBean(AbstractAuditListener.class))
+				.isInstanceOf(TestAuditListener.class));
 	}
 
 	@Test
 	void backsOffWhenDisabled() {
 		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
-				.withPropertyValues("management.auditevents.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(AuditListener.class)
-						.doesNotHaveBean(AuthenticationAuditListener.class)
-						.doesNotHaveBean(AuthorizationAuditListener.class));
+			.withPropertyValues("management.auditevents.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(AuditListener.class)
+				.doesNotHaveBean(AuthenticationAuditListener.class)
+				.doesNotHaveBean(AuthorizationAuditListener.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

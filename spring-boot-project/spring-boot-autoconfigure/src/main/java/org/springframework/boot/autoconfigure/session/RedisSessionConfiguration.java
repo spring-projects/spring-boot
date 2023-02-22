@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,8 +73,8 @@ class RedisSessionConfiguration {
 			return (sessionRepository) -> {
 				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 				map.from(sessionProperties
-						.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
-						.to(sessionRepository::setDefaultMaxInactiveInterval);
+					.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
+					.to(sessionRepository::setDefaultMaxInactiveInterval);
 				map.from(redisSessionProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
 				map.from(redisSessionProperties::getFlushMode).to(sessionRepository::setFlushMode);
 				map.from(redisSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);
@@ -104,8 +104,8 @@ class RedisSessionConfiguration {
 			return (sessionRepository) -> {
 				PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 				map.from(sessionProperties
-						.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
-						.to(sessionRepository::setDefaultMaxInactiveInterval);
+					.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
+					.to(sessionRepository::setDefaultMaxInactiveInterval);
 				map.from(redisSessionProperties::getNamespace).to(sessionRepository::setRedisKeyNamespace);
 				map.from(redisSessionProperties::getFlushMode).to(sessionRepository::setFlushMode);
 				map.from(redisSessionProperties::getSaveMode).to(sessionRepository::setSaveMode);

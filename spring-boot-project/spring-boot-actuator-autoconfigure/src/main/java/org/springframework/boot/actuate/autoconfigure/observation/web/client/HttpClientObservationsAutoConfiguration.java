@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ public class HttpClientObservationsAutoConfiguration {
 			String name = (observationName != null) ? observationName : metricName;
 			MeterFilter denyFilter = new OnlyOnceLoggingDenyMeterFilter(
 					() -> "Reached the maximum number of URI tags for '%s'. Are you using 'uriVariables'?"
-							.formatted(name));
+						.formatted(name));
 			return MeterFilter.maximumAllowableTags(name, "uri", clientProperties.getMaxUriTags(), denyFilter);
 		}
 

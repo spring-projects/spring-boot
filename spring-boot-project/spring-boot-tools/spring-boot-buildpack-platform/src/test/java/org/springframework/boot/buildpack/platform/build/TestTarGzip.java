@@ -129,7 +129,7 @@ class TestTarGzip {
 			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/");
 			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/");
 			assertThat(tar.getNextEntry().getName())
-					.isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/buildpack.toml");
+				.isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/buildpack.toml");
 			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/bin/");
 			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/bin/detect");
 			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/bin/build");

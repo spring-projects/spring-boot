@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,7 +131,7 @@ class AutoConfiguredHealthEndpointGroupTests {
 				Arrays.asList("admin", "root", "bossmode"), null);
 		Authentication principal = mock(Authentication.class);
 		given(principal.getAuthorities())
-				.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("admin")));
+			.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("admin")));
 		given(this.securityContext.getPrincipal()).willReturn(principal);
 		assertThat(group.showDetails(this.securityContext)).isTrue();
 	}
@@ -143,7 +143,7 @@ class AutoConfiguredHealthEndpointGroupTests {
 				Arrays.asList("admin", "rot", "bossmode"), null);
 		Authentication principal = mock(Authentication.class);
 		given(principal.getAuthorities())
-				.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("other")));
+			.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("other")));
 		given(this.securityContext.getPrincipal()).willReturn(principal);
 		assertThat(group.showDetails(this.securityContext)).isFalse();
 	}
@@ -219,7 +219,7 @@ class AutoConfiguredHealthEndpointGroupTests {
 				Arrays.asList("admin", "root", "bossmode"), null);
 		Authentication principal = mock(Authentication.class);
 		given(principal.getAuthorities())
-				.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("admin")));
+			.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("admin")));
 		given(this.securityContext.getPrincipal()).willReturn(principal);
 		assertThat(group.showComponents(this.securityContext)).isTrue();
 	}
@@ -231,7 +231,7 @@ class AutoConfiguredHealthEndpointGroupTests {
 				Arrays.asList("admin", "rot", "bossmode"), null);
 		Authentication principal = mock(Authentication.class);
 		given(principal.getAuthorities())
-				.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("other")));
+			.willAnswer((invocation) -> Collections.singleton(new SimpleGrantedAuthority("other")));
 		given(this.securityContext.getPrincipal()).willReturn(principal);
 		assertThat(group.showComponents(this.securityContext)).isFalse();
 	}

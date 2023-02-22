@@ -50,7 +50,8 @@ class LoggingApplicationListenerIntegrationTests {
 	@Test
 	void loggingSystemRegisteredInTheContext() {
 		try (ConfigurableApplicationContext context = new SpringApplicationBuilder(SampleService.class)
-				.web(WebApplicationType.NONE).run()) {
+			.web(WebApplicationType.NONE)
+			.run()) {
 			SampleService service = context.getBean(SampleService.class);
 			assertThat(service.loggingSystem).isNotNull();
 		}
@@ -60,7 +61,9 @@ class LoggingApplicationListenerIntegrationTests {
 	void logFileRegisteredInTheContextWhenApplicable(@TempDir File tempDir) {
 		String logFile = new File(tempDir, "test.log").getAbsolutePath();
 		try (ConfigurableApplicationContext context = new SpringApplicationBuilder(SampleService.class)
-				.web(WebApplicationType.NONE).properties("logging.file.name=" + logFile).run()) {
+			.web(WebApplicationType.NONE)
+			.properties("logging.file.name=" + logFile)
+			.run()) {
 			SampleService service = context.getBean(SampleService.class);
 			assertThat(service.logFile).isNotNull();
 			assertThat(service.logFile).hasToString(logFile);
@@ -72,17 +75,20 @@ class LoggingApplicationListenerIntegrationTests {
 
 	@Test
 	void loggingPerformedDuringChildApplicationStartIsNotLost(CapturedOutput output) {
-		new SpringApplicationBuilder(Config.class).web(WebApplicationType.NONE).child(Config.class)
-				.web(WebApplicationType.NONE).listeners(new ApplicationListener<ApplicationStartingEvent>() {
+		new SpringApplicationBuilder(Config.class).web(WebApplicationType.NONE)
+			.child(Config.class)
+			.web(WebApplicationType.NONE)
+			.listeners(new ApplicationListener<ApplicationStartingEvent>() {
 
-					private final Logger logger = LoggerFactory.getLogger(getClass());
+				private final Logger logger = LoggerFactory.getLogger(getClass());
 
-					@Override
-					public void onApplicationEvent(ApplicationStartingEvent event) {
-						this.logger.info("Child application starting");
-					}
+				@Override
+				public void onApplicationEvent(ApplicationStartingEvent event) {
+					this.logger.info("Child application starting");
+				}
 
-				}).run();
+			})
+			.run();
 		assertThat(output).contains("Child application starting");
 	}
 

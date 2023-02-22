@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AppOpticsMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(AppOpticsMetricsExportAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(AppOpticsMetricsExportAutoConfiguration.class));
 
 	@Test
 	void backsOffWithoutAClock() {
@@ -47,50 +47,54 @@ class AppOpticsMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfiguresItsConfigAndMeterRegistry() {
 		this.contextRunner.withPropertyValues("management.appoptics.metrics.export.api-token=abcde")
-				.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
-						.hasSingleBean(AppOpticsMeterRegistry.class).hasSingleBean(AppOpticsConfig.class));
+			.withUserConfiguration(BaseConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(AppOpticsMeterRegistry.class)
+				.hasSingleBean(AppOpticsConfig.class));
 	}
 
 	@Test
 	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.defaults.metrics.export.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(AppOpticsMeterRegistry.class)
-						.doesNotHaveBean(AppOpticsConfig.class));
+			.withPropertyValues("management.defaults.metrics.export.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(AppOpticsMeterRegistry.class)
+				.doesNotHaveBean(AppOpticsConfig.class));
 	}
 
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.appoptics.metrics.export.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(AppOpticsMeterRegistry.class)
-						.doesNotHaveBean(AppOpticsConfig.class));
+			.withPropertyValues("management.appoptics.metrics.export.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(AppOpticsMeterRegistry.class)
+				.doesNotHaveBean(AppOpticsConfig.class));
 	}
 
 	@Test
 	void allowsCustomConfigToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(AppOpticsMeterRegistry.class)
-						.hasSingleBean(AppOpticsConfig.class).hasBean("customConfig"));
+			.run((context) -> assertThat(context).hasSingleBean(AppOpticsMeterRegistry.class)
+				.hasSingleBean(AppOpticsConfig.class)
+				.hasBean("customConfig"));
 	}
 
 	@Test
 	void allowsCustomRegistryToBeUsed() {
 		this.contextRunner.withPropertyValues("management.appoptics.metrics.export.api-token=abcde")
-				.withUserConfiguration(CustomRegistryConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(AppOpticsMeterRegistry.class)
-						.hasBean("customRegistry").hasSingleBean(AppOpticsConfig.class));
+			.withUserConfiguration(CustomRegistryConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(AppOpticsMeterRegistry.class)
+				.hasBean("customRegistry")
+				.hasSingleBean(AppOpticsConfig.class));
 	}
 
 	@Test
 	void stopsMeterRegistryWhenContextIsClosed() {
 		this.contextRunner.withPropertyValues("management.appoptics.metrics.export.api-token=abcde")
-				.withUserConfiguration(BaseConfiguration.class).run((context) -> {
-					AppOpticsMeterRegistry registry = context.getBean(AppOpticsMeterRegistry.class);
-					assertThat(registry.isClosed()).isFalse();
-					context.close();
-					assertThat(registry.isClosed()).isTrue();
-				});
+			.withUserConfiguration(BaseConfiguration.class)
+			.run((context) -> {
+				AppOpticsMeterRegistry registry = context.getBean(AppOpticsMeterRegistry.class);
+				assertThat(registry.isClosed()).isFalse();
+				context.close();
+				assertThat(registry.isClosed()).isTrue();
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

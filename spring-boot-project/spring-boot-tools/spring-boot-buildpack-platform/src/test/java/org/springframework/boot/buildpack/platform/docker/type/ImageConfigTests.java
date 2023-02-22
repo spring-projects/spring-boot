@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,9 +68,9 @@ class ImageConfigTests extends AbstractJsonTests {
 	void updateWithLabelUpdatesLabels() throws Exception {
 		ImageConfig imageConfig = getImageConfig();
 		ImageConfig updatedImageConfig = imageConfig
-				.copy((update) -> update.withLabel("io.buildpacks.stack.id", "test"));
+			.copy((update) -> update.withLabel("io.buildpacks.stack.id", "test"));
 		assertThat(imageConfig.getLabels()).hasSize(4)
-				.contains(entry("io.buildpacks.stack.id", "org.cloudfoundry.stacks.cflinuxfs3"));
+			.contains(entry("io.buildpacks.stack.id", "org.cloudfoundry.stacks.cflinuxfs3"));
 		assertThat(updatedImageConfig.getLabels()).hasSize(4).contains(entry("io.buildpacks.stack.id", "test"));
 	}
 

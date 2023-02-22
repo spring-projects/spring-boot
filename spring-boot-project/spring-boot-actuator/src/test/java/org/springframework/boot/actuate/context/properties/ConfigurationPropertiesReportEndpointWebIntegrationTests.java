@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,22 +51,48 @@ class ConfigurationPropertiesReportEndpointWebIntegrationTests {
 
 	@WebEndpointTest
 	void noFilters() {
-		this.client.get().uri("/actuator/configprops").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("$..beans[*]").value(hasSize(greaterThanOrEqualTo(2))).jsonPath("$..beans['fooDotCom']")
-				.exists().jsonPath("$..beans['barDotCom']").exists();
+		this.client.get()
+			.uri("/actuator/configprops")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("$..beans[*]")
+			.value(hasSize(greaterThanOrEqualTo(2)))
+			.jsonPath("$..beans['fooDotCom']")
+			.exists()
+			.jsonPath("$..beans['barDotCom']")
+			.exists();
 	}
 
 	@WebEndpointTest
 	void filterByExactPrefix() {
-		this.client.get().uri("/actuator/configprops/com.foo").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("$..beans[*]").value(hasSize(1)).jsonPath("$..beans['fooDotCom']").exists();
+		this.client.get()
+			.uri("/actuator/configprops/com.foo")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("$..beans[*]")
+			.value(hasSize(1))
+			.jsonPath("$..beans['fooDotCom']")
+			.exists();
 	}
 
 	@WebEndpointTest
 	void filterByGeneralPrefix() {
-		this.client.get().uri("/actuator/configprops/com.").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("$..beans[*]").value(hasSize(2)).jsonPath("$..beans['fooDotCom']").exists()
-				.jsonPath("$..beans['barDotCom']").exists();
+		this.client.get()
+			.uri("/actuator/configprops/com.")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("$..beans[*]")
+			.value(hasSize(2))
+			.jsonPath("$..beans['fooDotCom']")
+			.exists()
+			.jsonPath("$..beans['barDotCom']")
+			.exists();
 	}
 
 	@WebEndpointTest

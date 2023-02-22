@@ -38,7 +38,7 @@ import org.springframework.util.StringUtils;
 class PropertyMigration {
 
 	public static final Comparator<PropertyMigration> COMPARATOR = Comparator
-			.comparing((property) -> property.getMetadata().getId());
+		.comparing((property) -> property.getMetadata().getId());
 
 	private final ConfigurationProperty property;
 

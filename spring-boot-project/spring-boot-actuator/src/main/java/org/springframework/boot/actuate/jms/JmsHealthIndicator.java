@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public class JmsHealthIndicator extends AbstractHealthIndicator {
 				try {
 					if (!this.latch.await(5, TimeUnit.SECONDS)) {
 						JmsHealthIndicator.this.logger
-								.warn("Connection failed to start within 5 seconds and will be closed.");
+							.warn("Connection failed to start within 5 seconds and will be closed.");
 						closeConnection();
 					}
 				}

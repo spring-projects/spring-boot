@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class SampleWebFluxApplicationActuatorDifferentPortTests {
 	@Test
 	void linksEndpointShouldBeAvailable() {
 		ResponseEntity<String> entity = new TestRestTemplate("user", getPassword())
-				.getForEntity("http://localhost:" + this.managementPort + "/", String.class);
+			.getForEntity("http://localhost:" + this.managementPort + "/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"_links\"");
 	}

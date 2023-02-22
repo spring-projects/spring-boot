@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,20 +37,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 class WebPropertiesResourcesBindingTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(TestConfiguration.class);
+		.withUserConfiguration(TestConfiguration.class);
 
 	@Test
 	void staticLocationsExpandArray() {
 		this.contextRunner
-				.withPropertyValues("spring.web.resources.static-locations[0]=classpath:/one/",
-						"spring.web.resources.static-locations[1]=classpath:/two",
-						"spring.web.resources.static-locations[2]=classpath:/three/",
-						"spring.web.resources.static-locations[3]=classpath:/four",
-						"spring.web.resources.static-locations[4]=classpath:/five/",
-						"spring.web.resources.static-locations[5]=classpath:/six")
-				.run(assertResourceProperties((properties) -> assertThat(properties.getStaticLocations()).contains(
-						"classpath:/one/", "classpath:/two/", "classpath:/three/", "classpath:/four/",
-						"classpath:/five/", "classpath:/six/")));
+			.withPropertyValues("spring.web.resources.static-locations[0]=classpath:/one/",
+					"spring.web.resources.static-locations[1]=classpath:/two",
+					"spring.web.resources.static-locations[2]=classpath:/three/",
+					"spring.web.resources.static-locations[3]=classpath:/four",
+					"spring.web.resources.static-locations[4]=classpath:/five/",
+					"spring.web.resources.static-locations[5]=classpath:/six")
+			.run(assertResourceProperties((properties) -> assertThat(properties.getStaticLocations()).contains(
+					"classpath:/one/", "classpath:/two/", "classpath:/three/", "classpath:/four/", "classpath:/five/",
+					"classpath:/six/")));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertResourceProperties(Consumer<Resources> consumer) {

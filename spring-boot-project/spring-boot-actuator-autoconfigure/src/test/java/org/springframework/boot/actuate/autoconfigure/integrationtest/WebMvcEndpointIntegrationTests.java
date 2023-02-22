@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,18 +106,18 @@ class WebMvcEndpointIntegrationTests {
 		TestPropertyValues.of("management.endpoints.web.base-path:/management").applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/beans").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isUnauthorized());
+			.andExpect(status().isUnauthorized());
 	}
 
 	@Test
 	void endpointsAreSecureWithActuatorRoleWithCustomBasePath() throws Exception {
 		TestSecurityContextHolder.getContext()
-				.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
+			.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		TestPropertyValues
-				.of("management.endpoints.web.base-path:/management", "management.endpoints.web.exposure.include=*")
-				.applyTo(this.context);
+			.of("management.endpoints.web.base-path:/management", "management.endpoints.web.exposure.include=*")
+			.applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/beans")).andExpect(status().isOk());
 	}
@@ -128,8 +128,12 @@ class WebMvcEndpointIntegrationTests {
 		this.context.register(DefaultConfiguration.class, EndpointsConfiguration.class);
 		TestPropertyValues.of("management.endpoints.web.exposure.include=*").applyTo(this.context);
 		MockMvc mockMvc = doCreateMockMvc();
-		mockMvc.perform(get("/actuator").accept("*/*")).andExpect(status().isOk()).andExpect(jsonPath("_links",
-				both(hasKey("beans")).and(hasKey("servlet")).and(hasKey("restcontroller")).and(hasKey("controller"))));
+		mockMvc.perform(get("/actuator").accept("*/*"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("_links",
+					both(hasKey("beans")).and(hasKey("servlet"))
+						.and(hasKey("restcontroller"))
+						.and(hasKey("controller"))));
 	}
 
 	@Test

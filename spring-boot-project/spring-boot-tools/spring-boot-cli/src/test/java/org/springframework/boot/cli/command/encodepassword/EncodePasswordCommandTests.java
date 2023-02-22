@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ class EncodePasswordCommandTests {
 		then(this.log).should().info(this.message.capture());
 		assertThat(this.message.getValue()).startsWith("{bcrypt}");
 		assertThat(PasswordEncoderFactories.createDelegatingPasswordEncoder().matches("boot", this.message.getValue()))
-				.isTrue();
+			.isTrue();
 		assertThat(status).isEqualTo(ExitStatus.OK);
 	}
 
@@ -84,7 +84,7 @@ class EncodePasswordCommandTests {
 		then(this.log).should().info(this.message.capture());
 		assertThat(this.message.getValue()).doesNotStartWith("{");
 		assertThat(Pbkdf2PasswordEncoder.defaultsForSpringSecurity_v5_8().matches("boot", this.message.getValue()))
-				.isTrue();
+			.isTrue();
 		assertThat(status).isEqualTo(ExitStatus.OK);
 	}
 

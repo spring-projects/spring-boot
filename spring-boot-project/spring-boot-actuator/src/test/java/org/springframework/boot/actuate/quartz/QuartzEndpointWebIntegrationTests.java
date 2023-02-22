@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,47 +62,80 @@ import static org.mockito.Mockito.mock;
  */
 class QuartzEndpointWebIntegrationTests {
 
-	private static final JobDetail jobOne = JobBuilder.newJob(Job.class).withIdentity("jobOne", "samples")
-			.usingJobData(new JobDataMap(Collections.singletonMap("name", "test"))).withDescription("A sample job")
-			.build();
+	private static final JobDetail jobOne = JobBuilder.newJob(Job.class)
+		.withIdentity("jobOne", "samples")
+		.usingJobData(new JobDataMap(Collections.singletonMap("name", "test")))
+		.withDescription("A sample job")
+		.build();
 
-	private static final JobDetail jobTwo = JobBuilder.newJob(DelegatingJob.class).withIdentity("jobTwo", "samples")
-			.build();
+	private static final JobDetail jobTwo = JobBuilder.newJob(DelegatingJob.class)
+		.withIdentity("jobTwo", "samples")
+		.build();
 
 	private static final JobDetail jobThree = JobBuilder.newJob(Job.class).withIdentity("jobThree").build();
 
-	private static final CronTrigger triggerOne = TriggerBuilder.newTrigger().withDescription("Once a day 3AM")
-			.withIdentity("triggerOne").withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0)).build();
+	private static final CronTrigger triggerOne = TriggerBuilder.newTrigger()
+		.withDescription("Once a day 3AM")
+		.withIdentity("triggerOne")
+		.withSchedule(CronScheduleBuilder.dailyAtHourAndMinute(3, 0))
+		.build();
 
-	private static final SimpleTrigger triggerTwo = TriggerBuilder.newTrigger().withDescription("Once a day")
-			.withIdentity("triggerTwo", "tests").withSchedule(SimpleScheduleBuilder.repeatHourlyForever(24)).build();
+	private static final SimpleTrigger triggerTwo = TriggerBuilder.newTrigger()
+		.withDescription("Once a day")
+		.withIdentity("triggerTwo", "tests")
+		.withSchedule(SimpleScheduleBuilder.repeatHourlyForever(24))
+		.build();
 
 	private static final CalendarIntervalTrigger triggerThree = TriggerBuilder.newTrigger()
-			.withDescription("Once a week").withIdentity("triggerThree", "tests")
-			.withSchedule(CalendarIntervalScheduleBuilder.calendarIntervalSchedule().withIntervalInWeeks(1)).build();
+		.withDescription("Once a week")
+		.withIdentity("triggerThree", "tests")
+		.withSchedule(CalendarIntervalScheduleBuilder.calendarIntervalSchedule().withIntervalInWeeks(1))
+		.build();
 
 	@WebEndpointTest
 	void quartzReport(WebTestClient client) {
-		client.get().uri("/actuator/quartz").exchange().expectStatus().isOk().expectBody().jsonPath("jobs.groups")
-				.isEqualTo(new JSONArray().appendElement("samples").appendElement("DEFAULT"))
-				.jsonPath("triggers.groups").isEqualTo(new JSONArray().appendElement("DEFAULT").appendElement("tests"));
+		client.get()
+			.uri("/actuator/quartz")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("jobs.groups")
+			.isEqualTo(new JSONArray().appendElement("samples").appendElement("DEFAULT"))
+			.jsonPath("triggers.groups")
+			.isEqualTo(new JSONArray().appendElement("DEFAULT").appendElement("tests"));
 	}
 
 	@WebEndpointTest
 	void quartzJobNames(WebTestClient client) {
-		client.get().uri("/actuator/quartz/jobs").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("groups.samples.jobs")
-				.isEqualTo(new JSONArray().appendElement("jobOne").appendElement("jobTwo"))
-				.jsonPath("groups.DEFAULT.jobs").isEqualTo(new JSONArray().appendElement("jobThree"));
+		client.get()
+			.uri("/actuator/quartz/jobs")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("groups.samples.jobs")
+			.isEqualTo(new JSONArray().appendElement("jobOne").appendElement("jobTwo"))
+			.jsonPath("groups.DEFAULT.jobs")
+			.isEqualTo(new JSONArray().appendElement("jobThree"));
 	}
 
 	@WebEndpointTest
 	void quartzTriggerNames(WebTestClient client) {
-		client.get().uri("/actuator/quartz/triggers").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("groups.DEFAULT.paused").isEqualTo(false).jsonPath("groups.DEFAULT.triggers")
-				.isEqualTo(new JSONArray().appendElement("triggerOne")).jsonPath("groups.tests.paused").isEqualTo(false)
-				.jsonPath("groups.tests.triggers")
-				.isEqualTo(new JSONArray().appendElement("triggerTwo").appendElement("triggerThree"));
+		client.get()
+			.uri("/actuator/quartz/triggers")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("groups.DEFAULT.paused")
+			.isEqualTo(false)
+			.jsonPath("groups.DEFAULT.triggers")
+			.isEqualTo(new JSONArray().appendElement("triggerOne"))
+			.jsonPath("groups.tests.paused")
+			.isEqualTo(false)
+			.jsonPath("groups.tests.triggers")
+			.isEqualTo(new JSONArray().appendElement("triggerTwo").appendElement("triggerThree"));
 	}
 
 	@WebEndpointTest
@@ -112,9 +145,18 @@ class QuartzEndpointWebIntegrationTests {
 
 	@WebEndpointTest
 	void quartzJobGroupSummary(WebTestClient client) {
-		client.get().uri("/actuator/quartz/jobs/samples").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("group").isEqualTo("samples").jsonPath("jobs.jobOne.className").isEqualTo(Job.class.getName())
-				.jsonPath("jobs.jobTwo.className").isEqualTo(DelegatingJob.class.getName());
+		client.get()
+			.uri("/actuator/quartz/jobs/samples")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("group")
+			.isEqualTo("samples")
+			.jsonPath("jobs.jobOne.className")
+			.isEqualTo(Job.class.getName())
+			.jsonPath("jobs.jobTwo.className")
+			.isEqualTo(DelegatingJob.class.getName());
 	}
 
 	@WebEndpointTest
@@ -124,12 +166,26 @@ class QuartzEndpointWebIntegrationTests {
 
 	@WebEndpointTest
 	void quartzTriggerGroupSummary(WebTestClient client) {
-		client.get().uri("/actuator/quartz/triggers/tests").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("group").isEqualTo("tests").jsonPath("paused").isEqualTo("false").jsonPath("triggers.cron")
-				.isEmpty().jsonPath("triggers.simple.triggerTwo.interval").isEqualTo(86400000)
-				.jsonPath("triggers.dailyTimeInterval").isEmpty()
-				.jsonPath("triggers.calendarInterval.triggerThree.interval").isEqualTo(604800000)
-				.jsonPath("triggers.custom").isEmpty();
+		client.get()
+			.uri("/actuator/quartz/triggers/tests")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("group")
+			.isEqualTo("tests")
+			.jsonPath("paused")
+			.isEqualTo("false")
+			.jsonPath("triggers.cron")
+			.isEmpty()
+			.jsonPath("triggers.simple.triggerTwo.interval")
+			.isEqualTo(86400000)
+			.jsonPath("triggers.dailyTimeInterval")
+			.isEmpty()
+			.jsonPath("triggers.calendarInterval.triggerThree.interval")
+			.isEqualTo(604800000)
+			.jsonPath("triggers.custom")
+			.isEmpty();
 	}
 
 	@WebEndpointTest
@@ -139,9 +195,18 @@ class QuartzEndpointWebIntegrationTests {
 
 	@WebEndpointTest
 	void quartzJobDetail(WebTestClient client) {
-		client.get().uri("/actuator/quartz/jobs/samples/jobOne").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("group").isEqualTo("samples").jsonPath("name").isEqualTo("jobOne").jsonPath("data.name")
-				.isEqualTo("test");
+		client.get()
+			.uri("/actuator/quartz/jobs/samples/jobOne")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("group")
+			.isEqualTo("samples")
+			.jsonPath("name")
+			.isEqualTo("jobOne")
+			.jsonPath("data.name")
+			.isEqualTo("test");
 	}
 
 	@WebEndpointTest
@@ -151,11 +216,32 @@ class QuartzEndpointWebIntegrationTests {
 
 	@WebEndpointTest
 	void quartzTriggerDetail(WebTestClient client) {
-		client.get().uri("/actuator/quartz/triggers/DEFAULT/triggerOne").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("group").isEqualTo("DEFAULT").jsonPath("name").isEqualTo("triggerOne").jsonPath("description")
-				.isEqualTo("Once a day 3AM").jsonPath("state").isEqualTo("NORMAL").jsonPath("type").isEqualTo("cron")
-				.jsonPath("simple").doesNotExist().jsonPath("calendarInterval").doesNotExist().jsonPath("dailyInterval")
-				.doesNotExist().jsonPath("custom").doesNotExist().jsonPath("cron.expression").isEqualTo("0 0 3 ? * *");
+		client.get()
+			.uri("/actuator/quartz/triggers/DEFAULT/triggerOne")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("group")
+			.isEqualTo("DEFAULT")
+			.jsonPath("name")
+			.isEqualTo("triggerOne")
+			.jsonPath("description")
+			.isEqualTo("Once a day 3AM")
+			.jsonPath("state")
+			.isEqualTo("NORMAL")
+			.jsonPath("type")
+			.isEqualTo("cron")
+			.jsonPath("simple")
+			.doesNotExist()
+			.jsonPath("calendarInterval")
+			.doesNotExist()
+			.jsonPath("dailyInterval")
+			.doesNotExist()
+			.jsonPath("custom")
+			.doesNotExist()
+			.jsonPath("cron.expression")
+			.isEqualTo("0 0 3 ? * *");
 	}
 
 	@WebEndpointTest
@@ -194,7 +280,7 @@ class QuartzEndpointWebIntegrationTests {
 			given(scheduler.getJobGroupNames()).willReturn(new ArrayList<>(jobKeys.keySet()));
 			for (Entry<String, List<JobKey>> entry : jobKeys.entrySet()) {
 				given(scheduler.getJobKeys(GroupMatcher.jobGroupEquals(entry.getKey())))
-						.willReturn(new LinkedHashSet<>(entry.getValue()));
+					.willReturn(new LinkedHashSet<>(entry.getValue()));
 			}
 		}
 
@@ -209,7 +295,7 @@ class QuartzEndpointWebIntegrationTests {
 			given(scheduler.getTriggerGroupNames()).willReturn(new ArrayList<>(triggerKeys.keySet()));
 			for (Entry<String, List<TriggerKey>> entry : triggerKeys.entrySet()) {
 				given(scheduler.getTriggerKeys(GroupMatcher.triggerGroupEquals(entry.getKey())))
-						.willReturn(new LinkedHashSet<>(entry.getValue()));
+					.willReturn(new LinkedHashSet<>(entry.getValue()));
 			}
 		}
 

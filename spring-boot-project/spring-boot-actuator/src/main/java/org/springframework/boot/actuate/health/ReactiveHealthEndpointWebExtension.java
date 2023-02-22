@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,9 +101,11 @@ public class ReactiveHealthEndpointWebExtension
 	protected Mono<? extends HealthComponent> aggregateContributions(ApiVersion apiVersion,
 			Map<String, Mono<? extends HealthComponent>> contributions, StatusAggregator statusAggregator,
 			boolean showComponents, Set<String> groupNames) {
-		return Flux.fromIterable(contributions.entrySet()).flatMap(NamedHealthComponent::create)
-				.collectMap(NamedHealthComponent::getName, NamedHealthComponent::getHealth).map((components) -> this
-						.getCompositeHealth(apiVersion, components, statusAggregator, showComponents, groupNames));
+		return Flux.fromIterable(contributions.entrySet())
+			.flatMap(NamedHealthComponent::create)
+			.collectMap(NamedHealthComponent::getName, NamedHealthComponent::getHealth)
+			.map((components) -> this.getCompositeHealth(apiVersion, components, statusAggregator, showComponents,
+					groupNames));
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class WebServiceClientIntegrationTests {
 	@Test
 	void mockServerCall() {
 		this.server.expect(payload(new StringSource("<request/>")))
-				.andRespond(withPayload(new StringSource("<response><status>200</status></response>")));
+			.andRespond(withPayload(new StringSource("<response><status>200</status></response>")));
 		assertThat(this.client.test()).extracting(Response::getStatus).isEqualTo(200);
 	}
 
@@ -56,14 +56,14 @@ class WebServiceClientIntegrationTests {
 	void mockServerCall1() {
 		this.server.expect(connectionTo("https://example1")).andRespond(withPayload(new StringSource("<response/>")));
 		assertThatExceptionOfType(SourceAssertionError.class).isThrownBy(this.client::test)
-				.withMessageContaining("Unexpected connection expected");
+			.withMessageContaining("Unexpected connection expected");
 	}
 
 	@Test
 	void mockServerCall2() {
 		this.server.expect(payload(new StringSource("<request/>"))).andRespond(withError("Invalid Request"));
 		assertThatExceptionOfType(WebServiceTransportException.class).isThrownBy(this.client::test)
-				.withMessageContaining("Invalid Request");
+			.withMessageContaining("Invalid Request");
 	}
 
 }

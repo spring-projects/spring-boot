@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ import org.springframework.util.Assert;
 public class Binder {
 
 	private static final Set<Class<?>> NON_BEAN_CLASSES = Collections
-			.unmodifiableSet(new HashSet<>(Arrays.asList(Object.class, Class.class)));
+		.unmodifiableSet(new HashSet<>(Arrays.asList(Object.class, Class.class)));
 
 	private final Iterable<ConfigurationPropertySource> sources;
 

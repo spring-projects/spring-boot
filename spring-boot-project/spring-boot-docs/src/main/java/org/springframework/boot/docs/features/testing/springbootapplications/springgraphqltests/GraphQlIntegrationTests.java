@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,11 +30,13 @@ class GraphQlIntegrationTests {
 	@Test
 	void shouldGreetWithSpecificName(@Autowired HttpGraphQlTester graphQlTester) {
 		HttpGraphQlTester authenticatedTester = graphQlTester.mutate()
-				.webTestClient(
-						(client) -> client.defaultHeaders((headers) -> headers.setBasicAuth("admin", "ilovespring")))
-				.build();
-		authenticatedTester.document("{ greeting(name: \"Alice\") } ").execute().path("greeting").entity(String.class)
-				.isEqualTo("Hello, Alice!");
+			.webTestClient((client) -> client.defaultHeaders((headers) -> headers.setBasicAuth("admin", "ilovespring")))
+			.build();
+		authenticatedTester.document("{ greeting(name: \"Alice\") } ")
+			.execute()
+			.path("greeting")
+			.entity(String.class)
+			.isEqualTo("Hello, Alice!");
 	}
 
 }

@@ -64,37 +64,38 @@ class ApplicationContextAssertProviderTests {
 	void getWhenTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> ApplicationContextAssertProvider.get(null, ApplicationContext.class, this.mockContextSupplier))
-				.withMessageContaining("Type must not be null");
+			.withMessageContaining("Type must not be null");
 	}
 
 	@Test
 	void getWhenTypeIsClassShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> ApplicationContextAssertProvider.get(null, ApplicationContext.class, this.mockContextSupplier))
-				.withMessageContaining("Type must not be null");
+			.withMessageContaining("Type must not be null");
 	}
 
 	@Test
 	void getWhenContextTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> ApplicationContextAssertProvider.get(TestAssertProviderApplicationContextClass.class,
-						ApplicationContext.class, this.mockContextSupplier))
-				.withMessageContaining("Type must be an interface");
+			.isThrownBy(() -> ApplicationContextAssertProvider.get(TestAssertProviderApplicationContextClass.class,
+					ApplicationContext.class, this.mockContextSupplier))
+			.withMessageContaining("Type must be an interface");
 	}
 
 	@Test
 	void getWhenContextTypeIsClassShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> ApplicationContextAssertProvider
-				.get(TestAssertProviderApplicationContext.class, null, this.mockContextSupplier))
-				.withMessageContaining("ContextType must not be null");
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> ApplicationContextAssertProvider.get(TestAssertProviderApplicationContext.class, null,
+					this.mockContextSupplier))
+			.withMessageContaining("ContextType must not be null");
 	}
 
 	@Test
 	void getWhenSupplierIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> ApplicationContextAssertProvider.get(TestAssertProviderApplicationContext.class,
-						StaticApplicationContext.class, this.mockContextSupplier))
-				.withMessageContaining("ContextType must be an interface");
+			.isThrownBy(() -> ApplicationContextAssertProvider.get(TestAssertProviderApplicationContext.class,
+					StaticApplicationContext.class, this.mockContextSupplier))
+			.withMessageContaining("ContextType must be an interface");
 	}
 
 	@Test
@@ -109,8 +110,9 @@ class ApplicationContextAssertProviderTests {
 	void getWhenContextFailsShouldReturnProxyThatThrowsExceptions() {
 		ApplicationContextAssertProvider<ApplicationContext> context = get(this.startupFailureSupplier);
 		assertThat((Object) context).isNotNull();
-		assertThatIllegalStateException().isThrownBy(() -> context.getBean("foo")).withCause(this.startupFailure)
-				.withMessageContaining("failed to start");
+		assertThatIllegalStateException().isThrownBy(() -> context.getBean("foo"))
+			.withCause(this.startupFailure)
+			.withMessageContaining("failed to start");
 	}
 
 	@Test
@@ -123,7 +125,8 @@ class ApplicationContextAssertProviderTests {
 	void getSourceContextWhenContextFailsShouldThrowException() {
 		ApplicationContextAssertProvider<ApplicationContext> context = get(this.startupFailureSupplier);
 		assertThatIllegalStateException().isThrownBy(context::getSourceApplicationContext)
-				.withCause(this.startupFailure).withMessageContaining("failed to start");
+			.withCause(this.startupFailure)
+			.withMessageContaining("failed to start");
 	}
 
 	@Test
@@ -136,8 +139,9 @@ class ApplicationContextAssertProviderTests {
 	void getSourceContextOfTypeWhenContextFailsToStartShouldThrowException() {
 		ApplicationContextAssertProvider<ApplicationContext> context = get(this.startupFailureSupplier);
 		assertThatIllegalStateException()
-				.isThrownBy(() -> context.getSourceApplicationContext(ApplicationContext.class))
-				.withCause(this.startupFailure).withMessageContaining("failed to start");
+			.isThrownBy(() -> context.getSourceApplicationContext(ApplicationContext.class))
+			.withCause(this.startupFailure)
+			.withMessageContaining("failed to start");
 	}
 
 	@Test
@@ -172,7 +176,7 @@ class ApplicationContextAssertProviderTests {
 	void toStringWhenContextStartsShouldReturnSimpleString() {
 		ApplicationContextAssertProvider<ApplicationContext> context = get(this.mockContextSupplier);
 		assertThat(context.toString()).startsWith("Started application [ConfigurableApplicationContext.MockitoMock")
-				.endsWith("id = [null], applicationName = [null], beanDefinitionCount = 0]");
+			.endsWith("id = [null], applicationName = [null], beanDefinitionCount = 0]");
 	}
 
 	@Test

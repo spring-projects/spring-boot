@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ import static org.mockito.Mockito.never;
 class HibernatePropertiesTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(TestConfiguration.class);
+		.withUserConfiguration(TestConfiguration.class);
 
 	@Mock
 	private Supplier<String> ddlAutoSupplier;
@@ -69,67 +69,67 @@ class HibernatePropertiesTests {
 	@Test
 	void hibernate5CustomNamingStrategies() {
 		this.contextRunner
-				.withPropertyValues("spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
-						"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical")
-				.run(assertHibernateProperties((hibernateProperties) -> {
-					assertThat(hibernateProperties).contains(
-							entry(AvailableSettings.IMPLICIT_NAMING_STRATEGY, "com.example.Implicit"),
-							entry(AvailableSettings.PHYSICAL_NAMING_STRATEGY, "com.example.Physical"));
-					assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
-				}));
+			.withPropertyValues("spring.jpa.hibernate.naming.implicit-strategy:com.example.Implicit",
+					"spring.jpa.hibernate.naming.physical-strategy:com.example.Physical")
+			.run(assertHibernateProperties((hibernateProperties) -> {
+				assertThat(hibernateProperties).contains(
+						entry(AvailableSettings.IMPLICIT_NAMING_STRATEGY, "com.example.Implicit"),
+						entry(AvailableSettings.PHYSICAL_NAMING_STRATEGY, "com.example.Physical"));
+				assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
+			}));
 	}
 
 	@Test
 	void hibernate5CustomNamingStrategiesViaJpaProperties() {
 		this.contextRunner
-				.withPropertyValues("spring.jpa.properties.hibernate.implicit_naming_strategy:com.example.Implicit",
-						"spring.jpa.properties.hibernate.physical_naming_strategy:com.example.Physical")
-				.run(assertHibernateProperties((hibernateProperties) -> {
-					// You can override them as we don't provide any default
-					assertThat(hibernateProperties).contains(
-							entry(AvailableSettings.IMPLICIT_NAMING_STRATEGY, "com.example.Implicit"),
-							entry(AvailableSettings.PHYSICAL_NAMING_STRATEGY, "com.example.Physical"));
-					assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
-				}));
+			.withPropertyValues("spring.jpa.properties.hibernate.implicit_naming_strategy:com.example.Implicit",
+					"spring.jpa.properties.hibernate.physical_naming_strategy:com.example.Physical")
+			.run(assertHibernateProperties((hibernateProperties) -> {
+				// You can override them as we don't provide any default
+				assertThat(hibernateProperties).contains(
+						entry(AvailableSettings.IMPLICIT_NAMING_STRATEGY, "com.example.Implicit"),
+						entry(AvailableSettings.PHYSICAL_NAMING_STRATEGY, "com.example.Physical"));
+				assertThat(hibernateProperties).doesNotContainKeys("hibernate.ejb.naming_strategy");
+			}));
 	}
 
 	@Test
 	void scannerUsesDisabledScannerByDefault() {
 		this.contextRunner.run(assertHibernateProperties((hibernateProperties) -> assertThat(hibernateProperties)
-				.containsEntry(AvailableSettings.SCANNER, "org.hibernate.boot.archive.scan.internal.DisabledScanner")));
+			.containsEntry(AvailableSettings.SCANNER, "org.hibernate.boot.archive.scan.internal.DisabledScanner")));
 	}
 
 	@Test
 	void scannerCanBeCustomized() {
 		this.contextRunner.withPropertyValues(
 				"spring.jpa.properties.hibernate.archive.scanner:org.hibernate.boot.archive.scan.internal.StandardScanner")
-				.run(assertHibernateProperties((hibernateProperties) -> assertThat(hibernateProperties).containsEntry(
-						AvailableSettings.SCANNER, "org.hibernate.boot.archive.scan.internal.StandardScanner")));
+			.run(assertHibernateProperties((hibernateProperties) -> assertThat(hibernateProperties)
+				.containsEntry(AvailableSettings.SCANNER, "org.hibernate.boot.archive.scan.internal.StandardScanner")));
 	}
 
 	@Test
 	void defaultDdlAutoIsNotInvokedIfPropertyIsSet() {
 		this.contextRunner.withPropertyValues("spring.jpa.hibernate.ddl-auto=validate")
-				.run(assertDefaultDdlAutoNotInvoked("validate"));
+			.run(assertDefaultDdlAutoNotInvoked("validate"));
 	}
 
 	@Test
 	void defaultDdlAutoIsNotInvokedIfHibernateSpecificPropertyIsSet() {
 		this.contextRunner.withPropertyValues("spring.jpa.properties.hibernate.hbm2ddl.auto=create")
-				.run(assertDefaultDdlAutoNotInvoked("create"));
+			.run(assertDefaultDdlAutoNotInvoked("create"));
 	}
 
 	@Test
 	void defaultDdlAutoIsNotInvokedAndDdlAutoIsNotSetIfJpaDbActionPropertyIsSet() {
 		this.contextRunner
-				.withPropertyValues(
-						"spring.jpa.properties.jakarta.persistence.schema-generation.database.action=drop-and-create")
-				.run(assertHibernateProperties((hibernateProperties) -> {
-					assertThat(hibernateProperties).doesNotContainKey(AvailableSettings.HBM2DDL_AUTO);
-					assertThat(hibernateProperties).containsEntry(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION,
-							"drop-and-create");
-					then(this.ddlAutoSupplier).should(never()).get();
-				}));
+			.withPropertyValues(
+					"spring.jpa.properties.jakarta.persistence.schema-generation.database.action=drop-and-create")
+			.run(assertHibernateProperties((hibernateProperties) -> {
+				assertThat(hibernateProperties).doesNotContainKey(AvailableSettings.HBM2DDL_AUTO);
+				assertThat(hibernateProperties).containsEntry(AvailableSettings.JAKARTA_HBM2DDL_DATABASE_ACTION,
+						"drop-and-create");
+				then(this.ddlAutoSupplier).should(never()).get();
+			}));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertDefaultDdlAutoNotInvoked(String expectedDdlAuto) {
@@ -145,8 +145,8 @@ class HibernatePropertiesTests {
 			assertThat(context).hasSingleBean(JpaProperties.class);
 			assertThat(context).hasSingleBean(HibernateProperties.class);
 			Map<String, Object> hibernateProperties = context.getBean(HibernateProperties.class)
-					.determineHibernateProperties(context.getBean(JpaProperties.class).getProperties(),
-							new HibernateSettings().ddlAuto(this.ddlAutoSupplier));
+				.determineHibernateProperties(context.getBean(JpaProperties.class).getProperties(),
+						new HibernateSettings().ddlAuto(this.ddlAutoSupplier));
 			consumer.accept(hibernateProperties);
 		};
 	}

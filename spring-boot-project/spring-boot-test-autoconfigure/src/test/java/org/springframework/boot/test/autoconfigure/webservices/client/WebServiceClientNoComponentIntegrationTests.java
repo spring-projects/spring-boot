@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,14 +50,14 @@ class WebServiceClientNoComponentIntegrationTests {
 	@Test
 	void exampleClientIsNotInjected() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(ExampleWebServiceClient.class));
+			.isThrownBy(() -> this.applicationContext.getBean(ExampleWebServiceClient.class));
 	}
 
 	@Test
 	void manuallyCreateBean() {
 		ExampleWebServiceClient client = new ExampleWebServiceClient(this.webServiceTemplateBuilder);
 		this.server.expect(payload(new StringSource("<request/>")))
-				.andRespond(withPayload(new StringSource("<response><status>200</status></response>")));
+			.andRespond(withPayload(new StringSource("<response><status>200</status></response>")));
 		assertThat(client.test()).extracting(Response::getStatus).isEqualTo(200);
 	}
 

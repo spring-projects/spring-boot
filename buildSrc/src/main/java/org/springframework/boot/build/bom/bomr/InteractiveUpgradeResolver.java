@@ -50,7 +50,7 @@ public final class InteractiveUpgradeResolver implements UpgradeResolver {
 			librariesByName.put(library.getName(), library);
 		}
 		List<LibraryWithVersionOptions> libraryUpdates = this.libraryUpdateResolver
-				.findLibraryUpdates(librariesToUpgrade, librariesByName);
+			.findLibraryUpdates(librariesToUpgrade, librariesByName);
 		return libraryUpdates.stream().map(this::resolveUpgrade).filter(Objects::nonNull).toList();
 	}
 

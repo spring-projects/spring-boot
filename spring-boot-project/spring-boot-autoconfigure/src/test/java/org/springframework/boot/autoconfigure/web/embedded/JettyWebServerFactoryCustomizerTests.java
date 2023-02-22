@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -162,7 +162,7 @@ class JettyWebServerFactoryCustomizerTests {
 		assertThat(defaultQueue).isInstanceOf(BlockingArrayQueue.class);
 		assertThat(configuredQueue).isInstanceOf(BlockingArrayQueue.class);
 		assertThat(((BlockingArrayQueue<?>) defaultQueue).getMaxCapacity())
-				.isEqualTo(((BlockingArrayQueue<?>) configuredQueue).getMaxCapacity());
+			.isEqualTo(((BlockingArrayQueue<?>) configuredQueue).getMaxCapacity());
 	}
 
 	@Test
@@ -239,7 +239,7 @@ class JettyWebServerFactoryCustomizerTests {
 		assertThat(queuedThreadPool.getMinThreads()).isEqualTo(defaultProperties.getThreads().getMin());
 		assertThat(queuedThreadPool.getMaxThreads()).isEqualTo(defaultProperties.getThreads().getMax());
 		assertThat(queuedThreadPool.getIdleTimeout())
-				.isEqualTo(defaultProperties.getThreads().getIdleTimeout().toMillis());
+			.isEqualTo(defaultProperties.getThreads().getIdleTimeout().toMillis());
 	}
 
 	private CustomRequestLog getRequestLog(JettyWebServer server) {
@@ -299,7 +299,9 @@ class JettyWebServerFactoryCustomizerTests {
 		server.start();
 		server.stop();
 		return Arrays.stream(server.getServer().getConnectors())
-				.filter((connector) -> connector instanceof AbstractConnector).map(Connector::getIdleTimeout).toList();
+			.filter((connector) -> connector instanceof AbstractConnector)
+			.map(Connector::getIdleTimeout)
+			.toList();
 	}
 
 	private List<Integer> getRequestHeaderSizes(JettyWebServer server) {
@@ -309,12 +311,14 @@ class JettyWebServerFactoryCustomizerTests {
 		server.stop();
 		Connector[] connectors = server.getServer().getConnectors();
 		for (Connector connector : connectors) {
-			connector.getConnectionFactories().stream().filter((factory) -> factory instanceof ConnectionFactory)
-					.forEach((cf) -> {
-						ConnectionFactory factory = (ConnectionFactory) cf;
-						HttpConfiguration configuration = factory.getHttpConfiguration();
-						requestHeaderSizes.add(configuration.getRequestHeaderSize());
-					});
+			connector.getConnectionFactories()
+				.stream()
+				.filter((factory) -> factory instanceof ConnectionFactory)
+				.forEach((cf) -> {
+					ConnectionFactory factory = (ConnectionFactory) cf;
+					HttpConfiguration configuration = factory.getHttpConfiguration();
+					requestHeaderSizes.add(configuration.getRequestHeaderSize());
+				});
 		}
 		return requestHeaderSizes;
 	}

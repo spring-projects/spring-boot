@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,8 +91,8 @@ class WebPropertiesResourcesTests {
 		properties.setStaleWhileRevalidate(Duration.ofSeconds(7));
 		CacheControl cacheControl = properties.toHttpCacheControl();
 		assertThat(cacheControl.getHeaderValue())
-				.isEqualTo("max-age=4, must-revalidate, no-transform, public, private, proxy-revalidate,"
-						+ " s-maxage=5, stale-if-error=6, stale-while-revalidate=7");
+			.isEqualTo("max-age=4, must-revalidate, no-transform, public, private, proxy-revalidate,"
+					+ " s-maxage=5, stale-if-error=6, stale-while-revalidate=7");
 	}
 
 	@Test

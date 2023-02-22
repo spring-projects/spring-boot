@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DatabaseDriverClassNameTests {
 
 	private static final Set<DatabaseDriver> EXCLUDED_DRIVERS = Collections
-			.unmodifiableSet(EnumSet.of(DatabaseDriver.UNKNOWN, DatabaseDriver.DB2_AS400, DatabaseDriver.INFORMIX,
-					DatabaseDriver.HANA, DatabaseDriver.PHOENIX, DatabaseDriver.TERADATA, DatabaseDriver.REDSHIFT));
+		.unmodifiableSet(EnumSet.of(DatabaseDriver.UNKNOWN, DatabaseDriver.DB2_AS400, DatabaseDriver.INFORMIX,
+				DatabaseDriver.HANA, DatabaseDriver.PHOENIX, DatabaseDriver.TERADATA, DatabaseDriver.REDSHIFT));
 
 	@ParameterizedTest(name = "{0} {2}")
 	@MethodSource
@@ -84,9 +84,10 @@ class DatabaseDriverClassNameTests {
 
 	private static Stream<? extends Arguments> argumentsForType(Class<?> clazz, Predicate<DatabaseDriver> predicate,
 			Function<DatabaseDriver, String> classNameExtractor) {
-		return Stream.of(DatabaseDriver.values()).filter((databaseDriver) -> !EXCLUDED_DRIVERS.contains(databaseDriver))
-				.filter(predicate)
-				.map((databaseDriver) -> Arguments.of(databaseDriver, classNameExtractor.apply(databaseDriver), clazz));
+		return Stream.of(DatabaseDriver.values())
+			.filter((databaseDriver) -> !EXCLUDED_DRIVERS.contains(databaseDriver))
+			.filter(predicate)
+			.map((databaseDriver) -> Arguments.of(databaseDriver, classNameExtractor.apply(databaseDriver), clazz));
 	}
 
 }

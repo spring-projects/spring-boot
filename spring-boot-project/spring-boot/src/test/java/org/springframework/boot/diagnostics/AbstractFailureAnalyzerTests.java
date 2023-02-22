@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,14 +53,15 @@ class AbstractFailureAnalyzerTests {
 	void findCauseWitNestedAndExactMatch() {
 		TestException ex = new TestException();
 		assertThat(this.failureAnalyzer.findCause(new IllegalArgumentException(new IllegalStateException(ex)),
-				TestException.class)).isEqualTo(ex);
+				TestException.class))
+			.isEqualTo(ex);
 	}
 
 	@Test
 	void findCauseWitNestedAndSubClass() {
 		SpecificTestException ex = new SpecificTestException();
 		assertThat(this.failureAnalyzer.findCause(new IOException(new IllegalStateException(ex)), TestException.class))
-				.isEqualTo(ex);
+			.isEqualTo(ex);
 	}
 
 	@Test

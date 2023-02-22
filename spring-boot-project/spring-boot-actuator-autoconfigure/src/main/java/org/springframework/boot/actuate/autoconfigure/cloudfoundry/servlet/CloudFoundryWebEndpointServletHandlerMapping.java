@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,7 +94,7 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 		@Reflective
 		public Map<String, Map<String, Link>> links(HttpServletRequest request, HttpServletResponse response) {
 			SecurityResponse securityResponse = CloudFoundryWebEndpointServletHandlerMapping.this.securityInterceptor
-					.preHandle(request, null);
+				.preHandle(request, null);
 			if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
 				sendFailureResponse(response, securityResponse);
 			}
@@ -104,10 +104,11 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 				return Collections.singletonMap("_links", filteredLinks);
 			}
 			Map<String, Link> links = CloudFoundryWebEndpointServletHandlerMapping.this.linksResolver
-					.resolveLinks(request.getRequestURL().toString());
-			filteredLinks = links.entrySet().stream()
-					.filter((e) -> e.getKey().equals("self") || accessLevel.isAccessAllowed(e.getKey()))
-					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+				.resolveLinks(request.getRequestURL().toString());
+			filteredLinks = links.entrySet()
+				.stream()
+				.filter((e) -> e.getKey().equals("self") || accessLevel.isAccessAllowed(e.getKey()))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 			return Collections.singletonMap("_links", filteredLinks);
 		}
 

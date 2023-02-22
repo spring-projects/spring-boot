@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,8 @@ class ConditionEvaluationReportLoggingProcessorTests {
 	@Test
 	void logsDebugOnProcessAheadOfTime(CapturedOutput output) {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		ConditionEvaluationReport.get(beanFactory).recordConditionEvaluation("test", mock(Condition.class),
-				ConditionOutcome.match());
+		ConditionEvaluationReport.get(beanFactory)
+			.recordConditionEvaluation("test", mock(Condition.class), ConditionOutcome.match());
 		ConditionEvaluationReportLoggingProcessor processor = new ConditionEvaluationReportLoggingProcessor();
 		processor.processAheadOfTime(beanFactory);
 		assertThat(output).doesNotContain("CONDITIONS EVALUATION REPORT");
@@ -55,7 +55,7 @@ class ConditionEvaluationReportLoggingProcessorTests {
 
 	private void withDebugLogging(Runnable runnable) {
 		Logger logger = ((LoggerContext) LoggerFactory.getILoggerFactory())
-				.getLogger(ConditionEvaluationReportLogger.class);
+			.getLogger(ConditionEvaluationReportLogger.class);
 		Level currentLevel = logger.getLevel();
 		logger.setLevel(Level.DEBUG);
 		try {

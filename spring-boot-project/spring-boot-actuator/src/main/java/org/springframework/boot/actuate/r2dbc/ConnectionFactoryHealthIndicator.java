@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,8 +70,8 @@ public class ConnectionFactoryHealthIndicator extends AbstractReactiveHealthIndi
 
 	@Override
 	protected final Mono<Health> doHealthCheck(Builder builder) {
-		return validate(builder).defaultIfEmpty(builder.build()).onErrorResume(Exception.class,
-				(ex) -> Mono.just(builder.down(ex).build()));
+		return validate(builder).defaultIfEmpty(builder.build())
+			.onErrorResume(Exception.class, (ex) -> Mono.just(builder.down(ex).build()));
 	}
 
 	private Mono<Health> validate(Builder builder) {
@@ -84,7 +84,8 @@ public class ConnectionFactoryHealthIndicator extends AbstractReactiveHealthIndi
 		builder.withDetail("validationQuery", this.validationQuery);
 		Mono<Object> connectionValidation = Mono.usingWhen(this.connectionFactory.create(),
 				(conn) -> Flux.from(conn.createStatement(this.validationQuery).execute())
-						.flatMap((it) -> it.map(this::extractResult)).next(),
+					.flatMap((it) -> it.map(this::extractResult))
+					.next(),
 				Connection::close, (o, throwable) -> o.close(), Connection::close);
 		return connectionValidation.map((result) -> builder.up().withDetail("result", result).build());
 	}

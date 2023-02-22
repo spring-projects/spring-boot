@@ -81,7 +81,7 @@ class TestRestTemplateTests {
 	void simple() {
 		// The Apache client is on the classpath so we get the fully-fledged factory
 		assertThat(new TestRestTemplate().getRestTemplate().getRequestFactory())
-				.isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
+			.isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
 	}
 
 	@Test
@@ -89,7 +89,7 @@ class TestRestTemplateTests {
 		RestTemplateBuilder builder = new RestTemplateBuilder().requestFactory(OkHttp3ClientHttpRequestFactory.class);
 		TestRestTemplate testRestTemplate = new TestRestTemplate(builder);
 		assertThat(testRestTemplate.getRestTemplate().getRequestFactory())
-				.isInstanceOf(OkHttp3ClientHttpRequestFactory.class);
+			.isInstanceOf(OkHttp3ClientHttpRequestFactory.class);
 	}
 
 	@Test
@@ -133,7 +133,8 @@ class TestRestTemplateTests {
 	void options() {
 		TestRestTemplate template = new TestRestTemplate(HttpClientOption.ENABLE_REDIRECTS);
 		CustomHttpComponentsClientHttpRequestFactory factory = (CustomHttpComponentsClientHttpRequestFactory) template
-				.getRestTemplate().getRequestFactory();
+			.getRestTemplate()
+			.getRequestFactory();
 		RequestConfig config = factory.createRequestConfig();
 		assertThat(config.isRedirectsEnabled()).isTrue();
 	}
@@ -154,7 +155,8 @@ class TestRestTemplateTests {
 						method.getParameterTypes());
 				assertThat(equivalent).as("Method %s not found", method).isNotNull();
 				assertThat(Modifier.isPublic(equivalent.getModifiers()))
-						.as("Method %s should have been public", equivalent).isTrue();
+					.as("Method %s should have been public", equivalent)
+					.isTrue();
 				try {
 					equivalent.invoke(restTemplate, mockArguments(method.getParameterTypes()));
 				}
@@ -269,14 +271,14 @@ class TestRestTemplateTests {
 	@Test
 	void exchangeWithRequestEntityAndClassHandlesRelativeUris() throws IOException {
 		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
-				.exchange(new RequestEntity<String>(HttpMethod.GET, relativeUri), String.class));
+			.exchange(new RequestEntity<String>(HttpMethod.GET, relativeUri), String.class));
 	}
 
 	@Test
 	void exchangeWithRequestEntityAndParameterizedTypeReferenceHandlesRelativeUris() throws IOException {
-		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate.exchange(
-				new RequestEntity<String>(HttpMethod.GET, relativeUri), new ParameterizedTypeReference<String>() {
-				}));
+		verifyRelativeUriHandling((testRestTemplate, relativeUri) -> testRestTemplate
+			.exchange(new RequestEntity<String>(HttpMethod.GET, relativeUri), new ParameterizedTypeReference<String>() {
+			}));
 	}
 
 	@Test

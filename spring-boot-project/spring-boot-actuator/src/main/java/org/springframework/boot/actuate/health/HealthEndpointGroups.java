@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,9 +78,10 @@ public interface HealthEndpointGroups {
 	default Set<HealthEndpointGroup> getAllWithAdditionalPath(WebServerNamespace namespace) {
 		Assert.notNull(namespace, "Namespace must not be null");
 		Set<HealthEndpointGroup> filteredGroups = new LinkedHashSet<>();
-		getNames().stream().map(this::get).filter(
-				(group) -> group.getAdditionalPath() != null && group.getAdditionalPath().hasNamespace(namespace))
-				.forEach(filteredGroups::add);
+		getNames().stream()
+			.map(this::get)
+			.filter((group) -> group.getAdditionalPath() != null && group.getAdditionalPath().hasNamespace(namespace))
+			.forEach(filteredGroups::add);
 		return filteredGroups;
 	}
 

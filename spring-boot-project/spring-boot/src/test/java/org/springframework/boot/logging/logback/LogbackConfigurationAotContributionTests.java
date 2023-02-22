@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,9 +82,10 @@ class LogbackConfigurationAotContributionTests {
 		assertThat(generatedFiles).has(resource("META-INF/spring/logback-model"));
 		assertThat(generatedFiles).has(resource("META-INF/spring/logback-pattern-rules"));
 		SerializationHints serializationHints = generationContext.getRuntimeHints().serialization();
-		assertThat(serializationHints.javaSerializationHints().map(JavaSerializationHint::getType)
-				.map(TypeReference::getName))
-						.containsExactlyInAnyOrder(namesOf(Model.class, ArrayList.class, Boolean.class, Integer.class));
+		assertThat(serializationHints.javaSerializationHints()
+			.map(JavaSerializationHint::getType)
+			.map(TypeReference::getName))
+			.containsExactlyInAnyOrder(namesOf(Model.class, ArrayList.class, Boolean.class, Integer.class));
 		assertThat(generationContext.getRuntimeHints().reflection().typeHints()).isEmpty();
 		Properties patternRules = load(
 				generatedFiles.getGeneratedFile(Kind.RESOURCE, "META-INF/spring/logback-pattern-rules"));
@@ -99,8 +100,8 @@ class LogbackConfigurationAotContributionTests {
 		TestGenerationContext generationContext = applyContribution(new Model());
 		assertThat(invokePublicConstructorsOf("com.example.Alpha")).accepts(generationContext.getRuntimeHints());
 		assertThat(invokePublicConstructorsOf("com.example.Bravo")).accepts(generationContext.getRuntimeHints());
-		Properties patternRules = load(generationContext.getGeneratedFiles().getGeneratedFile(Kind.RESOURCE,
-				"META-INF/spring/logback-pattern-rules"));
+		Properties patternRules = load(generationContext.getGeneratedFiles()
+			.getGeneratedFile(Kind.RESOURCE, "META-INF/spring/logback-pattern-rules"));
 		assertThat(patternRules).hasSize(2);
 		assertThat(patternRules).containsEntry("a", "com.example.Alpha");
 		assertThat(patternRules).containsEntry("b", "com.example.Bravo");
@@ -114,13 +115,14 @@ class LogbackConfigurationAotContributionTests {
 		model.getSubModels().add(component);
 		TestGenerationContext generationContext = applyContribution(model);
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(SizeAndTimeBasedRollingPolicy.class))
-				.accepts(generationContext.getRuntimeHints());
+			.accepts(generationContext.getRuntimeHints());
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(FileAppender.class))
-				.accepts(generationContext.getRuntimeHints());
+			.accepts(generationContext.getRuntimeHints());
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(FileSize.class))
-				.accepts(generationContext.getRuntimeHints());
+			.accepts(generationContext.getRuntimeHints());
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(
-				TimeBasedFileNamingAndTriggeringPolicy.class)).accepts(generationContext.getRuntimeHints());
+				TimeBasedFileNamingAndTriggeringPolicy.class))
+			.accepts(generationContext.getRuntimeHints());
 	}
 
 	@Test
@@ -131,11 +133,11 @@ class LogbackConfigurationAotContributionTests {
 		model.getSubModels().add(implicit);
 		TestGenerationContext generationContext = applyContribution(model);
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(PatternLayoutEncoder.class))
-				.accepts(generationContext.getRuntimeHints());
+			.accepts(generationContext.getRuntimeHints());
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Layout.class))
-				.accepts(generationContext.getRuntimeHints());
+			.accepts(generationContext.getRuntimeHints());
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Charset.class))
-				.accepts(generationContext.getRuntimeHints());
+			.accepts(generationContext.getRuntimeHints());
 	}
 
 	@Test
@@ -148,7 +150,7 @@ class LogbackConfigurationAotContributionTests {
 		model.getSubModels().addAll(List.of(importModel, component));
 		TestGenerationContext generationContext = applyContribution(model);
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(SizeAndTimeBasedRollingPolicy.class))
-				.accepts(generationContext.getRuntimeHints());
+			.accepts(generationContext.getRuntimeHints());
 	}
 
 	@Test
@@ -160,9 +162,9 @@ class LogbackConfigurationAotContributionTests {
 		component.getSubModels().add(implementation);
 		TestGenerationContext generationContext = applyContribution(component);
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Outer.class))
-				.accepts(generationContext.getRuntimeHints());
+			.accepts(generationContext.getRuntimeHints());
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Implementation.class))
-				.accepts(generationContext.getRuntimeHints());
+			.accepts(generationContext.getRuntimeHints());
 	}
 
 	@Test
@@ -174,9 +176,9 @@ class LogbackConfigurationAotContributionTests {
 		component.getSubModels().add(contract);
 		TestGenerationContext generationContext = applyContribution(component);
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(OuterWithDefaultClass.class))
-				.accepts(generationContext.getRuntimeHints());
+			.accepts(generationContext.getRuntimeHints());
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Implementation.class))
-				.accepts(generationContext.getRuntimeHints());
+			.accepts(generationContext.getRuntimeHints());
 	}
 
 	@Test
@@ -185,18 +187,20 @@ class LogbackConfigurationAotContributionTests {
 		component.setClassName(ArrayParmeters.class.getName());
 		TestGenerationContext generationContext = applyContribution(component);
 		assertThat(invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(InetSocketAddress.class))
-				.accepts(generationContext.getRuntimeHints());
+			.accepts(generationContext.getRuntimeHints());
 	}
 
 	private Predicate<RuntimeHints> invokePublicConstructorsOf(String name) {
-		return RuntimeHintsPredicates.reflection().onType(TypeReference.of(name))
-				.withMemberCategory(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
+		return RuntimeHintsPredicates.reflection()
+			.onType(TypeReference.of(name))
+			.withMemberCategory(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS);
 	}
 
 	private Predicate<RuntimeHints> invokePublicConstructorsAndInspectAndInvokePublicMethodsOf(Class<?> type) {
-		return RuntimeHintsPredicates.reflection().onType(TypeReference.of(type)).withMemberCategories(
-				MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS, MemberCategory.INTROSPECT_PUBLIC_METHODS,
-				MemberCategory.INVOKE_PUBLIC_METHODS);
+		return RuntimeHintsPredicates.reflection()
+			.onType(TypeReference.of(type))
+			.withMemberCategories(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS, MemberCategory.INTROSPECT_PUBLIC_METHODS,
+					MemberCategory.INVOKE_PUBLIC_METHODS);
 	}
 
 	private Properties load(InputStreamSource source) {
@@ -221,7 +225,7 @@ class LogbackConfigurationAotContributionTests {
 		configurator.setContext(context);
 		withSystemProperty("spring.aot.processing", "true", () -> configurator.processModel(model));
 		LogbackConfigurationAotContribution contribution = (LogbackConfigurationAotContribution) context
-				.getObject(BeanFactoryInitializationAotContribution.class.getName());
+			.getObject(BeanFactoryInitializationAotContribution.class.getName());
 		TestGenerationContext generationContext = new TestGenerationContext();
 		contribution.applyTo(generationContext, null);
 		return generationContext;

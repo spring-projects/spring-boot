@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,14 +48,14 @@ class BuildpackMetadataTests extends AbstractJsonTests {
 	@Test
 	void fromImageWhenImageIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackMetadata.fromImage(null))
-				.withMessage("Image must not be null");
+			.withMessage("Image must not be null");
 	}
 
 	@Test
 	void fromImageWhenImageConfigIsNullThrowsException() {
 		Image image = mock(Image.class);
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackMetadata.fromImage(image))
-				.withMessage("ImageConfig must not be null");
+			.withMessage("ImageConfig must not be null");
 	}
 
 	@Test
@@ -65,7 +65,7 @@ class BuildpackMetadataTests extends AbstractJsonTests {
 		given(image.getConfig()).willReturn(imageConfig);
 		given(imageConfig.getLabels()).willReturn(Collections.singletonMap("alpha", "a"));
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackMetadata.fromImage(image))
-				.withMessage("No 'io.buildpacks.buildpackage.metadata' label found in image config labels 'alpha'");
+			.withMessage("No 'io.buildpacks.buildpackage.metadata' label found in image config labels 'alpha'");
 	}
 
 	@Test

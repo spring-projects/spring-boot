@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,23 +93,25 @@ public class StartupEndpoint {
 	static class StartupEndpointRuntimeHints implements RuntimeHintsRegistrar {
 
 		private static final TypeReference DEFAULT_TAG = TypeReference
-				.of("org.springframework.boot.context.metrics.buffering.BufferedStartupStep$DefaultTag");
+			.of("org.springframework.boot.context.metrics.buffering.BufferedStartupStep$DefaultTag");
 
 		private static final TypeReference BUFFERED_STARTUP_STEP = TypeReference
-				.of("org.springframework.boot.context.metrics.buffering.BufferedStartupStep");
+			.of("org.springframework.boot.context.metrics.buffering.BufferedStartupStep");
 
 		private static final TypeReference FLIGHT_RECORDER_TAG = TypeReference
-				.of("org.springframework.core.metrics.jfr.FlightRecorderStartupStep$FlightRecorderTag");
+			.of("org.springframework.core.metrics.jfr.FlightRecorderStartupStep$FlightRecorderTag");
 
 		private static final TypeReference FLIGHT_RECORDER_STARTUP_STEP = TypeReference
-				.of("org.springframework.core.metrics.jfr.FlightRecorderStartupStep");
+			.of("org.springframework.core.metrics.jfr.FlightRecorderStartupStep");
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.reflection().registerType(DEFAULT_TAG, (typeHint) -> typeHint.onReachableType(BUFFERED_STARTUP_STEP)
+			hints.reflection()
+				.registerType(DEFAULT_TAG, (typeHint) -> typeHint.onReachableType(BUFFERED_STARTUP_STEP)
 					.withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
-			hints.reflection().registerType(FLIGHT_RECORDER_TAG, (typeHint) -> typeHint
-					.onReachableType(FLIGHT_RECORDER_STARTUP_STEP).withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
+			hints.reflection()
+				.registerType(FLIGHT_RECORDER_TAG, (typeHint) -> typeHint.onReachableType(FLIGHT_RECORDER_STARTUP_STEP)
+					.withMembers(MemberCategory.INVOKE_PUBLIC_METHODS));
 		}
 
 	}

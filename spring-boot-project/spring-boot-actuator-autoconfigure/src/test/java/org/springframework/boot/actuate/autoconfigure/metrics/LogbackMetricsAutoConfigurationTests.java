@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LogbackMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(LogbackMetricsAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(LogbackMetricsAutoConfiguration.class));
 
 	@Test
 	void autoConfiguresLogbackMetrics() {
@@ -45,8 +45,8 @@ class LogbackMetricsAutoConfigurationTests {
 
 	@Test
 	void allowsCustomLogbackMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomLogbackMetricsConfiguration.class).run(
-				(context) -> assertThat(context).hasSingleBean(LogbackMetrics.class).hasBean("customLogbackMetrics"));
+		this.contextRunner.withUserConfiguration(CustomLogbackMetricsConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(LogbackMetrics.class).hasBean("customLogbackMetrics"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

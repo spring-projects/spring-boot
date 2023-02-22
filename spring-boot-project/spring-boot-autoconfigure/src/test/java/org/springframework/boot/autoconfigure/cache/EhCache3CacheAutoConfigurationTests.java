@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,12 +40,12 @@ class EhCache3CacheAutoConfigurationTests extends AbstractCacheAutoConfiguration
 	void ehcache3AsJCacheWithCaches() {
 		String cachingProviderFqn = EhcacheCachingProvider.class.getName();
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
-				.withPropertyValues("spring.cache.type=jcache", "spring.cache.jcache.provider=" + cachingProviderFqn,
-						"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar")
-				.run((context) -> {
-					JCacheCacheManager cacheManager = getCacheManager(context, JCacheCacheManager.class);
-					assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
-				});
+			.withPropertyValues("spring.cache.type=jcache", "spring.cache.jcache.provider=" + cachingProviderFqn,
+					"spring.cache.cacheNames[0]=foo", "spring.cache.cacheNames[1]=bar")
+			.run((context) -> {
+				JCacheCacheManager cacheManager = getCacheManager(context, JCacheCacheManager.class);
+				assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+			});
 	}
 
 	@Test
@@ -53,15 +53,15 @@ class EhCache3CacheAutoConfigurationTests extends AbstractCacheAutoConfiguration
 		String cachingProviderFqn = EhcacheCachingProvider.class.getName();
 		String configLocation = "ehcache3.xml";
 		this.contextRunner.withUserConfiguration(DefaultCacheConfiguration.class)
-				.withPropertyValues("spring.cache.type=jcache", "spring.cache.jcache.provider=" + cachingProviderFqn,
-						"spring.cache.jcache.config=" + configLocation)
-				.run((context) -> {
-					JCacheCacheManager cacheManager = getCacheManager(context, JCacheCacheManager.class);
+			.withPropertyValues("spring.cache.type=jcache", "spring.cache.jcache.provider=" + cachingProviderFqn,
+					"spring.cache.jcache.config=" + configLocation)
+			.run((context) -> {
+				JCacheCacheManager cacheManager = getCacheManager(context, JCacheCacheManager.class);
 
-					Resource configResource = new ClassPathResource(configLocation);
-					assertThat(cacheManager.getCacheManager().getURI()).isEqualTo(configResource.getURI());
-					assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
-				});
+				Resource configResource = new ClassPathResource(configLocation);
+				assertThat(cacheManager.getCacheManager().getURI()).isEqualTo(configResource.getURI());
+				assertThat(cacheManager.getCacheNames()).containsOnly("foo", "bar");
+			});
 	}
 
 }

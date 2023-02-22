@@ -73,9 +73,9 @@ class DefaultBindConstructorProviderTests {
 	@Test
 	void getBindConstructorWhenHasTwoConstructorsWithOneAutowiredAndOneConstructorBindingThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.provider
-						.getBindConstructor(TwoConstructorsWithOneAutowiredAndOneConstructorBinding.class, false))
-				.withMessageContaining("declares @ConstructorBinding and @Autowired");
+			.isThrownBy(() -> this.provider
+				.getBindConstructor(TwoConstructorsWithOneAutowiredAndOneConstructorBinding.class, false))
+			.withMessageContaining("declares @ConstructorBinding and @Autowired");
 	}
 
 	@Test
@@ -88,9 +88,8 @@ class DefaultBindConstructorProviderTests {
 	@Test
 	void getBindConstructorWhenHasTwoConstructorsWithBothConstructorBindingThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(
-						() -> this.provider.getBindConstructor(TwoConstructorsWithBothConstructorBinding.class, false))
-				.withMessageContaining("has more than one @ConstructorBinding");
+			.isThrownBy(() -> this.provider.getBindConstructor(TwoConstructorsWithBothConstructorBinding.class, false))
+			.withMessageContaining("has more than one @ConstructorBinding");
 	}
 
 	@Test

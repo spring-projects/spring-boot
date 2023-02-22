@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,24 +43,25 @@ class ElasticsearchClientAutoConfigurationIntegrationTests {
 
 	@Container
 	static ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())
-			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
+		.withStartupAttempts(5)
+		.withStartupTimeout(Duration.ofMinutes(10));
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class,
-					ElasticsearchRestClientAutoConfiguration.class, ElasticsearchClientAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class,
+				ElasticsearchRestClientAutoConfiguration.class, ElasticsearchClientAutoConfiguration.class));
 
 	@Test
 	void reactiveClientCanQueryElasticsearchNode() {
 		this.contextRunner
-				.withPropertyValues("spring.elasticsearch.uris=" + elasticsearch.getHttpHostAddress(),
-						"spring.elasticsearch.connection-timeout=120s", "spring.elasticsearch.socket-timeout=120s")
-				.run((context) -> {
-					ElasticsearchClient client = context.getBean(ElasticsearchClient.class);
-					client.index((b) -> b.index("foo").id("1").document(Map.of("a", "alpha", "b", "bravo")));
-					GetResponse<Object> response = client.get((b) -> b.index("foo").id("1"), Object.class);
-					assertThat(response).isNotNull();
-					assertThat(response.found()).isTrue();
-				});
+			.withPropertyValues("spring.elasticsearch.uris=" + elasticsearch.getHttpHostAddress(),
+					"spring.elasticsearch.connection-timeout=120s", "spring.elasticsearch.socket-timeout=120s")
+			.run((context) -> {
+				ElasticsearchClient client = context.getBean(ElasticsearchClient.class);
+				client.index((b) -> b.index("foo").id("1").document(Map.of("a", "alpha", "b", "bravo")));
+				GetResponse<Object> response = client.get((b) -> b.index("foo").id("1"), Object.class);
+				assertThat(response).isNotNull();
+				assertThat(response.found()).isTrue();
+			});
 	}
 
 }

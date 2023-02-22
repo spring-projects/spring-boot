@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,9 +48,10 @@ class PropertiesMigrationListenerTests {
 	@Test
 	void sampleReport(CapturedOutput output) {
 		this.context = createSampleApplication().run("--logging.file=test.log");
-		assertThat(output).contains("commandLineArgs").contains("logging.file.name")
-				.contains("Each configuration key has been temporarily mapped")
-				.doesNotContain("Please refer to the release notes");
+		assertThat(output).contains("commandLineArgs")
+			.contains("logging.file.name")
+			.contains("Each configuration key has been temporarily mapped")
+			.doesNotContain("Please refer to the release notes");
 	}
 
 	private SpringApplication createSampleApplication() {

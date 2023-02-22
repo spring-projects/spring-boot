@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,11 +65,12 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessorTests {
 		registerEntries(RenameMixInClass.class);
 		processAheadOfTime();
 		RuntimeHints runtimeHints = this.generationContext.getRuntimeHints();
-		assertThat(RuntimeHintsPredicates.reflection().onType(RenameMixInClass.class)
-				.withMemberCategories(MemberCategory.DECLARED_FIELDS, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
-						.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(RenameMixInClass.class)
+			.withMemberCategories(MemberCategory.DECLARED_FIELDS, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS))
+			.accepts(runtimeHints);
 		assertThat(RuntimeHintsPredicates.reflection().onMethod(RenameMixInClass.class, "getName").introspect())
-				.accepts(runtimeHints);
+			.accepts(runtimeHints);
 	}
 
 	@Test
@@ -78,22 +79,23 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessorTests {
 		compile((freshContext, compiled) -> {
 			assertThat(freshContext.getBean(TestConfiguration.class).scanningInvoked).isFalse();
 			JsonMixinModuleEntries jsonMixinModuleEntries = freshContext.getBean(JsonMixinModuleEntries.class);
-			assertThat(jsonMixinModuleEntries).extracting("entries", InstanceOfAssertFactories.MAP).containsExactly(
-					entry(Name.class, RenameMixInClass.class), entry(NameAndAge.class, RenameMixInClass.class));
+			assertThat(jsonMixinModuleEntries).extracting("entries", InstanceOfAssertFactories.MAP)
+				.containsExactly(entry(Name.class, RenameMixInClass.class),
+						entry(NameAndAge.class, RenameMixInClass.class));
 		});
 	}
 
 	@Test
 	void processAheadOfTimeWhenNonAccessibleClassShouldRegisterClassName() {
 		Class<?> privateMixinClass = ClassUtils
-				.resolveClassName("org.springframework.boot.jackson.scan.e.PrivateMixInClass", null);
+			.resolveClassName("org.springframework.boot.jackson.scan.e.PrivateMixInClass", null);
 		registerEntries(privateMixinClass);
 		compile((freshContext, compiled) -> {
 			assertThat(freshContext.getBean(TestConfiguration.class).scanningInvoked).isFalse();
 			JsonMixinModuleEntries jsonMixinModuleEntries = freshContext.getBean(JsonMixinModuleEntries.class);
-			assertThat(jsonMixinModuleEntries).extracting("entries", InstanceOfAssertFactories.MAP).containsExactly(
-					entry(Name.class.getName(), privateMixinClass.getName()),
-					entry(NameAndAge.class.getName(), privateMixinClass.getName()));
+			assertThat(jsonMixinModuleEntries).extracting("entries", InstanceOfAssertFactories.MAP)
+				.containsExactly(entry(Name.class.getName(), privateMixinClass.getName()),
+						entry(NameAndAge.class.getName(), privateMixinClass.getName()));
 		});
 	}
 
@@ -110,7 +112,7 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessorTests {
 		TestCompiler.forSystem().with(this.generationContext).compile((compiled) -> {
 			GenericApplicationContext freshApplicationContext = new GenericApplicationContext();
 			ApplicationContextInitializer<GenericApplicationContext> initializer = compiled
-					.getInstance(ApplicationContextInitializer.class, className.toString());
+				.getInstance(ApplicationContextInitializer.class, className.toString());
 			initializer.initialize(freshApplicationContext);
 			freshApplicationContext.refresh();
 			result.accept(freshApplicationContext, compiled);
@@ -119,8 +121,10 @@ class JsonMixinModuleEntriesBeanRegistrationAotProcessorTests {
 
 	private void registerEntries(Class<?>... basePackageClasses) {
 		List<String> packageNames = Arrays.stream(basePackageClasses).map(Class::getPackageName).toList();
-		this.applicationContext.registerBeanDefinition("configuration", BeanDefinitionBuilder
-				.rootBeanDefinition(TestConfiguration.class).addConstructorArgValue(packageNames).getBeanDefinition());
+		this.applicationContext.registerBeanDefinition("configuration",
+				BeanDefinitionBuilder.rootBeanDefinition(TestConfiguration.class)
+					.addConstructorArgValue(packageNames)
+					.getBeanDefinition());
 	}
 
 	@Configuration(proxyBeanMethods = false)

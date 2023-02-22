@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,25 +48,24 @@ class ManagementContextAutoConfigurationTests {
 	void childManagementContextShouldStartForEmbeddedServer(CapturedOutput output) {
 		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
-								ServletWebServerFactoryAutoConfiguration.class,
-								ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-								EndpointAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
+					ServletWebServerFactoryAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class));
 		contextRunner.withPropertyValues("server.port=0", "management.server.port=0")
-				.run((context) -> assertThat(output).satisfies(numberOfOccurrences("Tomcat started on port", 2)));
+			.run((context) -> assertThat(output).satisfies(numberOfOccurrences("Tomcat started on port", 2)));
 	}
 
 	@Test
 	void givenSamePortManagementServerWhenManagementServerAddressIsConfiguredThenContextRefreshFails() {
 		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
-								ServletWebServerFactoryAutoConfiguration.class,
-								ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-								EndpointAutoConfiguration.class, DispatcherServletAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
+					ServletWebServerFactoryAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class, EndpointAutoConfiguration.class,
+					DispatcherServletAutoConfiguration.class));
 		contextRunner.withPropertyValues("server.port=0", "management.server.address=127.0.0.1")
-				.run((context) -> assertThat(context).getFailure()
-						.hasMessageStartingWith("Management-specific server address cannot be configured"));
+			.run((context) -> assertThat(context).getFailure()
+				.hasMessageStartingWith("Management-specific server address cannot be configured"));
 	}
 
 	private <T extends CharSequence> Consumer<T> numberOfOccurrences(String substring, int expectedCount) {

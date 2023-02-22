@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,21 +58,27 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
 			project.getPlugins().apply(ConfigurationPropertiesPlugin.class);
 			Configuration annotationProcessors = project.getConfigurations()
-					.getByName(JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME);
+				.getByName(JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME);
 			annotationProcessors.getDependencies()
-					.add(project.getDependencies().project(Collections.singletonMap("path",
+				.add(project.getDependencies()
+					.project(Collections.singletonMap("path",
 							":spring-boot-project:spring-boot-tools:spring-boot-autoconfigure-processor")));
 			annotationProcessors.getDependencies()
-					.add(project.getDependencies().project(Collections.singletonMap("path",
+				.add(project.getDependencies()
+					.project(Collections.singletonMap("path",
 							":spring-boot-project:spring-boot-tools:spring-boot-configuration-processor")));
 			project.getTasks().create("autoConfigurationMetadata", AutoConfigurationMetadata.class, (task) -> {
-				SourceSet main = project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets()
-						.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+				SourceSet main = project.getExtensions()
+					.getByType(JavaPluginExtension.class)
+					.getSourceSets()
+					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 				task.setSourceSet(main);
 				task.dependsOn(main.getClassesTaskName());
 				task.setOutputFile(new File(project.getBuildDir(), "auto-configuration-metadata.properties"));
-				project.getArtifacts().add(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME,
-						project.provider((Callable<File>) task::getOutputFile), (artifact) -> artifact.builtBy(task));
+				project.getArtifacts()
+					.add(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME,
+							project.provider((Callable<File>) task::getOutputFile),
+							(artifact) -> artifact.builtBy(task));
 			});
 		});
 	}

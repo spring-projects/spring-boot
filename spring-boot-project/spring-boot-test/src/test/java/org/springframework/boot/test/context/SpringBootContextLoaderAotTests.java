@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +59,9 @@ class SpringBootContextLoaderAotTests {
 		TestContextAotGenerator generator = new TestContextAotGenerator(generatedFiles);
 		Class<?> testClass = ExampleTest.class;
 		generator.processAheadOfTime(Stream.of(testClass));
-		TestCompiler.forSystem().with(CompilerFiles.from(generatedFiles))
-				.compile(ThrowingConsumer.of((compiled) -> assertCompiledTest(testClass)));
+		TestCompiler.forSystem()
+			.with(CompilerFiles.from(generatedFiles))
+			.compile(ThrowingConsumer.of((compiled) -> assertCompiledTest(testClass)));
 	}
 
 	private void assertCompiledTest(Class<?> testClass) throws Exception {
@@ -71,9 +72,9 @@ class SpringBootContextLoaderAotTests {
 			TestContextBootstrapper testContextBootstrapper = BootstrapUtils.resolveTestContextBootstrapper(testClass);
 			MergedContextConfiguration mergedConfig = testContextBootstrapper.buildMergedContextConfiguration();
 			ApplicationContextInitializer<ConfigurableApplicationContext> contextInitializer = aotContextInitializers
-					.getContextInitializer(testClass);
+				.getContextInitializer(testClass);
 			ConfigurableApplicationContext context = (ConfigurableApplicationContext) ((AotContextLoader) mergedConfig
-					.getContextLoader()).loadContextForAotRuntime(mergedConfig, contextInitializer);
+				.getContextLoader()).loadContextForAotRuntime(mergedConfig, contextInitializer);
 			assertThat(context).isExactlyInstanceOf(GenericApplicationContext.class);
 			String[] beanNames = context.getBeanNamesForType(ExampleBean.class);
 			BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition(beanNames[0]);

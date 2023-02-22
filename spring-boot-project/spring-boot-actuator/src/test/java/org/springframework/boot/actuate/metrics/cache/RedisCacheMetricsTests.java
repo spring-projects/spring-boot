@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,10 +54,11 @@ class RedisCacheMetricsTests {
 	private static final Tags TAGS = Tags.of("app", "test").and("cache", "test");
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class, CacheAutoConfiguration.class))
-			.withUserConfiguration(CachingConfiguration.class).withPropertyValues(
-					"spring.data.redis.host=" + redis.getHost(), "spring.data.redis.port=" + redis.getFirstMappedPort(),
-					"spring.cache.type=redis", "spring.cache.redis.enable-statistics=true");
+		.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class, CacheAutoConfiguration.class))
+		.withUserConfiguration(CachingConfiguration.class)
+		.withPropertyValues("spring.data.redis.host=" + redis.getHost(),
+				"spring.data.redis.port=" + redis.getFirstMappedPort(), "spring.cache.type=redis",
+				"spring.cache.redis.enable-statistics=true");
 
 	@Test
 	void cacheStatisticsAreExposed() {
@@ -66,7 +67,7 @@ class RedisCacheMetricsTests {
 			assertThat(meterRegistry.find("cache.gets").tags(TAGS.and("result", "hit")).functionCounter()).isNotNull();
 			assertThat(meterRegistry.find("cache.gets").tags(TAGS.and("result", "miss")).functionCounter()).isNotNull();
 			assertThat(meterRegistry.find("cache.gets").tags(TAGS.and("result", "pending")).functionCounter())
-					.isNotNull();
+				.isNotNull();
 			assertThat(meterRegistry.find("cache.evictions").tags(TAGS).functionCounter()).isNull();
 			assertThat(meterRegistry.find("cache.puts").tags(TAGS).functionCounter()).isNotNull();
 			assertThat(meterRegistry.find("cache.removals").tags(TAGS).functionCounter()).isNotNull();
@@ -83,7 +84,7 @@ class RedisCacheMetricsTests {
 			cache.get(key);
 			cache.get(key);
 			assertThat(meterRegistry.get("cache.gets").tags(TAGS.and("result", "hit")).functionCounter().count())
-					.isEqualTo(2.0d);
+				.isEqualTo(2.0d);
 		}));
 	}
 
@@ -95,7 +96,7 @@ class RedisCacheMetricsTests {
 			cache.get(key);
 			cache.get(key);
 			assertThat(meterRegistry.get("cache.gets").tags(TAGS.and("result", "miss")).functionCounter().count())
-					.isEqualTo(3.0d);
+				.isEqualTo(3.0d);
 		}));
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,14 +42,14 @@ class OnBeanConditionTypeDeductionFailureTests {
 	@Test
 	void conditionalOnMissingBeanWithDeducedTypeThatIsPartiallyMissingFromClassPath() {
 		assertThatExceptionOfType(Exception.class)
-				.isThrownBy(() -> new AnnotationConfigApplicationContext(ImportingConfiguration.class).close())
-				.satisfies((ex) -> {
-					Throwable beanTypeDeductionException = findNestedCause(ex, BeanTypeDeductionException.class);
-					assertThat(beanTypeDeductionException).hasMessage("Failed to deduce bean type for "
-							+ OnMissingBeanConfiguration.class.getName() + ".objectMapper");
-					assertThat(findNestedCause(beanTypeDeductionException, NoClassDefFoundError.class)).isNotNull();
+			.isThrownBy(() -> new AnnotationConfigApplicationContext(ImportingConfiguration.class).close())
+			.satisfies((ex) -> {
+				Throwable beanTypeDeductionException = findNestedCause(ex, BeanTypeDeductionException.class);
+				assertThat(beanTypeDeductionException).hasMessage("Failed to deduce bean type for "
+						+ OnMissingBeanConfiguration.class.getName() + ".objectMapper");
+				assertThat(findNestedCause(beanTypeDeductionException, NoClassDefFoundError.class)).isNotNull();
 
-				});
+			});
 	}
 
 	private Throwable findNestedCause(Throwable ex, Class<? extends Throwable> target) {

@@ -59,7 +59,7 @@ class SendGridAutoConfigurationTests {
 	void autoConfigurationNotFiredWhenPropertiesNotSet() {
 		loadContext();
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.context.getBean(SendGrid.class));
+			.isThrownBy(() -> this.context.getBean(SendGrid.class));
 	}
 
 	@Test

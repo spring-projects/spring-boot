@@ -87,7 +87,7 @@ class BufferingApplicationStartupTests {
 		BufferingApplicationStartup applicationStartup = new BufferingApplicationStartup(2);
 		applicationStartup.start("first").end();
 		assertThatThrownBy(applicationStartup::startRecording).isInstanceOf(IllegalStateException.class)
-				.hasMessage("Cannot restart recording once steps have been buffered.");
+			.hasMessage("Cannot restart recording once steps have been buffered.");
 	}
 
 	@Test
@@ -96,7 +96,7 @@ class BufferingApplicationStartupTests {
 		StartupStep step = applicationStartup.start("first");
 		step.end();
 		assertThatThrownBy(() -> step.tag("name", "value")).isInstanceOf(IllegalStateException.class)
-				.hasMessage("StartupStep has already ended.");
+			.hasMessage("StartupStep has already ended.");
 	}
 
 	@Test

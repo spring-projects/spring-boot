@@ -49,7 +49,8 @@ final class StandardGitHub implements GitHub {
 				Collections.singletonList(new MappingJackson2HttpMessageConverter(new ObjectMapper())));
 		restTemplate.getInterceptors().add((request, body, execution) -> {
 			request.getHeaders().add("User-Agent", StandardGitHub.this.username);
-			request.getHeaders().add("Authorization", "Basic " + Base64.getEncoder()
+			request.getHeaders()
+				.add("Authorization", "Basic " + Base64.getEncoder()
 					.encodeToString((StandardGitHub.this.username + ":" + StandardGitHub.this.password).getBytes()));
 			request.getHeaders().add("Accept", MediaType.APPLICATION_JSON_VALUE);
 			return execution.execute(request, body);

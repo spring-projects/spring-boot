@@ -54,7 +54,7 @@ class MockBeanContextCachingTests {
 	@SuppressWarnings("unchecked")
 	void clearCache() {
 		Map<MergedContextConfiguration, ApplicationContext> contexts = (Map<MergedContextConfiguration, ApplicationContext>) ReflectionTestUtils
-				.getField(this.contextCache, "contextMap");
+			.getField(this.contextCache, "contextMap");
 		for (ApplicationContext context : contexts.values()) {
 			if (context instanceof ConfigurableApplicationContext configurableContext) {
 				configurableContext.close();

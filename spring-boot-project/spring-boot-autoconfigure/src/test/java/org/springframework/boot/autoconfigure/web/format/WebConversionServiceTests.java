@@ -47,7 +47,7 @@ class WebConversionServiceTests {
 		WebConversionService conversionService = new WebConversionService(new DateTimeFormatters());
 		LocalDate date = LocalDate.of(2020, 4, 26);
 		assertThat(conversionService.convert(date, String.class))
-				.isEqualTo(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(date));
+			.isEqualTo(DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).format(date));
 	}
 
 	@Test
@@ -55,7 +55,7 @@ class WebConversionServiceTests {
 		WebConversionService conversionService = new WebConversionService(new DateTimeFormatters().dateFormat("iso"));
 		LocalDate date = LocalDate.of(2020, 4, 26);
 		assertThat(conversionService.convert(date, String.class))
-				.isEqualTo(DateTimeFormatter.ISO_LOCAL_DATE.format(date));
+			.isEqualTo(DateTimeFormatter.ISO_LOCAL_DATE.format(date));
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class WebConversionServiceTests {
 		WebConversionService conversionService = new WebConversionService(new DateTimeFormatters());
 		LocalTime time = LocalTime.of(12, 45, 23);
 		assertThat(conversionService.convert(time, String.class))
-				.isEqualTo(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).format(time));
+			.isEqualTo(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).format(time));
 	}
 
 	@Test
@@ -81,7 +81,7 @@ class WebConversionServiceTests {
 		WebConversionService conversionService = new WebConversionService(new DateTimeFormatters().timeFormat("iso"));
 		LocalTime time = LocalTime.of(12, 45, 23);
 		assertThat(conversionService.convert(time, String.class))
-				.isEqualTo(DateTimeFormatter.ISO_LOCAL_TIME.format(time));
+			.isEqualTo(DateTimeFormatter.ISO_LOCAL_TIME.format(time));
 	}
 
 	@Test
@@ -98,7 +98,7 @@ class WebConversionServiceTests {
 		WebConversionService conversionService = new WebConversionService(formatters);
 		OffsetTime offsetTime = OffsetTime.of(LocalTime.of(12, 45, 23), ZoneOffset.ofHoursMinutes(1, 30));
 		assertThat(conversionService.convert(offsetTime, String.class))
-				.isEqualTo(DateTimeFormatter.ISO_OFFSET_TIME.format(offsetTime));
+			.isEqualTo(DateTimeFormatter.ISO_OFFSET_TIME.format(offsetTime));
 	}
 
 	@Test
@@ -114,7 +114,7 @@ class WebConversionServiceTests {
 		WebConversionService conversionService = new WebConversionService(new DateTimeFormatters());
 		LocalDateTime dateTime = LocalDateTime.of(2020, 4, 26, 12, 45, 23);
 		assertThat(conversionService.convert(dateTime, String.class))
-				.isEqualTo(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(dateTime));
+			.isEqualTo(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT).format(dateTime));
 	}
 
 	@Test
@@ -123,7 +123,7 @@ class WebConversionServiceTests {
 				new DateTimeFormatters().dateTimeFormat("iso"));
 		LocalDateTime dateTime = LocalDateTime.of(2020, 4, 26, 12, 45, 23);
 		assertThat(conversionService.convert(dateTime, String.class))
-				.isEqualTo(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dateTime));
+			.isEqualTo(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(dateTime));
 	}
 
 	@Test
@@ -141,7 +141,7 @@ class WebConversionServiceTests {
 		OffsetDateTime offsetDateTime = OffsetDateTime.of(LocalDate.of(2020, 4, 26), LocalTime.of(12, 45, 23),
 				ZoneOffset.ofHoursMinutes(1, 30));
 		assertThat(conversionService.convert(offsetDateTime, String.class))
-				.isEqualTo(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(offsetDateTime));
+			.isEqualTo(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(offsetDateTime));
 	}
 
 	@Test

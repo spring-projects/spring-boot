@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,50 +58,73 @@ class MvcEndpointRequestIntegrationTests extends AbstractEndpointRequestIntegrat
 	@Test
 	void toAnyEndpointWhenServletPathSetShouldMatch() {
 		getContextRunner()
-				.withPropertyValues("spring.mvc.servlet.path=/admin", "spring.security.user.password=password")
-				.run((context) -> {
-					WebTestClient webTestClient = getWebTestClient(context);
-					webTestClient.get().uri("/admin/actuator/e2").exchange().expectStatus().isUnauthorized();
-					webTestClient.get().uri("/admin/actuator/e2").header("Authorization", getBasicAuth()).exchange()
-							.expectStatus().isOk();
-				});
+			.withPropertyValues("spring.mvc.servlet.path=/admin", "spring.security.user.password=password")
+			.run((context) -> {
+				WebTestClient webTestClient = getWebTestClient(context);
+				webTestClient.get().uri("/admin/actuator/e2").exchange().expectStatus().isUnauthorized();
+				webTestClient.get()
+					.uri("/admin/actuator/e2")
+					.header("Authorization", getBasicAuth())
+					.exchange()
+					.expectStatus()
+					.isOk();
+			});
 	}
 
 	@Test
 	void toAnyEndpointShouldMatchServletEndpoint() {
-		getContextRunner().withPropertyValues("spring.security.user.password=password",
-				"management.endpoints.web.exposure.include=se1").run((context) -> {
-					WebTestClient webTestClient = getWebTestClient(context);
-					webTestClient.get().uri("/actuator/se1").exchange().expectStatus().isUnauthorized();
-					webTestClient.get().uri("/actuator/se1").header("Authorization", getBasicAuth()).exchange()
-							.expectStatus().isOk();
-					webTestClient.get().uri("/actuator/se1/list").exchange().expectStatus().isUnauthorized();
-					webTestClient.get().uri("/actuator/se1/list").header("Authorization", getBasicAuth()).exchange()
-							.expectStatus().isOk();
-				});
+		getContextRunner()
+			.withPropertyValues("spring.security.user.password=password",
+					"management.endpoints.web.exposure.include=se1")
+			.run((context) -> {
+				WebTestClient webTestClient = getWebTestClient(context);
+				webTestClient.get().uri("/actuator/se1").exchange().expectStatus().isUnauthorized();
+				webTestClient.get()
+					.uri("/actuator/se1")
+					.header("Authorization", getBasicAuth())
+					.exchange()
+					.expectStatus()
+					.isOk();
+				webTestClient.get().uri("/actuator/se1/list").exchange().expectStatus().isUnauthorized();
+				webTestClient.get()
+					.uri("/actuator/se1/list")
+					.header("Authorization", getBasicAuth())
+					.exchange()
+					.expectStatus()
+					.isOk();
+			});
 	}
 
 	@Test
 	void toAnyEndpointWhenServletPathSetShouldMatchServletEndpoint() {
-		getContextRunner().withPropertyValues("spring.mvc.servlet.path=/admin",
-				"spring.security.user.password=password", "management.endpoints.web.exposure.include=se1")
-				.run((context) -> {
-					WebTestClient webTestClient = getWebTestClient(context);
-					webTestClient.get().uri("/admin/actuator/se1").exchange().expectStatus().isUnauthorized();
-					webTestClient.get().uri("/admin/actuator/se1").header("Authorization", getBasicAuth()).exchange()
-							.expectStatus().isOk();
-					webTestClient.get().uri("/admin/actuator/se1/list").exchange().expectStatus().isUnauthorized();
-					webTestClient.get().uri("/admin/actuator/se1/list").header("Authorization", getBasicAuth())
-							.exchange().expectStatus().isOk();
-				});
+		getContextRunner()
+			.withPropertyValues("spring.mvc.servlet.path=/admin", "spring.security.user.password=password",
+					"management.endpoints.web.exposure.include=se1")
+			.run((context) -> {
+				WebTestClient webTestClient = getWebTestClient(context);
+				webTestClient.get().uri("/admin/actuator/se1").exchange().expectStatus().isUnauthorized();
+				webTestClient.get()
+					.uri("/admin/actuator/se1")
+					.header("Authorization", getBasicAuth())
+					.exchange()
+					.expectStatus()
+					.isOk();
+				webTestClient.get().uri("/admin/actuator/se1/list").exchange().expectStatus().isUnauthorized();
+				webTestClient.get()
+					.uri("/admin/actuator/se1/list")
+					.header("Authorization", getBasicAuth())
+					.exchange()
+					.expectStatus()
+					.isOk();
+			});
 	}
 
 	@Override
 	protected WebApplicationContextRunner createContextRunner() {
 		return new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
-				.withUserConfiguration(WebMvcEndpointConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(DispatcherServletAutoConfiguration.class,
-						HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class));
+			.withUserConfiguration(WebMvcEndpointConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(DispatcherServletAutoConfiguration.class,
+					HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

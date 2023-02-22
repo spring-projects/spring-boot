@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ class OnEnabledInfoContributorCondition extends OnEndpointElementCondition {
 		InfoContributorFallback fallback = annotationAttributes.getEnum("fallback");
 		if (fallback == InfoContributorFallback.DISABLE) {
 			return new ConditionOutcome(false, ConditionMessage.forCondition(ConditionalOnEnabledInfoContributor.class)
-					.because("management.info." + annotationAttributes.getString("value") + ".enabled is not true"));
+				.because("management.info." + annotationAttributes.getString("value") + ".enabled is not true"));
 		}
 		return super.getDefaultOutcome(context, annotationAttributes);
 	}

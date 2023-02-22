@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,9 @@ class Neo4jHealthDetailsHandler {
 	void addHealthDetails(Builder builder, Neo4jHealthDetails healthDetails) {
 		ResultSummary summary = healthDetails.getSummary();
 		ServerInfo serverInfo = summary.server();
-		builder.up().withDetail("server", healthDetails.getVersion() + "@" + serverInfo.address()).withDetail("edition",
-				healthDetails.getEdition());
+		builder.up()
+			.withDetail("server", healthDetails.getVersion() + "@" + serverInfo.address())
+			.withDetail("edition", healthDetails.getEdition());
 		DatabaseInfo databaseInfo = summary.database();
 		if (StringUtils.hasText(databaseInfo.name())) {
 			builder.withDetail("database", databaseInfo.name());

@@ -21,9 +21,9 @@ import org.springframework.boot.configurationsample.DeprecatedConfigurationPrope
 
 /**
  * Configuration properties as record with deprecated property.
+ *
  * @param alpha alpha property, deprecated
  * @param bravo bravo property
- *
  * @author Moritz Halbritter
  */
 @ConfigurationProperties("deprecated-record")

@@ -105,7 +105,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		execute(packager, NO_LIBRARIES);
 		Manifest actualManifest = getPackagedManifest();
 		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"))
-				.isEqualTo("org.springframework.boot.loader.JarLauncher");
+			.isEqualTo("org.springframework.boot.loader.JarLauncher");
 		assertThat(actualManifest.getMainAttributes().getValue("Start-Class")).isEqualTo("a.b.C");
 		assertThat(hasPackagedLauncherClasses()).isTrue();
 	}
@@ -121,7 +121,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		execute(packager, NO_LIBRARIES);
 		Manifest actualManifest = getPackagedManifest();
 		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"))
-				.isEqualTo("org.springframework.boot.loader.JarLauncher");
+			.isEqualTo("org.springframework.boot.loader.JarLauncher");
 		assertThat(actualManifest.getMainAttributes().getValue("Start-Class")).isEqualTo("a.b.C");
 		assertThat(hasPackagedLauncherClasses()).isTrue();
 	}
@@ -133,7 +133,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		execute(packager, NO_LIBRARIES);
 		Manifest actualManifest = getPackagedManifest();
 		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"))
-				.isEqualTo("org.springframework.boot.loader.JarLauncher");
+			.isEqualTo("org.springframework.boot.loader.JarLauncher");
 		assertThat(actualManifest.getMainAttributes().getValue("Start-Class")).isEqualTo("a.b.C");
 		assertThat(hasPackagedLauncherClasses()).isTrue();
 	}
@@ -143,8 +143,8 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		this.testJarFile.addClass("a/b/D.class", ClassWithMainMethod.class);
 		P packager = createPackager();
-		assertThatIllegalStateException().isThrownBy(() -> execute(packager, NO_LIBRARIES)).withMessageContaining(
-				"Unable to find a single main class from the following candidates [a.b.C, a.b.D]");
+		assertThatIllegalStateException().isThrownBy(() -> execute(packager, NO_LIBRARIES))
+			.withMessageContaining("Unable to find a single main class from the following candidates [a.b.C, a.b.D]");
 	}
 
 	@Test
@@ -152,7 +152,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		this.testJarFile.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		P packager = createPackager(this.testJarFile.getFile());
 		assertThatIllegalStateException().isThrownBy(() -> execute(packager, NO_LIBRARIES))
-				.withMessageContaining("Unable to find main class");
+			.withMessageContaining("Unable to find main class");
 	}
 
 	@Test
@@ -182,7 +182,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		P packager = createPackager();
 		assertThatIllegalArgumentException().isThrownBy(() -> execute(packager, null))
-				.withMessageContaining("Libraries must not be null");
+			.withMessageContaining("Libraries must not be null");
 	}
 
 	@Test
@@ -235,7 +235,8 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		String index = getPackagedEntryContent("BOOT-INF/classpath.idx");
 		String[] libraries = index.split("\\r?\\n");
 		List<String> expected = Stream.of(libJarFile1, libJarFile2, libJarFile3)
-				.map((jar) -> "- \"BOOT-INF/lib/" + jar.getName() + "\"").toList();
+			.map((jar) -> "- \"BOOT-INF/lib/" + jar.getName() + "\"")
+			.toList();
 		assertThat(Arrays.asList(libraries)).containsExactlyElementsOf(expected);
 	}
 
@@ -266,7 +267,8 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String classpathIndex = getPackagedEntryContent("BOOT-INF/classpath.idx");
 		List<String> expectedClasspathIndex = Stream.of(libJarFile1, libJarFile2, libJarFile3)
-				.map((file) -> "- \"BOOT-INF/lib/" + file.getName() + "\"").toList();
+			.map((file) -> "- \"BOOT-INF/lib/" + file.getName() + "\"")
+			.toList();
 		assertThat(Arrays.asList(classpathIndex.split("\\n"))).containsExactlyElementsOf(expectedClasspathIndex);
 		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
 		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
@@ -284,7 +286,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		expectedLayers.add("- '0003':");
 		expectedLayers.add("  - 'BOOT-INF/lib/" + libJarFile3.getName() + "'");
 		assertThat(layersIndex.split("\\n"))
-				.containsExactly(expectedLayers.stream().map((s) -> s.replace('\'', '"')).toArray(String[]::new));
+			.containsExactly(expectedLayers.stream().map((s) -> s.replace('\'', '"')).toArray(String[]::new));
 	}
 
 	@Test
@@ -297,7 +299,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String classpathIndex = getPackagedEntryContent("BOOT-INF/classpath.idx");
 		assertThat(Arrays.asList(classpathIndex.split("\\n")))
-				.containsExactly("- \"BOOT-INF/lib/spring-boot-jarmode-layertools.jar\"");
+			.containsExactly("- \"BOOT-INF/lib/spring-boot-jarmode-layertools.jar\"");
 		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
 		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
 		List<String> expectedLayers = new ArrayList<>();
@@ -306,7 +308,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		expectedLayers.add("  - 'META-INF/'");
 		expectedLayers.add("  - 'org/'");
 		assertThat(layersIndex.split("\\n"))
-				.containsExactly(expectedLayers.stream().map((s) -> s.replace('\'', '"')).toArray(String[]::new));
+			.containsExactly(expectedLayers.stream().map((s) -> s.replace('\'', '"')).toArray(String[]::new));
 	}
 
 	@Test
@@ -395,7 +397,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		this.testJarFile.addClass("a/b/C.class", ClassWithoutMainMethod.class);
 		Packager packager = createPackager();
 		assertThatIllegalArgumentException().isThrownBy(() -> packager.setLayout(null))
-				.withMessageContaining("Layout must not be null");
+			.withMessageContaining("Layout must not be null");
 	}
 
 	@Test
@@ -649,7 +651,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		expected.add("\\Q" + libraryTwo.getName() + "\\E");
 		expected.add("^/META-INF/native-image/.*");
 		assertThat(getPackagedEntryContent("META-INF/native-image/argfile"))
-				.isEqualTo(expected.stream().collect(Collectors.joining("\n")) + "\n");
+			.isEqualTo(expected.stream().collect(Collectors.joining("\n")) + "\n");
 	}
 
 	private File createLibraryJar() throws IOException {
@@ -675,8 +677,9 @@ abstract class AbstractPackagerTests<P extends Packager> {
 	protected abstract void execute(P packager, Libraries libraries) throws IOException;
 
 	protected Collection<String> getPackagedEntryNames() throws IOException {
-		return getAllPackagedEntries().stream().map(ZipArchiveEntry::getName)
-				.collect(Collectors.toCollection(ArrayList::new));
+		return getAllPackagedEntries().stream()
+			.map(ZipArchiveEntry::getName)
+			.collect(Collectors.toCollection(ArrayList::new));
 	}
 
 	protected boolean hasPackagedLauncherClasses() throws IOException {
@@ -689,8 +692,10 @@ abstract class AbstractPackagerTests<P extends Packager> {
 	}
 
 	protected ZipEntry getPackagedEntry(String name) throws IOException {
-		return getAllPackagedEntries().stream().filter((entry) -> name.equals(entry.getName())).findFirst()
-				.orElse(null);
+		return getAllPackagedEntries().stream()
+			.filter((entry) -> name.equals(entry.getName()))
+			.findFirst()
+			.orElse(null);
 
 	}
 

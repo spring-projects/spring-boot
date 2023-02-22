@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,7 +56,7 @@ public class AutoConfigurationExcludeFilter implements TypeFilter, BeanClassLoad
 
 	private boolean isAutoConfiguration(MetadataReader metadataReader) {
 		boolean annotatedWithAutoConfiguration = metadataReader.getAnnotationMetadata()
-				.isAnnotated(AutoConfiguration.class.getName());
+			.isAnnotated(AutoConfiguration.class.getName());
 		return annotatedWithAutoConfiguration
 				|| getAutoConfigurations().contains(metadataReader.getClassMetadata().getClassName());
 	}
@@ -64,7 +64,7 @@ public class AutoConfigurationExcludeFilter implements TypeFilter, BeanClassLoad
 	protected List<String> getAutoConfigurations() {
 		if (this.autoConfigurations == null) {
 			this.autoConfigurations = ImportCandidates.load(AutoConfiguration.class, this.beanClassLoader)
-					.getCandidates();
+				.getCandidates();
 		}
 		return this.autoConfigurations;
 	}

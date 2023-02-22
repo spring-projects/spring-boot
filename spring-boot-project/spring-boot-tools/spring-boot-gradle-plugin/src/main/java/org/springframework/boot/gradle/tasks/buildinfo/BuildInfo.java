@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ public abstract class BuildInfo extends DefaultTask {
 					this.properties.getNameIfNotExcluded(), this.properties.getTimeIfNotExcluded(),
 					this.properties.getAdditionalIfNotExcluded());
 			new BuildPropertiesWriter(new File(getDestinationDir().get().getAsFile(), "build-info.properties"))
-					.writeBuildProperties(details);
+				.writeBuildProperties(details);
 		}
 		catch (IOException ex) {
 			throw new TaskExecutionException(this, ex);

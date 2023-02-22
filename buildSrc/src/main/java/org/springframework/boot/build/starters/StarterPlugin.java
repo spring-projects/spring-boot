@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,25 +58,26 @@ public class StarterPlugin implements Plugin<Project> {
 		File destination = new File(project.getBuildDir(), "starter-metadata.properties");
 		starterMetadata.setDestination(destination);
 		configurations.create("starterMetadata");
-		project.getArtifacts().add("starterMetadata", project.provider(starterMetadata::getDestination),
-				(artifact) -> artifact.builtBy(starterMetadata));
+		project.getArtifacts()
+			.add("starterMetadata", project.provider(starterMetadata::getDestination),
+					(artifact) -> artifact.builtBy(starterMetadata));
 		createClasspathConflictsCheck(runtimeClasspath, project);
 		createUnnecessaryExclusionsCheck(runtimeClasspath, project);
 		configureJarManifest(project);
 	}
 
 	private void createClasspathConflictsCheck(Configuration classpath, Project project) {
-		CheckClasspathForConflicts checkClasspathForConflicts = project.getTasks().create(
-				"check" + StringUtils.capitalize(classpath.getName() + "ForConflicts"),
-				CheckClasspathForConflicts.class);
+		CheckClasspathForConflicts checkClasspathForConflicts = project.getTasks()
+			.create("check" + StringUtils.capitalize(classpath.getName() + "ForConflicts"),
+					CheckClasspathForConflicts.class);
 		checkClasspathForConflicts.setClasspath(classpath);
 		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForConflicts);
 	}
 
 	private void createUnnecessaryExclusionsCheck(Configuration classpath, Project project) {
-		CheckClasspathForUnnecessaryExclusions checkClasspathForUnnecessaryExclusions = project.getTasks().create(
-				"check" + StringUtils.capitalize(classpath.getName() + "ForUnnecessaryExclusions"),
-				CheckClasspathForUnnecessaryExclusions.class);
+		CheckClasspathForUnnecessaryExclusions checkClasspathForUnnecessaryExclusions = project.getTasks()
+			.create("check" + StringUtils.capitalize(classpath.getName() + "ForUnnecessaryExclusions"),
+					CheckClasspathForUnnecessaryExclusions.class);
 		checkClasspathForUnnecessaryExclusions.setClasspath(classpath);
 		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForUnnecessaryExclusions);
 	}

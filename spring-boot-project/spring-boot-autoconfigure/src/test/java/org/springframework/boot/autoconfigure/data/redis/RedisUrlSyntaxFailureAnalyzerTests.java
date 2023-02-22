@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class RedisUrlSyntaxFailureAnalyzerTests {
 		RedisUrlSyntaxException exception = new RedisUrlSyntaxException("http://127.0.0.1:26379/mymaster");
 		FailureAnalysis analysis = new RedisUrlSyntaxFailureAnalyzer().analyze(exception);
 		assertThat(analysis.getDescription()).contains("The URL 'http://127.0.0.1:26379/mymaster' is not valid")
-				.contains("The scheme 'http' is not supported");
+			.contains("The scheme 'http' is not supported");
 		assertThat(analysis.getAction()).contains("Use the scheme 'redis://' for insecure or 'rediss://' for secure");
 	}
 
@@ -53,7 +53,7 @@ class RedisUrlSyntaxFailureAnalyzerTests {
 		FailureAnalysis analysis = new RedisUrlSyntaxFailureAnalyzer().analyze(exception);
 		assertThat(analysis.getDescription()).contains(
 				"The URL 'redis-sentinel://username:password@127.0.0.1:26379,127.0.0.1:26380/mymaster' is not valid")
-				.contains("The scheme 'redis-sentinel' is not supported");
+			.contains("The scheme 'redis-sentinel' is not supported");
 		assertThat(analysis.getAction()).contains("Use spring.data.redis.sentinel properties");
 	}
 
@@ -62,7 +62,7 @@ class RedisUrlSyntaxFailureAnalyzerTests {
 		RedisUrlSyntaxException exception = new RedisUrlSyntaxException("redis-socket:///redis/redis.sock");
 		FailureAnalysis analysis = new RedisUrlSyntaxFailureAnalyzer().analyze(exception);
 		assertThat(analysis.getDescription()).contains("The URL 'redis-socket:///redis/redis.sock' is not valid")
-				.contains("The scheme 'redis-socket' is not supported");
+			.contains("The scheme 'redis-socket' is not supported");
 		assertThat(analysis.getAction()).contains("Configure the appropriate Spring Data Redis connection beans");
 	}
 

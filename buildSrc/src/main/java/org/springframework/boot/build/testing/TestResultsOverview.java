@@ -66,7 +66,7 @@ public abstract class TestResultsOverview
 				System.err.println();
 				System.err.println(task.getPath());
 				failures.forEach((failure) -> System.err
-						.println("    " + failure.descriptor.getClassName() + " > " + failure.descriptor.getName()));
+					.println("    " + failure.descriptor.getClassName() + " > " + failure.descriptor.getName()));
 			});
 		}
 	}

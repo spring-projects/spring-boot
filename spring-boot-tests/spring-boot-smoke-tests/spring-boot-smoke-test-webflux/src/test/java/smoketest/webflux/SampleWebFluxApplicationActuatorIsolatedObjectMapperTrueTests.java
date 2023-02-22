@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,14 @@ class SampleWebFluxApplicationActuatorIsolatedObjectMapperTrueTests {
 
 	@Test
 	void linksEndpointShouldBeAvailable() {
-		this.webClient.get().uri("/actuator/startup").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
-				.isOk().expectBody().consumeWith(this::assertExpectedJson);
+		this.webClient.get()
+			.uri("/actuator/startup")
+			.accept(MediaType.APPLICATION_JSON)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.consumeWith(this::assertExpectedJson);
 	}
 
 	private void assertExpectedJson(EntityExchangeResult<byte[]> result) {

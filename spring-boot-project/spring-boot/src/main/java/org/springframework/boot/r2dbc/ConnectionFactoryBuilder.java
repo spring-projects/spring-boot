@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -218,9 +218,11 @@ public final class ConnectionFactoryBuilder {
 			String[] protocols = protocol.split(COLON, 2);
 			String driverDelegate = protocols[0];
 			String protocolDelegate = (protocols.length != 2) ? "" : protocols[1];
-			return ConnectionFactoryOptions.builder().from(options)
-					.option(ConnectionFactoryOptions.DRIVER, driverDelegate)
-					.option(ConnectionFactoryOptions.PROTOCOL, protocolDelegate).build();
+			return ConnectionFactoryOptions.builder()
+				.from(options)
+				.option(ConnectionFactoryOptions.DRIVER, driverDelegate)
+				.option(ConnectionFactoryOptions.PROTOCOL, protocolDelegate)
+				.build();
 		}
 
 		@SuppressWarnings("unchecked")
@@ -229,36 +231,51 @@ public final class ConnectionFactoryBuilder {
 			ConnectionPoolConfiguration.Builder builder = ConnectionPoolConfiguration.builder(connectionFactory);
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(options.getValue(PoolingConnectionFactoryProvider.BACKGROUND_EVICTION_INTERVAL))
-					.as(this::toDuration).to(builder::backgroundEvictionInterval);
-			map.from(options.getValue(PoolingConnectionFactoryProvider.INITIAL_SIZE)).as(this::toInteger)
-					.to(builder::initialSize);
-			map.from(options.getValue(PoolingConnectionFactoryProvider.MAX_SIZE)).as(this::toInteger)
-					.to(builder::maxSize);
-			map.from(options.getValue(PoolingConnectionFactoryProvider.ACQUIRE_RETRY)).as(this::toInteger)
-					.to(builder::acquireRetry);
-			map.from(options.getValue(PoolingConnectionFactoryProvider.MAX_LIFE_TIME)).as(this::toDuration)
-					.to(builder::maxLifeTime);
-			map.from(options.getValue(PoolingConnectionFactoryProvider.MAX_ACQUIRE_TIME)).as(this::toDuration)
-					.to(builder::maxAcquireTime);
-			map.from(options.getValue(PoolingConnectionFactoryProvider.MAX_IDLE_TIME)).as(this::toDuration)
-					.to(builder::maxIdleTime);
-			map.from(options.getValue(PoolingConnectionFactoryProvider.MAX_CREATE_CONNECTION_TIME)).as(this::toDuration)
-					.to(builder::maxCreateConnectionTime);
-			map.from(options.getValue(PoolingConnectionFactoryProvider.MAX_VALIDATION_TIME)).as(this::toDuration)
-					.to(builder::maxValidationTime);
-			map.from(options.getValue(PoolingConnectionFactoryProvider.MIN_IDLE)).as(this::toInteger)
-					.to(builder::minIdle);
+				.as(this::toDuration)
+				.to(builder::backgroundEvictionInterval);
+			map.from(options.getValue(PoolingConnectionFactoryProvider.INITIAL_SIZE))
+				.as(this::toInteger)
+				.to(builder::initialSize);
+			map.from(options.getValue(PoolingConnectionFactoryProvider.MAX_SIZE))
+				.as(this::toInteger)
+				.to(builder::maxSize);
+			map.from(options.getValue(PoolingConnectionFactoryProvider.ACQUIRE_RETRY))
+				.as(this::toInteger)
+				.to(builder::acquireRetry);
+			map.from(options.getValue(PoolingConnectionFactoryProvider.MAX_LIFE_TIME))
+				.as(this::toDuration)
+				.to(builder::maxLifeTime);
+			map.from(options.getValue(PoolingConnectionFactoryProvider.MAX_ACQUIRE_TIME))
+				.as(this::toDuration)
+				.to(builder::maxAcquireTime);
+			map.from(options.getValue(PoolingConnectionFactoryProvider.MAX_IDLE_TIME))
+				.as(this::toDuration)
+				.to(builder::maxIdleTime);
+			map.from(options.getValue(PoolingConnectionFactoryProvider.MAX_CREATE_CONNECTION_TIME))
+				.as(this::toDuration)
+				.to(builder::maxCreateConnectionTime);
+			map.from(options.getValue(PoolingConnectionFactoryProvider.MAX_VALIDATION_TIME))
+				.as(this::toDuration)
+				.to(builder::maxValidationTime);
+			map.from(options.getValue(PoolingConnectionFactoryProvider.MIN_IDLE))
+				.as(this::toInteger)
+				.to(builder::minIdle);
 			map.from(options.getValue(PoolingConnectionFactoryProvider.POOL_NAME)).as(this::toString).to(builder::name);
-			map.from(options.getValue(PoolingConnectionFactoryProvider.PRE_RELEASE)).to((function) -> builder
+			map.from(options.getValue(PoolingConnectionFactoryProvider.PRE_RELEASE))
+				.to((function) -> builder
 					.preRelease((Function<? super Connection, ? extends Publisher<Void>>) function));
-			map.from(options.getValue(PoolingConnectionFactoryProvider.POST_ALLOCATE)).to((function) -> builder
+			map.from(options.getValue(PoolingConnectionFactoryProvider.POST_ALLOCATE))
+				.to((function) -> builder
 					.postAllocate((Function<? super Connection, ? extends Publisher<Void>>) function));
-			map.from(options.getValue(PoolingConnectionFactoryProvider.REGISTER_JMX)).as(this::toBoolean)
-					.to(builder::registerJmx);
-			map.from(options.getValue(PoolingConnectionFactoryProvider.VALIDATION_QUERY)).as(this::toString)
-					.to(builder::validationQuery);
-			map.from(options.getValue(PoolingConnectionFactoryProvider.VALIDATION_DEPTH)).as(this::toValidationDepth)
-					.to(builder::validationDepth);
+			map.from(options.getValue(PoolingConnectionFactoryProvider.REGISTER_JMX))
+				.as(this::toBoolean)
+				.to(builder::registerJmx);
+			map.from(options.getValue(PoolingConnectionFactoryProvider.VALIDATION_QUERY))
+				.as(this::toString)
+				.to(builder::validationQuery);
+			map.from(options.getValue(PoolingConnectionFactoryProvider.VALIDATION_DEPTH))
+				.as(this::toValidationDepth)
+				.to(builder::validationDepth);
 			return builder.build();
 		}
 

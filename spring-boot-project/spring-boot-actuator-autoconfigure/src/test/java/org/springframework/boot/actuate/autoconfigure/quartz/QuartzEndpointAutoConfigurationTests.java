@@ -43,73 +43,75 @@ import static org.mockito.Mockito.mock;
 class QuartzEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(QuartzEndpointAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(QuartzEndpointAutoConfiguration.class));
 
 	@Test
 	void endpointIsAutoConfigured() {
 		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
-				.withPropertyValues("management.endpoints.web.exposure.include=quartz")
-				.run((context) -> assertThat(context).hasSingleBean(QuartzEndpoint.class));
+			.withPropertyValues("management.endpoints.web.exposure.include=quartz")
+			.run((context) -> assertThat(context).hasSingleBean(QuartzEndpoint.class));
 	}
 
 	@Test
 	void endpointIsNotAutoConfiguredIfSchedulerIsNotAvailable() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=quartz")
-				.run((context) -> assertThat(context).doesNotHaveBean(QuartzEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(QuartzEndpoint.class));
 	}
 
 	@Test
 	void endpointNotAutoConfiguredWhenNotExposed() {
 		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(QuartzEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(QuartzEndpoint.class));
 	}
 
 	@Test
 	void endpointCanBeDisabled() {
 		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
-				.withPropertyValues("management.endpoint.quartz.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(QuartzEndpoint.class));
+			.withPropertyValues("management.endpoint.quartz.enabled:false")
+			.run((context) -> assertThat(context).doesNotHaveBean(QuartzEndpoint.class));
 	}
 
 	@Test
 	void endpointBacksOffWhenUserProvidedEndpointIsPresent() {
 		this.contextRunner.withUserConfiguration(CustomEndpointConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(QuartzEndpoint.class).hasBean("customEndpoint"));
+			.run((context) -> assertThat(context).hasSingleBean(QuartzEndpoint.class).hasBean("customEndpoint"));
 	}
 
 	@Test
 	void runWhenOnlyExposedOverJmxShouldHaveEndpointBeanWithoutWebExtension() {
 		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
-				.withPropertyValues("management.endpoints.web.exposure.include=info", "spring.jmx.enabled=true",
-						"management.endpoints.jmx.exposure.include=quartz")
-				.run((context) -> assertThat(context).hasSingleBean(QuartzEndpoint.class)
-						.doesNotHaveBean(QuartzEndpointWebExtension.class));
+			.withPropertyValues("management.endpoints.web.exposure.include=info", "spring.jmx.enabled=true",
+					"management.endpoints.jmx.exposure.include=quartz")
+			.run((context) -> assertThat(context).hasSingleBean(QuartzEndpoint.class)
+				.doesNotHaveBean(QuartzEndpointWebExtension.class));
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	void rolesCanBeConfiguredViaTheEnvironment() {
 		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
-				.withPropertyValues("management.endpoint.quartz.roles: test")
-				.withPropertyValues("management.endpoints.web.exposure.include=quartz")
-				.withSystemProperties("dbPassword=123456", "apiKey=123456").run((context) -> {
-					assertThat(context).hasSingleBean(QuartzEndpointWebExtension.class);
-					QuartzEndpointWebExtension endpoint = context.getBean(QuartzEndpointWebExtension.class);
-					Set<String> roles = (Set<String>) ReflectionTestUtils.getField(endpoint, "roles");
-					assertThat(roles).contains("test");
-				});
+			.withPropertyValues("management.endpoint.quartz.roles: test")
+			.withPropertyValues("management.endpoints.web.exposure.include=quartz")
+			.withSystemProperties("dbPassword=123456", "apiKey=123456")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(QuartzEndpointWebExtension.class);
+				QuartzEndpointWebExtension endpoint = context.getBean(QuartzEndpointWebExtension.class);
+				Set<String> roles = (Set<String>) ReflectionTestUtils.getField(endpoint, "roles");
+				assertThat(roles).contains("test");
+			});
 	}
 
 	@Test
 	void showValuesCanBeConfiguredViaTheEnvironment() {
 		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
-				.withPropertyValues("management.endpoint.quartz.show-values: WHEN_AUTHORIZED")
-				.withPropertyValues("management.endpoints.web.exposure.include=quartz")
-				.withSystemProperties("dbPassword=123456", "apiKey=123456").run((context) -> {
-					assertThat(context).hasSingleBean(QuartzEndpointWebExtension.class);
-					assertThat(context.getBean(QuartzEndpointWebExtension.class)).extracting("showValues")
-							.isEqualTo(Show.WHEN_AUTHORIZED);
-				});
+			.withPropertyValues("management.endpoint.quartz.show-values: WHEN_AUTHORIZED")
+			.withPropertyValues("management.endpoints.web.exposure.include=quartz")
+			.withSystemProperties("dbPassword=123456", "apiKey=123456")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(QuartzEndpointWebExtension.class);
+				assertThat(context.getBean(QuartzEndpointWebExtension.class)).extracting("showValues")
+					.isEqualTo(Show.WHEN_AUTHORIZED);
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

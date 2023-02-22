@@ -246,8 +246,10 @@ public final class EndpointRequest {
 		}
 
 		private String toString(List<Object> endpoints, String emptyValue) {
-			return (!endpoints.isEmpty()) ? endpoints.stream().map(this::getEndpointId).map(Object::toString)
-					.collect(Collectors.joining(", ", "[", "]")) : emptyValue;
+			return (!endpoints.isEmpty()) ? endpoints.stream()
+				.map(this::getEndpointId)
+				.map(Object::toString)
+				.collect(Collectors.joining(", ", "[", "]")) : emptyValue;
 		}
 
 		private EndpointId getEndpointId(Object source) {

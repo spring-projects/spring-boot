@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,8 +84,10 @@ public class DocumentStarters extends DefaultTask {
 
 	@TaskAction
 	void documentStarters() {
-		Set<Starter> starters = this.starters.getFiles().stream().map(this::loadStarter)
-				.collect(Collectors.toCollection(TreeSet::new));
+		Set<Starter> starters = this.starters.getFiles()
+			.stream()
+			.map(this::loadStarter)
+			.collect(Collectors.toCollection(TreeSet::new));
 		writeTable("application-starters", starters.stream().filter(Starter::isApplication));
 		writeTable("production-starters", starters.stream().filter(Starter::isProduction));
 		writeTable("technical-starters", starters.stream().filter(Starter::isTechnical));

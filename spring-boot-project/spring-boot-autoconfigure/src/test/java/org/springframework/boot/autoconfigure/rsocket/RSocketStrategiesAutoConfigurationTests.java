@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,9 +54,9 @@ class RSocketStrategiesAutoConfigurationTests {
 			assertThat(context).getBeans(RSocketStrategies.class).hasSize(1);
 			RSocketStrategies strategies = context.getBean(RSocketStrategies.class);
 			assertThat(strategies.decoders()).hasAtLeastOneElementOfType(Jackson2CborDecoder.class)
-					.hasAtLeastOneElementOfType(Jackson2JsonDecoder.class);
+				.hasAtLeastOneElementOfType(Jackson2JsonDecoder.class);
 			assertThat(strategies.encoders()).hasAtLeastOneElementOfType(Jackson2CborEncoder.class)
-					.hasAtLeastOneElementOfType(Jackson2JsonEncoder.class);
+				.hasAtLeastOneElementOfType(Jackson2JsonEncoder.class);
 			assertThat(strategies.routeMatcher()).isInstanceOf(PathPatternRouteMatcher.class);
 		});
 	}
@@ -84,8 +84,10 @@ class RSocketStrategiesAutoConfigurationTests {
 
 		@Bean
 		RSocketStrategies customRSocketStrategies() {
-			return RSocketStrategies.builder().encoder(CharSequenceEncoder.textPlainOnly())
-					.decoder(StringDecoder.textPlainOnly()).build();
+			return RSocketStrategies.builder()
+				.encoder(CharSequenceEncoder.textPlainOnly())
+				.decoder(StringDecoder.textPlainOnly())
+				.build();
 		}
 
 	}

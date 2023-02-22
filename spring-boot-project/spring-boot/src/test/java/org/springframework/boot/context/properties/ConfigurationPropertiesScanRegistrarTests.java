@@ -81,7 +81,7 @@ class ConfigurationPropertiesScanRegistrarTests {
 				beanFactory);
 		assertThat(beanFactory.containsBeanDefinition(
 				"foo-org.springframework.boot.context.properties.scan.valid.ConfigurationPropertiesScanConfiguration$FooProperties"))
-						.isFalse();
+			.isFalse();
 		BeanDefinition aDefinition = beanFactory.getBeanDefinition(
 				"a-org.springframework.boot.context.properties.scan.valid.a.AScanConfiguration$AProperties");
 		BeanDefinition bFirstDefinition = beanFactory.getBeanDefinition(

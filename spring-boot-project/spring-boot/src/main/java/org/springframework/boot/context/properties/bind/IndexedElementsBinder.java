@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,8 +132,11 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 	private void assertNoUnboundChildren(ConfigurationPropertySource source,
 			MultiValueMap<String, ConfigurationPropertyName> children) {
 		if (!children.isEmpty()) {
-			throw new UnboundConfigurationPropertiesException(children.values().stream().flatMap(List::stream)
-					.map(source::getConfigurationProperty).collect(Collectors.toCollection(TreeSet::new)));
+			throw new UnboundConfigurationPropertiesException(children.values()
+				.stream()
+				.flatMap(List::stream)
+				.map(source::getConfigurationProperty)
+				.collect(Collectors.toCollection(TreeSet::new)));
 		}
 	}
 

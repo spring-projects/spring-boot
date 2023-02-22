@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ReactorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ReactorAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ReactorAutoConfiguration.class));
 
 	private static final String THREADLOCAL_KEY = "ReactorAutoConfigurationTests";
 
@@ -53,8 +53,10 @@ class ReactorAutoConfigurationTests {
 	void shouldConfigureAutomaticContextPropagation() {
 		AtomicReference<String> threadLocalValue = new AtomicReference<>();
 		this.contextRunner.run((applicationContext) -> {
-			Mono.just("test").doOnNext((element) -> threadLocalValue.set(THREADLOCAL_VALUE.get()))
-					.contextWrite(Context.of(THREADLOCAL_KEY, "success")).block();
+			Mono.just("test")
+				.doOnNext((element) -> threadLocalValue.set(THREADLOCAL_VALUE.get()))
+				.contextWrite(Context.of(THREADLOCAL_KEY, "success"))
+				.block();
 			assertThat(threadLocalValue.get()).isEqualTo("success");
 		});
 	}

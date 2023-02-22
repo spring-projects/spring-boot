@@ -73,38 +73,40 @@ class BinderTests {
 	@Test
 	void createWhenSourcesIsNullArrayShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Binder((ConfigurationPropertySource[]) null))
-				.withMessageContaining("Sources must not be null");
+			.withMessageContaining("Sources must not be null");
 	}
 
 	@Test
 	void createWhenSourcesIsNullIterableShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Binder((Iterable<ConfigurationPropertySource>) null))
-				.withMessageContaining("Sources must not be null");
+			.withMessageContaining("Sources must not be null");
 	}
 
 	@Test
 	void createWhenArraySourcesContainsNullElementShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Binder(new ConfigurationPropertySource[] { null }))
-				.withMessageContaining("Sources must not contain null elements");
+			.withMessageContaining("Sources must not contain null elements");
 	}
 
 	@Test
 	void createWhenIterableSourcesContainsNullElementShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Binder(Collections.singletonList(null)))
-				.withMessageContaining("Sources must not contain null elements");
+			.withMessageContaining("Sources must not contain null elements");
 	}
 
 	@Test
 	void bindWhenNameIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> this.binder.bind((ConfigurationPropertyName) null,
-				Bindable.of(String.class), BindHandler.DEFAULT)).withMessageContaining("Name must not be null");
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> this.binder.bind((ConfigurationPropertyName) null, Bindable.of(String.class),
+					BindHandler.DEFAULT))
+			.withMessageContaining("Name must not be null");
 	}
 
 	@Test
 	void bindWhenTargetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.binder.bind(ConfigurationPropertyName.of("foo"), null, BindHandler.DEFAULT))
-				.withMessageContaining("Target must not be null");
+			.isThrownBy(() -> this.binder.bind(ConfigurationPropertyName.of("foo"), null, BindHandler.DEFAULT))
+			.withMessageContaining("Target must not be null");
 	}
 
 	@Test
@@ -224,10 +226,10 @@ class BinderTests {
 		Bindable<JavaBean> target = Bindable.of(JavaBean.class);
 		this.binder.bind("foo", target, handler);
 		InOrder inOrder = inOrder(handler);
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.value")), eq(Bindable.of(String.class)),
-				any(), eq("bar"));
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(target), any(),
-				isA(JavaBean.class));
+		inOrder.verify(handler)
+			.onSuccess(eq(ConfigurationPropertyName.of("foo.value")), eq(Bindable.of(String.class)), any(), eq("bar"));
+		inOrder.verify(handler)
+			.onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(target), any(), isA(JavaBean.class));
 	}
 
 	@Test
@@ -238,18 +240,18 @@ class BinderTests {
 		Bindable<JavaBean> target = Bindable.of(JavaBean.class);
 		binder.bind("foo", target);
 		InOrder inOrder = inOrder(handler);
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo.value")), eq(Bindable.of(String.class)),
-				any(), eq("bar"));
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(target), any(),
-				isA(JavaBean.class));
+		inOrder.verify(handler)
+			.onSuccess(eq(ConfigurationPropertyName.of("foo.value")), eq(Bindable.of(String.class)), any(), eq("bar"));
+		inOrder.verify(handler)
+			.onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(target), any(), isA(JavaBean.class));
 	}
 
 	@Test
 	void bindWhenHasMalformedDateShouldThrowException() {
 		this.sources.add(new MockConfigurationPropertySource("foo", "2014-04-01T01:30:00.000-05:00"));
 		assertThatExceptionOfType(BindException.class)
-				.isThrownBy(() -> this.binder.bind("foo", Bindable.of(LocalDate.class)))
-				.withCauseInstanceOf(ConversionFailedException.class);
+			.isThrownBy(() -> this.binder.bind("foo", Bindable.of(LocalDate.class)))
+			.withCauseInstanceOf(ConversionFailedException.class);
 	}
 
 	@Test
@@ -300,7 +302,7 @@ class BinderTests {
 		source.put("value", "hello");
 		source.put("", "bar");
 		Iterable<ConfigurationPropertySource> propertySources = ConfigurationPropertySources
-				.from(new MapPropertySource("test", source));
+			.from(new MapPropertySource("test", source));
 		propertySources.forEach(this.sources::add);
 		Bindable<JavaBean> target = Bindable.of(JavaBean.class);
 		JavaBean result = this.binder.bind("", target).get();
@@ -346,7 +348,7 @@ class BinderTests {
 	@Test
 	void bindToJavaBeanWithPublicConstructorWhenHasBindRestriction() {
 		Bindable<JavaBeanWithPublicConstructor> bindable = Bindable.of(JavaBeanWithPublicConstructor.class)
-				.withBindRestrictions(BindRestriction.NO_DIRECT_PROPERTY);
+			.withBindRestrictions(BindRestriction.NO_DIRECT_PROPERTY);
 		JavaBeanWithPublicConstructor result = bindToJavaBeanWithPublicConstructor(bindable);
 		assertThat(result.getValue()).isEqualTo("setter");
 	}

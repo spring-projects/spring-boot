@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,28 +48,29 @@ class ElasticsearchRestClientAutoConfigurationIntegrationTests {
 
 	@Container
 	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())
-			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
+		.withStartupAttempts(5)
+		.withStartupTimeout(Duration.ofMinutes(10));
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class));
 
 	@Test
 	void restClientCanQueryElasticsearchNode() {
 		this.contextRunner
-				.withPropertyValues("spring.elasticsearch.uris=" + elasticsearch.getHttpHostAddress(),
-						"spring.elasticsearch.connection-timeout=120s", "spring.elasticsearch.socket-timeout=120s")
-				.run((context) -> {
-					RestClient client = context.getBean(RestClient.class);
-					Request index = new Request("PUT", "/test/_doc/2");
-					index.setJsonEntity("{" + "  \"a\": \"alpha\"," + "  \"b\": \"bravo\"" + "}");
-					client.performRequest(index);
-					Request getRequest = new Request("GET", "/test/_doc/2");
-					Response response = client.performRequest(getRequest);
-					try (InputStream input = response.getEntity().getContent()) {
-						JsonNode result = new ObjectMapper().readTree(input);
-						assertThat(result.path("found").asBoolean()).isTrue();
-					}
-				});
+			.withPropertyValues("spring.elasticsearch.uris=" + elasticsearch.getHttpHostAddress(),
+					"spring.elasticsearch.connection-timeout=120s", "spring.elasticsearch.socket-timeout=120s")
+			.run((context) -> {
+				RestClient client = context.getBean(RestClient.class);
+				Request index = new Request("PUT", "/test/_doc/2");
+				index.setJsonEntity("{" + "  \"a\": \"alpha\"," + "  \"b\": \"bravo\"" + "}");
+				client.performRequest(index);
+				Request getRequest = new Request("GET", "/test/_doc/2");
+				Response response = client.performRequest(getRequest);
+				try (InputStream input = response.getEntity().getContent()) {
+					JsonNode result = new ObjectMapper().readTree(input);
+					assertThat(result.path("found").asBoolean()).isTrue();
+				}
+			});
 	}
 
 }

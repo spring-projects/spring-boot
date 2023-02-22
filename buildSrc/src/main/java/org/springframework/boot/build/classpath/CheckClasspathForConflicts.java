@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,8 +70,8 @@ public class CheckClasspathForConflicts extends DefaultTask {
 			if (file.isDirectory()) {
 				Path root = file.toPath();
 				try (Stream<Path> pathStream = Files.walk(root)) {
-					pathStream.filter(Files::isRegularFile).forEach(
-							(entry) -> classpathContents.add(root.relativize(entry).toString(), root.toString()));
+					pathStream.filter(Files::isRegularFile)
+						.forEach((entry) -> classpathContents.add(root.relativize(entry).toString(), root.toString()));
 				}
 			}
 			else {
@@ -111,9 +111,11 @@ public class CheckClasspathForConflicts extends DefaultTask {
 		}
 
 		private Map<String, List<String>> getConflicts(List<Predicate<String>> ignores) {
-			return this.classpathContents.entrySet().stream().filter((entry) -> entry.getValue().size() > 1)
-					.filter((entry) -> canConflict(entry.getKey(), ignores))
-					.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (v1, v2) -> v1, TreeMap::new));
+			return this.classpathContents.entrySet()
+				.stream()
+				.filter((entry) -> entry.getValue().size() > 1)
+				.filter((entry) -> canConflict(entry.getKey(), ignores))
+				.collect(Collectors.toMap(Entry::getKey, Entry::getValue, (v1, v2) -> v1, TreeMap::new));
 		}
 
 		private boolean canConflict(String name, List<Predicate<String>> ignores) {

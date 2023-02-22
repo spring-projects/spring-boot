@@ -36,19 +36,19 @@ class VehicleIdentificationNumberTests {
 	@Test
 	void createWhenVinIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new VehicleIdentificationNumber(null))
-				.withMessage("VIN must not be null");
+			.withMessage("VIN must not be null");
 	}
 
 	@Test
 	void createWhenVinIsMoreThan17CharsShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new VehicleIdentificationNumber("012345678901234567"))
-				.withMessage("VIN must be exactly 17 characters");
+			.withMessage("VIN must be exactly 17 characters");
 	}
 
 	@Test
 	void createWhenVinIsLessThan17CharsShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new VehicleIdentificationNumber("0123456789012345"))
-				.withMessage("VIN must be exactly 17 characters");
+			.withMessage("VIN must be exactly 17 characters");
 	}
 
 	@Test

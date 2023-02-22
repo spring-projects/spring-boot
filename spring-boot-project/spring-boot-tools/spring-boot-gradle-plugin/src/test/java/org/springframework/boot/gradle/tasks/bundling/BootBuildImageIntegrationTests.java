@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ class BootBuildImageIntegrationTests {
 		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
 		assertThat(buildLibs.listFiles())
-				.containsExactly(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".war"));
+			.containsExactly(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".war"));
 		removeImages(projectName);
 	}
 
@@ -106,7 +106,7 @@ class BootBuildImageIntegrationTests {
 		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
 		assertThat(buildLibs.listFiles())
-				.containsExactly(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".war"));
+			.containsExactly(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".war"));
 		removeImages(projectName);
 	}
 
@@ -172,7 +172,7 @@ class BootBuildImageIntegrationTests {
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
 		assertThat(result.getOutput()).contains("---> Test Info buildpack building")
-				.contains("---> Test Info buildpack done");
+			.contains("---> Test Info buildpack done");
 		removeImages(projectName);
 	}
 
@@ -214,7 +214,7 @@ class BootBuildImageIntegrationTests {
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
 		assertThat(result.getOutput()).contains("---> Test Info buildpack building")
-				.contains("---> Test Info buildpack done");
+			.contains("---> Test Info buildpack done");
 		removeImages(projectName);
 	}
 
@@ -307,7 +307,7 @@ class BootBuildImageIntegrationTests {
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage", "--imageName=example/Invalid-Image-Name");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
 		assertThat(result.getOutput()).containsPattern("Unable to parse image reference")
-				.containsPattern("example/Invalid-Image-Name");
+			.containsPattern("example/Invalid-Image-Name");
 	}
 
 	@TestTemplate
@@ -326,7 +326,7 @@ class BootBuildImageIntegrationTests {
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
 		assertThat(result.getOutput()).containsPattern("Unable to parse image reference")
-				.containsPattern("example/Invalid-Tag-Name");
+			.containsPattern("example/Invalid-Tag-Name");
 	}
 
 	@TestTemplate
@@ -362,17 +362,18 @@ class BootBuildImageIntegrationTests {
 	private void writeLongNameResource() throws IOException {
 		StringBuilder name = new StringBuilder();
 		new Random().ints('a', 'z' + 1).limit(128).forEach((i) -> name.append((char) i));
-		Path path = this.gradleBuild.getProjectDir().toPath()
-				.resolve(Paths.get("src", "main", "resources", name.toString()));
+		Path path = this.gradleBuild.getProjectDir()
+			.toPath()
+			.resolve(Paths.get("src", "main", "resources", name.toString()));
 		Files.createDirectories(path.getParent());
 		Files.createFile(path);
 	}
 
 	private void writeBuildpackContent() throws IOException {
 		FileAttribute<Set<PosixFilePermission>> dirAttribute = PosixFilePermissions
-				.asFileAttribute(PosixFilePermissions.fromString("rwxr-xr-x"));
+			.asFileAttribute(PosixFilePermissions.fromString("rwxr-xr-x"));
 		FileAttribute<Set<PosixFilePermission>> execFileAttribute = PosixFilePermissions
-				.asFileAttribute(PosixFilePermissions.fromString("rwxrwxrwx"));
+			.asFileAttribute(PosixFilePermissions.fromString("rwxrwxrwx"));
 		File buildpackDir = new File(this.gradleBuild.getProjectDir(), "buildpack/hello-world");
 		Files.createDirectories(buildpackDir.toPath(), dirAttribute);
 		File binDir = new File(buildpackDir, "bin");

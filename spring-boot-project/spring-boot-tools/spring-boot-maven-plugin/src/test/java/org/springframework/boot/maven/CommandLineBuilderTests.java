@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,43 +36,44 @@ class CommandLineBuilderTests {
 	@Test
 	void buildWithNullJvmArgumentsIsIgnored() {
 		assertThat(CommandLineBuilder.forMainClass(CLASS_NAME).withJvmArguments((String[]) null).build())
-				.containsExactly(CLASS_NAME);
+			.containsExactly(CLASS_NAME);
 	}
 
 	@Test
 	void buildWithNullIntermediateJvmArgumentIsIgnored() {
-		assertThat(CommandLineBuilder.forMainClass(CLASS_NAME).withJvmArguments("-verbose:class", null, "-verbose:gc")
-				.build()).containsExactly("-verbose:class", "-verbose:gc", CLASS_NAME);
+		assertThat(CommandLineBuilder.forMainClass(CLASS_NAME)
+			.withJvmArguments("-verbose:class", null, "-verbose:gc")
+			.build()).containsExactly("-verbose:class", "-verbose:gc", CLASS_NAME);
 	}
 
 	@Test
 	void buildWithJvmArgument() {
 		assertThat(CommandLineBuilder.forMainClass(CLASS_NAME).withJvmArguments("-verbose:class").build())
-				.containsExactly("-verbose:class", CLASS_NAME);
+			.containsExactly("-verbose:class", CLASS_NAME);
 	}
 
 	@Test
 	void buildWithNullSystemPropertyIsIgnored() {
 		assertThat(CommandLineBuilder.forMainClass(CLASS_NAME).withSystemProperties(null).build())
-				.containsExactly(CLASS_NAME);
+			.containsExactly(CLASS_NAME);
 	}
 
 	@Test
 	void buildWithSystemProperty() {
 		assertThat(CommandLineBuilder.forMainClass(CLASS_NAME).withSystemProperties(Map.of("flag", "enabled")).build())
-				.containsExactly("-Dflag=\"enabled\"", CLASS_NAME);
+			.containsExactly("-Dflag=\"enabled\"", CLASS_NAME);
 	}
 
 	@Test
 	void buildWithNullArgumentsIsIgnored() {
 		assertThat(CommandLineBuilder.forMainClass(CLASS_NAME).withArguments((String[]) null).build())
-				.containsExactly(CLASS_NAME);
+			.containsExactly(CLASS_NAME);
 	}
 
 	@Test
 	void buildWithNullIntermediateArgumentIsIgnored() {
 		assertThat(CommandLineBuilder.forMainClass(CLASS_NAME).withArguments("--test", null, "--another").build())
-				.containsExactly(CLASS_NAME, "--test", "--another");
+			.containsExactly(CLASS_NAME, "--test", "--another");
 	}
 
 }

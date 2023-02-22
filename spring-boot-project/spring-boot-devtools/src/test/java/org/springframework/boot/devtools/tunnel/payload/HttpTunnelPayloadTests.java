@@ -51,13 +51,13 @@ class HttpTunnelPayloadTests {
 	@Test
 	void sequenceMustBePositive() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelPayload(0, ByteBuffer.allocate(1)))
-				.withMessageContaining("Sequence must be positive");
+			.withMessageContaining("Sequence must be positive");
 	}
 
 	@Test
 	void dataMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelPayload(1, null))
-				.withMessageContaining("Data must not be null");
+			.withMessageContaining("Data must not be null");
 	}
 
 	@Test
@@ -98,7 +98,7 @@ class HttpTunnelPayloadTests {
 		servletRequest.setContent("hello".getBytes());
 		HttpInputMessage request = new ServletServerHttpRequest(servletRequest);
 		assertThatIllegalStateException().isThrownBy(() -> HttpTunnelPayload.get(request))
-				.withMessageContaining("Missing sequence header");
+			.withMessageContaining("Missing sequence header");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class KairosMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(KairosMetricsExportAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(KairosMetricsExportAutoConfiguration.class));
 
 	@Test
 	void backsOffWithoutAClock() {
@@ -46,36 +46,41 @@ class KairosMetricsExportAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresItsConfigAndMeterRegistry() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(KairosMeterRegistry.class).hasSingleBean(KairosConfig.class));
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(KairosMeterRegistry.class)
+				.hasSingleBean(KairosConfig.class));
 	}
 
 	@Test
 	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.defaults.metrics.export.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(KairosMeterRegistry.class)
-						.doesNotHaveBean(KairosConfig.class));
+			.withPropertyValues("management.defaults.metrics.export.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(KairosMeterRegistry.class)
+				.doesNotHaveBean(KairosConfig.class));
 	}
 
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.kairos.metrics.export.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(KairosMeterRegistry.class)
-						.doesNotHaveBean(KairosConfig.class));
+			.withPropertyValues("management.kairos.metrics.export.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(KairosMeterRegistry.class)
+				.doesNotHaveBean(KairosConfig.class));
 	}
 
 	@Test
 	void allowsCustomConfigToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(KairosMeterRegistry.class).hasSingleBean(KairosConfig.class).hasBean("customConfig"));
+		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(KairosMeterRegistry.class)
+				.hasSingleBean(KairosConfig.class)
+				.hasBean("customConfig"));
 	}
 
 	@Test
 	void allowsCustomRegistryToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(KairosMeterRegistry.class).hasBean("customRegistry").hasSingleBean(KairosConfig.class));
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(KairosMeterRegistry.class)
+				.hasBean("customRegistry")
+				.hasSingleBean(KairosConfig.class));
 	}
 
 	@Test

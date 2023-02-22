@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,106 +48,111 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SqlInitializationAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(SqlInitializationAutoConfiguration.class)).withPropertyValues(
-					"spring.datasource.generate-unique-name:true", "spring.r2dbc.generate-unique-name:true");
+		.withConfiguration(AutoConfigurations.of(SqlInitializationAutoConfiguration.class))
+		.withPropertyValues("spring.datasource.generate-unique-name:true", "spring.r2dbc.generate-unique-name:true");
 
 	@Test
 	void whenNoDataSourceOrConnectionFactoryIsAvailableThenAutoConfigurationBacksOff() {
 		this.contextRunner
-				.run((context) -> assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class));
 	}
 
 	@Test
 	void whenConnectionFactoryIsAvailableThenR2dbcInitializerIsAutoConfigured() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
-				.run((context) -> assertThat(context).hasSingleBean(R2dbcScriptDatabaseInitializer.class));
+			.run((context) -> assertThat(context).hasSingleBean(R2dbcScriptDatabaseInitializer.class));
 	}
 
 	@Test
 	void whenConnectionFactoryIsAvailableAndModeIsNeverThenInitializerIsNotAutoConfigured() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
-				.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
-				.withPropertyValues("spring.sql.init.mode:never")
-				.run((context) -> assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class));
+			.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
+			.withPropertyValues("spring.sql.init.mode:never")
+			.run((context) -> assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class));
 	}
 
 	@Test
 	void whenDataSourceIsAvailableThenDataSourceInitializerIsAutoConfigured() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.run((context) -> assertThat(context).hasSingleBean(DataSourceScriptDatabaseInitializer.class));
+			.run((context) -> assertThat(context).hasSingleBean(DataSourceScriptDatabaseInitializer.class));
 	}
 
 	@Test
 	void whenDataSourceIsAvailableAndModeIsNeverThenThenInitializerIsNotAutoConfigured() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withPropertyValues("spring.sql.init.mode:never")
-				.run((context) -> assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class));
+			.withPropertyValues("spring.sql.init.mode:never")
+			.run((context) -> assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class));
 	}
 
 	@Test
 	void whenDataSourceAndConnectionFactoryAreAvailableThenOnlyR2dbcInitializerIsAutoConfigured() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
-				.withUserConfiguration(DataSourceAutoConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(ConnectionFactory.class)
-						.hasSingleBean(DataSource.class).hasSingleBean(R2dbcScriptDatabaseInitializer.class)
-						.doesNotHaveBean(DataSourceScriptDatabaseInitializer.class));
+			.withUserConfiguration(DataSourceAutoConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(ConnectionFactory.class)
+				.hasSingleBean(DataSource.class)
+				.hasSingleBean(R2dbcScriptDatabaseInitializer.class)
+				.doesNotHaveBean(DataSourceScriptDatabaseInitializer.class));
 	}
 
 	@Test
 	void whenAnSqlInitializerIsDefinedThenInitializerIsNotAutoConfigured() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
-				.withUserConfiguration(DataSourceAutoConfiguration.class, SqlDatabaseInitializerConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(AbstractScriptDatabaseInitializer.class)
-						.hasBean("customInitializer"));
+			.withUserConfiguration(DataSourceAutoConfiguration.class, SqlDatabaseInitializerConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(AbstractScriptDatabaseInitializer.class)
+				.hasBean("customInitializer"));
 	}
 
 	@Test
 	void whenAnInitializerIsDefinedThenSqlInitializerIsStillAutoConfigured() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withUserConfiguration(DatabaseInitializerConfiguration.class).run((context) -> assertThat(context)
-						.hasSingleBean(SqlDataSourceScriptDatabaseInitializer.class).hasBean("customInitializer"));
+			.withUserConfiguration(DatabaseInitializerConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(SqlDataSourceScriptDatabaseInitializer.class)
+				.hasBean("customInitializer"));
 	}
 
 	@Test
 	void whenBeanIsAnnotatedAsDependingOnDatabaseInitializationThenItDependsOnR2dbcScriptDatabaseInitializer() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
-				.withUserConfiguration(DependsOnInitializedDatabaseConfiguration.class).run((context) -> {
-					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition(
+			.withUserConfiguration(DependsOnInitializedDatabaseConfiguration.class)
+			.run((context) -> {
+				BeanDefinition beanDefinition = context.getBeanFactory()
+					.getBeanDefinition(
 							"sqlInitializationAutoConfigurationTests.DependsOnInitializedDatabaseConfiguration");
-					assertThat(beanDefinition.getDependsOn())
-							.containsExactlyInAnyOrder("r2dbcScriptDatabaseInitializer");
-				});
+				assertThat(beanDefinition.getDependsOn()).containsExactlyInAnyOrder("r2dbcScriptDatabaseInitializer");
+			});
 	}
 
 	@Test
 	void whenBeanIsAnnotatedAsDependingOnDatabaseInitializationThenItDependsOnDataSourceScriptDatabaseInitializer() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withUserConfiguration(DependsOnInitializedDatabaseConfiguration.class).run((context) -> {
-					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition(
+			.withUserConfiguration(DependsOnInitializedDatabaseConfiguration.class)
+			.run((context) -> {
+				BeanDefinition beanDefinition = context.getBeanFactory()
+					.getBeanDefinition(
 							"sqlInitializationAutoConfigurationTests.DependsOnInitializedDatabaseConfiguration");
-					assertThat(beanDefinition.getDependsOn())
-							.containsExactlyInAnyOrder("dataSourceScriptDatabaseInitializer");
-				});
+				assertThat(beanDefinition.getDependsOn())
+					.containsExactlyInAnyOrder("dataSourceScriptDatabaseInitializer");
+			});
 	}
 
 	@Test
 	void whenADataSourceIsAvailableAndSpringJdbcIsNotThenAutoConfigurationBacksOff() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
-				.withClassLoader(new FilteredClassLoader(DatabasePopulator.class)).run((context) -> {
-					assertThat(context).hasSingleBean(DataSource.class);
-					assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class);
-				});
+			.withClassLoader(new FilteredClassLoader(DatabasePopulator.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(DataSource.class);
+				assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class);
+			});
 	}
 
 	@Test
 	void whenAConnectionFactoryIsAvailableAndSpringR2dbcIsNotThenAutoConfigurationBacksOff() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
-				.withClassLoader(
-						new FilteredClassLoader(org.springframework.r2dbc.connection.init.DatabasePopulator.class))
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ConnectionFactory.class);
-					assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class);
-				});
+			.withClassLoader(new FilteredClassLoader(org.springframework.r2dbc.connection.init.DatabasePopulator.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ConnectionFactory.class);
+				assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class);
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

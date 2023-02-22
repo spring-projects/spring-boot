@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,10 +36,11 @@ public class SecurityConfig {
 	@Bean
 	public DefaultSecurityFilterChain springWebFilterChain(HttpSecurity http) throws Exception {
 		return http.csrf((csrf) -> csrf.disable())
-				// Demonstrate that method security works
-				// Best practice to use both for defense in depth
-				.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll()).httpBasic(withDefaults())
-				.build();
+			// Demonstrate that method security works
+			// Best practice to use both for defense in depth
+			.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll())
+			.httpBasic(withDefaults())
+			.build();
 	}
 
 	@Bean

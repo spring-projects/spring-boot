@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,14 +42,14 @@ import static org.mockito.Mockito.mock;
 class GraphQlObservationAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withBean(TestObservationRegistry.class, TestObservationRegistry::create)
-			.withConfiguration(AutoConfigurations.of(GraphQlObservationAutoConfiguration.class));
+		.withBean(TestObservationRegistry.class, TestObservationRegistry::create)
+		.withConfiguration(AutoConfigurations.of(GraphQlObservationAutoConfiguration.class));
 
 	@Test
 	void backsOffWhenObservationRegistryIsMissing() {
 		new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(GraphQlObservationAutoConfiguration.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(GraphQlObservationInstrumentation.class));
+			.withConfiguration(AutoConfigurations.of(GraphQlObservationAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(GraphQlObservationInstrumentation.class));
 	}
 
 	@Test
@@ -60,38 +60,38 @@ class GraphQlObservationAutoConfigurationTests {
 	@Test
 	void instrumentationBacksOffIfAlreadyPresent() {
 		this.contextRunner.withUserConfiguration(InstrumentationConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(GraphQlObservationInstrumentation.class)
-						.hasBean("customInstrumentation"));
+			.run((context) -> assertThat(context).hasSingleBean(GraphQlObservationInstrumentation.class)
+				.hasBean("customInstrumentation"));
 	}
 
 	@Test
 	void instrumentationUsesCustomConventionsIfAvailable() {
 		this.contextRunner.withUserConfiguration(CustomConventionsConfiguration.class).run((context) -> {
 			GraphQlObservationInstrumentation instrumentation = context
-					.getBean(GraphQlObservationInstrumentation.class);
+				.getBean(GraphQlObservationInstrumentation.class);
 			assertThat(instrumentation).extracting("requestObservationConvention")
-					.isInstanceOf(CustomExecutionRequestObservationConvention.class);
+				.isInstanceOf(CustomExecutionRequestObservationConvention.class);
 			assertThat(instrumentation).extracting("dataFetcherObservationConvention")
-					.isInstanceOf(CustomDataFetcherObservationConvention.class);
+				.isInstanceOf(CustomDataFetcherObservationConvention.class);
 		});
 	}
 
 	@Test
 	void propagationInterceptorNotContributedWhenPropagatorIsMissing() {
 		this.contextRunner.withUserConfiguration(WebGraphQlConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(PropagationWebGraphQlInterceptor.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(PropagationWebGraphQlInterceptor.class));
 	}
 
 	@Test
 	void propagationInterceptorNotContributedWhenNotWebApplication() {
 		this.contextRunner.withUserConfiguration(TracingConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(PropagationWebGraphQlInterceptor.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(PropagationWebGraphQlInterceptor.class));
 	}
 
 	@Test
 	void propagationInterceptorContributed() {
 		this.contextRunner.withUserConfiguration(WebGraphQlConfiguration.class, TracingConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(PropagationWebGraphQlInterceptor.class));
+			.run((context) -> assertThat(context).hasSingleBean(PropagationWebGraphQlInterceptor.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

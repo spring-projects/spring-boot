@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class ParentAwareNamingStrategyTests {
 			ParentAwareNamingStrategy strategy = new ParentAwareNamingStrategy(new AnnotationJmxAttributeSource());
 			strategy.setApplicationContext(context);
 			assertThat(strategy.getObjectName(context.getBean("testManagedResource"), "testManagedResource")
-					.getKeyPropertyListString()).isEqualTo("type=something,name1=def,name2=ghi");
+				.getKeyPropertyListString()).isEqualTo("type=something,name1=def,name2=ghi");
 		});
 	}
 
@@ -62,8 +62,10 @@ class ParentAwareNamingStrategyTests {
 
 	@Test
 	void sameBeanInParentContextAddsContextProperty() {
-		this.contextRunner.withBean("testManagedResource", TestManagedResource.class).run((parent) -> this.contextRunner
-				.withBean("testManagedResource", TestManagedResource.class).withParent(parent).run((context) -> {
+		this.contextRunner.withBean("testManagedResource", TestManagedResource.class)
+			.run((parent) -> this.contextRunner.withBean("testManagedResource", TestManagedResource.class)
+				.withParent(parent)
+				.run((context) -> {
 					ParentAwareNamingStrategy strategy = new ParentAwareNamingStrategy(
 							new AnnotationJmxAttributeSource());
 					strategy.setApplicationContext(context);
@@ -77,8 +79,10 @@ class ParentAwareNamingStrategyTests {
 
 	@Test
 	void uniqueObjectNameAndSameBeanInParentContextOnlyAddsIdentityProperty() {
-		this.contextRunner.withBean("testManagedResource", TestManagedResource.class).run((parent) -> this.contextRunner
-				.withBean("testManagedResource", TestManagedResource.class).withParent(parent).run((context) -> {
+		this.contextRunner.withBean("testManagedResource", TestManagedResource.class)
+			.run((parent) -> this.contextRunner.withBean("testManagedResource", TestManagedResource.class)
+				.withParent(parent)
+				.run((context) -> {
 					ParentAwareNamingStrategy strategy = new ParentAwareNamingStrategy(
 							new AnnotationJmxAttributeSource());
 					strategy.setApplicationContext(context);

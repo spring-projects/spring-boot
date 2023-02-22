@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class HttpMessageConvertersAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class));
 
 	@Test
 	void jacksonNotAvailable() {
@@ -85,25 +85,26 @@ class HttpMessageConvertersAutoConfigurationTests {
 	@Test
 	void jacksonDefaultConverter() {
 		this.contextRunner.withUserConfiguration(JacksonObjectMapperConfig.class)
-				.run(assertConverter(MappingJackson2HttpMessageConverter.class, "mappingJackson2HttpMessageConverter"));
+			.run(assertConverter(MappingJackson2HttpMessageConverter.class, "mappingJackson2HttpMessageConverter"));
 	}
 
 	@Test
 	void jacksonConverterWithBuilder() {
 		this.contextRunner.withUserConfiguration(JacksonObjectMapperBuilderConfig.class)
-				.run(assertConverter(MappingJackson2HttpMessageConverter.class, "mappingJackson2HttpMessageConverter"));
+			.run(assertConverter(MappingJackson2HttpMessageConverter.class, "mappingJackson2HttpMessageConverter"));
 	}
 
 	@Test
 	void jacksonXmlConverterWithBuilder() {
-		this.contextRunner.withUserConfiguration(JacksonObjectMapperBuilderConfig.class).run(assertConverter(
-				MappingJackson2XmlHttpMessageConverter.class, "mappingJackson2XmlHttpMessageConverter"));
+		this.contextRunner.withUserConfiguration(JacksonObjectMapperBuilderConfig.class)
+			.run(assertConverter(MappingJackson2XmlHttpMessageConverter.class,
+					"mappingJackson2XmlHttpMessageConverter"));
 	}
 
 	@Test
 	void jacksonCustomConverter() {
 		this.contextRunner.withUserConfiguration(JacksonObjectMapperConfig.class, JacksonConverterConfig.class)
-				.run(assertConverter(MappingJackson2HttpMessageConverter.class, "customJacksonMessageConverter"));
+			.run(assertConverter(MappingJackson2HttpMessageConverter.class, "customJacksonMessageConverter"));
 	}
 
 	@Test
@@ -117,14 +118,14 @@ class HttpMessageConvertersAutoConfigurationTests {
 	@Test
 	void gsonDefaultConverter() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(GsonAutoConfiguration.class))
-				.run(assertConverter(GsonHttpMessageConverter.class, "gsonHttpMessageConverter"));
+			.run(assertConverter(GsonHttpMessageConverter.class, "gsonHttpMessageConverter"));
 	}
 
 	@Test
 	void gsonCustomConverter() {
 		this.contextRunner.withUserConfiguration(GsonConverterConfig.class)
-				.withConfiguration(AutoConfigurations.of(GsonAutoConfiguration.class))
-				.run(assertConverter(GsonHttpMessageConverter.class, "customGsonMessageConverter"));
+			.withConfiguration(AutoConfigurations.of(GsonAutoConfiguration.class))
+			.run(assertConverter(GsonHttpMessageConverter.class, "customGsonMessageConverter"));
 	}
 
 	@Test
@@ -148,14 +149,14 @@ class HttpMessageConvertersAutoConfigurationTests {
 	@Test
 	void jsonbDefaultConverter() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class))
-				.run(assertConverter(JsonbHttpMessageConverter.class, "jsonbHttpMessageConverter"));
+			.run(assertConverter(JsonbHttpMessageConverter.class, "jsonbHttpMessageConverter"));
 	}
 
 	@Test
 	void jsonbCustomConverter() {
 		this.contextRunner.withUserConfiguration(JsonbConverterConfig.class)
-				.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class))
-				.run(assertConverter(JsonbHttpMessageConverter.class, "customJsonbMessageConverter"));
+			.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class))
+			.run(assertConverter(JsonbHttpMessageConverter.class, "customJsonbMessageConverter"));
 	}
 
 	@Test
@@ -176,30 +177,31 @@ class HttpMessageConvertersAutoConfigurationTests {
 	@Test
 	void stringCustomConverter() {
 		this.contextRunner.withUserConfiguration(StringConverterConfig.class)
-				.run(assertConverter(StringHttpMessageConverter.class, "customStringMessageConverter"));
+			.run(assertConverter(StringHttpMessageConverter.class, "customStringMessageConverter"));
 	}
 
 	@Test
 	void typeConstrainedConverterDoesNotPreventAutoConfigurationOfJacksonConverter() {
-		this.contextRunner.withUserConfiguration(JacksonObjectMapperBuilderConfig.class,
-				TypeConstrainedConverterConfiguration.class).run((context) -> {
-					BeanDefinition beanDefinition = ((GenericApplicationContext) context.getSourceApplicationContext())
-							.getBeanDefinition("mappingJackson2HttpMessageConverter");
-					assertThat(beanDefinition.getFactoryBeanName())
-							.isEqualTo(MappingJackson2HttpMessageConverterConfiguration.class.getName());
-				});
+		this.contextRunner
+			.withUserConfiguration(JacksonObjectMapperBuilderConfig.class, TypeConstrainedConverterConfiguration.class)
+			.run((context) -> {
+				BeanDefinition beanDefinition = ((GenericApplicationContext) context.getSourceApplicationContext())
+					.getBeanDefinition("mappingJackson2HttpMessageConverter");
+				assertThat(beanDefinition.getFactoryBeanName())
+					.isEqualTo(MappingJackson2HttpMessageConverterConfiguration.class.getName());
+			});
 	}
 
 	@Test
 	void typeConstrainedConverterFromSpringDataDoesNotPreventAutoConfigurationOfJacksonConverter() {
 		this.contextRunner
-				.withUserConfiguration(JacksonObjectMapperBuilderConfig.class, RepositoryRestMvcConfiguration.class)
-				.run((context) -> {
-					BeanDefinition beanDefinition = ((GenericApplicationContext) context.getSourceApplicationContext())
-							.getBeanDefinition("mappingJackson2HttpMessageConverter");
-					assertThat(beanDefinition.getFactoryBeanName())
-							.isEqualTo(MappingJackson2HttpMessageConverterConfiguration.class.getName());
-				});
+			.withUserConfiguration(JacksonObjectMapperBuilderConfig.class, RepositoryRestMvcConfiguration.class)
+			.run((context) -> {
+				BeanDefinition beanDefinition = ((GenericApplicationContext) context.getSourceApplicationContext())
+					.getBeanDefinition("mappingJackson2HttpMessageConverter");
+				assertThat(beanDefinition.getFactoryBeanName())
+					.isEqualTo(MappingJackson2HttpMessageConverterConfiguration.class.getName());
+			});
 	}
 
 	@Test
@@ -216,65 +218,66 @@ class HttpMessageConvertersAutoConfigurationTests {
 	@Test
 	void gsonIsPreferredIfJacksonIsNotAvailable() {
 		allOptionsRunner().withClassLoader(new FilteredClassLoader(ObjectMapper.class.getPackage().getName()))
-				.run((context) -> {
-					assertConverterBeanExists(context, GsonHttpMessageConverter.class, "gsonHttpMessageConverter");
-					assertConverterBeanRegisteredWithHttpMessageConverters(context, GsonHttpMessageConverter.class);
-					assertThat(context).doesNotHaveBean(JsonbHttpMessageConverter.class);
-				});
+			.run((context) -> {
+				assertConverterBeanExists(context, GsonHttpMessageConverter.class, "gsonHttpMessageConverter");
+				assertConverterBeanRegisteredWithHttpMessageConverters(context, GsonHttpMessageConverter.class);
+				assertThat(context).doesNotHaveBean(JsonbHttpMessageConverter.class);
+			});
 	}
 
 	@Test
 	void jsonbIsPreferredIfJacksonAndGsonAreNotAvailable() {
 		allOptionsRunner()
-				.withClassLoader(new FilteredClassLoader(ObjectMapper.class.getPackage().getName(),
-						Gson.class.getPackage().getName()))
-				.run(assertConverter(JsonbHttpMessageConverter.class, "jsonbHttpMessageConverter"));
+			.withClassLoader(new FilteredClassLoader(ObjectMapper.class.getPackage().getName(),
+					Gson.class.getPackage().getName()))
+			.run(assertConverter(JsonbHttpMessageConverter.class, "jsonbHttpMessageConverter"));
 	}
 
 	@Test
 	void whenServletWebApplicationHttpMessageConvertersIsConfigured() {
 		new WebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-				.run((context) -> assertThat(context).hasSingleBean(HttpMessageConverters.class));
+			.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
+			.run((context) -> assertThat(context).hasSingleBean(HttpMessageConverters.class));
 	}
 
 	@Test
 	void whenReactiveWebApplicationHttpMessageConvertersIsNotConfigured() {
 		new ReactiveWebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(HttpMessageConverters.class));
+			.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(HttpMessageConverters.class));
 	}
 
 	@Test
 	void whenEncodingCharsetIsNotConfiguredThenStringMessageConverterUsesUtf8() {
 		new WebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context).hasSingleBean(StringHttpMessageConverter.class);
-					assertThat(context.getBean(StringHttpMessageConverter.class).getDefaultCharset())
-							.isEqualTo(StandardCharsets.UTF_8);
-				});
+			.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(StringHttpMessageConverter.class);
+				assertThat(context.getBean(StringHttpMessageConverter.class).getDefaultCharset())
+					.isEqualTo(StandardCharsets.UTF_8);
+			});
 	}
 
 	@Test
 	void whenEncodingCharsetIsConfiguredThenStringMessageConverterUsesSpecificCharset() {
 		new WebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-				.withPropertyValues("server.servlet.encoding.charset=UTF-16").run((context) -> {
-					assertThat(context).hasSingleBean(StringHttpMessageConverter.class);
-					assertThat(context.getBean(StringHttpMessageConverter.class).getDefaultCharset())
-							.isEqualTo(StandardCharsets.UTF_16);
-				});
+			.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
+			.withPropertyValues("server.servlet.encoding.charset=UTF-16")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(StringHttpMessageConverter.class);
+				assertThat(context.getBean(StringHttpMessageConverter.class).getDefaultCharset())
+					.isEqualTo(StandardCharsets.UTF_16);
+			});
 	}
 
 	@Test // gh-21789
 	void whenAutoConfigurationIsActiveThenServerPropertiesConfigurationPropertiesAreNotEnabled() {
 		new WebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context).hasSingleBean(HttpMessageConverters.class);
-					assertThat(context).doesNotHaveBean(ServerProperties.class);
-				});
+			.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(HttpMessageConverters.class);
+				assertThat(context).doesNotHaveBean(ServerProperties.class);
+			});
 	}
 
 	@Test

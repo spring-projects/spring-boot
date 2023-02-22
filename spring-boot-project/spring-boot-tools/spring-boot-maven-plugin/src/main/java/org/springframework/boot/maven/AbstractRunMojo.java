@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -269,9 +269,10 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	protected RunArguments resolveJvmArguments() {
 		StringBuilder stringBuilder = new StringBuilder();
 		if (this.systemPropertyVariables != null) {
-			stringBuilder.append(this.systemPropertyVariables.entrySet().stream()
-					.map((e) -> SystemPropertyFormatter.format(e.getKey(), e.getValue()))
-					.collect(Collectors.joining(" ")));
+			stringBuilder.append(this.systemPropertyVariables.entrySet()
+				.stream()
+				.map((e) -> SystemPropertyFormatter.format(e.getKey(), e.getValue()))
+				.collect(Collectors.joining(" ")));
 		}
 		if (this.jvmArguments != null) {
 			stringBuilder.append(" ").append(this.jvmArguments);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -168,14 +168,15 @@ class BuildInfoTests {
 	void nullAdditionalPropertyProducesInformativeFailure() {
 		BuildInfo task = createTask(createProject("test"));
 		assertThatThrownBy(() -> task.getProperties().getAdditional().put("a", null))
-				.hasMessage("Cannot add an entry with a null value to a property of type Map.");
+			.hasMessage("Cannot add an entry with a null value to a property of type Map.");
 	}
 
 	private Project createProject(String projectName) {
 		File projectDir = new File(this.temp, projectName);
 		Project project = GradleProjectBuilder.builder().withProjectDir(projectDir).withName(projectName).build();
-		((ProjectInternal) project).getServices().get(GradlePropertiesController.class)
-				.loadGradlePropertiesFrom(projectDir);
+		((ProjectInternal) project).getServices()
+			.get(GradlePropertiesController.class)
+			.loadGradlePropertiesFrom(projectDir);
 		return project;
 	}
 

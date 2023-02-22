@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ class ConfigurationPropertiesTests {
 	@Test
 	void whenJsonHasAnIntegerDefaultValueThenItRemainsAnIntegerWhenRead() {
 		ConfigurationProperties properties = ConfigurationProperties
-				.fromFiles(Arrays.asList(new File("src/test/resources/spring-configuration-metadata.json")));
+			.fromFiles(Arrays.asList(new File("src/test/resources/spring-configuration-metadata.json")));
 		assertThat(properties.get("example.counter").getDefaultValue()).isEqualTo(0);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,9 @@ public class DefaultJerseyApplicationPath implements JerseyApplicationPath {
 		}
 		// Jersey doesn't like to be the default servlet, so map to /* as a fallback
 		return MergedAnnotations.from(this.config.getApplication().getClass(), SearchStrategy.TYPE_HIERARCHY)
-				.get(ApplicationPath.class).getValue(MergedAnnotation.VALUE, String.class).orElse("/*");
+			.get(ApplicationPath.class)
+			.getValue(MergedAnnotation.VALUE, String.class)
+			.orElse("/*");
 	}
 
 }

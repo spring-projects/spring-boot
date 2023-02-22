@@ -57,7 +57,7 @@ class GangliaPropertiesConfigAdapterTests {
 		GangliaProperties properties = new GangliaProperties();
 		properties.setAddressingMode(UDPAddressingMode.UNICAST);
 		assertThat(new GangliaPropertiesConfigAdapter(properties).addressingMode())
-				.isEqualTo(UDPAddressingMode.UNICAST);
+			.isEqualTo(UDPAddressingMode.UNICAST);
 	}
 
 	@Test

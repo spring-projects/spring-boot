@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,17 +60,19 @@ class DataRedisTestReactiveIntegrationTests {
 	@Test
 	void testRepository() {
 		String id = UUID.randomUUID().toString();
-		StepVerifier.create(this.operations.opsForValue().set(id, "Hello World")).expectNext(Boolean.TRUE)
-				.verifyComplete();
+		StepVerifier.create(this.operations.opsForValue().set(id, "Hello World"))
+			.expectNext(Boolean.TRUE)
+			.verifyComplete();
 		StepVerifier.create(this.operations.opsForValue().get(id)).expectNext("Hello World").verifyComplete();
-		StepVerifier.create(this.operations.execute((action) -> action.serverCommands().flushDb())).expectNext("OK")
-				.verifyComplete();
+		StepVerifier.create(this.operations.execute((action) -> action.serverCommands().flushDb()))
+			.expectNext("OK")
+			.verifyComplete();
 	}
 
 	@Test
 	void didNotInjectExampleService() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
+			.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
 	}
 
 }

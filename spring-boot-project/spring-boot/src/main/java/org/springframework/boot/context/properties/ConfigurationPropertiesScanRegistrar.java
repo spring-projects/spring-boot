@@ -64,7 +64,7 @@ class ConfigurationPropertiesScanRegistrar implements ImportBeanDefinitionRegist
 
 	private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
 		AnnotationAttributes attributes = AnnotationAttributes
-				.fromMap(metadata.getAnnotationAttributes(ConfigurationPropertiesScan.class.getName()));
+			.fromMap(metadata.getAnnotationAttributes(ConfigurationPropertiesScan.class.getName()));
 		String[] basePackages = attributes.getStringArray("basePackages");
 		Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
 		Set<String> packagesToScan = new LinkedHashSet<>(Arrays.asList(basePackages));

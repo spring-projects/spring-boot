@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,19 +59,19 @@ class WebEndpointsAutoConfigurationIntegrationTests {
 	@Test
 	void healthEndpointReactiveWebExtensionIsAutoConfigured() {
 		reactiveWebRunner()
-				.run((context) -> assertThat(context).hasSingleBean(ReactiveHealthEndpointWebExtension.class));
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveHealthEndpointWebExtension.class));
 	}
 
 	private WebApplicationContextRunner servletWebRunner() {
 		return new WebApplicationContextRunner()
-				.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class)).withPropertyValues(
-						"management.tracing.enabled=false", "management.defaults.metrics.export.enabled=false");
+			.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class))
+			.withPropertyValues("management.tracing.enabled=false", "management.defaults.metrics.export.enabled=false");
 	}
 
 	private ReactiveWebApplicationContextRunner reactiveWebRunner() {
 		return new ReactiveWebApplicationContextRunner()
-				.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class)).withPropertyValues(
-						"management.tracing.enabled=false", "management.defaults.metrics.export.enabled=false");
+			.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class))
+			.withPropertyValues("management.tracing.enabled=false", "management.defaults.metrics.export.enabled=false");
 	}
 
 	@EnableAutoConfiguration(exclude = { FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 			ClassLoaderFiles classLoaderFiles) {
 		this.classLoaderFiles = classLoaderFiles;
 		this.patternResolverDelegate = getResourcePatternResolverFactory()
-				.getResourcePatternResolver(applicationContext, retrieveResourceLoader(applicationContext));
+			.getResourcePatternResolver(applicationContext, retrieveResourceLoader(applicationContext));
 	}
 
 	private ResourceLoader retrieveResourceLoader(ApplicationContext applicationContext) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,8 @@ public final class JsonMixinModuleEntries {
 
 	private static void registerMixinClass(Builder builder, Class<?> mixinClass) {
 		MergedAnnotation<JsonMixin> annotation = MergedAnnotations
-				.from(mixinClass, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY).get(JsonMixin.class);
+			.from(mixinClass, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
+			.get(JsonMixin.class);
 		for (Class<?> targetType : annotation.getClassArray("type")) {
 			builder.and(targetType, mixinClass);
 		}

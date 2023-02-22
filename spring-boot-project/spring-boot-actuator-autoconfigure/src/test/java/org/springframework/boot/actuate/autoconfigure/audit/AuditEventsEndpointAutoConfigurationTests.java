@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,14 +42,14 @@ class AuditEventsEndpointAutoConfigurationTests {
 	@Test
 	void runWhenRepositoryBeanAvailableShouldHaveEndpointBean() {
 		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
-				.withPropertyValues("management.endpoints.web.exposure.include=auditevents")
-				.run((context) -> assertThat(context).hasSingleBean(AuditEventsEndpoint.class));
+			.withPropertyValues("management.endpoints.web.exposure.include=auditevents")
+			.run((context) -> assertThat(context).hasSingleBean(AuditEventsEndpoint.class));
 	}
 
 	@Test
 	void endpointBacksOffWhenRepositoryNotAvailable() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=auditevents")
-				.run((context) -> assertThat(context).doesNotHaveBean(AuditEventsEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(AuditEventsEndpoint.class));
 	}
 
 	@Test
@@ -60,9 +60,9 @@ class AuditEventsEndpointAutoConfigurationTests {
 	@Test
 	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpoint() {
 		this.contextRunner.withUserConfiguration(CustomAuditEventRepositoryConfiguration.class)
-				.withPropertyValues("management.endpoint.auditevents.enabled:false")
-				.withPropertyValues("management.endpoints.web.exposure.include=*")
-				.run((context) -> assertThat(context).doesNotHaveBean(AuditEventsEndpoint.class));
+			.withPropertyValues("management.endpoint.auditevents.enabled:false")
+			.withPropertyValues("management.endpoints.web.exposure.include=*")
+			.run((context) -> assertThat(context).doesNotHaveBean(AuditEventsEndpoint.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ class ConfigDataEnvironmentPostProcessorImportCombinedWithProfileSpecificIntegra
 	@Test
 	void testWithoutProfile() {
 		ConfigurableApplicationContext context = this.application
-				.run("--spring.config.name=configimportwithprofilespecific");
+			.run("--spring.config.name=configimportwithprofilespecific");
 		String value = context.getEnvironment().getProperty("prop");
 		assertThat(value).isEqualTo("fromicwps1");
 	}
@@ -69,7 +69,7 @@ class ConfigDataEnvironmentPostProcessorImportCombinedWithProfileSpecificIntegra
 	@Test
 	void testWithProfile() {
 		ConfigurableApplicationContext context = this.application
-				.run("--spring.config.name=configimportwithprofilespecific", "--spring.profiles.active=prod");
+			.run("--spring.config.name=configimportwithprofilespecific", "--spring.profiles.active=prod");
 		String value = context.getEnvironment().getProperty("prop");
 		assertThat(value).isEqualTo("fromicwps2");
 	}

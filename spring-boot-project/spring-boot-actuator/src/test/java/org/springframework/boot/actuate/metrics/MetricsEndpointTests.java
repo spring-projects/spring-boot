@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,8 +132,10 @@ class MetricsEndpointTests {
 		this.registry.counter("cache", "host", "1", "region", "east", "result", "hit");
 		this.registry.counter("cache", "host", "1", "region", "east", "result", "miss");
 		MetricsEndpoint.MetricDescriptor response = this.endpoint.metric("cache", Collections.singletonList("host:1"));
-		assertThat(response.getAvailableTags().stream().filter((t) -> t.getTag().equals("region"))
-				.flatMap((t) -> t.getValues().stream())).containsExactly("east");
+		assertThat(response.getAvailableTags()
+			.stream()
+			.filter((t) -> t.getTag().equals("region"))
+			.flatMap((t) -> t.getValues().stream())).containsExactly("east");
 	}
 
 	@Test
@@ -149,7 +151,7 @@ class MetricsEndpointTests {
 	@Test
 	void metricWithInvalidTag() {
 		assertThatExceptionOfType(InvalidEndpointRequestException.class)
-				.isThrownBy(() -> this.endpoint.metric("counter", Collections.singletonList("key")));
+			.isThrownBy(() -> this.endpoint.metric("counter", Collections.singletonList("key")));
 	}
 
 	@Test
@@ -191,14 +193,19 @@ class MetricsEndpointTests {
 	private void assertMetricHasStatisticEqualTo(MeterRegistry registry, String metricName, Statistic stat,
 			Double value) {
 		MetricsEndpoint endpoint = new MetricsEndpoint(registry);
-		assertThat(endpoint.metric(metricName, Collections.emptyList()).getMeasurements().stream()
-				.filter((sample) -> sample.getStatistic().equals(stat)).findAny())
-						.hasValueSatisfying((sample) -> assertThat(sample.getValue()).isEqualTo(value));
+		assertThat(endpoint.metric(metricName, Collections.emptyList())
+			.getMeasurements()
+			.stream()
+			.filter((sample) -> sample.getStatistic().equals(stat))
+			.findAny()).hasValueSatisfying((sample) -> assertThat(sample.getValue()).isEqualTo(value));
 	}
 
 	private Optional<Double> getCount(MetricsEndpoint.MetricDescriptor response) {
-		return response.getMeasurements().stream().filter((sample) -> sample.getStatistic().equals(Statistic.COUNT))
-				.findAny().map(MetricsEndpoint.Sample::getValue);
+		return response.getMeasurements()
+			.stream()
+			.filter((sample) -> sample.getStatistic().equals(Statistic.COUNT))
+			.findAny()
+			.map(MetricsEndpoint.Sample::getValue);
 	}
 
 	private Stream<String> availableTagKeys(MetricsEndpoint.MetricDescriptor response) {

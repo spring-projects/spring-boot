@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ class ConversionServiceDeducer {
 	List<ConversionService> getConversionServices() {
 		if (hasUserDefinedConfigurationServiceBean()) {
 			return Collections.singletonList(this.applicationContext
-					.getBean(ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME, ConversionService.class));
+				.getBean(ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME, ConversionService.class));
 		}
 		if (this.applicationContext instanceof ConfigurableApplicationContext configurableContext) {
 			return getConversionServices(configurableContext);
@@ -74,7 +74,7 @@ class ConversionServiceDeducer {
 	private boolean hasUserDefinedConfigurationServiceBean() {
 		String beanName = ConfigurableApplicationContext.CONVERSION_SERVICE_BEAN_NAME;
 		return this.applicationContext.containsBean(beanName) && this.applicationContext.getAutowireCapableBeanFactory()
-				.isTypeMatch(beanName, ConversionService.class);
+			.isTypeMatch(beanName, ConversionService.class);
 	}
 
 	private static class ConverterBeans {

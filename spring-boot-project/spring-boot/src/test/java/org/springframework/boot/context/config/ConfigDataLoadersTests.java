@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,8 +64,9 @@ class ConfigDataLoadersTests {
 		springFactoriesLoader.add(ConfigDataLoader.class, DeferredLogFactoryConfigDataLoader.class);
 		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext,
 				springFactoriesLoader);
-		assertThat(loaders).extracting("loaders").asList()
-				.satisfies(this::containsValidDeferredLogFactoryConfigDataLoader);
+		assertThat(loaders).extracting("loaders")
+			.asList()
+			.satisfies(this::containsValidDeferredLogFactoryConfigDataLoader);
 	}
 
 	private void containsValidDeferredLogFactoryConfigDataLoader(List<?> list) {
@@ -79,9 +80,10 @@ class ConfigDataLoadersTests {
 		MockSpringFactoriesLoader springFactoriesLoader = new MockSpringFactoriesLoader();
 		springFactoriesLoader.add(ConfigDataLoader.class, LogConfigDataLoader.class);
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ConfigDataLoaders(this.logFactory, this.bootstrapContext, springFactoriesLoader))
-				.havingCause().isInstanceOf(IllegalArgumentException.class)
-				.withMessageContaining("use DeferredLogFactory");
+			.isThrownBy(() -> new ConfigDataLoaders(this.logFactory, this.bootstrapContext, springFactoriesLoader))
+			.havingCause()
+			.isInstanceOf(IllegalArgumentException.class)
+			.withMessageContaining("use DeferredLogFactory");
 	}
 
 	@Test
@@ -111,7 +113,7 @@ class ConfigDataLoadersTests {
 				springFactoriesLoader);
 		TestConfigDataResource location = new TestConfigDataResource("test");
 		assertThatIllegalStateException().isThrownBy(() -> loaders.load(this.context, location))
-				.withMessageContaining("Multiple loaders found for resource 'test'");
+			.withMessageContaining("Multiple loaders found for resource 'test'");
 	}
 
 	@Test
@@ -122,7 +124,7 @@ class ConfigDataLoadersTests {
 				springFactoriesLoader);
 		TestConfigDataResource location = new TestConfigDataResource("test");
 		assertThatIllegalStateException().isThrownBy(() -> loaders.load(this.context, location))
-				.withMessage("No loader found for resource 'test'");
+			.withMessage("No loader found for resource 'test'");
 	}
 
 	@Test

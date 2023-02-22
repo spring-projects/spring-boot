@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,9 +68,13 @@ public class SpringApplicationAotProcessor extends ContextAotProcessor {
 		Assert.isTrue(args.length >= requiredArgs, () -> "Usage: " + SpringApplicationAotProcessor.class.getName()
 				+ " <applicationName> <sourceOutput> <resourceOutput> <classOutput> <groupId> <artifactId> <originalArgs...>");
 		Class<?> application = Class.forName(args[0]);
-		Settings settings = Settings.builder().sourceOutput(Paths.get(args[1])).resourceOutput(Paths.get(args[2]))
-				.classOutput(Paths.get(args[3])).groupId((StringUtils.hasText(args[4])) ? args[4] : "unspecified")
-				.artifactId(args[5]).build();
+		Settings settings = Settings.builder()
+			.sourceOutput(Paths.get(args[1]))
+			.resourceOutput(Paths.get(args[2]))
+			.classOutput(Paths.get(args[3]))
+			.groupId((StringUtils.hasText(args[4])) ? args[4] : "unspecified")
+			.artifactId(args[5])
+			.build();
 		String[] applicationArgs = (args.length > requiredArgs) ? Arrays.copyOfRange(args, requiredArgs, args.length)
 				: new String[0];
 		new SpringApplicationAotProcessor(application, settings, applicationArgs).process();
@@ -113,7 +117,7 @@ public class SpringApplicationAotProcessor extends ContextAotProcessor {
 			}
 			throw new IllegalStateException(
 					"No application context available after calling main method of '%s'. Does it run a SpringApplication?"
-							.formatted(this.application.getName()));
+						.formatted(this.application.getName()));
 		}
 
 	}

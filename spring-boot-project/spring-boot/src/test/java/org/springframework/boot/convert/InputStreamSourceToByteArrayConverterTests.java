@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,9 +53,10 @@ class InputStreamSourceToByteArrayConverterTests {
 		InputStreamSource source = mock(InputStreamSource.class);
 		given(source.getInputStream()).willThrow(IOException.class);
 		assertThatExceptionOfType(ConversionFailedException.class)
-				.isThrownBy(() -> conversionService.convert(source, byte[].class)).havingCause()
-				.isInstanceOf(IllegalStateException.class)
-				.withMessageContaining("Unable to read from input stream source");
+			.isThrownBy(() -> conversionService.convert(source, byte[].class))
+			.havingCause()
+			.isInstanceOf(IllegalStateException.class)
+			.withMessageContaining("Unable to read from input stream source");
 	}
 
 	@ConversionServiceTest
@@ -66,8 +67,10 @@ class InputStreamSourceToByteArrayConverterTests {
 		given(source.getInputStream()).willThrow(IOException.class);
 		given(((OriginProvider) source).getOrigin()).willReturn(origin);
 		assertThatExceptionOfType(ConversionFailedException.class)
-				.isThrownBy(() -> conversionService.convert(source, byte[].class)).havingCause()
-				.isInstanceOf(IllegalStateException.class).withMessageContaining("Unable to read from mylocation");
+			.isThrownBy(() -> conversionService.convert(source, byte[].class))
+			.havingCause()
+			.isInstanceOf(IllegalStateException.class)
+			.withMessageContaining("Unable to read from mylocation");
 	}
 
 	@ConversionServiceTest
@@ -77,13 +80,15 @@ class InputStreamSourceToByteArrayConverterTests {
 		given(source.getInputStream()).willThrow(IOException.class);
 		given(source.getDescription()).willReturn("myresource");
 		assertThatExceptionOfType(ConversionFailedException.class)
-				.isThrownBy(() -> conversionService.convert(source, byte[].class)).havingCause()
-				.isInstanceOf(IllegalStateException.class).withMessageContaining("Unable to read from myresource");
+			.isThrownBy(() -> conversionService.convert(source, byte[].class))
+			.havingCause()
+			.isInstanceOf(IllegalStateException.class)
+			.withMessageContaining("Unable to read from myresource");
 	}
 
 	static Stream<? extends Arguments> conversionServices() {
 		return ConversionServiceArguments
-				.with((service) -> service.addConverter(new InputStreamSourceToByteArrayConverter()));
+			.with((service) -> service.addConverter(new InputStreamSourceToByteArrayConverter()));
 	}
 
 	private static class TestOrigin implements Origin {

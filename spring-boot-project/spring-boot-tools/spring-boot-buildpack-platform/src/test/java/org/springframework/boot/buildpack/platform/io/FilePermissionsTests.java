@@ -51,7 +51,7 @@ class FilePermissionsTests {
 	@DisabledOnOs(OS.WINDOWS)
 	void umaskForPath() throws IOException {
 		FileAttribute<Set<PosixFilePermission>> fileAttribute = PosixFilePermissions
-				.asFileAttribute(PosixFilePermissions.fromString("rw-r-----"));
+			.asFileAttribute(PosixFilePermissions.fromString("rw-r-----"));
 		Path tempFile = Files.createTempFile(this.tempDir, "umask", null, fileAttribute);
 		assertThat(FilePermissions.umaskForPath(tempFile)).isEqualTo(0640);
 	}
@@ -60,7 +60,7 @@ class FilePermissionsTests {
 	@DisabledOnOs(OS.WINDOWS)
 	void umaskForPathWithNonExistentFile() {
 		assertThatIOException()
-				.isThrownBy(() -> FilePermissions.umaskForPath(Paths.get(this.tempDir.toString(), "does-not-exist")));
+			.isThrownBy(() -> FilePermissions.umaskForPath(Paths.get(this.tempDir.toString(), "does-not-exist")));
 	}
 
 	@Test
@@ -68,7 +68,7 @@ class FilePermissionsTests {
 	void umaskForPathOnWindowsFails() throws IOException {
 		Path tempFile = Files.createTempFile("umask", null);
 		assertThatIllegalStateException().isThrownBy(() -> FilePermissions.umaskForPath(tempFile))
-				.withMessageContaining("Unsupported file type for retrieving Posix attributes");
+			.withMessageContaining("Unsupported file type for retrieving Posix attributes");
 	}
 
 	@Test

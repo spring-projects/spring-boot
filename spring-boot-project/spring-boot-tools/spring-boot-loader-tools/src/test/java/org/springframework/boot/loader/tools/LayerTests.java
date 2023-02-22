@@ -42,7 +42,7 @@ class LayerTests {
 	@Test
 	void createWhenNameContainsBadCharsThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Layer("bad!name"))
-				.withMessage("Malformed layer name 'bad!name'");
+			.withMessage("Malformed layer name 'bad!name'");
 	}
 
 	@Test
@@ -62,11 +62,11 @@ class LayerTests {
 	@Test
 	void createWhenUsingReservedNameThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Layer("ext"))
-				.withMessage("Layer name 'ext' is reserved");
+			.withMessage("Layer name 'ext' is reserved");
 		assertThatIllegalArgumentException().isThrownBy(() -> new Layer("ExT"))
-				.withMessage("Layer name 'ExT' is reserved");
+			.withMessage("Layer name 'ExT' is reserved");
 		assertThatIllegalArgumentException().isThrownBy(() -> new Layer("springbootloader"))
-				.withMessage("Layer name 'springbootloader' is reserved");
+			.withMessage("Layer name 'springbootloader' is reserved");
 	}
 
 }

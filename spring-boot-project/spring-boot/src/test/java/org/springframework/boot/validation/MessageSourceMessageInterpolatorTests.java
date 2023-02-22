@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class MessageSourceMessageInterpolatorTests {
 	void interpolateWhenParametersAreUnknownShouldLeaveThemUnchanged() {
 		this.messageSource.addMessage("top", Locale.getDefault(), "{child}+{child}");
 		assertThat(this.interpolator.interpolate("{foo}{top}{bar}", this.context))
-				.isEqualTo("{foo}{child}+{child}{bar}");
+			.isEqualTo("{foo}{child}+{child}{bar}");
 	}
 
 	@Test
@@ -63,7 +63,7 @@ class MessageSourceMessageInterpolatorTests {
 		this.messageSource.setUseCodeAsDefaultMessage(true);
 		this.messageSource.addMessage("top", Locale.getDefault(), "{child}+{child}");
 		assertThat(this.interpolator.interpolate("{foo}{top}{bar}", this.context))
-				.isEqualTo("{foo}{child}+{child}{bar}");
+			.isEqualTo("{foo}{child}+{child}{bar}");
 	}
 
 	@Test
@@ -107,7 +107,7 @@ class MessageSourceMessageInterpolatorTests {
 		this.messageSource.addMessage("b", Locale.getDefault(), "{c}");
 		this.messageSource.addMessage("c", Locale.getDefault(), "{a}");
 		assertThatIllegalArgumentException().isThrownBy(() -> this.interpolator.interpolate("{a}", this.context))
-				.withMessage("Circular reference '{a -> b -> c -> a}'");
+			.withMessage("Circular reference '{a -> b -> c -> a}'");
 	}
 
 	private static final class IdentityMessageInterpolator implements MessageInterpolator {

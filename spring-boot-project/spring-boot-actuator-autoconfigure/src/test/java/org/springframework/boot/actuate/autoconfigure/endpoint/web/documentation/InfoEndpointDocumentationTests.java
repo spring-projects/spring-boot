@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,24 +49,25 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
 	void info() throws Exception {
-		this.mockMvc.perform(get("/actuator/info")).andExpect(status().isOk())
-				.andDo(MockMvcRestDocumentation.document("info",
-						responseFields(beneathPath("git"),
-								fieldWithPath("branch").description("Name of the Git branch, if any."),
-								fieldWithPath("commit").description("Details of the Git commit, if any."),
-								fieldWithPath("commit.time").description("Timestamp of the commit, if any.")
-										.type(JsonFieldType.VARIES),
-								fieldWithPath("commit.id").description("ID of the commit, if any.")),
-						responseFields(beneathPath("build"),
-								fieldWithPath("artifact").description("Artifact ID of the application, if any.")
-										.optional(),
-								fieldWithPath("group").description("Group ID of the application, if any.").optional(),
-								fieldWithPath("name").description("Name of the application, if any.")
-										.type(JsonFieldType.STRING).optional(),
-								fieldWithPath("version").description("Version of the application, if any.").optional(),
-								fieldWithPath("time")
-										.description("Timestamp of when the application was built, if any.")
-										.type(JsonFieldType.VARIES).optional())));
+		this.mockMvc.perform(get("/actuator/info"))
+			.andExpect(status().isOk())
+			.andDo(MockMvcRestDocumentation.document("info",
+					responseFields(beneathPath("git"),
+							fieldWithPath("branch").description("Name of the Git branch, if any."),
+							fieldWithPath("commit").description("Details of the Git commit, if any."),
+							fieldWithPath("commit.time").description("Timestamp of the commit, if any.")
+								.type(JsonFieldType.VARIES),
+							fieldWithPath("commit.id").description("ID of the commit, if any.")),
+					responseFields(beneathPath("build"),
+							fieldWithPath("artifact").description("Artifact ID of the application, if any.").optional(),
+							fieldWithPath("group").description("Group ID of the application, if any.").optional(),
+							fieldWithPath("name").description("Name of the application, if any.")
+								.type(JsonFieldType.STRING)
+								.optional(),
+							fieldWithPath("version").description("Version of the application, if any.").optional(),
+							fieldWithPath("time").description("Timestamp of when the application was built, if any.")
+								.type(JsonFieldType.VARIES)
+								.optional())));
 	}
 
 	@Configuration(proxyBeanMethods = false)

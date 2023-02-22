@@ -421,7 +421,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		String key = BeanFactoryInitializationAotContribution.class.getName();
 		LoggerContext context = getLoggerContext();
 		BeanFactoryInitializationAotContribution contribution = (BeanFactoryInitializationAotContribution) context
-				.getObject(key);
+			.getObject(key);
 		context.removeObject(key);
 		return contribution;
 	}

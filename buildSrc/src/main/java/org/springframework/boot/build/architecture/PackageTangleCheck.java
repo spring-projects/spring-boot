@@ -61,7 +61,7 @@ public abstract class PackageTangleCheck extends DefaultTask {
 	@TaskAction
 	void checkForPackageTangles() throws IOException {
 		JavaClasses javaClasses = new ClassFileImporter()
-				.importPaths(this.classes.getFiles().stream().map(File::toPath).collect(Collectors.toList()));
+			.importPaths(this.classes.getFiles().stream().map(File::toPath).collect(Collectors.toList()));
 		SliceRule freeOfCycles = SlicesRuleDefinition.slices().matching("(**)").should().beFreeOfCycles();
 		EvaluationResult result = freeOfCycles.evaluate(javaClasses);
 		File outputFile = getOutputDirectory().file("failure-report.txt").get().getAsFile();

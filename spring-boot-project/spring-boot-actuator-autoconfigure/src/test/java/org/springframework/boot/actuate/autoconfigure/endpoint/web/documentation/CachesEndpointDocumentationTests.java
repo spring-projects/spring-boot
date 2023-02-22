@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,38 +56,42 @@ class CachesEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 			fieldWithPath("target").description("Fully qualified name of the native cache."));
 
 	private static final List<ParameterDescriptor> queryParameters = Collections
-			.singletonList(parameterWithName("cacheManager").description(
-					"Name of the cacheManager to qualify the cache. May be omitted if the cache name is unique.")
-					.optional());
+		.singletonList(parameterWithName("cacheManager")
+			.description("Name of the cacheManager to qualify the cache. May be omitted if the cache name is unique.")
+			.optional());
 
 	@Test
 	void allCaches() throws Exception {
-		this.mockMvc.perform(get("/actuator/caches")).andExpect(status().isOk())
-				.andDo(MockMvcRestDocumentation.document("caches/all",
-						responseFields(fieldWithPath("cacheManagers").description("Cache managers keyed by id."),
-								fieldWithPath("cacheManagers.*.caches")
-										.description("Caches in the application context keyed by name."))
-												.andWithPrefix("cacheManagers.*.caches.*.", fieldWithPath("target")
-														.description("Fully qualified name of the native cache."))));
+		this.mockMvc.perform(get("/actuator/caches"))
+			.andExpect(status().isOk())
+			.andDo(MockMvcRestDocumentation.document("caches/all",
+					responseFields(fieldWithPath("cacheManagers").description("Cache managers keyed by id."),
+							fieldWithPath("cacheManagers.*.caches")
+								.description("Caches in the application context keyed by name."))
+						.andWithPrefix("cacheManagers.*.caches.*.",
+								fieldWithPath("target").description("Fully qualified name of the native cache."))));
 	}
 
 	@Test
 	void namedCache() throws Exception {
-		this.mockMvc.perform(get("/actuator/caches/cities")).andExpect(status().isOk()).andDo(MockMvcRestDocumentation
-				.document("caches/named", queryParameters(queryParameters), responseFields(levelFields)));
+		this.mockMvc.perform(get("/actuator/caches/cities"))
+			.andExpect(status().isOk())
+			.andDo(MockMvcRestDocumentation.document("caches/named", queryParameters(queryParameters),
+					responseFields(levelFields)));
 	}
 
 	@Test
 	void evictAllCaches() throws Exception {
-		this.mockMvc.perform(delete("/actuator/caches")).andExpect(status().isNoContent())
-				.andDo(MockMvcRestDocumentation.document("caches/evict-all"));
+		this.mockMvc.perform(delete("/actuator/caches"))
+			.andExpect(status().isNoContent())
+			.andDo(MockMvcRestDocumentation.document("caches/evict-all"));
 	}
 
 	@Test
 	void evictNamedCache() throws Exception {
 		this.mockMvc.perform(delete("/actuator/caches/countries?cacheManager=anotherCacheManager"))
-				.andExpect(status().isNoContent())
-				.andDo(MockMvcRestDocumentation.document("caches/evict-named", queryParameters(queryParameters)));
+			.andExpect(status().isNoContent())
+			.andDo(MockMvcRestDocumentation.document("caches/evict-named", queryParameters(queryParameters)));
 	}
 
 	@Configuration(proxyBeanMethods = false)

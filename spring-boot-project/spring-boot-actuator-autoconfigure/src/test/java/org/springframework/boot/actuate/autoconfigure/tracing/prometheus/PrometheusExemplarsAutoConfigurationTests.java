@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,36 +45,37 @@ import static org.mockito.Mockito.mock;
 class PrometheusExemplarsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withPropertyValues("management.tracing.sampling.probability=1.0",
-					"management.metrics.distribution.percentiles-histogram.all=true")
-			.with(MetricsRun.limitedTo(PrometheusMetricsExportAutoConfiguration.class))
-			.withConfiguration(AutoConfigurations.of(PrometheusExemplarsAutoConfiguration.class,
-					ObservationAutoConfiguration.class, BraveAutoConfiguration.class,
-					MicrometerTracingAutoConfiguration.class));
+		.withPropertyValues("management.tracing.sampling.probability=1.0",
+				"management.metrics.distribution.percentiles-histogram.all=true")
+		.with(MetricsRun.limitedTo(PrometheusMetricsExportAutoConfiguration.class))
+		.withConfiguration(
+				AutoConfigurations.of(PrometheusExemplarsAutoConfiguration.class, ObservationAutoConfiguration.class,
+						BraveAutoConfiguration.class, MicrometerTracingAutoConfiguration.class));
 
 	@Test
 	void shouldNotSupplyBeansIfTracingIsDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(SpanContextSupplier.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(SpanContextSupplier.class));
 	}
 
 	@Test
 	void shouldNotSupplyBeansIfPrometheusSupportIsMissing() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("io.prometheus.client.exemplars"))
-				.run((context) -> assertThat(context).doesNotHaveBean(SpanContextSupplier.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(SpanContextSupplier.class));
 	}
 
 	@Test
 	void shouldNotSupplyBeansIfMicrometerTracingIsMissing() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("io.micrometer.tracing"))
-				.run((context) -> assertThat(context).doesNotHaveBean(SpanContextSupplier.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(SpanContextSupplier.class));
 	}
 
 	@Test
 	void shouldSupplyCustomBeans() {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(SpanContextSupplier.class)
-						.getBean(SpanContextSupplier.class).isSameAs(CustomConfiguration.SUPPLIER));
+			.run((context) -> assertThat(context).hasSingleBean(SpanContextSupplier.class)
+				.getBean(SpanContextSupplier.class)
+				.isSameAs(CustomConfiguration.SUPPLIER));
 	}
 
 	@Test
@@ -85,8 +86,9 @@ class PrometheusExemplarsAutoConfigurationTests {
 			Observation.start("test.observation", observationRegistry).stop();
 			PrometheusMeterRegistry prometheusMeterRegistry = context.getBean(PrometheusMeterRegistry.class);
 			String openMetricsOutput = prometheusMeterRegistry.scrape(TextFormat.CONTENT_TYPE_OPENMETRICS_100);
-			assertThat(openMetricsOutput).contains("test_observation_seconds_bucket").containsOnlyOnce("trace_id=")
-					.containsOnlyOnce("span_id=");
+			assertThat(openMetricsOutput).contains("test_observation_seconds_bucket")
+				.containsOnlyOnce("trace_id=")
+				.containsOnlyOnce("span_id=");
 		});
 	}
 

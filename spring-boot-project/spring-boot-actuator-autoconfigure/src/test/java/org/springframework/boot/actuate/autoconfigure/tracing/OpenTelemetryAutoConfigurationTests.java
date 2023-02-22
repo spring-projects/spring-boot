@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ import static org.mockito.Mockito.mock;
 class OpenTelemetryAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(OpenTelemetryAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(OpenTelemetryAutoConfiguration.class));
 
 	@Test
 	void shouldSupplyBeans() {
@@ -159,13 +159,13 @@ class OpenTelemetryAutoConfigurationTests {
 	@Test
 	void shouldNotSupplySlf4jBaggageEventListenerWhenBaggageCorrelationDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.baggage.correlation.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(Slf4JBaggageEventListener.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(Slf4JBaggageEventListener.class));
 	}
 
 	@Test
 	void shouldNotSupplySlf4JBaggageEventListenerWhenBaggageDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(Slf4JBaggageEventListener.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(Slf4JBaggageEventListener.class));
 	}
 
 	@Test
@@ -178,12 +178,13 @@ class OpenTelemetryAutoConfigurationTests {
 
 	@Test
 	void shouldSupplyB3PropagationIfPropagationPropertySetAndBaggageDisabled() {
-		this.contextRunner.withPropertyValues("management.tracing.propagation.type=B3",
-				"management.tracing.baggage.enabled=false").run((context) -> {
-					assertThat(context).hasSingleBean(B3Propagator.class);
-					assertThat(context).hasBean("b3TextMapPropagator");
-					assertThat(context).doesNotHaveBean(W3CTraceContextPropagator.class);
-				});
+		this.contextRunner
+			.withPropertyValues("management.tracing.propagation.type=B3", "management.tracing.baggage.enabled=false")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(B3Propagator.class);
+				assertThat(context).hasBean("b3TextMapPropagator");
+				assertThat(context).doesNotHaveBean(W3CTraceContextPropagator.class);
+			});
 	}
 
 	@Test
@@ -191,7 +192,7 @@ class OpenTelemetryAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("management.tracing.baggage.remote-fields=foo").run((context) -> {
 			assertThat(context).hasBean("w3cTextMapPropagatorWithBaggage");
 			Collection<String> allFields = context.getBean("w3cTextMapPropagatorWithBaggage", TextMapPropagator.class)
-					.fields();
+				.fields();
 			assertThat(allFields).containsExactly("traceparent", "tracestate", "baggage", "foo");
 		});
 	}
@@ -199,7 +200,7 @@ class OpenTelemetryAutoConfigurationTests {
 	@Test
 	void shouldSupplyW3CPropagationWithoutBaggageWhenDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false")
-				.run((context) -> assertThat(context).hasBean("w3cTextMapPropagatorWithoutBaggage"));
+			.run((context) -> assertThat(context).hasBean("w3cTextMapPropagatorWithoutBaggage"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

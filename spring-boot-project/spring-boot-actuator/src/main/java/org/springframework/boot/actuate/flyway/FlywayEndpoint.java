@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ public class FlywayEndpoint {
 		while (target != null) {
 			Map<String, FlywayDescriptor> flywayBeans = new HashMap<>();
 			target.getBeansOfType(Flyway.class)
-					.forEach((name, flyway) -> flywayBeans.put(name, new FlywayDescriptor(flyway.info().all())));
+				.forEach((name, flyway) -> flywayBeans.put(name, new FlywayDescriptor(flyway.info().all())));
 			ApplicationContext parent = target.getParent();
 			contextFlywayBeans.put(target.getId(),
 					new ContextFlywayBeansDescriptor(flywayBeans, (parent != null) ? parent.getId() : null));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,9 +87,9 @@ class DatabaseInitializationDependencyConfigurerTests {
 					context.registerBeanDefinition("alpha", alpha);
 					context.registerBeanDefinition("bravo", bravo);
 					given(MockDatabaseInitializerDetector.instance.detect(context.getBeanFactory()))
-							.willReturn(Collections.singleton("alpha"));
+						.willReturn(Collections.singleton("alpha"));
 					given(MockedDependsOnDatabaseInitializationDetector.instance.detect(context.getBeanFactory()))
-							.willReturn(Collections.singleton("bravo"));
+						.willReturn(Collections.singleton("bravo"));
 					context.refresh();
 					assertThat(DependsOnCaptor.dependsOn).hasEntrySatisfying("bravo",
 							(dependencies) -> assertThat(dependencies).containsExactly("alpha"));
@@ -107,7 +107,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 					context.refresh();
 					assertThat(ConstructorInjectionDatabaseInitializerDetector.environment).isEqualTo(this.environment);
 					assertThat(ConstructorInjectionDependsOnDatabaseInitializationDetector.environment)
-							.isEqualTo(this.environment);
+						.isEqualTo(this.environment);
 				});
 	}
 
@@ -120,16 +120,16 @@ class DatabaseInitializationDependencyConfigurerTests {
 					context.registerBeanDefinition("alpha", alpha);
 					context.registerBeanDefinition("bravo", bravo);
 					given(MockDatabaseInitializerDetector.instance.detect(context.getBeanFactory()))
-							.willReturn(Collections.singleton("alpha"));
+						.willReturn(Collections.singleton("alpha"));
 					given(MockedDependsOnDatabaseInitializationDetector.instance.detect(context.getBeanFactory()))
-							.willReturn(Collections.singleton("bravo"));
+						.willReturn(Collections.singleton("bravo"));
 					context.register(DependencyConfigurerConfiguration.class);
 					context.refresh();
 					assertThat(alpha.getAttribute(DatabaseInitializerDetector.class.getName()))
-							.isEqualTo(MockDatabaseInitializerDetector.class.getName());
+						.isEqualTo(MockDatabaseInitializerDetector.class.getName());
 					assertThat(bravo.getAttribute(DatabaseInitializerDetector.class.getName())).isNull();
-					then(MockDatabaseInitializerDetector.instance).should().detectionComplete(context.getBeanFactory(),
-							Collections.singleton("alpha"));
+					then(MockDatabaseInitializerDetector.instance).should()
+						.detectionComplete(context.getBeanFactory(), Collections.singleton("alpha"));
 					assertThat(bravo.getDependsOn()).containsExactly("alpha");
 				});
 	}
@@ -147,13 +147,13 @@ class DatabaseInitializationDependencyConfigurerTests {
 						MockedDependsOnDatabaseInitializationDetector.class),
 				(context) -> {
 					given(MockDatabaseInitializerDetector.instance.detect(context.getBeanFactory()))
-							.willReturn(Collections.singleton("alpha"));
+						.willReturn(Collections.singleton("alpha"));
 					given(OrderedNearLowestMockDatabaseInitializerDetector.instance.detect(context.getBeanFactory()))
-							.willReturn(new LinkedHashSet<>(Arrays.asList("bravo1", "bravo2")));
+						.willReturn(new LinkedHashSet<>(Arrays.asList("bravo1", "bravo2")));
 					given(OrderedLowestMockDatabaseInitializerDetector.instance.detect(context.getBeanFactory()))
-							.willReturn(new LinkedHashSet<>(Arrays.asList("charlie")));
+						.willReturn(new LinkedHashSet<>(Arrays.asList("charlie")));
 					given(MockedDependsOnDatabaseInitializationDetector.instance.detect(context.getBeanFactory()))
-							.willReturn(Collections.singleton("delta"));
+						.willReturn(Collections.singleton("delta"));
 					context.registerBeanDefinition("alpha", alpha);
 					context.registerBeanDefinition("bravo1", bravo1);
 					context.registerBeanDefinition("bravo2", bravo2);
@@ -326,7 +326,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 			}
 			else if (DependsOnDatabaseInitializationDetector.class.isAssignableFrom(detector)) {
 				this.dependsOnDatabaseInitializationDetectors
-						.add((Class<DependsOnDatabaseInitializationDetector>) detector);
+					.add((Class<DependsOnDatabaseInitializationDetector>) detector);
 			}
 			else {
 				throw new IllegalArgumentException("Unsupported detector type '" + detector.getName() + "'");

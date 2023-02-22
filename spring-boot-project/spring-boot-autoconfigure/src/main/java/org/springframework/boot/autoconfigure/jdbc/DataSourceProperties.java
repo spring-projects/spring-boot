@@ -120,8 +120,12 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * this instance
 	 */
 	public DataSourceBuilder<?> initializeDataSourceBuilder() {
-		return DataSourceBuilder.create(getClassLoader()).type(getType()).driverClassName(determineDriverClassName())
-				.url(determineUrl()).username(determineUsername()).password(determinePassword());
+		return DataSourceBuilder.create(getClassLoader())
+			.type(getType())
+			.driverClassName(determineDriverClassName())
+			.url(determineUrl())
+			.username(determineUsername())
+			.password(determinePassword());
 	}
 
 	public boolean isGenerateUniqueName() {

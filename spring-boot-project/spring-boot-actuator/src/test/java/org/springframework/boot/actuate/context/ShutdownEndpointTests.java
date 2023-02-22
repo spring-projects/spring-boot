@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ class ShutdownEndpointTests {
 	@Test
 	void shutdown() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withUserConfiguration(EndpointConfig.class);
+			.withUserConfiguration(EndpointConfig.class);
 		contextRunner.run((context) -> {
 			EndpointConfig config = context.getBean(EndpointConfig.class);
 			ClassLoader previousTccl = Thread.currentThread().getContextClassLoader();
@@ -69,7 +69,9 @@ class ShutdownEndpointTests {
 	@Test
 	void shutdownChild() throws Exception {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(EmptyConfig.class)
-				.child(EndpointConfig.class).web(WebApplicationType.NONE).run();
+			.child(EndpointConfig.class)
+			.web(WebApplicationType.NONE)
+			.run();
 		CountDownLatch latch = context.getBean(EndpointConfig.class).latch;
 		assertThat(context.getBean(ShutdownEndpoint.class).shutdown().getMessage()).startsWith("Shutting down");
 		assertThat(context.isActive()).isTrue();
@@ -79,7 +81,9 @@ class ShutdownEndpointTests {
 	@Test
 	void shutdownParent() throws Exception {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder(EndpointConfig.class)
-				.child(EmptyConfig.class).web(WebApplicationType.NONE).run();
+			.child(EmptyConfig.class)
+			.web(WebApplicationType.NONE)
+			.run();
 		CountDownLatch parentLatch = context.getBean(EndpointConfig.class).latch;
 		CountDownLatch childLatch = context.getBean(EmptyConfig.class).latch;
 		assertThat(context.getBean(ShutdownEndpoint.class).shutdown().getMessage()).startsWith("Shutting down");

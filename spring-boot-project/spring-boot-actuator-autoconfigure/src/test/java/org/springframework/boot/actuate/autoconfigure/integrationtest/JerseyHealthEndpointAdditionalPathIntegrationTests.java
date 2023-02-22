@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,13 +44,14 @@ class JerseyHealthEndpointAdditionalPathIntegrationTests extends
 
 	JerseyHealthEndpointAdditionalPathIntegrationTests() {
 		super(new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, JerseyAutoConfiguration.class,
-						EndpointAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
-						WebEndpointAutoConfiguration.class, JerseyAutoConfiguration.class,
-						ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
-						HealthEndpointAutoConfiguration.class, DiskSpaceHealthContributorAutoConfiguration.class))
-				.withInitializer(new ServerPortInfoApplicationContextInitializer())
-				.withClassLoader(new FilteredClassLoader(DispatcherServlet.class)).withPropertyValues("server.port=0"));
+			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, JerseyAutoConfiguration.class,
+					EndpointAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class, JerseyAutoConfiguration.class,
+					ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
+					HealthEndpointAutoConfiguration.class, DiskSpaceHealthContributorAutoConfiguration.class))
+			.withInitializer(new ServerPortInfoApplicationContextInitializer())
+			.withClassLoader(new FilteredClassLoader(DispatcherServlet.class))
+			.withPropertyValues("server.port=0"));
 	}
 
 }

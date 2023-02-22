@@ -133,8 +133,8 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void testNonexistentConfigLocation() {
 		this.loggingSystem.beforeInitialize();
-		assertThatIllegalStateException().isThrownBy(
-				() -> this.loggingSystem.initialize(null, "classpath:logging-nonexistent.properties", null));
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.loggingSystem.initialize(null, "classpath:logging-nonexistent.properties", null));
 	}
 
 	@Test
@@ -182,7 +182,7 @@ class JavaLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
 		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(getClass().getName());
 		assertThat(configuration)
-				.isEqualTo(new LoggerConfiguration(getClass().getName(), LogLevel.DEBUG, LogLevel.DEBUG));
+			.isEqualTo(new LoggerConfiguration(getClass().getName(), LogLevel.DEBUG, LogLevel.DEBUG));
 	}
 
 }

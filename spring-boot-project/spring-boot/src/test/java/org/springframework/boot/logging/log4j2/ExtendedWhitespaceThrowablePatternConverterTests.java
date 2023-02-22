@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ExtendedWhitespaceThrowablePatternConverterTests {
 
 	private final ThrowablePatternConverter converter = ExtendedWhitespaceThrowablePatternConverter
-			.newInstance(new DefaultConfiguration(), new String[] {});
+		.newInstance(new DefaultConfiguration(), new String[] {});
 
 	@Test
 	void noStackTrace() {

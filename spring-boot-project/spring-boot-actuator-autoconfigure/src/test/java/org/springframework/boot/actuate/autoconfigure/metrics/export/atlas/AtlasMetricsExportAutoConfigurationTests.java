@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class AtlasMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(AtlasMetricsExportAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(AtlasMetricsExportAutoConfiguration.class));
 
 	@Test
 	void backsOffWithoutAClock() {
@@ -46,36 +46,41 @@ class AtlasMetricsExportAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresItsConfigAndMeterRegistry() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(AtlasMeterRegistry.class).hasSingleBean(AtlasConfig.class));
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(AtlasMeterRegistry.class)
+				.hasSingleBean(AtlasConfig.class));
 	}
 
 	@Test
 	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.defaults.metrics.export.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(AtlasMeterRegistry.class)
-						.doesNotHaveBean(AtlasConfig.class));
+			.withPropertyValues("management.defaults.metrics.export.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(AtlasMeterRegistry.class)
+				.doesNotHaveBean(AtlasConfig.class));
 	}
 
 	@Test
 	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.atlas.metrics.export.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(AtlasMeterRegistry.class)
-						.doesNotHaveBean(AtlasConfig.class));
+			.withPropertyValues("management.atlas.metrics.export.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(AtlasMeterRegistry.class)
+				.doesNotHaveBean(AtlasConfig.class));
 	}
 
 	@Test
 	void allowsCustomConfigToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(AtlasMeterRegistry.class).hasSingleBean(AtlasConfig.class).hasBean("customConfig"));
+		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(AtlasMeterRegistry.class)
+				.hasSingleBean(AtlasConfig.class)
+				.hasBean("customConfig"));
 	}
 
 	@Test
 	void allowsCustomRegistryToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(AtlasMeterRegistry.class).hasBean("customRegistry").hasSingleBean(AtlasConfig.class));
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(AtlasMeterRegistry.class)
+				.hasBean("customRegistry")
+				.hasSingleBean(AtlasConfig.class));
 	}
 
 	@Test

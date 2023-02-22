@@ -102,7 +102,7 @@ abstract class AbstractJsonParserTests {
 	@Test
 	void mapOfLists() {
 		Map<String, Object> map = this.parser
-				.parseMap("{\"foo\":[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]}");
+			.parseMap("{\"foo\":[{\"foo\":\"bar\",\"spam\":1},{\"foo\":\"baz\",\"spam\":2}]}");
 		assertThat(map).hasSize(1);
 		assertThat(((List<Object>) map.get("foo"))).hasSize(2);
 		assertThat(map.get("foo")).asList().allMatch(Map.class::isInstance);
@@ -111,8 +111,8 @@ abstract class AbstractJsonParserTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	void nestedLeadingAndTrailingWhitespace() {
-		Map<String, Object> map = this.parser.parseMap(
-				" {\"foo\": [ { \"foo\" : \"bar\" , \"spam\" : 1 } , { \"foo\" : \"baz\" , \"spam\" : 2 } ] } ");
+		Map<String, Object> map = this.parser
+			.parseMap(" {\"foo\": [ { \"foo\" : \"bar\" , \"spam\" : 1 } , { \"foo\" : \"baz\" , \"spam\" : 2 } ] } ");
 		assertThat(map).hasSize(1);
 		assertThat(((List<Object>) map.get("foo"))).hasSize(2);
 		assertThat(map.get("foo")).asList().allMatch(Map.class::isInstance);
@@ -182,7 +182,7 @@ abstract class AbstractJsonParserTests {
 	@Test
 	void listWithMalformedMap() {
 		assertThatExceptionOfType(JsonParseException.class)
-				.isThrownBy(() -> this.parser.parseList("[tru,erqett,{\"foo\":fatrue,true,true,true,tr''ue}]"));
+			.isThrownBy(() -> this.parser.parseList("[tru,erqett,{\"foo\":fatrue,true,true,true,tr''ue}]"));
 	}
 
 	@Test
@@ -194,8 +194,9 @@ abstract class AbstractJsonParserTests {
 	void listWithRepeatedOpenArray() throws IOException {
 		String input = StreamUtils.copyToString(
 				AbstractJsonParserTests.class.getResourceAsStream("repeated-open-array.txt"), StandardCharsets.UTF_8);
-		assertThatExceptionOfType(JsonParseException.class).isThrownBy(() -> this.parser.parseList(input)).havingCause()
-				.withMessageContaining("too deeply nested");
+		assertThatExceptionOfType(JsonParseException.class).isThrownBy(() -> this.parser.parseList(input))
+			.havingCause()
+			.withMessageContaining("too deeply nested");
 	}
 
 	@Test // gh-31869

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,8 +57,9 @@ public class ApplicationRunner extends DefaultTask {
 
 	private final Property<String> expectedLogging = getProject().getObjects().property(String.class);
 
-	private final Property<String> applicationJar = getProject().getObjects().property(String.class)
-			.convention("/opt/apps/myapp.jar");
+	private final Property<String> applicationJar = getProject().getObjects()
+		.property(String.class)
+		.convention("/opt/apps/myapp.jar");
 
 	private final Map<String, String> normalizations = new HashMap<>();
 
@@ -118,13 +119,17 @@ public class ApplicationRunner extends DefaultTask {
 		File executable = Jvm.current().getExecutable("java");
 		command.add(executable.getAbsolutePath());
 		command.add("-cp");
-		command.add(this.classpath.getFiles().stream().map(File::getAbsolutePath)
-				.collect(Collectors.joining(File.pathSeparator)));
+		command.add(this.classpath.getFiles()
+			.stream()
+			.map(File::getAbsolutePath)
+			.collect(Collectors.joining(File.pathSeparator)));
 		command.add(this.mainClass.get());
 		command.addAll(this.args.get());
 		File outputFile = this.output.getAsFile().get();
-		Process process = new ProcessBuilder().redirectOutput(outputFile).redirectError(outputFile).command(command)
-				.start();
+		Process process = new ProcessBuilder().redirectOutput(outputFile)
+			.redirectError(outputFile)
+			.command(command)
+			.start();
 		awaitLogging(process);
 		process.destroy();
 		normalizeLogging();

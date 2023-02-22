@@ -52,8 +52,9 @@ class DataSourceBuilderRuntimeHints implements RuntimeHintsRegistrar {
 	@Override
 	public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
 		for (String typeName : TYPE_NAMES) {
-			hints.reflection().registerTypeIfPresent(classLoader, typeName,
-					(hint) -> hint.withMembers(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
+			hints.reflection()
+				.registerTypeIfPresent(classLoader, typeName,
+						(hint) -> hint.withMembers(MemberCategory.INVOKE_PUBLIC_CONSTRUCTORS));
 		}
 	}
 

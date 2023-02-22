@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ class OnDatabaseInitializationConditionTests {
 	void getMatchOutcomeWithPropertyNoSetMatches() {
 		OnDatabaseInitializationCondition condition = new OnDatabaseInitializationCondition("Test", "test.init-mode");
 		ConditionOutcome outcome = condition
-				.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.another", "noise")), null);
+			.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.another", "noise")), null);
 		assertThat(outcome.isMatch()).isTrue();
 	}
 
@@ -46,7 +46,7 @@ class OnDatabaseInitializationConditionTests {
 	void getMatchOutcomeWithPropertySetToAlwaysMatches() {
 		OnDatabaseInitializationCondition condition = new OnDatabaseInitializationCondition("Test", "test.init-mode");
 		ConditionOutcome outcome = condition
-				.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.init-mode=always")), null);
+			.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.init-mode=always")), null);
 		assertThat(outcome.isMatch()).isTrue();
 	}
 
@@ -54,7 +54,7 @@ class OnDatabaseInitializationConditionTests {
 	void getMatchOutcomeWithPropertySetToEmbeddedMatches() {
 		OnDatabaseInitializationCondition condition = new OnDatabaseInitializationCondition("Test", "test.init-mode");
 		ConditionOutcome outcome = condition
-				.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.init-mode=embedded")), null);
+			.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.init-mode=embedded")), null);
 		assertThat(outcome.isMatch()).isTrue();
 	}
 
@@ -62,7 +62,7 @@ class OnDatabaseInitializationConditionTests {
 	void getMatchOutcomeWithPropertySetToNeverDoesNotMatch() {
 		OnDatabaseInitializationCondition condition = new OnDatabaseInitializationCondition("Test", "test.init-mode");
 		ConditionOutcome outcome = condition
-				.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.init-mode=never")), null);
+			.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.init-mode=never")), null);
 		assertThat(outcome.isMatch()).isFalse();
 	}
 
@@ -70,7 +70,7 @@ class OnDatabaseInitializationConditionTests {
 	void getMatchOutcomeWithPropertySetToEmptyStringIsIgnored() {
 		OnDatabaseInitializationCondition condition = new OnDatabaseInitializationCondition("Test", "test.init-mode");
 		ConditionOutcome outcome = condition
-				.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.init-mode")), null);
+			.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.init-mode")), null);
 		assertThat(outcome.isMatch()).isTrue();
 	}
 
@@ -79,7 +79,7 @@ class OnDatabaseInitializationConditionTests {
 		OnDatabaseInitializationCondition condition = new OnDatabaseInitializationCondition("Test", "test.init-mode",
 				"test.schema-mode", "test.init-schema-mode");
 		ConditionOutcome outcome = condition
-				.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.init-schema-mode=embedded")), null);
+			.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.init-schema-mode=embedded")), null);
 		assertThat(outcome.isMatch()).isTrue();
 		assertThat(outcome.getMessage()).isEqualTo("TestDatabase Initialization test.init-schema-mode is EMBEDDED");
 	}
@@ -88,7 +88,7 @@ class OnDatabaseInitializationConditionTests {
 	void getMatchOutcomeHasDedicatedDescription() {
 		OnDatabaseInitializationCondition condition = new OnDatabaseInitializationCondition("Test", "test.init-mode");
 		ConditionOutcome outcome = condition
-				.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.init-mode=embedded")), null);
+			.getMatchOutcome(mockConditionContext(TestPropertyValues.of("test.init-mode=embedded")), null);
 		assertThat(outcome.getMessage()).isEqualTo("TestDatabase Initialization test.init-mode is EMBEDDED");
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2022 the original author or authors.
+ * Copyright 2020-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,9 @@ class GraphQlTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
 		return MergedAnnotations.from(testClass, MergedAnnotations.SearchStrategy.INHERITED_ANNOTATIONS)
-				.get(GraphQlTest.class).getValue("properties", String[].class).orElse(null);
+			.get(GraphQlTest.class)
+			.getValue("properties", String[].class)
+			.orElse(null);
 	}
 
 }

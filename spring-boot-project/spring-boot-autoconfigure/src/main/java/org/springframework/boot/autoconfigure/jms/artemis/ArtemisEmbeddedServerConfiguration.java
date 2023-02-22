@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,15 +66,16 @@ class ArtemisEmbeddedServerConfiguration {
 			ObjectProvider<ArtemisConfigurationCustomizer> configurationCustomizers) {
 		for (JMSQueueConfiguration queueConfiguration : jmsConfiguration.getQueueConfigurations()) {
 			String queueName = queueConfiguration.getName();
-			configuration.addAddressConfiguration(
-					new CoreAddressConfiguration().setName(queueName).addRoutingType(RoutingType.ANYCAST)
-							.addQueueConfiguration(new QueueConfiguration(queueName).setAddress(queueName)
-									.setFilterString(queueConfiguration.getSelector())
-									.setDurable(queueConfiguration.isDurable()).setRoutingType(RoutingType.ANYCAST)));
+			configuration.addAddressConfiguration(new CoreAddressConfiguration().setName(queueName)
+				.addRoutingType(RoutingType.ANYCAST)
+				.addQueueConfiguration(new QueueConfiguration(queueName).setAddress(queueName)
+					.setFilterString(queueConfiguration.getSelector())
+					.setDurable(queueConfiguration.isDurable())
+					.setRoutingType(RoutingType.ANYCAST)));
 		}
 		for (TopicConfiguration topicConfiguration : jmsConfiguration.getTopicConfigurations()) {
 			configuration.addAddressConfiguration(new CoreAddressConfiguration().setName(topicConfiguration.getName())
-					.addRoutingType(RoutingType.MULTICAST));
+				.addRoutingType(RoutingType.MULTICAST));
 		}
 		configurationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(configuration));
 		EmbeddedActiveMQ embeddedActiveMq = new EmbeddedActiveMQ();

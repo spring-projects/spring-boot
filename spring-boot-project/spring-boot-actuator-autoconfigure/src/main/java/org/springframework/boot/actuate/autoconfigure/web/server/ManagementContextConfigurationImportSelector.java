@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,8 @@ class ManagementContextConfigurationImportSelector implements DeferredImportSele
 	@Override
 	public String[] selectImports(AnnotationMetadata metadata) {
 		ManagementContextType contextType = (ManagementContextType) metadata
-				.getAnnotationAttributes(EnableManagementContext.class.getName()).get("value");
+			.getAnnotationAttributes(EnableManagementContext.class.getName())
+			.get("value");
 		// Find all management context configuration classes, filtering duplicates
 		List<ManagementConfiguration> configurations = getConfigurations();
 		OrderComparator.sort(configurations);
@@ -118,7 +119,7 @@ class ManagementContextConfigurationImportSelector implements DeferredImportSele
 
 		private ManagementContextType readContextType(AnnotationMetadata annotationMetadata) {
 			Map<String, Object> annotationAttributes = annotationMetadata
-					.getAnnotationAttributes(ManagementContextConfiguration.class.getName());
+				.getAnnotationAttributes(ManagementContextConfiguration.class.getName());
 			return (annotationAttributes != null) ? (ManagementContextType) annotationAttributes.get("value")
 					: ManagementContextType.ANY;
 		}

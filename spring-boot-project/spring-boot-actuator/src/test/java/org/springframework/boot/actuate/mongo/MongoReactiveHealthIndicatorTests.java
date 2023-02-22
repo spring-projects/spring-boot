@@ -58,7 +58,7 @@ class MongoReactiveHealthIndicatorTests {
 	void testMongoIsDown() {
 		ReactiveMongoTemplate reactiveMongoTemplate = mock(ReactiveMongoTemplate.class);
 		given(reactiveMongoTemplate.executeCommand("{ isMaster: 1 }"))
-				.willThrow(new MongoException("Connection failed"));
+			.willThrow(new MongoException("Connection failed"));
 		MongoReactiveHealthIndicator mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(
 				reactiveMongoTemplate);
 		Mono<Health> health = mongoReactiveHealthIndicator.health();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ class EmbeddedServletContainerWarPackagingIntegrationTests {
 	@TestTemplate
 	void applicationClassesAreNotAvailableViaHttp(RestTemplate rest) {
 		ResponseEntity<String> entity = rest
-				.getForEntity("/WEB-INF/classes/com/example/ResourceHandlingApplication.class", String.class);
+			.getForEntity("/WEB-INF/classes/com/example/ResourceHandlingApplication.class", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
@@ -98,14 +98,14 @@ class EmbeddedServletContainerWarPackagingIntegrationTests {
 		ResponseEntity<String> entity = rest.getForEntity("/resourcePaths", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(readLines(entity.getBody()))
-				.noneMatch((resourcePath) -> resourcePath.startsWith("/org/springframework/boot/loader"));
+			.noneMatch((resourcePath) -> resourcePath.startsWith("/org/springframework/boot/loader"));
 	}
 
 	@TestTemplate
 	void conditionalOnWarDeploymentBeanIsNotAvailableForEmbeddedServer(RestTemplate rest) {
 		assertThat(rest.getForEntity("/always", String.class).getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(rest.getForEntity("/conditionalOnWar", String.class).getStatusCode())
-				.isEqualTo(HttpStatus.NOT_FOUND);
+			.isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	private List<String> readLines(String input) {

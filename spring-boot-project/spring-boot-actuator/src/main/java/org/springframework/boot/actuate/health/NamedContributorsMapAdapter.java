@@ -43,8 +43,10 @@ abstract class NamedContributorsMapAdapter<V, C> implements NamedContributors<C>
 		Assert.notNull(map, "Map must not be null");
 		Assert.notNull(valueAdapter, "ValueAdapter must not be null");
 		map.keySet().forEach(this::validateKey);
-		this.map = Collections.unmodifiableMap(map.entrySet().stream().collect(LinkedHashMap::new,
-				(result, entry) -> result.put(entry.getKey(), adapt(entry.getValue(), valueAdapter)), Map::putAll));
+		this.map = Collections.unmodifiableMap(map.entrySet()
+			.stream()
+			.collect(LinkedHashMap::new,
+					(result, entry) -> result.put(entry.getKey(), adapt(entry.getValue(), valueAdapter)), Map::putAll));
 
 	}
 

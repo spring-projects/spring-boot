@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,8 +78,10 @@ class HealthEndpointWebExtensionConfiguration {
 
 	private static ExposableWebEndpoint getHealthEndpoint(WebEndpointsSupplier webEndpointsSupplier) {
 		Collection<ExposableWebEndpoint> webEndpoints = webEndpointsSupplier.getEndpoints();
-		return webEndpoints.stream().filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
-				.findFirst().get();
+		return webEndpoints.stream()
+			.filter((endpoint) -> endpoint.getEndpointId().equals(HealthEndpoint.ID))
+			.findFirst()
+			.get();
 	}
 
 	@ConditionalOnBean(DispatcherServlet.class)
@@ -160,8 +162,10 @@ class HealthEndpointWebExtensionConfiguration {
 			JerseyHealthEndpointAdditionalPathResourceFactory resourceFactory = new JerseyHealthEndpointAdditionalPathResourceFactory(
 					WebServerNamespace.SERVER, this.groups);
 			Collection<Resource> endpointResources = resourceFactory
-					.createEndpointResources(mapping, Collections.singletonList(this.endpoint), null, null, false)
-					.stream().filter(Objects::nonNull).toList();
+				.createEndpointResources(mapping, Collections.singletonList(this.endpoint), null, null, false)
+				.stream()
+				.filter(Objects::nonNull)
+				.toList();
 			register(endpointResources, config);
 		}
 

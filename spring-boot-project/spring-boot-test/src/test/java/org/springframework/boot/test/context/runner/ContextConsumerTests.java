@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ class ContextConsumerTests {
 		ContextConsumer<ApplicationContext> firstConsumer = (context) -> assertThat(predicate.test(42)).isFalse();
 		ContextConsumer<ApplicationContext> secondConsumer = (context) -> assertThat(predicate.test(24)).isFalse();
 		assertThatThrownBy(() -> firstConsumer.andThen(secondConsumer).accept(mock(ApplicationContext.class)))
-				.isInstanceOf(AssertionError.class);
+			.isInstanceOf(AssertionError.class);
 		then(predicate).should().test(42);
 		then(predicate).shouldHaveNoMoreInteractions();
 	}
@@ -70,7 +70,7 @@ class ContextConsumerTests {
 		ContextConsumer<?> consumer = (context) -> {
 		};
 		assertThatIllegalArgumentException().isThrownBy(() -> consumer.andThen(null))
-				.withMessage("After must not be null");
+			.withMessage("After must not be null");
 	}
 
 }

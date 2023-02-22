@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,61 +70,61 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner(
 			AnnotationConfigReactiveWebServerApplicationContext::new)
-					.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class));
 
 	@Test
 	void createFromConfigClass() {
 		this.contextRunner.withUserConfiguration(MockWebServerConfiguration.class, HttpHandlerConfiguration.class)
-				.run((context) -> {
-					assertThat(context.getBeansOfType(ReactiveWebServerFactory.class)).hasSize(1);
-					assertThat(context.getBeansOfType(WebServerFactoryCustomizer.class)).hasSize(2);
-					assertThat(context.getBeansOfType(ReactiveWebServerFactoryCustomizer.class)).hasSize(1);
-				});
+			.run((context) -> {
+				assertThat(context.getBeansOfType(ReactiveWebServerFactory.class)).hasSize(1);
+				assertThat(context.getBeansOfType(WebServerFactoryCustomizer.class)).hasSize(2);
+				assertThat(context.getBeansOfType(ReactiveWebServerFactoryCustomizer.class)).hasSize(1);
+			});
 	}
 
 	@Test
 	void missingHttpHandler() {
 		this.contextRunner.withUserConfiguration(MockWebServerConfiguration.class)
-				.run((context) -> assertThat(context.getStartupFailure())
-						.isInstanceOf(ApplicationContextException.class).rootCause()
-						.hasMessageContaining("missing HttpHandler bean"));
+			.run((context) -> assertThat(context.getStartupFailure()).isInstanceOf(ApplicationContextException.class)
+				.rootCause()
+				.hasMessageContaining("missing HttpHandler bean"));
 	}
 
 	@Test
 	void multipleHttpHandler() {
 		this.contextRunner
-				.withUserConfiguration(MockWebServerConfiguration.class, HttpHandlerConfiguration.class,
-						TooManyHttpHandlers.class)
-				.run((context) -> assertThat(context.getStartupFailure())
-						.isInstanceOf(ApplicationContextException.class).rootCause()
-						.hasMessageContaining("multiple HttpHandler beans : httpHandler,additionalHttpHandler"));
+			.withUserConfiguration(MockWebServerConfiguration.class, HttpHandlerConfiguration.class,
+					TooManyHttpHandlers.class)
+			.run((context) -> assertThat(context.getStartupFailure()).isInstanceOf(ApplicationContextException.class)
+				.rootCause()
+				.hasMessageContaining("multiple HttpHandler beans : httpHandler,additionalHttpHandler"));
 	}
 
 	@Test
 	void customizeReactiveWebServer() {
 		this.contextRunner
-				.withUserConfiguration(MockWebServerConfiguration.class, HttpHandlerConfiguration.class,
-						ReactiveWebServerCustomization.class)
-				.run((context) -> assertThat(context.getBean(MockReactiveWebServerFactory.class).getPort())
-						.isEqualTo(9000));
+			.withUserConfiguration(MockWebServerConfiguration.class, HttpHandlerConfiguration.class,
+					ReactiveWebServerCustomization.class)
+			.run((context) -> assertThat(context.getBean(MockReactiveWebServerFactory.class).getPort())
+				.isEqualTo(9000));
 	}
 
 	@Test
 	void defaultWebServerIsTomcat() {
 		// Tomcat should be chosen over Netty if the Tomcat library is present.
-		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class).withPropertyValues("server.port=0")
-				.run((context) -> assertThat(context.getBean(ReactiveWebServerFactory.class))
-						.isInstanceOf(TomcatReactiveWebServerFactory.class));
+		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class)
+			.withPropertyValues("server.port=0")
+			.run((context) -> assertThat(context.getBean(ReactiveWebServerFactory.class))
+				.isInstanceOf(TomcatReactiveWebServerFactory.class));
 	}
 
 	@Test
 	void tomcatConnectorCustomizerBeanIsAddedToFactory() {
 		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
 				AnnotationConfigReactiveWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(HttpHandlerConfiguration.class,
-								TomcatConnectorCustomizerConfiguration.class)
-						.withPropertyValues("server.port: 0");
+			.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(HttpHandlerConfiguration.class, TomcatConnectorCustomizerConfiguration.class)
+			.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
 			TomcatConnectorCustomizer customizer = context.getBean("connectorCustomizer",
@@ -138,10 +138,10 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	void tomcatConnectorCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
 		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
 				AnnotationConfigReactiveWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(HttpHandlerConfiguration.class,
-								DoubleRegistrationTomcatConnectorCustomizerConfiguration.class)
-						.withPropertyValues("server.port: 0");
+			.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(HttpHandlerConfiguration.class,
+					DoubleRegistrationTomcatConnectorCustomizerConfiguration.class)
+			.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
 			TomcatConnectorCustomizer customizer = context.getBean("connectorCustomizer",
@@ -155,10 +155,9 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	void tomcatContextCustomizerBeanIsAddedToFactory() {
 		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
 				AnnotationConfigReactiveWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(HttpHandlerConfiguration.class,
-								TomcatContextCustomizerConfiguration.class)
-						.withPropertyValues("server.port: 0");
+			.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(HttpHandlerConfiguration.class, TomcatContextCustomizerConfiguration.class)
+			.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
 			TomcatContextCustomizer customizer = context.getBean("contextCustomizer", TomcatContextCustomizer.class);
@@ -171,10 +170,10 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	void tomcatContextCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
 		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
 				AnnotationConfigReactiveWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(HttpHandlerConfiguration.class,
-								DoubleRegistrationTomcatContextCustomizerConfiguration.class)
-						.withPropertyValues("server.port: 0");
+			.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(HttpHandlerConfiguration.class,
+					DoubleRegistrationTomcatContextCustomizerConfiguration.class)
+			.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
 			TomcatContextCustomizer customizer = context.getBean("contextCustomizer", TomcatContextCustomizer.class);
@@ -187,10 +186,9 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	void tomcatProtocolHandlerCustomizerBeanIsAddedToFactory() {
 		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
 				AnnotationConfigReactiveWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(HttpHandlerConfiguration.class,
-								TomcatProtocolHandlerCustomizerConfiguration.class)
-						.withPropertyValues("server.port: 0");
+			.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(HttpHandlerConfiguration.class, TomcatProtocolHandlerCustomizerConfiguration.class)
+			.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
 			TomcatProtocolHandlerCustomizer<?> customizer = context.getBean("protocolHandlerCustomizer",
@@ -204,10 +202,10 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	void tomcatProtocolHandlerCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
 		ReactiveWebApplicationContextRunner runner = new ReactiveWebApplicationContextRunner(
 				AnnotationConfigReactiveWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(HttpHandlerConfiguration.class,
-								DoubleRegistrationTomcatProtocolHandlerCustomizerConfiguration.class)
-						.withPropertyValues("server.port: 0");
+			.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(HttpHandlerConfiguration.class,
+					DoubleRegistrationTomcatProtocolHandlerCustomizerConfiguration.class)
+			.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			TomcatReactiveWebServerFactory factory = context.getBean(TomcatReactiveWebServerFactory.class);
 			TomcatProtocolHandlerCustomizer<?> customizer = context.getBean("protocolHandlerCustomizer",
@@ -221,106 +219,109 @@ class ReactiveWebServerFactoryAutoConfigurationTests {
 	@Servlet5ClassPathOverrides
 	void jettyServerCustomizerBeanIsAddedToFactory() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
-				.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class))
-				.withUserConfiguration(JettyServerCustomizerConfiguration.class, HttpHandlerConfiguration.class)
-				.run((context) -> {
-					JettyReactiveWebServerFactory factory = context.getBean(JettyReactiveWebServerFactory.class);
-					assertThat(factory.getServerCustomizers()).hasSize(1);
-				});
+			.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+			.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class))
+			.withUserConfiguration(JettyServerCustomizerConfiguration.class, HttpHandlerConfiguration.class)
+			.run((context) -> {
+				JettyReactiveWebServerFactory factory = context.getBean(JettyReactiveWebServerFactory.class);
+				assertThat(factory.getServerCustomizers()).hasSize(1);
+			});
 	}
 
 	@Test
 	@Servlet5ClassPathOverrides
 	void jettyServerCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
-				.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class))
-				.withUserConfiguration(DoubleRegistrationJettyServerCustomizerConfiguration.class,
-						HttpHandlerConfiguration.class)
-				.withPropertyValues("server.port=0").run((context) -> {
-					JettyReactiveWebServerFactory factory = context.getBean(JettyReactiveWebServerFactory.class);
-					JettyServerCustomizer customizer = context.getBean("serverCustomizer", JettyServerCustomizer.class);
-					assertThat(factory.getServerCustomizers()).contains(customizer);
-					then(customizer).should().customize(any(Server.class));
-				});
+			.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+			.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class))
+			.withUserConfiguration(DoubleRegistrationJettyServerCustomizerConfiguration.class,
+					HttpHandlerConfiguration.class)
+			.withPropertyValues("server.port=0")
+			.run((context) -> {
+				JettyReactiveWebServerFactory factory = context.getBean(JettyReactiveWebServerFactory.class);
+				JettyServerCustomizer customizer = context.getBean("serverCustomizer", JettyServerCustomizer.class);
+				assertThat(factory.getServerCustomizers()).contains(customizer);
+				then(customizer).should().customize(any(Server.class));
+			});
 	}
 
 	@Test
 	void undertowBuilderCustomizerBeanIsAddedToFactory() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
-				.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
-				.withUserConfiguration(UndertowBuilderCustomizerConfiguration.class, HttpHandlerConfiguration.class)
-				.run((context) -> {
-					UndertowReactiveWebServerFactory factory = context.getBean(UndertowReactiveWebServerFactory.class);
-					assertThat(factory.getBuilderCustomizers()).hasSize(1);
-				});
+			.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+			.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
+			.withUserConfiguration(UndertowBuilderCustomizerConfiguration.class, HttpHandlerConfiguration.class)
+			.run((context) -> {
+				UndertowReactiveWebServerFactory factory = context.getBean(UndertowReactiveWebServerFactory.class);
+				assertThat(factory.getBuilderCustomizers()).hasSize(1);
+			});
 	}
 
 	@Test
 	void undertowBuilderCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
-				.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
-				.withUserConfiguration(DoubleRegistrationUndertowBuilderCustomizerConfiguration.class,
-						HttpHandlerConfiguration.class)
-				.withPropertyValues("server.port: 0").run((context) -> {
-					UndertowReactiveWebServerFactory factory = context.getBean(UndertowReactiveWebServerFactory.class);
-					UndertowBuilderCustomizer customizer = context.getBean("builderCustomizer",
-							UndertowBuilderCustomizer.class);
-					assertThat(factory.getBuilderCustomizers()).contains(customizer);
-					then(customizer).should().customize(any(Builder.class));
-				});
+			.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+			.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
+			.withUserConfiguration(DoubleRegistrationUndertowBuilderCustomizerConfiguration.class,
+					HttpHandlerConfiguration.class)
+			.withPropertyValues("server.port: 0")
+			.run((context) -> {
+				UndertowReactiveWebServerFactory factory = context.getBean(UndertowReactiveWebServerFactory.class);
+				UndertowBuilderCustomizer customizer = context.getBean("builderCustomizer",
+						UndertowBuilderCustomizer.class);
+				assertThat(factory.getBuilderCustomizers()).contains(customizer);
+				then(customizer).should().customize(any(Builder.class));
+			});
 	}
 
 	@Test
 	void nettyServerCustomizerBeanIsAddedToFactory() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
-				.withClassLoader(new FilteredClassLoader(Tomcat.class, Server.class, Undertow.class))
-				.withUserConfiguration(NettyServerCustomizerConfiguration.class, HttpHandlerConfiguration.class)
-				.run((context) -> {
-					NettyReactiveWebServerFactory factory = context.getBean(NettyReactiveWebServerFactory.class);
-					assertThat(factory.getServerCustomizers()).hasSize(1);
-				});
+			.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+			.withClassLoader(new FilteredClassLoader(Tomcat.class, Server.class, Undertow.class))
+			.withUserConfiguration(NettyServerCustomizerConfiguration.class, HttpHandlerConfiguration.class)
+			.run((context) -> {
+				NettyReactiveWebServerFactory factory = context.getBean(NettyReactiveWebServerFactory.class);
+				assertThat(factory.getServerCustomizers()).hasSize(1);
+			});
 	}
 
 	@Test
 	void nettyServerCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
-				.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
-				.withClassLoader(new FilteredClassLoader(Tomcat.class, Server.class, Undertow.class))
-				.withUserConfiguration(DoubleRegistrationNettyServerCustomizerConfiguration.class,
-						HttpHandlerConfiguration.class)
-				.withPropertyValues("server.port: 0").run((context) -> {
-					NettyReactiveWebServerFactory factory = context.getBean(NettyReactiveWebServerFactory.class);
-					NettyServerCustomizer customizer = context.getBean("serverCustomizer", NettyServerCustomizer.class);
-					assertThat(factory.getServerCustomizers()).contains(customizer);
-					then(customizer).should().apply(any(HttpServer.class));
-				});
+			.withConfiguration(AutoConfigurations.of(ReactiveWebServerFactoryAutoConfiguration.class))
+			.withClassLoader(new FilteredClassLoader(Tomcat.class, Server.class, Undertow.class))
+			.withUserConfiguration(DoubleRegistrationNettyServerCustomizerConfiguration.class,
+					HttpHandlerConfiguration.class)
+			.withPropertyValues("server.port: 0")
+			.run((context) -> {
+				NettyReactiveWebServerFactory factory = context.getBean(NettyReactiveWebServerFactory.class);
+				NettyServerCustomizer customizer = context.getBean("serverCustomizer", NettyServerCustomizer.class);
+				assertThat(factory.getServerCustomizers()).contains(customizer);
+				then(customizer).should().apply(any(HttpServer.class));
+			});
 	}
 
 	@Test
 	void forwardedHeaderTransformerShouldBeConfigured() {
 		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class)
-				.withPropertyValues("server.forward-headers-strategy=framework", "server.port=0")
-				.run((context) -> assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class));
+			.withPropertyValues("server.forward-headers-strategy=framework", "server.port=0")
+			.run((context) -> assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class));
 	}
 
 	@Test
 	void forwardedHeaderTransformerWhenStrategyNotFilterShouldNotBeConfigured() {
 		this.contextRunner.withUserConfiguration(HttpHandlerConfiguration.class)
-				.withPropertyValues("server.forward-headers-strategy=native", "server.port=0")
-				.run((context) -> assertThat(context).doesNotHaveBean(ForwardedHeaderTransformer.class));
+			.withPropertyValues("server.forward-headers-strategy=native", "server.port=0")
+			.run((context) -> assertThat(context).doesNotHaveBean(ForwardedHeaderTransformer.class));
 	}
 
 	@Test
 	void forwardedHeaderTransformerWhenAlreadyRegisteredShouldBackOff() {
 		this.contextRunner
-				.withUserConfiguration(ForwardedHeaderTransformerConfiguration.class, HttpHandlerConfiguration.class)
-				.withPropertyValues("server.forward-headers-strategy=framework", "server.port=0")
-				.run((context) -> assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class));
+			.withUserConfiguration(ForwardedHeaderTransformerConfiguration.class, HttpHandlerConfiguration.class)
+			.withPropertyValues("server.forward-headers-strategy=framework", "server.port=0")
+			.run((context) -> assertThat(context).hasSingleBean(ForwardedHeaderTransformer.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -62,7 +62,7 @@ class BindResultTests {
 	void getWhenHasNoValueShouldThrowException() {
 		BindResult<String> result = BindResult.of(null);
 		assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(result::get)
-				.withMessageContaining("No value bound");
+			.withMessageContaining("No value bound");
 	}
 
 	@Test
@@ -81,7 +81,7 @@ class BindResultTests {
 	void ifBoundWhenConsumerIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
 		assertThatIllegalArgumentException().isThrownBy(() -> result.ifBound(null))
-				.withMessageContaining("Consumer must not be null");
+			.withMessageContaining("Consumer must not be null");
 	}
 
 	@Test
@@ -102,7 +102,7 @@ class BindResultTests {
 	void mapWhenMapperIsNullShouldThrowException() {
 		BindResult<String> result = BindResult.of("foo");
 		assertThatIllegalArgumentException().isThrownBy(() -> result.map(null))
-				.withMessageContaining("Mapper must not be null");
+			.withMessageContaining("Mapper must not be null");
 	}
 
 	@Test

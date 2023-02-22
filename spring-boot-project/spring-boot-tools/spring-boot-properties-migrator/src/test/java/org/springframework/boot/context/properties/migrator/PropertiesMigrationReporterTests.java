@@ -90,7 +90,7 @@ class PropertiesMigrationReporterTests {
 	@Test
 	void errorReport() throws IOException {
 		this.environment.getPropertySources()
-				.addFirst(loadPropertySource("test1", "config/config-warnings.properties"));
+			.addFirst(loadPropertySource("test1", "config/config-warnings.properties"));
 		this.environment.getPropertySources().addFirst(loadPropertySource("test2", "config/config-error.properties"));
 		String report = createErrorReport(loadRepository("metadata/sample-metadata.json"));
 		assertThat(report).isNotNull();
@@ -102,7 +102,7 @@ class PropertiesMigrationReporterTests {
 	@Test
 	void errorReportNoReplacement() throws IOException {
 		this.environment.getPropertySources()
-				.addFirst(loadPropertySource("first", "config/config-error-no-replacement.properties"));
+			.addFirst(loadPropertySource("first", "config/config-error-no-replacement.properties"));
 		this.environment.getPropertySources().addFirst(loadPropertySource("second", "config/config-error.properties"));
 		String report = createErrorReport(loadRepository("metadata/sample-metadata.json"));
 		assertThat(report).isNotNull();
@@ -134,7 +134,7 @@ class PropertiesMigrationReporterTests {
 	@Test
 	void reasonIsProvidedIfPropertyCouldNotBeRenamed() throws IOException {
 		this.environment.getPropertySources()
-				.addFirst(loadPropertySource("test", "config/config-error-no-compatible-type.properties"));
+			.addFirst(loadPropertySource("test", "config/config-error-no-compatible-type.properties"));
 		String report = createErrorReport(loadRepository("metadata/type-conversion-metadata.json"));
 		assertThat(report).isNotNull();
 		assertThat(report).containsSubsequence("Property source 'test'", "wrong.inconvertible", "Line: 1",
@@ -144,7 +144,7 @@ class PropertiesMigrationReporterTests {
 	@Test
 	void invalidReplacementHandled() throws IOException {
 		this.environment.getPropertySources()
-				.addFirst(loadPropertySource("first", "config/config-error-invalid-replacement.properties"));
+			.addFirst(loadPropertySource("first", "config/config-error-invalid-replacement.properties"));
 		String report = createErrorReport(loadRepository("metadata/sample-metadata-invalid-replacement.json"));
 		assertThat(report).isNotNull();
 		assertThat(report).containsSubsequence("Property source 'first'", "deprecated.six.test", "Line: 1", "Reason",
@@ -155,7 +155,7 @@ class PropertiesMigrationReporterTests {
 	@Test
 	void invalidNameHandledGracefully() {
 		this.environment.getPropertySources()
-				.addFirst(new MapPropertySource("first", Collections.singletonMap("invalid.property-name", "value")));
+			.addFirst(new MapPropertySource("first", Collections.singletonMap("invalid.property-name", "value")));
 		String report = createWarningReport(loadRepository("metadata/sample-metadata-invalid-name.json"));
 		assertThat(report).isNotNull();
 		assertThat(report).contains("Key: invalid.propertyname").contains("Replacement: valid.property-name");
@@ -163,42 +163,46 @@ class PropertiesMigrationReporterTests {
 
 	@Test
 	void mapPropertiesDeprecatedNoReplacement() throws IOException {
-		this.environment.getPropertySources().addFirst(
-				new MapPropertySource("first", Collections.singletonMap("custom.map-no-replacement.key", "value")));
+		this.environment.getPropertySources()
+			.addFirst(
+					new MapPropertySource("first", Collections.singletonMap("custom.map-no-replacement.key", "value")));
 		String report = createErrorReport(loadRepository("metadata/sample-metadata.json"));
 		assertThat(report).isNotNull();
 		assertThat(report).contains("Key: custom.map-no-replacement.key")
-				.contains("Reason: This is no longer supported.");
+			.contains("Reason: This is no longer supported.");
 	}
 
 	@Test
 	void mapPropertiesDeprecatedWithReplacement() throws IOException {
-		this.environment.getPropertySources().addFirst(
-				new MapPropertySource("first", Collections.singletonMap("custom.map-with-replacement.key", "value")));
+		this.environment.getPropertySources()
+			.addFirst(new MapPropertySource("first",
+					Collections.singletonMap("custom.map-with-replacement.key", "value")));
 		String report = createWarningReport(loadRepository("metadata/sample-metadata.json"));
 		assertThat(report).isNotNull();
 		assertThat(report).contains("Key: custom.map-with-replacement.key")
-				.contains("Replacement: custom.the-map-replacement.key");
+			.contains("Replacement: custom.the-map-replacement.key");
 	}
 
 	@Test
 	void mapPropertiesDeprecatedWithReplacementRelaxedBindingUnderscore() {
-		this.environment.getPropertySources().addFirst(
-				new MapPropertySource("first", Collections.singletonMap("custom.map_with_replacement.key", "value")));
+		this.environment.getPropertySources()
+			.addFirst(new MapPropertySource("first",
+					Collections.singletonMap("custom.map_with_replacement.key", "value")));
 		String report = createWarningReport(loadRepository("metadata/sample-metadata.json"));
 		assertThat(report).isNotNull();
 		assertThat(report).contains("Key: custom.mapwithreplacement.key")
-				.contains("Replacement: custom.the-map-replacement.key");
+			.contains("Replacement: custom.the-map-replacement.key");
 	}
 
 	@Test
 	void mapPropertiesDeprecatedWithReplacementRelaxedBindingCamelCase() {
-		this.environment.getPropertySources().addFirst(
-				new MapPropertySource("first", Collections.singletonMap("custom.MapWithReplacement.key", "value")));
+		this.environment.getPropertySources()
+			.addFirst(
+					new MapPropertySource("first", Collections.singletonMap("custom.MapWithReplacement.key", "value")));
 		String report = createWarningReport(loadRepository("metadata/sample-metadata.json"));
 		assertThat(report).isNotNull();
 		assertThat(report).contains("Key: custom.mapwithreplacement.key")
-				.contains("Replacement: custom.the-map-replacement.key");
+			.contains("Replacement: custom.the-map-replacement.key");
 	}
 
 	private List<String> mapToNames(PropertySources sources) {

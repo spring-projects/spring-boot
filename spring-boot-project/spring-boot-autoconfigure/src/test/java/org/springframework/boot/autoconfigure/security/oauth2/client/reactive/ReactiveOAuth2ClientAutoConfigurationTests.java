@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,16 +63,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ReactiveOAuth2ClientAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ClientAutoConfiguration.class,
-					ReactiveSecurityAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ClientAutoConfiguration.class,
+				ReactiveSecurityAutoConfiguration.class));
 
 	private static final String REGISTRATION_PREFIX = "spring.security.oauth2.client.registration";
 
 	@Test
 	void autoConfigurationShouldBackOffForServletEnvironments() {
 		new WebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ClientAutoConfiguration.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveOAuth2ClientAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ClientAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(ReactiveOAuth2ClientAutoConfiguration.class));
 	}
 
 	@Test
@@ -83,16 +83,15 @@ class ReactiveOAuth2ClientAutoConfigurationTests {
 	@Test
 	void clientRegistrationRepositoryBeanShouldBeCreatedWhenPropertiesPresent() {
 		this.contextRunner
-				.withPropertyValues(REGISTRATION_PREFIX + ".foo.client-id=abcd",
-						REGISTRATION_PREFIX + ".foo.client-secret=secret", REGISTRATION_PREFIX + ".foo.provider=github")
-				.run((context) -> {
-					ReactiveClientRegistrationRepository repository = context
-							.getBean(ReactiveClientRegistrationRepository.class);
-					ClientRegistration registration = repository.findByRegistrationId("foo")
-							.block(Duration.ofSeconds(30));
-					assertThat(registration).isNotNull();
-					assertThat(registration.getClientSecret()).isEqualTo("secret");
-				});
+			.withPropertyValues(REGISTRATION_PREFIX + ".foo.client-id=abcd",
+					REGISTRATION_PREFIX + ".foo.client-secret=secret", REGISTRATION_PREFIX + ".foo.provider=github")
+			.run((context) -> {
+				ReactiveClientRegistrationRepository repository = context
+					.getBean(ReactiveClientRegistrationRepository.class);
+				ClientRegistration registration = repository.findByRegistrationId("foo").block(Duration.ofSeconds(30));
+				assertThat(registration).isNotNull();
+				assertThat(registration.getClientSecret()).isEqualTo("secret");
+			});
 	}
 
 	@Test
@@ -114,50 +113,50 @@ class ReactiveOAuth2ClientAutoConfigurationTests {
 	@Test
 	void authorizedClientServiceBeanIsConditionalOnMissingBean() {
 		this.contextRunner.withUserConfiguration(ReactiveOAuth2AuthorizedClientRepositoryConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ReactiveOAuth2AuthorizedClientService.class);
-					assertThat(context).hasBean("testAuthorizedClientService");
-				});
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ReactiveOAuth2AuthorizedClientService.class);
+				assertThat(context).hasBean("testAuthorizedClientService");
+			});
 	}
 
 	@Test
 	void authorizedClientRepositoryBeanIsConditionalOnAuthorizedClientService() {
 		this.contextRunner
-				.run((context) -> assertThat(context).doesNotHaveBean(ServerOAuth2AuthorizedClientRepository.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(ServerOAuth2AuthorizedClientRepository.class));
 	}
 
 	@Test
 	void configurationRegistersAuthorizedClientRepositoryBean() {
 		this.contextRunner.withUserConfiguration(ReactiveOAuth2AuthorizedClientServiceConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository.class));
+			.run((context) -> assertThat(context)
+				.hasSingleBean(AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository.class));
 	}
 
 	@Test
 	void authorizedClientRepositoryBeanIsConditionalOnMissingBean() {
 		this.contextRunner.withUserConfiguration(ReactiveOAuth2AuthorizedClientRepositoryConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ServerOAuth2AuthorizedClientRepository.class);
-					assertThat(context).hasBean("testAuthorizedClientRepository");
-				});
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ServerOAuth2AuthorizedClientRepository.class);
+				assertThat(context).hasBean("testAuthorizedClientRepository");
+			});
 	}
 
 	@Test
 	void securityWebFilterChainBeanConditionalOnWebApplication() {
 		this.contextRunner.withUserConfiguration(ReactiveOAuth2AuthorizedClientRepositoryConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(SecurityWebFilterChain.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(SecurityWebFilterChain.class));
 	}
 
 	@Test
 	void configurationRegistersSecurityWebFilterChainBean() { // gh-17949
 		new ReactiveWebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ClientAutoConfiguration.class))
-				.withUserConfiguration(ReactiveOAuth2AuthorizedClientServiceConfiguration.class,
-						ServerHttpSecurityConfiguration.class)
-				.run((context) -> {
-					assertThat(hasFilter(context, OAuth2LoginAuthenticationWebFilter.class)).isTrue();
-					assertThat(hasFilter(context, OAuth2AuthorizationCodeGrantWebFilter.class)).isTrue();
-				});
+			.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ClientAutoConfiguration.class))
+			.withUserConfiguration(ReactiveOAuth2AuthorizedClientServiceConfiguration.class,
+					ServerHttpSecurityConfiguration.class)
+			.run((context) -> {
+				assertThat(hasFilter(context, OAuth2LoginAuthenticationWebFilter.class)).isTrue();
+				assertThat(hasFilter(context, OAuth2AuthorizationCodeGrantWebFilter.class)).isTrue();
+			});
 	}
 
 	@Test
@@ -178,15 +177,15 @@ class ReactiveOAuth2ClientAutoConfigurationTests {
 	private void assertWhenClassNotPresent(Class<?> classToFilter) {
 		FilteredClassLoader classLoader = new FilteredClassLoader(classToFilter);
 		this.contextRunner.withClassLoader(classLoader)
-				.withPropertyValues(REGISTRATION_PREFIX + ".foo.client-id=abcd",
-						REGISTRATION_PREFIX + ".foo.client-secret=secret", REGISTRATION_PREFIX + ".foo.provider=github")
-				.run((context) -> assertThat(context).doesNotHaveBean(ReactiveOAuth2ClientAutoConfiguration.class));
+			.withPropertyValues(REGISTRATION_PREFIX + ".foo.client-id=abcd",
+					REGISTRATION_PREFIX + ".foo.client-secret=secret", REGISTRATION_PREFIX + ".foo.provider=github")
+			.run((context) -> assertThat(context).doesNotHaveBean(ReactiveOAuth2ClientAutoConfiguration.class));
 	}
 
 	@SuppressWarnings("unchecked")
 	private boolean hasFilter(AssertableReactiveWebApplicationContext context, Class<? extends WebFilter> filter) {
 		SecurityWebFilterChain filterChain = (SecurityWebFilterChain) context
-				.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
+			.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 		List<WebFilter> filters = (List<WebFilter>) ReflectionTestUtils.getField(filterChain, "filters");
 		return filters.stream().anyMatch(filter::isInstance);
 	}
@@ -204,13 +203,18 @@ class ReactiveOAuth2ClientAutoConfigurationTests {
 
 		private ClientRegistration getClientRegistration(String id, String userInfoUri) {
 			ClientRegistration.Builder builder = ClientRegistration.withRegistrationId(id);
-			builder.clientName("foo").clientId("foo")
-					.clientAuthenticationMethod(
-							org.springframework.security.oauth2.core.ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
-					.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE).scope("read")
-					.clientSecret("secret").redirectUri("https://redirect-uri.com")
-					.authorizationUri("https://authorization-uri.com").tokenUri("https://token-uri.com")
-					.userInfoUri(userInfoUri).userNameAttributeName("login");
+			builder.clientName("foo")
+				.clientId("foo")
+				.clientAuthenticationMethod(
+						org.springframework.security.oauth2.core.ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+				.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+				.scope("read")
+				.clientSecret("secret")
+				.redirectUri("https://redirect-uri.com")
+				.authorizationUri("https://authorization-uri.com")
+				.tokenUri("https://token-uri.com")
+				.userInfoUri(userInfoUri)
+				.userNameAttributeName("login");
 			return builder.build();
 		}
 

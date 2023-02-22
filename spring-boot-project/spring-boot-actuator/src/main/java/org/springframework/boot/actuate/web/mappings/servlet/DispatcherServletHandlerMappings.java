@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,8 +95,10 @@ final class DispatcherServletHandlerMappings {
 		}
 
 		private Optional<Context> findContext() {
-			return Stream.of(this.webServer.getTomcat().getHost().findChildren()).filter(Context.class::isInstance)
-					.map(Context.class::cast).findFirst();
+			return Stream.of(this.webServer.getTomcat().getHost().findChildren())
+				.filter(Context.class::isInstance)
+				.map(Context.class::cast)
+				.findFirst();
 		}
 
 		private void initializeServlet(Context context, String name) {

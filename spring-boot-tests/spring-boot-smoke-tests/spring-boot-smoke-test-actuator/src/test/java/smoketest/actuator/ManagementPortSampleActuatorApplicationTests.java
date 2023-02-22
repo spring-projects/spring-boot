@@ -69,14 +69,14 @@ class ManagementPortSampleActuatorApplicationTests {
 	void testMetrics() {
 		testHome(); // makes sure some requests have been made
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(new TestRestTemplate()
-				.getForEntity("http://localhost:" + this.managementPort + "/actuator/metrics", Map.class));
+			.getForEntity("http://localhost:" + this.managementPort + "/actuator/metrics", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void testHealth() {
 		ResponseEntity<String> entity = new TestRestTemplate().withBasicAuth("user", "password")
-				.getForEntity("http://localhost:" + this.managementPort + "/actuator/health", String.class);
+			.getForEntity("http://localhost:" + this.managementPort + "/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 		assertThat(entity.getBody()).contains("\"example\"");
@@ -86,7 +86,7 @@ class ManagementPortSampleActuatorApplicationTests {
 	@Test
 	void testErrorPage() {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(new TestRestTemplate("user", "password")
-				.getForEntity("http://localhost:" + this.managementPort + "/error", Map.class));
+			.getForEntity("http://localhost:" + this.managementPort + "/error", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).containsEntry("status", 999);
 	}
@@ -95,7 +95,7 @@ class ManagementPortSampleActuatorApplicationTests {
 	void securityContextIsAvailableToErrorHandling() {
 		this.errorAttributes.securityContext = null;
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(new TestRestTemplate("user", "password")
-				.getForEntity("http://localhost:" + this.managementPort + "/404", Map.class));
+			.getForEntity("http://localhost:" + this.managementPort + "/404", Map.class));
 		assertThat(this.errorAttributes.securityContext.getAuthentication()).isNotNull();
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(entity.getBody()).containsEntry("status", 404);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,9 +38,8 @@ class WebServiceServerIntegrationTests {
 	@Test
 	void payloadRootMethod() {
 		this.mock
-				.sendRequest(
-						RequestCreators.withPayload(new StringSource("<request><message>Hello</message></request>")))
-				.andExpect(ResponseMatchers.payload(new StringSource("<response><code>42</code></response>")));
+			.sendRequest(RequestCreators.withPayload(new StringSource("<request><message>Hello</message></request>")))
+			.andExpect(ResponseMatchers.payload(new StringSource("<response><code>42</code></response>")));
 	}
 
 }

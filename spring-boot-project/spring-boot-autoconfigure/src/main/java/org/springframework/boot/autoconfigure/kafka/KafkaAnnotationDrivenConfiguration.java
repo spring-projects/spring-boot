@@ -81,7 +81,7 @@ class KafkaAnnotationDrivenConfiguration {
 		this.recordMessageConverter = recordMessageConverter.getIfUnique();
 		this.recordFilterStrategy = recordFilterStrategy.getIfUnique();
 		this.batchMessageConverter = batchMessageConverter
-				.getIfUnique(() -> new BatchMessagingMessageConverter(this.recordMessageConverter));
+			.getIfUnique(() -> new BatchMessagingMessageConverter(this.recordMessageConverter));
 		this.kafkaTemplate = kafkaTemplate.getIfUnique();
 		this.transactionManager = kafkaTransactionManager.getIfUnique();
 		this.rebalanceListener = rebalanceListener.getIfUnique();
@@ -114,7 +114,7 @@ class KafkaAnnotationDrivenConfiguration {
 			ObjectProvider<ConsumerFactory<Object, Object>> kafkaConsumerFactory) {
 		ConcurrentKafkaListenerContainerFactory<Object, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
 		configurer.configure(factory, kafkaConsumerFactory
-				.getIfAvailable(() -> new DefaultKafkaConsumerFactory<>(this.properties.buildConsumerProperties())));
+			.getIfAvailable(() -> new DefaultKafkaConsumerFactory<>(this.properties.buildConsumerProperties())));
 		return factory;
 	}
 

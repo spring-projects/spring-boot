@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ class WebOperationRequestPredicateTests {
 	@Test
 	void predicatesWithMultiplePathVariablesInTheSamePlaceAreEqual() {
 		assertThat(predicateWithPath("/path/{foo1}/more/{bar1}"))
-				.isEqualTo(predicateWithPath("/path/{foo2}/more/{bar2}"));
+			.isEqualTo(predicateWithPath("/path/{foo2}/more/{bar2}"));
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,11 +49,12 @@ final class GradleCompatibilityExtension implements TestTemplateInvocationContex
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
 		Stream<String> gradleVersions = GRADLE_VERSIONS.stream();
 		GradleCompatibility gradleCompatibility = AnnotationUtils
-				.findAnnotation(context.getRequiredTestClass(), GradleCompatibility.class).get();
+			.findAnnotation(context.getRequiredTestClass(), GradleCompatibility.class)
+			.get();
 		if (StringUtils.hasText(gradleCompatibility.versionsLessThan())) {
 			GradleVersion upperExclusive = GradleVersion.version(gradleCompatibility.versionsLessThan());
 			gradleVersions = gradleVersions
-					.filter((version) -> GradleVersion.version(version).compareTo(upperExclusive) < 0);
+				.filter((version) -> GradleVersion.version(version).compareTo(upperExclusive) < 0);
 		}
 		return gradleVersions.flatMap((version) -> {
 			List<TestTemplateInvocationContext> invocationContexts = new ArrayList<>();

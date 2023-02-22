@@ -90,7 +90,7 @@ class AtlasPropertiesConfigAdapterTests {
 		AtlasProperties properties = new AtlasProperties();
 		properties.setConfigRefreshFrequency(Duration.ofMinutes(5));
 		assertThat(new AtlasPropertiesConfigAdapter(properties).configRefreshFrequency())
-				.isEqualTo(Duration.ofMinutes(5));
+			.isEqualTo(Duration.ofMinutes(5));
 	}
 
 	@Test
@@ -105,7 +105,7 @@ class AtlasPropertiesConfigAdapterTests {
 		AtlasProperties properties = new AtlasProperties();
 		properties.setConfigUri("https://atlas.example.com/config");
 		assertThat(new AtlasPropertiesConfigAdapter(properties).configUri())
-				.isEqualTo("https://atlas.example.com/config");
+			.isEqualTo("https://atlas.example.com/config");
 	}
 
 	@Test
@@ -113,7 +113,7 @@ class AtlasPropertiesConfigAdapterTests {
 		AtlasProperties properties = new AtlasProperties();
 		properties.setEvalUri("https://atlas.example.com/evaluate");
 		assertThat(new AtlasPropertiesConfigAdapter(properties).evalUri())
-				.isEqualTo("https://atlas.example.com/evaluate");
+			.isEqualTo("https://atlas.example.com/evaluate");
 	}
 
 }

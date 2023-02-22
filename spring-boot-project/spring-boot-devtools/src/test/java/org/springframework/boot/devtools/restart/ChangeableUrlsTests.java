@@ -114,8 +114,8 @@ class ChangeableUrlsTests {
 		File classpathJar = new File(this.tempDir, "classpath.jar");
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().putValue(Attributes.Name.MANIFEST_VERSION.toString(), "1.0");
-		manifest.getMainAttributes().putValue(Attributes.Name.CLASS_PATH.toString(),
-				StringUtils.arrayToDelimitedString(urls, " "));
+		manifest.getMainAttributes()
+			.putValue(Attributes.Name.CLASS_PATH.toString(), StringUtils.arrayToDelimitedString(urls, " "));
 		new JarOutputStream(new FileOutputStream(classpathJar), manifest).close();
 		return classpathJar;
 	}

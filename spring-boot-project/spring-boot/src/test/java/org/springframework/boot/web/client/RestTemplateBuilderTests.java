@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ class RestTemplateBuilderTests {
 	void createWhenCustomizersAreNullShouldThrowException() {
 		RestTemplateCustomizer[] customizers = null;
 		assertThatIllegalArgumentException().isThrownBy(() -> new RestTemplateBuilder(customizers))
-				.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
@@ -121,8 +121,9 @@ class RestTemplateBuilderTests {
 	@Test
 	void rootUriShouldApplyAfterUriTemplateHandler() {
 		UriTemplateHandler uriTemplateHandler = mock(UriTemplateHandler.class);
-		RestTemplate template = this.builder.uriTemplateHandler(uriTemplateHandler).rootUri("https://example.com")
-				.build();
+		RestTemplate template = this.builder.uriTemplateHandler(uriTemplateHandler)
+			.rootUri("https://example.com")
+			.build();
 		UriTemplateHandler handler = template.getUriTemplateHandler();
 		handler.expand("/hello");
 		assertThat(handler).isInstanceOf(RootUriTemplateHandler.class);
@@ -132,15 +133,15 @@ class RestTemplateBuilderTests {
 	@Test
 	void messageConvertersWhenConvertersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.messageConverters((HttpMessageConverter<?>[]) null))
-				.withMessageContaining("MessageConverters must not be null");
+			.isThrownBy(() -> this.builder.messageConverters((HttpMessageConverter<?>[]) null))
+			.withMessageContaining("MessageConverters must not be null");
 	}
 
 	@Test
 	void messageConvertersCollectionWhenConvertersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.messageConverters((Set<HttpMessageConverter<?>>) null))
-				.withMessageContaining("MessageConverters must not be null");
+			.isThrownBy(() -> this.builder.messageConverters((Set<HttpMessageConverter<?>>) null))
+			.withMessageContaining("MessageConverters must not be null");
 	}
 
 	@Test
@@ -152,29 +153,31 @@ class RestTemplateBuilderTests {
 	@Test
 	void messageConvertersShouldReplaceExisting() {
 		RestTemplate template = this.builder.messageConverters(new ResourceHttpMessageConverter())
-				.messageConverters(Collections.singleton(this.messageConverter)).build();
+			.messageConverters(Collections.singleton(this.messageConverter))
+			.build();
 		assertThat(template.getMessageConverters()).containsOnly(this.messageConverter);
 	}
 
 	@Test
 	void additionalMessageConvertersWhenConvertersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.additionalMessageConverters((HttpMessageConverter<?>[]) null))
-				.withMessageContaining("MessageConverters must not be null");
+			.isThrownBy(() -> this.builder.additionalMessageConverters((HttpMessageConverter<?>[]) null))
+			.withMessageContaining("MessageConverters must not be null");
 	}
 
 	@Test
 	void additionalMessageConvertersCollectionWhenConvertersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.additionalMessageConverters((Set<HttpMessageConverter<?>>) null))
-				.withMessageContaining("MessageConverters must not be null");
+			.isThrownBy(() -> this.builder.additionalMessageConverters((Set<HttpMessageConverter<?>>) null))
+			.withMessageContaining("MessageConverters must not be null");
 	}
 
 	@Test
 	void additionalMessageConvertersShouldAddToExisting() {
 		HttpMessageConverter<?> resourceConverter = new ResourceHttpMessageConverter();
 		RestTemplate template = this.builder.messageConverters(resourceConverter)
-				.additionalMessageConverters(this.messageConverter).build();
+			.additionalMessageConverters(this.messageConverter)
+			.build();
 		assertThat(template.getMessageConverters()).containsOnly(resourceConverter, this.messageConverter);
 	}
 
@@ -195,15 +198,15 @@ class RestTemplateBuilderTests {
 	@Test
 	void interceptorsWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.interceptors((ClientHttpRequestInterceptor[]) null))
-				.withMessageContaining("interceptors must not be null");
+			.isThrownBy(() -> this.builder.interceptors((ClientHttpRequestInterceptor[]) null))
+			.withMessageContaining("interceptors must not be null");
 	}
 
 	@Test
 	void interceptorsCollectionWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.interceptors((Set<ClientHttpRequestInterceptor>) null))
-				.withMessageContaining("interceptors must not be null");
+			.isThrownBy(() -> this.builder.interceptors((Set<ClientHttpRequestInterceptor>) null))
+			.withMessageContaining("interceptors must not be null");
 	}
 
 	@Test
@@ -215,22 +218,23 @@ class RestTemplateBuilderTests {
 	@Test
 	void interceptorsShouldReplaceExisting() {
 		RestTemplate template = this.builder.interceptors(mock(ClientHttpRequestInterceptor.class))
-				.interceptors(Collections.singleton(this.interceptor)).build();
+			.interceptors(Collections.singleton(this.interceptor))
+			.build();
 		assertThat(template.getInterceptors()).containsOnly(this.interceptor);
 	}
 
 	@Test
 	void additionalInterceptorsWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.additionalInterceptors((ClientHttpRequestInterceptor[]) null))
-				.withMessageContaining("interceptors must not be null");
+			.isThrownBy(() -> this.builder.additionalInterceptors((ClientHttpRequestInterceptor[]) null))
+			.withMessageContaining("interceptors must not be null");
 	}
 
 	@Test
 	void additionalInterceptorsCollectionWhenInterceptorsAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.additionalInterceptors((Set<ClientHttpRequestInterceptor>) null))
-				.withMessageContaining("interceptors must not be null");
+			.isThrownBy(() -> this.builder.additionalInterceptors((Set<ClientHttpRequestInterceptor>) null))
+			.withMessageContaining("interceptors must not be null");
 	}
 
 	@Test
@@ -243,8 +247,8 @@ class RestTemplateBuilderTests {
 	@Test
 	void requestFactoryClassWhenFactoryIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.requestFactory((Class<ClientHttpRequestFactory>) null))
-				.withMessageContaining("RequestFactoryType must not be null");
+			.isThrownBy(() -> this.builder.requestFactory((Class<ClientHttpRequestFactory>) null))
+			.withMessageContaining("RequestFactoryType must not be null");
 	}
 
 	@Test
@@ -262,16 +266,16 @@ class RestTemplateBuilderTests {
 	@Test
 	void requestFactoryWhenSupplierIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.requestFactory((Supplier<ClientHttpRequestFactory>) null))
-				.withMessageContaining("RequestFactorySupplier must not be null");
+			.isThrownBy(() -> this.builder.requestFactory((Supplier<ClientHttpRequestFactory>) null))
+			.withMessageContaining("RequestFactorySupplier must not be null");
 	}
 
 	@Test
 	void requestFactoryWhenFunctionIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder
-						.requestFactory((Function<ClientHttpRequestFactorySettings, ClientHttpRequestFactory>) null))
-				.withMessageContaining("RequestFactoryFunction must not be null");
+			.isThrownBy(() -> this.builder
+				.requestFactory((Function<ClientHttpRequestFactorySettings, ClientHttpRequestFactory>) null))
+			.withMessageContaining("RequestFactoryFunction must not be null");
 	}
 
 	@Test
@@ -284,7 +288,7 @@ class RestTemplateBuilderTests {
 	@Test
 	void uriTemplateHandlerWhenHandlerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.uriTemplateHandler(null))
-				.withMessageContaining("UriTemplateHandler must not be null");
+			.withMessageContaining("UriTemplateHandler must not be null");
 	}
 
 	@Test
@@ -297,7 +301,7 @@ class RestTemplateBuilderTests {
 	@Test
 	void errorHandlerWhenHandlerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.errorHandler(null))
-				.withMessageContaining("ErrorHandler must not be null");
+			.withMessageContaining("ErrorHandler must not be null");
 	}
 
 	@Test
@@ -342,7 +346,8 @@ class RestTemplateBuilderTests {
 	@Test
 	void requestCustomizersAddsCustomizers() {
 		RestTemplate template = this.builder
-				.requestCustomizers((request) -> request.getHeaders().add("spring", "framework")).build();
+			.requestCustomizers((request) -> request.getHeaders().add("spring", "framework"))
+			.build();
 		ClientHttpRequest request = createRequest(template);
 		assertThat(request.getHeaders()).contains(entry("spring", Collections.singletonList("framework")));
 	}
@@ -350,24 +355,25 @@ class RestTemplateBuilderTests {
 	@Test
 	void additionalRequestCustomizersAddsCustomizers() {
 		RestTemplate template = this.builder
-				.requestCustomizers((request) -> request.getHeaders().add("spring", "framework"))
-				.additionalRequestCustomizers((request) -> request.getHeaders().add("for", "java")).build();
+			.requestCustomizers((request) -> request.getHeaders().add("spring", "framework"))
+			.additionalRequestCustomizers((request) -> request.getHeaders().add("for", "java"))
+			.build();
 		ClientHttpRequest request = createRequest(template);
 		assertThat(request.getHeaders()).contains(entry("spring", Collections.singletonList("framework")))
-				.contains(entry("for", Collections.singletonList("java")));
+			.contains(entry("for", Collections.singletonList("java")));
 	}
 
 	@Test
 	void customizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.builder.customizers((RestTemplateCustomizer[]) null))
-				.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void customizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.customizers((Set<RestTemplateCustomizer>) null))
-				.withMessageContaining("Customizers must not be null");
+			.isThrownBy(() -> this.builder.customizers((Set<RestTemplateCustomizer>) null))
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
@@ -389,8 +395,9 @@ class RestTemplateBuilderTests {
 	void customizersShouldReplaceExisting() {
 		RestTemplateCustomizer customizer1 = mock(RestTemplateCustomizer.class);
 		RestTemplateCustomizer customizer2 = mock(RestTemplateCustomizer.class);
-		RestTemplate template = this.builder.customizers(customizer1).customizers(Collections.singleton(customizer2))
-				.build();
+		RestTemplate template = this.builder.customizers(customizer1)
+			.customizers(Collections.singleton(customizer2))
+			.build();
 		then(customizer1).shouldHaveNoInteractions();
 		then(customizer2).should().customize(template);
 	}
@@ -398,15 +405,15 @@ class RestTemplateBuilderTests {
 	@Test
 	void additionalCustomizersWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.additionalCustomizers((RestTemplateCustomizer[]) null))
-				.withMessageContaining("Customizers must not be null");
+			.isThrownBy(() -> this.builder.additionalCustomizers((RestTemplateCustomizer[]) null))
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void additionalCustomizersCollectionWhenCustomizersAreNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.builder.additionalCustomizers((Set<RestTemplateCustomizer>) null))
-				.withMessageContaining("RestTemplateCustomizers must not be null");
+			.isThrownBy(() -> this.builder.additionalCustomizers((Set<RestTemplateCustomizer>) null))
+			.withMessageContaining("RestTemplateCustomizers must not be null");
 	}
 
 	@Test
@@ -423,18 +430,23 @@ class RestTemplateBuilderTests {
 	void customizerShouldBeAppliedAtTheEnd() {
 		ResponseErrorHandler errorHandler = mock(ResponseErrorHandler.class);
 		ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-		this.builder.interceptors(this.interceptor).messageConverters(this.messageConverter)
-				.rootUri("http://localhost:8080").errorHandler(errorHandler).basicAuthentication("spring", "boot")
-				.requestFactory(() -> requestFactory).customizers((restTemplate) -> {
-					assertThat(restTemplate.getInterceptors()).hasSize(1);
-					assertThat(restTemplate.getMessageConverters()).contains(this.messageConverter);
-					assertThat(restTemplate.getUriTemplateHandler()).isInstanceOf(RootUriTemplateHandler.class);
-					assertThat(restTemplate.getErrorHandler()).isEqualTo(errorHandler);
-					ClientHttpRequestFactory actualRequestFactory = restTemplate.getRequestFactory();
-					assertThat(actualRequestFactory).isInstanceOf(InterceptingClientHttpRequestFactory.class);
-					ClientHttpRequestInitializer initializer = restTemplate.getClientHttpRequestInitializers().get(0);
-					assertThat(initializer).isInstanceOf(RestTemplateBuilderClientHttpRequestInitializer.class);
-				}).build();
+		this.builder.interceptors(this.interceptor)
+			.messageConverters(this.messageConverter)
+			.rootUri("http://localhost:8080")
+			.errorHandler(errorHandler)
+			.basicAuthentication("spring", "boot")
+			.requestFactory(() -> requestFactory)
+			.customizers((restTemplate) -> {
+				assertThat(restTemplate.getInterceptors()).hasSize(1);
+				assertThat(restTemplate.getMessageConverters()).contains(this.messageConverter);
+				assertThat(restTemplate.getUriTemplateHandler()).isInstanceOf(RootUriTemplateHandler.class);
+				assertThat(restTemplate.getErrorHandler()).isEqualTo(errorHandler);
+				ClientHttpRequestFactory actualRequestFactory = restTemplate.getRequestFactory();
+				assertThat(actualRequestFactory).isInstanceOf(InterceptingClientHttpRequestFactory.class);
+				ClientHttpRequestInitializer initializer = restTemplate.getClientHttpRequestInitializers().get(0);
+				assertThat(initializer).isInstanceOf(RestTemplateBuilderClientHttpRequestInitializer.class);
+			})
+			.build();
 	}
 
 	@Test
@@ -460,7 +472,7 @@ class RestTemplateBuilderTests {
 	void unwrappingDoesNotAffectRequestFactoryThatIsSetOnTheBuiltTemplate() {
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		RestTemplate template = this.builder.requestFactory(() -> new BufferingClientHttpRequestFactory(requestFactory))
-				.build();
+			.build();
 		assertThat(template.getRequestFactory()).isInstanceOf(BufferingClientHttpRequestFactory.class);
 	}
 

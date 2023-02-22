@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,28 +83,46 @@ class MvcWebEndpointIntegrationTests
 	@Test
 	void responseToOptionsRequestIncludesCorsHeaders() {
 		load(TestEndpointConfiguration.class,
-				(client) -> client.options().uri("/test").accept(MediaType.APPLICATION_JSON)
-						.header("Access-Control-Request-Method", "POST").header("Origin", "https://example.com")
-						.exchange().expectStatus().isOk().expectHeader()
-						.valueEquals("Access-Control-Allow-Origin", "https://example.com").expectHeader()
-						.valueEquals("Access-Control-Allow-Methods", "GET,POST"));
+				(client) -> client.options()
+					.uri("/test")
+					.accept(MediaType.APPLICATION_JSON)
+					.header("Access-Control-Request-Method", "POST")
+					.header("Origin", "https://example.com")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectHeader()
+					.valueEquals("Access-Control-Allow-Origin", "https://example.com")
+					.expectHeader()
+					.valueEquals("Access-Control-Allow-Methods", "GET,POST"));
 	}
 
 	@Test
 	void readOperationsThatReturnAResourceSupportRangeRequests() {
 		load(ResourceEndpointConfiguration.class, (client) -> {
-			byte[] responseBody = client.get().uri("/resource").header("Range", "bytes=0-3").exchange().expectStatus()
-					.isEqualTo(HttpStatus.PARTIAL_CONTENT).expectHeader()
-					.contentType(MediaType.APPLICATION_OCTET_STREAM).returnResult(byte[].class)
-					.getResponseBodyContent();
+			byte[] responseBody = client.get()
+				.uri("/resource")
+				.header("Range", "bytes=0-3")
+				.exchange()
+				.expectStatus()
+				.isEqualTo(HttpStatus.PARTIAL_CONTENT)
+				.expectHeader()
+				.contentType(MediaType.APPLICATION_OCTET_STREAM)
+				.returnResult(byte[].class)
+				.getResponseBodyContent();
 			assertThat(responseBody).containsExactly(0, 1, 2, 3);
 		});
 	}
 
 	@Test
 	void requestWithSuffixShouldNotMatch() {
-		load(TestEndpointConfiguration.class, (client) -> client.options().uri("/test.do")
-				.accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isNotFound());
+		load(TestEndpointConfiguration.class,
+				(client) -> client.options()
+					.uri("/test.do")
+					.accept(MediaType.APPLICATION_JSON)
+					.exchange()
+					.expectStatus()
+					.isNotFound());
 	}
 
 	@Override

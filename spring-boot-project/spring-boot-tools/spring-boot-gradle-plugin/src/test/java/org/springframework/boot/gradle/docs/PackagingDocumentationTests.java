@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ class PackagingDocumentationTests {
 		assertThat(file).isFile();
 		try (JarFile jar = new JarFile(file)) {
 			assertThat(jar.getManifest().getMainAttributes().getValue("Start-Class"))
-					.isEqualTo("com.example.ExampleApplication");
+				.isEqualTo("com.example.ExampleApplication");
 		}
 	}
 
@@ -75,7 +75,7 @@ class PackagingDocumentationTests {
 		assertThat(file).isFile();
 		try (JarFile jar = new JarFile(file)) {
 			assertThat(jar.getManifest().getMainAttributes().getValue("Start-Class"))
-					.isEqualTo("com.example.ExampleApplication");
+				.isEqualTo("com.example.ExampleApplication");
 		}
 	}
 
@@ -87,7 +87,7 @@ class PackagingDocumentationTests {
 		assertThat(file).isFile();
 		try (JarFile jar = new JarFile(file)) {
 			assertThat(jar.getManifest().getMainAttributes().getValue("Start-Class"))
-					.isEqualTo("com.example.ExampleApplication");
+				.isEqualTo("com.example.ExampleApplication");
 		}
 	}
 
@@ -99,7 +99,7 @@ class PackagingDocumentationTests {
 		assertThat(file).isFile();
 		try (JarFile jar = new JarFile(file)) {
 			assertThat(jar.getManifest().getMainAttributes().getValue("Start-Class"))
-					.isEqualTo("com.example.ExampleApplication");
+				.isEqualTo("com.example.ExampleApplication");
 		}
 	}
 
@@ -166,7 +166,7 @@ class PackagingDocumentationTests {
 		assertThat(file).isFile();
 		try (JarFile jar = new JarFile(file)) {
 			assertThat(jar.getManifest().getMainAttributes().getValue("Main-Class"))
-					.isEqualTo("org.springframework.boot.loader.PropertiesLauncher");
+				.isEqualTo("org.springframework.boot.loader.PropertiesLauncher");
 		}
 	}
 
@@ -222,8 +222,10 @@ class PackagingDocumentationTests {
 		try (JarFile jar = new JarFile(file)) {
 			JarEntry entry = jar.getJarEntry("BOOT-INF/layers.idx");
 			assertThat(entry).isNotNull();
-			assertThat(Collections.list(jar.entries()).stream().map(JarEntry::getName)
-					.filter((name) -> name.startsWith("BOOT-INF/lib/spring-boot"))).isNotEmpty();
+			assertThat(Collections.list(jar.entries())
+				.stream()
+				.map(JarEntry::getName)
+				.filter((name) -> name.startsWith("BOOT-INF/lib/spring-boot"))).isNotEmpty();
 		}
 	}
 
@@ -236,100 +238,105 @@ class PackagingDocumentationTests {
 		try (JarFile jar = new JarFile(file)) {
 			JarEntry entry = jar.getJarEntry("BOOT-INF/layers.idx");
 			assertThat(entry).isNotNull();
-			assertThat(Collections.list(jar.entries()).stream().map(JarEntry::getName)
-					.filter((name) -> name.startsWith("BOOT-INF/lib/spring-boot"))).isEmpty();
+			assertThat(Collections.list(jar.entries())
+				.stream()
+				.map(JarEntry::getName)
+				.filter((name) -> name.startsWith("BOOT-INF/lib/spring-boot"))).isEmpty();
 		}
 	}
 
 	@TestTemplate
 	void bootBuildImageWithBuilder() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-builder")
-				.build("bootBuildImageBuilder");
+			.build("bootBuildImageBuilder");
 		assertThat(result.getOutput()).contains("builder=mine/java-cnb-builder").contains("runImage=mine/java-cnb-run");
 	}
 
 	@TestTemplate
 	void bootBuildImageWithCustomBuildpackJvmVersion() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-env")
-				.build("bootBuildImageEnvironment");
+			.build("bootBuildImageEnvironment");
 		assertThat(result.getOutput()).contains("BP_JVM_VERSION=17");
 	}
 
 	@TestTemplate
 	void bootBuildImageWithCustomProxySettings() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-env-proxy")
-				.build("bootBuildImageEnvironment");
+			.build("bootBuildImageEnvironment");
 		assertThat(result.getOutput()).contains("HTTP_PROXY=http://proxy.example.com")
-				.contains("HTTPS_PROXY=https://proxy.example.com");
+			.contains("HTTPS_PROXY=https://proxy.example.com");
 	}
 
 	@TestTemplate
 	void bootBuildImageWithCustomRuntimeConfiguration() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-env-runtime")
-				.build("bootBuildImageEnvironment");
+			.build("bootBuildImageEnvironment");
 		assertThat(result.getOutput()).contains("BPE_DELIM_JAVA_TOOL_OPTIONS= ")
-				.contains("BPE_APPEND_JAVA_TOOL_OPTIONS=-XX:+HeapDumpOnOutOfMemoryError");
+			.contains("BPE_APPEND_JAVA_TOOL_OPTIONS=-XX:+HeapDumpOnOutOfMemoryError");
 	}
 
 	@TestTemplate
 	void bootBuildImageWithCustomImageName() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-name")
-				.build("bootBuildImageName");
+			.build("bootBuildImageName");
 		assertThat(result.getOutput()).contains("example.com/library/" + this.gradleBuild.getProjectDir().getName());
 	}
 
 	@TestTemplate
 	void bootBuildImageWithDockerHostMinikube() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-docker-host")
-				.build("bootBuildImageDocker");
-		assertThat(result.getOutput()).contains("host=tcp://192.168.99.100:2376").contains("tlsVerify=true")
-				.contains("certPath=/home/user/.minikube/certs");
+			.build("bootBuildImageDocker");
+		assertThat(result.getOutput()).contains("host=tcp://192.168.99.100:2376")
+			.contains("tlsVerify=true")
+			.contains("certPath=/home/user/.minikube/certs");
 	}
 
 	@TestTemplate
 	void bootBuildImageWithDockerHostPodman() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-docker-host-podman")
-				.build("bootBuildImageDocker");
+			.build("bootBuildImageDocker");
 		assertThat(result.getOutput()).contains("host=unix:///run/user/1000/podman/podman.sock")
-				.contains("bindHostToBuilder=true");
+			.contains("bindHostToBuilder=true");
 	}
 
 	@TestTemplate
 	void bootBuildImageWithDockerUserAuth() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-docker-auth-user")
-				.build("bootBuildImageDocker");
-		assertThat(result.getOutput()).contains("username=user").contains("password=secret")
-				.contains("url=https://docker.example.com/v1/").contains("email=user@example.com");
+			.build("bootBuildImageDocker");
+		assertThat(result.getOutput()).contains("username=user")
+			.contains("password=secret")
+			.contains("url=https://docker.example.com/v1/")
+			.contains("email=user@example.com");
 	}
 
 	@TestTemplate
 	void bootBuildImageWithDockerTokenAuth() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-docker-auth-token")
-				.build("bootBuildImageDocker");
+			.build("bootBuildImageDocker");
 		assertThat(result.getOutput()).contains("token=9cbaf023786cd7...");
 	}
 
 	@TestTemplate
 	void bootBuildImagePublish() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-publish")
-				.build("bootBuildImagePublish");
+			.build("bootBuildImagePublish");
 		assertThat(result.getOutput()).contains("true");
 	}
 
 	@TestTemplate
 	void bootBuildImageWithBuildpacks() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-buildpacks")
-				.build("bootBuildImageBuildpacks");
+			.build("bootBuildImageBuildpacks");
 		assertThat(result.getOutput()).contains("file:///path/to/example-buildpack.tgz")
-				.contains("urn:cnb:builder:paketo-buildpacks/java");
+			.contains("urn:cnb:builder:paketo-buildpacks/java");
 	}
 
 	@TestTemplate
 	void bootBuildImageWithCaches() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-caches")
-				.build("bootBuildImageCaches");
+			.build("bootBuildImageCaches");
 		assertThat(result.getOutput()).containsPattern("buildCache=cache-gradle-[\\d]+.build")
-				.containsPattern("launchCache=cache-gradle-[\\d]+.launch");
+			.containsPattern("launchCache=cache-gradle-[\\d]+.launch");
 	}
 
 	protected void jarFile(File file) throws IOException {

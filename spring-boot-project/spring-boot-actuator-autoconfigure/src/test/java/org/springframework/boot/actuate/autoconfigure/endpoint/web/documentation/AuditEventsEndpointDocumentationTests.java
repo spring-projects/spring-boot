@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,13 +56,15 @@ class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocumentation
 	void allAuditEvents() throws Exception {
 		String queryTimestamp = "2017-11-07T09:37Z";
 		given(this.repository.find(any(), any(), any()))
-				.willReturn(Arrays.asList(new AuditEvent("alice", "logout", Collections.emptyMap())));
-		this.mockMvc.perform(get("/actuator/auditevents").param("after", queryTimestamp)).andExpect(status().isOk())
-				.andDo(document("auditevents/all", responseFields(
-						fieldWithPath("events").description("An array of audit events."),
-						fieldWithPath("events.[].timestamp").description("The timestamp of when the event occurred."),
-						fieldWithPath("events.[].principal").description("The principal that triggered the event."),
-						fieldWithPath("events.[].type").description("The type of the event."))));
+			.willReturn(Arrays.asList(new AuditEvent("alice", "logout", Collections.emptyMap())));
+		this.mockMvc.perform(get("/actuator/auditevents").param("after", queryTimestamp))
+			.andExpect(status().isOk())
+			.andDo(document("auditevents/all",
+					responseFields(fieldWithPath("events").description("An array of audit events."),
+							fieldWithPath("events.[].timestamp")
+								.description("The timestamp of when the event occurred."),
+							fieldWithPath("events.[].principal").description("The principal that triggered the event."),
+							fieldWithPath("events.[].type").description("The type of the event."))));
 	}
 
 	@Test
@@ -70,19 +72,20 @@ class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocumentation
 		OffsetDateTime now = OffsetDateTime.now();
 		String queryTimestamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(now);
 		given(this.repository.find("alice", now.toInstant(), "logout"))
-				.willReturn(Arrays.asList(new AuditEvent("alice", "logout", Collections.emptyMap())));
+			.willReturn(Arrays.asList(new AuditEvent("alice", "logout", Collections.emptyMap())));
 		this.mockMvc
-				.perform(get("/actuator/auditevents")
-						.param("principal", "alice").param("after", queryTimestamp).param("type", "logout"))
-				.andExpect(status().isOk())
-				.andDo(document("auditevents/filtered",
-						queryParameters(
-								parameterWithName("after").description(
-										"Restricts the events to those that occurred after the given time. Optional."),
-								parameterWithName("principal").description(
-										"Restricts the events to those with the given principal. Optional."),
-								parameterWithName("type")
-										.description("Restricts the events to those with the given type. Optional."))));
+			.perform(get("/actuator/auditevents").param("principal", "alice")
+				.param("after", queryTimestamp)
+				.param("type", "logout"))
+			.andExpect(status().isOk())
+			.andDo(document("auditevents/filtered",
+					queryParameters(
+							parameterWithName("after").description(
+									"Restricts the events to those that occurred after the given time. Optional."),
+							parameterWithName("principal")
+								.description("Restricts the events to those with the given principal. Optional."),
+							parameterWithName("type")
+								.description("Restricts the events to those with the given type. Optional."))));
 		then(this.repository).should().find("alice", now.toInstant(), "logout");
 	}
 

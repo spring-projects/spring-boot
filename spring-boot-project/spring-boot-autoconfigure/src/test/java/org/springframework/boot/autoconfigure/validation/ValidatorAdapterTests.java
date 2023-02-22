@@ -86,10 +86,9 @@ class ValidatorAdapterTests {
 		ClassPathResource hibernateValidator = new ClassPathResource(
 				"META-INF/services/jakarta.validation.spi.ValidationProvider");
 		this.contextRunner
-				.withClassLoader(
-						new FilteredClassLoader(FilteredClassLoader.ClassPathResourceFilter.of(hibernateValidator),
-								FilteredClassLoader.PackageFilter.of("org.hibernate.validator")))
-				.run((context) -> ValidatorAdapter.get(context, null));
+			.withClassLoader(new FilteredClassLoader(FilteredClassLoader.ClassPathResourceFilter.of(hibernateValidator),
+					FilteredClassLoader.PackageFilter.of("org.hibernate.validator")))
+			.run((context) -> ValidatorAdapter.get(context, null));
 	}
 
 	@Configuration(proxyBeanMethods = false)

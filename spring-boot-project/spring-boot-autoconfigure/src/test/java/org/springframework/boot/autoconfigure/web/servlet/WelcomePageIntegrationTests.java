@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,8 @@ class WelcomePageIntegrationTests {
 	@Test
 	void contentStrategyWithWelcomePage() throws Exception {
 		RequestEntity<?> entity = RequestEntity.get(new URI("http://localhost:" + this.port + "/"))
-				.header("Accept", MediaType.ALL.toString()).build();
+			.header("Accept", MediaType.ALL.toString())
+			.build();
 		ResponseEntity<String> content = this.template.exchange(entity, String.class);
 		assertThat(content.getBody()).contains("/custom-");
 	}

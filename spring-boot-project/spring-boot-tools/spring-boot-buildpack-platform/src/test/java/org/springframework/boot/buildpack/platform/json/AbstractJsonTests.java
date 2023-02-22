@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ public abstract class AbstractJsonTests {
 
 	protected final String getContentAsString(String name) {
 		return new BufferedReader(new InputStreamReader(getContent(name), StandardCharsets.UTF_8)).lines()
-				.collect(Collectors.joining("\n"));
+			.collect(Collectors.joining("\n"));
 	}
 
 }

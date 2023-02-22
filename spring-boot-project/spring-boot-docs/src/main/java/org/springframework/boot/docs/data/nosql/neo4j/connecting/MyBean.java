@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,10 +34,13 @@ public class MyBean {
 	// @fold:on // ...
 	public String someMethod(String message) {
 		try (Session session = this.driver.session()) {
-			return session.executeWrite((transaction) -> transaction
-					.run("CREATE (a:Greeting) SET a.message = $message RETURN a.message + ', from node ' + id(a)",
-							Values.parameters("message", message))
-					.single().get(0).asString());
+			return session.executeWrite(
+					(transaction) -> transaction
+						.run("CREATE (a:Greeting) SET a.message = $message RETURN a.message + ', from node ' + id(a)",
+								Values.parameters("message", message))
+						.single()
+						.get(0)
+						.asString());
 		}
 	}
 	// @fold:off

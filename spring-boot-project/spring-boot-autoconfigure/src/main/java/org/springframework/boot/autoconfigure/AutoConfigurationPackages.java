@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,10 +106,11 @@ public abstract class AutoConfigurationPackages {
 		ConstructorArgumentValues constructorArgumentValues = beanDefinition.getConstructorArgumentValues();
 		if (constructorArgumentValues.hasIndexedArgumentValue(0)) {
 			String[] existingPackages = (String[]) constructorArgumentValues.getIndexedArgumentValue(0, String[].class)
-					.getValue();
+				.getValue();
 			constructorArgumentValues.addIndexedArgumentValue(0,
-					Stream.concat(Stream.of(existingPackages), Stream.of(additionalBasePackages)).distinct()
-							.toArray(String[]::new));
+					Stream.concat(Stream.of(existingPackages), Stream.of(additionalBasePackages))
+						.distinct()
+						.toArray(String[]::new));
 		}
 		else {
 			constructorArgumentValues.addIndexedArgumentValue(0, additionalBasePackages);
@@ -143,7 +144,7 @@ public abstract class AutoConfigurationPackages {
 
 		PackageImports(AnnotationMetadata metadata) {
 			AnnotationAttributes attributes = AnnotationAttributes
-					.fromMap(metadata.getAnnotationAttributes(AutoConfigurationPackage.class.getName(), false));
+				.fromMap(metadata.getAnnotationAttributes(AutoConfigurationPackage.class.getName(), false));
 			List<String> packageNames = new ArrayList<>(Arrays.asList(attributes.getStringArray("basePackages")));
 			for (Class<?> basePackageClass : attributes.getClassArray("basePackageClasses")) {
 				packageNames.add(basePackageClass.getPackage().getName());

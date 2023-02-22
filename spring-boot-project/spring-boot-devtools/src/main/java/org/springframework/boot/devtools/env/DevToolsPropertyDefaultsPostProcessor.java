@@ -135,7 +135,7 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 	private static Map<String, Object> loadDefaultProperties() {
 		Properties properties = new Properties();
 		try (InputStream stream = DevToolsPropertyDefaultsPostProcessor.class
-				.getResourceAsStream("devtools-property-defaults.properties")) {
+			.getResourceAsStream("devtools-property-defaults.properties")) {
 			if (stream == null) {
 				throw new RuntimeException(
 						"Failed to load devtools-property-defaults.properties because it doesn't exist");

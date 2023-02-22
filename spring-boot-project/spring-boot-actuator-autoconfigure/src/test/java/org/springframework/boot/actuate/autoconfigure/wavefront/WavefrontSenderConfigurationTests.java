@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,12 +40,12 @@ import static org.mockito.Mockito.mock;
 class WavefrontSenderConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(WavefrontSenderConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(WavefrontSenderConfiguration.class));
 
 	@Test
 	void shouldNotFailIfWavefrontIsMissing() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader("com.wavefront"))
-				.run(((context) -> assertThat(context).doesNotHaveBean(WavefrontSender.class)));
+			.run(((context) -> assertThat(context).doesNotHaveBean(WavefrontSender.class)));
 	}
 
 	@Test
@@ -59,9 +59,9 @@ class WavefrontSenderConfigurationTests {
 			WavefrontProperties properties = new WavefrontProperties();
 			WavefrontSender sender = context.getBean(WavefrontSender.class);
 			assertThat(sender)
-					.extracting("metricsBuffer", as(InstanceOfAssertFactories.type(LinkedBlockingQueue.class)))
-					.satisfies((queue) -> assertThat(queue.remainingCapacity() + queue.size())
-							.isEqualTo(properties.getSender().getMaxQueueSize()));
+				.extracting("metricsBuffer", as(InstanceOfAssertFactories.type(LinkedBlockingQueue.class)))
+				.satisfies((queue) -> assertThat(queue.remainingCapacity() + queue.size())
+					.isEqualTo(properties.getSender().getMaxQueueSize()));
 			assertThat(sender).hasFieldOrPropertyWithValue("batchSize", properties.getSender().getBatchSize());
 			assertThat(sender).hasFieldOrPropertyWithValue("messageSizeBytes",
 					(int) properties.getSender().getMessageSize().toBytes());
@@ -70,22 +70,23 @@ class WavefrontSenderConfigurationTests {
 
 	@Test
 	void configureWavefrontSender() {
-		this.contextRunner.withPropertyValues("management.wavefront.api-token=abcde",
-				"management.wavefront.sender.batch-size=50", "management.wavefront.sender.max-queue-size=100",
-				"management.wavefront.sender.message-size=1KB").run((context) -> {
-					WavefrontSender sender = context.getBean(WavefrontSender.class);
-					assertThat(sender).hasFieldOrPropertyWithValue("batchSize", 50);
-					assertThat(sender)
-							.extracting("metricsBuffer", as(InstanceOfAssertFactories.type(LinkedBlockingQueue.class)))
-							.satisfies((queue) -> assertThat(queue.remainingCapacity() + queue.size()).isEqualTo(100));
-					assertThat(sender).hasFieldOrPropertyWithValue("messageSizeBytes", 1024);
-				});
+		this.contextRunner
+			.withPropertyValues("management.wavefront.api-token=abcde", "management.wavefront.sender.batch-size=50",
+					"management.wavefront.sender.max-queue-size=100", "management.wavefront.sender.message-size=1KB")
+			.run((context) -> {
+				WavefrontSender sender = context.getBean(WavefrontSender.class);
+				assertThat(sender).hasFieldOrPropertyWithValue("batchSize", 50);
+				assertThat(sender)
+					.extracting("metricsBuffer", as(InstanceOfAssertFactories.type(LinkedBlockingQueue.class)))
+					.satisfies((queue) -> assertThat(queue.remainingCapacity() + queue.size()).isEqualTo(100));
+				assertThat(sender).hasFieldOrPropertyWithValue("messageSizeBytes", 1024);
+			});
 	}
 
 	@Test
 	void allowsWavefrontSenderToBeCustomized() {
 		this.contextRunner.withUserConfiguration(CustomSenderConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(WavefrontSender.class).hasBean("customSender"));
+			.run((context) -> assertThat(context).hasSingleBean(WavefrontSender.class).hasBean("customSender"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

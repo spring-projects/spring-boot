@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,25 +56,27 @@ import static org.mockito.Mockito.mock;
 class TaskExecutionAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class));
 
 	@Test
 	void taskExecutorBuilderShouldApplyCustomSettings() {
-		this.contextRunner.withPropertyValues("spring.task.execution.pool.queue-capacity=10",
-				"spring.task.execution.pool.core-size=2", "spring.task.execution.pool.max-size=4",
-				"spring.task.execution.pool.allow-core-thread-timeout=true", "spring.task.execution.pool.keep-alive=5s",
-				"spring.task.execution.shutdown.await-termination=true",
-				"spring.task.execution.shutdown.await-termination-period=30s",
-				"spring.task.execution.thread-name-prefix=mytest-").run(assertTaskExecutor((taskExecutor) -> {
-					assertThat(taskExecutor).hasFieldOrPropertyWithValue("queueCapacity", 10);
-					assertThat(taskExecutor.getCorePoolSize()).isEqualTo(2);
-					assertThat(taskExecutor.getMaxPoolSize()).isEqualTo(4);
-					assertThat(taskExecutor).hasFieldOrPropertyWithValue("allowCoreThreadTimeOut", true);
-					assertThat(taskExecutor.getKeepAliveSeconds()).isEqualTo(5);
-					assertThat(taskExecutor).hasFieldOrPropertyWithValue("waitForTasksToCompleteOnShutdown", true);
-					assertThat(taskExecutor).hasFieldOrPropertyWithValue("awaitTerminationMillis", 30000L);
-					assertThat(taskExecutor.getThreadNamePrefix()).isEqualTo("mytest-");
-				}));
+		this.contextRunner
+			.withPropertyValues("spring.task.execution.pool.queue-capacity=10",
+					"spring.task.execution.pool.core-size=2", "spring.task.execution.pool.max-size=4",
+					"spring.task.execution.pool.allow-core-thread-timeout=true",
+					"spring.task.execution.pool.keep-alive=5s", "spring.task.execution.shutdown.await-termination=true",
+					"spring.task.execution.shutdown.await-termination-period=30s",
+					"spring.task.execution.thread-name-prefix=mytest-")
+			.run(assertTaskExecutor((taskExecutor) -> {
+				assertThat(taskExecutor).hasFieldOrPropertyWithValue("queueCapacity", 10);
+				assertThat(taskExecutor.getCorePoolSize()).isEqualTo(2);
+				assertThat(taskExecutor.getMaxPoolSize()).isEqualTo(4);
+				assertThat(taskExecutor).hasFieldOrPropertyWithValue("allowCoreThreadTimeOut", true);
+				assertThat(taskExecutor.getKeepAliveSeconds()).isEqualTo(5);
+				assertThat(taskExecutor).hasFieldOrPropertyWithValue("waitForTasksToCompleteOnShutdown", true);
+				assertThat(taskExecutor).hasFieldOrPropertyWithValue("awaitTerminationMillis", 30000L);
+				assertThat(taskExecutor.getThreadNamePrefix()).isEqualTo("mytest-");
+			}));
 	}
 
 	@Test
@@ -82,7 +84,7 @@ class TaskExecutionAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomTaskExecutorBuilderConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(TaskExecutorBuilder.class);
 			assertThat(context.getBean(TaskExecutorBuilder.class))
-					.isSameAs(context.getBean(CustomTaskExecutorBuilderConfig.class).taskExecutorBuilder);
+				.isSameAs(context.getBean(CustomTaskExecutorBuilderConfig.class).taskExecutorBuilder);
 		});
 	}
 
@@ -99,8 +101,9 @@ class TaskExecutionAutoConfigurationTests {
 	void taskExecutorAutoConfiguredIsLazy() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(Executor.class).hasBean("applicationTaskExecutor");
-			BeanDefinition beanDefinition = context.getSourceApplicationContext().getBeanFactory()
-					.getBeanDefinition("applicationTaskExecutor");
+			BeanDefinition beanDefinition = context.getSourceApplicationContext()
+				.getBeanFactory()
+				.getBeanDefinition("applicationTaskExecutor");
 			assertThat(beanDefinition.isLazyInit()).isTrue();
 			assertThat(context).getBean("applicationTaskExecutor").isInstanceOf(ThreadPoolTaskExecutor.class);
 		});
@@ -126,24 +129,25 @@ class TaskExecutionAutoConfigurationTests {
 	@Test
 	void enableAsyncUsesAutoConfiguredOneByDefault() {
 		this.contextRunner.withPropertyValues("spring.task.execution.thread-name-prefix=task-test-")
-				.withUserConfiguration(AsyncConfiguration.class, TestBean.class).run((context) -> {
-					assertThat(context).hasSingleBean(TaskExecutor.class);
-					TestBean bean = context.getBean(TestBean.class);
-					String text = bean.echo("something").get();
-					assertThat(text).contains("task-test-").contains("something");
-				});
+			.withUserConfiguration(AsyncConfiguration.class, TestBean.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(TaskExecutor.class);
+				TestBean bean = context.getBean(TestBean.class);
+				String text = bean.echo("something").get();
+				assertThat(text).contains("task-test-").contains("something");
+			});
 	}
 
 	@Test
 	void enableAsyncUsesAutoConfiguredOneByDefaultEvenThoughSchedulingIsConfigured() {
 		this.contextRunner.withPropertyValues("spring.task.execution.thread-name-prefix=task-test-")
-				.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class))
-				.withUserConfiguration(AsyncConfiguration.class, SchedulingConfiguration.class, TestBean.class)
-				.run((context) -> {
-					TestBean bean = context.getBean(TestBean.class);
-					String text = bean.echo("something").get();
-					assertThat(text).contains("task-test-").contains("something");
-				});
+			.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class))
+			.withUserConfiguration(AsyncConfiguration.class, SchedulingConfiguration.class, TestBean.class)
+			.run((context) -> {
+				TestBean bean = context.getBean(TestBean.class);
+				String text = bean.echo("something").get();
+				assertThat(text).contains("task-test-").contains("something");
+			});
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertTaskExecutor(

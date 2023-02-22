@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,22 +56,22 @@ class MustacheAutoConfigurationTests {
 	@Test
 	void servletViewResolverCanBeDisabled() {
 		configure(new WebApplicationContextRunner()).withPropertyValues("spring.mustache.enabled=false")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(Mustache.Compiler.class);
-					assertThat(context).hasSingleBean(MustacheResourceTemplateLoader.class);
-					assertThat(context).doesNotHaveBean(MustacheViewResolver.class);
-				});
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Mustache.Compiler.class);
+				assertThat(context).hasSingleBean(MustacheResourceTemplateLoader.class);
+				assertThat(context).doesNotHaveBean(MustacheViewResolver.class);
+			});
 	}
 
 	@Test
 	void registerCompilerForServletApp() {
 		configure(new WebApplicationContextRunner()).withUserConfiguration(CustomCompilerConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(Mustache.Compiler.class);
-					assertThat(context).hasSingleBean(MustacheResourceTemplateLoader.class);
-					assertThat(context).hasSingleBean(MustacheViewResolver.class);
-					assertThat(context.getBean(Mustache.Compiler.class).standardsMode).isTrue();
-				});
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Mustache.Compiler.class);
+				assertThat(context).hasSingleBean(MustacheResourceTemplateLoader.class);
+				assertThat(context).hasSingleBean(MustacheViewResolver.class);
+				assertThat(context.getBean(Mustache.Compiler.class).standardsMode).isTrue();
+			});
 	}
 
 	@Test
@@ -81,32 +81,32 @@ class MustacheAutoConfigurationTests {
 			assertThat(context).hasSingleBean(MustacheResourceTemplateLoader.class);
 			assertThat(context).doesNotHaveBean(MustacheViewResolver.class);
 			assertThat(context)
-					.hasSingleBean(org.springframework.boot.web.reactive.result.view.MustacheViewResolver.class);
+				.hasSingleBean(org.springframework.boot.web.reactive.result.view.MustacheViewResolver.class);
 		});
 	}
 
 	@Test
 	void reactiveViewResolverCanBeDisabled() {
 		configure(new ReactiveWebApplicationContextRunner()).withPropertyValues("spring.mustache.enabled=false")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(Mustache.Compiler.class);
-					assertThat(context).hasSingleBean(MustacheResourceTemplateLoader.class);
-					assertThat(context).doesNotHaveBean(
-							org.springframework.boot.web.reactive.result.view.MustacheViewResolver.class);
-				});
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Mustache.Compiler.class);
+				assertThat(context).hasSingleBean(MustacheResourceTemplateLoader.class);
+				assertThat(context)
+					.doesNotHaveBean(org.springframework.boot.web.reactive.result.view.MustacheViewResolver.class);
+			});
 	}
 
 	@Test
 	void registerCompilerForReactiveApp() {
 		configure(new ReactiveWebApplicationContextRunner()).withUserConfiguration(CustomCompilerConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(Mustache.Compiler.class);
-					assertThat(context).hasSingleBean(MustacheResourceTemplateLoader.class);
-					assertThat(context).doesNotHaveBean(MustacheViewResolver.class);
-					assertThat(context).hasSingleBean(
-							org.springframework.boot.web.reactive.result.view.MustacheViewResolver.class);
-					assertThat(context.getBean(Mustache.Compiler.class).standardsMode).isTrue();
-				});
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Mustache.Compiler.class);
+				assertThat(context).hasSingleBean(MustacheResourceTemplateLoader.class);
+				assertThat(context).doesNotHaveBean(MustacheViewResolver.class);
+				assertThat(context)
+					.hasSingleBean(org.springframework.boot.web.reactive.result.view.MustacheViewResolver.class);
+				assertThat(context.getBean(Mustache.Compiler.class).standardsMode).isTrue();
+			});
 	}
 
 	@Test
@@ -130,13 +130,13 @@ class MustacheAutoConfigurationTests {
 	void defaultReactiveViewResolverConfiguration() {
 		configure(new ReactiveWebApplicationContextRunner()).run((context) -> {
 			org.springframework.boot.web.reactive.result.view.MustacheViewResolver viewResolver = context
-					.getBean(org.springframework.boot.web.reactive.result.view.MustacheViewResolver.class);
+				.getBean(org.springframework.boot.web.reactive.result.view.MustacheViewResolver.class);
 			assertThat(viewResolver).extracting("charset").isEqualTo("UTF-8");
 			assertThat(viewResolver).extracting("prefix").isEqualTo("classpath:/templates/");
 			assertThat(viewResolver).extracting("requestContextAttribute").isNull();
 			assertThat(viewResolver).extracting("suffix").isEqualTo(".mustache");
 			assertThat(viewResolver.getSupportedMediaTypes())
-					.containsExactly(MediaType.parseMediaType("text/html;charset=UTF-8"));
+				.containsExactly(MediaType.parseMediaType("text/html;charset=UTF-8"));
 		});
 	}
 
@@ -211,9 +211,11 @@ class MustacheAutoConfigurationTests {
 
 	private void assertViewResolverProperty(ViewResolverKind kind, String property, String field,
 			Object expectedValue) {
-		kind.runner().withConfiguration(AutoConfigurations.of(MustacheAutoConfiguration.class))
-				.withPropertyValues(property).run((context) -> assertThat(context.getBean(kind.viewResolverClass()))
-						.extracting(field).isEqualTo(expectedValue));
+		kind.runner()
+			.withConfiguration(AutoConfigurations.of(MustacheAutoConfiguration.class))
+			.withPropertyValues(property)
+			.run((context) -> assertThat(context.getBean(kind.viewResolverClass())).extracting(field)
+				.isEqualTo(expectedValue));
 	}
 
 	private <T extends AbstractApplicationContextRunner<T, ?, ?>> T configure(T runner) {

@@ -47,66 +47,67 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ConfigurationPropertiesReportEndpointAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ConfigurationPropertiesReportEndpointAutoConfiguration.class));
 
 	@Test
 	void runShouldHaveEndpointBean() {
 		this.contextRunner.withUserConfiguration(Config.class)
-				.withPropertyValues("management.endpoints.web.exposure.include=configprops")
-				.run(validateTestProperties("******", "******"));
+			.withPropertyValues("management.endpoints.web.exposure.include=configprops")
+			.run(validateTestProperties("******", "******"));
 	}
 
 	@Test
 	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.configprops.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(ConfigurationPropertiesReportEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(ConfigurationPropertiesReportEndpoint.class));
 	}
 
 	@Test
 	@SuppressWarnings("unchecked")
 	void rolesCanBeConfiguredViaTheEnvironment() {
 		this.contextRunner.withUserConfiguration(Config.class)
-				.withPropertyValues("management.endpoint.configprops.roles: test")
-				.withPropertyValues("management.endpoints.web.exposure.include=configprops").run((context) -> {
-					assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpointWebExtension.class);
-					ConfigurationPropertiesReportEndpointWebExtension endpoint = context
-							.getBean(ConfigurationPropertiesReportEndpointWebExtension.class);
-					Set<String> roles = (Set<String>) ReflectionTestUtils.getField(endpoint, "roles");
-					assertThat(roles).contains("test");
-				});
+			.withPropertyValues("management.endpoint.configprops.roles: test")
+			.withPropertyValues("management.endpoints.web.exposure.include=configprops")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpointWebExtension.class);
+				ConfigurationPropertiesReportEndpointWebExtension endpoint = context
+					.getBean(ConfigurationPropertiesReportEndpointWebExtension.class);
+				Set<String> roles = (Set<String>) ReflectionTestUtils.getField(endpoint, "roles");
+				assertThat(roles).contains("test");
+			});
 	}
 
 	@Test
 	void showValuesCanBeConfiguredViaTheEnvironment() {
 		this.contextRunner.withUserConfiguration(Config.class)
-				.withPropertyValues("management.endpoint.configprops.show-values: WHEN_AUTHORIZED")
-				.withPropertyValues("management.endpoints.web.exposure.include=configprops").run((context) -> {
-					assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpoint.class);
-					assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpointWebExtension.class);
-					ConfigurationPropertiesReportEndpointWebExtension webExtension = context
-							.getBean(ConfigurationPropertiesReportEndpointWebExtension.class);
-					ConfigurationPropertiesReportEndpoint endpoint = context
-							.getBean(ConfigurationPropertiesReportEndpoint.class);
-					Show showValuesWebExtension = (Show) ReflectionTestUtils.getField(webExtension, "showValues");
-					assertThat(showValuesWebExtension).isEqualTo(Show.WHEN_AUTHORIZED);
-					Show showValues = (Show) ReflectionTestUtils.getField(endpoint, "showValues");
-					assertThat(showValues).isEqualTo(Show.WHEN_AUTHORIZED);
-				});
+			.withPropertyValues("management.endpoint.configprops.show-values: WHEN_AUTHORIZED")
+			.withPropertyValues("management.endpoints.web.exposure.include=configprops")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpoint.class);
+				assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpointWebExtension.class);
+				ConfigurationPropertiesReportEndpointWebExtension webExtension = context
+					.getBean(ConfigurationPropertiesReportEndpointWebExtension.class);
+				ConfigurationPropertiesReportEndpoint endpoint = context
+					.getBean(ConfigurationPropertiesReportEndpoint.class);
+				Show showValuesWebExtension = (Show) ReflectionTestUtils.getField(webExtension, "showValues");
+				assertThat(showValuesWebExtension).isEqualTo(Show.WHEN_AUTHORIZED);
+				Show showValues = (Show) ReflectionTestUtils.getField(endpoint, "showValues");
+				assertThat(showValues).isEqualTo(Show.WHEN_AUTHORIZED);
+			});
 	}
 
 	@Test
 	void customSanitizingFunctionsAreAppliedInOrder() {
 		this.contextRunner.withPropertyValues("management.endpoint.configprops.show-values: ALWAYS")
-				.withUserConfiguration(Config.class, SanitizingFunctionConfiguration.class)
-				.withPropertyValues("management.endpoints.web.exposure.include=configprops",
-						"test.my-test-property=abc")
-				.run(validateTestProperties("$$$111$$$", "$$$222$$$"));
+			.withUserConfiguration(Config.class, SanitizingFunctionConfiguration.class)
+			.withPropertyValues("management.endpoints.web.exposure.include=configprops", "test.my-test-property=abc")
+			.run(validateTestProperties("$$$111$$$", "$$$222$$$"));
 	}
 
 	@Test
 	void runWhenNotExposedShouldNotHaveEndpointBean() {
 		this.contextRunner
-				.run((context) -> assertThat(context).doesNotHaveBean(ConfigurationPropertiesReportEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(ConfigurationPropertiesReportEndpoint.class));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> validateTestProperties(String dbPassword,
@@ -114,10 +115,13 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 		return (context) -> {
 			assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpoint.class);
 			ConfigurationPropertiesReportEndpoint endpoint = context
-					.getBean(ConfigurationPropertiesReportEndpoint.class);
+				.getBean(ConfigurationPropertiesReportEndpoint.class);
 			ConfigurationPropertiesDescriptor properties = endpoint.configurationProperties();
-			Map<String, Object> nestedProperties = properties.getContexts().get(context.getId()).getBeans()
-					.get("testProperties").getProperties();
+			Map<String, Object> nestedProperties = properties.getContexts()
+				.get(context.getId())
+				.getBeans()
+				.get("testProperties")
+				.getProperties();
 			assertThat(nestedProperties).isNotNull();
 			assertThat(nestedProperties).containsEntry("dbPassword", dbPassword);
 			assertThat(nestedProperties).containsEntry("myTestProperty", myTestProperty);
@@ -127,10 +131,10 @@ class ConfigurationPropertiesReportEndpointAutoConfigurationTests {
 	@Test
 	void runWhenOnlyExposedOverJmxShouldHaveEndpointBeanWithoutWebExtension() {
 		this.contextRunner
-				.withPropertyValues("management.endpoints.web.exposure.include=info", "spring.jmx.enabled=true",
-						"management.endpoints.jmx.exposure.include=configprops")
-				.run((context) -> assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpoint.class)
-						.doesNotHaveBean(ConfigurationPropertiesReportEndpointWebExtension.class));
+			.withPropertyValues("management.endpoints.web.exposure.include=info", "spring.jmx.enabled=true",
+					"management.endpoints.jmx.exposure.include=configprops")
+			.run((context) -> assertThat(context).hasSingleBean(ConfigurationPropertiesReportEndpoint.class)
+				.doesNotHaveBean(ConfigurationPropertiesReportEndpointWebExtension.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

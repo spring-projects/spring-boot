@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,14 +34,18 @@ class StartStopIntegrationTests {
 
 	@TestTemplate
 	void startStopWaitsForApplicationToBeReadyAndThenRequestsShutdown(MavenBuild mavenBuild) {
-		mavenBuild.project("start-stop").goals("verify").execute(
-				(project) -> assertThat(buildLog(project)).contains("isReady: true").contains("Shutdown requested"));
+		mavenBuild.project("start-stop")
+			.goals("verify")
+			.execute((project) -> assertThat(buildLog(project)).contains("isReady: true")
+				.contains("Shutdown requested"));
 	}
 
 	@TestTemplate
 	void whenSkipIsTrueStartAndStopAreSkipped(MavenBuild mavenBuild) {
-		mavenBuild.project("start-stop-skip").goals("verify").execute((project) -> assertThat(buildLog(project))
-				.doesNotContain("Ooops, I haz been run").doesNotContain("Stopping application"));
+		mavenBuild.project("start-stop-skip")
+			.goals("verify")
+			.execute((project) -> assertThat(buildLog(project)).doesNotContain("Ooops, I haz been run")
+				.doesNotContain("Stopping application"));
 	}
 
 	private String buildLog(File project) {

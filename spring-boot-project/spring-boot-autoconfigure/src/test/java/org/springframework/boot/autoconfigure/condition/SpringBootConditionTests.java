@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,13 +38,13 @@ class SpringBootConditionTests {
 	@Test
 	void sensibleClassException() {
 		assertThatIllegalStateException().isThrownBy(() -> new AnnotationConfigApplicationContext(ErrorOnClass.class))
-				.withMessageContaining("Error processing condition on " + ErrorOnClass.class.getName());
+			.withMessageContaining("Error processing condition on " + ErrorOnClass.class.getName());
 	}
 
 	@Test
 	void sensibleMethodException() {
 		assertThatIllegalStateException().isThrownBy(() -> new AnnotationConfigApplicationContext(ErrorOnMethod.class))
-				.withMessageContaining("Error processing condition on " + ErrorOnMethod.class.getName() + ".myBean");
+			.withMessageContaining("Error processing condition on " + ErrorOnMethod.class.getName() + ".myBean");
 	}
 
 	@Configuration(proxyBeanMethods = false)

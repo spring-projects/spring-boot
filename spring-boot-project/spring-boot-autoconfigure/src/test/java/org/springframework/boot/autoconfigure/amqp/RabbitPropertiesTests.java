@@ -237,7 +237,7 @@ class RabbitPropertiesTests {
 	void customAddresses() {
 		this.properties.setAddresses("user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
 		assertThat(this.properties.getAddresses())
-				.isEqualTo("user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
+			.isEqualTo("user:secret@rabbit1.example.com:1234/alpha,rabbit2.example.com");
 	}
 
 	@Test

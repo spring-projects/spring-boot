@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,28 +36,29 @@ import static org.mockito.Mockito.mock;
 class CouchbaseReactiveHealthContributorAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withBean(Cluster.class, () -> mock(Cluster.class))
-			.withConfiguration(AutoConfigurations.of(CouchbaseReactiveHealthContributorAutoConfiguration.class,
-					HealthContributorAutoConfiguration.class));
+		.withBean(Cluster.class, () -> mock(Cluster.class))
+		.withConfiguration(AutoConfigurations.of(CouchbaseReactiveHealthContributorAutoConfiguration.class,
+				HealthContributorAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(CouchbaseReactiveHealthIndicator.class)
-				.hasBean("couchbaseHealthContributor"));
+			.hasBean("couchbaseHealthContributor"));
 	}
 
 	@Test
 	void runWithRegularIndicatorShouldOnlyCreateReactiveIndicator() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(CouchbaseHealthContributorAutoConfiguration.class))
-				.run((context) -> assertThat(context).hasSingleBean(CouchbaseReactiveHealthIndicator.class)
-						.hasBean("couchbaseHealthContributor").doesNotHaveBean(CouchbaseHealthIndicator.class));
+			.run((context) -> assertThat(context).hasSingleBean(CouchbaseReactiveHealthIndicator.class)
+				.hasBean("couchbaseHealthContributor")
+				.doesNotHaveBean(CouchbaseHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.health.couchbase.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(CouchbaseReactiveHealthIndicator.class)
-						.doesNotHaveBean("couchbaseHealthContributor"));
+			.run((context) -> assertThat(context).doesNotHaveBean(CouchbaseReactiveHealthIndicator.class)
+				.doesNotHaveBean("couchbaseHealthContributor"));
 	}
 
 }

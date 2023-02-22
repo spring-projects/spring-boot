@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -215,7 +215,7 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 		private boolean isSslEnabled(ApplicationContext context) {
 			try {
 				AbstractReactiveWebServerFactory webServerFactory = context
-						.getBean(AbstractReactiveWebServerFactory.class);
+					.getBean(AbstractReactiveWebServerFactory.class);
 				return webServerFactory.getSsl() != null && webServerFactory.getSsl().isEnabled();
 			}
 			catch (NoSuchBeanDefinitionException ex) {
@@ -225,7 +225,8 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 
 		private void customizeWebTestClientBuilder(WebTestClient.Builder clientBuilder, ApplicationContext context) {
 			for (WebTestClientBuilderCustomizer customizer : context
-					.getBeansOfType(WebTestClientBuilderCustomizer.class).values()) {
+				.getBeansOfType(WebTestClientBuilderCustomizer.class)
+				.values()) {
 				customizer.customize(clientBuilder);
 			}
 		}
@@ -233,9 +234,10 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 		private void customizeWebTestClientCodecs(WebTestClient.Builder clientBuilder, ApplicationContext context) {
 			Collection<CodecCustomizer> codecCustomizers = context.getBeansOfType(CodecCustomizer.class).values();
 			if (!CollectionUtils.isEmpty(codecCustomizers)) {
-				clientBuilder.exchangeStrategies(ExchangeStrategies.builder().codecs(
-						(codecs) -> codecCustomizers.forEach((codecCustomizer) -> codecCustomizer.customize(codecs)))
-						.build());
+				clientBuilder.exchangeStrategies(ExchangeStrategies.builder()
+					.codecs((codecs) -> codecCustomizers
+						.forEach((codecCustomizer) -> codecCustomizer.customize(codecs)))
+					.build());
 			}
 		}
 

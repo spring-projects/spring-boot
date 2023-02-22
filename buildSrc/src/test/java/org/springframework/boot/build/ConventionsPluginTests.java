@@ -88,9 +88,9 @@ class ConventionsPluginTests {
 			assertThatNoticeIsPresent(jar);
 			Attributes mainAttributes = jar.getManifest().getMainAttributes();
 			assertThat(mainAttributes.getValue("Implementation-Title"))
-					.isEqualTo("Test project for manifest customization");
+				.isEqualTo("Test project for manifest customization");
 			assertThat(mainAttributes.getValue("Automatic-Module-Name"))
-					.isEqualTo(this.projectDir.getName().replace("-", "."));
+				.isEqualTo(this.projectDir.getName().replace("-", "."));
 			assertThat(mainAttributes.getValue("Implementation-Version")).isEqualTo("1.2.3");
 			assertThat(mainAttributes.getValue("Built-By")).isEqualTo("Spring");
 			assertThat(mainAttributes.getValue("Build-Jdk-Spec")).isEqualTo("17");
@@ -117,9 +117,9 @@ class ConventionsPluginTests {
 			assertThatNoticeIsPresent(jar);
 			Attributes mainAttributes = jar.getManifest().getMainAttributes();
 			assertThat(mainAttributes.getValue("Implementation-Title"))
-					.isEqualTo("Source for " + this.projectDir.getName());
+				.isEqualTo("Source for " + this.projectDir.getName());
 			assertThat(mainAttributes.getValue("Automatic-Module-Name"))
-					.isEqualTo(this.projectDir.getName().replace("-", "."));
+				.isEqualTo(this.projectDir.getName().replace("-", "."));
 			assertThat(mainAttributes.getValue("Implementation-Version")).isEqualTo("1.2.3");
 			assertThat(mainAttributes.getValue("Built-By")).isEqualTo("Spring");
 			assertThat(mainAttributes.getValue("Build-Jdk-Spec")).isEqualTo("17");
@@ -146,9 +146,9 @@ class ConventionsPluginTests {
 			assertThatNoticeIsPresent(jar);
 			Attributes mainAttributes = jar.getManifest().getMainAttributes();
 			assertThat(mainAttributes.getValue("Implementation-Title"))
-					.isEqualTo("Javadoc for " + this.projectDir.getName());
+				.isEqualTo("Javadoc for " + this.projectDir.getName());
 			assertThat(mainAttributes.getValue("Automatic-Module-Name"))
-					.isEqualTo(this.projectDir.getName().replace("-", "."));
+				.isEqualTo(this.projectDir.getName().replace("-", "."));
 			assertThat(mainAttributes.getValue("Implementation-Version")).isEqualTo("1.2.3");
 			assertThat(mainAttributes.getValue("Built-By")).isEqualTo("Spring");
 			assertThat(mainAttributes.getValue("Build-Jdk-Spec")).isEqualTo("17");
@@ -186,7 +186,8 @@ class ConventionsPluginTests {
 			out.println("}");
 		}
 		assertThat(runGradle(Collections.singletonMap("CI", "true"), "retryConfig", "--stacktrace").getOutput())
-				.contains("maxRetries: 3").contains("failOnPassedAfterRetry: true");
+			.contains("maxRetries: 3")
+			.contains("failOnPassedAfterRetry: true");
 	}
 
 	@Test
@@ -207,7 +208,8 @@ class ConventionsPluginTests {
 			out.println("}");
 		}
 		assertThat(runGradle(Collections.singletonMap("CI", "local"), "retryConfig", "--stacktrace").getOutput())
-				.contains("maxRetries: 0").contains("failOnPassedAfterRetry: true");
+			.contains("maxRetries: 0")
+			.contains("failOnPassedAfterRetry: true");
 	}
 
 	private BuildResult runGradle(String... args) {
@@ -215,8 +217,12 @@ class ConventionsPluginTests {
 	}
 
 	private BuildResult runGradle(Map<String, String> environment, String... args) {
-		return GradleRunner.create().withProjectDir(this.projectDir).withEnvironment(environment).withArguments(args)
-				.withPluginClasspath().build();
+		return GradleRunner.create()
+			.withProjectDir(this.projectDir)
+			.withEnvironment(environment)
+			.withArguments(args)
+			.withPluginClasspath()
+			.build();
 	}
 
 }

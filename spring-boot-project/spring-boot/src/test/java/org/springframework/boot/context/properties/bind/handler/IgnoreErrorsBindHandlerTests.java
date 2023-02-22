@@ -54,7 +54,7 @@ class IgnoreErrorsBindHandlerTests {
 	@Test
 	void bindWhenNotIgnoringErrorsShouldFail() {
 		assertThatExceptionOfType(BindException.class)
-				.isThrownBy(() -> this.binder.bind("example", Bindable.of(Example.class)));
+			.isThrownBy(() -> this.binder.bind("example", Bindable.of(Example.class)));
 	}
 
 	@Test

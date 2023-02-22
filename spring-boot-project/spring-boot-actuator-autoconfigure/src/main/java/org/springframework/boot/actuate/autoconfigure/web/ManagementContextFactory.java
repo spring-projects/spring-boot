@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,12 +59,12 @@ public final class ManagementContextFactory {
 	public ConfigurableApplicationContext createManagementContext(ApplicationContext parentContext) {
 		Environment parentEnvironment = parentContext.getEnvironment();
 		ConfigurableEnvironment childEnvironment = ApplicationContextFactory.DEFAULT
-				.createEnvironment(this.webApplicationType);
+			.createEnvironment(this.webApplicationType);
 		if (parentEnvironment instanceof ConfigurableEnvironment) {
 			childEnvironment.setConversionService(((ConfigurableEnvironment) parentEnvironment).getConversionService());
 		}
 		ConfigurableApplicationContext managementContext = ApplicationContextFactory.DEFAULT
-				.create(this.webApplicationType);
+			.create(this.webApplicationType);
 		managementContext.setEnvironment(childEnvironment);
 		managementContext.setParent(parentContext);
 		return managementContext;

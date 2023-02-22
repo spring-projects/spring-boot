@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,9 @@ public class TestServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		resp.getWriter().print(((String) req.getServletContext().getAttribute("listenerAttribute")) + " "
-				+ req.getAttribute("filterAttribute") + " " + req.getAttribute("listenerAddedFilterAttribute"));
+		resp.getWriter()
+			.print(((String) req.getServletContext().getAttribute("listenerAttribute")) + " "
+					+ req.getAttribute("filterAttribute") + " " + req.getAttribute("listenerAddedFilterAttribute"));
 		resp.getWriter().flush();
 	}
 

@@ -38,13 +38,13 @@ class TotalProgressEventTests {
 	@Test
 	void createWhenPercentLessThanZeroThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TotalProgressEvent(-1))
-				.withMessage("Percent must be in the range 0 to 100");
+			.withMessage("Percent must be in the range 0 to 100");
 	}
 
 	@Test
 	void createWhenEventMoreThanOneHundredThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TotalProgressEvent(101))
-				.withMessage("Percent must be in the range 0 to 100");
+			.withMessage("Percent must be in the range 0 to 100");
 	}
 
 }

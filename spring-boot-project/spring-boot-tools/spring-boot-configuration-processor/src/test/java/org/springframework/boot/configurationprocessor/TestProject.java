@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,8 +84,8 @@ public class TestProject {
 	 */
 	public void delete(Class<?> type) {
 		SourceFile[] newSources = this.sources.stream()
-				.filter((sourceFile) -> !sourceFile.getPath().equals(SourceFile.forTestClass(type).getPath()))
-				.toArray(SourceFile[]::new);
+			.filter((sourceFile) -> !sourceFile.getPath().equals(SourceFile.forTestClass(type).getPath()))
+			.toArray(SourceFile[]::new);
 		this.sources = SourceFiles.of(newSources);
 	}
 
