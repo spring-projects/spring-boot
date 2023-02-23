@@ -38,6 +38,7 @@ import ch.qos.logback.classic.spi.LoggerContextListener;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import ch.qos.logback.core.joran.action.Action;
+import ch.qos.logback.core.joran.spi.ActionException;
 import ch.qos.logback.core.joran.spi.ElementSelector;
 import ch.qos.logback.core.joran.spi.RuleStore;
 import ch.qos.logback.core.joran.spi.SaxEventInterpretationContext;
@@ -684,27 +685,13 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 				mock(BeanFactoryInitializationAotContribution.class));
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerSingleton("joranConfigurator1", new JoranConfigurator() {
+
 			@Override
 			public void addElementSelectorAndActionAssociations(RuleStore ruleStore) {
-				ruleStore.addRule(new ElementSelector("*/rule1"), () -> new Action() {
-					@Override
-					public void begin(SaxEventInterpretationContext intercon, String name, Attributes attributes) {
-					}
-
-					@Override
-					public void end(SaxEventInterpretationContext intercon, String name) {
-					}
-				});
-				ruleStore.addRule(new ElementSelector("*/rule2"), () -> new Action() {
-					@Override
-					public void begin(SaxEventInterpretationContext intercon, String name, Attributes attributes) {
-					}
-
-					@Override
-					public void end(SaxEventInterpretationContext intercon, String name) {
-					}
-				});
+				ruleStore.addRule(new ElementSelector("*/rule1"), () -> new EmptyAction());
+				ruleStore.addRule(new ElementSelector("*/rule2"), () -> new EmptyAction());
 			}
+
 		});
 		this.loggingSystem.processAheadOfTime(beanFactory);
 		this.loggingSystem.beforeInitialize();
@@ -753,6 +740,19 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 			.filter((line) -> line.contains(outputSearch))
 			.findFirst()
 			.orElse(null);
+	}
+
+	private static class EmptyAction extends Action {
+
+		@Override
+		public void begin(SaxEventInterpretationContext intercon, String name, Attributes attributes)
+				throws ActionException {
+		}
+
+		@Override
+		public void end(SaxEventInterpretationContext intercon, String name) throws ActionException {
+		}
+
 	}
 
 }

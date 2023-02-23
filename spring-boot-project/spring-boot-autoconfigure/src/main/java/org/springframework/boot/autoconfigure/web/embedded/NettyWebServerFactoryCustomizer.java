@@ -57,17 +57,14 @@ public class NettyWebServerFactoryCustomizer
 	@Override
 	public void customize(NettyReactiveWebServerFactory factory) {
 		factory.setUseForwardHeaders(getOrDeduceUseForwardHeaders());
-		PropertyMapper propertyMapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		ServerProperties.Netty nettyProperties = this.serverProperties.getNetty();
-		propertyMapper.from(nettyProperties::getConnectionTimeout)
-			.whenNonNull()
+		map.from(nettyProperties::getConnectionTimeout)
 			.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
-		propertyMapper.from(nettyProperties::getIdleTimeout)
-			.whenNonNull()
-			.to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
-		propertyMapper.from(nettyProperties::getMaxKeepAliveRequests)
+		map.from(nettyProperties::getIdleTimeout).to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
+		map.from(nettyProperties::getMaxKeepAliveRequests)
 			.to((maxKeepAliveRequests) -> customizeMaxKeepAliveRequests(factory, maxKeepAliveRequests));
-		customizeRequestDecoder(factory, propertyMapper);
+		customizeRequestDecoder(factory, map);
 	}
 
 	private boolean getOrDeduceUseForwardHeaders() {

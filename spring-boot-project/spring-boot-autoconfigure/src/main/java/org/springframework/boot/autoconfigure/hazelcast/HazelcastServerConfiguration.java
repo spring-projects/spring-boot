@@ -77,10 +77,7 @@ class HazelcastServerConfiguration {
 
 		private Config loadConfig(Resource configLocation) throws IOException {
 			URL configUrl = configLocation.getURL();
-			Config config;
-			try (InputStream stream = configUrl.openStream()) {
-				config = Config.loadFromStream(stream);
-			}
+			Config config = loadConfig(configUrl);
 			if (ResourceUtils.isFileURL(configUrl)) {
 				config.setConfigurationFile(configLocation.getFile());
 			}
@@ -88,6 +85,12 @@ class HazelcastServerConfiguration {
 				config.setConfigurationUrl(configUrl);
 			}
 			return config;
+		}
+
+		private Config loadConfig(URL configUrl) throws IOException {
+			try (InputStream stream = configUrl.openStream()) {
+				return Config.loadFromStream(stream);
+			}
 		}
 
 	}

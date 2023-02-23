@@ -87,6 +87,7 @@ public enum CloudPlatform {
 
 	/**
 	 * Nomad platform.
+	 * @since 3.1.0
 	 */
 	NOMAD {
 
