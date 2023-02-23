@@ -1,0 +1,5 @@
+# .git-blame-ignore-revs
+# Reformat code following spring-javaformat upgrade
+df5898a1464112f185d295d585740de696934a12
+
+    
