@@ -1421,7 +1421,7 @@ bom {
 			]
 		}
 	}
-	library("Spring WS", "4.0.1") {
+	library("Spring WS", "4.0.2") {
 		group("org.springframework.ws") {
 			imports = [
 				"spring-ws-bom"
