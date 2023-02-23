@@ -159,7 +159,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(output).contains("Hello world").contains(tmpDir() + "/tmp.log");
 		assertThat(new File(tmpDir() + "/tmp.log")).doesNotExist();
 		assertThat(configuration.getConfigurationSource().getFile().getAbsolutePath())
-				.contains("log4j2-nondefault.xml");
+			.contains("log4j2-nondefault.xml");
 		assertThat(configuration.getWatchManager().getIntervalSeconds()).isEqualTo(30);
 	}
 
@@ -236,7 +236,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
 		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(getClass().getName());
 		assertThat(configuration)
-				.isEqualTo(new LoggerConfiguration(getClass().getName(), LogLevel.DEBUG, LogLevel.DEBUG));
+			.isEqualTo(new LoggerConfiguration(getClass().getName(), LogLevel.DEBUG, LogLevel.DEBUG));
 	}
 
 	@Test
@@ -391,7 +391,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.setLogLevel("com.example.test", LogLevel.DEBUG);
 		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration("com.example.test");
 		assertThat(configuration)
-				.isEqualTo(new LoggerConfiguration("com.example.test", LogLevel.DEBUG, LogLevel.DEBUG));
+			.isEqualTo(new LoggerConfiguration("com.example.test", LogLevel.DEBUG, LogLevel.DEBUG));
 		this.loggingSystem.setLogLevel("com.example.test", null);
 		LoggerConfiguration updatedConfiguration = this.loggingSystem.getLoggerConfiguration("com.example.test");
 		assertThat(updatedConfiguration).isNull();
@@ -402,17 +402,18 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
 		this.loggingSystem.beforeInitialize();
 		this.loggingSystem.initialize(this.initializationContext, null, null);
-		loggerContext.getConfiguration().addLogger("com.example.test",
-				new LoggerConfig("com.example.test", org.apache.logging.log4j.Level.INFO, false));
+		loggerContext.getConfiguration()
+			.addLogger("com.example.test",
+					new LoggerConfig("com.example.test", org.apache.logging.log4j.Level.INFO, false));
 		this.loggingSystem.setLogLevel("com.example", LogLevel.WARN);
 		this.loggingSystem.setLogLevel("com.example.test", LogLevel.DEBUG);
 		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration("com.example.test");
 		assertThat(configuration)
-				.isEqualTo(new LoggerConfiguration("com.example.test", LogLevel.DEBUG, LogLevel.DEBUG));
+			.isEqualTo(new LoggerConfiguration("com.example.test", LogLevel.DEBUG, LogLevel.DEBUG));
 		this.loggingSystem.setLogLevel("com.example.test", null);
 		LoggerConfiguration updatedConfiguration = this.loggingSystem.getLoggerConfiguration("com.example.test");
 		assertThat(updatedConfiguration)
-				.isEqualTo(new LoggerConfiguration("com.example.test", LogLevel.WARN, LogLevel.WARN));
+			.isEqualTo(new LoggerConfiguration("com.example.test", LogLevel.WARN, LogLevel.WARN));
 	}
 
 	@Test
@@ -436,7 +437,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	void shutdownHookIsDisabled() {
 		assertThat(
 				PropertiesUtil.getProperties().getBooleanProperty(ShutdownCallbackRegistry.SHUTDOWN_HOOK_ENABLED, true))
-						.isFalse();
+			.isFalse();
 	}
 
 	@Test
@@ -475,9 +476,11 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	void nonFileUrlsAreResolvedUsingLog4J2UrlConnectionFactory() {
 		this.loggingSystem.beforeInitialize();
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.loggingSystem.initialize(this.initializationContext,
-						"http://localhost:8080/shouldnotwork", null))
-				.havingCause().isInstanceOf(ProtocolException.class).withMessageContaining("http has not been enabled");
+			.isThrownBy(() -> this.loggingSystem.initialize(this.initializationContext,
+					"http://localhost:8080/shouldnotwork", null))
+			.havingCause()
+			.isInstanceOf(ProtocolException.class)
+			.withMessageContaining("http has not been enabled");
 	}
 
 	private String getRelativeClasspathLocation(String fileName) {
