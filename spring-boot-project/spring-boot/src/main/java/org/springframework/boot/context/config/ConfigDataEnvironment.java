@@ -150,7 +150,7 @@ class ConfigDataEnvironment {
 		this.environmentUpdateListener = (environmentUpdateListener != null) ? environmentUpdateListener
 				: ConfigDataEnvironmentUpdateListener.NONE;
 		this.loaders = new ConfigDataLoaders(logFactory, bootstrapContext,
-				SpringFactoriesLoader.forDefaultResourceLocation());
+				SpringFactoriesLoader.forDefaultResourceLocation(resourceLoader.getClassLoader()));
 		this.contributors = createContributors(binder);
 	}
 

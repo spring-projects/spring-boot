@@ -16,8 +16,12 @@
 
 package org.springframework.boot.context.config;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,10 +46,12 @@ import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.mock.env.MockPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -326,6 +332,33 @@ class ConfigDataEnvironmentTests {
 		assertThat(listener.getProfiles().getActive()).containsExactly("one", "two", "three");
 	}
 
+	@Test
+	@SuppressWarnings("rawtypes")
+	void configDataLoadersAreLoadedUsingClassLoaderFromResourceLoader() {
+		ResourceLoader resourceLoader = mock(ResourceLoader.class);
+		ClassLoader classLoader = new ClassLoader() {
+
+			@Override
+			public Enumeration<URL> getResources(String name) throws IOException {
+				if (SpringFactoriesLoader.FACTORIES_RESOURCE_LOCATION.equals(name)) {
+					return Collections.enumeration(List.of(new File(
+							"src/test/resources/org/springframework/boot/context/config/separate-class-loader-spring.factories")
+						.toURI()
+						.toURL()));
+				}
+				return super.getResources(name);
+			}
+
+		};
+		given(resourceLoader.getClassLoader()).willReturn(classLoader);
+		TestConfigDataEnvironment configDataEnvironment = new TestConfigDataEnvironment(this.logFactory,
+				this.bootstrapContext, this.environment, resourceLoader, this.additionalProfiles, null);
+		assertThat(configDataEnvironment).extracting("loaders.loaders")
+			.asList()
+			.extracting((item) -> (Class) item.getClass())
+			.containsOnly(SeparateClassLoaderConfigDataLoader.class);
+	}
+
 	private String getConfigLocation(TestInfo info) {
 		return "optional:classpath:" + info.getTestClass().get().getName().replace('.', '/') + "-"
 				+ info.getTestMethod().get().getName() + ".properties";
@@ -351,6 +384,16 @@ class ConfigDataEnvironmentTests {
 
 		Binder getConfigDataLocationResolversBinder() {
 			return this.configDataLocationResolversBinder;
+		}
+
+	}
+
+	static class SeparateClassLoaderConfigDataLoader implements ConfigDataLoader<ConfigDataResource> {
+
+		@Override
+		public ConfigData load(ConfigDataLoaderContext context, ConfigDataResource resource)
+				throws IOException, ConfigDataResourceNotFoundException {
+			return null;
 		}
 
 	}
