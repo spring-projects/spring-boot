@@ -23,6 +23,7 @@ publishing.publications.withType(MavenPublication) {
 				delegate."resource.delimiter"('@')
 				delegate."maven.compiler.source"('${java.version}')
 				delegate."maven.compiler.target"('${java.version}')
+				delegate."maven.compiler.release"('${java.version}')
 				delegate."project.build.sourceEncoding"('UTF-8')
 				delegate."project.reporting.outputEncoding"('UTF-8')
 			}
