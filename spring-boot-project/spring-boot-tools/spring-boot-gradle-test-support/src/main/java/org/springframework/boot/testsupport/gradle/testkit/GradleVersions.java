@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ public final class GradleVersions {
 		if (isJava16()) {
 			return Arrays.asList("7.0.2", GradleVersion.current().getVersion());
 		}
-		return Arrays.asList("6.8.3", "6.9.3", "7.0.2", GradleVersion.current().getVersion());
+		return Arrays.asList("6.8.3", "6.9.4", "7.0.2", GradleVersion.current().getVersion());
 	}
 
 	public static String minimumCompatible() {
