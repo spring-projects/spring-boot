@@ -1,9 +1,9 @@
+// tag::apply[]
 plugins {
+	id 'java'
 	id 'org.springframework.boot' version '{gradle-project-version}'
 }
 
-// tag::apply[]
-apply plugin: 'java'
 apply plugin: 'io.spring.dependency-management'
 // end::apply[]
 
