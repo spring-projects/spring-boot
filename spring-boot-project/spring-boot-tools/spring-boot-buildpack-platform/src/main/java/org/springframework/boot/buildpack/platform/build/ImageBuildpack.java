@@ -17,6 +17,7 @@
 package org.springframework.boot.buildpack.platform.build;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,7 +36,6 @@ import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.Layer;
 import org.springframework.boot.buildpack.platform.docker.type.LayerId;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
-import org.springframework.boot.buildpack.platform.io.TarArchive;
 import org.springframework.util.StreamUtils;
 
 /**
@@ -115,23 +115,16 @@ final class ImageBuildpack implements Buildpack {
 
 		ExportedLayers(BuildpackResolverContext context, ImageReference imageReference) throws IOException {
 			List<Path> layerFiles = new ArrayList<>();
-			context.exportImageLayers(imageReference, (name, archive) -> layerFiles.add(copyToTemp(name, archive)));
+			context.exportImageLayers(imageReference, (name, path) -> layerFiles.add(copyToTemp(path)));
 			this.layerFiles = Collections.unmodifiableList(layerFiles);
 		}
 
-		private Path copyToTemp(String name, TarArchive archive) throws IOException {
-			String[] parts = name.split("/");
-			Path path = Files.createTempFile("create-builder-scratch-", parts[0]);
-			try (OutputStream out = Files.newOutputStream(path)) {
-				archive.writeTo(out);
+		private Path copyToTemp(Path path) throws IOException {
+			Path outputPath = Files.createTempFile("create-builder-scratch-", null);
+			try (OutputStream out = Files.newOutputStream(outputPath)) {
+				copyLayerTar(path, out);
 			}
-			return path;
-		}
-
-		void apply(IOConsumer<Layer> layers) throws IOException {
-			for (Path path : this.layerFiles) {
-				layers.accept(Layer.fromTarArchive((out) -> copyLayerTar(path, out)));
-			}
+			return outputPath;
 		}
 
 		private void copyLayerTar(Path path, OutputStream out) throws IOException {
@@ -147,7 +140,16 @@ final class ImageBuildpack implements Buildpack {
 				}
 				tarOut.finish();
 			}
-			Files.delete(path);
+		}
+
+		void apply(IOConsumer<Layer> layers) throws IOException {
+			for (Path path : this.layerFiles) {
+				layers.accept(Layer.fromTarArchive((out) -> {
+					InputStream in = Files.newInputStream(path);
+					StreamUtils.copy(in, out);
+				}));
+				Files.delete(path);
+			}
 		}
 
 	}

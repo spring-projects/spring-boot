@@ -21,6 +21,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -310,14 +313,14 @@ class DockerApiTests {
 
 		@Test
 		void exportLayersWhenReferenceIsNullThrowsException() {
-			assertThatIllegalArgumentException().isThrownBy(() -> this.api.exportLayers(null, (name, archive) -> {
+			assertThatIllegalArgumentException().isThrownBy(() -> this.api.exportLayerFiles(null, (name, archive) -> {
 			})).withMessage("Reference must not be null");
 		}
 
 		@Test
 		void exportLayersWhenExportsIsNullThrowsException() {
 			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
-			assertThatIllegalArgumentException().isThrownBy(() -> this.api.exportLayers(reference, null))
+			assertThatIllegalArgumentException().isThrownBy(() -> this.api.exportLayerFiles(reference, null))
 				.withMessage("Exports must not be null");
 		}
 
@@ -340,11 +343,62 @@ class DockerApiTests {
 				}
 			});
 			assertThat(contents).hasSize(3)
-				.containsKeys("1bf6c63a1e9ed1dd7cb961273bf60b8e0f440361faf273baf866f408e4910601/layer.tar",
-						"8fdfb915302159a842cbfae6faec5311b00c071ebf14e12da7116ae7532e9319/layer.tar",
-						"93cd584bb189bfca4f51744bd19d836fd36da70710395af5a1523ee88f208c6a/layer.tar");
-			assertThat(contents.get("1bf6c63a1e9ed1dd7cb961273bf60b8e0f440361faf273baf866f408e4910601/layer.tar"))
-				.containsExactly("etc/", "etc/apt/", "etc/apt/sources.list");
+				.containsKeys("70bb7a3115f3d5c01099852112c7e05bf593789e510468edb06b6a9a11fa3b73/layer.tar",
+						"74a9a50ece13c025cf10e9110d9ddc86c995079c34e2a22a28d1a3d523222c6e/layer.tar",
+						"a69532b5b92bb891fbd9fa1a6b3af9087ea7050255f59ba61a796f8555ecd783/layer.tar");
+			assertThat(contents.get("70bb7a3115f3d5c01099852112c7e05bf593789e510468edb06b6a9a11fa3b73/layer.tar"))
+				.containsExactly("/cnb/order.toml");
+			assertThat(contents.get("74a9a50ece13c025cf10e9110d9ddc86c995079c34e2a22a28d1a3d523222c6e/layer.tar"))
+				.containsExactly("/cnb/stack.toml");
+		}
+
+		@Test
+		void exportLayersWithSymlinksExportsLayerTars() throws Exception {
+			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
+			URI exportUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/get");
+			given(DockerApiTests.this.http.get(exportUri)).willReturn(responseOf("export-symlinks.tar"));
+			MultiValueMap<String, String> contents = new LinkedMultiValueMap<>();
+			this.api.exportLayers(reference, (name, archive) -> {
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				archive.writeTo(out);
+				try (TarArchiveInputStream in = new TarArchiveInputStream(
+						new ByteArrayInputStream(out.toByteArray()))) {
+					TarArchiveEntry entry = in.getNextTarEntry();
+					while (entry != null) {
+						contents.add(name, entry.getName());
+						entry = in.getNextTarEntry();
+					}
+				}
+			});
+			assertThat(contents).hasSize(3)
+				.containsKeys("6aa3691a73805f608e5fce69fb6bc89aec8362f58a6b4be2682515e9cfa3cc1a.tar",
+						"762e198f655bc2580ef3e56b538810fd2b9981bd707f8a44c70344b58f9aee68.tar",
+						"d3cc975ad97fdfbb73d9daf157e7f658d6117249fd9c237e3856ad173c87e1d2.tar");
+			assertThat(contents.get("d3cc975ad97fdfbb73d9daf157e7f658d6117249fd9c237e3856ad173c87e1d2.tar"))
+				.containsExactly("/cnb/order.toml");
+			assertThat(contents.get("762e198f655bc2580ef3e56b538810fd2b9981bd707f8a44c70344b58f9aee68.tar"))
+				.containsExactly("/cnb/stack.toml");
+		}
+
+		@Test
+		void exportLayerFilesDeletesTempFiles() throws Exception {
+			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
+			URI exportUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/get");
+			given(DockerApiTests.this.http.get(exportUri)).willReturn(responseOf("export.tar"));
+			List<Path> layerFilePaths = new ArrayList<>();
+			this.api.exportLayerFiles(reference, (name, path) -> layerFilePaths.add(path));
+			layerFilePaths.forEach((path) -> assertThat(path.toFile()).doesNotExist());
+		}
+
+		@Test
+		void exportLayersWithNoManifestThrowsException() throws Exception {
+			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
+			URI exportUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/get");
+			given(DockerApiTests.this.http.get(exportUri)).willReturn(responseOf("export-no-manifest.tar"));
+			assertThatIllegalArgumentException()
+				.isThrownBy(() -> this.api.exportLayerFiles(reference, (name, archive) -> {
+				}))
+				.withMessageContaining("Manifest not found in image " + reference);
 		}
 
 		@Test
