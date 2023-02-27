@@ -97,8 +97,18 @@ public class BuildInfoMojo extends AbstractMojo {
 	@Parameter
 	private List<String> excludeInfoProperties;
 
+	/**
+	 * Skip the execution.
+	 */
+	@Parameter(property = "spring-boot.build-info.skip", defaultValue = "false")
+	private boolean skip;
+
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		if (this.skip) {
+			getLog().debug("skipping build-info as per configuration.");
+			return;
+		}
 		try {
 			ProjectDetails details = getProjectDetails();
 			new BuildPropertiesWriter(this.outputFile).writeBuildProperties(details);
