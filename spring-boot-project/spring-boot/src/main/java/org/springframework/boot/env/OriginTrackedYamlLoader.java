@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.env;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +48,7 @@ import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.boot.origin.TextResourceOrigin;
 import org.springframework.boot.origin.TextResourceOrigin.Location;
 import org.springframework.core.io.Resource;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Class to load {@code .yml} files into a map of {@code String} to
@@ -73,8 +77,8 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 
 	private Yaml createYaml(LoaderOptions loaderOptions) {
 		BaseConstructor constructor = new OriginTrackingConstructor(loaderOptions);
-		Representer representer = new Representer();
 		DumperOptions dumperOptions = new DumperOptions();
+		Representer representer = new Representer(dumperOptions);
 		LimitedResolver resolver = new LimitedResolver();
 		return new Yaml(constructor, representer, dumperOptions, loaderOptions, resolver);
 	}
@@ -167,7 +171,12 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 	/**
 	 * {@link Resolver} that limits {@link Tag#TIMESTAMP} tags.
 	 */
-	private static class LimitedResolver extends Resolver {
+	static class LimitedResolver extends Resolver {
+
+		private static final MethodType SNAKE_YAML_2_ADD_IMPLICIT_RESOLVER_METHOD_TYPE = MethodType
+				.methodType(void.class, Tag.class, Pattern.class, String.class, int.class);
+
+		private volatile MethodHandle snakeYaml2ImplicitResolverMethod;
 
 		@Override
 		public void addImplicitResolver(Tag tag, Pattern regexp, String first) {
@@ -175,6 +184,30 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 				return;
 			}
 			super.addImplicitResolver(tag, regexp, first);
+		}
+
+		public void addImplicitResolver(Tag tag, Pattern regexp, String first, int limit) {
+			// Support for SnakeYAML 2.0
+			if (tag == Tag.TIMESTAMP) {
+				return;
+			}
+			try {
+				getSnakeYaml2ImplicitResolverMethod().invoke(this, tag, regexp, first, limit);
+			}
+			catch (Throwable ex) {
+				ReflectionUtils.rethrowRuntimeException(ex);
+			}
+		}
+
+		private MethodHandle getSnakeYaml2ImplicitResolverMethod()
+				throws NoSuchMethodException, IllegalAccessException {
+			MethodHandle snakeYaml2ImplicitResolverMethod = this.snakeYaml2ImplicitResolverMethod;
+			if (snakeYaml2ImplicitResolverMethod == null) {
+				snakeYaml2ImplicitResolverMethod = MethodHandles.lookup().findSpecial(Resolver.class,
+						"addImplicitResolver", SNAKE_YAML_2_ADD_IMPLICIT_RESOLVER_METHOD_TYPE, getClass());
+				this.snakeYaml2ImplicitResolverMethod = snakeYaml2ImplicitResolverMethod;
+			}
+			return snakeYaml2ImplicitResolverMethod;
 		}
 
 	}
