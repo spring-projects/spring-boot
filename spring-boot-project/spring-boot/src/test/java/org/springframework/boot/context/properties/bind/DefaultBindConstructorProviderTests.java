@@ -125,6 +125,14 @@ class DefaultBindConstructorProviderTests {
 		assertThat(bindConstructor).isNotNull();
 	}
 
+	@Test
+	void getBindConstructorWhenHasExistingValueAndValueIsRecordReturnsConstructor() {
+		OneConstructorOnRecord existingValue = new OneConstructorOnRecord("name", 123);
+		Bindable<?> bindable = Bindable.of(OneConstructorOnRecord.class).withExistingValue(existingValue);
+		Constructor<?> bindConstructor = this.provider.getBindConstructor(bindable, false);
+		assertThat(bindConstructor).isNotNull();
+	}
+
 	static class OnlyDefaultConstructor {
 
 	}
@@ -196,6 +204,10 @@ class DefaultBindConstructorProviderTests {
 
 		OneConstructorWithoutAnnotations(String name, int age) {
 		}
+
+	}
+
+	static record OneConstructorOnRecord(String name, int age) {
 
 	}
 

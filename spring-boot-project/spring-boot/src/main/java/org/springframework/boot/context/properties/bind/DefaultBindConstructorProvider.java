@@ -21,6 +21,8 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import kotlin.jvm.JvmClassMappingKt;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.KotlinDetector;
@@ -41,7 +43,8 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 	public Constructor<?> getBindConstructor(Bindable<?> bindable, boolean isNestedConstructorBinding) {
 		Constructors constructors = Constructors.getConstructors(bindable.getType().resolve(),
 				isNestedConstructorBinding);
-		if (constructors.getBind() != null && constructors.isDeducedBindConstructor()) {
+		if (constructors.getBind() != null && constructors.isDeducedBindConstructor()
+				&& !constructors.isImmutableType()) {
 			if (bindable.getValue() != null && bindable.getValue().get() != null) {
 				return null;
 			}
@@ -60,7 +63,7 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 	 */
 	static final class Constructors {
 
-		private static final Constructors NONE = new Constructors(false, null, false);
+		private static final Constructors NONE = new Constructors(false, null, false, false);
 
 		private final boolean hasAutowired;
 
@@ -68,10 +71,14 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 
 		private final boolean deducedBindConstructor;
 
-		private Constructors(boolean hasAutowired, Constructor<?> bind, boolean deducedBindConstructor) {
+		private final boolean immutableType;
+
+		private Constructors(boolean hasAutowired, Constructor<?> bind, boolean deducedBindConstructor,
+				boolean immutableType) {
 			this.hasAutowired = hasAutowired;
 			this.bind = bind;
 			this.deducedBindConstructor = deducedBindConstructor;
+			this.immutableType = immutableType;
 		}
 
 		boolean hasAutowired() {
@@ -86,6 +93,10 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			return this.deducedBindConstructor;
 		}
 
+		boolean isImmutableType() {
+			return this.immutableType;
+		}
+
 		static Constructors getConstructors(Class<?> type, boolean isNestedConstructorBinding) {
 			if (type == null) {
 				return NONE;
@@ -93,13 +104,15 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			boolean hasAutowiredConstructor = isAutowiredPresent(type);
 			Constructor<?>[] candidates = getCandidateConstructors(type);
 			MergedAnnotations[] candidateAnnotations = getAnnotations(candidates);
+			boolean kotlinType = isKotlinType(type);
 			boolean deducedBindConstructor = false;
+			boolean immutableType = type.isRecord() || isKotlinDataClass(type);
 			Constructor<?> bind = getConstructorBindingAnnotated(type, candidates, candidateAnnotations);
 			if (bind == null && !hasAutowiredConstructor) {
 				bind = deduceBindConstructor(type, candidates);
 				deducedBindConstructor = bind != null;
 			}
-			if (bind == null && !hasAutowiredConstructor && isKotlinType(type)) {
+			if (bind == null && !hasAutowiredConstructor && kotlinType) {
 				bind = deduceKotlinBindConstructor(type);
 				deducedBindConstructor = bind != null;
 			}
@@ -107,7 +120,7 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 				Assert.state(!hasAutowiredConstructor,
 						() -> type.getName() + " declares @ConstructorBinding and @Autowired constructor");
 			}
-			return new Constructors(hasAutowiredConstructor, bind, deducedBindConstructor);
+			return new Constructors(hasAutowiredConstructor, bind, deducedBindConstructor, immutableType);
 		}
 
 		private static boolean isAutowiredPresent(Class<?> type) {
@@ -183,6 +196,10 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 				}
 			}
 			return (result != null && result.getParameterCount() > 0) ? result : null;
+		}
+
+		private static boolean isKotlinDataClass(Class<?> type) {
+			return isKotlinType(type) && JvmClassMappingKt.getKotlinClass(type).isData();
 		}
 
 		private static boolean isKotlinType(Class<?> type) {
