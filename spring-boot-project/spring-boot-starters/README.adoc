@@ -88,6 +88,9 @@ do as they were designed before this was clarified.
 | ErroREST exception handler
 | https://github.com/mkopylec/errorest-spring-boot-starter
 
+| https://societe-generale.github.io/failover/[Failover]
+| https://github.com/societe-generale/failover
+
 | https://www.flowable.org/[Flowable]
 | https://github.com/flowable/flowable-engine/tree/master/modules/flowable-spring-boot/flowable-spring-boot-starters
 
@@ -246,8 +249,5 @@ do as they were designed before this was clarified.
 
 | https://github.com/knowm/XChange[XChange]
 | https://github.com/cassandre-tech/cassandre-trading-bot
-
-| https://societe-generale.github.io/failover/[Failover]
-| https://github.com/societe-generale/failover
 
 |===
