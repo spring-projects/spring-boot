@@ -55,8 +55,8 @@ class GraphitePropertiesConfigAdapterTests {
 	@Test
 	void whenPropertiesDurationUnitsIsSetAdapterDurationUnitsReturnsIt() {
 		GraphiteProperties properties = new GraphiteProperties();
-		properties.setRateUnits(TimeUnit.MINUTES);
-		assertThat(new GraphitePropertiesConfigAdapter(properties).rateUnits()).isEqualTo(TimeUnit.MINUTES);
+		properties.setDurationUnits(TimeUnit.MINUTES);
+		assertThat(new GraphitePropertiesConfigAdapter(properties).durationUnits()).isEqualTo(TimeUnit.MINUTES);
 	}
 
 	@Test

@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mirko Sobeck
  */
-class SignalFXPropertiesConfigAdapterTests
+class SignalFxPropertiesConfigAdapterTests
 		extends StepRegistryPropertiesConfigAdapterTests<SignalFxProperties, SignalFxPropertiesConfigAdapter> {
 
 	@Override
