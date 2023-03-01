@@ -386,6 +386,22 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	void whenMultipleRabbitTemplateCustomizersAreDefinedThenTheyAreCalledInOrder() {
+		this.contextRunner.withUserConfiguration(MultipleRabbitTemplateCustomizersConfiguration.class)
+			.run((context) -> {
+				RabbitTemplateCustomizer firstCustomizer = context.getBean("firstCustomizer",
+						RabbitTemplateCustomizer.class);
+				RabbitTemplateCustomizer secondCustomizer = context.getBean("secondCustomizer",
+						RabbitTemplateCustomizer.class);
+				InOrder inOrder = inOrder(firstCustomizer, secondCustomizer);
+				RabbitTemplate template = context.getBean(RabbitTemplate.class);
+				then(firstCustomizer).should(inOrder).customize(template);
+				then(secondCustomizer).should(inOrder).customize(template);
+				inOrder.verifyNoMoreInteractions();
+			});
+	}
+
+	@Test
 	void testConnectionFactoryBackOff() {
 		this.contextRunner.withUserConfiguration(TestConfiguration2.class).run((context) -> {
 			RabbitTemplate rabbitTemplate = context.getBean(RabbitTemplate.class);
@@ -988,6 +1004,23 @@ class RabbitAutoConfigurationTests {
 		@Bean
 		MessageRecoverer anotherMessageRecoverer() {
 			return mock(MessageRecoverer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MultipleRabbitTemplateCustomizersConfiguration {
+
+		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE)
+		RabbitTemplateCustomizer secondCustomizer() {
+			return mock(RabbitTemplateCustomizer.class);
+		}
+
+		@Bean
+		@Order(0)
+		RabbitTemplateCustomizer firstCustomizer() {
+			return mock(RabbitTemplateCustomizer.class);
 		}
 
 	}

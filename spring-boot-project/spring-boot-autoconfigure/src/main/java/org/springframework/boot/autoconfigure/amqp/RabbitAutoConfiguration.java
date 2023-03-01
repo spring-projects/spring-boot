@@ -154,9 +154,11 @@ public class RabbitAutoConfiguration {
 		@Bean
 		@ConditionalOnSingleCandidate(ConnectionFactory.class)
 		@ConditionalOnMissingBean(RabbitOperations.class)
-		public RabbitTemplate rabbitTemplate(RabbitTemplateConfigurer configurer, ConnectionFactory connectionFactory) {
+		public RabbitTemplate rabbitTemplate(RabbitTemplateConfigurer configurer, ConnectionFactory connectionFactory,
+				ObjectProvider<RabbitTemplateCustomizer> customizers) {
 			RabbitTemplate template = new RabbitTemplate();
 			configurer.configure(template, connectionFactory);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(template));
 			return template;
 		}
 
