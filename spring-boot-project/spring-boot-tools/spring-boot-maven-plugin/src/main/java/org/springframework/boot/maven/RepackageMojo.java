@@ -22,6 +22,7 @@ import java.nio.file.attribute.FileTime;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Properties;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
@@ -207,6 +208,8 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	}
 
 	private void repackage() throws MojoExecutionException {
+		TimeZone originalDefaultTimeZone = TimeZone.getDefault();
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		Artifact source = getSourceArtifact(this.classifier);
 		File target = getTargetFile(this.finalName, this.classifier, this.outputDirectory);
 		Repackager repackager = getRepackager(source.getFile());
@@ -219,6 +222,7 @@ public class RepackageMojo extends AbstractPackagerMojo {
 			throw new MojoExecutionException(ex.getMessage(), ex);
 		}
 		updateArtifact(source, target, repackager.getBackupFile());
+		TimeZone.setDefault(originalDefaultTimeZone);
 	}
 
 	private FileTime parseOutputTimestamp() {
