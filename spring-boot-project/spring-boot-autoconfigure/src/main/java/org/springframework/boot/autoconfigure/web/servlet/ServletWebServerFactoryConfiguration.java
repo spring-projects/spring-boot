@@ -88,7 +88,7 @@ class ServletWebServerFactoryConfiguration {
 	static class EmbeddedJetty {
 
 		@Bean
-		JettyServletWebServerFactory JettyServletWebServerFactory(
+		JettyServletWebServerFactory jettyServletWebServerFactory(
 				ObjectProvider<JettyServerCustomizer> serverCustomizers) {
 			JettyServletWebServerFactory factory = new JettyServletWebServerFactory();
 			factory.getServerCustomizers().addAll(serverCustomizers.orderedStream().toList());
