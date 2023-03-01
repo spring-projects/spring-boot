@@ -63,7 +63,7 @@ class NewRelicPropertiesConfigAdapterTests
 	}
 
 	@Test
-	void whenPropertiesApikeyIsSetAdapterApikeyReturnsIt() {
+	void whenPropertiesApiKeyIsSetAdapterApiKeyReturnsIt() {
 		NewRelicProperties properties = createProperties();
 		properties.setApiKey("my-key");
 		assertThat(createConfigAdapter(properties).apiKey()).isEqualTo("my-key");
