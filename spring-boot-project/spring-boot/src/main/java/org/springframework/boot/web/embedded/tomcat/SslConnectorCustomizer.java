@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package org.springframework.boot.web.embedded.tomcat;
 
-import java.io.FileNotFoundException;
-
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11JsseProtocol;
@@ -28,9 +26,8 @@ import org.apache.tomcat.util.net.SSLHostConfigCertificate.Type;
 
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
-import org.springframework.boot.web.server.WebServerException;
+import org.springframework.boot.web.server.SslStoreProviderFactory;
 import org.springframework.util.Assert;
-import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -46,6 +43,10 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 	private final Ssl ssl;
 
 	private final SslStoreProvider sslStoreProvider;
+
+	SslConnectorCustomizer(Ssl ssl) {
+		this(ssl, SslStoreProviderFactory.from(ssl));
+	}
 
 	SslConnectorCustomizer(Ssl ssl, SslStoreProvider sslStoreProvider) {
 		Assert.notNull(ssl, "Ssl configuration should not be null");
@@ -99,10 +100,6 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 				certificate.setCertificateKeyPassword(keyPassword);
 			}
 		}
-		else {
-			configureSslKeyStore(certificate, ssl);
-			configureSslTrustStore(sslHostConfig, ssl);
-		}
 	}
 
 	private void configureEnabledProtocols(AbstractHttp11JsseProtocol<?> protocol, Ssl ssl) {
@@ -135,48 +132,7 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 			}
 		}
 		catch (Exception ex) {
-			throw new WebServerException("Could not load store: " + ex.getMessage(), ex);
-		}
-	}
-
-	private void configureSslKeyStore(SSLHostConfigCertificate certificate, Ssl ssl) {
-		String keystoreType = (ssl.getKeyStoreType() != null) ? ssl.getKeyStoreType() : "JKS";
-		String keystoreLocation = ssl.getKeyStore();
-		if (keystoreType.equalsIgnoreCase("PKCS11")) {
-			Assert.state(!StringUtils.hasText(keystoreLocation),
-					() -> "Keystore location '" + keystoreLocation + "' must be empty or null for PKCS11 key stores");
-		}
-		else {
-			try {
-				certificate.setCertificateKeystoreFile(ResourceUtils.getURL(keystoreLocation).toString());
-			}
-			catch (Exception ex) {
-				throw new WebServerException("Could not load key store '" + keystoreLocation + "'", ex);
-			}
-		}
-		certificate.setCertificateKeystoreType(keystoreType);
-		if (ssl.getKeyStoreProvider() != null) {
-			certificate.setCertificateKeystoreProvider(ssl.getKeyStoreProvider());
-		}
-	}
-
-	private void configureSslTrustStore(SSLHostConfig sslHostConfig, Ssl ssl) {
-		if (ssl.getTrustStore() != null) {
-			try {
-				sslHostConfig.setTruststoreFile(ResourceUtils.getURL(ssl.getTrustStore()).toString());
-			}
-			catch (FileNotFoundException ex) {
-				throw new WebServerException("Could not load trust store: " + ex.getMessage(), ex);
-			}
-		}
-		if (ssl.getTrustStorePassword() != null) {
-			sslHostConfig.setTruststorePassword(ssl.getTrustStorePassword());
-		}
-		if (ssl.getTrustStoreType() != null) {
-			sslHostConfig.setTruststoreType(ssl.getTrustStoreType());
-		}
-		if (ssl.getTrustStoreProvider() != null) {
-			sslHostConfig.setTruststoreProvider(ssl.getTrustStoreProvider());
+			throw new IllegalStateException("Could not load store: " + ex.getMessage(), ex);
 		}
 	}
 

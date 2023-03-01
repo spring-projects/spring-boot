@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,9 +39,9 @@ import org.springframework.boot.rsocket.server.ConfigurableRSocketServerFactory;
 import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
-import org.springframework.boot.web.server.CertificateFileSslStoreProvider;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
+import org.springframework.boot.web.server.SslStoreProviderFactory;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.unit.DataSize;
@@ -202,7 +202,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 		if (this.sslStoreProvider != null) {
 			return this.sslStoreProvider;
 		}
-		return CertificateFileSslStoreProvider.from(this.ssl);
+		return SslStoreProviderFactory.from(this.ssl);
 	}
 
 	private InetSocketAddress getListenAddress() {

@@ -41,12 +41,10 @@ import org.springframework.boot.web.embedded.test.MockPkcs11Security;
 import org.springframework.boot.web.embedded.test.MockPkcs11SecurityProvider;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
-import org.springframework.boot.web.server.WebServerException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.BDDMockito.given;
@@ -184,9 +182,9 @@ class SslConnectorCustomizerTests {
 
 	@Test
 	void customizeWhenSslIsEnabledWithNoKeyStoreAndNotPkcs11ThrowsException() {
-		assertThatExceptionOfType(WebServerException.class)
-			.isThrownBy(() -> new SslConnectorCustomizer(new Ssl(), null).customize(this.tomcat.getConnector()))
-			.withMessageContaining("Could not load key store 'null'");
+		assertThatIllegalStateException()
+			.isThrownBy(() -> new SslConnectorCustomizer(new Ssl()).customize(this.tomcat.getConnector()))
+			.withMessageContaining("KeyStore location must not be empty or null");
 	}
 
 	@Test
@@ -196,7 +194,7 @@ class SslConnectorCustomizerTests {
 		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
 		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setKeyPassword("password");
-		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl, null);
+		SslConnectorCustomizer customizer = new SslConnectorCustomizer(ssl);
 		assertThatIllegalStateException().isThrownBy(() -> customizer.customize(this.tomcat.getConnector()))
 			.withMessageContaining("must be empty or null for PKCS11 key stores");
 	}

@@ -26,8 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.web.embedded.test.MockPkcs11Security;
 import org.springframework.boot.web.embedded.test.MockPkcs11SecurityProvider;
 import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.server.WebServerException;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.boot.web.server.SslStoreProviderFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -49,7 +48,7 @@ class SslBuilderCustomizerTests {
 		ssl.setKeyPassword("password");
 		ssl.setKeyStore("src/test/resources/test.jks");
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
-		KeyManager[] keyManagers = ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null);
+		KeyManager[] keyManagers = customizer.getKeyManagers(ssl, SslStoreProviderFactory.from(ssl));
 		Class<?> name = Class
 			.forName("org.springframework.boot.web.embedded.undertow.SslBuilderCustomizer$ConfigurableAliasKeyManager");
 		assertThat(keyManagers[0]).isNotInstanceOf(name);
@@ -63,7 +62,7 @@ class SslBuilderCustomizerTests {
 		ssl.setKeyStoreProvider("com.example.KeyStoreProvider");
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
 		assertThatIllegalStateException()
-			.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null))
+			.isThrownBy(() -> customizer.getKeyManagers(ssl, SslStoreProviderFactory.from(ssl)))
 			.withCauseInstanceOf(NoSuchProviderException.class)
 			.withMessageContaining("com.example.KeyStoreProvider");
 	}
@@ -76,8 +75,7 @@ class SslBuilderCustomizerTests {
 		ssl.setTrustStoreProvider("com.example.TrustStoreProvider");
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
 		assertThatIllegalStateException()
-			.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getTrustManagers", ssl, null))
-			.withCauseInstanceOf(NoSuchProviderException.class)
+			.isThrownBy(() -> customizer.getTrustManagers(SslStoreProviderFactory.from(ssl)))
 			.withMessageContaining("com.example.TrustStoreProvider");
 	}
 
@@ -86,9 +84,9 @@ class SslBuilderCustomizerTests {
 		Ssl ssl = new Ssl();
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
 		assertThatIllegalStateException()
-			.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null))
-			.withCauseInstanceOf(WebServerException.class)
-			.withMessageContaining("Could not load key store 'null'");
+			.isThrownBy(() -> customizer.getKeyManagers(ssl, SslStoreProviderFactory.from(ssl)))
+			.withCauseInstanceOf(IllegalStateException.class)
+			.withMessageContaining("KeyStore location must not be empty or null");
 	}
 
 	@Test
@@ -100,9 +98,9 @@ class SslBuilderCustomizerTests {
 		ssl.setKeyPassword("password");
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
 		assertThatIllegalStateException()
-			.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null))
-			.withCauseInstanceOf(IllegalArgumentException.class)
-			.withMessageContaining("Input keystore location is not valid for keystore type 'PKCS11'");
+			.isThrownBy(() -> customizer.getKeyManagers(ssl, SslStoreProviderFactory.from(ssl)))
+			.withCauseInstanceOf(IllegalStateException.class)
+			.withMessageContaining("must be empty or null for PKCS11 key stores");
 	}
 
 	@Test
@@ -112,8 +110,7 @@ class SslBuilderCustomizerTests {
 		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
 		ssl.setKeyStorePassword("1234");
 		SslBuilderCustomizer customizer = new SslBuilderCustomizer(8080, InetAddress.getLocalHost(), ssl, null);
-		assertThatNoException()
-			.isThrownBy(() -> ReflectionTestUtils.invokeMethod(customizer, "getKeyManagers", ssl, null));
+		assertThatNoException().isThrownBy(() -> customizer.getKeyManagers(ssl, SslStoreProviderFactory.from(ssl)));
 	}
 
 }

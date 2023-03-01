@@ -77,6 +77,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
@@ -400,8 +401,8 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 	@Test
 	void whenSslIsEnabledAndNoKeyStoreIsConfiguredThenServerFailsToStart() {
-		assertThatThrownBy(() -> testBasicSslWithKeyStore(null, null))
-			.hasMessageContaining("Could not load key store 'null'");
+		assertThatIllegalStateException().isThrownBy(() -> testBasicSslWithKeyStore(null, null))
+			.withMessageContaining("KeyStore location must not be empty or null");
 	}
 
 	@Test

@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.web.embedded.test.MockPkcs11Security;
 import org.springframework.boot.web.embedded.test.MockPkcs11SecurityProvider;
 import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.server.WebServerException;
+import org.springframework.boot.web.server.SslStoreProviderFactory;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
@@ -34,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
  * @author Andy Wilkinson
  * @author Raheela Aslam
  * @author Cyril Dangerville
+ * @author Scott Frederick
  */
 @SuppressWarnings("deprecation")
 @MockPkcs11Security
@@ -46,7 +47,8 @@ class SslServerCustomizerTests {
 		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setKeyStoreProvider("com.example.KeyStoreProvider");
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
-		assertThatIllegalStateException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
+		assertThatIllegalStateException()
+			.isThrownBy(() -> customizer.getKeyManagerFactory(ssl, SslStoreProviderFactory.from(ssl)))
 			.withCauseInstanceOf(NoSuchProviderException.class)
 			.withMessageContaining("com.example.KeyStoreProvider");
 	}
@@ -58,7 +60,8 @@ class SslServerCustomizerTests {
 		ssl.setTrustStore("src/test/resources/test.jks");
 		ssl.setTrustStoreProvider("com.example.TrustStoreProvider");
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
-		assertThatIllegalStateException().isThrownBy(() -> customizer.getTrustManagerFactory(ssl, null))
+		assertThatIllegalStateException()
+			.isThrownBy(() -> customizer.getTrustManagerFactory(SslStoreProviderFactory.from(ssl)))
 			.withCauseInstanceOf(NoSuchProviderException.class)
 			.withMessageContaining("com.example.TrustStoreProvider");
 	}
@@ -67,9 +70,10 @@ class SslServerCustomizerTests {
 	void getKeyManagerFactoryWhenSslIsEnabledWithNoKeyStoreAndNotPkcs11ThrowsException() {
 		Ssl ssl = new Ssl();
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
-		assertThatIllegalStateException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
-			.withCauseInstanceOf(WebServerException.class)
-			.withMessageContaining("Could not load key store 'null'");
+		assertThatIllegalStateException()
+			.isThrownBy(() -> customizer.getKeyManagerFactory(ssl, SslStoreProviderFactory.from(ssl)))
+			.withCauseInstanceOf(IllegalStateException.class)
+			.withMessageContaining("KeyStore location must not be empty or null");
 	}
 
 	@Test
@@ -80,7 +84,8 @@ class SslServerCustomizerTests {
 		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setKeyPassword("password");
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
-		assertThatIllegalStateException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
+		assertThatIllegalStateException()
+			.isThrownBy(() -> customizer.getKeyManagerFactory(ssl, SslStoreProviderFactory.from(ssl)))
 			.withCauseInstanceOf(IllegalStateException.class)
 			.withMessageContaining("must be empty or null for PKCS11 key stores");
 	}
@@ -92,7 +97,8 @@ class SslServerCustomizerTests {
 		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
 		ssl.setKeyStorePassword("1234");
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
-		assertThatNoException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null));
+		assertThatNoException()
+			.isThrownBy(() -> customizer.getKeyManagerFactory(ssl, SslStoreProviderFactory.from(ssl)));
 	}
 
 }
