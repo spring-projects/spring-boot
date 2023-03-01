@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.actuate.autoconfigure.tracing.wavefront;
-
-import java.util.Collections;
 
 import brave.handler.SpanHandler;
 import com.wavefront.sdk.common.WavefrontSender;
@@ -65,7 +63,7 @@ public class WavefrontTracingAutoConfiguration {
 	WavefrontSpanHandler wavefrontSpanHandler(WavefrontProperties properties, WavefrontSender wavefrontSender,
 			SpanMetrics spanMetrics, ApplicationTags applicationTags) {
 		return new WavefrontSpanHandler(properties.getSender().getMaxQueueSize(), wavefrontSender, spanMetrics,
-				properties.getSourceOrDefault(), applicationTags, Collections.emptySet());
+				properties.getSourceOrDefault(), applicationTags, properties.getTraceDerivedCustomTagKeys());
 	}
 
 	@Configuration(proxyBeanMethods = false)
