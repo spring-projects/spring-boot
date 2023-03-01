@@ -22,13 +22,13 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
  * Callback interface that can be used to customize a {@link RabbitTemplate}.
  *
  * @author dang zhicairang
- * @since 2.3.0
+ * @since 3.1.0
  */
 @FunctionalInterface
 public interface RabbitTemplateCustomizer {
 
 	/**
-	 * Customize the {@link RabbitTemplate}.
+	 * Callback to customize a {@link RabbitTemplate} instance.
 	 * @param rabbitTemplate the rabbitTemplate to customize
 	 */
 	void customize(RabbitTemplate rabbitTemplate);

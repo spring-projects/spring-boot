@@ -388,17 +388,17 @@ class RabbitAutoConfigurationTests {
 	@Test
 	void whenMultipleRabbitTemplateCustomizersAreDefinedThenTheyAreCalledInOrder() {
 		this.contextRunner.withUserConfiguration(MultipleRabbitTemplateCustomizersConfiguration.class)
-				.run((context) -> {
-					RabbitTemplateCustomizer firstCustomizer = context.getBean("firstCustomizer",
-							RabbitTemplateCustomizer.class);
-					RabbitTemplateCustomizer secondCustomizer = context.getBean("secondCustomizer",
-							RabbitTemplateCustomizer.class);
-					InOrder inOrder = inOrder(firstCustomizer, secondCustomizer);
-					RabbitTemplate template = context.getBean(RabbitTemplate.class);
-					then(firstCustomizer).should(inOrder).customize(template);
-					then(secondCustomizer).should(inOrder).customize(template);
-					inOrder.verifyNoMoreInteractions();
-				});
+			.run((context) -> {
+				RabbitTemplateCustomizer firstCustomizer = context.getBean("firstCustomizer",
+						RabbitTemplateCustomizer.class);
+				RabbitTemplateCustomizer secondCustomizer = context.getBean("secondCustomizer",
+						RabbitTemplateCustomizer.class);
+				InOrder inOrder = inOrder(firstCustomizer, secondCustomizer);
+				RabbitTemplate template = context.getBean(RabbitTemplate.class);
+				then(firstCustomizer).should(inOrder).customize(template);
+				then(secondCustomizer).should(inOrder).customize(template);
+				inOrder.verifyNoMoreInteractions();
+			});
 	}
 
 	@Test
