@@ -1,6 +1,6 @@
 plugins {
-	id 'java'
 	id 'org.springframework.boot' version '{version}'
+	id 'java'
 }
 
 springBoot {
@@ -10,7 +10,7 @@ springBoot {
 gradle.taskGraph.whenReady {
 	gradle.taskGraph.allTasks.each {
 		if (it instanceof JavaCompile) {
-			println "${it.name} compiler args: ${it.options.compilerArgs}"
+			println "${it.name} = ${it.options.encoding}"
 		}
 	}
 }
