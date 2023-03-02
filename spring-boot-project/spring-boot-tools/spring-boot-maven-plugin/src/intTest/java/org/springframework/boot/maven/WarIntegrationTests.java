@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
@@ -96,10 +97,12 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 		mavenBuild.project("war-output-timestamp").execute((project) -> {
 			File repackaged = new File(project, "target/war-output-timestamp-0.0.1.BUILD-SNAPSHOT.war");
 			assertThat(repackaged).isFile();
-			assertThat(repackaged.lastModified()).isEqualTo(1584352800000L);
+			long expectedModified = 1584352800000L;
+			assertThat(repackaged.lastModified()).isEqualTo(expectedModified);
+			long offsetExpectedModified = expectedModified - TimeZone.getDefault().getOffset(expectedModified);
 			try (JarFile jar = new JarFile(repackaged)) {
 				List<String> unreproducibleEntries = jar.stream()
-					.filter((entry) -> entry.getLastModifiedTime().toMillis() != 1584352800000L)
+					.filter((entry) -> entry.getLastModifiedTime().toMillis() != offsetExpectedModified)
 					.map((entry) -> entry.getName() + ": " + entry.getLastModifiedTime())
 					.collect(Collectors.toList());
 				assertThat(unreproducibleEntries).isEmpty();
