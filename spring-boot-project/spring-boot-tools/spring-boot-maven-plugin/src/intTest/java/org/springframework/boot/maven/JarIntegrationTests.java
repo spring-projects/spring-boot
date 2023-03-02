@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.JarFile;
 
@@ -404,10 +405,12 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 		mavenBuild.project("jar-output-timestamp").execute((project) -> {
 			File repackaged = new File(project, "target/jar-output-timestamp-0.0.1.BUILD-SNAPSHOT.jar");
 			assertThat(repackaged).isFile();
-			assertThat(repackaged.lastModified()).isEqualTo(1584352800000L);
+			long expectedModified = 1584352800000L;
+			long offsetExpectedModified = expectedModified - TimeZone.getDefault().getOffset(expectedModified);
+			assertThat(repackaged.lastModified()).isEqualTo(expectedModified);
 			try (JarFile jar = new JarFile(repackaged)) {
 				List<String> unreproducibleEntries = jar.stream()
-					.filter((entry) -> entry.getLastModifiedTime().toMillis() != 1584352800000L)
+					.filter((entry) -> entry.getLastModifiedTime().toMillis() != offsetExpectedModified)
 					.map((entry) -> entry.getName() + ": " + entry.getLastModifiedTime())
 					.toList();
 				assertThat(unreproducibleEntries).isEmpty();

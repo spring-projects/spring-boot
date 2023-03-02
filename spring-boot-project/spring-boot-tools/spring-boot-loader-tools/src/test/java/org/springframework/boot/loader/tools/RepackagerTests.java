@@ -200,8 +200,9 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
 		long timestamp = OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC).toInstant().toEpochMilli();
 		repackager.repackage(this.destination, NO_LIBRARIES, null, FileTime.fromMillis(timestamp));
+		long offsetTimestamp = DefaultTimeZoneOffset.INSTANCE.removeFrom(timestamp);
 		for (ZipArchiveEntry entry : getAllPackagedEntries()) {
-			assertThat(entry.getTime()).isEqualTo(timestamp);
+			assertThat(entry.getTime()).isEqualTo(offsetTimestamp);
 		}
 	}
 

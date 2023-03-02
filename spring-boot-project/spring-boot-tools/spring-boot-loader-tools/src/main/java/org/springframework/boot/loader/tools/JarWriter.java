@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ public class JarWriter extends AbstractJarWriter implements AutoCloseable {
 	protected void writeToArchive(ZipEntry entry, EntryWriter entryWriter) throws IOException {
 		JarArchiveEntry jarEntry = asJarArchiveEntry(entry);
 		if (this.lastModifiedTime != null) {
-			jarEntry.setLastModifiedTime(this.lastModifiedTime);
+			jarEntry.setTime(DefaultTimeZoneOffset.INSTANCE.removeFrom(this.lastModifiedTime).toMillis());
 		}
 		this.jarOutputStream.putArchiveEntry(jarEntry);
 		if (entryWriter != null) {
