@@ -351,18 +351,19 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		this.task.setPreserveFileTimestamps(false);
 		executeTask();
 		assertThat(this.task.getArchiveFile().get().getAsFile()).exists();
+		long expectedTime = DefaultTimeZoneOffset.INSTANCE.removeFrom(BootZipCopyAction.CONSTANT_TIME_FOR_ZIP_ENTRIES);
 		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
 			Enumeration<JarEntry> entries = jarFile.entries();
 			while (entries.hasMoreElements()) {
 				JarEntry entry = entries.nextElement();
-				assertThat(entry.getTime()).isEqualTo(BootZipCopyAction.CONSTANT_TIME_FOR_ZIP_ENTRIES);
+				assertThat(entry.getTime()).isEqualTo(expectedTime);
 			}
 		}
 	}
 
 	@Test
 	void constantTimestampMatchesGradleInternalTimestamp() {
-		assertThat(BootZipCopyAction.CONSTANT_TIME_FOR_ZIP_ENTRIES)
+		assertThat(DefaultTimeZoneOffset.INSTANCE.removeFrom(BootZipCopyAction.CONSTANT_TIME_FOR_ZIP_ENTRIES))
 			.isEqualTo(ZipCopyAction.CONSTANT_TIME_FOR_ZIP_ENTRIES);
 	}
 

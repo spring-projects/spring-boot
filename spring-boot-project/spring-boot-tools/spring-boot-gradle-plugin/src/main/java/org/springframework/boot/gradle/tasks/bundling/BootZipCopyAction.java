@@ -22,9 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.Calendar;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Collection;
-import java.util.GregorianCalendar;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -67,8 +67,9 @@ import org.springframework.util.StringUtils;
  */
 class BootZipCopyAction implements CopyAction {
 
-	static final long CONSTANT_TIME_FOR_ZIP_ENTRIES = new GregorianCalendar(1980, Calendar.FEBRUARY, 1, 0, 0, 0)
-		.getTimeInMillis();
+	static final long CONSTANT_TIME_FOR_ZIP_ENTRIES = OffsetDateTime.of(1980, 2, 1, 0, 0, 0, 0, ZoneOffset.UTC)
+		.toInstant()
+		.toEpochMilli();
 
 	private final File output;
 
@@ -364,7 +365,7 @@ class BootZipCopyAction implements CopyAction {
 			writeParentDirectoriesIfNecessary(name, time);
 			entry.setUnixMode(mode);
 			if (time != null) {
-				entry.setTime(time);
+				entry.setTime(DefaultTimeZoneOffset.INSTANCE.removeFrom(time));
 			}
 		}
 
