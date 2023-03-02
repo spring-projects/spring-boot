@@ -10,7 +10,7 @@ TIP: To learn more about Micrometer Tracing capabilities, see its https://microm
 === Supported Tracers
 Spring Boot ships auto-configuration for the following tracers:
 
-* https://opentelemetry.io/[OpenTelemetry] with https://zipkin.io/[Zipkin] or https://docs.wavefront.com/[Wavefront]
+* https://opentelemetry.io/[OpenTelemetry] with https://zipkin.io/[Zipkin],  https://docs.wavefront.com/[Wavefront], or https://opentelemetry.io/docs/reference/specification/protocol/[OTLP]
 * https://github.com/openzipkin/brave[OpenZipkin Brave] with https://zipkin.io/[Zipkin] or https://docs.wavefront.com/[Wavefront]
 
 
@@ -87,6 +87,14 @@ All tracer implementations need the `org.springframework.boot:spring-boot-starte
 
 * `io.micrometer:micrometer-tracing-bridge-otel` - which is needed to bridge the Micrometer Observation API to OpenTelemetry.
 * `io.micrometer:micrometer-tracing-reporter-wavefront` - which is needed to report traces to Wavefront.
+
+
+
+[[actuator.micrometer-tracing.tracer-implementations.otel-otlp]]
+==== OpenTelemetry With OTLP
+
+* `io.micrometer:micrometer-tracing-bridge-otel` - which is needed to bridge the Micrometer Observation API to OpenTelemetry.
+* `io.opentelemetry:opentelemetry-exporter-otlp` - which is needed to report traces to a collector that can accept OTLP.
 
 
 

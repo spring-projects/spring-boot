@@ -70,6 +70,7 @@ dependencies {
 	optional("io.micrometer:micrometer-registry-wavefront")
 	optional("io.zipkin.reporter2:zipkin-sender-urlconnection")
 	optional("io.opentelemetry:opentelemetry-exporter-zipkin")
+	optional("io.opentelemetry:opentelemetry-exporter-otlp")
 	optional("io.projectreactor.netty:reactor-netty-http")
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.r2dbc:r2dbc-spi")
