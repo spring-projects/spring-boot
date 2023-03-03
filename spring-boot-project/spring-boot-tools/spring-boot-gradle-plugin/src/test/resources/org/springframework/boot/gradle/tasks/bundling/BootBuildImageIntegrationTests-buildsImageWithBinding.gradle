@@ -9,5 +9,5 @@ targetCompatibility = '1.8'
 bootBuildImage {
 	builder = "projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.1"
 	pullPolicy = "IF_NOT_PRESENT"
-	bindings = [ "${projectDir}/bindings/ca-certificates:/platform/bindings/certificates" ]
+	bindings = [ "${projectDir}/bindings/ca-certificates:/platform/bindings/certificates" as String ]
 }

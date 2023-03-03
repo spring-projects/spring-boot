@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ public final class GradleVersions {
 	}
 
 	public static List<String> allCompatible() {
-		return Arrays.asList("7.5.1", GradleVersion.current().getVersion());
+		return Arrays.asList("7.5.1", GradleVersion.current().getVersion(), "8.0.1");
 	}
 
 	public static String minimumCompatible() {

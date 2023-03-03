@@ -47,53 +47,46 @@ class JavaPluginActionIntegrationTests {
 
 	@TestTemplate
 	void noBootJarTaskWithoutJavaPluginApplied() {
-		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootJar").getOutput())
-			.contains("bootJar exists = false");
+		assertThat(this.gradleBuild.build("tasks").getOutput()).doesNotContain("bootJar");
 	}
 
 	@TestTemplate
 	void applyingJavaPluginCreatesBootJarTask() {
-		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootJar", "-PapplyJavaPlugin").getOutput())
-			.contains("bootJar exists = true");
+		assertThat(this.gradleBuild.build("tasks").getOutput()).contains("bootJar");
 	}
 
 	@TestTemplate
 	void noBootRunTaskWithoutJavaPluginApplied() {
-		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootRun").getOutput())
-			.contains("bootRun exists = false");
+		assertThat(this.gradleBuild.build("tasks").getOutput()).doesNotContain("bootRun");
 	}
 
 	@TestTemplate
 	void applyingJavaPluginCreatesBootRunTask() {
-		assertThat(this.gradleBuild.build("taskExists", "-PtaskName=bootRun", "-PapplyJavaPlugin").getOutput())
-			.contains("bootRun exists = true");
+		assertThat(this.gradleBuild.build("tasks").getOutput()).contains("bootRun");
 	}
 
 	@TestTemplate
 	void javaCompileTasksUseUtf8Encoding() {
-		assertThat(this.gradleBuild.build("javaCompileEncoding", "-PapplyJavaPlugin").getOutput())
-			.contains("compileJava = UTF-8")
+		assertThat(this.gradleBuild.build("build").getOutput()).contains("compileJava = UTF-8")
 			.contains("compileTestJava = UTF-8");
 	}
 
 	@TestTemplate
 	void javaCompileTasksUseParametersCompilerFlagByDefault() {
-		assertThat(this.gradleBuild.build("javaCompileTasksCompilerArgs").getOutput())
-			.contains("compileJava compiler args: [-parameters]")
+		assertThat(this.gradleBuild.build("build").getOutput()).contains("compileJava compiler args: [-parameters]")
 			.contains("compileTestJava compiler args: [-parameters]");
 	}
 
 	@TestTemplate
 	void javaCompileTasksUseParametersAndAdditionalCompilerFlags() {
-		assertThat(this.gradleBuild.build("javaCompileTasksCompilerArgs").getOutput())
+		assertThat(this.gradleBuild.build("build").getOutput())
 			.contains("compileJava compiler args: [-parameters, -Xlint:all]")
 			.contains("compileTestJava compiler args: [-parameters, -Xlint:all]");
 	}
 
 	@TestTemplate
 	void javaCompileTasksCanOverrideDefaultParametersCompilerFlag() {
-		assertThat(this.gradleBuild.build("javaCompileTasksCompilerArgs").getOutput())
-			.contains("compileJava compiler args: [-Xlint:all]")
+		assertThat(this.gradleBuild.build("build").getOutput()).contains("compileJava compiler args: [-Xlint:all]")
 			.contains("compileTestJava compiler args: [-Xlint:all]");
 	}
 
@@ -139,16 +132,12 @@ class JavaPluginActionIntegrationTests {
 
 	@TestTemplate
 	void applyingJavaPluginCreatesDevelopmentOnlyConfiguration() {
-		assertThat(this.gradleBuild
-			.build("configurationExists", "-PconfigurationName=developmentOnly", "-PapplyJavaPlugin")
-			.getOutput()).contains("developmentOnly exists = true");
+		assertThat(this.gradleBuild.build("build").getOutput()).contains("developmentOnly exists = true");
 	}
 
 	@TestTemplate
 	void productionRuntimeClasspathIsConfiguredWithAttributes() {
-		assertThat(this.gradleBuild
-			.build("configurationAttributes", "-PconfigurationName=productionRuntimeClasspath", "-PapplyJavaPlugin")
-			.getOutput()).contains("3 productionRuntimeClasspath attributes:")
+		assertThat(this.gradleBuild.build("build").getOutput()).contains("3 productionRuntimeClasspath attributes:")
 			.contains("org.gradle.usage: java-runtime")
 			.contains("org.gradle.libraryelements: jar")
 			.contains("org.gradle.dependency.bundling: external");
@@ -156,18 +145,11 @@ class JavaPluginActionIntegrationTests {
 
 	@TestTemplate
 	void productionRuntimeClasspathIsConfiguredWithResolvabilityAndConsumabilityThatMatchesRuntimeClasspath() {
-		String runtime = this.gradleBuild
-			.build("configurationResolvabilityAndConsumability", "-PconfigurationName=runtimeClasspath",
-					"-PapplyJavaPlugin")
-			.getOutput();
-		assertThat(runtime).contains("canBeResolved: true");
-		assertThat(runtime).contains("canBeConsumed: false");
-		String productionRuntime = this.gradleBuild
-			.build("configurationResolvabilityAndConsumability", "-PconfigurationName=productionRuntimeClasspath",
-					"-PapplyJavaPlugin")
-			.getOutput();
-		assertThat(productionRuntime).contains("canBeResolved: true");
-		assertThat(productionRuntime).contains("canBeConsumed: false");
+		String output = this.gradleBuild.build("build").getOutput();
+		assertThat(output).contains("runtimeClasspath canBeResolved: true");
+		assertThat(output).contains("runtimeClasspath canBeConsumed: false");
+		assertThat(output).contains("productionRuntimeClasspath canBeResolved: true");
+		assertThat(output).contains("productionRuntimeClasspath canBeConsumed: false");
 	}
 
 	@TestTemplate

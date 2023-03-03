@@ -22,7 +22,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.gradle.testkit.runner.BuildResult;
-import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.gradle.junit.GradleCompatibility;
@@ -45,9 +44,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenAResolvableCopyOfAnUnresolvableConfigurationIsResolvedThenResolutionSucceeds() {
-		BuildResult build = this.gradleBuild.build("resolveResolvableCopyOfUnresolvableConfiguration");
-		assertThat(build.task(":resolveResolvableCopyOfUnresolvableConfiguration").getOutcome())
-			.isEqualTo(TaskOutcome.SUCCESS);
+		this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.0").build("build");
 	}
 
 	@TestTemplate

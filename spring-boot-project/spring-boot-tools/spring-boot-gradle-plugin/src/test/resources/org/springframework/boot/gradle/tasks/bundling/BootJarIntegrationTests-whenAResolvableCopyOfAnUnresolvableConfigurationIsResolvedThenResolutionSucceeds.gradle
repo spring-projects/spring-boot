@@ -7,10 +7,8 @@ bootJar {
 	mainClass = 'com.example.Application'
 }
 
-task resolveResolvableCopyOfUnresolvableConfiguration {
-	doFirst {
-		def copy = configurations.implementation.copyRecursive()
-		copy.canBeResolved = true
-		copy.resolve()
-	}
+gradle.taskGraph.whenReady {
+	def copy = configurations.implementation.copyRecursive()
+	copy.canBeResolved = true
+	copy.resolve()
 }
