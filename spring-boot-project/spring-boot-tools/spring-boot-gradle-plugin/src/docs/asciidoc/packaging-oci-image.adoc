@@ -461,6 +461,8 @@ include::../gradle/packaging/boot-build-image-docker-host-podman.gradle[tags=doc
 include::../gradle/packaging/boot-build-image-docker-host-podman.gradle.kts[tags=docker-host]
 ----
 
+TIP: With the `podman` CLI installed, the command `podman info --format='{{.Host.RemoteSocket.Path}}'` can be used to get the value for the `docker.host` configuration property shown in this example.
+
 [[build-image.examples.docker.auth]]
 ==== Docker Configuration for Authentication
 
