@@ -88,7 +88,7 @@ class MavenBuild {
 
 	private Map<String, String> getPomReplacements() {
 		Map<String, String> replacements = new HashMap<>();
-		replacements.put("java.version", "1.8");
+		replacements.put("java.version", "17");
 		replacements.put("project.groupId", "org.springframework.boot");
 		replacements.put("project.artifactId", "spring-boot-maven-plugin");
 		replacements.putAll(new Versions().asMap());
