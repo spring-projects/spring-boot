@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
+
+import org.assertj.core.api.Assumptions;
+import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.junit.GradleCompatibility;
 
@@ -40,6 +44,27 @@ class BootWarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		Set<String> contents = new TreeSet<>(Arrays.asList(additionalFiles));
 		contents.addAll(Arrays.asList("WEB-INF/classpath.idx", "WEB-INF/layers.idx", "META-INF/"));
 		return contents.toArray(new String[0]);
+	}
+
+	@Override
+	void multiModuleImplicitLayers() throws IOException {
+		whenTestingWithTheConfigurationCacheAssumeThatTheGradleVersionIsLessThan8();
+		super.multiModuleImplicitLayers();
+	}
+
+	@Override
+	void multiModuleCustomLayers() throws IOException {
+		whenTestingWithTheConfigurationCacheAssumeThatTheGradleVersionIsLessThan8();
+		super.multiModuleCustomLayers();
+	}
+
+	private void whenTestingWithTheConfigurationCacheAssumeThatTheGradleVersionIsLessThan8() {
+		if (this.gradleBuild.isConfigurationCache()) {
+			// With Gradle 8.0, a configuration cache bug prevents ResolvedDependencies
+			// from processing dependencies on the runtime classpath
+			Assumptions.assumeThat(GradleVersion.version(this.gradleBuild.getGradleVersion()))
+				.isLessThan(GradleVersion.version("8.0"));
+		}
 	}
 
 }

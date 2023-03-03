@@ -1,4 +1,3 @@
 plugins {
-	id 'application'
 	id 'org.springframework.boot' version '{version}'
 }

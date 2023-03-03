@@ -3,4 +3,6 @@ plugins {
 	id 'org.springframework.boot' version '{version}'
 }
 
-applicationDefaultJvmArgs = ['-Dcom.foo=bar', '-Dcom.bar=baz']
+application {
+	applicationDefaultJvmArgs = ['-Dcom.foo=bar', '-Dcom.bar=baz']
+}
