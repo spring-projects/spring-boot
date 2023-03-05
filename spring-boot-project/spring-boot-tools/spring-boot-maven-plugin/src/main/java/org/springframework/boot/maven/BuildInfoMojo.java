@@ -99,6 +99,7 @@ public class BuildInfoMojo extends AbstractMojo {
 
 	/**
 	 * Skip the execution.
+	 * @since 3.1.0
 	 */
 	@Parameter(property = "spring-boot.build-info.skip", defaultValue = "false")
 	private boolean skip;
