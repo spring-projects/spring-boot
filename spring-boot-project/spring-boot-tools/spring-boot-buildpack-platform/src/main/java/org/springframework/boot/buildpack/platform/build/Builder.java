@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.buildpack.platform.build;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -32,7 +33,6 @@ import org.springframework.boot.buildpack.platform.docker.transport.DockerEngine
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.IOBiConsumer;
-import org.springframework.boot.buildpack.platform.io.TarArchive;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -273,9 +273,8 @@ public class Builder {
 		}
 
 		@Override
-		public void exportImageLayers(ImageReference reference, IOBiConsumer<String, TarArchive> exports)
-				throws IOException {
-			Builder.this.docker.image().exportLayers(reference, exports);
+		public void exportImageLayers(ImageReference reference, IOBiConsumer<String, Path> exports) throws IOException {
+			Builder.this.docker.image().exportLayerFiles(reference, exports);
 		}
 
 	}
