@@ -77,6 +77,7 @@ import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.Sync;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskExecutionException;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.external.javadoc.StandardJavadocDocletOptions;
@@ -255,9 +256,15 @@ public class MavenPluginPlugin implements Plugin<Project> {
 	}
 
 	private void addPrepareMavenBinariesTask(Project project) {
-		PrepareMavenBinaries task = project.getTasks().create("prepareMavenBinaries", PrepareMavenBinaries.class);
-		task.setOutputDir(new File(project.getBuildDir(), "maven-binaries"));
-		project.getTasks().getByName(IntegrationTestPlugin.INT_TEST_TASK_NAME).dependsOn(task);
+		TaskProvider<PrepareMavenBinaries> task = project.getTasks()
+			.register("prepareMavenBinaries", PrepareMavenBinaries.class, (prepareMavenBinaries) -> prepareMavenBinaries
+				.setOutputDir(new File(project.getBuildDir(), "maven-binaries")));
+		project.getTasks()
+			.getByName(IntegrationTestPlugin.INT_TEST_TASK_NAME)
+			.getInputs()
+			.dir(task.map(PrepareMavenBinaries::getOutputDir))
+			.withPathSensitivity(PathSensitivity.RELATIVE)
+			.withPropertyName("mavenBinaries");
 	}
 
 	private void replaceVersionPlaceholder(CopySpec copy, Project project) {
