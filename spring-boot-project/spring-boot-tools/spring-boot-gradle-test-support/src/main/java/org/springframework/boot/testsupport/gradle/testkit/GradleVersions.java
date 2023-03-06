@@ -32,7 +32,7 @@ public final class GradleVersions {
 	}
 
 	public static List<String> allCompatible() {
-		return Arrays.asList("7.5.1", GradleVersion.current().getVersion(), "8.0.1");
+		return Arrays.asList("7.5.1", GradleVersion.current().getVersion(), "8.0.2");
 	}
 
 	public static String minimumCompatible() {
