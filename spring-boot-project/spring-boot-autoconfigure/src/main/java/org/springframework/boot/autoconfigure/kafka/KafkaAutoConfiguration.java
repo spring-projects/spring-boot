@@ -162,7 +162,7 @@ public class KafkaAutoConfiguration {
 		KafkaProperties.Retry.Topic retryTopic = this.properties.getRetry().getTopic();
 		RetryTopicConfigurationBuilder builder = RetryTopicConfigurationBuilder.newInstance()
 			.maxAttempts(retryTopic.getAttempts())
-			.useSingleTopicForFixedDelays()
+			.useSingleTopicForSameIntervals()
 			.suffixTopicsWithIndexValues()
 			.doNotAutoCreateRetryTopics();
 		setBackOffPolicy(builder, retryTopic);
