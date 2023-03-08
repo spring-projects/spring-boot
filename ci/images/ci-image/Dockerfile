@@ -1,4 +1,4 @@
-FROM ubuntu:jammy-20230126
+FROM ubuntu:jammy-20230301
 
 ADD setup.sh /setup.sh
 ADD get-jdk-url.sh /get-jdk-url.sh
