@@ -25,7 +25,7 @@
 			"io.buildpacks.stack.id": "org.cloudfoundry.stacks.cflinuxfs3"
 		}
 	},
-	"created": "1980-01-01T00:00:01Z",
+	"created": "now",
 	"history": [
 		{
 

@@ -24,8 +24,11 @@ import java.nio.charset.StandardCharsets;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.Customization;
 import org.skyscreamer.jsonassert.JSONAssert;
 
+import org.skyscreamer.jsonassert.JSONCompareMode;
+import org.skyscreamer.jsonassert.comparator.CustomComparator;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 import org.springframework.util.StreamUtils;
@@ -78,10 +81,10 @@ class ImageArchiveTests extends AbstractJsonTests {
 	}
 
 	private void assertExpectedConfig(TarArchiveEntry entry, byte[] content) throws Exception {
-		assertThat(entry.getName()).isEqualTo("682f8d24b9d9c313d1190a0e955dcb5e65ec9beea40420999839c6f0cbb38382.json");
+		assertThat(entry.getName()).isEqualTo("89e65966a137f5e0b635f298c79779a7127eea2284bc57bf41683618f462f86d.json");
 		String actualJson = new String(content, StandardCharsets.UTF_8);
 		String expectedJson = StreamUtils.copyToString(getContent("image-archive-config.json"), StandardCharsets.UTF_8);
-		JSONAssert.assertEquals(expectedJson, actualJson, false);
+		JSONAssert.assertEquals(expectedJson, actualJson, new CustomComparator(JSONCompareMode.LENIENT, new Customization("created", (o1, o2) -> true)));
 	}
 
 	private void assertExpectedManifest(TarArchiveEntry entry, byte[] content) throws Exception {

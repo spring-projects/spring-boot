@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -54,9 +55,6 @@ import org.springframework.util.Assert;
  * Specification</a>
  */
 public class ImageArchive implements TarArchive {
-
-	private static final Instant WINDOWS_EPOCH_PLUS_SECOND = OffsetDateTime.of(1980, 1, 1, 0, 0, 1, 0, ZoneOffset.UTC)
-		.toInstant();
 
 	private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ISO_ZONED_DATE_TIME
 		.withZone(ZoneOffset.UTC);
@@ -150,11 +148,12 @@ public class ImageArchive implements TarArchive {
 	private String writeConfig(Layout writer, List<LayerId> writtenLayers) throws IOException {
 		try {
 			ObjectNode config = createConfig(writtenLayers);
-			String json = this.objectMapper.writeValueAsString(config).replace("\r\n", "\n");
+			String name = getName(config);
+			config.set("created", config.textNode(getCreatedDate()));
+			String jsonWithCreated = this.objectMapper.writeValueAsString(config).replace("\r\n", "\n");
 			MessageDigest digest = MessageDigest.getInstance("SHA-256");
-			InspectedContent content = InspectedContent.of(Content.of(json), digest::update);
-			String name = LayerId.ofSha256Digest(digest.digest()).getHash() + ".json";
-			writer.file(name, Owner.ROOT, content);
+			InspectedContent contentWithCreated = InspectedContent.of(Content.of(jsonWithCreated), digest::update);
+			writer.file(name, Owner.ROOT, contentWithCreated);
 			return name;
 		}
 		catch (NoSuchAlgorithmException ex) {
@@ -162,10 +161,16 @@ public class ImageArchive implements TarArchive {
 		}
 	}
 
+	private String getName(ObjectNode config) throws IOException, NoSuchAlgorithmException {
+		String jsonWithoutCreated = this.objectMapper.writeValueAsString(config).replace("\r\n", "\n");
+		MessageDigest digest = MessageDigest.getInstance("SHA-256");
+		InspectedContent.of(Content.of(jsonWithoutCreated), digest::update);
+		return LayerId.ofSha256Digest(digest.digest()).getHash() + ".json";
+	}
+
 	private ObjectNode createConfig(List<LayerId> writtenLayers) {
 		ObjectNode config = this.objectMapper.createObjectNode();
 		config.set("config", this.imageConfig.getNodeCopy());
-		config.set("created", config.textNode(getCreatedDate()));
 		config.set("history", createHistory(writtenLayers));
 		config.set("os", config.textNode(this.os));
 		config.set("rootfs", createRootFs(writtenLayers));
@@ -262,7 +267,7 @@ public class ImageArchive implements TarArchive {
 
 		private ImageArchive applyTo(IOConsumer<Update> update) throws IOException {
 			update.accept(this);
-			Instant createDate = (this.createDate != null) ? this.createDate : WINDOWS_EPOCH_PLUS_SECOND;
+			Instant createDate = (this.createDate != null) ? this.createDate : OffsetDateTime.now().toInstant();
 			return new ImageArchive(SharedObjectMapper.get(), this.config, createDate, this.tag, this.image.getOs(),
 					this.image.getLayers(), Collections.unmodifiableList(this.newLayers));
 		}
