@@ -125,8 +125,7 @@ public class OpenTelemetryAutoConfiguration {
         }
 
         @Bean
-        @ConditionalOnProperty(prefix = "management.tracing.propagation", name = "type", havingValue = "W3C",
-                matchIfMissing = true)
+        @ConditionalOnProperty(prefix = "management.tracing.propagation", name = "type", havingValue = "W3C")
         TextMapPropagator w3cTextMapPropagatorWithBaggage(OtelCurrentTraceContext otelCurrentTraceContext) {
             List<String> remoteFields = this.tracingProperties.getBaggage().getRemoteFields();
             return TextMapPropagator.composite(W3CTraceContextPropagator.getInstance(),
@@ -166,8 +165,7 @@ public class OpenTelemetryAutoConfiguration {
 
         @Bean
         @ConditionalOnMissingBean
-        @ConditionalOnProperty(prefix = "management.tracing.propagation", name = "type", havingValue = "W3C",
-                matchIfMissing = true)
+        @ConditionalOnProperty(prefix = "management.tracing.propagation", name = "type", havingValue = "W3C")
         W3CTraceContextPropagator w3cTextMapPropagatorWithoutBaggage() {
             return W3CTraceContextPropagator.getInstance();
         }
