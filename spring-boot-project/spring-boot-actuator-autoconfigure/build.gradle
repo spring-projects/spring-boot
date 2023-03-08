@@ -69,6 +69,8 @@ dependencies {
 	optional("io.micrometer:micrometer-registry-statsd")
 	optional("io.micrometer:micrometer-registry-wavefront")
 	optional("io.zipkin.reporter2:zipkin-sender-urlconnection")
+	optional("io.opentelemetry.instrumentation:opentelemetry-micrometer-1.5")
+	optional("io.opentelemetry:opentelemetry-sdk-extension-autoconfigure")
 	optional("io.opentelemetry:opentelemetry-exporter-zipkin")
 	optional("io.projectreactor.netty:reactor-netty-http")
 	optional("io.r2dbc:r2dbc-pool")

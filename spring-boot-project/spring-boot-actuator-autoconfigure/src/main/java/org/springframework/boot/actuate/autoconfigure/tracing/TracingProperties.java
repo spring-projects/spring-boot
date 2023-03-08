@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for tracing.
@@ -72,10 +72,12 @@ public class TracingProperties {
 
 	public static class Sampling {
 
+		public static final float DEFAULT_PROBABILITY = 0.10f;
+
 		/**
 		 * Probability in the range from 0.0 to 1.0 that a trace will be sampled.
 		 */
-		private float probability = 0.10f;
+		private float probability = DEFAULT_PROBABILITY;
 
 		public float getProbability() {
 			return this.probability;
@@ -165,10 +167,12 @@ public class TracingProperties {
 
 	public static class Propagation {
 
+		public static final PropagationType DEFAULT_TYPE = PropagationType.W3C;
+
 		/**
 		 * Tracing context propagation type.
 		 */
-		private PropagationType type = PropagationType.W3C;
+		private PropagationType type = DEFAULT_TYPE;
 
 		public PropagationType getType() {
 			return this.type;
