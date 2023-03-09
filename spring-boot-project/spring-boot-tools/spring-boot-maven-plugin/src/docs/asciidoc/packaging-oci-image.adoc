@@ -357,7 +357,7 @@ The `publish` option can be specified on the command line as well, as shown in t
 	$ mvn spring-boot:build-image -Dspring-boot.build-image.imageName=docker.example.com/library/my-app:v1 -Dspring-boot.build-image.publish=true
 ----
 
-If you intend to invoke the `publish` option on the command line, with authentication, you'll need the combination of this command line:
+When using the `publish` option on the command line with authentication, you can provide credentials using properties as in this example:
 
 [indent=0]
 ----
@@ -366,10 +366,10 @@ If you intend to invoke the `publish` option on the command line, with authentic
           -Ddocker.publishRegistry.password=secret \
           -Ddocker.publishRegistry.url=docker.example.com \
           -Dspring-boot.build-image.publish=true \
-          -Dspring-boot.build-image.imageName=docker.example.com/library/my-app:v1 \
+          -Dspring-boot.build-image.imageName=docker.example.com/library/my-app:v1
 ----
 
-and this XML configuration:
+and reference the properties in the XML configuration:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
