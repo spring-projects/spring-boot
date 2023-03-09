@@ -145,7 +145,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 			assertThat(registration.getAssertingPartyDetails().getWantAuthnRequestsSigned()).isEqualTo(false);
 			assertThat(registration.getSigningX509Credentials()).hasSize(1);
 			assertThat(registration.getDecryptionX509Credentials()).hasSize(1);
-			assertThat(registration.getAssertingPartyDetails().getVerificationX509Credentials()).isNotNull();
+			assertThat(registration.getAssertingPartyDetails().getVerificationX509Credentials()).hasSize(1);
 			assertThat(registration.getEntityId()).isEqualTo("{baseUrl}/saml2/foo-entity-id");
 			assertThat(registration.getSingleLogoutServiceLocation())
 				.isEqualTo("https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SLOService.php");

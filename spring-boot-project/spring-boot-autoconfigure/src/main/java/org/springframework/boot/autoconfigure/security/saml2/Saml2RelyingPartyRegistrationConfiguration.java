@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.AssertingParty;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.AssertingParty.Verification;
+import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.AssertingParty.Verification.Credential;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Decryption;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Registration;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Registration.Signing;
@@ -52,6 +53,7 @@ import org.springframework.security.saml2.provider.service.registration.RelyingP
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrations;
 import org.springframework.security.saml2.provider.service.registration.Saml2MessageBinding;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -102,12 +104,11 @@ class Saml2RelyingPartyRegistrationConfiguration {
 			.stream()
 			.map(this::asDecryptionCredential)
 			.forEach(credentials::add));
-		builder.assertingPartyDetails(
-				(details) -> details.verificationX509Credentials((credentials) -> assertingParty.getVerification()
-					.getCredentials()
-					.stream()
-					.map(this::asVerificationCredential)
-					.forEach(credentials::add)));
+		builder.assertingPartyDetails((details) -> details
+			.verificationX509Credentials((credentials) -> assertingParty.getVerificationCredentials()
+				.stream()
+				.map(this::asVerificationCredential)
+				.forEach(credentials::add)));
 		builder.singleLogoutServiceLocation(properties.getSinglelogout().getUrl());
 		builder.singleLogoutServiceResponseLocation(properties.getSinglelogout().getResponseUrl());
 		builder.singleLogoutServiceBinding(properties.getSinglelogout().getBinding());
@@ -200,8 +201,8 @@ class Saml2RelyingPartyRegistrationConfiguration {
 			return get("metadata-uri", AssertingParty::getMetadataUri);
 		}
 
-		Verification getVerification() {
-			return get("verification", AssertingParty::getVerification);
+		List<Credential> getVerificationCredentials() {
+			return get("verification.credentials", (property) -> property.getVerification().getCredentials());
 		}
 
 		String getEntityId() {
@@ -235,7 +236,7 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		@SuppressWarnings("deprecation")
 		private <T> T get(String name, Function<AssertingParty, T> getter) {
 			T newValue = getter.apply(this.registration.getAssertingparty());
-			if (newValue != null) {
+			if (!ObjectUtils.isEmpty(newValue)) {
 				return newValue;
 			}
 			T deprecatedValue = getter.apply(this.registration.getIdentityprovider());
