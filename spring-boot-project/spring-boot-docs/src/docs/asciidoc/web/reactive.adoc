@@ -159,9 +159,10 @@ include::code:MyExceptionHandlingController[]
 
 [[web.reactive.webflux.error-handling.error-pages]]
 ===== Custom Error Pages
-If you want to display a custom HTML error page for a given status code, you can add a file to an `/error` directory.
+If you want to display a custom HTML error page for a given status code, you can add views that resolve from "error/*", for example by adding files to an `/error` directory.
 Error pages can either be static HTML (that is, added under any of the static resource directories) or built with templates.
-The name of the file should be the exact status code or a series mask.
+The name of the file should be the exact status code or a series mask, or "error" for a fallback if nothing else matches.
+Note the difference with MVC where "error" is the name of the default error `View`, whereas here it is "error/error".
 
 For example, to map `404` to a static HTML file, your directory structure would be as follows:
 
