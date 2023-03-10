@@ -35,10 +35,12 @@ final class TldPatterns {
 		Set<String> skipPatterns = new LinkedHashSet<>();
 		skipPatterns.add("annotations-api.jar");
 		skipPatterns.add("ant-junit*.jar");
-		skipPatterns.add("ant-launcher.jar");
-		skipPatterns.add("ant.jar");
+		skipPatterns.add("ant-launcher*.jar");
+		skipPatterns.add("ant*.jar");
 		skipPatterns.add("asm-*.jar");
 		skipPatterns.add("aspectj*.jar");
+		skipPatterns.add("bcel*.jar");
+		skipPatterns.add("biz.aQute.bnd*.jar");
 		skipPatterns.add("bootstrap.jar");
 		skipPatterns.add("catalina-ant.jar");
 		skipPatterns.add("catalina-ha.jar");
@@ -51,6 +53,7 @@ final class TldPatterns {
 		skipPatterns.add("commons-beanutils*.jar");
 		skipPatterns.add("commons-codec*.jar");
 		skipPatterns.add("commons-collections*.jar");
+		skipPatterns.add("commons-compress*.jar");
 		skipPatterns.add("commons-daemon.jar");
 		skipPatterns.add("commons-dbcp*.jar");
 		skipPatterns.add("commons-digester*.jar");
@@ -93,6 +96,8 @@ final class TldPatterns {
 		skipPatterns.add("mail*.jar");
 		skipPatterns.add("objenesis-*.jar");
 		skipPatterns.add("oraclepki.jar");
+		skipPatterns.add("org.hamcrest.core_*.jar");
+		skipPatterns.add("org.junit_*.jar");
 		skipPatterns.add("oro-*.jar");
 		skipPatterns.add("servlet-api-*.jar");
 		skipPatterns.add("servlet-api.jar");
@@ -111,6 +116,7 @@ final class TldPatterns {
 		skipPatterns.add("tomcat-util.jar");
 		skipPatterns.add("tomcat-websocket.jar");
 		skipPatterns.add("tools.jar");
+		skipPatterns.add("unboundid-ldapsdk-*.jar");
 		skipPatterns.add("websocket-api.jar");
 		skipPatterns.add("websocket-client-api.jar");
 		skipPatterns.add("wsdl4j*.jar");
