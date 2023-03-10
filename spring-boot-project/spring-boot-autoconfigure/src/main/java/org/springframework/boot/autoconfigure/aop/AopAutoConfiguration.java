@@ -18,7 +18,10 @@ package org.springframework.boot.autoconfigure.aop;
 
 import org.aspectj.weaver.Advice;
 
+import org.aspectj.weaver.WeaverMessages;
 import org.springframework.aop.config.AopConfigUtils;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -65,7 +68,14 @@ public class AopAutoConfiguration {
 		static class CglibAutoProxyConfiguration {
 
 		}
+	}
 
+	@ConditionalOnClass(WeaverMessages.class)
+	static class AspectJRuntimeHints implements RuntimeHintsRegistrar {
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.resources().registerResourceBundle("org.aspectj.weaver.weaver-messages");
+		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
