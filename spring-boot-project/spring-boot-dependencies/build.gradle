@@ -630,7 +630,7 @@ bom {
 			]
 		}
 	}
-	library("Jetty", "11.0.13") {
+	library("Jetty", "11.0.14") {
 		group("org.eclipse.jetty") {
 			imports = [
 				"jetty-bom"
