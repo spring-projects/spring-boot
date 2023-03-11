@@ -285,6 +285,14 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	private void stopAndReset(LoggerContext loggerContext) {
 		loggerContext.stop();
 		loggerContext.reset();
+
+		// FIXME: At this point, all initial default states (including appenders and filters) of loggerContext have been cleared.
+		// If other loggers are still printing logs (such as org.springframework.jndi.JndiTemplate which reads environment variable values from <springProperty scope="context" ...>),
+		// a warning noAppenderDefinedWarning will be issued, causing StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext) to be executed.
+		// This will ultimately result in a large amount of unimportant logs being printed before SpringBoot completes startup.
+
+		loggerContext.getTurboFilterList().add(FILTER);
+
 		if (isBridgeHandlerInstalled()) {
 			addLevelChangePropagator(loggerContext);
 		}
