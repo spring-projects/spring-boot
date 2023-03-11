@@ -285,6 +285,8 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	private void stopAndReset(LoggerContext loggerContext) {
 		loggerContext.stop();
 		loggerContext.reset();
+		// Ignore other loggers print messages until logback configuration is complete.
+		loggerContext.getTurboFilterList().add(FILTER);
 		if (isBridgeHandlerInstalled()) {
 			addLevelChangePropagator(loggerContext);
 		}
