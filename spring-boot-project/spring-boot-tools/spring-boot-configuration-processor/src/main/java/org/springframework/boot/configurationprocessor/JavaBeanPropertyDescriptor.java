@@ -36,7 +36,7 @@ class JavaBeanPropertyDescriptor extends PropertyDescriptor<ExecutableElement> {
 	@Override
 	protected boolean isProperty(MetadataGenerationEnvironment env) {
 		boolean isCollection = env.getTypeUtils().isCollectionOrMap(getType());
-		return !env.isExcluded(getType()) && getGetter() != null && (getSetter() != null || isCollection);
+		return !env.isExcluded(getType()) && (getSetter() != null || isCollection);
 	}
 
 	@Override

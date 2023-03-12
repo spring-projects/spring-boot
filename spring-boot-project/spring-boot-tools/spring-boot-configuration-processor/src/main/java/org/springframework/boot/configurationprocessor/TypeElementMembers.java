@@ -113,7 +113,7 @@ class TypeElementMembers {
 		return getMatchingAccessor(candidates, type, ExecutableElement::getReturnType);
 	}
 
-	private ExecutableElement getMatchingSetter(List<ExecutableElement> candidates, TypeMirror type) {
+	ExecutableElement getMatchingSetter(List<ExecutableElement> candidates, TypeMirror type) {
 		return getMatchingAccessor(candidates, type, (candidate) -> candidate.getParameters().get(0).asType());
 	}
 
@@ -195,6 +195,10 @@ class TypeElementMembers {
 
 	Map<String, List<ExecutableElement>> getPublicGetters() {
 		return Collections.unmodifiableMap(this.publicGetters);
+	}
+
+	Map<String, List<ExecutableElement>> getPublicSetters() {
+		return Collections.unmodifiableMap(this.publicSetters);
 	}
 
 	ExecutableElement getPublicGetter(String name, TypeMirror type) {

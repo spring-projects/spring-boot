@@ -19,6 +19,7 @@ package org.springframework.boot.configurationprocessor;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -106,6 +107,18 @@ class PropertyDescriptorResolver {
 			register(candidates, new JavaBeanPropertyDescriptor(type, factoryMethod, getter, name, propertyType, field,
 					members.getPublicSetter(name, propertyType)));
 		});
+		// Also check based on setters, to mirror behavior of @ConfigurationProperties on
+		// @Bean
+		members.getPublicSetters().forEach((name, setters) -> {
+			VariableElement field = members.getFields().get(name);
+			// use Optional for fields that only have a setter
+			Optional<ExecutableElement> matchingGetter = Optional.ofNullable(members.getPublicGetters().get(name))
+				.map((g) -> findMatchingGetter(members, g, field));
+			ExecutableElement setter = findMatchingSetter(members, setters, field);
+			TypeMirror propertyType = setter.getParameters().get(0).asType();
+			register(candidates, new JavaBeanPropertyDescriptor(type, factoryMethod, matchingGetter.orElse(null), name,
+					propertyType, field, members.getPublicSetter(name, propertyType)));
+		});
 		// Then check for Lombok ones
 		members.getFields().forEach((name, field) -> {
 			TypeMirror propertyType = field.asType();
@@ -121,6 +134,14 @@ class PropertyDescriptorResolver {
 			VariableElement field) {
 		if (candidates.size() > 1 && field != null) {
 			return members.getMatchingGetter(candidates, field.asType());
+		}
+		return candidates.get(0);
+	}
+
+	private ExecutableElement findMatchingSetter(TypeElementMembers members, List<ExecutableElement> candidates,
+			VariableElement field) {
+		if (candidates.size() > 1 && field != null) {
+			return members.getMatchingSetter(candidates, field.asType());
 		}
 		return candidates.get(0);
 	}
