@@ -79,7 +79,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 			.withDescription("A simple flag.")
 			.withDeprecation(null, null)
 			.withDefaultValue(true));
-		assertThat(metadata.getItems()).hasSize(4);
+		assertThat(metadata.getItems()).hasSize(5);
 	}
 
 	@Test
@@ -88,7 +88,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 				true, null);
 		writeAdditionalMetadata(property);
 		ConfigurationMetadata metadata = compile(SimpleProperties.class, SimpleConflictingProperties.class);
-		assertThat(metadata.getItems()).hasSize(6);
+		assertThat(metadata.getItems()).hasSize(7);
 		List<ItemMetadata> items = metadata.getItems()
 			.stream()
 			.filter((item) -> item.getName().equals("simple.flag"))
@@ -121,7 +121,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(metadata).has(Metadata.withProperty("simple.comparator", "java.util.Comparator<?>")
 			.fromSource(SimpleProperties.class)
 			.withDescription("A nice comparator."));
-		assertThat(metadata.getItems()).hasSize(4);
+		assertThat(metadata.getItems()).hasSize(5);
 	}
 
 	@Test
@@ -133,7 +133,7 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 		assertThat(metadata).has(Metadata.withProperty("simple.comparator", "java.util.Comparator<?>")
 			.fromSource(SimpleProperties.class)
 			.withDeprecation("Don't use this.", "simple.complex-comparator", "error"));
-		assertThat(metadata.getItems()).hasSize(4);
+		assertThat(metadata.getItems()).hasSize(5);
 	}
 
 	@Test

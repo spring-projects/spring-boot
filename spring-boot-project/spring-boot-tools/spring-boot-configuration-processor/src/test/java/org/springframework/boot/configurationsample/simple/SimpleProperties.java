@@ -47,8 +47,13 @@ public class SimpleProperties {
 	// ignored
 	private FeatureDescriptor featureDescriptor;
 
-	// There is only a setter on this "simple" property --> ignored
+	/**
+	 * A setter-only property.
+	 */
 	@SuppressWarnings("unused")
+	private Long number;
+
+	// There is no getter nor setter on this "simple" property --> ignored
 	private Long counter;
 
 	// There is only a getter on this "simple" property --> ignored
@@ -84,8 +89,8 @@ public class SimpleProperties {
 		return this.featureDescriptor;
 	}
 
-	public void setCounter(Long counter) {
-		this.counter = counter;
+	public void setNumber(Long number) {
+		this.number = number;
 	}
 
 	public Integer getSize() {

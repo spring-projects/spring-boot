@@ -112,8 +112,11 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 			.fromSource(SimpleProperties.class)
 			.withDescription("A simple flag.")
 			.withDeprecation(null, null));
+		assertThat(metadata).has(Metadata.withProperty("simple.number", Long.class)
+				.fromSource(SimpleProperties.class)
+				.withDescription("A setter-only property.")
+		);
 		assertThat(metadata).has(Metadata.withProperty("simple.comparator"));
-		assertThat(metadata).doesNotHave(Metadata.withProperty("simple.counter"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("simple.size"));
 	}
 
@@ -404,7 +407,9 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	void invalidAccessor() {
 		ConfigurationMetadata metadata = compile(InvalidAccessorProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("config"));
-		assertThat(metadata.getItems()).hasSize(1);
+		// ensure valid property is still found
+		assertThat(metadata).has(Metadata.withProperty("config.flag").withDefaultValue(false));
+		assertThat(metadata.getItems()).hasSize(2);
 	}
 
 	@Test

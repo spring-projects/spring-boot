@@ -110,17 +110,17 @@ class JavaBeanPropertyDescriptorTests extends PropertyDescriptorTests {
 	}
 
 	@Test
-	void javaBeanSimplePropertyWithOnlySetterShouldNotBeExposed() throws IOException {
+	void javaBeanSimplePropertyWithOnlySetterShouldBeExposed() throws IOException {
 		process(SimpleProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(SimpleProperties.class);
-			VariableElement field = getField(ownerElement, "counter");
-			JavaBeanPropertyDescriptor property = new JavaBeanPropertyDescriptor(ownerElement, null, null, "counter",
-					field.asType(), field, getMethod(ownerElement, "setCounter"));
-			assertThat(property.getName()).isEqualTo("counter");
+			VariableElement field = getField(ownerElement, "number");
+			JavaBeanPropertyDescriptor property = new JavaBeanPropertyDescriptor(ownerElement, null, null, "number",
+					field.asType(), field, getMethod(ownerElement, "setNumber"));
+			assertThat(property.getName()).isEqualTo("number");
 			assertThat(property.getSource()).isSameAs(property.getGetter());
 			assertThat(property.getGetter()).isNull();
-			assertThat(property.getSetter().getSimpleName()).hasToString("setCounter");
-			assertThat(property.isProperty(metadataEnv)).isFalse();
+			assertThat(property.getSetter().getSimpleName()).hasToString("setNumber");
+			assertThat(property.isProperty(metadataEnv)).isTrue();
 			assertThat(property.isNested(metadataEnv)).isFalse();
 		});
 	}
