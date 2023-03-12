@@ -31,7 +31,7 @@ import org.springframework.boot.buildpack.platform.json.MappedObject;
  * Image archive manifest information.
  *
  * @author Scott Frederick
- * @since 2.7.9
+ * @since 2.7.10
  */
 public class ImageArchiveManifest extends MappedObject {
 
