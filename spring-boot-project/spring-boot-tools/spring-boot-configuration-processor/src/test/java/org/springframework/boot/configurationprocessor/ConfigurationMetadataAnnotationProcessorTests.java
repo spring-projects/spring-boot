@@ -113,9 +113,8 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 			.withDescription("A simple flag.")
 			.withDeprecation(null, null));
 		assertThat(metadata).has(Metadata.withProperty("simple.number", Long.class)
-				.fromSource(SimpleProperties.class)
-				.withDescription("A setter-only property.")
-		);
+			.fromSource(SimpleProperties.class)
+			.withDescription("A setter-only property."));
 		assertThat(metadata).has(Metadata.withProperty("simple.comparator"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty("simple.size"));
 	}

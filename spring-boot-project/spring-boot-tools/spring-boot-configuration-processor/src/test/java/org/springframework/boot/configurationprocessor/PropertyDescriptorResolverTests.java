@@ -65,8 +65,8 @@ class PropertyDescriptorResolverTests {
 
 	@Test
 	void propertiesWithJavaBeanProperties() throws IOException {
-		process(SimpleProperties.class,
-				propertyNames((stream) -> assertThat(stream).containsExactly("theName", "flag", "comparator", "number")));
+		process(SimpleProperties.class, propertyNames(
+				(stream) -> assertThat(stream).containsExactly("theName", "flag", "comparator", "number")));
 	}
 
 	@Test
