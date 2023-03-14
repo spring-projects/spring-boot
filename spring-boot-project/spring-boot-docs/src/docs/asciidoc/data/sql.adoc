@@ -298,7 +298,7 @@ For more advanced queries, a `@Query` annotation is provided.
 
 Spring Boot will auto-configure Spring Data's JDBC repositories when the necessary dependencies are on the classpath.
 They can be added to your project with a single dependency on `spring-boot-starter-data-jdbc`.
-If necessary, you can take control of Spring Data JDBC's configuration by adding the `@EnableJdbcRepositories` annotation or a `JdbcConfiguration` subclass to your application.
+If necessary, you can take control of Spring Data JDBC's configuration by adding the `@EnableJdbcRepositories` annotation or an `AbstractJdbcConfiguration` subclass to your application.
 
 TIP: For complete details of Spring Data JDBC, see the {spring-data-jdbc-docs}[reference documentation].
 
