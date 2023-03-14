@@ -284,6 +284,7 @@ public class DockerApi {
 		 * @param exports a consumer to receive the layer tar file paths (file can only be
 		 * accessed during the callback)
 		 * @throws IOException on IO error
+		 * @since 2.7.10
 		 */
 		public void exportLayerFiles(ImageReference reference, IOBiConsumer<String, Path> exports) throws IOException {
 			Assert.notNull(reference, "Reference must not be null");
