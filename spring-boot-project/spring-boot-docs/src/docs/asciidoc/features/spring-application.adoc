@@ -287,7 +287,7 @@ The algorithm used to determine a `WebApplicationType` is the following:
 This means that if you are using Spring MVC and the new `WebClient` from Spring WebFlux in the same application, Spring MVC will be used by default.
 You can override that easily by calling `setWebApplicationType(WebApplicationType)`.
 
-It is also possible to take complete control of the `ApplicationContext` type that is used by calling `setApplicationContextClass(...)`.
+It is also possible to take complete control of the `ApplicationContext` type that is used by calling `setApplicationContextFactory(...)`.
 
 TIP: It is often desirable to call `setWebApplicationType(WebApplicationType.NONE)` when using `SpringApplication` within a JUnit test.
 
