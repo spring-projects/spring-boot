@@ -148,6 +148,12 @@ public class GraphQlAutoConfiguration {
 		return controllerConfigurer;
 	}
 
+	@Bean
+	DataFetcherExceptionResolver annotatedControllerConfigurerDataFetcherExceptionResolver(
+			AnnotatedControllerConfigurer annotatedControllerConfigurer) {
+		return annotatedControllerConfigurer.getExceptionResolver();
+	}
+
 	static class GraphQlResourcesRuntimeHints implements RuntimeHintsRegistrar {
 
 		@Override

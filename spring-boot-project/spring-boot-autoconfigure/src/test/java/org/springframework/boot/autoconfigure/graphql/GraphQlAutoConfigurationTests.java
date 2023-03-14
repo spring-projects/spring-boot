@@ -116,8 +116,10 @@ class GraphQlAutoConfigurationTests {
 			GraphQlSource graphQlSource = context.getBean(GraphQlSource.class);
 			GraphQL graphQL = graphQlSource.graphQl();
 			assertThat(graphQL.getQueryStrategy()).extracting("dataFetcherExceptionHandler")
-				.satisfies((exceptionHandler) -> assertThat(exceptionHandler.getClass().getName())
-					.endsWith("ExceptionResolversExceptionHandler"));
+				.satisfies((exceptionHandler) -> {
+					assertThat(exceptionHandler.getClass().getName()).endsWith("ExceptionResolversExceptionHandler");
+					assertThat(exceptionHandler).extracting("resolvers").asList().hasSize(2);
+				});
 		});
 	}
 
