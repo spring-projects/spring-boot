@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,20 +76,21 @@ public final class SanitizableData {
 	}
 
 	/**
+	 * Return a new {@link SanitizableData} instance with sanatized value.
+	 * @return a new sanitizable data instance.
+	 * @since 3.1.0
+	 */
+	public SanitizableData withSanitizedValue() {
+		return withValue(SANITIZED_VALUE);
+	}
+
+	/**
 	 * Return a new {@link SanitizableData} instance with a different value.
 	 * @param value the new value (often {@link #SANITIZED_VALUE}
 	 * @return a new sanitizable data instance
 	 */
 	public SanitizableData withValue(Object value) {
 		return new SanitizableData(this.propertySource, this.key, value);
-	}
-
-	/**
-	 * Return a new {@link SanitizableData} instance with sanatized value.
-	 * @return a new sanitizable data instance.
-	 */
-	public SanitizableData withSanitizedValue() {
-		return new SanitizableData(this.propertySource, this.key, SANITIZED_VALUE);
 	}
 
 }
