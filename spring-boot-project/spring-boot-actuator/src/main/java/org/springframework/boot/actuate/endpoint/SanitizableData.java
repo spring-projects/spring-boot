@@ -86,7 +86,7 @@ public final class SanitizableData {
 	
 	/**
 	 * Return a new {@link SanitizableData} instance with sanatized value.
-	 * @return a new sanitizable data instance
+	 * @return a new sanitizable data instance.
 	 */
 	public SanitizableData withSanitizedValue() {
 		return new SanitizableData(this.propertySource, this.key, SANITIZED_VALUE);
