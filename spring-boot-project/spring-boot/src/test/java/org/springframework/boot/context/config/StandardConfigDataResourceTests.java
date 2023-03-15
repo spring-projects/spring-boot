@@ -16,9 +16,12 @@
 
 package org.springframework.boot.context.config;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileUrlResource;
 import org.springframework.core.io.Resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,6 +67,17 @@ class StandardConfigDataResourceTests {
 		StandardConfigDataResource location = new StandardConfigDataResource(this.reference, resource1);
 		StandardConfigDataResource other = new StandardConfigDataResource(this.reference, resource2);
 		assertThat(location).isNotEqualTo(other);
+	}
+
+	@Test // gh-34212
+	void equalsAndHashCodeWhenSameUnderlyingResource() throws IOException {
+		ClassPathResource classPathResource = new ClassPathResource("log4j2.springboot");
+		FileUrlResource fileUrlResource = new FileUrlResource(classPathResource.getURL());
+		ConfigDataResource classPathConfigDataResource = new StandardConfigDataResource(this.reference,
+				classPathResource);
+		ConfigDataResource fileUrlConfigDataResource = new StandardConfigDataResource(this.reference, fileUrlResource);
+		assertThat(classPathConfigDataResource.hashCode()).isEqualTo(fileUrlConfigDataResource.hashCode());
+		assertThat(classPathConfigDataResource).isEqualTo(fileUrlConfigDataResource);
 	}
 
 }
