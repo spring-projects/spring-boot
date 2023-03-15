@@ -21,8 +21,6 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-import kotlin.jvm.JvmClassMappingKt;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.KotlinDetector;
@@ -106,7 +104,7 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 			MergedAnnotations[] candidateAnnotations = getAnnotations(candidates);
 			boolean kotlinType = isKotlinType(type);
 			boolean deducedBindConstructor = false;
-			boolean immutableType = type.isRecord() || isKotlinDataClass(type);
+			boolean immutableType = type.isRecord();
 			Constructor<?> bind = getConstructorBindingAnnotated(type, candidates, candidateAnnotations);
 			if (bind == null && !hasAutowiredConstructor) {
 				bind = deduceBindConstructor(type, candidates);
@@ -196,10 +194,6 @@ class DefaultBindConstructorProvider implements BindConstructorProvider {
 				}
 			}
 			return (result != null && result.getParameterCount() > 0) ? result : null;
-		}
-
-		private static boolean isKotlinDataClass(Class<?> type) {
-			return isKotlinType(type) && JvmClassMappingKt.getKotlinClass(type).isData();
 		}
 
 		private static boolean isKotlinType(Class<?> type) {
