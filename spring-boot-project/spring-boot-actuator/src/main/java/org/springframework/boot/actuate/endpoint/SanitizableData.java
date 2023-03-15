@@ -22,6 +22,7 @@ import org.springframework.core.env.PropertySource;
  * Value object that represents the data that can be used by a {@link SanitizingFunction}.
  *
  * @author Madhura Bhave
+ * @author Rohan Goyal
  * @since 2.6.0
  **/
 public final class SanitizableData {
@@ -81,6 +82,14 @@ public final class SanitizableData {
 	 */
 	public SanitizableData withValue(Object value) {
 		return new SanitizableData(this.propertySource, this.key, value);
+	}
+
+	/**
+	 * Return a new {@link SanitizableData} instance with sanatized value.
+	 * @return a new sanitizable data instance.
+	 */
+	public SanitizableData withSanitizedValue() {
+		return new SanitizableData(this.propertySource, this.key, SANITIZED_VALUE);
 	}
 
 }
