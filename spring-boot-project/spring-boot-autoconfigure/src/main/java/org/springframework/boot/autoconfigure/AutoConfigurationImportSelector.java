@@ -370,7 +370,10 @@ public class AutoConfigurationImportSelector implements DeferredImportSelector, 
 		}
 
 		List<String> filter(List<String> configurations) {
-			long startTime = System.nanoTime();
+			long startTime = 0;
+			if (logger.isTraceEnabled()) {
+				startTime = System.nanoTime();
+			}
 			String[] candidates = StringUtils.toStringArray(configurations);
 			boolean skipped = false;
 			for (AutoConfigurationImportFilter filter : this.filters) {
