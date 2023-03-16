@@ -720,9 +720,11 @@ The example in the previous section can be rewritten in an immutable fashion as 
 
 include::code:MyProperties[]
 
-In this setup, the presence of a single parameterized constructor implies that constructor binding should be used.
+In this setup, the presence of a single parameterized constructor and the fact that the type is annotated with `@ConstructorBinding`
+implies that constructor binding should be used.
 This means that the binder will find a constructor with the parameters that you wish to have bound.
-If your class has multiple constructors, the `@ConstructorBinding` annotation can be used to specify which constructor to use for constructor binding.
+If your class has multiple constructors, the `@ConstructorBinding` annotation can be put on a specific constructor to specify which
+constructor to use for constructor binding.
 To opt out of constructor binding for a class with a single parameterized constructor, the constructor must be annotated with `@Autowired`.
 Constructor binding can be used with records.
 Unless your record has multiple constructors, there is no need to use `@ConstructorBinding`.
