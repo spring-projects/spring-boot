@@ -212,7 +212,7 @@ For example, to indicate that JRuby should be flagged for unpacking by using the
 [[howto.build.create-a-nonexecutable-jar]]
 === Create a Non-executable JAR with Exclusions
 Often, if you have an executable and a non-executable jar as two separate build products, the executable version has additional configuration files that are not needed in a library jar.
-For example, the `application.yml` configuration file might be excluded from the non-executable JAR.
+For example, the `application.yaml` configuration file might be excluded from the non-executable JAR.
 
 In Maven, the executable jar must be the main artifact and you can add a classified jar for the library, as follows:
 
@@ -236,7 +236,7 @@ In Maven, the executable jar must be the main artifact and you can add a classif
 						<configuration>
 							<classifier>lib</classifier>
 							<excludes>
-								<exclude>application.yml</exclude>
+								<exclude>application.yaml</exclude>
 							</excludes>
 						</configuration>
 					</execution>

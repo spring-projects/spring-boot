@@ -115,5 +115,5 @@ It is also possible to activate profiles by using Spring's `ConfigurableEnvironm
 
 [[features.profiles.profile-specific-configuration-files]]
 === Profile-specific Configuration Files
-Profile-specific variants of both `application.properties` (or `application.yml`) and files referenced through `@ConfigurationProperties` are considered as files and loaded.
+Profile-specific variants of both `application.properties` (or `application.yaml`) and files referenced through `@ConfigurationProperties` are considered as files and loaded.
 See "<<features#features.external-config.files.profile-specific>>" for details.
