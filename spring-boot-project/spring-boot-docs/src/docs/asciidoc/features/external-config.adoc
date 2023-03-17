@@ -35,7 +35,7 @@ Config data files are considered in the following order:
 . <<features#features.external-config.files.profile-specific,Profile-specific application properties>> outside of your packaged jar (`application-\{profile}.properties` and YAML variants).
 
 NOTE: It is recommended to stick with one format for your entire application.
-If you have configuration files with both `.properties` and `.yaml` format in the same location, `.properties` takes precedence.
+If you have configuration files with both `.properties` and YAML format in the same location, `.properties` takes precedence.
 
 To provide a concrete example, suppose you develop a `@Component` that uses a `name` property, as shown in the following example:
 
@@ -837,13 +837,13 @@ With the preceding code, the following properties names can all be used:
 | Property | Note
 
 | `my.main-project.person.first-name`
-| Kebab case, which is recommended for use in `.properties` and `.yaml` files.
+| Kebab case, which is recommended for use in `.properties` and YAML files.
 
 | `my.main-project.person.firstName`
 | Standard camel case syntax.
 
 | `my.main-project.person.first_name`
-| Underscore notation, which is an alternative format for use in `.properties` and `.yaml` files.
+| Underscore notation, which is an alternative format for use in `.properties` and YAML files.
 
 | `MY_MAINPROJECT_PERSON_FIRSTNAME`
 | Upper case format, which is recommended when using system environment variables.
