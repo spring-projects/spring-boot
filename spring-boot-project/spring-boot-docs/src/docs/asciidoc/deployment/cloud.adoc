@@ -35,7 +35,7 @@ The following line shows using the `cf push` command to deploy an application:
 NOTE: In the preceding example, we substitute `acloudyspringtime` for whatever value you give `cf` as the name of your application.
 
 See the https://docs.cloudfoundry.org/cf-cli/getting-started.html#push[`cf push` documentation] for more options.
-If there is a Cloud Foundry https://docs.cloudfoundry.org/devguide/deploy-apps/manifest.html[`manifest.yml`] file present in the same directory, it is considered.
+If there is a Cloud Foundry https://docs.cloudfoundry.org/devguide/deploy-apps/manifest.html[`manifest.yaml`] file present in the same directory, it is considered.
 
 At this point, `cf` starts uploading your application, producing output similar to the following example:
 
@@ -274,7 +274,7 @@ To configure it, add the following line to your `application.properties` file:
 ====
 By default, Elastic Beanstalk uploads sources and compiles them in AWS.
 However, it is best to upload the binaries instead.
-To do so, add lines similar to the following to your `.elasticbeanstalk/config.yml` file:
+To do so, add lines similar to the following to your `.elasticbeanstalk/config.yaml` file:
 
 [source,xml,indent=0,subs="verbatim"]
 ----

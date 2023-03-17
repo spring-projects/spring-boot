@@ -182,7 +182,7 @@ You can configure this behavior by setting the configprop:server.compression.mim
 
 [[howto.webserver.configure-ssl]]
 === Configure SSL
-SSL can be configured declaratively by setting the various `+server.ssl.*+` properties, typically in `application.properties` or `application.yml`.
+SSL can be configured declaratively by setting the various `+server.ssl.*+` properties, typically in `application.properties` or `application.yaml`.
 The following example shows setting SSL properties using a Java KeyStore file:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -268,7 +268,7 @@ Undertow supports `h2c` and `h2` out of the box.
 
 [[howto.webserver.configure]]
 === Configure the Web Server
-Generally, you should first consider using one of the many available configuration keys and customize your web server by adding new entries in your `application.properties` or `application.yml` file.
+Generally, you should first consider using one of the many available configuration keys and customize your web server by adding new entries in your `application.properties` or `application.yaml` file.
 See "`<<howto#howto.properties-and-configuration.discover-build-in-options-for-external-properties>>`").
 The `server.{asterisk}` namespace is quite useful here, and it includes namespaces like `server.tomcat.{asterisk}`, `server.jetty.{asterisk}` and others, for server-specific features.
 See the list of <<application-properties#appendix.application-properties>>.
