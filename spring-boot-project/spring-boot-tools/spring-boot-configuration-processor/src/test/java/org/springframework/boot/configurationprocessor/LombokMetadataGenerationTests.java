@@ -63,7 +63,7 @@ class LombokMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	void lombokExplicitProperties() {
 		ConfigurationMetadata metadata = compile(LombokExplicitProperties.class);
 		assertSimpleLombokProperties(metadata, LombokExplicitProperties.class, "explicit");
-		assertThat(metadata.getItems()).hasSize(6);
+		assertThat(metadata.getItems()).hasSize(7);
 	}
 
 	@Test
@@ -143,6 +143,10 @@ class LombokMetadataGenerationTests extends AbstractMetadataGenerationTests {
 			.fromSource(source)
 			.withDefaultValue(0)
 			.withDeprecation(null, null));
+		assertThat(metadata).has(Metadata.withProperty(prefix + ".number2")
+			.fromSource(source)
+			.withDefaultValue(1)
+			.withDeprecation("true", "false"));
 		assertThat(metadata).has(Metadata.withProperty(prefix + ".items"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty(prefix + ".ignored"));
 	}

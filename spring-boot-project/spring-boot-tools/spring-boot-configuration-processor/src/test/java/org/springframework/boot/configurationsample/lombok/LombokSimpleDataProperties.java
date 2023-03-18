@@ -22,6 +22,7 @@ import java.util.List;
 import lombok.Data;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties using lombok @Data.
@@ -46,6 +47,9 @@ public class LombokSimpleDataProperties {
 
 	@Deprecated
 	private Integer number = 0;
+
+	@DeprecatedConfigurationProperty(reason = "true", replacement = "false")
+	private Integer number2 = 1;
 
 	private final List<String> items = new ArrayList<>();
 

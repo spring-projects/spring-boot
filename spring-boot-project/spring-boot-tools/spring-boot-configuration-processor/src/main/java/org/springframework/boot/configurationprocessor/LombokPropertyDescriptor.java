@@ -75,7 +75,7 @@ class LombokPropertyDescriptor extends PropertyDescriptor<VariableElement> {
 	protected ItemDeprecation resolveItemDeprecation(MetadataGenerationEnvironment environment) {
 		boolean deprecated = environment.isDeprecated(getField()) || environment.isDeprecated(getGetter())
 				|| environment.isDeprecated(getFactoryMethod());
-		return deprecated ? environment.resolveItemDeprecation(getGetter()) : null;
+		return deprecated ? environment.resolveItemDeprecation(getField()) : null;
 	}
 
 	private boolean hasSetter(MetadataGenerationEnvironment env) {

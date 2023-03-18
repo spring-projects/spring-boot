@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties using lombok @Getter/@Setter at field level.
@@ -54,6 +55,11 @@ public class LombokExplicitProperties {
 	@Getter
 	@Setter
 	private Integer number = 0;
+
+	@DeprecatedConfigurationProperty(reason = "true", replacement = "false")
+	@Getter
+	@Setter
+	private Integer number2 = 1;
 
 	@Getter
 	private final List<String> items = new ArrayList<>();

@@ -90,25 +90,25 @@ class PropertyDescriptorResolverTests {
 	@Test
 	void propertiesWithLombokGetterSetterAtClassLevel() throws IOException {
 		process(LombokSimpleProperties.class, propertyNames(
-				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "items")));
+				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "number2", "items")));
 	}
 
 	@Test
 	void propertiesWithLombokGetterSetterAtFieldLevel() throws IOException {
 		process(LombokExplicitProperties.class, propertyNames(
-				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "items")));
+				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "number2", "items")));
 	}
 
 	@Test
 	void propertiesWithLombokDataClass() throws IOException {
 		process(LombokSimpleDataProperties.class, propertyNames(
-				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "items")));
+				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "number2", "items")));
 	}
 
 	@Test
 	void propertiesWithLombokValueClass() throws IOException {
 		process(LombokSimpleValueProperties.class, propertyNames(
-				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "items")));
+				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "number2", "items")));
 	}
 
 	@Test

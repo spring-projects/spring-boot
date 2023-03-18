@@ -28,12 +28,13 @@ import java.lang.annotation.Target;
  * but it is used by the {@code spring-boot-configuration-processor} to add deprecation
  * meta-data.
  * <p>
- * This annotation <strong>must</strong> be used on the getter of the deprecated element.
+ * This annotation <strong>must</strong> be used on the getter of the deprecated element,
+ * or on the field, if Lombok is used.
  *
  * @author Phillip Webb
  * @since 1.3.0
  */
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface DeprecatedConfigurationProperty {
