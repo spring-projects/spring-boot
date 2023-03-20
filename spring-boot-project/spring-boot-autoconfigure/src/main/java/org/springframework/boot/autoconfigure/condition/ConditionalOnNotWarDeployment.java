@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional @Conditional} that only matches when the application is a not
+ * {@link Conditional @Conditional} that only matches when the application is not a
  * traditional WAR deployment. For applications with embedded servers, this condition will
  * return true.
  *
