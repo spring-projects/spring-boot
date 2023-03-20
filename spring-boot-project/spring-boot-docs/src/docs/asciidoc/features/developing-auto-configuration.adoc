@@ -125,12 +125,12 @@ Resources can be specified by using the usual Spring conventions, as shown in th
 
 [[features.developing-auto-configuration.condition-annotations.web-application-conditions]]
 ==== Web Application Conditions
-The `@ConditionalOnWebApplication` and `@ConditionalOnNotWebApplication` annotations let configuration be included depending on whether the application is a "`web application`".
+The `@ConditionalOnWebApplication` and `@ConditionalOnNotWebApplication` annotations let configuration be included depending on whether the application is a web application.
 A servlet-based web application is any application that uses a Spring `WebApplicationContext`, defines a `session` scope, or has a `ConfigurableWebEnvironment`.
 A reactive web application is any application that uses a `ReactiveWebApplicationContext`, or has a `ConfigurableReactiveWebEnvironment`.
 
-The `@ConditionalOnWarDeployment` annotation lets configuration be included depending on whether the application is a traditional WAR application that is deployed to a container.
-This condition will not match for applications that are run with an embedded server.
+The `@ConditionalOnWarDeployment` and `@ConditionalOnNotWarDeployment` annotations let configuration be included depending on whether the application is a traditional WAR application that is deployed to a servlet container.
+This condition will not match for applications that are run with an embedded web server.
 
 
 
