@@ -86,8 +86,8 @@ public class MavenExec extends JavaExec {
 			return existing;
 		}
 		return project.getConfigurations().create("maven", (maven) -> {
-			maven.getDependencies().add(project.getDependencies().create("org.apache.maven:maven-embedder:3.6.2"));
-			maven.getDependencies().add(project.getDependencies().create("org.apache.maven:maven-compat:3.6.2"));
+			maven.getDependencies().add(project.getDependencies().create("org.apache.maven:maven-embedder:3.6.3"));
+			maven.getDependencies().add(project.getDependencies().create("org.apache.maven:maven-compat:3.6.3"));
 			maven.getDependencies().add(project.getDependencies().create("org.slf4j:slf4j-simple:1.7.5"));
 			maven.getDependencies()
 				.add(project.getDependencies()

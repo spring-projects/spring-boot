@@ -30,7 +30,7 @@ dependencies {
 	implementation("com.gradle:gradle-enterprise-gradle-plugin:3.12.1")
 	implementation("com.tngtech.archunit:archunit:1.0.0")
 	implementation("commons-codec:commons-codec:1.13")
-	implementation("org.apache.maven:maven-embedder:3.6.2")
+	implementation("org.apache.maven:maven-embedder:3.6.3")
 	implementation("org.asciidoctor:asciidoctor-gradle-jvm:3.3.2")
 	implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
 	implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:${kotlinVersion}")
