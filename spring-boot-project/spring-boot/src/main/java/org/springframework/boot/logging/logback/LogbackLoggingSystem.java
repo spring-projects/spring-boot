@@ -33,7 +33,6 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.jul.LevelChangePropagator;
 import ch.qos.logback.classic.turbo.TurboFilter;
-import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.spi.FilterReply;
 import ch.qos.logback.core.status.OnConsoleStatusListener;
@@ -272,13 +271,13 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	private void configureByResourceUrl(LoggingInitializationContext initializationContext, LoggerContext loggerContext,
 			URL url) throws JoranException {
-		if (url.toString().endsWith("xml")) {
+		if (url.toString().endsWith(".xml")) {
 			JoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext, this.configurators);
 			configurator.setContext(loggerContext);
 			configurator.doConfigure(url);
 		}
 		else {
-			new ContextInitializer(loggerContext).configureByResource(url);
+			throw new IllegalArgumentException("Unsupported file extension in '" + url + "'. Only .xml is supported");
 		}
 	}
 
