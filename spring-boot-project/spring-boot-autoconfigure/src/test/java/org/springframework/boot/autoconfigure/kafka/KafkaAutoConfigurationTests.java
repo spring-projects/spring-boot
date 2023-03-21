@@ -364,10 +364,10 @@ class KafkaAutoConfigurationTests {
 				"spring.kafka.retry.topic.multiplier=2", "spring.kafka.retry.topic.max-delay=300ms")
 			.run((context) -> {
 				RetryTopicConfiguration configuration = context.getBean(RetryTopicConfiguration.class);
-				assertThat(configuration.getDestinationTopicProperties()).hasSize(6)
+				assertThat(configuration.getDestinationTopicProperties()).hasSize(5)
 					.extracting(DestinationTopic.Properties::delay, DestinationTopic.Properties::suffix)
 					.containsExactly(tuple(0L, ""), tuple(100L, "-retry-0"), tuple(200L, "-retry-1"),
-							tuple(300L, "-retry-2"), tuple(300L, "-retry-3"), tuple(0L, "-dlt"));
+							tuple(300L, "-retry-2"), tuple(0L, "-dlt"));
 			});
 	}
 

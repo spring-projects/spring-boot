@@ -105,7 +105,7 @@ class KafkaAutoConfigurationIntegrationTests {
 				"spring.kafka.consumer.auto-offset-reset=earliest");
 		RetryTopicConfiguration configuration = this.context.getBean(RetryTopicConfiguration.class);
 		assertThat(configuration.getDestinationTopicProperties()).extracting(DestinationTopic.Properties::delay)
-			.containsExactly(0L, 100L, 200L, 300L, 300L, 0L);
+			.containsExactly(0L, 100L, 200L, 300L, 0L);
 		KafkaTemplate<String, String> template = this.context.getBean(KafkaTemplate.class);
 		template.send(TEST_RETRY_TOPIC, "foo", "bar");
 		RetryListener listener = this.context.getBean(RetryListener.class);
@@ -116,7 +116,7 @@ class KafkaAutoConfigurationIntegrationTests {
 			.asList()
 			.hasSize(5)
 			.containsSequence("testRetryTopic", "testRetryTopic-retry-0", "testRetryTopic-retry-1",
-					"testRetryTopic-retry-2", "testRetryTopic-retry-3");
+					"testRetryTopic-retry-2");
 	}
 
 	@Test
