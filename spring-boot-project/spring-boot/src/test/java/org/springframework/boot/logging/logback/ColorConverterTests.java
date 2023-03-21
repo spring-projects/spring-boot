@@ -17,12 +17,16 @@
 package org.springframework.boot.logging.logback;
 
 import java.util.Collections;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.LoggingEvent;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 
 import org.springframework.boot.ansi.AnsiOutput;
 
@@ -32,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ColorConverter}.
  *
  * @author Phillip Webb
+ * @author Krzysztof Krason
  */
 class ColorConverterTests {
 
@@ -51,53 +56,27 @@ class ColorConverterTests {
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.DETECT);
 	}
 
-	@Test
-	void faint() {
-		this.converter.setOptionList(Collections.singletonList("faint"));
-		String out = this.converter.transform(this.event, this.in);
-		assertThat(out).isEqualTo("\033[2min\033[0;39m");
+	@TestFactory
+	Stream<DynamicTest> colors() {
+		return Map.ofEntries(Map.entry("faint", "\033[2min\033[0;39m"), Map.entry("cyan", "\033[36min\033[0;39m"),
+				Map.entry("magenta", "\033[35min\033[0;39m"), Map.entry("blue", "\033[34min\033[0;39m"),
+				Map.entry("yellow", "\033[33min\033[0;39m"), Map.entry("green", "\033[32min\033[0;39m"),
+				Map.entry("red", "\033[31min\033[0;39m"), Map.entry("black", "\033[30min\033[0;39m"),
+				Map.entry("white", "\033[37min\033[0;39m"), Map.entry("bright_cyan", "\033[96min\033[0;39m"),
+				Map.entry("bright_magenta", "\033[95min\033[0;39m"), Map.entry("bright_blue", "\033[94min\033[0;39m"),
+				Map.entry("bright_yellow", "\033[93min\033[0;39m"), Map.entry("bright_green", "\033[92min\033[0;39m"),
+				Map.entry("bright_red", "\033[91min\033[0;39m"), Map.entry("bright_black", "\033[90min\033[0;39m"),
+				Map.entry("bright_white", "\033[97min\033[0;39m"))
+			.entrySet()
+			.stream()
+			.map((entry) -> DynamicTest.dynamicTest("Test for %s".formatted(entry.getKey()),
+					() -> colorValidation(entry.getKey(), entry.getValue())));
 	}
 
-	@Test
-	void red() {
-		this.converter.setOptionList(Collections.singletonList("red"));
+	void colorValidation(String color, String escapeSeq) {
+		this.converter.setOptionList(Collections.singletonList(color));
 		String out = this.converter.transform(this.event, this.in);
-		assertThat(out).isEqualTo("\033[31min\033[0;39m");
-	}
-
-	@Test
-	void green() {
-		this.converter.setOptionList(Collections.singletonList("green"));
-		String out = this.converter.transform(this.event, this.in);
-		assertThat(out).isEqualTo("\033[32min\033[0;39m");
-	}
-
-	@Test
-	void yellow() {
-		this.converter.setOptionList(Collections.singletonList("yellow"));
-		String out = this.converter.transform(this.event, this.in);
-		assertThat(out).isEqualTo("\033[33min\033[0;39m");
-	}
-
-	@Test
-	void blue() {
-		this.converter.setOptionList(Collections.singletonList("blue"));
-		String out = this.converter.transform(this.event, this.in);
-		assertThat(out).isEqualTo("\033[34min\033[0;39m");
-	}
-
-	@Test
-	void magenta() {
-		this.converter.setOptionList(Collections.singletonList("magenta"));
-		String out = this.converter.transform(this.event, this.in);
-		assertThat(out).isEqualTo("\033[35min\033[0;39m");
-	}
-
-	@Test
-	void cyan() {
-		this.converter.setOptionList(Collections.singletonList("cyan"));
-		String out = this.converter.transform(this.event, this.in);
-		assertThat(out).isEqualTo("\033[36min\033[0;39m");
+		assertThat(out).isEqualTo(escapeSeq);
 	}
 
 	@Test

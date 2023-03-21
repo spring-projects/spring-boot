@@ -16,12 +16,17 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.util.Map;
+import java.util.stream.Stream;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.AbstractLogEvent;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 
 import org.springframework.boot.ansi.AnsiOutput;
 
@@ -31,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ColorConverter}.
  *
  * @author Vladimir Tsanev
+ * @author Krzysztof Krason
  */
 class ColorConverterTests {
 
@@ -57,53 +63,27 @@ class ColorConverterTests {
 		return ColorConverter.newInstance(null, new String[] { this.in, styling });
 	}
 
-	@Test
-	void faint() {
-		StringBuilder output = new StringBuilder();
-		newConverter("faint").format(this.event, output);
-		assertThat(output).hasToString("\033[2min\033[0;39m");
+	@TestFactory
+	Stream<DynamicTest> colors() {
+		return Map.ofEntries(Map.entry("faint", "\033[2min\033[0;39m"), Map.entry("cyan", "\033[36min\033[0;39m"),
+				Map.entry("magenta", "\033[35min\033[0;39m"), Map.entry("blue", "\033[34min\033[0;39m"),
+				Map.entry("yellow", "\033[33min\033[0;39m"), Map.entry("green", "\033[32min\033[0;39m"),
+				Map.entry("red", "\033[31min\033[0;39m"), Map.entry("black", "\033[30min\033[0;39m"),
+				Map.entry("white", "\033[37min\033[0;39m"), Map.entry("bright_cyan", "\033[96min\033[0;39m"),
+				Map.entry("bright_magenta", "\033[95min\033[0;39m"), Map.entry("bright_blue", "\033[94min\033[0;39m"),
+				Map.entry("bright_yellow", "\033[93min\033[0;39m"), Map.entry("bright_green", "\033[92min\033[0;39m"),
+				Map.entry("bright_red", "\033[91min\033[0;39m"), Map.entry("bright_black", "\033[90min\033[0;39m"),
+				Map.entry("bright_white", "\033[97min\033[0;39m"))
+			.entrySet()
+			.stream()
+			.map((entry) -> DynamicTest.dynamicTest("Test for %s".formatted(entry.getKey()),
+					() -> colorValidation(entry.getKey(), entry.getValue())));
 	}
 
-	@Test
-	void red() {
+	void colorValidation(String color, String escapeSeq) {
 		StringBuilder output = new StringBuilder();
-		newConverter("red").format(this.event, output);
-		assertThat(output).hasToString("\033[31min\033[0;39m");
-	}
-
-	@Test
-	void green() {
-		StringBuilder output = new StringBuilder();
-		newConverter("green").format(this.event, output);
-		assertThat(output).hasToString("\033[32min\033[0;39m");
-	}
-
-	@Test
-	void yellow() {
-		StringBuilder output = new StringBuilder();
-		newConverter("yellow").format(this.event, output);
-		assertThat(output).hasToString("\033[33min\033[0;39m");
-	}
-
-	@Test
-	void blue() {
-		StringBuilder output = new StringBuilder();
-		newConverter("blue").format(this.event, output);
-		assertThat(output).hasToString("\033[34min\033[0;39m");
-	}
-
-	@Test
-	void magenta() {
-		StringBuilder output = new StringBuilder();
-		newConverter("magenta").format(this.event, output);
-		assertThat(output).hasToString("\033[35min\033[0;39m");
-	}
-
-	@Test
-	void cyan() {
-		StringBuilder output = new StringBuilder();
-		newConverter("cyan").format(this.event, output);
-		assertThat(output).hasToString("\033[36min\033[0;39m");
+		newConverter(color).format(this.event, output);
+		assertThat(output).hasToString(escapeSeq);
 	}
 
 	@Test
