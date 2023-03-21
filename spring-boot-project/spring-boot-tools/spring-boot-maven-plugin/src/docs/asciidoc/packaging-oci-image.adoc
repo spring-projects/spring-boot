@@ -357,6 +357,25 @@ The `publish` option can be specified on the command line as well, as shown in t
 	$ mvn spring-boot:build-image -Dspring-boot.build-image.imageName=docker.example.com/library/my-app:v1 -Dspring-boot.build-image.publish=true
 ----
 
+When using the `publish` option on the command line with authentication, you can provide credentials using properties as in this example:
+
+[indent=0]
+----
+	$ mvn spring-boot:build-image \
+          -Ddocker.publishRegistry.username=user \
+          -Ddocker.publishRegistry.password=secret \
+          -Ddocker.publishRegistry.url=docker.example.com \
+          -Dspring-boot.build-image.publish=true \
+          -Dspring-boot.build-image.imageName=docker.example.com/library/my-app:v1
+----
+
+and reference the properties in the XML configuration:
+
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
+----
+include::../maven/packaging-oci-image/docker-pom-authentication-command-line.xml[tags=docker]
+----
+
 [[build-image.examples.caches]]
 === Builder Cache Configuration
 
