@@ -623,7 +623,7 @@ bom {
 			]
 		}
 	}
-	library("Jedis", "4.3.1") {
+	library("Jedis", "4.3.2") {
 		group("redis.clients") {
 			modules = [
 				"jedis"
