@@ -1342,7 +1342,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Framework", "6.0.7-SNAPSHOT") {
+	library("Spring Framework", "6.0.7") {
 		group("org.springframework") {
 			imports = [
 				"spring-framework-bom"
