@@ -1284,6 +1284,10 @@ bom {
 		}
 	}
 	library("Selenium HtmlUnit", "4.8.0") {
+		prohibit {
+			versionRange("[4.8.1,)")
+			because("it requires HtmlUnit 3.0.0 which is incompatible with Spring Framework 6.0")
+		}
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"htmlunit-driver"
