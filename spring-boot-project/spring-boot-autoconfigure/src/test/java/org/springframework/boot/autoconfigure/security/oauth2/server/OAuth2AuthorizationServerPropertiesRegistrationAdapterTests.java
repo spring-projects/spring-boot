@@ -34,18 +34,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Steve Riesenberg
  */
-public class OAuth2AuthorizationServerPropertiesRegistrationAdapterTests {
+class OAuth2AuthorizationServerPropertiesRegistrationAdapterTests {
 
 	@Test
 	void getRegisteredClientsWhenValidParametersShouldAdapt() {
 		OAuth2AuthorizationServerProperties properties = new OAuth2AuthorizationServerProperties();
 		OAuth2AuthorizationServerProperties.Client client = createClient();
 		properties.getClient().put("foo", client);
-
 		List<RegisteredClient> registeredClients = OAuth2AuthorizationServerPropertiesRegistrationAdapter
 			.getRegisteredClients(properties);
 		assertThat(registeredClients).hasSize(1);
-
 		RegisteredClient registeredClient = registeredClients.get(0);
 		assertThat(registeredClient.getClientId()).isEqualTo("foo");
 		assertThat(registeredClient.getClientSecret()).isEqualTo("secret");
@@ -56,13 +54,11 @@ public class OAuth2AuthorizationServerPropertiesRegistrationAdapterTests {
 		assertThat(registeredClient.getRedirectUris()).containsExactly("https://example.com/redirect");
 		assertThat(registeredClient.getPostLogoutRedirectUris()).containsExactly("https://example.com/logout");
 		assertThat(registeredClient.getScopes()).containsExactly("user.read");
-
 		assertThat(registeredClient.getClientSettings().isRequireProofKey()).isTrue();
 		assertThat(registeredClient.getClientSettings().isRequireAuthorizationConsent()).isTrue();
 		assertThat(registeredClient.getClientSettings().getJwkSetUrl()).isEqualTo("https://example.com/jwks");
 		assertThat(registeredClient.getClientSettings().getTokenEndpointAuthenticationSigningAlgorithm())
 			.isEqualTo(SignatureAlgorithm.RS256);
-
 		assertThat(registeredClient.getTokenSettings().getAccessTokenFormat()).isEqualTo(OAuth2TokenFormat.REFERENCE);
 		assertThat(registeredClient.getTokenSettings().getAccessTokenTimeToLive()).isEqualTo(Duration.ofSeconds(300));
 		assertThat(registeredClient.getTokenSettings().getRefreshTokenTimeToLive()).isEqualTo(Duration.ofHours(24));
@@ -77,7 +73,6 @@ public class OAuth2AuthorizationServerPropertiesRegistrationAdapterTests {
 		client.setRequireAuthorizationConsent(true);
 		client.setJwkSetUri("https://example.com/jwks");
 		client.setTokenEndpointAuthenticationSigningAlgorithm("rs256");
-
 		OAuth2AuthorizationServerProperties.Registration registration = client.getRegistration();
 		registration.setClientId("foo");
 		registration.setClientSecret("secret");
@@ -86,14 +81,12 @@ public class OAuth2AuthorizationServerPropertiesRegistrationAdapterTests {
 		registration.getRedirectUris().add("https://example.com/redirect");
 		registration.getPostLogoutRedirectUris().add("https://example.com/logout");
 		registration.getScopes().add("user.read");
-
 		OAuth2AuthorizationServerProperties.Token token = client.getToken();
 		token.setAccessTokenFormat("reference");
 		token.setAccessTokenTimeToLive(Duration.ofSeconds(300));
 		token.setRefreshTokenTimeToLive(Duration.ofHours(24));
 		token.setReuseRefreshTokens(true);
 		token.setIdTokenSignatureAlgorithm("rs512");
-
 		return client;
 	}
 

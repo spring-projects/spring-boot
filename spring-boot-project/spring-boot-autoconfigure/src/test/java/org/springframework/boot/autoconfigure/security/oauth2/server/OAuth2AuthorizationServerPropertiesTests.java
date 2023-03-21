@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Steve Riesenberg
  */
-public class OAuth2AuthorizationServerPropertiesTests {
+class OAuth2AuthorizationServerPropertiesTests {
 
 	private final OAuth2AuthorizationServerProperties properties = new OAuth2AuthorizationServerProperties();
 

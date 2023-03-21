@@ -27,12 +27,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Steve Riesenberg
  */
-public class OAuth2AuthorizationServerPropertiesSettingsAdapterTests {
+class OAuth2AuthorizationServerPropertiesSettingsAdapterTests {
 
 	@Test
 	void getAuthorizationServerSettingsWhenValidParametersShouldAdapt() {
 		OAuth2AuthorizationServerProperties properties = createAuthorizationServerProperties();
-
 		AuthorizationServerSettings settings = OAuth2AuthorizationServerPropertiesSettingsAdapter
 			.getAuthorizationServerSettings(properties);
 		assertThat(settings.getIssuer()).isEqualTo("https://example.com");
@@ -49,14 +48,12 @@ public class OAuth2AuthorizationServerPropertiesSettingsAdapterTests {
 	private OAuth2AuthorizationServerProperties createAuthorizationServerProperties() {
 		OAuth2AuthorizationServerProperties properties = new OAuth2AuthorizationServerProperties();
 		properties.setIssuer("https://example.com");
-
 		OAuth2AuthorizationServerProperties.Endpoint endpoints = properties.getEndpoint();
 		endpoints.setAuthorizationUri("/authorize");
 		endpoints.setTokenUri("/token");
 		endpoints.setJwkSetUri("/jwks");
 		endpoints.setTokenRevocationUri("/revoke");
 		endpoints.setTokenIntrospectionUri("/introspect");
-
 		OAuth2AuthorizationServerProperties.OidcEndpoint oidc = endpoints.getOidc();
 		oidc.setLogoutUri("/logout");
 		oidc.setClientRegistrationUri("/register");

@@ -37,7 +37,7 @@ import org.springframework.security.authentication.DefaultAuthenticationEventPub
  * @author Madhura Bhave
  * @since 1.0.0
  */
-@AutoConfiguration
+@AutoConfiguration(before = UserDetailsServiceAutoConfiguration.class)
 @ConditionalOnClass(DefaultAuthenticationEventPublisher.class)
 @EnableConfigurationProperties(SecurityProperties.class)
 @Import({ SpringBootWebSecurityConfiguration.class, SecurityDataConfiguration.class })

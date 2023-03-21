@@ -31,7 +31,6 @@ import org.springframework.security.oauth2.server.authorization.client.Registere
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
-import org.springframework.util.CollectionUtils;
 
 /**
  * Adapter class to convert {@link Client} to a {@link RegisteredClient}.
@@ -58,64 +57,21 @@ public final class OAuth2AuthorizationServerPropertiesRegistrationAdapter {
 		map.from(registration::getClientId).to(builder::clientId);
 		map.from(registration::getClientSecret).to(builder::clientSecret);
 		map.from(registration::getClientName).to(builder::clientName);
-		if (!CollectionUtils.isEmpty(registration.getClientAuthenticationMethods())) {
-			registration.getClientAuthenticationMethods()
-				.forEach((clientAuthenticationMethod) -> map.from(clientAuthenticationMethod)
-					.as(OAuth2AuthorizationServerPropertiesRegistrationAdapter::clientAuthenticationMethod)
-					.to(builder::clientAuthenticationMethod));
-		}
-		if (!CollectionUtils.isEmpty(registration.getAuthorizationGrantTypes())) {
-			registration.getAuthorizationGrantTypes()
-				.forEach((authorizationGrantType) -> map.from(authorizationGrantType)
-					.as(OAuth2AuthorizationServerPropertiesRegistrationAdapter::authorizationGrantType)
-					.to(builder::authorizationGrantType));
-		}
-		if (!CollectionUtils.isEmpty(registration.getRedirectUris())) {
-			registration.getRedirectUris().forEach((redirectUri) -> map.from(redirectUri).to(builder::redirectUri));
-		}
-		if (!CollectionUtils.isEmpty(registration.getPostLogoutRedirectUris())) {
-			registration.getPostLogoutRedirectUris()
-				.forEach((redirectUri) -> map.from(redirectUri).to(builder::postLogoutRedirectUri));
-		}
-		if (!CollectionUtils.isEmpty(registration.getScopes())) {
-			registration.getScopes().forEach((scope) -> map.from(scope).to(builder::scope));
-		}
+		registration.getClientAuthenticationMethods()
+			.forEach((clientAuthenticationMethod) -> map.from(clientAuthenticationMethod)
+				.as(ClientAuthenticationMethod::new)
+				.to(builder::clientAuthenticationMethod));
+		registration.getAuthorizationGrantTypes()
+			.forEach((authorizationGrantType) -> map.from(authorizationGrantType)
+				.as(AuthorizationGrantType::new)
+				.to(builder::authorizationGrantType));
+		registration.getRedirectUris().forEach((redirectUri) -> map.from(redirectUri).to(builder::redirectUri));
+		registration.getPostLogoutRedirectUris()
+			.forEach((redirectUri) -> map.from(redirectUri).to(builder::postLogoutRedirectUri));
+		registration.getScopes().forEach((scope) -> map.from(scope).to(builder::scope));
 		builder.clientSettings(getClientSettings(client, map));
 		builder.tokenSettings(getTokenSettings(client, map));
 		return builder.build();
-	}
-
-	private static ClientAuthenticationMethod clientAuthenticationMethod(String clientAuthenticationMethod) {
-		if (ClientAuthenticationMethod.CLIENT_SECRET_BASIC.getValue().equals(clientAuthenticationMethod)) {
-			return ClientAuthenticationMethod.CLIENT_SECRET_BASIC;
-		}
-		else if (ClientAuthenticationMethod.CLIENT_SECRET_POST.getValue().equals(clientAuthenticationMethod)) {
-			return ClientAuthenticationMethod.CLIENT_SECRET_POST;
-		}
-		else if (ClientAuthenticationMethod.CLIENT_SECRET_JWT.getValue().equals(clientAuthenticationMethod)) {
-			return ClientAuthenticationMethod.CLIENT_SECRET_JWT;
-		}
-		else if (ClientAuthenticationMethod.PRIVATE_KEY_JWT.getValue().equals(clientAuthenticationMethod)) {
-			return ClientAuthenticationMethod.PRIVATE_KEY_JWT;
-		}
-		else if (ClientAuthenticationMethod.NONE.getValue().equals(clientAuthenticationMethod)) {
-			return ClientAuthenticationMethod.NONE;
-		}
-		else {
-			return new ClientAuthenticationMethod(clientAuthenticationMethod);
-		}
-	}
-
-	private static AuthorizationGrantType authorizationGrantType(String authorizationGrantType) {
-		if (AuthorizationGrantType.AUTHORIZATION_CODE.getValue().equals(authorizationGrantType)) {
-			return AuthorizationGrantType.AUTHORIZATION_CODE;
-		}
-		else if (AuthorizationGrantType.CLIENT_CREDENTIALS.getValue().equals(authorizationGrantType)) {
-			return AuthorizationGrantType.CLIENT_CREDENTIALS;
-		}
-		else {
-			return new AuthorizationGrantType(authorizationGrantType);
-		}
 	}
 
 	private static ClientSettings getClientSettings(Client client, PropertyMapper map) {

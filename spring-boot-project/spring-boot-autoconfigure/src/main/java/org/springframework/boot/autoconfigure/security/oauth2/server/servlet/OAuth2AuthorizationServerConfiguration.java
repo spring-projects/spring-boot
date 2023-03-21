@@ -40,7 +40,7 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
  */
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(OAuth2AuthorizationServerProperties.class)
-class OAuth2AuthorizationServerPropertiesConfiguration {
+class OAuth2AuthorizationServerConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean

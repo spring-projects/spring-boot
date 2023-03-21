@@ -102,18 +102,14 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setBasicAuth("messaging-client", "secret");
 		HttpEntity<Object> request = new HttpEntity<>(headers);
-		// @formatter:off
 		String requestUri = UriComponentsBuilder.fromUriString("/token")
-				.queryParam(OAuth2ParameterNames.CLIENT_ID, "messaging-client")
-				.queryParam(OAuth2ParameterNames.GRANT_TYPE, AuthorizationGrantType.CLIENT_CREDENTIALS.getValue())
-				.queryParam(OAuth2ParameterNames.SCOPE, "message.read+message.write")
-				.toUriString();
-		// @formatter:on
-
+			.queryParam(OAuth2ParameterNames.CLIENT_ID, "messaging-client")
+			.queryParam(OAuth2ParameterNames.GRANT_TYPE, AuthorizationGrantType.CLIENT_CREDENTIALS.getValue())
+			.queryParam(OAuth2ParameterNames.SCOPE, "message.read+message.write")
+			.toUriString();
 		ResponseEntity<Map<String, Object>> entity = this.restTemplate.exchange(requestUri, HttpMethod.POST, request,
 				MAP_TYPE_REFERENCE);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-
 		Map<String, Object> tokenResponse = Objects.requireNonNull(entity.getBody());
 		assertThat(tokenResponse.get(OAuth2ParameterNames.ACCESS_TOKEN)).isNotNull();
 		assertThat(tokenResponse.get(OAuth2ParameterNames.EXPIRES_IN)).isNotNull();
