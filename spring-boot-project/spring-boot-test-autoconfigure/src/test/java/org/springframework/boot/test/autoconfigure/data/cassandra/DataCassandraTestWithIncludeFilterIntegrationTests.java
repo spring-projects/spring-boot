@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,13 +25,12 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.cassandra.CassandraServiceConnection;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testsupport.testcontainers.CassandraContainer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.stereotype.Service;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,23 +39,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  * {@link DataCassandraTest @DataCassandraTest}.
  *
  * @author Artsiom Yudovin
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 @DataCassandraTest(includeFilters = @Filter(Service.class),
-		properties = { "spring.cassandra.local-datacenter=datacenter1",
-				"spring.cassandra.schema-action=create-if-not-exists",
+		properties = { "spring.cassandra.schema-action=create-if-not-exists",
 				"spring.cassandra.connection.connect-timeout=60s", "spring.cassandra.connection.init-query-timeout=60s",
 				"spring.cassandra.request.timeout=60s" })
 @Testcontainers(disabledWithoutDocker = true)
 class DataCassandraTestWithIncludeFilterIntegrationTests {
 
 	@Container
+	@CassandraServiceConnection
 	static final CassandraContainer cassandra = new CassandraContainer();
-
-	@DynamicPropertySource
-	static void cassandraProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.cassandra.contact-points",
-				() -> cassandra.getHost() + ":" + cassandra.getFirstMappedPort());
-	}
 
 	@Autowired
 	private ExampleRepository exampleRepository;

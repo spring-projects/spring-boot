@@ -28,6 +28,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.mongo.MongoServiceConnection;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -40,8 +41,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -51,6 +50,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link SampleSessionMongoApplication}.
  *
  * @author Angel L. Villalain
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers(disabledWithoutDocker = true)
@@ -63,13 +65,9 @@ class SampleSessionMongoApplicationTests {
 	private int port;
 
 	@Container
+	@MongoServiceConnection
 	static MongoDBContainer mongo = new MongoDBContainer(DockerImageNames.mongo()).withStartupAttempts(3)
 		.withStartupTimeout(Duration.ofMinutes(2));
-
-	@DynamicPropertySource
-	static void applicationProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.data.mongodb.uri", mongo::getReplicaSetUrl);
-	}
 
 	@Test
 	@SuppressWarnings("unchecked")

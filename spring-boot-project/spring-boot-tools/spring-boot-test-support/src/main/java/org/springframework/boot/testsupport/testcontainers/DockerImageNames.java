@@ -32,11 +32,17 @@ public final class DockerImageNames {
 
 	private static final String ELASTICSEARCH_VERSION = "7.17.5";
 
+	private static final String KAFKA_VERSION = "5.4.3";
+
+	private static final String INFLUX_DB_VERSION = "2.6.1";
+
 	private static final String MONGO_VERSION = "4.0.23";
 
 	private static final String NEO4J_VERSION = "4.4.11";
 
 	private static final String POSTGRESQL_VERSION = "14.0";
+
+	private static final String RABBIT_VERSION = "3.11-alpine";
 
 	private static final String REDIS_VERSION = "4.0.14";
 
@@ -70,6 +76,22 @@ public final class DockerImageNames {
 	}
 
 	/**
+	 * Return a {@link DockerImageName} suitable for running InfluxDB.
+	 * @return a docker image name for running Kafka
+	 */
+	public static DockerImageName influxDb() {
+		return DockerImageName.parse("influxdb").withTag(INFLUX_DB_VERSION);
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running Kafka.
+	 * @return a docker image name for running Kafka
+	 */
+	public static DockerImageName kafka() {
+		return DockerImageName.parse("confluentinc/cp-kafka").withTag(KAFKA_VERSION);
+	}
+
+	/**
 	 * Return a {@link DockerImageName} suitable for running Mongo.
 	 * @return a docker image name for running mongo
 	 */
@@ -91,6 +113,14 @@ public final class DockerImageNames {
 	 */
 	public static DockerImageName postgresql() {
 		return DockerImageName.parse("postgres").withTag(POSTGRESQL_VERSION);
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running RabbitMQ.
+	 * @return a docker image name for running redis
+	 */
+	public static DockerImageName rabbit() {
+		return DockerImageName.parse("rabbitmq").withTag(RABBIT_VERSION);
 	}
 
 	/**

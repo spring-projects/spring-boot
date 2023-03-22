@@ -29,11 +29,46 @@ Testcontainers can be used in a Spring Boot test as follows:
 include::code:vanilla/MyIntegrationTests[]
 
 This will start up a docker container running Neo4j (if Docker is running locally) before any of the tests are run.
-In most cases, you will need to configure the application using details from the running container, such as container IP or port.
+In most cases, you will need to configure the application to connect to the service running in the container.
 
-This can be done with a static `@DynamicPropertySource` method that allows adding dynamic property values to the Spring Environment.
 
-include::code:dynamicproperties/MyIntegrationTests[]
+[[howto.testing.testcontainers.service-connections]]
+==== Service Connections
+A service connection is a connection to any remote service.
+Spring Boot's auto-configuration can consume the details of a service connection and use them to establish a connection to a remote service.
+When doing so, the connection details take precedence over any connection-related configuration properties.
+
+When using Testcontainers, connection details can be automatically created for a service running in a container by annotating the container field in the test class.
+
+include::code:MyIntegrationTests[]
+
+Thanks to `@Neo4jServiceConnection`, the above configuration allows Neo4j-related beans in the application to communicate with Neo4j running inside the Testcontainers-managed Docker container.
+This is done by automatically defining a `Neo4jConnectionDetails` bean which is then used by the Neo4j auto-configuration, overriding any connection-related configuration properties.
+
+The following service connection annotations are provided by `spring-boot-test-autoconfigure`:
+
+- `@CassandraServiceConnection`
+- `@CouchbaseServiceConnection`
+- `@ElasticsearchServiceConnection`
+- `@InfluxDbServiceConnection`
+- `@JdbcServiceConnection`
+- `@KafkaServiceConnection`
+- `@MongoServiceConnection`
+- `@Neo4jServiceConnection`
+- `@R2dbcServiceConnection`
+- `@RabbitServiceConnection`
+- `@RedisServiceConnection`
+
+As with the earlier `@Neo4jConnectionDetails` example, each can be used on a container field. Doing so will automatically configure the application to connect to the service running in the container.
+
+
+
+[[howto.testing.testcontainers.dynamic-properties]]
+==== Dynamic Properties
+A slightly more verbose but also more flexible alternative to service connections is `@DynamicPropertySource`.
+A static `@DynamicPropertySource` method allows adding dynamic property values to the Spring Environment.
+
+include::code:/MyIntegrationTests[]
 
 The above configuration allows Neo4j-related beans in the application to communicate with Neo4j running inside the Testcontainers-managed Docker container.
 

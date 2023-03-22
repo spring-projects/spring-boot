@@ -27,10 +27,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.context.ApplicationContext;
-import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisOperations;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -39,6 +36,9 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * Integration test for {@link DataRedisTest @DataRedisTest}.
  *
  * @author Jayaram Pradhan
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 @Testcontainers(disabledWithoutDocker = true)
 @DataRedisTest
@@ -47,6 +47,7 @@ class DataRedisTestIntegrationTests {
 	private static final Charset CHARSET = StandardCharsets.UTF_8;
 
 	@Container
+	@RedisServiceConnection
 	static RedisContainer redis = new RedisContainer();
 
 	@Autowired
@@ -58,12 +59,6 @@ class DataRedisTestIntegrationTests {
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	@DynamicPropertySource
-	static void redisProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.data.redis.host", redis::getHost);
-		registry.add("spring.data.redis.port", redis::getFirstMappedPort);
-	}
-
 	@Test
 	void testRepository() {
 		PersonHash personHash = new PersonHash();
@@ -71,8 +66,10 @@ class DataRedisTestIntegrationTests {
 		assertThat(personHash.getId()).isNull();
 		PersonHash savedEntity = this.exampleRepository.save(personHash);
 		assertThat(savedEntity.getId()).isNotNull();
-		assertThat(this.operations.execute((RedisConnection connection) -> connection.keyCommands()
-			.exists(("persons:" + savedEntity.getId()).getBytes(CHARSET)))).isTrue();
+		assertThat(this.operations
+			.execute((org.springframework.data.redis.connection.RedisConnection connection) -> connection.keyCommands()
+				.exists(("persons:" + savedEntity.getId()).getBytes(CHARSET))))
+			.isTrue();
 		this.exampleRepository.deleteAll();
 	}
 

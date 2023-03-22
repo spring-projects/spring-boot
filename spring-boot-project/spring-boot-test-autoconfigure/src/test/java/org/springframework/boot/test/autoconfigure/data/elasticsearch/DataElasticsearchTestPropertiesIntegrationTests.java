@@ -24,10 +24,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.elasticsearch.ElasticsearchServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,20 +35,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  * {@link DataElasticsearchTest @DataElasticsearchTest}.
  *
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 @DataElasticsearchTest(properties = "spring.profiles.active=test")
 @Testcontainers(disabledWithoutDocker = true)
 class DataElasticsearchTestPropertiesIntegrationTests {
 
 	@Container
+	@ElasticsearchServiceConnection
 	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())
 		.withStartupAttempts(5)
 		.withStartupTimeout(Duration.ofMinutes(10));
-
-	@DynamicPropertySource
-	static void elasticsearchProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.elasticsearch.uris", elasticsearch::getHttpHostAddress);
-	}
 
 	@Autowired
 	private Environment environment;
