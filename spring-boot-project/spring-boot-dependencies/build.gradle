@@ -1780,7 +1780,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Integration", "5.5.16") {
+	library("Spring Integration", "5.5.17") {
 		prohibit {
 			versionRange "[6.0.0-M1,)"
 			because "it uses Spring Framework 6"
