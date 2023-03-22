@@ -94,6 +94,7 @@
 :spring-security: https://spring.io/projects/spring-security
 :spring-security-docs: https://docs.spring.io/spring-security/reference/{spring-security-version}
 :spring-authorization-server: https://spring.io/projects/spring-authorization-server
+:spring-authorization-server-docs: https://docs.spring.io/spring-authorization-server/docs/{spring-authorization-server-version}/reference/html
 :spring-session: https://spring.io/projects/spring-session
 :spring-webservices-docs: https://docs.spring.io/spring-ws/docs/{spring-webservices-version}/reference/html/
 :ant-docs: https://ant.apache.org/manual
