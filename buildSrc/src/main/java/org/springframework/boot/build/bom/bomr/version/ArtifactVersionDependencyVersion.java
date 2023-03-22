@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,6 +73,20 @@ class ArtifactVersionDependencyVersion extends AbstractDependencyVersion {
 		return this.artifactVersion.getMajorVersion() == other.artifactVersion.getMajorVersion()
 				&& this.artifactVersion.getMinorVersion() == other.artifactVersion.getMinorVersion()
 				&& isNewerThan(other);
+	}
+
+	@Override
+	public int compareTo(DependencyVersion other) {
+		if (other instanceof ArtifactVersionDependencyVersion otherArtifactDependencyVersion) {
+			ArtifactVersion otherArtifactVersion = otherArtifactDependencyVersion.artifactVersion;
+			if ("snapshot".equalsIgnoreCase(otherArtifactVersion.getQualifier())
+					&& otherArtifactVersion.getMajorVersion() == this.artifactVersion.getMajorVersion()
+					&& otherArtifactVersion.getMinorVersion() == this.artifactVersion.getMinorVersion()
+					&& otherArtifactVersion.getIncrementalVersion() == this.artifactVersion.getIncrementalVersion()) {
+				return 1;
+			}
+		}
+		return super.compareTo(other);
 	}
 
 	@Override

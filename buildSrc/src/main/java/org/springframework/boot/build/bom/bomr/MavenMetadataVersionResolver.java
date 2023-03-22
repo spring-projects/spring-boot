@@ -58,7 +58,18 @@ final class MavenMetadataVersionResolver implements VersionResolver {
 
 	MavenMetadataVersionResolver(RestTemplate restTemplate, Collection<URI> repositoryUrls) {
 		this.rest = restTemplate;
-		this.repositoryUrls = repositoryUrls;
+		this.repositoryUrls = normalize(repositoryUrls);
+	}
+
+	private Collection<URI> normalize(Collection<URI> uris) {
+		return uris.stream().map(this::normalize).toList();
+	}
+
+	private URI normalize(URI uri) {
+		if ("/".equals(uri.getPath())) {
+			return uri;
+		}
+		return URI.create(uri.toString() + "/");
 	}
 
 	@Override
