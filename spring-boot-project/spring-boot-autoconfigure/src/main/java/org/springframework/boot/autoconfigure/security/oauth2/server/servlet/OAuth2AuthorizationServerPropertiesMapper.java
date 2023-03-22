@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.oauth2.server;
+package org.springframework.boot.autoconfigure.security.oauth2.server.servlet;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.security.oauth2.server.OAuth2AuthorizationServerProperties.Client;
-import org.springframework.boot.autoconfigure.security.oauth2.server.OAuth2AuthorizationServerProperties.Registration;
+import org.springframework.boot.autoconfigure.security.oauth2.server.servlet.OAuth2AuthorizationServerProperties.Client;
+import org.springframework.boot.autoconfigure.security.oauth2.server.servlet.OAuth2AuthorizationServerProperties.Registration;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
@@ -28,29 +28,49 @@ import org.springframework.security.oauth2.jose.jws.JwsAlgorithm;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 
 /**
- * Adapter class to convert {@link Client} to a {@link RegisteredClient}.
+ * Maps {@OAuth2AuthorizationServerProperties} to Authorization Server types.
  *
  * @author Steve Riesenberg
- * @since 3.1.0
  */
-public final class OAuth2AuthorizationServerPropertiesRegistrationAdapter {
+final class OAuth2AuthorizationServerPropertiesMapper {
 
-	private OAuth2AuthorizationServerPropertiesRegistrationAdapter() {
+	private final OAuth2AuthorizationServerProperties properties;
+
+	OAuth2AuthorizationServerPropertiesMapper(OAuth2AuthorizationServerProperties properties) {
+		this.properties = properties;
 	}
 
-	public static List<RegisteredClient> getRegisteredClients(OAuth2AuthorizationServerProperties properties) {
+	AuthorizationServerSettings asAuthorizationServerSettings() {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		OAuth2AuthorizationServerProperties.Endpoint endpoint = this.properties.getEndpoint();
+		OAuth2AuthorizationServerProperties.OidcEndpoint oidc = endpoint.getOidc();
+		AuthorizationServerSettings.Builder builder = AuthorizationServerSettings.builder();
+		map.from(this.properties::getIssuer).to(builder::issuer);
+		map.from(endpoint::getAuthorizationUri).to(builder::authorizationEndpoint);
+		map.from(endpoint::getTokenUri).to(builder::tokenEndpoint);
+		map.from(endpoint::getJwkSetUri).to(builder::jwkSetEndpoint);
+		map.from(endpoint::getTokenRevocationUri).to(builder::tokenRevocationEndpoint);
+		map.from(endpoint::getTokenIntrospectionUri).to(builder::tokenIntrospectionEndpoint);
+		map.from(oidc::getLogoutUri).to(builder::oidcLogoutEndpoint);
+		map.from(oidc::getClientRegistrationUri).to(builder::oidcClientRegistrationEndpoint);
+		map.from(oidc::getUserInfoUri).to(builder::oidcUserInfoEndpoint);
+		return builder.build();
+	}
+
+	List<RegisteredClient> asRegisteredClients() {
 		List<RegisteredClient> registeredClients = new ArrayList<>();
-		properties.getClient()
+		this.properties.getClient()
 			.forEach((registrationId, client) -> registeredClients.add(getRegisteredClient(registrationId, client)));
 		return registeredClients;
 	}
 
-	private static RegisteredClient getRegisteredClient(String registrationId, Client client) {
+	private RegisteredClient getRegisteredClient(String registrationId, Client client) {
 		Registration registration = client.getRegistration();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		RegisteredClient.Builder builder = RegisteredClient.withId(registrationId);
@@ -74,18 +94,18 @@ public final class OAuth2AuthorizationServerPropertiesRegistrationAdapter {
 		return builder.build();
 	}
 
-	private static ClientSettings getClientSettings(Client client, PropertyMapper map) {
+	private ClientSettings getClientSettings(Client client, PropertyMapper map) {
 		ClientSettings.Builder builder = ClientSettings.builder();
 		map.from(client::isRequireProofKey).to(builder::requireProofKey);
 		map.from(client::isRequireAuthorizationConsent).to(builder::requireAuthorizationConsent);
 		map.from(client::getJwkSetUri).to(builder::jwkSetUrl);
 		map.from(client::getTokenEndpointAuthenticationSigningAlgorithm)
-			.as(OAuth2AuthorizationServerPropertiesRegistrationAdapter::jwsAlgorithm)
+			.as(this::jwsAlgorithm)
 			.to(builder::tokenEndpointAuthenticationSigningAlgorithm);
 		return builder.build();
 	}
 
-	private static TokenSettings getTokenSettings(Client client, PropertyMapper map) {
+	private TokenSettings getTokenSettings(Client client, PropertyMapper map) {
 		OAuth2AuthorizationServerProperties.Token token = client.getToken();
 		TokenSettings.Builder builder = TokenSettings.builder();
 		map.from(token::getAuthorizationCodeTimeToLive).to(builder::authorizationCodeTimeToLive);
@@ -94,12 +114,12 @@ public final class OAuth2AuthorizationServerPropertiesRegistrationAdapter {
 		map.from(token::isReuseRefreshTokens).to(builder::reuseRefreshTokens);
 		map.from(token::getRefreshTokenTimeToLive).to(builder::refreshTokenTimeToLive);
 		map.from(token::getIdTokenSignatureAlgorithm)
-			.as(OAuth2AuthorizationServerPropertiesRegistrationAdapter::signatureAlgorithm)
+			.as(this::signatureAlgorithm)
 			.to(builder::idTokenSignatureAlgorithm);
 		return builder.build();
 	}
 
-	private static JwsAlgorithm jwsAlgorithm(String signingAlgorithm) {
+	private JwsAlgorithm jwsAlgorithm(String signingAlgorithm) {
 		String name = signingAlgorithm.toUpperCase();
 		JwsAlgorithm jwsAlgorithm = SignatureAlgorithm.from(name);
 		if (jwsAlgorithm == null) {
@@ -108,7 +128,7 @@ public final class OAuth2AuthorizationServerPropertiesRegistrationAdapter {
 		return jwsAlgorithm;
 	}
 
-	private static SignatureAlgorithm signatureAlgorithm(String signatureAlgorithm) {
+	private SignatureAlgorithm signatureAlgorithm(String signatureAlgorithm) {
 		return SignatureAlgorithm.from(signatureAlgorithm.toUpperCase());
 	}
 

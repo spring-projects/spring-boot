@@ -227,9 +227,7 @@ Alternatively, you can define your own `OpaqueTokenIntrospector` bean for servle
 
 [[web.security.oauth2.authorization-server]]
 ==== Authorization Server
-If you have `spring-security-oauth2-authorization-server` on your classpath, you can take advantage of some auto-configuration to set up an OAuth2 Authorization Server.
-This configuration makes use of the properties under `OAuth2AuthorizationServerProperties`.
-The properties are only applicable for servlet applications.
+If you have `spring-security-oauth2-authorization-server` on your classpath, you can take advantage of some auto-configuration to set up a Servlet-based OAuth2 Authorization Server.
 
 You can register multiple OAuth2 clients under the `spring.security.oauth2.authorizationserver.client` prefix, as shown in the following example:
 

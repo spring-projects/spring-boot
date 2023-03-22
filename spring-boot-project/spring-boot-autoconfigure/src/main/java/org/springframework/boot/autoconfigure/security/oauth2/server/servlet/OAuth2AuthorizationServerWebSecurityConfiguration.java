@@ -48,26 +48,17 @@ class OAuth2AuthorizationServerWebSecurityConfiguration {
 	SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http) throws Exception {
 		OAuth2AuthorizationServerConfiguration.applyDefaultSecurity(http);
 		http.getConfigurer(OAuth2AuthorizationServerConfigurer.class).oidc(Customizer.withDefaults());
-		// @formatter:off
-		http
-			.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
+		http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::jwt)
 			.exceptionHandling((exceptions) -> exceptions
-				.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login"))
-			);
-		// @formatter:on
+				.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")));
 		return http.build();
 	}
 
 	@Bean
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
 	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-		// @formatter:off
-		http
-			.authorizeHttpRequests((authorize) -> authorize
-				.anyRequest().authenticated()
-			)
+		http.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
 			.formLogin(Customizer.withDefaults());
-		// @formatter:on
 		return http.build();
 	}
 

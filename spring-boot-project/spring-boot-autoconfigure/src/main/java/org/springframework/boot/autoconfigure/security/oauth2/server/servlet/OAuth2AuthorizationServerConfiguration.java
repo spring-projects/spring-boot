@@ -16,19 +16,12 @@
 
 package org.springframework.boot.autoconfigure.security.oauth2.server.servlet;
 
-import java.util.List;
-
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.security.oauth2.server.OAuth2AuthorizationServerProperties;
-import org.springframework.boot.autoconfigure.security.oauth2.server.OAuth2AuthorizationServerPropertiesRegistrationAdapter;
-import org.springframework.boot.autoconfigure.security.oauth2.server.OAuth2AuthorizationServerPropertiesSettingsAdapter;
-import org.springframework.boot.autoconfigure.security.oauth2.server.RegisteredClientsConfiguredCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
-import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 
@@ -42,19 +35,23 @@ import org.springframework.security.oauth2.server.authorization.settings.Authori
 @EnableConfigurationProperties(OAuth2AuthorizationServerProperties.class)
 class OAuth2AuthorizationServerConfiguration {
 
-	@Bean
-	@ConditionalOnMissingBean
-	@Conditional(RegisteredClientsConfiguredCondition.class)
-	RegisteredClientRepository registeredClientRepository(OAuth2AuthorizationServerProperties properties) {
-		List<RegisteredClient> registeredClients = OAuth2AuthorizationServerPropertiesRegistrationAdapter
-			.getRegisteredClients(properties);
-		return new InMemoryRegisteredClientRepository(registeredClients);
+	private final OAuth2AuthorizationServerPropertiesMapper propertiesMapper;
+
+	OAuth2AuthorizationServerConfiguration(OAuth2AuthorizationServerProperties properties) {
+		this.propertiesMapper = new OAuth2AuthorizationServerPropertiesMapper(properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	AuthorizationServerSettings authorizationServerSettings(OAuth2AuthorizationServerProperties properties) {
-		return OAuth2AuthorizationServerPropertiesSettingsAdapter.getAuthorizationServerSettings(properties);
+	@Conditional(RegisteredClientsConfiguredCondition.class)
+	RegisteredClientRepository registeredClientRepository() {
+		return new InMemoryRegisteredClientRepository(this.propertiesMapper.asRegisteredClients());
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	AuthorizationServerSettings authorizationServerSettings() {
+		return this.propertiesMapper.asAuthorizationServerSettings();
 	}
 
 }

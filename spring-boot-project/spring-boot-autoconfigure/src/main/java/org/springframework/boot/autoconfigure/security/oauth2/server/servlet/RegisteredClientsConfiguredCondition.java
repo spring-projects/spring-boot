@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.oauth2.server;
+package org.springframework.boot.autoconfigure.security.oauth2.server.servlet;
 
 import java.util.Collections;
 import java.util.Map;
@@ -34,9 +34,8 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * properties are defined.
  *
  * @author Steve Riesenberg
- * @since 3.1.0
  */
-public class RegisteredClientsConfiguredCondition extends SpringBootCondition {
+class RegisteredClientsConfiguredCondition extends SpringBootCondition {
 
 	private static final Bindable<Map<String, OAuth2AuthorizationServerProperties.Client>> STRING_CLIENT_MAP = Bindable
 		.mapOf(String.class, OAuth2AuthorizationServerProperties.Client.class);

@@ -73,12 +73,9 @@ public class OAuth2AuthorizationServerJwtAutoConfiguration {
 		KeyPair keyPair = generateRsaKey();
 		RSAPublicKey publicKey = (RSAPublicKey) keyPair.getPublic();
 		RSAPrivateKey privateKey = (RSAPrivateKey) keyPair.getPrivate();
-		// @formatter:off
-		RSAKey rsaKey = new RSAKey.Builder(publicKey)
-				.privateKey(privateKey)
-				.keyID(UUID.randomUUID().toString())
-				.build();
-		// @formatter:on
+		RSAKey rsaKey = new RSAKey.Builder(publicKey).privateKey(privateKey)
+			.keyID(UUID.randomUUID().toString())
+			.build();
 		return rsaKey;
 	}
 

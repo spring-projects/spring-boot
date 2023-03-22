@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.oauth2.server;
+package org.springframework.boot.autoconfigure.security.oauth2.server.servlet;
 
 import java.time.Duration;
 import java.util.List;
@@ -25,24 +25,28 @@ import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
+import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
 import org.springframework.security.oauth2.server.authorization.settings.OAuth2TokenFormat;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link OAuth2AuthorizationServerPropertiesRegistrationAdapter}.
+ * Tests for {@link OAuth2AuthorizationServerPropertiesMapper}.
  *
  * @author Steve Riesenberg
  */
-class OAuth2AuthorizationServerPropertiesRegistrationAdapterTests {
+class OAuth2AuthorizationServerPropertiesMapperTests {
+
+	private final OAuth2AuthorizationServerProperties properties = new OAuth2AuthorizationServerProperties();
+
+	private final OAuth2AuthorizationServerPropertiesMapper mapper = new OAuth2AuthorizationServerPropertiesMapper(
+			this.properties);
 
 	@Test
 	void getRegisteredClientsWhenValidParametersShouldAdapt() {
-		OAuth2AuthorizationServerProperties properties = new OAuth2AuthorizationServerProperties();
 		OAuth2AuthorizationServerProperties.Client client = createClient();
-		properties.getClient().put("foo", client);
-		List<RegisteredClient> registeredClients = OAuth2AuthorizationServerPropertiesRegistrationAdapter
-			.getRegisteredClients(properties);
+		this.properties.getClient().put("foo", client);
+		List<RegisteredClient> registeredClients = this.mapper.asRegisteredClients();
 		assertThat(registeredClients).hasSize(1);
 		RegisteredClient registeredClient = registeredClients.get(0);
 		assertThat(registeredClient.getClientId()).isEqualTo("foo");
@@ -88,6 +92,31 @@ class OAuth2AuthorizationServerPropertiesRegistrationAdapterTests {
 		token.setReuseRefreshTokens(true);
 		token.setIdTokenSignatureAlgorithm("rs512");
 		return client;
+	}
+
+	@Test
+	void getAuthorizationServerSettingsWhenValidParametersShouldAdapt() {
+		this.properties.setIssuer("https://example.com");
+		OAuth2AuthorizationServerProperties.Endpoint endpoints = this.properties.getEndpoint();
+		endpoints.setAuthorizationUri("/authorize");
+		endpoints.setTokenUri("/token");
+		endpoints.setJwkSetUri("/jwks");
+		endpoints.setTokenRevocationUri("/revoke");
+		endpoints.setTokenIntrospectionUri("/introspect");
+		OAuth2AuthorizationServerProperties.OidcEndpoint oidc = endpoints.getOidc();
+		oidc.setLogoutUri("/logout");
+		oidc.setClientRegistrationUri("/register");
+		oidc.setUserInfoUri("/user");
+		AuthorizationServerSettings settings = this.mapper.asAuthorizationServerSettings();
+		assertThat(settings.getIssuer()).isEqualTo("https://example.com");
+		assertThat(settings.getAuthorizationEndpoint()).isEqualTo("/authorize");
+		assertThat(settings.getTokenEndpoint()).isEqualTo("/token");
+		assertThat(settings.getJwkSetEndpoint()).isEqualTo("/jwks");
+		assertThat(settings.getTokenRevocationEndpoint()).isEqualTo("/revoke");
+		assertThat(settings.getTokenIntrospectionEndpoint()).isEqualTo("/introspect");
+		assertThat(settings.getOidcLogoutEndpoint()).isEqualTo("/logout");
+		assertThat(settings.getOidcClientRegistrationEndpoint()).isEqualTo("/register");
+		assertThat(settings.getOidcUserInfoEndpoint()).isEqualTo("/user");
 	}
 
 }

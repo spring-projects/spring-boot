@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.security.oauth2.server;
+package org.springframework.boot.autoconfigure.security.oauth2.server.servlet;
 
 import org.junit.jupiter.api.Test;
 
