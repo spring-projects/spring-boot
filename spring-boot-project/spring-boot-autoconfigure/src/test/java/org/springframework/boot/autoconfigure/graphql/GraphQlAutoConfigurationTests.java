@@ -21,7 +21,12 @@ import java.nio.charset.StandardCharsets;
 import graphql.GraphQL;
 import graphql.execution.instrumentation.ChainedInstrumentation;
 import graphql.execution.instrumentation.Instrumentation;
+import graphql.schema.FieldCoordinates;
+import graphql.schema.GraphQLFieldDefinition;
+import graphql.schema.GraphQLObjectType;
+import graphql.schema.GraphQLOutputType;
 import graphql.schema.GraphQLSchema;
+import graphql.schema.PropertyDataFetcher;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.visibility.DefaultGraphqlFieldVisibility;
 import graphql.schema.visibility.NoIntrospectionGraphqlFieldVisibility;
@@ -39,6 +44,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer;
+import org.springframework.graphql.data.pagination.EncodingCursorStrategy;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
 import org.springframework.graphql.execution.DataFetcherExceptionResolver;
 import org.springframework.graphql.execution.DataLoaderRegistrar;
@@ -58,12 +64,11 @@ class GraphQlAutoConfigurationTests {
 
 	@Test
 	void shouldContributeDefaultBeans() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(GraphQlSource.class);
-			assertThat(context).hasSingleBean(BatchLoaderRegistry.class);
-			assertThat(context).hasSingleBean(ExecutionGraphQlService.class);
-			assertThat(context).hasSingleBean(AnnotatedControllerConfigurer.class);
-		});
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(GraphQlSource.class)
+			.hasSingleBean(BatchLoaderRegistry.class)
+			.hasSingleBean(ExecutionGraphQlService.class)
+			.hasSingleBean(AnnotatedControllerConfigurer.class)
+			.hasSingleBean(EncodingCursorStrategy.class));
 	}
 
 	@Test
@@ -193,6 +198,29 @@ class GraphQlAutoConfigurationTests {
 		new GraphQlResourcesRuntimeHints().registerHints(hints, getClass().getClassLoader());
 		assertThat(RuntimeHintsPredicates.resource().forResource("graphql/sample/schema.gqls")).accepts(hints);
 		assertThat(RuntimeHintsPredicates.resource().forResource("graphql/other.graphqls")).accepts(hints);
+	}
+
+	@Test
+	void shouldContributeConnectionTypeDefinitionConfigurer() {
+		this.contextRunner.withUserConfiguration(CustomGraphQlBuilderConfiguration.class).run((context) -> {
+			GraphQlSource graphQlSource = context.getBean(GraphQlSource.class);
+			GraphQLSchema schema = graphQlSource.schema();
+			GraphQLOutputType bookConnection = schema.getQueryType().getField("books").getType();
+			assertThat(bookConnection).isNotNull().isInstanceOf(GraphQLObjectType.class);
+			assertThat((GraphQLObjectType) bookConnection)
+				.satisfies((connection) -> assertThat(connection.getFieldDefinition("edges")).isNotNull());
+		});
+	}
+
+	@Test
+	void shouldContributeConnectionDataFetcher() {
+		this.contextRunner.withUserConfiguration(CustomGraphQlBuilderConfiguration.class).run((context) -> {
+			GraphQlSource graphQlSource = context.getBean(GraphQlSource.class);
+			GraphQLFieldDefinition books = graphQlSource.schema().getQueryType().getField("books");
+			FieldCoordinates booksCoordinates = FieldCoordinates.coordinates("Query", "books");
+			assertThat(graphQlSource.schema().getCodeRegistry().getDataFetcher(booksCoordinates, books))
+				.isNotInstanceOf(PropertyDataFetcher.class);
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)
