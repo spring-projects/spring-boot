@@ -32,12 +32,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 import jakarta.validation.ValidatorFactory;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Aspect;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import org.springframework.aop.support.AopUtils;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -646,6 +651,17 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
+	void problemDetailsExceptionHandlerDoesNotPreventProxying() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(AopAutoConfiguration.class))
+			.withBean(ExceptionHandlerInterceptor.class)
+			.withPropertyValues("spring.webflux.problemdetails.enabled:true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ProblemDetailsExceptionHandler.class);
+				assertThat(AopUtils.isCglibProxy(context.getBean(ProblemDetailsExceptionHandler.class)));
+			});
+	}
+
+	@Test
 	void problemDetailsBacksOffWhenExceptionHandler() {
 		this.contextRunner.withPropertyValues("spring.webflux.problemdetails.enabled:true")
 			.withUserConfiguration(CustomExceptionHandlerConfiguration.class)
@@ -954,6 +970,16 @@ class WebFluxAutoConfigurationTests {
 
 	@ControllerAdvice
 	static class CustomExceptionHandler extends ResponseEntityExceptionHandler {
+
+	}
+
+	@Aspect
+	static class ExceptionHandlerInterceptor {
+
+		@AfterReturning(pointcut = "@annotation(org.springframework.web.bind.annotation.ExceptionHandler)",
+				returning = "returnValue")
+		void exceptionHandlerIntercept(JoinPoint joinPoint, Object returnValue) {
+		}
 
 	}
 
