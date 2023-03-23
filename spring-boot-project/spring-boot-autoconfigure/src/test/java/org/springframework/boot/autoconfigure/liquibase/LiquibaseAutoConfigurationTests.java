@@ -423,8 +423,11 @@ class LiquibaseAutoConfigurationTests {
 	void shouldRegisterHints() {
 		RuntimeHints hints = new RuntimeHints();
 		new LiquibaseAutoConfigurationRuntimeHints().registerHints(hints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.resource().forResource("db/changelog/")).accepts(hints);
 		assertThat(RuntimeHintsPredicates.resource().forResource("db/changelog/db.changelog-master.yaml"))
 			.accepts(hints);
+		assertThat(RuntimeHintsPredicates.resource().forResource("db/changelog/tables/init.sql"))
+				.accepts(hints);
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertLiquibase(Consumer<SpringLiquibase> consumer) {

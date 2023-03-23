@@ -175,7 +175,7 @@ public class LiquibaseAutoConfiguration {
 
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			hints.resources().registerPattern("db/changelog/db.changelog-master.yaml");
+			hints.resources().registerPattern("db/changelog/*");
 		}
 
 	}
