@@ -36,9 +36,14 @@ import java.util.function.Consumer;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ValidatorFactory;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Aspect;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aop.support.AopUtils;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -989,6 +994,17 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	void problemDetailsExceptionHandlerDoesNotPreventProxying() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(AopAutoConfiguration.class))
+			.withBean(ExceptionHandlerInterceptor.class)
+			.withPropertyValues("spring.mvc.problemdetails.enabled:true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ProblemDetailsExceptionHandler.class);
+				assertThat(AopUtils.isCglibProxy(context.getBean(ProblemDetailsExceptionHandler.class)));
+			});
+	}
+
+	@Test
 	void problemDetailsBacksOffWhenExceptionHandler() {
 		this.contextRunner.withPropertyValues("spring.mvc.problemdetails.enabled:true")
 			.withUserConfiguration(CustomExceptionHandlerConfiguration.class)
@@ -1536,6 +1552,16 @@ class WebMvcAutoConfigurationTests {
 
 	@ControllerAdvice
 	static class CustomExceptionHandler extends ResponseEntityExceptionHandler {
+
+	}
+
+	@Aspect
+	static class ExceptionHandlerInterceptor {
+
+		@AfterReturning(pointcut = "@annotation(org.springframework.web.bind.annotation.ExceptionHandler)",
+				returning = "returnValue")
+		void exceptionHandlerIntercept(JoinPoint joinPoint, Object returnValue) {
+		}
 
 	}
 
