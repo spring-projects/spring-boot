@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -170,13 +169,9 @@ public class EntityScanPackages {
 			addPackageNames(packageNames);
 		}
 
-		@Override
-		public Supplier<?> getInstanceSupplier() {
-			return () -> new EntityScanPackages(StringUtils.toStringArray(this.packageNames));
-		}
-
 		private void addPackageNames(Collection<String> additionalPackageNames) {
 			this.packageNames.addAll(additionalPackageNames);
+			getConstructorArgumentValues().addIndexedArgumentValue(0, StringUtils.toStringArray(this.packageNames));
 		}
 
 	}
