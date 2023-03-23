@@ -44,7 +44,6 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.graphql.ExecutionGraphQlService;
 import org.springframework.graphql.data.method.annotation.support.AnnotatedControllerConfigurer;
-import org.springframework.graphql.data.pagination.CursorStrategy;
 import org.springframework.graphql.data.pagination.EncodingCursorStrategy;
 import org.springframework.graphql.execution.BatchLoaderRegistry;
 import org.springframework.graphql.execution.DataFetcherExceptionResolver;
@@ -65,14 +64,11 @@ class GraphQlAutoConfigurationTests {
 
 	@Test
 	void shouldContributeDefaultBeans() {
-		this.contextRunner.run((context) -> {
-			assertThat(context).hasSingleBean(GraphQlSource.class)
-				.hasSingleBean(BatchLoaderRegistry.class)
-				.hasSingleBean(ExecutionGraphQlService.class)
-				.hasSingleBean(AnnotatedControllerConfigurer.class)
-				.hasSingleBean(CursorStrategy.class);
-			assertThat(context.getBean(CursorStrategy.class)).isInstanceOf(EncodingCursorStrategy.class);
-		});
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(GraphQlSource.class)
+			.hasSingleBean(BatchLoaderRegistry.class)
+			.hasSingleBean(ExecutionGraphQlService.class)
+			.hasSingleBean(AnnotatedControllerConfigurer.class)
+			.hasSingleBean(EncodingCursorStrategy.class));
 	}
 
 	@Test

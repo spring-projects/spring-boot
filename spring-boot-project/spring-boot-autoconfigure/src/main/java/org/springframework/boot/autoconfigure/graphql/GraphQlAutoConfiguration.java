@@ -51,6 +51,7 @@ import org.springframework.graphql.data.method.annotation.support.AnnotatedContr
 import org.springframework.graphql.data.pagination.ConnectionFieldTypeVisitor;
 import org.springframework.graphql.data.pagination.CursorEncoder;
 import org.springframework.graphql.data.pagination.CursorStrategy;
+import org.springframework.graphql.data.pagination.EncodingCursorStrategy;
 import org.springframework.graphql.data.query.ScrollPositionCursorStrategy;
 import org.springframework.graphql.data.query.SliceConnectionAdapter;
 import org.springframework.graphql.data.query.WindowConnectionAdapter;
@@ -170,7 +171,7 @@ public class GraphQlAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		CursorStrategy<ScrollPosition> cursorStrategy() {
+		EncodingCursorStrategy<ScrollPosition> cursorStrategy() {
 			return CursorStrategy.withEncoder(new ScrollPositionCursorStrategy(), CursorEncoder.base64());
 		}
 
