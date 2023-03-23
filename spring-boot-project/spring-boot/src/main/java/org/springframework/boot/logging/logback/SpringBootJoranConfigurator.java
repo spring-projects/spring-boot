@@ -26,7 +26,6 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -79,16 +78,8 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 
 	private final LoggingInitializationContext initializationContext;
 
-	private final Collection<JoranConfigurator> configurators;
-
 	SpringBootJoranConfigurator(LoggingInitializationContext initializationContext) {
-		this(initializationContext, Collections.emptyList());
-	}
-
-	SpringBootJoranConfigurator(LoggingInitializationContext initializationContext,
-			Collection<JoranConfigurator> configurators) {
 		this.initializationContext = initializationContext;
-		this.configurators = configurators;
 	}
 
 	@Override
@@ -114,7 +105,6 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 		ruleStore.addRule(new ElementSelector("configuration/springProperty"), SpringPropertyAction::new);
 		ruleStore.addRule(new ElementSelector("*/springProfile"), SpringProfileAction::new);
 		ruleStore.addTransparentPathPart("springProfile");
-		this.configurators.forEach((configurator) -> configurator.addElementSelectorAndActionAssociations(ruleStore));
 	}
 
 	boolean configureUsingAotGeneratedArtifacts() {
@@ -134,7 +124,6 @@ class SpringBootJoranConfigurator extends JoranConfigurator {
 			getContext().putObject(BeanFactoryInitializationAotContribution.class.getName(),
 					new LogbackConfigurationAotContribution(model, getModelInterpretationContext(), getContext()));
 		}
-		this.configurators.forEach((configurator) -> configurator.processModel(model));
 	}
 
 	private boolean isAotProcessingInProgress() {

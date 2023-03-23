@@ -33,15 +33,9 @@ import java.util.logging.LogManager;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.classic.spi.LoggerContextListener;
 import ch.qos.logback.core.ConsoleAppender;
 import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
-import ch.qos.logback.core.joran.action.Action;
-import ch.qos.logback.core.joran.spi.ActionException;
-import ch.qos.logback.core.joran.spi.ElementSelector;
-import ch.qos.logback.core.joran.spi.RuleStore;
-import ch.qos.logback.core.joran.spi.SaxEventInterpretationContext;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import ch.qos.logback.core.util.StatusPrinter;
@@ -52,10 +46,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
-import org.xml.sax.Attributes;
 
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
-import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogFile;
@@ -662,8 +654,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void whenContextHasNoAotContributionThenProcessAheadOfTimeReturnsNull() {
-		BeanFactoryInitializationAotContribution contribution = this.loggingSystem
-			.processAheadOfTime(new DefaultListableBeanFactory());
+		BeanFactoryInitializationAotContribution contribution = this.loggingSystem.processAheadOfTime(null);
 		assertThat(contribution).isNull();
 	}
 
@@ -672,32 +663,9 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		LoggerContext context = ((LoggerContext) LoggerFactory.getILoggerFactory());
 		context.putObject(BeanFactoryInitializationAotContribution.class.getName(),
 				mock(BeanFactoryInitializationAotContribution.class));
-		BeanFactoryInitializationAotContribution contribution = this.loggingSystem
-			.processAheadOfTime(new DefaultListableBeanFactory());
+		BeanFactoryInitializationAotContribution contribution = this.loggingSystem.processAheadOfTime(null);
 		assertThat(context.getObject(BeanFactoryInitializationAotContribution.class.getName())).isNull();
 		assertThat(contribution).isNotNull();
-	}
-
-	@Test
-	void whenContextHasConfiguratorsThenInitializeExecutesThem(CapturedOutput output) {
-		LoggerContext context = ((LoggerContext) LoggerFactory.getILoggerFactory());
-		context.putObject(BeanFactoryInitializationAotContribution.class.getName(),
-				mock(BeanFactoryInitializationAotContribution.class));
-		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		beanFactory.registerSingleton("joranConfigurator1", new JoranConfigurator() {
-
-			@Override
-			public void addElementSelectorAndActionAssociations(RuleStore ruleStore) {
-				ruleStore.addRule(new ElementSelector("*/rule1"), () -> new EmptyAction());
-				ruleStore.addRule(new ElementSelector("*/rule2"), () -> new EmptyAction());
-			}
-
-		});
-		this.loggingSystem.processAheadOfTime(beanFactory);
-		this.loggingSystem.beforeInitialize();
-		initialize(this.initializationContext, "classpath:logback-custom-rules.xml", null);
-		assertThat(output).doesNotContain("Ignoring unknown property [rule1] in [ch.qos.logback.classic.LoggerContext]")
-			.doesNotContain("Ignoring unknown property [rule2] in [ch.qos.logback.classic.LoggerContext]");
 	}
 
 	@Test // gh-33610
@@ -740,19 +708,6 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 			.filter((line) -> line.contains(outputSearch))
 			.findFirst()
 			.orElse(null);
-	}
-
-	private static class EmptyAction extends Action {
-
-		@Override
-		public void begin(SaxEventInterpretationContext intercon, String name, Attributes attributes)
-				throws ActionException {
-		}
-
-		@Override
-		public void end(SaxEventInterpretationContext intercon, String name) throws ActionException {
-		}
-
 	}
 
 }

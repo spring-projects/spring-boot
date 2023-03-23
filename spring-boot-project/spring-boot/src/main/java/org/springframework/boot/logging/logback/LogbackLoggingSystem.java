@@ -20,8 +20,6 @@ import java.net.URL;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.ConsoleHandler;
@@ -83,8 +81,6 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	private static final String CONFIGURATION_FILE_PROPERTY = "logback.configurationFile";
 
 	private static final LogLevels<Level> LEVELS = new LogLevels<>();
-
-	private Collection<JoranConfigurator> configurators = Collections.emptyList();
 
 	static {
 		LEVELS.map(LogLevel.TRACE, Level.TRACE);
@@ -187,7 +183,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		if (isAlreadyInitialized(loggerContext)) {
 			return;
 		}
-		if (!initializeFromAotGeneratedArtifactsIfPossible(initializationContext, this.configurators, logFile)) {
+		if (!initializeFromAotGeneratedArtifactsIfPossible(initializationContext, logFile)) {
 			super.initialize(initializationContext, configLocation, logFile);
 		}
 		loggerContext.getTurboFilterList().remove(FILTER);
@@ -199,7 +195,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	}
 
 	private boolean initializeFromAotGeneratedArtifactsIfPossible(LoggingInitializationContext initializationContext,
-			Collection<JoranConfigurator> configurators, LogFile logFile) {
+			LogFile logFile) {
 		if (!AotDetector.useGeneratedArtifacts()) {
 			return false;
 		}
@@ -208,8 +204,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		}
 		LoggerContext loggerContext = getLoggerContext();
 		stopAndReset(loggerContext);
-		SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext,
-				configurators);
+		SpringBootJoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
 		configurator.setContext(loggerContext);
 		boolean configuredUsingAotGeneratedArtifacts = configurator.configureUsingAotGeneratedArtifacts();
 		if (configuredUsingAotGeneratedArtifacts) {
@@ -272,7 +267,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	private void configureByResourceUrl(LoggingInitializationContext initializationContext, LoggerContext loggerContext,
 			URL url) throws JoranException {
 		if (url.toString().endsWith(".xml")) {
-			JoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext, this.configurators);
+			JoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
 			configurator.setContext(loggerContext);
 			configurator.doConfigure(url);
 		}
@@ -427,8 +422,6 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		BeanFactoryInitializationAotContribution contribution = (BeanFactoryInitializationAotContribution) context
 			.getObject(key);
 		context.removeObject(key);
-		this.configurators = beanFactory.getBeansOfType(JoranConfigurator.class).values();
-		this.configurators.forEach((configurator) -> configurator.setContext(context));
 		return contribution;
 	}
 
