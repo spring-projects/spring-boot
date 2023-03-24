@@ -12,10 +12,6 @@ case "$JDK_VERSION" in
 		 BASE_URL="https://api.bell-sw.com/v1/liberica/releases?version-feature=17"
 		 ISSUE_TITLE="Upgrade Java 17 version in CI image and .sdkmanrc"
 	;;
-	java19)
-		 BASE_URL="https://api.bell-sw.com/v1/liberica/releases?version-feature=19"
-		 ISSUE_TITLE="Upgrade Java 19 version in CI image"
-	;;
 	*)
 		echo $"Unknown java version"
 		exit 1;
