@@ -657,7 +657,7 @@ class WebFluxAutoConfigurationTests {
 			.withPropertyValues("spring.webflux.problemdetails.enabled:true")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ProblemDetailsExceptionHandler.class);
-				assertThat(AopUtils.isCglibProxy(context.getBean(ProblemDetailsExceptionHandler.class)));
+				assertThat(AopUtils.isCglibProxy(context.getBean(ProblemDetailsExceptionHandler.class))).isTrue();
 			});
 	}
 

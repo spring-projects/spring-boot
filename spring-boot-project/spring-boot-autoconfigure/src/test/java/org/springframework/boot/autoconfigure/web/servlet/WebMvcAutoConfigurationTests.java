@@ -1000,7 +1000,7 @@ class WebMvcAutoConfigurationTests {
 			.withPropertyValues("spring.mvc.problemdetails.enabled:true")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ProblemDetailsExceptionHandler.class);
-				assertThat(AopUtils.isCglibProxy(context.getBean(ProblemDetailsExceptionHandler.class)));
+				assertThat(AopUtils.isCglibProxy(context.getBean(ProblemDetailsExceptionHandler.class))).isTrue();
 			});
 	}
 
