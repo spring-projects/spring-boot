@@ -27,6 +27,7 @@ import io.r2dbc.h2.H2ConnectionFactory;
 import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.pool.PoolMetrics;
 import io.r2dbc.spi.ConnectionFactory;
+import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.ConnectionFactoryProvider;
 import io.r2dbc.spi.Option;
 import io.r2dbc.spi.Wrapped;
@@ -54,6 +55,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class R2dbcAutoConfigurationTests {
 
@@ -68,7 +72,7 @@ class R2dbcAutoConfigurationTests {
 				assertThat(context.getBean(ConnectionPool.class)).extracting(ConnectionPool::unwrap)
 					.satisfies((connectionFactory) -> assertThat(connectionFactory)
 						.asInstanceOf(type(OptionsCapableConnectionFactory.class))
-						.extracting(Wrapped<ConnectionFactory>::unwrap)
+						.extracting(Wrapped::unwrap)
 						.isExactlyInstanceOf(H2ConnectionFactory.class));
 			});
 	}
@@ -306,6 +310,64 @@ class R2dbcAutoConfigurationTests {
 				.doesNotHaveBean(DatabaseClient.class));
 	}
 
+	@Test
+	void shouldUseCustomConnectionDetailsIfAvailable() {
+		this.contextRunner.withPropertyValues("spring.r2dbc.pool.enabled=false")
+			.withUserConfiguration(ConnectionDetailsConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ConnectionFactory.class);
+				OptionsCapableConnectionFactory connectionFactory = context
+					.getBean(OptionsCapableConnectionFactory.class);
+				ConnectionFactoryOptions options = connectionFactory.getOptions();
+				assertThat(options.getValue(ConnectionFactoryOptions.DRIVER)).isEqualTo("postgresql");
+				assertThat(options.getValue(ConnectionFactoryOptions.HOST)).isEqualTo("postgres.example.com");
+				assertThat(options.getValue(ConnectionFactoryOptions.PORT)).isEqualTo(12345);
+				assertThat(options.getValue(ConnectionFactoryOptions.DATABASE)).isEqualTo("database-1");
+				assertThat(options.getValue(ConnectionFactoryOptions.USER)).isEqualTo("user-1");
+				assertThat(options.getValue(ConnectionFactoryOptions.PASSWORD)).isEqualTo("password-1");
+			});
+	}
+
+	@Test
+	void configureWithUsernamePasswordAndUrlWithoutUserInfoUsesUsernameAndPassword() {
+		this.contextRunner
+			.withPropertyValues("spring.r2dbc.pool.enabled=false",
+					"spring.r2dbc.url:r2dbc:postgresql://postgres.example.com:4321/db", "spring.r2dbc.username=alice",
+					"spring.r2dbc.password=secret")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ConnectionFactory.class);
+				OptionsCapableConnectionFactory connectionFactory = context
+					.getBean(OptionsCapableConnectionFactory.class);
+				ConnectionFactoryOptions options = connectionFactory.getOptions();
+				assertThat(options.getValue(ConnectionFactoryOptions.DRIVER)).isEqualTo("postgresql");
+				assertThat(options.getValue(ConnectionFactoryOptions.HOST)).isEqualTo("postgres.example.com");
+				assertThat(options.getValue(ConnectionFactoryOptions.PORT)).isEqualTo(4321);
+				assertThat(options.getValue(ConnectionFactoryOptions.DATABASE)).isEqualTo("db");
+				assertThat(options.getValue(ConnectionFactoryOptions.USER)).isEqualTo("alice");
+				assertThat(options.getValue(ConnectionFactoryOptions.PASSWORD)).isEqualTo("secret");
+			});
+	}
+
+	@Test
+	void configureWithUsernamePasswordAndUrlWithUserInfoUsesUserInfo() {
+		this.contextRunner
+			.withPropertyValues("spring.r2dbc.pool.enabled=false",
+					"spring.r2dbc.url:r2dbc:postgresql://bob:password@postgres.example.com:9876/db",
+					"spring.r2dbc.username=alice", "spring.r2dbc.password=secret")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ConnectionFactory.class);
+				OptionsCapableConnectionFactory connectionFactory = context
+					.getBean(OptionsCapableConnectionFactory.class);
+				ConnectionFactoryOptions options = connectionFactory.getOptions();
+				assertThat(options.getValue(ConnectionFactoryOptions.DRIVER)).isEqualTo("postgresql");
+				assertThat(options.getValue(ConnectionFactoryOptions.HOST)).isEqualTo("postgres.example.com");
+				assertThat(options.getValue(ConnectionFactoryOptions.PORT)).isEqualTo(9876);
+				assertThat(options.getValue(ConnectionFactoryOptions.DATABASE)).isEqualTo("db");
+				assertThat(options.getValue(ConnectionFactoryOptions.USER)).isEqualTo("bob");
+				assertThat(options.getValue(ConnectionFactoryOptions.PASSWORD)).isEqualTo("password");
+			});
+	}
+
 	private <T> InstanceOfAssertFactory<T, ObjectAssert<T>> type(Class<T> type) {
 		return InstanceOfAssertFactories.type(type);
 	}
@@ -338,6 +400,24 @@ class R2dbcAutoConfigurationTests {
 		@Bean
 		ConnectionFactoryOptionsBuilderCustomizer customizer() {
 			return (builder) -> builder.option(Option.valueOf("customized"), true);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ConnectionDetailsConfiguration {
+
+		@Bean
+		R2dbcConnectionDetails r2dbcConnectionDetails() {
+			return new R2dbcConnectionDetails() {
+
+				@Override
+				public ConnectionFactoryOptions getConnectionFactoryOptions() {
+					return ConnectionFactoryOptions
+						.parse("r2dbc:postgresql://user-1:password-1@postgres.example.com:12345/database-1");
+				}
+
+			};
 		}
 
 	}

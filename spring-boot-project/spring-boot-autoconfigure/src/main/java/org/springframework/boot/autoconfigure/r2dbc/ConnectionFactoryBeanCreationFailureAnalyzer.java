@@ -53,7 +53,7 @@ class ConnectionFactoryBeanCreationFailureAnalyzer
 	private String getDescription(ConnectionFactoryBeanCreationException cause) {
 		StringBuilder description = new StringBuilder();
 		description.append("Failed to configure a ConnectionFactory: ");
-		if (!StringUtils.hasText(cause.getProperties().getUrl())) {
+		if (!StringUtils.hasText(cause.getUrl())) {
 			description.append("'url' attribute is not specified and ");
 		}
 		description.append(String.format("no embedded database could be configured.%n"));
