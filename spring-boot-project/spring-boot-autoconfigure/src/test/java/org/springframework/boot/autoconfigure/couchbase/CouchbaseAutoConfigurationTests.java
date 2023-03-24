@@ -48,6 +48,9 @@ import static org.mockito.Mockito.mock;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class CouchbaseAutoConfigurationTests {
 
@@ -61,6 +64,19 @@ class CouchbaseAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldUseConnectionDetails() {
+		this.contextRunner.withBean(CouchbaseConnectionDetails.class, this::couchbaseConnectionDetails)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
+				Cluster cluster = context.getBean(Cluster.class);
+				assertThat(cluster.core()).extracting("connectionString.hosts")
+					.asList()
+					.extractingResultOf("host")
+					.containsExactly("couchbase.example.com");
+			});
+	}
+
+	@Test
 	void connectionStringCreateEnvironmentAndCluster() {
 		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
 			.withPropertyValues("spring.couchbase.connection-string=localhost")
@@ -68,6 +84,21 @@ class CouchbaseAutoConfigurationTests {
 				assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
 				assertThat(context.getBean(Cluster.class))
 					.isSameAs(context.getBean(CouchbaseTestConfiguration.class).couchbaseCluster());
+			});
+	}
+
+	@Test
+	void connectionDetailsShouldOverrideProperties() {
+		this.contextRunner.withBean(CouchbaseConnectionDetails.class, this::couchbaseConnectionDetails)
+			.withPropertyValues("spring.couchbase.connection-string=localhost", "spring.couchbase.username=a-user",
+					"spring.couchbase.password=a-password")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
+				Cluster cluster = context.getBean(Cluster.class);
+				assertThat(cluster.core()).extracting("connectionString.hosts")
+					.asList()
+					.extractingResultOf("host")
+					.containsExactly("couchbase.example.com");
 			});
 	}
 
@@ -174,6 +205,27 @@ class CouchbaseAutoConfigurationTests {
 				assertThat(env.timeoutConfig().kvTimeout()).isEqualTo(Duration.ofSeconds(5));
 				assertThat(env.timeoutConfig().connectTimeout()).isEqualTo(Duration.ofSeconds(2));
 			});
+	}
+
+	private CouchbaseConnectionDetails couchbaseConnectionDetails() {
+		return new CouchbaseConnectionDetails() {
+
+			@Override
+			public String getConnectionString() {
+				return "couchbase.example.com";
+			}
+
+			@Override
+			public String getUsername() {
+				return "user-1";
+			}
+
+			@Override
+			public String getPassword() {
+				return "password-1";
+			}
+
+		};
 	}
 
 	@Configuration(proxyBeanMethods = false)
