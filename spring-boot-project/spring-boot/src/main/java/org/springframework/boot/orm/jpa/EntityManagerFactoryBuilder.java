@@ -82,7 +82,7 @@ public class EntityManagerFactoryBuilder {
 	 * @param persistenceUnitManager optional source of persistence unit information (can
 	 * be null)
 	 * @param persistenceUnitRootLocation the persistence unit root location to use as a
-	 * fallback (can be null)
+	 * fallback or {@code null}
 	 * @since 1.4.1
 	 */
 	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter, Map<String, ?> jpaProperties,
