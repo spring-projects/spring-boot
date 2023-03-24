@@ -99,6 +99,9 @@ import static org.mockito.Mockito.never;
  * @author Nakul Mishra
  * @author Tomaz Fernandes
  * @author Thomas Kåsene
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class KafkaAutoConfigurationTests {
 
@@ -162,6 +165,24 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
+	void connectionDetailsAreAppliedToConsumer() {
+		this.contextRunner
+			.withPropertyValues("spring.kafka.bootstrap-servers=foo:1234",
+					"spring.kafka.consumer.bootstrap-servers=foo:1234", "spring.kafka.security.protocol=SSL",
+					"spring.kafka.consumer.security.protocol=SSL")
+			.withBean(KafkaConnectionDetails.class, this::kafkaConnectionDetails)
+			.run((context) -> {
+				DefaultKafkaConsumerFactory<?, ?> consumerFactory = context.getBean(DefaultKafkaConsumerFactory.class);
+				Map<String, Object> configs = consumerFactory.getConfigurationProperties();
+				assertThat(configs).containsEntry(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
+						Collections.singletonList("kafka.example.com:12345"));
+				assertThat(configs).containsEntry(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+						Collections.singletonList("kafka.example.com:12345"));
+				assertThat(configs).containsEntry(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
+			});
+	}
+
+	@Test
 	void producerProperties() {
 		this.contextRunner.withPropertyValues("spring.kafka.clientId=cid",
 				"spring.kafka.properties.foo.bar.baz=qux.fiz.buz", "spring.kafka.producer.acks=all",
@@ -212,6 +233,24 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
+	void connectionDetailsAreAppliedToProducer() {
+		this.contextRunner
+			.withPropertyValues("spring.kafka.bootstrap-servers=foo:1234",
+					"spring.kafka.producer.bootstrap-servers=foo:1234", "spring.kafka.security.protocol=SSL",
+					"spring.kafka.producer.security.protocol=SSL")
+			.withBean(KafkaConnectionDetails.class, this::kafkaConnectionDetails)
+			.run((context) -> {
+				DefaultKafkaProducerFactory<?, ?> producerFactory = context.getBean(DefaultKafkaProducerFactory.class);
+				Map<String, Object> configs = producerFactory.getConfigurationProperties();
+				assertThat(configs).containsEntry(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
+						Collections.singletonList("kafka.example.com:12345"));
+				assertThat(configs).containsEntry(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+						Collections.singletonList("kafka.example.com:12345"));
+				assertThat(configs).containsEntry(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
+			});
+	}
+
+	@Test
 	void adminProperties() {
 		this.contextRunner
 			.withPropertyValues("spring.kafka.clientId=cid", "spring.kafka.properties.foo.bar.baz=qux.fiz.buz",
@@ -249,6 +288,24 @@ class KafkaAutoConfigurationTests {
 				assertThat(admin).hasFieldOrPropertyWithValue("fatalIfBrokerNotAvailable", true);
 				assertThat(admin).hasFieldOrPropertyWithValue("modifyTopicConfigs", true);
 				assertThat(admin).hasFieldOrPropertyWithValue("autoCreate", false);
+			});
+	}
+
+	@Test
+	void connectionDetailsAreAppliedToAdmin() {
+		this.contextRunner
+			.withPropertyValues("spring.kafka.bootstrap-servers=foo:1234", "spring.kafka.security.protocol=SSL",
+					"spring.kafka.admin.security.protocol=SSL")
+			.withBean(KafkaConnectionDetails.class, this::kafkaConnectionDetails)
+			.run((context) -> {
+				KafkaAdmin admin = context.getBean(KafkaAdmin.class);
+				Map<String, Object> configs = admin.getConfigurationProperties();
+				assertThat(configs).containsEntry(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
+						Collections.singletonList("kafka.example.com:12345"));
+				assertThat(configs).containsEntry(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
+						Collections.singletonList("kafka.example.com:12345"));
+				assertThat(configs).containsEntry(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
+				assertThat(configs).containsEntry(AdminClientConfig.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
 			});
 	}
 
@@ -295,6 +352,27 @@ class KafkaAutoConfigurationTests {
 				assertThat(configs).containsEntry("fiz.buz", "fix.fox");
 				assertThat(context.getBean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_BUILDER_BEAN_NAME))
 					.isNotNull();
+			});
+	}
+
+	@Test
+	void connectionDetailsAreAppliedToStreams() {
+		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
+			.withPropertyValues("spring.kafka.streams.auto-startup=false", "spring.kafka.streams.application-id=test",
+					"spring.kafka.bootstrap-servers=foo:1234", "spring.kafka.streams.bootstrap-servers=foo:1234",
+					"spring.kafka.security.protocol=SSL", "spring.kafka.streams.security.protocol=SSL")
+			.withBean(KafkaConnectionDetails.class, this::kafkaConnectionDetails)
+			.run((context) -> {
+				Properties configs = context
+					.getBean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
+							KafkaStreamsConfiguration.class)
+					.asProperties();
+				assertThat(configs).containsEntry(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
+						Collections.singletonList("kafka.example.com:12345"));
+				assertThat(configs).containsEntry(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG,
+						Collections.singletonList("kafka.example.com:12345"));
+				assertThat(configs).containsEntry(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
+				assertThat(configs).containsEntry(StreamsConfig.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
 			});
 	}
 
@@ -742,6 +820,17 @@ class KafkaAutoConfigurationTests {
 				Map<String, Object> configs = admin.getConfigurationProperties();
 				assertThat(configs).containsEntry(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
 			});
+	}
+
+	private KafkaConnectionDetails kafkaConnectionDetails() {
+		return new KafkaConnectionDetails() {
+
+			@Override
+			public List<Node> getBootstrapNodes() {
+				return List.of(new Node("kafka.example.com", 12345));
+			}
+
+		};
 	}
 
 	@Configuration(proxyBeanMethods = false)
