@@ -27,7 +27,7 @@ Although you _could_ copy Spring Boot jars, we generally recommend that you use 
 
 [[getting-started.installing.java.maven]]
 ==== Maven Installation
-Spring Boot is compatible with Apache Maven 3.5 or above.
+Spring Boot is compatible with Apache Maven 3.6.3 or later.
 If you do not already have Maven installed, you can follow the instructions at https://maven.apache.org.
 
 TIP: On many operating systems, Maven can be installed with a package manager.
