@@ -203,7 +203,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	/**
 	 * Customize the {@link ClassLoader} that the {@link ApplicationContext} should use
 	 * for resource loading and bean class loading.
-	 * @param classLoader the classloader to use (can be null to use the default)
+	 * @param classLoader the classloader to use (or {@code null} to use the default)
 	 * @return a new instance with the updated class loader
 	 * @see FilteredClassLoader
 	 */
