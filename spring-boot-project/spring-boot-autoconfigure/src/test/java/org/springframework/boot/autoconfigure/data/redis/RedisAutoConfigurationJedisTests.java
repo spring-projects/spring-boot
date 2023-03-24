@@ -39,6 +39,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Mark Paluch
  * @author Stephane Nicoll
  * @author Weix Sun
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 @ClassPathExclusions("lettuce-core-*.jar")
 class RedisAutoConfigurationJedisTests {
@@ -76,6 +79,14 @@ class RedisAutoConfigurationJedisTests {
 		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
 			JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 			assertThat(cf.isUseSsl()).isTrue();
+		});
+	}
+
+	@Test
+	void usesConnectionDetailsIfAvailable() {
+		this.contextRunner.withUserConfiguration(ConnectionDetailsConfiguration.class).run((context) -> {
+			JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
+			assertThat(cf.isUseSsl()).isFalse();
 		});
 	}
 
@@ -236,6 +247,35 @@ class RedisAutoConfigurationJedisTests {
 		@Bean
 		JedisClientConfigurationBuilderCustomizer customizer() {
 			return JedisClientConfigurationBuilder::useSsl;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ConnectionDetailsConfiguration {
+
+		@Bean
+		RedisConnectionDetails redisConnectionDetails() {
+			return new RedisConnectionDetails() {
+
+				@Override
+				public Standalone getStandalone() {
+					return new Standalone() {
+
+						@Override
+						public String getHost() {
+							return "localhost";
+						}
+
+						@Override
+						public int getPort() {
+							return 6379;
+						}
+
+					};
+				}
+
+			};
 		}
 
 	}

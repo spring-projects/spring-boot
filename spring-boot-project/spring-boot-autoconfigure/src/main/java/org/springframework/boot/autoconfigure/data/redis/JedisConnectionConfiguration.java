@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,9 @@ import org.springframework.util.StringUtils;
  *
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ GenericObjectPool.class, JedisConnection.class, Jedis.class })
@@ -52,8 +55,10 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 	JedisConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
-			ObjectProvider<RedisClusterConfiguration> clusterConfiguration) {
-		super(properties, standaloneConfigurationProvider, sentinelConfiguration, clusterConfiguration);
+			ObjectProvider<RedisClusterConfiguration> clusterConfiguration,
+			ObjectProvider<RedisConnectionDetails> connectionDetailsProvider) {
+		super(properties, standaloneConfigurationProvider, sentinelConfiguration, clusterConfiguration,
+				connectionDetailsProvider);
 	}
 
 	@Bean
@@ -90,7 +95,9 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private JedisClientConfigurationBuilder applyProperties(JedisClientConfigurationBuilder builder) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(getProperties().isSsl()).whenTrue().toCall(builder::useSsl);
+		boolean ssl = (!(getConnectionDetails() instanceof PropertiesRedisConnectionDetails)) ? false
+				: getProperties().isSsl();
+		map.from(ssl).whenTrue().toCall(builder::useSsl);
 		map.from(getProperties().getTimeout()).to(builder::readTimeout);
 		map.from(getProperties().getConnectTimeout()).to(builder::connectTimeout);
 		map.from(getProperties().getClientName()).whenHasText().to(builder::clientName);
@@ -117,8 +124,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private void customizeConfigurationFromUrl(JedisClientConfiguration.JedisClientConfigurationBuilder builder) {
-		ConnectionInfo connectionInfo = parseUrl(getProperties().getUrl());
-		if (connectionInfo.isUseSsl()) {
+		if (urlUsesSsl()) {
 			builder.useSsl();
 		}
 	}
