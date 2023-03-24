@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,10 @@
 
 package org.springframework.boot.autoconfigure.r2dbc;
 
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.ConnectionFactoryOptions.Builder;
-import io.r2dbc.spi.Option;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.r2dbc.EmbeddedDatabaseConnection;
@@ -31,6 +29,9 @@ import org.springframework.util.StringUtils;
  * Initialize a {@link Builder} based on {@link R2dbcProperties}.
  *
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class ConnectionFactoryOptionsInitializer {
 
@@ -38,45 +39,31 @@ class ConnectionFactoryOptionsInitializer {
 	 * Initialize a {@link Builder ConnectionFactoryOptions.Builder} using the specified
 	 * properties.
 	 * @param properties the properties to use to initialize the builder
+	 * @param connectionDetails the connection details to use to initialize the builder
 	 * @param embeddedDatabaseConnection the embedded connection to use as a fallback
 	 * @return an initialized builder
 	 * @throws ConnectionFactoryBeanCreationException if no suitable connection could be
 	 * determined
 	 */
-	ConnectionFactoryOptions.Builder initialize(R2dbcProperties properties,
+	ConnectionFactoryOptions.Builder initialize(R2dbcProperties properties, R2dbcConnectionDetails connectionDetails,
 			Supplier<EmbeddedDatabaseConnection> embeddedDatabaseConnection) {
-		if (StringUtils.hasText(properties.getUrl())) {
-			return initializeRegularOptions(properties);
+		if (connectionDetails != null) {
+			return connectionDetails.getConnectionFactoryOptions().mutate();
 		}
 		EmbeddedDatabaseConnection embeddedConnection = embeddedDatabaseConnection.get();
 		if (embeddedConnection != EmbeddedDatabaseConnection.NONE) {
 			return initializeEmbeddedOptions(properties, embeddedConnection);
 		}
-		throw connectionFactoryBeanCreationException("Failed to determine a suitable R2DBC Connection URL", properties,
+		throw connectionFactoryBeanCreationException("Failed to determine a suitable R2DBC Connection URL", null,
 				embeddedConnection);
-	}
-
-	private ConnectionFactoryOptions.Builder initializeRegularOptions(R2dbcProperties properties) {
-		ConnectionFactoryOptions urlOptions = ConnectionFactoryOptions.parse(properties.getUrl());
-		Builder optionsBuilder = urlOptions.mutate();
-		configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.USER, properties::getUsername,
-				StringUtils::hasText);
-		configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.PASSWORD, properties::getPassword,
-				StringUtils::hasText);
-		configureIf(optionsBuilder, urlOptions, ConnectionFactoryOptions.DATABASE,
-				() -> determineDatabaseName(properties), StringUtils::hasText);
-		if (properties.getProperties() != null) {
-			properties.getProperties().forEach((key, value) -> optionsBuilder.option(Option.valueOf(key), value));
-		}
-		return optionsBuilder;
 	}
 
 	private Builder initializeEmbeddedOptions(R2dbcProperties properties,
 			EmbeddedDatabaseConnection embeddedDatabaseConnection) {
 		String url = embeddedDatabaseConnection.getUrl(determineEmbeddedDatabaseName(properties));
 		if (url == null) {
-			throw connectionFactoryBeanCreationException("Failed to determine a suitable R2DBC Connection URL",
-					properties, embeddedDatabaseConnection);
+			throw connectionFactoryBeanCreationException("Failed to determine a suitable R2DBC Connection URL", url,
+					embeddedDatabaseConnection);
 		}
 		Builder builder = ConnectionFactoryOptions.parse(url).mutate();
 		String username = determineEmbeddedUsername(properties);
@@ -89,6 +76,11 @@ class ConnectionFactoryOptionsInitializer {
 		return builder;
 	}
 
+	private String determineEmbeddedDatabaseName(R2dbcProperties properties) {
+		String databaseName = determineDatabaseName(properties);
+		return (databaseName != null) ? databaseName : "testdb";
+	}
+
 	private String determineDatabaseName(R2dbcProperties properties) {
 		if (properties.isGenerateUniqueName()) {
 			return properties.determineUniqueName();
@@ -99,30 +91,14 @@ class ConnectionFactoryOptionsInitializer {
 		return null;
 	}
 
-	private String determineEmbeddedDatabaseName(R2dbcProperties properties) {
-		String databaseName = determineDatabaseName(properties);
-		return (databaseName != null) ? databaseName : "testdb";
-	}
-
 	private String determineEmbeddedUsername(R2dbcProperties properties) {
 		String username = ifHasText(properties.getUsername());
 		return (username != null) ? username : "sa";
 	}
 
-	private <T extends CharSequence> void configureIf(Builder optionsBuilder, ConnectionFactoryOptions originalOptions,
-			Option<T> option, Supplier<T> valueSupplier, Predicate<T> setIf) {
-		if (originalOptions.hasOption(option)) {
-			return;
-		}
-		T value = valueSupplier.get();
-		if (setIf.test(value)) {
-			optionsBuilder.option(option, value);
-		}
-	}
-
 	private ConnectionFactoryBeanCreationException connectionFactoryBeanCreationException(String message,
-			R2dbcProperties properties, EmbeddedDatabaseConnection embeddedDatabaseConnection) {
-		return new ConnectionFactoryBeanCreationException(message, properties, embeddedDatabaseConnection);
+			String r2dbcUrl, EmbeddedDatabaseConnection embeddedDatabaseConnection) {
+		return new ConnectionFactoryBeanCreationException(message, r2dbcUrl, embeddedDatabaseConnection);
 	}
 
 	private String ifHasText(String candidate) {
@@ -131,23 +107,23 @@ class ConnectionFactoryOptionsInitializer {
 
 	static class ConnectionFactoryBeanCreationException extends BeanCreationException {
 
-		private final R2dbcProperties properties;
+		private final String url;
 
 		private final EmbeddedDatabaseConnection embeddedDatabaseConnection;
 
-		ConnectionFactoryBeanCreationException(String message, R2dbcProperties properties,
+		ConnectionFactoryBeanCreationException(String message, String url,
 				EmbeddedDatabaseConnection embeddedDatabaseConnection) {
 			super(message);
-			this.properties = properties;
+			this.url = url;
 			this.embeddedDatabaseConnection = embeddedDatabaseConnection;
+		}
+
+		String getUrl() {
+			return this.url;
 		}
 
 		EmbeddedDatabaseConnection getEmbeddedDatabaseConnection() {
 			return this.embeddedDatabaseConnection;
-		}
-
-		R2dbcProperties getProperties() {
-			return this.properties;
 		}
 
 	}

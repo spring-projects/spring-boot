@@ -49,6 +49,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayAutoConfigurationRuntimeHints;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.SchemaManagement;
@@ -121,6 +122,16 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	void createsDataSourceWithNoDataSourceBeanAndJdbcConnectionDetails() {
+		this.contextRunner
+			.withUserConfiguration(JdbcConnectionDetailsConfiguration.class, MockFlywayMigrationStrategy.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Flyway.class);
+				assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource()).isNotNull();
+			});
+	}
+
+	@Test
 	void backsOffWithFlywayUrlAndNoSpringJdbc() {
 		this.contextRunner.withPropertyValues("spring.flyway.url:jdbc:hsqldb:mem:" + UUID.randomUUID())
 			.withClassLoader(new FilteredClassLoader("org.springframework.jdbc"))
@@ -134,6 +145,28 @@ class FlywayAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(Flyway.class);
 				assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource()).isNotNull();
+			});
+	}
+
+	@Test
+	void createDataSourceWithJdbcConnectionDetails() {
+		this.contextRunner
+			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JdbcConnectionDetailsConfiguration.class,
+					MockFlywayMigrationStrategy.class)
+			.withPropertyValues("spring.flyway.url=jdbc:hsqldb:mem:flywaytest", "spring.flyway.user=some-user",
+					"spring.flyway.password=some-password",
+					"spring.flyway.driver-class-name=org.hsqldb.jdbc.JDBCDriver")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Flyway.class);
+				Flyway flyway = context.getBean(Flyway.class);
+				DataSource dataSource = flyway.getConfiguration().getDataSource();
+				assertThat(dataSource).isInstanceOf(SimpleDriverDataSource.class);
+				SimpleDriverDataSource simpleDriverDataSource = (SimpleDriverDataSource) dataSource;
+				assertThat(simpleDriverDataSource.getUrl())
+					.isEqualTo("jdbc:postgresql://database.example.com:12345/database-1");
+				assertThat(simpleDriverDataSource.getUsername()).isEqualTo("user-1");
+				assertThat(simpleDriverDataSource.getPassword()).isEqualTo("secret-1");
+				assertThat(simpleDriverDataSource.getDriver()).isInstanceOf(org.postgresql.Driver.class);
 			});
 	}
 
@@ -194,6 +227,19 @@ class FlywayAutoConfigurationTests {
 		this.contextRunner
 			.withUserConfiguration(FlywayDataSourceConfiguration.class, EmbeddedDataSourceConfiguration.class)
 			.run((context) -> {
+				assertThat(context).hasSingleBean(Flyway.class);
+				assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource())
+					.isEqualTo(context.getBean("flywayDataSource"));
+			});
+	}
+
+	@Test
+	void flywayDataSourceIsUsedWhenJdbcConnectionDetailsIsAvailable() {
+		this.contextRunner
+			.withUserConfiguration(FlywayDataSourceConfiguration.class, EmbeddedDataSourceConfiguration.class,
+					JdbcConnectionDetailsConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JdbcConnectionDetails.class);
 				assertThat(context).hasSingleBean(Flyway.class);
 				assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource())
 					.isEqualTo(context.getBean("flywayDataSource"));
@@ -1032,6 +1078,33 @@ class FlywayAutoConfigurationTests {
 		@Override
 		public void migrate(org.flywaydb.core.api.migration.Context context) {
 
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class JdbcConnectionDetailsConfiguration {
+
+		@Bean
+		JdbcConnectionDetails jdbcConnectionDetails() {
+			return new JdbcConnectionDetails() {
+
+				@Override
+				public String getJdbcUrl() {
+					return "jdbc:postgresql://database.example.com:12345/database-1";
+				}
+
+				@Override
+				public String getUsername() {
+					return "user-1";
+				}
+
+				@Override
+				public String getPassword() {
+					return "secret-1";
+				}
+
+			};
 		}
 
 	}

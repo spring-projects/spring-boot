@@ -59,21 +59,6 @@ import org.springframework.core.io.ResourceLoader;
  * <li>{@link org.springframework.amqp.core.AmqpAdmin } instance as long as
  * {@literal spring.rabbitmq.dynamic=true}.</li>
  * </ul>
- * <p>
- * The {@link org.springframework.amqp.rabbit.connection.CachingConnectionFactory} honors
- * the following properties:
- * <ul>
- * <li>{@literal spring.rabbitmq.port} is used to specify the port to which the client
- * should connect, and defaults to 5672.</li>
- * <li>{@literal spring.rabbitmq.username} is used to specify the (optional) username.
- * </li>
- * <li>{@literal spring.rabbitmq.password} is used to specify the (optional) password.
- * </li>
- * <li>{@literal spring.rabbitmq.host} is used to specify the host, and defaults to
- * {@literal localhost}.</li>
- * <li>{@literal spring.rabbitmq.virtualHost} is used to specify the (optional) virtual
- * host to which the client should connect.</li>
- * </ul>
  *
  * @author Greg Turnquist
  * @author Josh Long
@@ -82,6 +67,8 @@ import org.springframework.core.io.ResourceLoader;
  * @author Phillip Webb
  * @author Artsiom Yudovin
  * @author Chris Bono
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
  * @since 1.0.0
  */
 @AutoConfiguration
@@ -93,13 +80,24 @@ public class RabbitAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	protected static class RabbitConnectionFactoryCreator {
 
+		private final RabbitProperties properties;
+
+		private final RabbitConnectionDetails connectionDetails;
+
+		protected RabbitConnectionFactoryCreator(RabbitProperties properties,
+				ObjectProvider<RabbitConnectionDetails> connectionDetails) {
+			this.properties = properties;
+			this.connectionDetails = connectionDetails
+				.getIfAvailable(() -> new PropertiesRabbitConnectionDetails(properties));
+		}
+
 		@Bean
 		@ConditionalOnMissingBean
-		RabbitConnectionFactoryBeanConfigurer rabbitConnectionFactoryBeanConfigurer(RabbitProperties properties,
-				ResourceLoader resourceLoader, ObjectProvider<CredentialsProvider> credentialsProvider,
+		RabbitConnectionFactoryBeanConfigurer rabbitConnectionFactoryBeanConfigurer(ResourceLoader resourceLoader,
+				ObjectProvider<CredentialsProvider> credentialsProvider,
 				ObjectProvider<CredentialsRefreshService> credentialsRefreshService) {
 			RabbitConnectionFactoryBeanConfigurer configurer = new RabbitConnectionFactoryBeanConfigurer(resourceLoader,
-					properties);
+					this.properties, this.connectionDetails);
 			configurer.setCredentialsProvider(credentialsProvider.getIfUnique());
 			configurer.setCredentialsRefreshService(credentialsRefreshService.getIfUnique());
 			return configurer;
@@ -107,9 +105,10 @@ public class RabbitAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		CachingConnectionFactoryConfigurer rabbitConnectionFactoryConfigurer(RabbitProperties rabbitProperties,
+		CachingConnectionFactoryConfigurer rabbitConnectionFactoryConfigurer(
 				ObjectProvider<ConnectionNameStrategy> connectionNameStrategy) {
-			CachingConnectionFactoryConfigurer configurer = new CachingConnectionFactoryConfigurer(rabbitProperties);
+			CachingConnectionFactoryConfigurer configurer = new CachingConnectionFactoryConfigurer(this.properties,
+					this.connectionDetails);
 			configurer.setConnectionNameStrategy(connectionNameStrategy.getIfUnique());
 			return configurer;
 		}

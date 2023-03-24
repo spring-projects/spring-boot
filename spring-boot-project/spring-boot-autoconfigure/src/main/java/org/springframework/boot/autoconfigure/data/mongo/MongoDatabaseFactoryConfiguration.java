@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,12 @@ package org.springframework.boot.autoconfigure.data.mongo;
 
 import com.mongodb.client.MongoClient;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.boot.autoconfigure.mongo.PropertiesMongoConnectionDetails;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
@@ -32,6 +35,8 @@ import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
+ * @author Phillip Webb
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(MongoDatabaseFactory.class)
@@ -39,8 +44,12 @@ import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 class MongoDatabaseFactoryConfiguration {
 
 	@Bean
-	MongoDatabaseFactorySupport<?> mongoDatabaseFactory(MongoClient mongoClient, MongoProperties properties) {
-		return new SimpleMongoClientDatabaseFactory(mongoClient, properties.getMongoClientDatabase());
+	MongoDatabaseFactorySupport<?> mongoDatabaseFactory(MongoClient mongoClient, MongoProperties properties,
+			ObjectProvider<MongoConnectionDetails> connectionDetails) {
+		return new SimpleMongoClientDatabaseFactory(mongoClient,
+				connectionDetails.getIfAvailable(() -> new PropertiesMongoConnectionDetails(properties))
+					.getConnectionString()
+					.getDatabase());
 	}
 
 }

@@ -22,6 +22,7 @@ import javax.sql.XADataSource;
 import com.ibm.db2.jcc.DB2XADataSource;
 import org.hsqldb.jdbc.pool.JDBCXADataSource;
 import org.junit.jupiter.api.Test;
+import org.postgresql.xa.PGXADataSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jdbc.XADataSourceWrapper;
@@ -40,6 +41,8 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link XADataSourceAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
  */
 class XADataSourceAutoConfigurationTests {
 
@@ -90,12 +93,36 @@ class XADataSourceAutoConfigurationTests {
 		assertThat(dataSource.getLoginTimeout()).isEqualTo(123);
 	}
 
+	@Test
+	void shouldUseConnectionDetailsIfAvailable() {
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(XADataSourceAutoConfiguration.class))
+			.withUserConfiguration(FromProperties.class, JdbcConnectionDetailsConfiguration.class)
+			.run((context) -> {
+				MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);
+				PGXADataSource dataSource = (PGXADataSource) wrapper.getXaDataSource();
+				assertThat(dataSource).isNotNull();
+				assertThat(dataSource.getUrl()).startsWith("jdbc:postgresql://postgres.example.com:12345/database-1");
+				assertThat(dataSource.getUser()).isEqualTo("user-1");
+				assertThat(dataSource.getPassword()).isEqualTo("password-1");
+			});
+	}
+
 	private ApplicationContext createContext(Class<?> configuration, String... env) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of(env).applyTo(context);
 		context.register(configuration, XADataSourceAutoConfiguration.class);
 		context.refresh();
 		return context;
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class JdbcConnectionDetailsConfiguration {
+
+		@Bean
+		JdbcConnectionDetails jdbcConnectionDetails() {
+			return new TestJdbcConnectionDetails();
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
