@@ -25,12 +25,32 @@ import org.springframework.boot.context.properties.PropertyMapper;
  * Configures Rabbit {@link CachingConnectionFactory} with sensible defaults.
  *
  * @author Chris Bono
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 2.6.0
  */
 public class CachingConnectionFactoryConfigurer extends AbstractConnectionFactoryConfigurer<CachingConnectionFactory> {
 
+	/**
+	 * Creates a new configurer that will configure the connection factory using the given
+	 * {@code properties}.
+	 * @param properties the properties to use to configure the connection factory
+	 */
 	public CachingConnectionFactoryConfigurer(RabbitProperties properties) {
-		super(properties);
+		this(properties, new PropertiesRabbitConnectionDetails(properties));
+	}
+
+	/**
+	 * Creates a new configurer that will configure the connection factory using the given
+	 * {@code properties} and {@code connectionDetails}, with the latter taking priority.
+	 * @param properties the properties to use to configure the connection factory
+	 * @param connectionDetails the connection details to use to configure the connection
+	 * factory
+	 * @since 3.1.0
+	 */
+	public CachingConnectionFactoryConfigurer(RabbitProperties properties, RabbitConnectionDetails connectionDetails) {
+		super(properties, connectionDetails);
 	}
 
 	@Override
