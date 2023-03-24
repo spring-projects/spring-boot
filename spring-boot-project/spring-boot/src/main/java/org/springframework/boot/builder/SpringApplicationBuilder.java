@@ -106,7 +106,7 @@ public class SpringApplicationBuilder {
 	 * Creates a new {@link SpringApplication} instance from the given sources using the
 	 * given {@link ResourceLoader}. Subclasses may override in order to provide a custom
 	 * subclass of {@link SpringApplication}.
-	 * @param resourceLoader the resource loader (can be null)
+	 * @param resourceLoader the resource loader or {@code null}
 	 * @param sources the sources
 	 * @return the {@link SpringApplication} instance
 	 * @since 2.6.0
