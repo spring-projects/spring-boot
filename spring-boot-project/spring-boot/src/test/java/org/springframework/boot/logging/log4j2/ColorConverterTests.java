@@ -105,6 +105,76 @@ class ColorConverterTests {
 		newConverter("cyan").format(this.event, output);
 		assertThat(output).hasToString("\033[36min\033[0;39m");
 	}
+	@Test
+	void white() {
+		StringBuilder output = new StringBuilder();
+		newConverter("white").format(this.event, output);
+		assertThat(output).hasToString("\u001B[37m");
+	}
+
+	@Test
+	void black() {
+		StringBuilder output = new StringBuilder();
+		newConverter("black").format(this.event, output);
+		assertThat(output).hasToString("\u001B[30m");
+	}
+
+	@Test
+	void brightblack() {
+		StringBuilder output = new StringBuilder();
+		newConverter("bright_black").format(this.event, output);
+		assertThat(output).hasToString("\u001B[30;1m");
+	}
+
+	@Test
+	void brightred() {
+		StringBuilder output = new StringBuilder();
+		newConverter("bright_red").format(this.event, output);
+		assertThat(output).hasToString("\u001B[31;1m");
+	}
+
+	@Test
+	void brightgreen() {
+		StringBuilder output = new StringBuilder();
+		newConverter("bright_green").format(this.event, output);
+		assertThat(output).hasToString("\u001B[32;1m");
+	}
+
+	@Test
+	void brightyellow() {
+		StringBuilder output = new StringBuilder();
+		newConverter("bright_yellow").format(this.event, output);
+		assertThat(output).hasToString("\u001B[33;1m");
+	}
+
+	@Test
+	void brightblue() {
+		StringBuilder output = new StringBuilder();
+		newConverter("bright_blue").format(this.event, output);
+		assertThat(output).hasToString("\u001B[34;1m");
+	}
+
+	@Test
+	void brightmagenta() {
+		StringBuilder output = new StringBuilder();
+		newConverter("bright_magenta").format(this.event, output);
+		assertThat(output).hasToString("\u001B[35;1m");
+	}
+
+	@Test
+	void brightcyan() {
+		StringBuilder output = new StringBuilder();
+		newConverter("bright_cyan").format(this.event, output);
+		assertThat(output).hasToString("\u001B[36;1m");
+	}
+
+	@Test
+	void brightwhite() {
+		StringBuilder output = new StringBuilder();
+		newConverter("bright_white").format(this.event, output);
+		assertThat(output).hasToString("\u001B[37;1m");
+	}
+
 
 	@Test
 	void highlightFatal() {
