@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,13 @@ import com.zaxxer.hikari.HikariDataSource;
 import oracle.jdbc.OracleConnection;
 import oracle.ucp.jdbc.PoolDataSourceImpl;
 
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,12 +43,25 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Fabio Grassi
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
  */
 abstract class DataSourceConfiguration {
 
 	@SuppressWarnings("unchecked")
 	protected static <T> T createDataSource(DataSourceProperties properties, Class<? extends DataSource> type) {
 		return (T) properties.initializeDataSourceBuilder().type(type).build();
+	}
+
+	@SuppressWarnings("unchecked")
+	protected static <T> T createDataSource(JdbcConnectionDetails connectionDetails, Class<? extends DataSource> type,
+			ClassLoader classLoader) {
+		return (T) DataSourceBuilder.create(classLoader)
+			.url(connectionDetails.getJdbcUrl())
+			.username(connectionDetails.getUsername())
+			.password(connectionDetails.getPassword())
+			.type(type)
+			.build();
 	}
 
 	/**
@@ -59,12 +75,25 @@ abstract class DataSourceConfiguration {
 	static class Tomcat {
 
 		@Bean
+		@ConditionalOnBean(JdbcConnectionDetails.class)
+		static TomcatJdbcConnectionDetailsBeanPostProcessor tomcatJdbcConnectionDetailsBeanPostProcessor(
+				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+			return new TomcatJdbcConnectionDetailsBeanPostProcessor(connectionDetailsProvider);
+		}
+
+		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.tomcat")
-		org.apache.tomcat.jdbc.pool.DataSource dataSource(DataSourceProperties properties) {
-			org.apache.tomcat.jdbc.pool.DataSource dataSource = createDataSource(properties,
-					org.apache.tomcat.jdbc.pool.DataSource.class);
-			DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(properties.determineUrl());
-			String validationQuery = databaseDriver.getValidationQuery();
+		org.apache.tomcat.jdbc.pool.DataSource dataSource(DataSourceProperties properties,
+				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+			JdbcConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
+			Class<? extends DataSource> dataSourceType = org.apache.tomcat.jdbc.pool.DataSource.class;
+			org.apache.tomcat.jdbc.pool.DataSource dataSource = (connectionDetails != null)
+					? createDataSource(connectionDetails, dataSourceType, properties.getClassLoader())
+					: createDataSource(properties, dataSourceType);
+			String validationQuery;
+			String url = (connectionDetails != null) ? connectionDetails.getJdbcUrl() : properties.determineUrl();
+			DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(url);
+			validationQuery = databaseDriver.getValidationQuery();
 			if (validationQuery != null) {
 				dataSource.setTestOnBorrow(true);
 				dataSource.setValidationQuery(validationQuery);
@@ -85,9 +114,20 @@ abstract class DataSourceConfiguration {
 	static class Hikari {
 
 		@Bean
+		@ConditionalOnBean(JdbcConnectionDetails.class)
+		static HikariJdbcConnectionDetailsBeanPostProcessor jdbcConnectionDetailsHikariBeanPostProcessor(
+				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+			return new HikariJdbcConnectionDetailsBeanPostProcessor(connectionDetailsProvider);
+		}
+
+		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.hikari")
-		HikariDataSource dataSource(DataSourceProperties properties) {
-			HikariDataSource dataSource = createDataSource(properties, HikariDataSource.class);
+		HikariDataSource dataSource(DataSourceProperties properties,
+				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+			JdbcConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
+			HikariDataSource dataSource = (connectionDetails != null)
+					? createDataSource(connectionDetails, HikariDataSource.class, properties.getClassLoader())
+					: createDataSource(properties, HikariDataSource.class);
 			if (StringUtils.hasText(properties.getName())) {
 				dataSource.setPoolName(properties.getName());
 			}
@@ -107,9 +147,21 @@ abstract class DataSourceConfiguration {
 	static class Dbcp2 {
 
 		@Bean
+		@ConditionalOnBean(JdbcConnectionDetails.class)
+		static Dbcp2JdbcConnectionDetailsBeanPostProcessor dbcp2JdbcConnectionDetailsBeanPostProcessor(
+				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+			return new Dbcp2JdbcConnectionDetailsBeanPostProcessor(connectionDetailsProvider);
+		}
+
+		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.dbcp2")
-		org.apache.commons.dbcp2.BasicDataSource dataSource(DataSourceProperties properties) {
-			return createDataSource(properties, org.apache.commons.dbcp2.BasicDataSource.class);
+		org.apache.commons.dbcp2.BasicDataSource dataSource(DataSourceProperties properties,
+				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+			JdbcConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
+			Class<? extends DataSource> dataSourceType = org.apache.commons.dbcp2.BasicDataSource.class;
+			return (connectionDetails != null)
+					? createDataSource(connectionDetails, dataSourceType, properties.getClassLoader())
+					: createDataSource(properties, dataSourceType);
 		}
 
 	}
@@ -125,9 +177,20 @@ abstract class DataSourceConfiguration {
 	static class OracleUcp {
 
 		@Bean
+		@ConditionalOnBean(JdbcConnectionDetails.class)
+		static OracleUcpJdbcConnectionDetailsBeanPostProcessor oracleUcpJdbcConnectionDetailsBeanPostProcessor(
+				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+			return new OracleUcpJdbcConnectionDetailsBeanPostProcessor(connectionDetailsProvider);
+		}
+
+		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.oracleucp")
-		PoolDataSourceImpl dataSource(DataSourceProperties properties) throws SQLException {
-			PoolDataSourceImpl dataSource = createDataSource(properties, PoolDataSourceImpl.class);
+		PoolDataSourceImpl dataSource(DataSourceProperties properties,
+				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) throws SQLException {
+			JdbcConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
+			PoolDataSourceImpl dataSource = (connectionDetails != null)
+					? createDataSource(connectionDetails, PoolDataSourceImpl.class, properties.getClassLoader())
+					: createDataSource(properties, PoolDataSourceImpl.class);
 			dataSource.setValidateConnectionOnBorrow(true);
 			if (StringUtils.hasText(properties.getName())) {
 				dataSource.setConnectionPoolName(properties.getName());
@@ -146,7 +209,17 @@ abstract class DataSourceConfiguration {
 	static class Generic {
 
 		@Bean
-		DataSource dataSource(DataSourceProperties properties) {
+		DataSource dataSource(DataSourceProperties properties,
+				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
+			JdbcConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
+			if (connectionDetails != null) {
+				return DataSourceBuilder.create(properties.getClassLoader())
+					.url(connectionDetails.getJdbcUrl())
+					.username(connectionDetails.getUsername())
+					.password(connectionDetails.getPassword())
+					.type(properties.getType())
+					.build();
+			}
 			return properties.initializeDataSourceBuilder().build();
 		}
 

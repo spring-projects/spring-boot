@@ -24,9 +24,11 @@ import org.apache.tomcat.jdbc.pool.interceptor.SlowQueryReport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -41,12 +43,19 @@ import static org.junit.jupiter.api.Assertions.fail;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class TomcatDataSourceConfigurationTests {
 
 	private static final String PREFIX = "spring.datasource.tomcat.";
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+		.withPropertyValues("spring.datasource.type=" + org.apache.tomcat.jdbc.pool.DataSource.class.getName());
 
 	@BeforeEach
 	void init() {
@@ -104,6 +113,32 @@ class TomcatDataSourceConfigurationTests {
 		assertThat(ds.getMinEvictableIdleTimeMillis()).isEqualTo(60000);
 		assertThat(ds.getMaxWait()).isEqualTo(30000);
 		assertThat(ds.getValidationInterval()).isEqualTo(3000L);
+	}
+
+	@Test
+	void usesJdbcConnectionDetailsIfAvailable() {
+		this.contextRunner.withUserConfiguration(ConnectionDetailsConfiguration.class)
+			.withPropertyValues(PREFIX + "url=jdbc:broken", PREFIX + "username=alice", PREFIX + "password=secret")
+			.run((context) -> {
+				DataSource dataSource = context.getBean(DataSource.class);
+				assertThat(dataSource).isInstanceOf(org.apache.tomcat.jdbc.pool.DataSource.class);
+				org.apache.tomcat.jdbc.pool.DataSource tomcat = (org.apache.tomcat.jdbc.pool.DataSource) dataSource;
+				assertThat(tomcat.getPoolProperties().getUsername()).isEqualTo("user-1");
+				assertThat(tomcat.getPoolProperties().getPassword()).isEqualTo("password-1");
+				assertThat(tomcat.getPoolProperties().getDriverClassName()).isEqualTo("org.postgresql.Driver");
+				assertThat(tomcat.getPoolProperties().getUrl())
+					.isEqualTo("jdbc:postgresql://postgres.example.com:12345/database-1");
+			});
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ConnectionDetailsConfiguration {
+
+		@Bean
+		JdbcConnectionDetails jdbcConnectionDetails() {
+			return new TestJdbcConnectionDetails();
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
