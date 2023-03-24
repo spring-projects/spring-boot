@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Tagging interface used to indicate that an operation result is intended to be returned
- * in the body of the response. Primarily intended to support JSON serialzation using an
+ * in the body of the response. Primarily intended to support JSON serialization using an
  * endpoint specific {@link ObjectMapper}.
  *
  * @author Phillip Webb
@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public interface OperationResponseBody {
 
 	/**
-	 * Return a {@link OperationResponseBody} {@link Map} instance containing entires from
+	 * Return a {@link OperationResponseBody} {@link Map} instance containing entries from
 	 * the given {@code map}.
 	 * @param <K> the key type
 	 * @param <V> the value type
