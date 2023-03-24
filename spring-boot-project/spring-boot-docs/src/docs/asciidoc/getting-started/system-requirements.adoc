@@ -37,4 +37,4 @@ Spring Boot supports the following embedded servlet containers:
 | 4.0
 |===
 
-Spring Boot {spring-boot-version} `.war` applications can also be deployed in web containers compatible with Servlet Spec 3.1 or above, up to and including 4.0. Web containers with Servlet Spec 5.0 and above are not compatible, due to breaking changes in this Servlet Spec version.
+You can also deploy Spring Boot applications to any Servlet 3.1 or 4.0 compatible container.
