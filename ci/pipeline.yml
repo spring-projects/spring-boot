@@ -282,6 +282,12 @@ jobs:
       params:
         <<: *github-task-params
         JDK_VERSION: java17
+    - task: detect-jdk20-update
+      image: ci-image
+      file: git-repo/ci/tasks/detect-jdk-updates.yml
+      params:
+        <<: *github-task-params
+        JDK_VERSION: java20
 - name: detect-ubuntu-image-updates
   plan:
   - get: git-repo
