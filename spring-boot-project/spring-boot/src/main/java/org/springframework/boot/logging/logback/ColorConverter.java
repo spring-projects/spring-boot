@@ -50,6 +50,16 @@ public class ColorConverter extends CompositeConverter<ILoggingEvent> {
 		ansiElements.put("blue", AnsiColor.BLUE);
 		ansiElements.put("magenta", AnsiColor.MAGENTA);
 		ansiElements.put("cyan", AnsiColor.CYAN);
+		ansiElements.put("white", AnsiColor.WHITE);
+		ansiElements.put("black", AnsiColor.BLACK);
+		ansiElements.put("bright_black", AnsiColor.BRIGHT_BLACK);
+		ansiElements.put("bright_red", AnsiColor.BRIGHT_RED);
+		ansiElements.put("bright_green", AnsiColor.BRIGHT_GREEN);
+		ansiElements.put("bright_yellow", AnsiColor.BRIGHT_YELLOW);
+		ansiElements.put("bright_blue", AnsiColor.BRIGHT_BLUE);
+		ansiElements.put("bright_magenta", AnsiColor.BRIGHT_MAGENTA);
+		ansiElements.put("bright_cyan", AnsiColor.BRIGHT_CYAN);
+		ansiElements.put("bright_white", AnsiColor.BRIGHT_WHITE);
 		ELEMENTS = Collections.unmodifiableMap(ansiElements);
 	}
 
