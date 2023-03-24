@@ -105,76 +105,76 @@ class ColorConverterTests {
 		newConverter("cyan").format(this.event, output);
 		assertThat(output).hasToString("\033[36min\033[0;39m");
 	}
+
 	@Test
 	void white() {
 		StringBuilder output = new StringBuilder();
 		newConverter("white").format(this.event, output);
-		assertThat(output).hasToString("\u001B[37m");
+		assertThat(output).hasToString("\033[37min\033[0;39m");
 	}
 
 	@Test
 	void black() {
 		StringBuilder output = new StringBuilder();
 		newConverter("black").format(this.event, output);
-		assertThat(output).hasToString("\u001B[30m");
+		assertThat(output).hasToString("\033[30min\033[0;39m");
 	}
 
 	@Test
-	void brightblack() {
+	void brightBlack() {
 		StringBuilder output = new StringBuilder();
 		newConverter("bright_black").format(this.event, output);
-		assertThat(output).hasToString("\u001B[30;1m");
+		assertThat(output).hasToString("\033[90min\033[0;39m");
 	}
 
 	@Test
-	void brightred() {
+	void brightRed() {
 		StringBuilder output = new StringBuilder();
 		newConverter("bright_red").format(this.event, output);
-		assertThat(output).hasToString("\u001B[31;1m");
+		assertThat(output).hasToString("\033[91min\033[0;39m");
 	}
 
 	@Test
-	void brightgreen() {
+	void brightGreen() {
 		StringBuilder output = new StringBuilder();
 		newConverter("bright_green").format(this.event, output);
-		assertThat(output).hasToString("\u001B[32;1m");
+		assertThat(output).hasToString("\033[92min\033[0;39m");
 	}
 
 	@Test
-	void brightyellow() {
+	void brightYellow() {
 		StringBuilder output = new StringBuilder();
 		newConverter("bright_yellow").format(this.event, output);
-		assertThat(output).hasToString("\u001B[33;1m");
+		assertThat(output).hasToString("\033[93min\033[0;39m");
 	}
 
 	@Test
-	void brightblue() {
+	void brightBlue() {
 		StringBuilder output = new StringBuilder();
 		newConverter("bright_blue").format(this.event, output);
-		assertThat(output).hasToString("\u001B[34;1m");
+		assertThat(output).hasToString("\033[94min\033[0;39m");
 	}
 
 	@Test
-	void brightmagenta() {
+	void brightMagenta() {
 		StringBuilder output = new StringBuilder();
 		newConverter("bright_magenta").format(this.event, output);
-		assertThat(output).hasToString("\u001B[35;1m");
+		assertThat(output).hasToString("\033[95min\033[0;39m");
 	}
 
 	@Test
-	void brightcyan() {
+	void brightCyan() {
 		StringBuilder output = new StringBuilder();
 		newConverter("bright_cyan").format(this.event, output);
-		assertThat(output).hasToString("\u001B[36;1m");
+		assertThat(output).hasToString("\033[96min\033[0;39m");
 	}
 
 	@Test
-	void brightwhite() {
+	void brightWhite() {
 		StringBuilder output = new StringBuilder();
 		newConverter("bright_white").format(this.event, output);
-		assertThat(output).hasToString("\u001B[37;1m");
+		assertThat(output).hasToString("\033[97min\033[0;39m");
 	}
-
 
 	@Test
 	void highlightFatal() {
