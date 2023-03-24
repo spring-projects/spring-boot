@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,10 @@ import java.util.regex.Pattern;
 
 import io.micrometer.core.instrument.Tag;
 
+import org.springframework.boot.actuate.metrics.http.Outcome;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.observation.DefaultClientRequestObservationConvention;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,8 +35,13 @@ import org.springframework.web.client.RestTemplate;
  *
  * @author Andy Wilkinson
  * @author Jon Schneider
+ * @author Nishant Raut
+ * @author Brian Clozel
  * @since 2.0.0
+ * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
+ * {@link DefaultClientRequestObservationConvention}
  */
+@Deprecated(since = "3.0.0", forRemoval = true)
 public final class RestTemplateExchangeTags {
 
 	private static final Pattern STRIP_URI_PATTERN = Pattern.compile("^https?://[^/]+/");
@@ -81,7 +88,7 @@ public final class RestTemplateExchangeTags {
 
 	/**
 	 * Creates a {@code status} {@code Tag} derived from the
-	 * {@link ClientHttpResponse#getRawStatusCode() status} of the given {@code response}.
+	 * {@link ClientHttpResponse#getStatusCode() status} of the given {@code response}.
 	 * @param response the response
 	 * @return the status tag
 	 */
@@ -94,7 +101,7 @@ public final class RestTemplateExchangeTags {
 			if (response == null) {
 				return "CLIENT_ERROR";
 			}
-			return String.valueOf(response.getRawStatusCode());
+			return String.valueOf(response.getStatusCode().value());
 		}
 		catch (IOException ex) {
 			return "IO_ERROR";
@@ -102,17 +109,36 @@ public final class RestTemplateExchangeTags {
 	}
 
 	/**
-	 * Create a {@code clientName} {@code Tag} derived from the {@link URI#getHost host}
+	 * Create a {@code client.name} {@code Tag} derived from the {@link URI#getHost host}
 	 * of the {@link HttpRequest#getURI() URI} of the given {@code request}.
 	 * @param request the request
-	 * @return the clientName tag
+	 * @return the client.name tag
 	 */
 	public static Tag clientName(HttpRequest request) {
 		String host = request.getURI().getHost();
 		if (host == null) {
 			host = "none";
 		}
-		return Tag.of("clientName", host);
+		return Tag.of("client.name", host);
+	}
+
+	/**
+	 * Creates an {@code outcome} {@code Tag} derived from the
+	 * {@link ClientHttpResponse#getStatusCode() status} of the given {@code response}.
+	 * @param response the response
+	 * @return the outcome tag
+	 * @since 2.2.0
+	 */
+	public static Tag outcome(ClientHttpResponse response) {
+		try {
+			if (response != null) {
+				return Outcome.forStatus(response.getStatusCode().value()).asTag();
+			}
+		}
+		catch (IOException ex) {
+			// Continue
+		}
+		return Outcome.UNKNOWN.asTag();
 	}
 
 }

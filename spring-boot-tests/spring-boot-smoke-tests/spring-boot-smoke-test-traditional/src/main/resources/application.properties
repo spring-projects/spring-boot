@@ -1,0 +1,1 @@
+server.servlet.register-default-servlet=true

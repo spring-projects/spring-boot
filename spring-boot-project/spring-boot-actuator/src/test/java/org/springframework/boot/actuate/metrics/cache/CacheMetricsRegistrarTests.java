@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.util.Collections;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.cache.caffeine.CaffeineCache;
 import org.springframework.cache.transaction.TransactionAwareCacheDecorator;
@@ -33,12 +33,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class CacheMetricsRegistrarTests {
+class CacheMetricsRegistrarTests {
 
 	private final MeterRegistry meterRegistry = new SimpleMeterRegistry();
 
 	@Test
-	public void bindToSupportedCache() {
+	void bindToSupportedCache() {
 		CacheMetricsRegistrar registrar = new CacheMetricsRegistrar(this.meterRegistry,
 				Collections.singleton(new CaffeineCacheMeterBinderProvider()));
 		assertThat(registrar.bindCacheToRegistry(new CaffeineCache("test", Caffeine.newBuilder().build()))).isTrue();
@@ -46,16 +46,17 @@ public class CacheMetricsRegistrarTests {
 	}
 
 	@Test
-	public void bindToSupportedCacheWrappedInTransactionProxy() {
+	void bindToSupportedCacheWrappedInTransactionProxy() {
 		CacheMetricsRegistrar registrar = new CacheMetricsRegistrar(this.meterRegistry,
 				Collections.singleton(new CaffeineCacheMeterBinderProvider()));
 		assertThat(registrar.bindCacheToRegistry(
-				new TransactionAwareCacheDecorator(new CaffeineCache("test", Caffeine.newBuilder().build())))).isTrue();
+				new TransactionAwareCacheDecorator(new CaffeineCache("test", Caffeine.newBuilder().build()))))
+			.isTrue();
 		assertThat(this.meterRegistry.get("cache.gets").tags("name", "test").meter()).isNotNull();
 	}
 
 	@Test
-	public void bindToUnsupportedCache() {
+	void bindToUnsupportedCache() {
 		CacheMetricsRegistrar registrar = new CacheMetricsRegistrar(this.meterRegistry, Collections.emptyList());
 		assertThat(registrar.bindCacheToRegistry(new CaffeineCache("test", Caffeine.newBuilder().build()))).isFalse();
 		assertThat(this.meterRegistry.find("cache.gets").tags("name", "test").meter()).isNull();

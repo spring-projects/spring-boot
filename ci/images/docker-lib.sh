@@ -68,12 +68,8 @@ start_docker() {
 
   server_args="${server_args}"
 
-  for registry in $3; do
-    server_args="${server_args} --insecure-registry ${registry}"
-  done
-
-  if [ -n "$4" ]; then
-    server_args="${server_args} --registry-mirror $4"
+  if [ -n "$1" ]; then
+    server_args="${server_args} --registry-mirror https://$1"
   fi
 
   try_start() {

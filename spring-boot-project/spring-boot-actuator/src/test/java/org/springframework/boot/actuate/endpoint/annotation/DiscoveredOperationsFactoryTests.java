@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,18 +22,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.boot.actuate.endpoint.Producible;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoke.reflect.OperationMethod;
+import org.springframework.util.MimeType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -43,7 +45,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class DiscoveredOperationsFactoryTests {
+class DiscoveredOperationsFactoryTests {
 
 	private TestDiscoveredOperationsFactory factory;
 
@@ -51,15 +53,15 @@ public class DiscoveredOperationsFactoryTests {
 
 	private List<OperationInvokerAdvisor> invokerAdvisors;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.parameterValueMapper = (parameter, value) -> value.toString();
 		this.invokerAdvisors = new ArrayList<>();
 		this.factory = new TestDiscoveredOperationsFactory(this.parameterValueMapper, this.invokerAdvisors);
 	}
 
 	@Test
-	public void createOperationsWhenHasReadMethodShouldCreateOperation() {
+	void createOperationsWhenHasReadMethodShouldCreateOperation() {
 		Collection<TestOperation> operations = this.factory.createOperations(EndpointId.of("test"), new ExampleRead());
 		assertThat(operations).hasSize(1);
 		TestOperation operation = getFirst(operations);
@@ -67,7 +69,7 @@ public class DiscoveredOperationsFactoryTests {
 	}
 
 	@Test
-	public void createOperationsWhenHasWriteMethodShouldCreateOperation() {
+	void createOperationsWhenHasWriteMethodShouldCreateOperation() {
 		Collection<TestOperation> operations = this.factory.createOperations(EndpointId.of("test"), new ExampleWrite());
 		assertThat(operations).hasSize(1);
 		TestOperation operation = getFirst(operations);
@@ -75,7 +77,7 @@ public class DiscoveredOperationsFactoryTests {
 	}
 
 	@Test
-	public void createOperationsWhenHasDeleteMethodShouldCreateOperation() {
+	void createOperationsWhenHasDeleteMethodShouldCreateOperation() {
 		Collection<TestOperation> operations = this.factory.createOperations(EndpointId.of("test"),
 				new ExampleDelete());
 		assertThat(operations).hasSize(1);
@@ -84,7 +86,7 @@ public class DiscoveredOperationsFactoryTests {
 	}
 
 	@Test
-	public void createOperationsWhenMultipleShouldReturnMultiple() {
+	void createOperationsWhenMultipleShouldReturnMultiple() {
 		Collection<TestOperation> operations = this.factory.createOperations(EndpointId.of("test"),
 				new ExampleMultiple());
 		assertThat(operations).hasSize(2);
@@ -93,7 +95,7 @@ public class DiscoveredOperationsFactoryTests {
 	}
 
 	@Test
-	public void createOperationsShouldProvideOperationMethod() {
+	void createOperationsShouldProvideOperationMethod() {
 		TestOperation operation = getFirst(
 				this.factory.createOperations(EndpointId.of("test"), new ExampleWithParams()));
 		OperationMethod operationMethod = operation.getOperationMethod();
@@ -102,7 +104,7 @@ public class DiscoveredOperationsFactoryTests {
 	}
 
 	@Test
-	public void createOperationsShouldProviderInvoker() {
+	void createOperationsShouldProviderInvoker() {
 		TestOperation operation = getFirst(
 				this.factory.createOperations(EndpointId.of("test"), new ExampleWithParams()));
 		Map<String, Object> params = Collections.singletonMap("name", 123);
@@ -111,7 +113,7 @@ public class DiscoveredOperationsFactoryTests {
 	}
 
 	@Test
-	public void createOperationShouldApplyAdvisors() {
+	void createOperationShouldApplyAdvisors() {
 		TestOperationInvokerAdvisor advisor = new TestOperationInvokerAdvisor();
 		this.invokerAdvisors.add(advisor);
 		TestOperation operation = getFirst(this.factory.createOperations(EndpointId.of("test"), new ExampleRead()));
@@ -121,6 +123,14 @@ public class DiscoveredOperationsFactoryTests {
 		assertThat(advisor.getParameters()).isEmpty();
 	}
 
+	@Test
+	void createOperationShouldApplyProducesFrom() {
+		TestOperation operation = getFirst(
+				this.factory.createOperations(EndpointId.of("test"), new ExampleWithProducesFrom()));
+		DiscoveredOperationMethod method = (DiscoveredOperationMethod) operation.getOperationMethod();
+		assertThat(method.getProducesMediaTypes()).containsExactly("one/*", "two/*", "three/*");
+	}
+
 	private <T> T getFirst(Iterable<T> iterable) {
 		return iterable.iterator().next();
 	}
@@ -128,7 +138,7 @@ public class DiscoveredOperationsFactoryTests {
 	static class ExampleRead {
 
 		@ReadOperation
-		public String read() {
+		String read() {
 			return "read";
 		}
 
@@ -137,7 +147,7 @@ public class DiscoveredOperationsFactoryTests {
 	static class ExampleWrite {
 
 		@WriteOperation
-		public String write() {
+		String write() {
 			return "write";
 		}
 
@@ -146,7 +156,7 @@ public class DiscoveredOperationsFactoryTests {
 	static class ExampleDelete {
 
 		@DeleteOperation
-		public String delete() {
+		String delete() {
 			return "delete";
 		}
 
@@ -155,12 +165,12 @@ public class DiscoveredOperationsFactoryTests {
 	static class ExampleMultiple {
 
 		@ReadOperation
-		public String read() {
+		String read() {
 			return "read";
 		}
 
 		@WriteOperation
-		public String write() {
+		String write() {
 			return "write";
 		}
 
@@ -169,8 +179,17 @@ public class DiscoveredOperationsFactoryTests {
 	static class ExampleWithParams {
 
 		@ReadOperation
-		public String read(String name) {
+		String read(String name) {
 			return name;
+		}
+
+	}
+
+	static class ExampleWithProducesFrom {
+
+		@ReadOperation(producesFrom = ExampleProducible.class)
+		String read() {
+			return "read";
 		}
 
 	}
@@ -215,16 +234,27 @@ public class DiscoveredOperationsFactoryTests {
 			return invoker;
 		}
 
-		public EndpointId getEndpointId() {
+		EndpointId getEndpointId() {
 			return this.endpointId;
 		}
 
-		public OperationType getOperationType() {
+		OperationType getOperationType() {
 			return this.operationType;
 		}
 
-		public OperationParameters getParameters() {
+		OperationParameters getParameters() {
 			return this.parameters;
+		}
+
+	}
+
+	enum ExampleProducible implements Producible<ExampleProducible> {
+
+		ONE, TWO, THREE;
+
+		@Override
+		public MimeType getProducedMimeType() {
+			return new MimeType(toString().toLowerCase());
 		}
 
 	}

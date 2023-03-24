@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.test.mock.mockito;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -37,19 +37,19 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Phillip Webb
  */
-public class DefinitionsParserTests {
+class DefinitionsParserTests {
 
-	private DefinitionsParser parser = new DefinitionsParser();
+	private final DefinitionsParser parser = new DefinitionsParser();
 
 	@Test
-	public void parseSingleMockBean() {
+	void parseSingleMockBean() {
 		this.parser.parse(SingleMockBean.class);
 		assertThat(getDefinitions()).hasSize(1);
 		assertThat(getMockDefinition(0).getTypeToMock().resolve()).isEqualTo(ExampleService.class);
 	}
 
 	@Test
-	public void parseRepeatMockBean() {
+	void parseRepeatMockBean() {
 		this.parser.parse(RepeatMockBean.class);
 		assertThat(getDefinitions()).hasSize(2);
 		assertThat(getMockDefinition(0).getTypeToMock().resolve()).isEqualTo(ExampleService.class);
@@ -57,7 +57,7 @@ public class DefinitionsParserTests {
 	}
 
 	@Test
-	public void parseMockBeanAttributes() {
+	void parseMockBeanAttributes() {
 		this.parser.parse(MockBeanAttributes.class);
 		assertThat(getDefinitions()).hasSize(1);
 		MockDefinition definition = getMockDefinition(0);
@@ -71,7 +71,7 @@ public class DefinitionsParserTests {
 	}
 
 	@Test
-	public void parseMockBeanOnClassAndField() {
+	void parseMockBeanOnClassAndField() {
 		this.parser.parse(MockBeanOnClassAndField.class);
 		assertThat(getDefinitions()).hasSize(2);
 		MockDefinition classDefinition = getMockDefinition(0);
@@ -80,25 +80,25 @@ public class DefinitionsParserTests {
 		MockDefinition fieldDefinition = getMockDefinition(1);
 		assertThat(fieldDefinition.getTypeToMock().resolve()).isEqualTo(ExampleServiceCaller.class);
 		QualifierDefinition qualifier = QualifierDefinition
-				.forElement(ReflectionUtils.findField(MockBeanOnClassAndField.class, "caller"));
+			.forElement(ReflectionUtils.findField(MockBeanOnClassAndField.class, "caller"));
 		assertThat(fieldDefinition.getQualifier()).isNotNull().isEqualTo(qualifier);
 	}
 
 	@Test
-	public void parseMockBeanInferClassToMock() {
+	void parseMockBeanInferClassToMock() {
 		this.parser.parse(MockBeanInferClassToMock.class);
 		assertThat(getDefinitions()).hasSize(1);
 		assertThat(getMockDefinition(0).getTypeToMock().resolve()).isEqualTo(ExampleService.class);
 	}
 
 	@Test
-	public void parseMockBeanMissingClassToMock() {
+	void parseMockBeanMissingClassToMock() {
 		assertThatIllegalStateException().isThrownBy(() -> this.parser.parse(MockBeanMissingClassToMock.class))
-				.withMessageContaining("Unable to deduce type to mock");
+			.withMessageContaining("Unable to deduce type to mock");
 	}
 
 	@Test
-	public void parseMockBeanMultipleClasses() {
+	void parseMockBeanMultipleClasses() {
 		this.parser.parse(MockBeanMultipleClasses.class);
 		assertThat(getDefinitions()).hasSize(2);
 		assertThat(getMockDefinition(0).getTypeToMock().resolve()).isEqualTo(ExampleService.class);
@@ -106,20 +106,20 @@ public class DefinitionsParserTests {
 	}
 
 	@Test
-	public void parseMockBeanMultipleClassesWithName() {
+	void parseMockBeanMultipleClassesWithName() {
 		assertThatIllegalStateException().isThrownBy(() -> this.parser.parse(MockBeanMultipleClassesWithName.class))
-				.withMessageContaining("The name attribute can only be used when mocking a single class");
+			.withMessageContaining("The name attribute can only be used when mocking a single class");
 	}
 
 	@Test
-	public void parseSingleSpyBean() {
+	void parseSingleSpyBean() {
 		this.parser.parse(SingleSpyBean.class);
 		assertThat(getDefinitions()).hasSize(1);
 		assertThat(getSpyDefinition(0).getTypeToSpy().resolve()).isEqualTo(RealExampleService.class);
 	}
 
 	@Test
-	public void parseRepeatSpyBean() {
+	void parseRepeatSpyBean() {
 		this.parser.parse(RepeatSpyBean.class);
 		assertThat(getDefinitions()).hasSize(2);
 		assertThat(getSpyDefinition(0).getTypeToSpy().resolve()).isEqualTo(RealExampleService.class);
@@ -127,7 +127,7 @@ public class DefinitionsParserTests {
 	}
 
 	@Test
-	public void parseSpyBeanAttributes() {
+	void parseSpyBeanAttributes() {
 		this.parser.parse(SpyBeanAttributes.class);
 		assertThat(getDefinitions()).hasSize(1);
 		SpyDefinition definition = getSpyDefinition(0);
@@ -138,7 +138,7 @@ public class DefinitionsParserTests {
 	}
 
 	@Test
-	public void parseSpyBeanOnClassAndField() {
+	void parseSpyBeanOnClassAndField() {
 		this.parser.parse(SpyBeanOnClassAndField.class);
 		assertThat(getDefinitions()).hasSize(2);
 		SpyDefinition classDefinition = getSpyDefinition(0);
@@ -146,26 +146,26 @@ public class DefinitionsParserTests {
 		assertThat(classDefinition.getTypeToSpy().resolve()).isEqualTo(RealExampleService.class);
 		SpyDefinition fieldDefinition = getSpyDefinition(1);
 		QualifierDefinition qualifier = QualifierDefinition
-				.forElement(ReflectionUtils.findField(SpyBeanOnClassAndField.class, "caller"));
+			.forElement(ReflectionUtils.findField(SpyBeanOnClassAndField.class, "caller"));
 		assertThat(fieldDefinition.getQualifier()).isNotNull().isEqualTo(qualifier);
 		assertThat(fieldDefinition.getTypeToSpy().resolve()).isEqualTo(ExampleServiceCaller.class);
 	}
 
 	@Test
-	public void parseSpyBeanInferClassToMock() {
+	void parseSpyBeanInferClassToMock() {
 		this.parser.parse(SpyBeanInferClassToMock.class);
 		assertThat(getDefinitions()).hasSize(1);
 		assertThat(getSpyDefinition(0).getTypeToSpy().resolve()).isEqualTo(RealExampleService.class);
 	}
 
 	@Test
-	public void parseSpyBeanMissingClassToMock() {
+	void parseSpyBeanMissingClassToMock() {
 		assertThatIllegalStateException().isThrownBy(() -> this.parser.parse(SpyBeanMissingClassToMock.class))
-				.withMessageContaining("Unable to deduce type to spy");
+			.withMessageContaining("Unable to deduce type to spy");
 	}
 
 	@Test
-	public void parseSpyBeanMultipleClasses() {
+	void parseSpyBeanMultipleClasses() {
 		this.parser.parse(SpyBeanMultipleClasses.class);
 		assertThat(getDefinitions()).hasSize(2);
 		assertThat(getSpyDefinition(0).getTypeToSpy().resolve()).isEqualTo(RealExampleService.class);
@@ -173,9 +173,9 @@ public class DefinitionsParserTests {
 	}
 
 	@Test
-	public void parseSpyBeanMultipleClassesWithName() {
+	void parseSpyBeanMultipleClassesWithName() {
 		assertThatIllegalStateException().isThrownBy(() -> this.parser.parse(SpyBeanMultipleClassesWithName.class))
-				.withMessageContaining("The name attribute can only be used when spying a single class");
+			.withMessageContaining("The name attribute can only be used when spying a single class");
 	}
 
 	private MockDefinition getMockDefinition(int index) {

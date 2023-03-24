@@ -25,9 +25,9 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional} that matches when the application is a web application. By default,
- * any web application will match but it can be narrowed using the {@link #type()}
- * attribute.
+ * {@link Conditional @Conditional} that matches when the application is a web
+ * application. By default, any web application will match but it can be narrowed using
+ * the {@link #type()} attribute.
  *
  * @author Dave Syer
  * @author Stephane Nicoll

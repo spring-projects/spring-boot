@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,18 +18,22 @@ package org.springframework.boot.actuate.liquibase;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.sql.DataSource;
 
 import liquibase.integration.spring.SpringLiquibase;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.liquibase.LiquibaseEndpoint.LiquibaseBean;
+import org.springframework.boot.actuate.liquibase.LiquibaseEndpoint.LiquibaseBeanDescriptor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
+import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -46,48 +50,69 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Leo Li
  */
-public class LiquibaseEndpointTests {
+class LiquibaseEndpointTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(
-					AutoConfigurations.of(DataSourceAutoConfiguration.class, LiquibaseAutoConfiguration.class))
-			.withPropertyValues("spring.datasource.generate-unique-name=true");
+		.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class, LiquibaseAutoConfiguration.class))
+		.withPropertyValues("spring.datasource.generate-unique-name=true");
 
 	@Test
-	public void liquibaseReportIsReturned() {
+	void liquibaseReportIsReturned() {
 		this.contextRunner.withUserConfiguration(Config.class).run((context) -> {
-			Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class).liquibaseBeans()
-					.getContexts().get(context.getId()).getLiquibaseBeans();
+			Map<String, LiquibaseBeanDescriptor> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+				.liquibaseBeans()
+				.getContexts()
+				.get(context.getId())
+				.getLiquibaseBeans();
 			assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
 		});
 	}
 
 	@Test
-	public void invokeWithCustomSchema() {
-		this.contextRunner.withUserConfiguration(Config.class)
-				.withPropertyValues("spring.liquibase.default-schema=CUSTOMSCHEMA",
-						"spring.datasource.schema=classpath:/db/create-custom-schema.sql")
-				.run((context) -> {
-					Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
-							.liquibaseBeans().getContexts().get(context.getId()).getLiquibaseBeans();
-					assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
-				});
+	void liquibaseReportIsReturnedForContextHierarchy() {
+		this.contextRunner.withUserConfiguration().run((parent) -> {
+			this.contextRunner.withUserConfiguration(Config.class).withParent(parent).run((context) -> {
+				Map<String, LiquibaseBeanDescriptor> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+					.liquibaseBeans()
+					.getContexts()
+					.get(parent.getId())
+					.getLiquibaseBeans();
+				assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
+			});
+		});
 	}
 
 	@Test
-	public void invokeWithCustomTables() {
-		this.contextRunner.withUserConfiguration(Config.class)
-				.withPropertyValues("spring.liquibase.database-change-log-lock-table=liquibase_database_changelog_lock",
-						"spring.liquibase.database-change-log-table=liquibase_database_changelog")
-				.run((context) -> {
-					Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
-							.liquibaseBeans().getContexts().get(context.getId()).getLiquibaseBeans();
-					assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
-				});
+	void invokeWithCustomSchema() {
+		this.contextRunner.withUserConfiguration(Config.class, DataSourceWithSchemaConfiguration.class)
+			.withPropertyValues("spring.liquibase.default-schema=CUSTOMSCHEMA")
+			.run((context) -> {
+				Map<String, LiquibaseBeanDescriptor> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+					.liquibaseBeans()
+					.getContexts()
+					.get(context.getId())
+					.getLiquibaseBeans();
+				assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
+			});
 	}
 
 	@Test
-	public void connectionAutoCommitPropertyIsReset() {
+	void invokeWithCustomTables() {
+		this.contextRunner.withUserConfiguration(Config.class)
+			.withPropertyValues("spring.liquibase.database-change-log-lock-table=liquibase_database_changelog_lock",
+					"spring.liquibase.database-change-log-table=liquibase_database_changelog")
+			.run((context) -> {
+				Map<String, LiquibaseBeanDescriptor> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+					.liquibaseBeans()
+					.getContexts()
+					.get(context.getId())
+					.getLiquibaseBeans();
+				assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
+			});
+	}
+
+	@Test
+	void connectionAutoCommitPropertyIsReset() {
 		this.contextRunner.withUserConfiguration(Config.class).run((context) -> {
 			DataSource dataSource = context.getBean(DataSource.class);
 			assertThat(getAutoCommit(dataSource)).isTrue();
@@ -97,18 +122,21 @@ public class LiquibaseEndpointTests {
 	}
 
 	@Test
-	public void whenMultipleLiquibaseBeansArePresentChangeSetsAreCorrectlyReportedForEachBean() {
+	void whenMultipleLiquibaseBeansArePresentChangeSetsAreCorrectlyReportedForEachBean() {
 		this.contextRunner.withUserConfiguration(Config.class, MultipleDataSourceLiquibaseConfiguration.class)
-				.run((context) -> {
-					Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
-							.liquibaseBeans().getContexts().get(context.getId()).getLiquibaseBeans();
-					assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
-					assertThat(liquibaseBeans.get("liquibase").getChangeSets().get(0).getChangeLog())
-							.isEqualTo("classpath:/db/changelog/db.changelog-master.yaml");
-					assertThat(liquibaseBeans.get("liquibaseBackup").getChangeSets()).hasSize(1);
-					assertThat(liquibaseBeans.get("liquibaseBackup").getChangeSets().get(0).getChangeLog())
-							.isEqualTo("classpath:/db/changelog/db.changelog-master-backup.yaml");
-				});
+			.run((context) -> {
+				Map<String, LiquibaseBeanDescriptor> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
+					.liquibaseBeans()
+					.getContexts()
+					.get(context.getId())
+					.getLiquibaseBeans();
+				assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
+				assertThat(liquibaseBeans.get("liquibase").getChangeSets().get(0).getChangeLog())
+					.isEqualTo("db/changelog/db.changelog-master.yaml");
+				assertThat(liquibaseBeans.get("liquibaseBackup").getChangeSets()).hasSize(1);
+				assertThat(liquibaseBeans.get("liquibaseBackup").getChangeSets().get(0).getChangeLog())
+					.isEqualTo("db/changelog/db.changelog-master-backup.yaml");
+			});
 	}
 
 	private boolean getAutoCommit(DataSource dataSource) throws SQLException {
@@ -117,17 +145,36 @@ public class LiquibaseEndpointTests {
 		}
 	}
 
-	@Configuration
-	public static class Config {
+	@Configuration(proxyBeanMethods = false)
+	static class Config {
 
 		@Bean
-		public LiquibaseEndpoint endpoint(ApplicationContext context) {
+		LiquibaseEndpoint endpoint(ApplicationContext context) {
 			return new LiquibaseEndpoint(context);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
+	static class DataSourceWithSchemaConfiguration {
+
+		@Bean
+		DataSource dataSource() {
+			DataSource dataSource = new EmbeddedDatabaseBuilder()
+				.setType(EmbeddedDatabaseConnection.get(getClass().getClassLoader()).getType())
+				.setName(UUID.randomUUID().toString())
+				.build();
+			DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
+			settings.setSchemaLocations(Arrays.asList("classpath:/db/create-custom-schema.sql"));
+			DataSourceScriptDatabaseInitializer initializer = new DataSourceScriptDatabaseInitializer(dataSource,
+					settings);
+			initializer.initializeDatabase();
+			return dataSource;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class MultipleDataSourceLiquibaseConfiguration {
 
 		@Bean
@@ -152,7 +199,8 @@ public class LiquibaseEndpointTests {
 
 		private DataSource createEmbeddedDatabase() {
 			return new EmbeddedDatabaseBuilder().generateUniqueName(true)
-					.setType(EmbeddedDatabaseConnection.HSQL.getType()).build();
+				.setType(EmbeddedDatabaseConnection.HSQLDB.getType())
+				.build();
 		}
 
 		private SpringLiquibase createSpringLiquibase(String changeLog, DataSource dataSource) {

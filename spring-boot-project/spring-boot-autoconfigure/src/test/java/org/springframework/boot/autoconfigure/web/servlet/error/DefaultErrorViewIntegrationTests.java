@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -38,7 +37,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -52,39 +50,42 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Integration tests for the default error view.
  *
  * @author Dave Syer
+ * @author Scott Frederick
  */
-@RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(properties = { "server.error.include-message=always" })
 @DirtiesContext
-public class DefaultErrorViewIntegrationTests {
+class DefaultErrorViewIntegrationTests {
 
 	@Autowired
 	private WebApplicationContext wac;
 
 	private MockMvc mockMvc;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.mockMvc = MockMvcBuilders.webAppContextSetup(this.wac).build();
 	}
 
 	@Test
-	public void testErrorForBrowserClient() throws Exception {
+	void testErrorForBrowserClient() throws Exception {
 		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().is5xxServerError()).andReturn();
+			.andExpect(status().is5xxServerError())
+			.andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("<html>");
 		assertThat(content).contains("999");
 	}
 
 	@Test
-	public void testErrorWithHtmlEscape() throws Exception {
+	void testErrorWithHtmlEscape() throws Exception {
 		MvcResult response = this.mockMvc
-				.perform(get("/error")
-						.requestAttr("javax.servlet.error.exception",
+			.perform(
+					get("/error")
+						.requestAttr("jakarta.servlet.error.exception",
 								new RuntimeException("<script>alert('Hello World')</script>"))
 						.accept(MediaType.TEXT_HTML))
-				.andExpect(status().is5xxServerError()).andReturn();
+			.andExpect(status().is5xxServerError())
+			.andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("&lt;script&gt;");
 		assertThat(content).contains("Hello World");
@@ -92,16 +93,18 @@ public class DefaultErrorViewIntegrationTests {
 	}
 
 	@Test
-	public void testErrorWithSpelEscape() throws Exception {
+	void testErrorWithSpelEscape() throws Exception {
 		String spel = "${T(" + getClass().getName() + ").injectCall()}";
-		MvcResult response = this.mockMvc.perform(get("/error")
-				.requestAttr("javax.servlet.error.exception", new RuntimeException(spel)).accept(MediaType.TEXT_HTML))
-				.andExpect(status().is5xxServerError()).andReturn();
+		MvcResult response = this.mockMvc
+			.perform(get("/error").requestAttr("jakarta.servlet.error.exception", new RuntimeException(spel))
+				.accept(MediaType.TEXT_HTML))
+			.andExpect(status().is5xxServerError())
+			.andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).doesNotContain("injection");
 	}
 
-	public static String injectCall() {
+	static String injectCall() {
 		return "injection";
 	}
 
@@ -115,12 +118,12 @@ public class DefaultErrorViewIntegrationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@MinimalWebConfiguration
-	public static class TestConfiguration {
+	static class TestConfiguration {
 
 		// For manual testing
-		public static void main(String[] args) {
+		static void main(String[] args) {
 			SpringApplication.run(TestConfiguration.class, args);
 		}
 

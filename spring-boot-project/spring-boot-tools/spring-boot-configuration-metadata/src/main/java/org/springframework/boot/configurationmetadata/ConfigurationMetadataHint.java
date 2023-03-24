@@ -36,15 +36,15 @@ class ConfigurationMetadataHint {
 
 	private final List<ValueProvider> valueProviders = new ArrayList<>();
 
-	public boolean isMapKeyHints() {
+	boolean isMapKeyHints() {
 		return (this.id != null && this.id.endsWith(KEY_SUFFIX));
 	}
 
-	public boolean isMapValueHints() {
+	boolean isMapValueHints() {
 		return (this.id != null && this.id.endsWith(VALUE_SUFFIX));
 	}
 
-	public String resolveId() {
+	String resolveId() {
 		if (isMapKeyHints()) {
 			return this.id.substring(0, this.id.length() - KEY_SUFFIX.length());
 		}
@@ -54,19 +54,19 @@ class ConfigurationMetadataHint {
 		return this.id;
 	}
 
-	public String getId() {
+	String getId() {
 		return this.id;
 	}
 
-	public void setId(String id) {
+	void setId(String id) {
 		this.id = id;
 	}
 
-	public List<ValueHint> getValueHints() {
+	List<ValueHint> getValueHints() {
 		return this.valueHints;
 	}
 
-	public List<ValueProvider> getValueProviders() {
+	List<ValueProvider> getValueProviders() {
 		return this.valueProviders;
 	}
 

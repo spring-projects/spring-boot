@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.actuate.endpoint.ApiVersion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -30,29 +32,46 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class EndpointMediaTypesTests {
+class EndpointMediaTypesTests {
+
+	private static final String V2_JSON = ApiVersion.V2.getProducedMimeType().toString();
+
+	private static final String V3_JSON = ApiVersion.V3.getProducedMimeType().toString();
 
 	@Test
-	public void createWhenProducedIsNullShouldThrowException() {
+	void defaultReturnsExpectedProducedAndConsumedTypes() {
+		assertThat(EndpointMediaTypes.DEFAULT.getProduced()).containsExactly(V3_JSON, V2_JSON, "application/json");
+		assertThat(EndpointMediaTypes.DEFAULT.getConsumed()).containsExactly(V3_JSON, V2_JSON, "application/json");
+	}
+
+	@Test
+	void createWhenProducedIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new EndpointMediaTypes(null, Collections.emptyList()))
-				.withMessageContaining("Produced must not be null");
+			.withMessageContaining("Produced must not be null");
 	}
 
 	@Test
-	public void createWhenConsumedIsNullShouldThrowException() {
+	void createWhenConsumedIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new EndpointMediaTypes(Collections.emptyList(), null))
-				.withMessageContaining("Consumed must not be null");
+			.withMessageContaining("Consumed must not be null");
 	}
 
 	@Test
-	public void getProducedShouldReturnProduced() {
+	void createFromProducedAndConsumedUsesSameListForBoth() {
+		EndpointMediaTypes types = new EndpointMediaTypes("spring/framework", "spring/boot");
+		assertThat(types.getProduced()).containsExactly("spring/framework", "spring/boot");
+		assertThat(types.getConsumed()).containsExactly("spring/framework", "spring/boot");
+	}
+
+	@Test
+	void getProducedShouldReturnProduced() {
 		List<String> produced = Arrays.asList("a", "b", "c");
 		EndpointMediaTypes types = new EndpointMediaTypes(produced, Collections.emptyList());
 		assertThat(types.getProduced()).isEqualTo(produced);
 	}
 
 	@Test
-	public void getConsumedShouldReturnConsumed() {
+	void getConsumedShouldReturnConsumed() {
 		List<String> consumed = Arrays.asList("a", "b", "c");
 		EndpointMediaTypes types = new EndpointMediaTypes(Collections.emptyList(), consumed);
 		assertThat(types.getConsumed()).isEqualTo(consumed);

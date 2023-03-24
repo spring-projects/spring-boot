@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,69 +19,83 @@ package org.springframework.boot.actuate.autoconfigure.metrics.cache;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.spring.cache.HazelcastCache;
 import io.micrometer.core.instrument.binder.MeterBinder;
-import net.sf.ehcache.Ehcache;
+import org.cache2k.Cache2kBuilder;
+import org.cache2k.extra.micrometer.Cache2kCacheMetrics;
+import org.cache2k.extra.spring.SpringCache2kCache;
 
+import org.springframework.boot.actuate.metrics.cache.Cache2kCacheMeterBinderProvider;
 import org.springframework.boot.actuate.metrics.cache.CacheMeterBinderProvider;
 import org.springframework.boot.actuate.metrics.cache.CaffeineCacheMeterBinderProvider;
-import org.springframework.boot.actuate.metrics.cache.EhCache2CacheMeterBinderProvider;
 import org.springframework.boot.actuate.metrics.cache.HazelcastCacheMeterBinderProvider;
 import org.springframework.boot.actuate.metrics.cache.JCacheCacheMeterBinderProvider;
+import org.springframework.boot.actuate.metrics.cache.RedisCacheMeterBinderProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.cache.caffeine.CaffeineCache;
-import org.springframework.cache.ehcache.EhCacheCache;
 import org.springframework.cache.jcache.JCacheCache;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCache;
 
 /**
  * Configure {@link CacheMeterBinderProvider} beans.
  *
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(MeterBinder.class)
 class CacheMeterBinderProvidersConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ Cache2kBuilder.class, SpringCache2kCache.class, Cache2kCacheMetrics.class })
+	static class Cache2kCacheMeterBinderProviderConfiguration {
+
+		@Bean
+		Cache2kCacheMeterBinderProvider cache2kCacheMeterBinderProvider() {
+			return new Cache2kCacheMeterBinderProvider();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ CaffeineCache.class, com.github.benmanes.caffeine.cache.Cache.class })
 	static class CaffeineCacheMeterBinderProviderConfiguration {
 
 		@Bean
-		public CaffeineCacheMeterBinderProvider caffeineCacheMeterBinderProvider() {
+		CaffeineCacheMeterBinderProvider caffeineCacheMeterBinderProvider() {
 			return new CaffeineCacheMeterBinderProvider();
 		}
 
 	}
 
-	@Configuration
-	@ConditionalOnClass({ EhCacheCache.class, Ehcache.class })
-	static class EhCache2CacheMeterBinderProviderConfiguration {
-
-		@Bean
-		public EhCache2CacheMeterBinderProvider ehCache2CacheMeterBinderProvider() {
-			return new EhCache2CacheMeterBinderProvider();
-		}
-
-	}
-
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ HazelcastCache.class, Hazelcast.class })
 	static class HazelcastCacheMeterBinderProviderConfiguration {
 
 		@Bean
-		public HazelcastCacheMeterBinderProvider hazelcastCacheMeterBinderProvider() {
+		HazelcastCacheMeterBinderProvider hazelcastCacheMeterBinderProvider() {
 			return new HazelcastCacheMeterBinderProvider();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ JCacheCache.class, javax.cache.CacheManager.class })
 	static class JCacheCacheMeterBinderProviderConfiguration {
 
 		@Bean
-		public JCacheCacheMeterBinderProvider jCacheCacheMeterBinderProvider() {
+		JCacheCacheMeterBinderProvider jCacheCacheMeterBinderProvider() {
 			return new JCacheCacheMeterBinderProvider();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(RedisCache.class)
+	static class RedisCacheMeterBinderProviderConfiguration {
+
+		@Bean
+		RedisCacheMeterBinderProvider redisCacheMeterBinderProvider() {
+			return new RedisCacheMeterBinderProvider();
 		}
 
 	}

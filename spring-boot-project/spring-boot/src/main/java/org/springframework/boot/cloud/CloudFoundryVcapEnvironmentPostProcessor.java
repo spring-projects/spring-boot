@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.context.config.ConfigFileApplicationListener;
-import org.springframework.boot.context.event.ApplicationPreparedEvent;
+import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
-import org.springframework.boot.logging.DeferredLog;
-import org.springframework.context.ApplicationListener;
+import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -40,13 +40,13 @@ import org.springframework.util.StringUtils;
 
 /**
  * An {@link EnvironmentPostProcessor} that knows where to find VCAP (a.k.a. Cloud
- * Foundry) meta data in the existing environment. It parses out the VCAP_APPLICATION and
- * VCAP_SERVICES meta data and dumps it in a form that is easily consumed by
- * {@link Environment} users. If the app is running in Cloud Foundry then both meta data
+ * Foundry) metadata in the existing environment. It parses out the VCAP_APPLICATION and
+ * VCAP_SERVICES metadata and dumps it in a form that is easily consumed by
+ * {@link Environment} users. If the app is running in Cloud Foundry then both metadata
  * items are JSON objects encoded in OS environment variables. VCAP_APPLICATION is a
  * shallow hash with basic information about the application (name, instance id, instance
  * index, etc.), and VCAP_SERVICES is a hash of lists where the keys are service labels
- * and the values are lists of hashes of service instance meta data. Examples are:
+ * and the values are lists of hashes of service instance metadata. Examples are:
  *
  * <pre class="code">
  * VCAP_APPLICATION: {"instance_id":"2ce0ac627a6c8e47e936d829a3a47b5b","instance_index":0,
@@ -89,17 +89,25 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @since 1.3.0
  */
-public class CloudFoundryVcapEnvironmentPostProcessor
-		implements EnvironmentPostProcessor, Ordered, ApplicationListener<ApplicationPreparedEvent> {
-
-	private static final DeferredLog logger = new DeferredLog();
+public class CloudFoundryVcapEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
 	private static final String VCAP_APPLICATION = "VCAP_APPLICATION";
 
 	private static final String VCAP_SERVICES = "VCAP_SERVICES";
 
-	// Before ConfigFileApplicationListener so values there can use these ones
-	private int order = ConfigFileApplicationListener.DEFAULT_ORDER - 1;
+	private final Log logger;
+
+	// Before ConfigDataEnvironmentPostProcessor so values there can use these
+	private int order = ConfigDataEnvironmentPostProcessor.ORDER - 1;
+
+	/**
+	 * Create a new {@link CloudFoundryVcapEnvironmentPostProcessor} instance.
+	 * @param logFactory the log factory to use
+	 * @since 3.0.0
+	 */
+	public CloudFoundryVcapEnvironmentPostProcessor(DeferredLogFactory logFactory) {
+		this.logger = logFactory.getLog(CloudFoundryVcapEnvironmentPostProcessor.class);
+	}
 
 	public void setOrder(int order) {
 		this.order = order;
@@ -128,11 +136,6 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 		}
 	}
 
-	@Override
-	public void onApplicationEvent(ApplicationPreparedEvent event) {
-		logger.switchTo(CloudFoundryVcapEnvironmentPostProcessor.class);
-	}
-
 	private void addWithPrefix(Properties properties, Properties other, String prefix) {
 		for (String key : other.stringPropertyNames()) {
 			String prefixed = prefix + key;
@@ -148,7 +151,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 			extractPropertiesFromApplication(properties, map);
 		}
 		catch (Exception ex) {
-			logger.error("Could not parse VCAP_APPLICATION", ex);
+			this.logger.error("Could not parse VCAP_APPLICATION", ex);
 		}
 		return properties;
 	}
@@ -161,7 +164,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 			extractPropertiesFromServices(properties, map);
 		}
 		catch (Exception ex) {
-			logger.error("Could not parse VCAP_SERVICES", ex);
+			this.logger.error("Could not parse VCAP_SERVICES", ex);
 		}
 		return properties;
 	}

@@ -23,7 +23,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.FilterType;
@@ -41,38 +41,38 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class FilterAnnotationsTests {
+class FilterAnnotationsTests {
 
 	@Test
-	public void filterAnnotation() throws Exception {
+	void filterAnnotation() throws Exception {
 		FilterAnnotations filterAnnotations = get(FilterByAnnotation.class);
 		assertThat(match(filterAnnotations, ExampleWithAnnotation.class)).isTrue();
 		assertThat(match(filterAnnotations, ExampleWithoutAnnotation.class)).isFalse();
 	}
 
 	@Test
-	public void filterAssignableType() throws Exception {
+	void filterAssignableType() throws Exception {
 		FilterAnnotations filterAnnotations = get(FilterByType.class);
 		assertThat(match(filterAnnotations, ExampleWithAnnotation.class)).isFalse();
 		assertThat(match(filterAnnotations, ExampleWithoutAnnotation.class)).isTrue();
 	}
 
 	@Test
-	public void filterCustom() throws Exception {
+	void filterCustom() throws Exception {
 		FilterAnnotations filterAnnotations = get(FilterByCustom.class);
 		assertThat(match(filterAnnotations, ExampleWithAnnotation.class)).isFalse();
 		assertThat(match(filterAnnotations, ExampleWithoutAnnotation.class)).isTrue();
 	}
 
 	@Test
-	public void filterAspectJ() throws Exception {
+	void filterAspectJ() throws Exception {
 		FilterAnnotations filterAnnotations = get(FilterByAspectJ.class);
 		assertThat(match(filterAnnotations, ExampleWithAnnotation.class)).isFalse();
 		assertThat(match(filterAnnotations, ExampleWithoutAnnotation.class)).isTrue();
 	}
 
 	@Test
-	public void filterRegex() throws Exception {
+	void filterRegex() throws Exception {
 		FilterAnnotations filterAnnotations = get(FilterByRegex.class);
 		assertThat(match(filterAnnotations, ExampleWithAnnotation.class)).isFalse();
 		assertThat(match(filterAnnotations, ExampleWithoutAnnotation.class)).isTrue();

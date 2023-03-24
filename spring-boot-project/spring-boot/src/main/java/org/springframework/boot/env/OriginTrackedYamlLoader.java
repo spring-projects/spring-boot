@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package org.springframework.boot.env;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.LoaderOptions;
@@ -29,6 +29,7 @@ import org.yaml.snakeyaml.constructor.BaseConstructor;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.error.Mark;
+import org.yaml.snakeyaml.nodes.CollectionNode;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeTuple;
@@ -62,17 +63,23 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 
 	@Override
 	protected Yaml createYaml() {
-		BaseConstructor constructor = new OriginTrackingConstructor();
-		Representer representer = new Representer();
-		DumperOptions dumperOptions = new DumperOptions();
-		LimitedResolver resolver = new LimitedResolver();
 		LoaderOptions loaderOptions = new LoaderOptions();
 		loaderOptions.setAllowDuplicateKeys(false);
+		loaderOptions.setMaxAliasesForCollections(Integer.MAX_VALUE);
+		loaderOptions.setAllowRecursiveKeys(true);
+		return createYaml(loaderOptions);
+	}
+
+	private Yaml createYaml(LoaderOptions loaderOptions) {
+		BaseConstructor constructor = new OriginTrackingConstructor(loaderOptions);
+		DumperOptions dumperOptions = new DumperOptions();
+		Representer representer = new Representer(dumperOptions);
+		NoTimestampResolver resolver = new NoTimestampResolver();
 		return new Yaml(constructor, representer, dumperOptions, loaderOptions, resolver);
 	}
 
-	public List<Map<String, Object>> load() {
-		final List<Map<String, Object>> result = new ArrayList<>();
+	List<Map<String, Object>> load() {
+		List<Map<String, Object>> result = new ArrayList<>();
 		process((properties, map) -> result.add(getFlattenedMap(map)));
 		return result;
 	}
@@ -82,21 +89,39 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 	 */
 	private class OriginTrackingConstructor extends SafeConstructor {
 
+		OriginTrackingConstructor(LoaderOptions loadingConfig) {
+			super(loadingConfig);
+		}
+
+		@Override
+		public Object getData() throws NoSuchElementException {
+			Object data = super.getData();
+			if (data instanceof CharSequence charSequence && charSequence.isEmpty()) {
+				return null;
+			}
+			return data;
+		}
+
 		@Override
 		protected Object constructObject(Node node) {
+			if (node instanceof CollectionNode && ((CollectionNode<?>) node).getValue().isEmpty()) {
+				return constructTrackedObject(node, super.constructObject(node));
+			}
 			if (node instanceof ScalarNode) {
 				if (!(node instanceof KeyScalarNode)) {
 					return constructTrackedObject(node, super.constructObject(node));
 				}
 			}
-			else if (node instanceof MappingNode) {
-				replaceMappingNodeKeys((MappingNode) node);
+			if (node instanceof MappingNode mappingNode) {
+				replaceMappingNodeKeys(mappingNode);
 			}
 			return super.constructObject(node);
 		}
 
 		private void replaceMappingNodeKeys(MappingNode node) {
-			node.setValue(node.getValue().stream().map(KeyScalarNode::get).collect(Collectors.toList()));
+			List<NodeTuple> newValue = new ArrayList<>();
+			node.getValue().stream().map(KeyScalarNode::get).forEach(newValue::add);
+			node.setValue(newValue);
 		}
 
 		private Object constructTrackedObject(Node node, Object value) {
@@ -125,15 +150,15 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 			super(node.getTag(), node.getValue(), node.getStartMark(), node.getEndMark(), node.getScalarStyle());
 		}
 
-		public static NodeTuple get(NodeTuple nodeTuple) {
+		static NodeTuple get(NodeTuple nodeTuple) {
 			Node keyNode = nodeTuple.getKeyNode();
 			Node valueNode = nodeTuple.getValueNode();
 			return new NodeTuple(KeyScalarNode.get(keyNode), valueNode);
 		}
 
 		private static Node get(Node node) {
-			if (node instanceof ScalarNode) {
-				return new KeyScalarNode((ScalarNode) node);
+			if (node instanceof ScalarNode scalarNode) {
+				return new KeyScalarNode(scalarNode);
 			}
 			return node;
 		}
@@ -143,14 +168,14 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 	/**
 	 * {@link Resolver} that limits {@link Tag#TIMESTAMP} tags.
 	 */
-	private static class LimitedResolver extends Resolver {
+	private static class NoTimestampResolver extends Resolver {
 
 		@Override
-		public void addImplicitResolver(Tag tag, Pattern regexp, String first) {
+		public void addImplicitResolver(Tag tag, Pattern regexp, String first, int limit) {
 			if (tag == Tag.TIMESTAMP) {
 				return;
 			}
-			super.addImplicitResolver(tag, regexp, first);
+			super.addImplicitResolver(tag, regexp, first, limit);
 		}
 
 	}

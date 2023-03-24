@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- tag::caches[] -->
+<project>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<image>
+						<buildCache>
+							<volume>
+								<name>cache-${project.artifactId}.build</name>
+							</volume>
+						</buildCache>
+						<launchCache>
+							<volume>
+								<name>cache-${project.artifactId}.launch</name>
+							</volume>
+						</launchCache>
+					</image>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+<!-- end::caches[] -->

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,13 +29,14 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
  * {@link BeanNotOfRequiredTypeException}.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  * @since 1.4.0
  */
 public class BeanNotOfRequiredTypeFailureAnalyzer extends AbstractFailureAnalyzer<BeanNotOfRequiredTypeException> {
 
 	private static final String ACTION = "Consider injecting the bean as one of its "
 			+ "interfaces or forcing the use of CGLib-based "
-			+ "proxies by setting proxyTargetClass=true on @EnableAsync and/or " + "@EnableCaching.";
+			+ "proxies by setting proxyTargetClass=true on @EnableAsync and/or @EnableCaching.";
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, BeanNotOfRequiredTypeException cause) {
@@ -48,8 +49,12 @@ public class BeanNotOfRequiredTypeFailureAnalyzer extends AbstractFailureAnalyze
 	private String getDescription(BeanNotOfRequiredTypeException ex) {
 		StringWriter description = new StringWriter();
 		PrintWriter printer = new PrintWriter(description);
-		printer.printf("The bean '%s' could not be injected as a '%s' because it is a "
-				+ "JDK dynamic proxy that implements:%n", ex.getBeanName(), ex.getRequiredType().getName());
+		printer.printf("The bean '%s' could not be injected because it is a JDK dynamic proxy%n%n", ex.getBeanName());
+		printer.printf("The bean is of type '%s' and implements:%n", ex.getActualType().getName());
+		for (Class<?> actualTypeInterface : ex.getActualType().getInterfaces()) {
+			printer.println("\t" + actualTypeInterface.getName());
+		}
+		printer.printf("%nExpected a bean of type '%s' which implements:%n", ex.getRequiredType().getName());
 		for (Class<?> requiredTypeInterface : ex.getRequiredType().getInterfaces()) {
 			printer.println("\t" + requiredTypeInterface.getName());
 		}

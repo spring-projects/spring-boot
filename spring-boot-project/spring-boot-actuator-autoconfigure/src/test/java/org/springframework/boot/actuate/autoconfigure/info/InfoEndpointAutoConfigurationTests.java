@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.info;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -29,27 +29,26 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class InfoEndpointAutoConfigurationTests {
+class InfoEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(InfoEndpointAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(InfoEndpointAutoConfiguration.class));
 
 	@Test
-	public void runShouldHaveEndpointBean() {
-		this.contextRunner.withPropertyValues("management.endpoint.shutdown.enabled:true")
-				.run((context) -> assertThat(context).hasSingleBean(InfoEndpoint.class));
+	void runShouldHaveEndpointBean() {
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=info")
+			.run((context) -> assertThat(context).hasSingleBean(InfoEndpoint.class));
 	}
 
 	@Test
-	public void runShouldHaveEndpointBeanEvenIfDefaultIsDisabled() {
-		this.contextRunner.withPropertyValues("management.endpoint.default.enabled:false")
-				.run((context) -> assertThat(context).hasSingleBean(InfoEndpoint.class));
+	void runWhenNotExposedShouldNotHaveEndpointBean() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(InfoEndpoint.class));
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.info.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(InfoEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(InfoEndpoint.class));
 	}
 
 }

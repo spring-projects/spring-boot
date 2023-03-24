@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,18 +21,19 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.ext.ContextResolver;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.ws.rs.ext.ContextResolver;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.model.Resource;
 import org.glassfish.jersey.servlet.ServletContainer;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
@@ -52,6 +53,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 /**
@@ -89,26 +91,33 @@ public class JerseyWebEndpointIntegrationTests
 		// Jersey doesn't support the general error page handling
 	}
 
-	@Configuration
+	@Override
+	@Test
+	@Disabled("Jersey does not distinguish between /example and /example/")
+	protected void operationWithTrailingSlashShouldNotMatch() {
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class JerseyConfiguration {
 
 		@Bean
-		public TomcatServletWebServerFactory tomcat() {
+		TomcatServletWebServerFactory tomcat() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public ServletRegistrationBean<ServletContainer> servletContainer(ResourceConfig resourceConfig) {
+		ServletRegistrationBean<ServletContainer> servletContainer(ResourceConfig resourceConfig) {
 			return new ServletRegistrationBean<>(new ServletContainer(resourceConfig), "/*");
 		}
 
 		@Bean
-		public ResourceConfig resourceConfig(Environment environment, WebEndpointDiscoverer endpointDiscoverer,
+		ResourceConfig resourceConfig(Environment environment, WebEndpointDiscoverer endpointDiscoverer,
 				EndpointMediaTypes endpointMediaTypes) {
 			ResourceConfig resourceConfig = new ResourceConfig();
+			String endpointPath = environment.getProperty("endpointPath");
 			Collection<Resource> resources = new JerseyEndpointResourceFactory().createEndpointResources(
-					new EndpointMapping(environment.getProperty("endpointPath")), endpointDiscoverer.getEndpoints(),
-					endpointMediaTypes, new EndpointLinksResolver(endpointDiscoverer.getEndpoints()));
+					new EndpointMapping(endpointPath), endpointDiscoverer.getEndpoints(), endpointMediaTypes,
+					new EndpointLinksResolver(endpointDiscoverer.getEndpoints()), StringUtils.hasText(endpointPath));
 			resourceConfig.registerResources(new HashSet<>(resources));
 			resourceConfig.register(JacksonFeature.class);
 			resourceConfig.register(new ObjectMapperContextResolver(new ObjectMapper()), ContextResolver.class);
@@ -117,11 +126,11 @@ public class JerseyWebEndpointIntegrationTests
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class AuthenticatedConfiguration {
 
 		@Bean
-		public Filter securityFilter() {
+		Filter securityFilter() {
 			return new OncePerRequestFilter() {
 
 				@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,23 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
-import javax.transaction.TransactionManager;
+
+import jakarta.transaction.TransactionManager;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties.DataSourceBeanCreationException;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -38,7 +43,6 @@ import org.springframework.boot.context.properties.source.MapConfigurationProper
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.XADataSourceWrapper;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -52,36 +56,19 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @since 1.2.0
  */
-@Configuration
-@AutoConfigureBefore(DataSourceAutoConfiguration.class)
+@AutoConfiguration(before = DataSourceAutoConfiguration.class)
 @EnableConfigurationProperties(DataSourceProperties.class)
 @ConditionalOnClass({ DataSource.class, TransactionManager.class, EmbeddedDatabaseType.class })
 @ConditionalOnBean(XADataSourceWrapper.class)
 @ConditionalOnMissingBean(DataSource.class)
 public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 
-	private final XADataSourceWrapper wrapper;
-
-	private final DataSourceProperties properties;
-
-	private final XADataSource xaDataSource;
-
 	private ClassLoader classLoader;
 
-	public XADataSourceAutoConfiguration(XADataSourceWrapper wrapper, DataSourceProperties properties,
-			ObjectProvider<XADataSource> xaDataSource) {
-		this.wrapper = wrapper;
-		this.properties = properties;
-		this.xaDataSource = xaDataSource.getIfAvailable();
-	}
-
 	@Bean
-	public DataSource dataSource() throws Exception {
-		XADataSource xaDataSource = this.xaDataSource;
-		if (xaDataSource == null) {
-			xaDataSource = createXaDataSource();
-		}
-		return this.wrapper.wrapDataSource(xaDataSource);
+	public DataSource dataSource(XADataSourceWrapper wrapper, DataSourceProperties properties,
+			ObjectProvider<XADataSource> xaDataSource) throws Exception {
+		return wrapper.wrapDataSource(xaDataSource.getIfAvailable(() -> createXaDataSource(properties)));
 	}
 
 	@Override
@@ -89,14 +76,14 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 		this.classLoader = classLoader;
 	}
 
-	private XADataSource createXaDataSource() {
-		String className = this.properties.getXa().getDataSourceClassName();
+	private XADataSource createXaDataSource(DataSourceProperties properties) {
+		String className = properties.getXa().getDataSourceClassName();
 		if (!StringUtils.hasLength(className)) {
-			className = DatabaseDriver.fromJdbcUrl(this.properties.determineUrl()).getXaDataSourceClassName();
+			className = DatabaseDriver.fromJdbcUrl(properties.determineUrl()).getXaDataSourceClassName();
 		}
 		Assert.state(StringUtils.hasLength(className), "No XA DataSource class name specified");
 		XADataSource dataSource = createXaDataSourceInstance(className);
-		bindXaProperties(dataSource, this.properties);
+		bindXaProperties(dataSource, properties);
 		return dataSource;
 	}
 
@@ -118,11 +105,17 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	}
 
 	private ConfigurationPropertySource getBinderSource(DataSourceProperties dataSourceProperties) {
-		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
-		source.put("user", this.properties.determineUsername());
-		source.put("password", this.properties.determinePassword());
-		source.put("url", this.properties.determineUrl());
-		source.putAll(dataSourceProperties.getXa().getProperties());
+		Map<Object, Object> properties = new HashMap<>();
+		properties.putAll(dataSourceProperties.getXa().getProperties());
+		properties.computeIfAbsent("user", (key) -> dataSourceProperties.determineUsername());
+		properties.computeIfAbsent("password", (key) -> dataSourceProperties.determinePassword());
+		try {
+			properties.computeIfAbsent("url", (key) -> dataSourceProperties.determineUrl());
+		}
+		catch (DataSourceBeanCreationException ex) {
+			// Continue as not all XA DataSource's require a URL
+		}
+		MapConfigurationPropertySource source = new MapConfigurationPropertySource(properties);
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases("user", "username");
 		return source.withAliases(aliases);

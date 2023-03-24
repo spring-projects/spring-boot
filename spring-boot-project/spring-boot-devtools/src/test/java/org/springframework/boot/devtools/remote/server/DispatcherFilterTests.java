@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,18 @@
 
 package org.springframework.boot.devtools.remote.server;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.junit.Before;
-import org.junit.Test;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -39,17 +39,17 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Tests for {@link DispatcherFilter}.
  *
  * @author Phillip Webb
  */
-public class DispatcherFilterTests {
+@ExtendWith(MockitoExtension.class)
+class DispatcherFilterTests {
 
 	@Mock
 	private Dispatcher dispatcher;
@@ -65,43 +65,42 @@ public class DispatcherFilterTests {
 
 	private DispatcherFilter filter;
 
-	@Before
-	public void setup() {
-		MockitoAnnotations.initMocks(this);
+	@BeforeEach
+	void setup() {
 		this.filter = new DispatcherFilter(this.dispatcher);
 	}
 
 	@Test
-	public void dispatcherMustNotBeNull() {
+	void dispatcherMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DispatcherFilter(null))
-				.withMessageContaining("Dispatcher must not be null");
+			.withMessageContaining("Dispatcher must not be null");
 	}
 
 	@Test
-	public void ignoresNotServletRequests() throws Exception {
+	void ignoresNotServletRequests() throws Exception {
 		ServletRequest request = mock(ServletRequest.class);
 		ServletResponse response = mock(ServletResponse.class);
 		this.filter.doFilter(request, response, this.chain);
-		verifyZeroInteractions(this.dispatcher);
-		verify(this.chain).doFilter(request, response);
+		then(this.dispatcher).shouldHaveNoInteractions();
+		then(this.chain).should().doFilter(request, response);
 	}
 
 	@Test
-	public void ignoredByDispatcher() throws Exception {
+	void ignoredByDispatcher() throws Exception {
 		HttpServletRequest request = new MockHttpServletRequest("GET", "/hello");
 		HttpServletResponse response = new MockHttpServletResponse();
 		this.filter.doFilter(request, response, this.chain);
-		verify(this.chain).doFilter(request, response);
+		then(this.chain).should().doFilter(request, response);
 	}
 
 	@Test
-	public void handledByDispatcher() throws Exception {
+	void handledByDispatcher() throws Exception {
 		HttpServletRequest request = new MockHttpServletRequest("GET", "/hello");
 		HttpServletResponse response = new MockHttpServletResponse();
 		willReturn(true).given(this.dispatcher).handle(any(ServerHttpRequest.class), any(ServerHttpResponse.class));
 		this.filter.doFilter(request, response, this.chain);
-		verifyZeroInteractions(this.chain);
-		verify(this.dispatcher).handle(this.serverRequestCaptor.capture(), this.serverResponseCaptor.capture());
+		then(this.chain).shouldHaveNoInteractions();
+		then(this.dispatcher).should().handle(this.serverRequestCaptor.capture(), this.serverResponseCaptor.capture());
 		ServerHttpRequest dispatcherRequest = this.serverRequestCaptor.getValue();
 		ServletServerHttpRequest actualRequest = (ServletServerHttpRequest) dispatcherRequest;
 		ServerHttpResponse dispatcherResponse = this.serverResponseCaptor.getValue();

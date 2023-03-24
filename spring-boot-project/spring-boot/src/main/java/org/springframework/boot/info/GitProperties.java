@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,15 @@
 
 package org.springframework.boot.info;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Properties;
+
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.boot.info.GitProperties.GitPropertiesRuntimeHints;
+import org.springframework.context.annotation.ImportRuntimeHints;
 
 /**
  * Provide git-related information such as commit id and time.
@@ -27,6 +32,7 @@ import java.util.Properties;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
+@ImportRuntimeHints(GitPropertiesRuntimeHints.class)
 public class GitProperties extends InfoProperties {
 
 	public GitProperties(Properties entries) {
@@ -108,11 +114,11 @@ public class GitProperties extends InfoProperties {
 		if (epoch != null) {
 			return String.valueOf(epoch);
 		}
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
 		try {
-			return String.valueOf(format.parse(s).getTime());
+			return String.valueOf(format.parse(s, Instant::from).toEpochMilli());
 		}
-		catch (ParseException ex) {
+		catch (DateTimeParseException ex) {
 			return s;
 		}
 	}
@@ -124,6 +130,15 @@ public class GitProperties extends InfoProperties {
 		catch (NumberFormatException ex) {
 			return null;
 		}
+	}
+
+	static class GitPropertiesRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.resources().registerPattern("git.properties");
+		}
+
 	}
 
 }

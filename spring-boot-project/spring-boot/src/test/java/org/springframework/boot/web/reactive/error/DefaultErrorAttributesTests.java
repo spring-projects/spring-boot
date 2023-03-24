@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.codec.HttpMessageReader;
@@ -47,174 +49,218 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
-public class DefaultErrorAttributesTests {
+class DefaultErrorAttributesTests {
 
 	private static final ResponseStatusException NOT_FOUND = new ResponseStatusException(HttpStatus.NOT_FOUND);
 
 	private DefaultErrorAttributes errorAttributes = new DefaultErrorAttributes();
 
-	private List<HttpMessageReader<?>> readers = ServerCodecConfigurer.create().getReaders();
+	private final List<HttpMessageReader<?>> readers = ServerCodecConfigurer.create().getReaders();
 
 	@Test
-	public void missingExceptionAttribute() {
+	void missingExceptionAttribute() {
 		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test").build());
 		ServerRequest request = ServerRequest.create(exchange, this.readers);
-		assertThatIllegalStateException().isThrownBy(() -> this.errorAttributes.getErrorAttributes(request, false))
-				.withMessageContaining("Missing exception attribute in ServerWebExchange");
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.errorAttributes.getErrorAttributes(request, ErrorAttributeOptions.defaults()))
+			.withMessageContaining("Missing exception attribute in ServerWebExchange");
 	}
 
 	@Test
-	public void includeTimeStamp() {
+	void includeTimeStamp() {
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, NOT_FOUND),
-				false);
+				ErrorAttributeOptions.defaults());
 		assertThat(attributes.get("timestamp")).isInstanceOf(Date.class);
 	}
 
 	@Test
-	public void defaultStatusCode() {
+	void defaultStatusCode() {
 		Error error = new OutOfMemoryError("Test error");
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, error),
-				false);
-		assertThat(attributes.get("error")).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
-		assertThat(attributes.get("status")).isEqualTo(500);
+				ErrorAttributeOptions.defaults());
+		assertThat(attributes).containsEntry("error", HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+		assertThat(attributes).containsEntry("status", 500);
 	}
 
 	@Test
-	public void annotatedResponseStatusCode() {
+	void annotatedResponseStatusCode() {
 		Exception error = new CustomException();
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, error),
-				false);
-		assertThat(attributes.get("error")).isEqualTo(HttpStatus.I_AM_A_TEAPOT.getReasonPhrase());
-		assertThat(attributes.get("message")).isEqualTo("");
-		assertThat(attributes.get("status")).isEqualTo(HttpStatus.I_AM_A_TEAPOT.value());
+				ErrorAttributeOptions.defaults());
+		assertThat(attributes).containsEntry("error", HttpStatus.I_AM_A_TEAPOT.getReasonPhrase());
+		assertThat(attributes).doesNotContainKey("message");
+		assertThat(attributes).containsEntry("status", HttpStatus.I_AM_A_TEAPOT.value());
 	}
 
 	@Test
-	public void annotatedResponseStatusCodeWithExceptionMessage() {
+	void annotatedResponseStatusCodeWithExceptionMessage() {
 		Exception error = new CustomException("Test Message");
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, error),
-				false);
-		assertThat(attributes.get("error")).isEqualTo(HttpStatus.I_AM_A_TEAPOT.getReasonPhrase());
-		assertThat(attributes.get("message")).isEqualTo("Test Message");
-		assertThat(attributes.get("status")).isEqualTo(HttpStatus.I_AM_A_TEAPOT.value());
+				ErrorAttributeOptions.of(Include.MESSAGE));
+		assertThat(attributes).containsEntry("error", HttpStatus.I_AM_A_TEAPOT.getReasonPhrase());
+		assertThat(attributes).containsEntry("message", "Test Message");
+		assertThat(attributes).containsEntry("status", HttpStatus.I_AM_A_TEAPOT.value());
 	}
 
 	@Test
-	public void annotatedResponseStatusCodeWithCustomReasonPhrase() {
+	void annotatedResponseStatusCodeWithCustomReasonPhrase() {
 		Exception error = new Custom2Exception();
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, error),
-				false);
-		assertThat(attributes.get("error")).isEqualTo(HttpStatus.I_AM_A_TEAPOT.getReasonPhrase());
-		assertThat(attributes.get("status")).isEqualTo(HttpStatus.I_AM_A_TEAPOT.value());
-		assertThat(attributes.get("message")).isEqualTo("Nope!");
+				ErrorAttributeOptions.of(Include.MESSAGE));
+		assertThat(attributes).containsEntry("error", HttpStatus.I_AM_A_TEAPOT.getReasonPhrase());
+		assertThat(attributes).containsEntry("status", HttpStatus.I_AM_A_TEAPOT.value());
+		assertThat(attributes).containsEntry("message", "Nope!");
 	}
 
 	@Test
-	public void includeStatusCode() {
+	void includeStatusCode() {
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, NOT_FOUND),
-				false);
-		assertThat(attributes.get("error")).isEqualTo(HttpStatus.NOT_FOUND.getReasonPhrase());
-		assertThat(attributes.get("status")).isEqualTo(404);
+				ErrorAttributeOptions.defaults());
+		assertThat(attributes).containsEntry("error", HttpStatus.NOT_FOUND.getReasonPhrase());
+		assertThat(attributes).containsEntry("status", 404);
 	}
 
 	@Test
-	public void getError() {
+	void getError() {
 		Error error = new OutOfMemoryError("Test error");
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		ServerRequest serverRequest = buildServerRequest(request, error);
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest, false);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest,
+				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
-		assertThat(attributes.get("exception")).isNull();
-		assertThat(attributes.get("message")).isEqualTo("Test error");
+		assertThat(attributes).doesNotContainKey("exception");
+		assertThat(attributes).containsEntry("message", "Test error");
 	}
 
 	@Test
-	public void includeException() {
-		RuntimeException error = new RuntimeException("Test");
-		this.errorAttributes = new DefaultErrorAttributes(true);
+	void excludeMessage() {
+		Error error = new OutOfMemoryError("Test error");
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		ServerRequest serverRequest = buildServerRequest(request, error);
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest, false);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest,
+				ErrorAttributeOptions.defaults());
 		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
-		assertThat(attributes.get("exception")).isEqualTo(RuntimeException.class.getName());
-		assertThat(attributes.get("message")).isEqualTo("Test");
+		assertThat(attributes).doesNotContainKey("message");
 	}
 
 	@Test
-	public void processResponseStatusException() {
+	void includeException() {
+		RuntimeException error = new RuntimeException("Test");
+		this.errorAttributes = new DefaultErrorAttributes();
+		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
+		ServerRequest serverRequest = buildServerRequest(request, error);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest,
+				ErrorAttributeOptions.of(Include.EXCEPTION, Include.MESSAGE));
+		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
+		assertThat(serverRequest.attribute(ErrorAttributes.ERROR_ATTRIBUTE)).containsSame(error);
+		assertThat(attributes).containsEntry("exception", RuntimeException.class.getName());
+		assertThat(attributes).containsEntry("message", "Test");
+	}
+
+	@Test
+	void processResponseStatusException() {
 		RuntimeException nested = new RuntimeException("Test");
 		ResponseStatusException error = new ResponseStatusException(HttpStatus.BAD_REQUEST, "invalid request", nested);
-		this.errorAttributes = new DefaultErrorAttributes(true);
+		this.errorAttributes = new DefaultErrorAttributes();
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		ServerRequest serverRequest = buildServerRequest(request, error);
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest, false);
-		assertThat(attributes.get("status")).isEqualTo(400);
-		assertThat(attributes.get("message")).isEqualTo("invalid request");
-		assertThat(attributes.get("exception")).isEqualTo(RuntimeException.class.getName());
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest,
+				ErrorAttributeOptions.of(Include.EXCEPTION, Include.MESSAGE));
+		assertThat(attributes).containsEntry("status", 400);
+		assertThat(attributes).containsEntry("message", "invalid request");
+		assertThat(attributes).containsEntry("exception", RuntimeException.class.getName());
 		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
+		assertThat(serverRequest.attribute(ErrorAttributes.ERROR_ATTRIBUTE)).containsSame(error);
 	}
 
 	@Test
-	public void processResponseStatusExceptionWithNoNestedCause() {
+	void processResponseStatusExceptionWithNoNestedCause() {
 		ResponseStatusException error = new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE,
 				"could not process request");
-		this.errorAttributes = new DefaultErrorAttributes(true);
+		this.errorAttributes = new DefaultErrorAttributes();
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		ServerRequest serverRequest = buildServerRequest(request, error);
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest, false);
-		assertThat(attributes.get("status")).isEqualTo(406);
-		assertThat(attributes.get("message")).isEqualTo("could not process request");
-		assertThat(attributes.get("exception")).isEqualTo(ResponseStatusException.class.getName());
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest,
+				ErrorAttributeOptions.of(Include.EXCEPTION, Include.MESSAGE));
+		assertThat(attributes).containsEntry("status", 406);
+		assertThat(attributes).containsEntry("message", "could not process request");
+		assertThat(attributes).containsEntry("exception", ResponseStatusException.class.getName());
 		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
+		assertThat(serverRequest.attribute(ErrorAttributes.ERROR_ATTRIBUTE)).containsSame(error);
 	}
 
 	@Test
-	public void notIncludeTrace() {
+	void notIncludeTrace() {
 		RuntimeException ex = new RuntimeException("Test");
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, ex),
-				false);
-		assertThat(attributes.get("trace")).isNull();
+				ErrorAttributeOptions.defaults());
+		assertThat(attributes).doesNotContainKey("trace");
 	}
 
 	@Test
-	public void includeTrace() {
+	void includeTrace() {
 		RuntimeException ex = new RuntimeException("Test");
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, ex), true);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, ex),
+				ErrorAttributeOptions.of(Include.STACK_TRACE));
 		assertThat(attributes.get("trace").toString()).startsWith("java.lang");
 	}
 
 	@Test
-	public void includePath() {
+	void includePath() {
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, NOT_FOUND),
-				false);
-		assertThat(attributes.get("path")).isEqualTo("/test");
+				ErrorAttributeOptions.defaults());
+		assertThat(attributes).containsEntry("path", "/test");
 	}
 
 	@Test
-	public void extractBindingResultErrors() throws Exception {
-		Method method = getClass().getMethod("method", String.class);
+	void includeLogPrefix() {
+		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
+		ServerRequest serverRequest = buildServerRequest(request, NOT_FOUND);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest,
+				ErrorAttributeOptions.defaults());
+		assertThat(attributes).containsEntry("requestId", serverRequest.exchange().getRequest().getId());
+	}
+
+	@Test
+	void extractBindingResultErrors() throws Exception {
+		Method method = getClass().getDeclaredMethod("method", String.class);
 		MethodParameter stringParam = new MethodParameter(method, 0);
 		BindingResult bindingResult = new MapBindingResult(Collections.singletonMap("a", "b"), "objectName");
 		bindingResult.addError(new ObjectError("c", "d"));
 		Exception ex = new WebExchangeBindException(stringParam, bindingResult);
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, ex),
-				false);
+				ErrorAttributeOptions.of(Include.MESSAGE, Include.BINDING_ERRORS));
 		assertThat(attributes.get("message")).asString()
-				.startsWith("Validation failed for argument at index 0 in method: "
-						+ "public int org.springframework.boot.web.reactive.error.DefaultErrorAttributesTests"
-						+ ".method(java.lang.String), with 1 error(s)");
-		assertThat(attributes.get("errors")).isEqualTo(bindingResult.getAllErrors());
+			.startsWith("Validation failed for argument at index 0 in method: "
+					+ "int org.springframework.boot.web.reactive.error.DefaultErrorAttributesTests"
+					+ ".method(java.lang.String), with 1 error(s)");
+		assertThat(attributes).containsEntry("errors", bindingResult.getAllErrors());
+	}
+
+	@Test
+	void extractBindingResultErrorsExcludeMessageAndErrors() throws Exception {
+		Method method = getClass().getDeclaredMethod("method", String.class);
+		MethodParameter stringParam = new MethodParameter(method, 0);
+		BindingResult bindingResult = new MapBindingResult(Collections.singletonMap("a", "b"), "objectName");
+		bindingResult.addError(new ObjectError("c", "d"));
+		Exception ex = new WebExchangeBindException(stringParam, bindingResult);
+		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, ex),
+				ErrorAttributeOptions.defaults());
+		assertThat(attributes).doesNotContainKey("message");
+		assertThat(attributes).doesNotContainKey("errors");
 	}
 
 	private ServerRequest buildServerRequest(MockServerHttpRequest request, Throwable error) {
@@ -223,12 +269,12 @@ public class DefaultErrorAttributesTests {
 		return ServerRequest.create(exchange, this.readers);
 	}
 
-	public int method(String firstParam) {
+	int method(String firstParam) {
 		return 42;
 	}
 
 	@ResponseStatus(HttpStatus.I_AM_A_TEAPOT)
-	private static class CustomException extends RuntimeException {
+	static class CustomException extends RuntimeException {
 
 		CustomException() {
 		}
@@ -240,7 +286,7 @@ public class DefaultErrorAttributesTests {
 	}
 
 	@ResponseStatus(value = HttpStatus.I_AM_A_TEAPOT, reason = "Nope!")
-	private static class Custom2Exception extends RuntimeException {
+	static class Custom2Exception extends RuntimeException {
 
 	}
 

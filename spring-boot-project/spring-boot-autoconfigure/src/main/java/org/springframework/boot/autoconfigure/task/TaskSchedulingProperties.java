@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.task;
 
+import java.time.Duration;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -29,6 +31,8 @@ public class TaskSchedulingProperties {
 
 	private final Pool pool = new Pool();
 
+	private final Shutdown shutdown = new Shutdown();
+
 	/**
 	 * Prefix to use for the names of newly created threads.
 	 */
@@ -36,6 +40,10 @@ public class TaskSchedulingProperties {
 
 	public Pool getPool() {
 		return this.pool;
+	}
+
+	public Shutdown getShutdown() {
+		return this.shutdown;
 	}
 
 	public String getThreadNamePrefix() {
@@ -59,6 +67,36 @@ public class TaskSchedulingProperties {
 
 		public void setSize(int size) {
 			this.size = size;
+		}
+
+	}
+
+	public static class Shutdown {
+
+		/**
+		 * Whether the executor should wait for scheduled tasks to complete on shutdown.
+		 */
+		private boolean awaitTermination;
+
+		/**
+		 * Maximum time the executor should wait for remaining tasks to complete.
+		 */
+		private Duration awaitTerminationPeriod;
+
+		public boolean isAwaitTermination() {
+			return this.awaitTermination;
+		}
+
+		public void setAwaitTermination(boolean awaitTermination) {
+			this.awaitTermination = awaitTermination;
+		}
+
+		public Duration getAwaitTerminationPeriod() {
+			return this.awaitTerminationPeriod;
+		}
+
+		public void setAwaitTerminationPeriod(Duration awaitTerminationPeriod) {
+			this.awaitTerminationPeriod = awaitTerminationPeriod;
 		}
 
 	}

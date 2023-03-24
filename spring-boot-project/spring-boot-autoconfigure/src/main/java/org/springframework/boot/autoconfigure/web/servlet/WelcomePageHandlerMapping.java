@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,8 @@ package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -49,9 +47,9 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 	private static final List<MediaType> MEDIA_TYPES_ALL = Collections.singletonList(MediaType.ALL);
 
 	WelcomePageHandlerMapping(TemplateAvailabilityProviders templateAvailabilityProviders,
-			ApplicationContext applicationContext, Optional<Resource> welcomePage, String staticPathPattern) {
-		if (welcomePage.isPresent() && "/**".equals(staticPathPattern)) {
-			logger.info("Adding welcome page: " + welcomePage.get());
+			ApplicationContext applicationContext, Resource welcomePage, String staticPathPattern) {
+		if (welcomePage != null && "/**".equals(staticPathPattern)) {
+			logger.info("Adding welcome page: " + welcomePage);
 			setRootViewName("forward:index.html");
 		}
 		else if (welcomeTemplateExists(templateAvailabilityProviders, applicationContext)) {

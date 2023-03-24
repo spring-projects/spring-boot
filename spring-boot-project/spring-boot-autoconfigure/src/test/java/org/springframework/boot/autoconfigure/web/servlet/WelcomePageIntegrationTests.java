@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,7 @@ package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.net.URI;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -27,13 +26,12 @@ import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfigurati
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,21 +40,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = { "spring.resources.chain.strategy.content.enabled=true",
+		properties = { "spring.web.resources.chain.strategy.content.enabled=true",
 				"spring.thymeleaf.prefix=classpath:/templates/thymeleaf/" })
-public class WelcomePageIntegrationTests {
+class WelcomePageIntegrationTests {
 
 	@LocalServerPort
 	private int port;
 
-	private TestRestTemplate template = new TestRestTemplate();
+	private final TestRestTemplate template = new TestRestTemplate();
 
 	@Test
-	public void contentStrategyWithWelcomePage() throws Exception {
+	void contentStrategyWithWelcomePage() throws Exception {
 		RequestEntity<?> entity = RequestEntity.get(new URI("http://localhost:" + this.port + "/"))
-				.header("Accept", MediaType.ALL.toString()).build();
+			.header("Accept", MediaType.ALL.toString())
+			.build();
 		ResponseEntity<String> content = this.template.exchange(entity, String.class);
 		assertThat(content.getBody()).contains("/custom-");
 	}
@@ -65,9 +63,9 @@ public class WelcomePageIntegrationTests {
 	@Import({ PropertyPlaceholderAutoConfiguration.class, WebMvcAutoConfiguration.class,
 			HttpMessageConvertersAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
 			DispatcherServletAutoConfiguration.class, ThymeleafAutoConfiguration.class })
-	public static class TestConfiguration {
+	static class TestConfiguration {
 
-		public static void main(String[] args) {
+		static void main(String[] args) {
 			new SpringApplicationBuilder(TestConfiguration.class).run(args);
 		}
 

@@ -24,7 +24,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Example {@link Controller} used with {@link WebFluxTest} tests.
+ * Example {@link Controller @Controller} used with {@link WebFluxTest @WebFluxTest}
+ * tests.
  *
  * @author Stephane Nicoll
  */

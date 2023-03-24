@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.datadog;
 
 import io.micrometer.datadog.DatadogConfig;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesTests;
 
@@ -27,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class DatadogPropertiesTests extends StepRegistryPropertiesTests {
+class DatadogPropertiesTests extends StepRegistryPropertiesTests {
 
-	@Override
-	public void defaultValuesAreConsistent() {
+	@Test
+	void defaultValuesAreConsistent() {
 		DatadogProperties properties = new DatadogProperties();
 		DatadogConfig config = (key) -> null;
 		assertStepRegistryDefaultValues(properties, config);

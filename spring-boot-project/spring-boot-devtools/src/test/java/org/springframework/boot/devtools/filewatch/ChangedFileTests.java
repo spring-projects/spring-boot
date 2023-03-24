@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,8 @@ package org.springframework.boot.devtools.filewatch;
 
 import java.io.File;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 
@@ -32,49 +31,52 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class ChangedFileTests {
+class ChangedFileTests {
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
-
-	@Test
-	public void sourceFolderMustNotBeNull() throws Exception {
-		assertThatIllegalArgumentException().isThrownBy(() -> new ChangedFile(null, this.temp.newFile(), Type.ADD))
-				.withMessageContaining("SourceFolder must not be null");
-	}
+	@TempDir
+	File tempDir;
 
 	@Test
-	public void fileMustNotBeNull() throws Exception {
-		assertThatIllegalArgumentException().isThrownBy(() -> new ChangedFile(this.temp.newFolder(), null, Type.ADD))
-				.withMessageContaining("File must not be null");
-	}
-
-	@Test
-	public void typeMustNotBeNull() throws Exception {
+	void sourceDirectoryMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ChangedFile(this.temp.newFile(), this.temp.newFolder(), null))
-				.withMessageContaining("Type must not be null");
+			.isThrownBy(() -> new ChangedFile(null, new File(this.tempDir, "file"), Type.ADD))
+			.withMessageContaining("SourceDirectory must not be null");
 	}
 
 	@Test
-	public void getFile() throws Exception {
-		File file = this.temp.newFile();
-		ChangedFile changedFile = new ChangedFile(this.temp.newFolder(), file, Type.ADD);
+	void fileMustNotBeNull() {
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> new ChangedFile(new File(this.tempDir, "directory"), null, Type.ADD))
+			.withMessageContaining("File must not be null");
+	}
+
+	@Test
+	void typeMustNotBeNull() {
+		assertThatIllegalArgumentException()
+			.isThrownBy(
+					() -> new ChangedFile(new File(this.tempDir, "file"), new File(this.tempDir, "directory"), null))
+			.withMessageContaining("Type must not be null");
+	}
+
+	@Test
+	void getFile() {
+		File file = new File(this.tempDir, "file");
+		ChangedFile changedFile = new ChangedFile(new File(this.tempDir, "directory"), file, Type.ADD);
 		assertThat(changedFile.getFile()).isEqualTo(file);
 	}
 
 	@Test
-	public void getType() throws Exception {
-		ChangedFile changedFile = new ChangedFile(this.temp.newFolder(), this.temp.newFile(), Type.DELETE);
+	void getType() {
+		ChangedFile changedFile = new ChangedFile(new File(this.tempDir, "directory"), new File(this.tempDir, "file"),
+				Type.DELETE);
 		assertThat(changedFile.getType()).isEqualTo(Type.DELETE);
 	}
 
 	@Test
-	public void getRelativeName() throws Exception {
-		File folder = this.temp.newFolder();
-		File subFolder = new File(folder, "A");
-		File file = new File(subFolder, "B.txt");
-		ChangedFile changedFile = new ChangedFile(folder, file, Type.ADD);
+	void getRelativeName() {
+		File subDirectory = new File(this.tempDir, "A");
+		File file = new File(subDirectory, "B.txt");
+		ChangedFile changedFile = new ChangedFile(this.tempDir, file, Type.ADD);
 		assertThat(changedFile.getRelativeName()).isEqualTo("A/B.txt");
 	}
 

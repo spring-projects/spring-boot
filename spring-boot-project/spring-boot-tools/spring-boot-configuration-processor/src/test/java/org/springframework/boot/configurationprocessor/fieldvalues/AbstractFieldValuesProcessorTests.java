@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,12 +29,11 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationsample.fieldvalues.FieldValues;
-import org.springframework.boot.testsupport.compiler.TestCompiler;
+import org.springframework.core.test.tools.SourceFile;
+import org.springframework.core.test.tools.TestCompiler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,18 +45,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public abstract class AbstractFieldValuesProcessorTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
-
 	protected abstract FieldValuesParser createProcessor(ProcessingEnvironment env);
 
 	@Test
-	public void getFieldValues() throws Exception {
+	void getFieldValues() throws Exception {
 		TestProcessor processor = new TestProcessor();
-		TestCompiler compiler = new TestCompiler(this.temporaryFolder);
-		compiler.getTask(FieldValues.class).call(processor);
+		TestCompiler compiler = TestCompiler.forSystem()
+			.withProcessors(processor)
+			.withSources(SourceFile.forTestClass(FieldValues.class));
+		compiler.compile((compiled) -> {
+		});
 		Map<String, Object> values = processor.getValues();
-		assertThat(values.get("string")).isEqualTo("1");
 		assertThat(values.get("stringNone")).isNull();
 		assertThat(values.get("stringConst")).isEqualTo("c");
 		assertThat(values.get("bool")).isEqualTo(true);
@@ -94,12 +92,19 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("durationMinutes")).isEqualTo("30m");
 		assertThat(values.get("durationHours")).isEqualTo("40h");
 		assertThat(values.get("durationDays")).isEqualTo("50d");
+		assertThat(values.get("durationZero")).isEqualTo(0);
 		assertThat(values.get("dataSizeNone")).isNull();
 		assertThat(values.get("dataSizeBytes")).isEqualTo("5B");
 		assertThat(values.get("dataSizeKilobytes")).isEqualTo("10KB");
 		assertThat(values.get("dataSizeMegabytes")).isEqualTo("20MB");
 		assertThat(values.get("dataSizeGigabytes")).isEqualTo("30GB");
 		assertThat(values.get("dataSizeTerabytes")).isEqualTo("40TB");
+		assertThat(values.get("periodNone")).isNull();
+		assertThat(values.get("periodDays")).isEqualTo("3d");
+		assertThat(values.get("periodWeeks")).isEqualTo("2w");
+		assertThat(values.get("periodMonths")).isEqualTo("10m");
+		assertThat(values.get("periodYears")).isEqualTo("15y");
+		assertThat(values.get("periodZero")).isEqualTo(0);
 	}
 
 	@SupportedAnnotationTypes({ "org.springframework.boot.configurationsample.ConfigurationProperties" })
@@ -108,7 +113,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 
 		private FieldValuesParser processor;
 
-		private Map<String, Object> values = new HashMap<>();
+		private final Map<String, Object> values = new HashMap<>();
 
 		@Override
 		public synchronized void init(ProcessingEnvironment env) {
@@ -119,9 +124,9 @@ public abstract class AbstractFieldValuesProcessorTests {
 		public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 			for (TypeElement annotation : annotations) {
 				for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
-					if (element instanceof TypeElement) {
+					if (element instanceof TypeElement typeElement) {
 						try {
-							this.values.putAll(this.processor.getFieldValues((TypeElement) element));
+							this.values.putAll(this.processor.getFieldValues(typeElement));
 						}
 						catch (Exception ex) {
 							throw new IllegalStateException(ex);
@@ -132,7 +137,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 			return false;
 		}
 
-		public Map<String, Object> getValues() {
+		Map<String, Object> getValues() {
 			return this.values;
 		}
 

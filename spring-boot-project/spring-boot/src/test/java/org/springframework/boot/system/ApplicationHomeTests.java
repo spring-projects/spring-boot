@@ -25,9 +25,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import net.bytebuddy.ByteBuddy;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.util.FileCopyUtils;
 
@@ -38,21 +37,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ApplicationHomeTests {
+class ApplicationHomeTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
-	public void whenSourceClassIsProvidedThenApplicationHomeReflectsItsLocation() throws Exception {
-		File app = this.temporaryFolder.newFolder("app");
+	void whenSourceClassIsProvidedThenApplicationHomeReflectsItsLocation() throws Exception {
+		File app = new File(this.tempDir, "app");
 		ApplicationHome applicationHome = createApplicationHome(app);
 		assertThat(applicationHome.getDir()).isEqualTo(app);
 	}
 
 	@Test
-	public void whenSourceClassIsProvidedWithSpaceInItsPathThenApplicationHomeReflectsItsLocation() throws Exception {
-		File app = this.temporaryFolder.newFolder("app location");
+	void whenSourceClassIsProvidedWithSpaceInItsPathThenApplicationHomeReflectsItsLocation() throws Exception {
+		File app = new File(this.tempDir, "app location");
 		ApplicationHome applicationHome = createApplicationHome(app);
 		assertThat(applicationHome.getDir()).isEqualTo(app);
 	}

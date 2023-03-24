@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,9 @@ package org.springframework.boot.webservices.client;
 import java.time.Duration;
 
 import okhttp3.OkHttpClient;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -38,22 +36,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@RunWith(ModifiedClassPathRunner.class)
-@ClassPathExclusions("httpclient-*.jar")
-public class HttpWebServiceMessageSenderBuilderOkHttp3IntegrationTests {
+@ClassPathExclusions("httpclient5-*.jar")
+class HttpWebServiceMessageSenderBuilderOkHttp3IntegrationTests {
 
 	private final HttpWebServiceMessageSenderBuilder builder = new HttpWebServiceMessageSenderBuilder();
 
 	@Test
-	public void buildUseOkHttp3ByDefault() {
+	void buildUseOkHttp3ByDefault() {
 		WebServiceMessageSender messageSender = this.builder.build();
 		assertOkHttp3RequestFactory(messageSender);
 	}
 
 	@Test
-	public void buildWithCustomTimeouts() {
+	void buildWithCustomTimeouts() {
 		WebServiceMessageSender messageSender = this.builder.setConnectTimeout(Duration.ofSeconds(5))
-				.setReadTimeout(Duration.ofSeconds(2)).build();
+			.setReadTimeout(Duration.ofSeconds(2))
+			.build();
 		OkHttp3ClientHttpRequestFactory factory = assertOkHttp3RequestFactory(messageSender);
 		OkHttpClient client = (OkHttpClient) ReflectionTestUtils.getField(factory, "client");
 		assertThat(client).isNotNull();

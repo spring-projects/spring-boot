@@ -1,0 +1,18 @@
+plugins {
+	id "java"
+	id "org.springframework.boot.conventions"
+}
+
+description = "Spring Boot Test no Mockito smoke test"
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+
+	runtimeOnly("com.h2database:h2")
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.springframework:spring-test")
+}

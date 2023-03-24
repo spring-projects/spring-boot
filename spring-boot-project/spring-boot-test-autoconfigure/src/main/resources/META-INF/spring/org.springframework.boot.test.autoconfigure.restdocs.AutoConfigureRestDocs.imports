@@ -1,0 +1,2 @@
+# AutoConfigureRestDocs auto-configuration imports
+org.springframework.boot.test.autoconfigure.restdocs.RestDocsAutoConfiguration

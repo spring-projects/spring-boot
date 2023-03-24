@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import org.springframework.boot.actuate.info.BuildInfoContributor;
 import org.springframework.boot.actuate.info.EnvironmentInfoContributor;
 import org.springframework.boot.actuate.info.GitInfoContributor;
 import org.springframework.boot.actuate.info.InfoContributor;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.actuate.info.JavaInfoContributor;
+import org.springframework.boot.actuate.info.OsInfoContributor;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
@@ -29,7 +31,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.info.GitProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -40,10 +41,10 @@ import org.springframework.core.env.ConfigurableEnvironment;
  *
  * @author Meang Akira Tanaka
  * @author Stephane Nicoll
+ * @author Jonatan Ivanov
  * @since 2.0.0
  */
-@Configuration
-@AutoConfigureAfter(ProjectInfoAutoConfiguration.class)
+@AutoConfiguration(after = ProjectInfoAutoConfiguration.class)
 @EnableConfigurationProperties(InfoContributorProperties.class)
 public class InfoContributorAutoConfiguration {
 
@@ -52,14 +53,8 @@ public class InfoContributorAutoConfiguration {
 	 */
 	public static final int DEFAULT_ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
-	private final InfoContributorProperties properties;
-
-	public InfoContributorAutoConfiguration(InfoContributorProperties properties) {
-		this.properties = properties;
-	}
-
 	@Bean
-	@ConditionalOnEnabledInfoContributor("env")
+	@ConditionalOnEnabledInfoContributor(value = "env", fallback = InfoContributorFallback.DISABLE)
 	@Order(DEFAULT_ORDER)
 	public EnvironmentInfoContributor envInfoContributor(ConfigurableEnvironment environment) {
 		return new EnvironmentInfoContributor(environment);
@@ -70,8 +65,9 @@ public class InfoContributorAutoConfiguration {
 	@ConditionalOnSingleCandidate(GitProperties.class)
 	@ConditionalOnMissingBean
 	@Order(DEFAULT_ORDER)
-	public GitInfoContributor gitInfoContributor(GitProperties gitProperties) {
-		return new GitInfoContributor(gitProperties, this.properties.getGit().getMode());
+	public GitInfoContributor gitInfoContributor(GitProperties gitProperties,
+			InfoContributorProperties infoContributorProperties) {
+		return new GitInfoContributor(gitProperties, infoContributorProperties.getGit().getMode());
 	}
 
 	@Bean
@@ -80,6 +76,20 @@ public class InfoContributorAutoConfiguration {
 	@Order(DEFAULT_ORDER)
 	public InfoContributor buildInfoContributor(BuildProperties buildProperties) {
 		return new BuildInfoContributor(buildProperties);
+	}
+
+	@Bean
+	@ConditionalOnEnabledInfoContributor(value = "java", fallback = InfoContributorFallback.DISABLE)
+	@Order(DEFAULT_ORDER)
+	public JavaInfoContributor javaInfoContributor() {
+		return new JavaInfoContributor();
+	}
+
+	@Bean
+	@ConditionalOnEnabledInfoContributor(value = "os", fallback = InfoContributorFallback.DISABLE)
+	@Order(DEFAULT_ORDER)
+	public OsInfoContributor osInfoContributor() {
+		return new OsInfoContributor();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.context.properties.bind.handler;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.BindHandler;
@@ -38,14 +38,14 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class NoUnboundElementsBindHandlerTests {
+class NoUnboundElementsBindHandlerTests {
 
-	private List<ConfigurationPropertySource> sources = new ArrayList<>();
+	private final List<ConfigurationPropertySource> sources = new ArrayList<>();
 
 	private Binder binder;
 
 	@Test
-	public void bindWhenNotUsingNoUnboundElementsHandlerShouldBind() {
+	void bindWhenNotUsingNoUnboundElementsHandlerShouldBind() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo", "bar");
 		source.put("example.baz", "bar");
@@ -56,43 +56,44 @@ public class NoUnboundElementsBindHandlerTests {
 	}
 
 	@Test
-	public void bindWhenUsingNoUnboundElementsHandlerShouldBind() {
+	void bindWhenUsingNoUnboundElementsHandlerShouldBind() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo", "bar");
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
 		Example bound = this.binder.bind("example", Bindable.of(Example.class), new NoUnboundElementsBindHandler())
-				.get();
+			.get();
 		assertThat(bound.getFoo()).isEqualTo("bar");
 	}
 
 	@Test
-	public void bindWhenUsingNoUnboundElementsHandlerThrowException() {
+	void bindWhenUsingNoUnboundElementsHandlerThrowException() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo", "bar");
 		source.put("example.baz", "bar");
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
-		assertThatExceptionOfType(BindException.class).isThrownBy(
-				() -> this.binder.bind("example", Bindable.of(Example.class), new NoUnboundElementsBindHandler()))
-				.satisfies((ex) -> assertThat(ex.getCause().getMessage())
-						.contains("The elements [example.baz] were left unbound"));
+		assertThatExceptionOfType(BindException.class)
+			.isThrownBy(
+					() -> this.binder.bind("example", Bindable.of(Example.class), new NoUnboundElementsBindHandler()))
+			.satisfies((ex) -> assertThat(ex.getCause().getMessage())
+				.contains("The elements [example.baz] were left unbound"));
 	}
 
 	@Test
-	public void bindWhenUsingNoUnboundElementsHandlerShouldBindIfPrefixDifferent() {
+	void bindWhenUsingNoUnboundElementsHandlerShouldBindIfPrefixDifferent() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo", "bar");
 		source.put("other.baz", "bar");
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
 		Example bound = this.binder.bind("example", Bindable.of(Example.class), new NoUnboundElementsBindHandler())
-				.get();
+			.get();
 		assertThat(bound.getFoo()).isEqualTo("bar");
 	}
 
 	@Test
-	public void bindWhenUsingNoUnboundElementsHandlerShouldBindIfUnboundSystemProperties() {
+	void bindWhenUsingNoUnboundElementsHandlerShouldBindIfUnboundSystemProperties() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo", "bar");
 		source.put("example.other", "baz");
@@ -105,7 +106,7 @@ public class NoUnboundElementsBindHandlerTests {
 	}
 
 	@Test
-	public void bindWhenUsingNoUnboundElementsHandlerShouldBindIfUnboundCollectionProperties() {
+	void bindWhenUsingNoUnboundElementsHandlerShouldBindIfUnboundCollectionProperties() {
 		MockConfigurationPropertySource source1 = new MockConfigurationPropertySource();
 		source1.put("example.foo[0]", "bar");
 		MockConfigurationPropertySource source2 = new MockConfigurationPropertySource();
@@ -120,19 +121,20 @@ public class NoUnboundElementsBindHandlerTests {
 	}
 
 	@Test
-	public void bindWhenUsingNoUnboundElementsHandlerAndUnboundListElementsShouldThrowException() {
+	void bindWhenUsingNoUnboundElementsHandlerAndUnboundListElementsShouldThrowException() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("example.foo[0]", "bar");
 		this.sources.add(source);
 		this.binder = new Binder(this.sources);
-		assertThatExceptionOfType(BindException.class).isThrownBy(
-				() -> this.binder.bind("example", Bindable.of(Example.class), new NoUnboundElementsBindHandler()))
-				.satisfies((ex) -> assertThat(ex.getCause().getMessage())
-						.contains("The elements [example.foo[0]] were left unbound"));
+		assertThatExceptionOfType(BindException.class)
+			.isThrownBy(
+					() -> this.binder.bind("example", Bindable.of(Example.class), new NoUnboundElementsBindHandler()))
+			.satisfies((ex) -> assertThat(ex.getCause().getMessage())
+				.contains("The elements [example.foo[0]] were left unbound"));
 	}
 
 	@Test
-	public void bindWhenUsingNoUnboundElementsHandlerShouldBindIfUnboundNestedCollectionProperties() {
+	void bindWhenUsingNoUnboundElementsHandlerShouldBindIfUnboundNestedCollectionProperties() {
 		MockConfigurationPropertySource source1 = new MockConfigurationPropertySource();
 		source1.put("example.nested[0].string-value", "bar");
 		MockConfigurationPropertySource source2 = new MockConfigurationPropertySource();
@@ -145,12 +147,12 @@ public class NoUnboundElementsBindHandlerTests {
 		this.binder = new Binder(this.sources);
 		NoUnboundElementsBindHandler handler = new NoUnboundElementsBindHandler();
 		ExampleWithNestedList bound = this.binder.bind("example", Bindable.of(ExampleWithNestedList.class), handler)
-				.get();
+			.get();
 		assertThat(bound.getNested().get(0).getStringValue()).isEqualTo("bar");
 	}
 
 	@Test
-	public void bindWhenUsingNoUnboundElementsHandlerAndUnboundCollectionElementsWithInvalidPropertyShouldThrowException() {
+	void bindWhenUsingNoUnboundElementsHandlerAndUnboundCollectionElementsWithInvalidPropertyShouldThrowException() {
 		MockConfigurationPropertySource source1 = new MockConfigurationPropertySource();
 		source1.put("example.nested[0].string-value", "bar");
 		MockConfigurationPropertySource source2 = new MockConfigurationPropertySource();
@@ -161,49 +163,49 @@ public class NoUnboundElementsBindHandlerTests {
 		this.sources.add(source2);
 		this.binder = new Binder(this.sources);
 		assertThatExceptionOfType(BindException.class)
-				.isThrownBy(() -> this.binder.bind("example", Bindable.of(ExampleWithNestedList.class),
-						new NoUnboundElementsBindHandler()))
-				.satisfies((ex) -> assertThat(ex.getCause().getMessage())
-						.contains("The elements [example.nested[1].invalid] were left unbound"));
+			.isThrownBy(() -> this.binder.bind("example", Bindable.of(ExampleWithNestedList.class),
+					new NoUnboundElementsBindHandler()))
+			.satisfies((ex) -> assertThat(ex.getCause().getMessage())
+				.contains("The elements [example.nested[1].invalid] were left unbound"));
 	}
 
-	public static class Example {
+	static class Example {
 
 		private String foo;
 
-		public String getFoo() {
+		String getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(String foo) {
+		void setFoo(String foo) {
 			this.foo = foo;
 		}
 
 	}
 
-	public static class ExampleWithList {
+	static class ExampleWithList {
 
 		private List<String> foo;
 
-		public List<String> getFoo() {
+		List<String> getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(List<String> foo) {
+		void setFoo(List<String> foo) {
 			this.foo = foo;
 		}
 
 	}
 
-	public static class ExampleWithNestedList {
+	static class ExampleWithNestedList {
 
 		private List<Nested> nested;
 
-		public List<Nested> getNested() {
+		List<Nested> getNested() {
 			return this.nested;
 		}
 
-		public void setNested(List<Nested> nested) {
+		void setNested(List<Nested> nested) {
 			this.nested = nested;
 		}
 
@@ -217,27 +219,27 @@ public class NoUnboundElementsBindHandlerTests {
 
 		private OtherNested otherNested;
 
-		public String getStringValue() {
+		String getStringValue() {
 			return this.stringValue;
 		}
 
-		public void setStringValue(String value) {
+		void setStringValue(String value) {
 			this.stringValue = value;
 		}
 
-		public Integer getIntValue() {
+		Integer getIntValue() {
 			return this.intValue;
 		}
 
-		public void setIntValue(Integer intValue) {
+		void setIntValue(Integer intValue) {
 			this.intValue = intValue;
 		}
 
-		public OtherNested getOtherNested() {
+		OtherNested getOtherNested() {
 			return this.otherNested;
 		}
 
-		public void setOtherNested(OtherNested otherNested) {
+		void setOtherNested(OtherNested otherNested) {
 			this.otherNested = otherNested;
 		}
 
@@ -247,11 +249,11 @@ public class NoUnboundElementsBindHandlerTests {
 
 		private String baz;
 
-		public String getBaz() {
+		String getBaz() {
 			return this.baz;
 		}
 
-		public void setBaz(String baz) {
+		void setBaz(String baz) {
 			this.baz = baz;
 		}
 

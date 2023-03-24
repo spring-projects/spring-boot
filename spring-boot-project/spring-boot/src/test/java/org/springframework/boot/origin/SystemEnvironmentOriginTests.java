@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.origin;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -26,28 +26,28 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Madhura Bhave
  */
-public class SystemEnvironmentOriginTests {
+class SystemEnvironmentOriginTests {
 
 	@Test
-	public void createWhenPropertyIsNullShouldThrowException() {
+	void createWhenPropertyIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new SystemEnvironmentOrigin(null));
 	}
 
 	@Test
-	public void createWhenPropertyNameIsEmptyShouldThrowException() {
+	void createWhenPropertyNameIsEmptyShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new SystemEnvironmentOrigin(""));
 	}
 
 	@Test
-	public void getPropertyShouldReturnProperty() {
+	void getPropertyShouldReturnProperty() {
 		SystemEnvironmentOrigin origin = new SystemEnvironmentOrigin("FOO_BAR");
 		assertThat(origin.getProperty()).isEqualTo("FOO_BAR");
 	}
 
 	@Test
-	public void toStringShouldReturnStringWithDetails() {
+	void toStringShouldReturnStringWithDetails() {
 		SystemEnvironmentOrigin origin = new SystemEnvironmentOrigin("FOO_BAR");
-		assertThat(origin.toString()).isEqualTo("System Environment Property \"FOO_BAR\"");
+		assertThat(origin).hasToString("System Environment Property \"FOO_BAR\"");
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.loader.archive;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
+import java.util.Iterator;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.Launcher;
@@ -31,7 +31,7 @@ import org.springframework.boot.loader.Launcher;
  * @since 1.0.0
  * @see JarFileArchive
  */
-public interface Archive extends Iterable<Archive.Entry> {
+public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 
 	/**
 	 * Returns a URL that can be used to load the archive.
@@ -48,12 +48,35 @@ public interface Archive extends Iterable<Archive.Entry> {
 	Manifest getManifest() throws IOException;
 
 	/**
-	 * Returns nested {@link Archive}s for entries that match the specified filter.
-	 * @param filter the filter used to limit entries
-	 * @return nested archives
-	 * @throws IOException if nested archives cannot be read
+	 * Returns nested {@link Archive}s for entries that match the specified filters.
+	 * @param searchFilter filter used to limit when additional sub-entry searching is
+	 * required or {@code null} if all entries should be considered.
+	 * @param includeFilter filter used to determine which entries should be included in
+	 * the result or {@code null} if all entries should be included
+	 * @return the nested archives
+	 * @throws IOException on IO error
+	 * @since 2.3.0
 	 */
-	List<Archive> getNestedArchives(EntryFilter filter) throws IOException;
+	Iterator<Archive> getNestedArchives(EntryFilter searchFilter, EntryFilter includeFilter) throws IOException;
+
+	/**
+	 * Return if the archive is exploded (already unpacked).
+	 * @return if the archive is exploded
+	 * @since 2.3.0
+	 */
+	default boolean isExploded() {
+		return false;
+	}
+
+	/**
+	 * Closes the {@code Archive}, releasing any open resources.
+	 * @throws Exception if an error occurs during close processing
+	 * @since 2.2.0
+	 */
+	@Override
+	default void close() throws Exception {
+
+	}
 
 	/**
 	 * Represents a single entry in the archive.
@@ -77,6 +100,7 @@ public interface Archive extends Iterable<Archive.Entry> {
 	/**
 	 * Strategy interface to filter {@link Entry Entries}.
 	 */
+	@FunctionalInterface
 	interface EntryFilter {
 
 		/**

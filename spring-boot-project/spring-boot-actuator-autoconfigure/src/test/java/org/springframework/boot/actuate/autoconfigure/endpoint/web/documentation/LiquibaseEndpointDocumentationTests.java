@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import liquibase.changelog.ChangeSet.ExecType;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.liquibase.LiquibaseEndpoint;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -43,19 +43,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-public class LiquibaseEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class LiquibaseEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void liquibase() throws Exception {
+	void liquibase() throws Exception {
 		FieldDescriptor changeSetsField = fieldWithPath("contexts.*.liquibaseBeans.*.changeSets")
-				.description("Change sets made by the Liquibase beans, keyed by " + "bean name.");
-		this.mockMvc.perform(get("/actuator/liquibase")).andExpect(status().isOk())
-				.andDo(MockMvcRestDocumentation.document("liquibase",
-						responseFields(fieldWithPath("contexts").description("Application contexts keyed by id"),
-								changeSetsField)
-										.andWithPrefix("contexts.*.liquibaseBeans.*.changeSets[].",
-												getChangeSetFieldDescriptors())
-										.and(parentIdField())));
+			.description("Change sets made by the Liquibase beans, keyed by bean name.");
+		this.mockMvc.perform(get("/actuator/liquibase"))
+			.andExpect(status().isOk())
+			.andDo(MockMvcRestDocumentation.document("liquibase",
+					responseFields(fieldWithPath("contexts").description("Application contexts keyed by id"),
+							changeSetsField)
+						.andWithPrefix("contexts.*.liquibaseBeans.*.changeSets[].", getChangeSetFieldDescriptors())
+						.and(parentIdField())));
 	}
 
 	private List<FieldDescriptor> getChangeSetFieldDescriptors() {
@@ -67,22 +67,23 @@ public class LiquibaseEndpointDocumentationTests extends MockMvcEndpointDocument
 				fieldWithPath("deploymentId").description("ID of the deployment that ran the change set."),
 				fieldWithPath("description").description("Description of the change set."),
 				fieldWithPath("execType")
-						.description("Execution type of the change set (" + describeEnumValues(ExecType.class) + ")."),
+					.description("Execution type of the change set (" + describeEnumValues(ExecType.class) + ")."),
 				fieldWithPath("id").description("ID of the change set."),
 				fieldWithPath("labels").description("Labels associated with the change set."),
 				fieldWithPath("checksum").description("Checksum of the change set."),
 				fieldWithPath("orderExecuted").description("Order of the execution of the change set."),
-				fieldWithPath("tag").description("Tag associated with the change set, if any.").optional()
-						.type(JsonFieldType.STRING));
+				fieldWithPath("tag").description("Tag associated with the change set, if any.")
+					.optional()
+					.type(JsonFieldType.STRING));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import({ BaseDocumentationConfiguration.class, EmbeddedDataSourceConfiguration.class,
 			LiquibaseAutoConfiguration.class })
 	static class TestConfiguration {
 
 		@Bean
-		public LiquibaseEndpoint endpoint(ApplicationContext context) {
+		LiquibaseEndpoint endpoint(ApplicationContext context) {
 			return new LiquibaseEndpoint(context);
 		}
 

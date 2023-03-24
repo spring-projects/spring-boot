@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,8 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.junit.Test;
+import jakarta.servlet.http.HttpServletRequest;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
@@ -43,39 +42,41 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class ApplicationContextRequestMatcherTests {
+class ApplicationContextRequestMatcherTests {
 
 	@Test
-	public void createWhenContextClassIsNullShouldThrowException() {
+	void createWhenContextClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestApplicationContextRequestMatcher<>(null))
-				.withMessageContaining("Context class must not be null");
+			.withMessageContaining("Context class must not be null");
 	}
 
 	@Test
-	public void matchesWhenContextClassIsApplicationContextShouldProvideContext() {
+	void matchesWhenContextClassIsApplicationContextShouldProvideContext() {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		assertThat(new TestApplicationContextRequestMatcher<>(ApplicationContext.class)
-				.callMatchesAndReturnProvidedContext(context).get()).isEqualTo(context);
+			.callMatchesAndReturnProvidedContext(context)
+			.get()).isEqualTo(context);
 	}
 
 	@Test
-	public void matchesWhenContextClassIsExistingBeanShouldProvideBean() {
+	void matchesWhenContextClassIsExistingBeanShouldProvideBean() {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		context.registerSingleton("existingBean", ExistingBean.class);
 		assertThat(new TestApplicationContextRequestMatcher<>(ExistingBean.class)
-				.callMatchesAndReturnProvidedContext(context).get()).isEqualTo(context.getBean(ExistingBean.class));
+			.callMatchesAndReturnProvidedContext(context)
+			.get()).isEqualTo(context.getBean(ExistingBean.class));
 	}
 
 	@Test
-	public void matchesWhenContextClassIsBeanThatDoesNotExistShouldSupplyException() {
+	void matchesWhenContextClassIsBeanThatDoesNotExistShouldSupplyException() {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		Supplier<ExistingBean> supplier = new TestApplicationContextRequestMatcher<>(ExistingBean.class)
-				.callMatchesAndReturnProvidedContext(context);
+			.callMatchesAndReturnProvidedContext(context);
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(supplier::get);
 	}
 
 	@Test // gh-18012
-	public void machesWhenCalledWithDifferentApplicationContextDoesNotCache() {
+	void matchesWhenCalledWithDifferentApplicationContextDoesNotCache() {
 		StaticWebApplicationContext context1 = createWebApplicationContext();
 		StaticWebApplicationContext context2 = createWebApplicationContext();
 		TestApplicationContextRequestMatcher<ApplicationContext> matcher = new TestApplicationContextRequestMatcher<>(
@@ -85,9 +86,9 @@ public class ApplicationContextRequestMatcherTests {
 	}
 
 	@Test
-	public void initializeAndMatchesAreNotCalledIfContextIsIgnored() {
+	void initializeAndMatchesAreNotCalledIfContextIsIgnored() {
 		StaticWebApplicationContext context = createWebApplicationContext();
-		TestApplicationContextRequestMatcher<ApplicationContext> matcher = new TestApplicationContextRequestMatcher<ApplicationContext>(
+		TestApplicationContextRequestMatcher<ApplicationContext> matcher = new TestApplicationContextRequestMatcher<>(
 				ApplicationContext.class) {
 
 			@Override
@@ -111,7 +112,7 @@ public class ApplicationContextRequestMatcherTests {
 	}
 
 	@Test // gh-18211
-	public void matchesWhenConcurrentlyCalledWaitsForInitialize() {
+	void matchesWhenConcurrentlyCalledWaitsForInitialize() {
 		ConcurrentApplicationContextRequestMatcher matcher = new ConcurrentApplicationContextRequestMatcher();
 		StaticWebApplicationContext context = createWebApplicationContext();
 		Runnable target = () -> matcher.matches(new MockHttpServletRequest(context.getServletContext()));
@@ -155,7 +156,7 @@ public class ApplicationContextRequestMatcherTests {
 			this.bean = bean;
 		}
 
-		public ExistingBean getBean() {
+		ExistingBean getBean() {
 			return this.bean;
 		}
 
@@ -169,11 +170,11 @@ public class ApplicationContextRequestMatcherTests {
 			super(context);
 		}
 
-		public Supplier<C> callMatchesAndReturnProvidedContext(WebApplicationContext context) {
+		Supplier<C> callMatchesAndReturnProvidedContext(WebApplicationContext context) {
 			return callMatchesAndReturnProvidedContext(new MockHttpServletRequest(context.getServletContext()));
 		}
 
-		public Supplier<C> callMatchesAndReturnProvidedContext(HttpServletRequest request) {
+		Supplier<C> callMatchesAndReturnProvidedContext(HttpServletRequest request) {
 			matches(request);
 			return getProvidedContext();
 		}
@@ -184,7 +185,7 @@ public class ApplicationContextRequestMatcherTests {
 			return false;
 		}
 
-		public Supplier<C> getProvidedContext() {
+		Supplier<C> getProvidedContext() {
 			return this.providedContext;
 		}
 
@@ -196,7 +197,7 @@ public class ApplicationContextRequestMatcherTests {
 			super(Object.class);
 		}
 
-		private AtomicBoolean initialized = new AtomicBoolean();
+		private final AtomicBoolean initialized = new AtomicBoolean();
 
 		@Override
 		protected void initialized(Supplier<Object> context) {
@@ -221,11 +222,11 @@ public class ApplicationContextRequestMatcherTests {
 		private volatile Throwable ex;
 
 		@Override
-		public void uncaughtException(Thread thead, Throwable ex) {
+		public void uncaughtException(Thread thread, Throwable ex) {
 			this.ex = ex;
 		}
 
-		public void assertNoExceptions() {
+		void assertNoExceptions() {
 			if (this.ex != null) {
 				ReflectionUtils.rethrowRuntimeException(this.ex);
 			}

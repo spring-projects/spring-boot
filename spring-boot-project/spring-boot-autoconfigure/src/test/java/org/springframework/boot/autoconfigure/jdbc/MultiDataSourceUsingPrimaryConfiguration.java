@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,23 +23,23 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 
 /**
- * Configuration for multiple {@link DataSource} (one being {@code @Primary}.
+ * Configuration for multiple {@link DataSource} (one being {@code @Primary}).
  *
  * @author Phillip Webb
  * @author Kazuki Shimizu
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 class MultiDataSourceUsingPrimaryConfiguration {
 
 	@Bean
 	@Primary
-	public DataSource test1DataSource() {
-		return new TestDataSource("test1");
+	DataSource test1DataSource() {
+		return new TestDataSource("test1", false);
 	}
 
 	@Bean
-	public DataSource test2DataSource() {
-		return new TestDataSource("test2");
+	DataSource test2DataSource() {
+		return new TestDataSource("test2", false);
 	}
 
 }

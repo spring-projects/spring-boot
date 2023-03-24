@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,19 @@
 
 package org.springframework.boot.context.event;
 
+import java.time.Duration;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
+import org.springframework.boot.availability.AvailabilityChangeEvent;
+import org.springframework.boot.availability.LivenessState;
+import org.springframework.boot.availability.ReadinessState;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.event.ApplicationEventMulticaster;
@@ -41,9 +48,10 @@ import org.springframework.util.ErrorHandler;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Artsiom Yudovin
- * @since 1.0.0
+ * @author Brian Clozel
+ * @author Chris Bono
  */
-public class EventPublishingRunListener implements SpringApplicationRunListener, Ordered {
+class EventPublishingRunListener implements SpringApplicationRunListener, Ordered {
 
 	private final SpringApplication application;
 
@@ -51,13 +59,10 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 
 	private final SimpleApplicationEventMulticaster initialMulticaster;
 
-	public EventPublishingRunListener(SpringApplication application, String[] args) {
+	EventPublishingRunListener(SpringApplication application, String[] args) {
 		this.application = application;
 		this.args = args;
 		this.initialMulticaster = new SimpleApplicationEventMulticaster();
-		for (ApplicationListener<?> listener : application.getListeners()) {
-			this.initialMulticaster.addApplicationListener(listener);
-		}
 	}
 
 	@Override
@@ -66,41 +71,43 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 	}
 
 	@Override
-	public void starting() {
-		this.initialMulticaster.multicastEvent(new ApplicationStartingEvent(this.application, this.args));
+	public void starting(ConfigurableBootstrapContext bootstrapContext) {
+		multicastInitialEvent(new ApplicationStartingEvent(bootstrapContext, this.application, this.args));
 	}
 
 	@Override
-	public void environmentPrepared(ConfigurableEnvironment environment) {
-		this.initialMulticaster
-				.multicastEvent(new ApplicationEnvironmentPreparedEvent(this.application, this.args, environment));
+	public void environmentPrepared(ConfigurableBootstrapContext bootstrapContext,
+			ConfigurableEnvironment environment) {
+		multicastInitialEvent(
+				new ApplicationEnvironmentPreparedEvent(bootstrapContext, this.application, this.args, environment));
 	}
 
 	@Override
 	public void contextPrepared(ConfigurableApplicationContext context) {
-		this.initialMulticaster
-				.multicastEvent(new ApplicationContextInitializedEvent(this.application, this.args, context));
+		multicastInitialEvent(new ApplicationContextInitializedEvent(this.application, this.args, context));
 	}
 
 	@Override
 	public void contextLoaded(ConfigurableApplicationContext context) {
 		for (ApplicationListener<?> listener : this.application.getListeners()) {
-			if (listener instanceof ApplicationContextAware) {
-				((ApplicationContextAware) listener).setApplicationContext(context);
+			if (listener instanceof ApplicationContextAware contextAware) {
+				contextAware.setApplicationContext(context);
 			}
 			context.addApplicationListener(listener);
 		}
-		this.initialMulticaster.multicastEvent(new ApplicationPreparedEvent(this.application, this.args, context));
+		multicastInitialEvent(new ApplicationPreparedEvent(this.application, this.args, context));
 	}
 
 	@Override
-	public void started(ConfigurableApplicationContext context) {
-		context.publishEvent(new ApplicationStartedEvent(this.application, this.args, context));
+	public void started(ConfigurableApplicationContext context, Duration timeTaken) {
+		context.publishEvent(new ApplicationStartedEvent(this.application, this.args, context, timeTaken));
+		AvailabilityChangeEvent.publish(context, LivenessState.CORRECT);
 	}
 
 	@Override
-	public void running(ConfigurableApplicationContext context) {
-		context.publishEvent(new ApplicationReadyEvent(this.application, this.args, context));
+	public void ready(ConfigurableApplicationContext context, Duration timeTaken) {
+		context.publishEvent(new ApplicationReadyEvent(this.application, this.args, context, timeTaken));
+		AvailabilityChangeEvent.publish(context, ReadinessState.ACCEPTING_TRAFFIC);
 	}
 
 	@Override
@@ -113,16 +120,24 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 		}
 		else {
 			// An inactive context may not have a multicaster so we use our multicaster to
-			// call all of the context's listeners instead
-			if (context instanceof AbstractApplicationContext) {
-				for (ApplicationListener<?> listener : ((AbstractApplicationContext) context)
-						.getApplicationListeners()) {
+			// call all the context's listeners instead
+			if (context instanceof AbstractApplicationContext abstractApplicationContext) {
+				for (ApplicationListener<?> listener : abstractApplicationContext.getApplicationListeners()) {
 					this.initialMulticaster.addApplicationListener(listener);
 				}
 			}
 			this.initialMulticaster.setErrorHandler(new LoggingErrorHandler());
 			this.initialMulticaster.multicastEvent(event);
 		}
+	}
+
+	private void multicastInitialEvent(ApplicationEvent event) {
+		refreshApplicationListeners();
+		this.initialMulticaster.multicastEvent(event);
+	}
+
+	private void refreshApplicationListeners() {
+		this.application.getListeners().forEach(this.initialMulticaster::addApplicationListener);
 	}
 
 	private static class LoggingErrorHandler implements ErrorHandler {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,15 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.annotation.WebInitParam;
-
-import org.junit.Test;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.WebInitParam;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
@@ -48,7 +47,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class WebFilterHandlerTests {
+class WebFilterHandlerTests {
 
 	private final WebFilterHandler handler = new WebFilterHandler();
 
@@ -56,15 +55,15 @@ public class WebFilterHandlerTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void defaultFilterConfiguration() throws IOException {
+	void defaultFilterConfiguration() throws IOException {
 		AnnotatedBeanDefinition definition = createBeanDefinition(DefaultConfigurationFilter.class);
 		this.handler.handle(definition, this.registry);
 		BeanDefinition filterRegistrationBean = this.registry
-				.getBeanDefinition(DefaultConfigurationFilter.class.getName());
+			.getBeanDefinition(DefaultConfigurationFilter.class.getName());
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat(propertyValues.get("asyncSupported")).isEqualTo(false);
 		assertThat((EnumSet<DispatcherType>) propertyValues.get("dispatcherTypes"))
-				.containsExactly(DispatcherType.REQUEST);
+			.containsExactly(DispatcherType.REQUEST);
 		assertThat(((Map<String, String>) propertyValues.get("initParameters"))).isEmpty();
 		assertThat((String[]) propertyValues.get("servletNames")).isEmpty();
 		assertThat((String[]) propertyValues.get("urlPatterns")).isEmpty();
@@ -73,7 +72,7 @@ public class WebFilterHandlerTests {
 	}
 
 	@Test
-	public void filterWithCustomName() throws IOException {
+	void filterWithCustomName() throws IOException {
 		AnnotatedBeanDefinition definition = createBeanDefinition(CustomNameFilter.class);
 		this.handler.handle(definition, this.registry);
 		BeanDefinition filterRegistrationBean = this.registry.getBeanDefinition("custom");
@@ -82,7 +81,7 @@ public class WebFilterHandlerTests {
 	}
 
 	@Test
-	public void asyncSupported() throws IOException {
+	void asyncSupported() throws IOException {
 		BeanDefinition filterRegistrationBean = handleBeanDefinitionForClass(AsyncSupportedFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat(propertyValues.get("asyncSupported")).isEqualTo(true);
@@ -90,7 +89,7 @@ public class WebFilterHandlerTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void dispatcherTypes() throws IOException {
+	void dispatcherTypes() throws IOException {
 		BeanDefinition filterRegistrationBean = handleBeanDefinitionForClass(DispatcherTypesFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat((Set<DispatcherType>) propertyValues.get("dispatcherTypes")).containsExactly(DispatcherType.FORWARD,
@@ -99,39 +98,39 @@ public class WebFilterHandlerTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	public void initParameters() throws IOException {
+	void initParameters() throws IOException {
 		BeanDefinition filterRegistrationBean = handleBeanDefinitionForClass(InitParametersFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat((Map<String, String>) propertyValues.get("initParameters")).containsEntry("a", "alpha")
-				.containsEntry("b", "bravo");
+			.containsEntry("b", "bravo");
 	}
 
 	@Test
-	public void servletNames() throws IOException {
+	void servletNames() throws IOException {
 		BeanDefinition filterRegistrationBean = handleBeanDefinitionForClass(ServletNamesFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat((String[]) propertyValues.get("servletNames")).contains("alpha", "bravo");
 	}
 
 	@Test
-	public void urlPatterns() throws IOException {
+	void urlPatterns() throws IOException {
 		BeanDefinition filterRegistrationBean = handleBeanDefinitionForClass(UrlPatternsFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat((String[]) propertyValues.get("urlPatterns")).contains("alpha", "bravo");
 	}
 
 	@Test
-	public void urlPatternsFromValue() throws IOException {
+	void urlPatternsFromValue() throws IOException {
 		BeanDefinition filterRegistrationBean = handleBeanDefinitionForClass(UrlPatternsFromValueFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat((String[]) propertyValues.get("urlPatterns")).contains("alpha", "bravo");
 	}
 
 	@Test
-	public void urlPatternsDeclaredTwice() throws IOException {
+	void urlPatternsDeclaredTwice() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> handleBeanDefinitionForClass(UrlPatternsDeclaredTwiceFilter.class))
-				.withMessageContaining("The urlPatterns and value attributes are mutually exclusive.");
+			.isThrownBy(() -> handleBeanDefinitionForClass(UrlPatternsDeclaredTwiceFilter.class))
+			.withMessageContaining("The urlPatterns and value attributes are mutually exclusive.");
 	}
 
 	private AnnotatedBeanDefinition createBeanDefinition(Class<?> filterClass) throws IOException {

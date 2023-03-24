@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.session;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.session.SessionsEndpoint.SessionDescriptor;
 import org.springframework.session.FindByIndexNameSessionRepository;
@@ -28,15 +28,15 @@ import org.springframework.session.Session;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link SessionsEndpoint}.
  *
  * @author Vedran Pavic
  */
-public class SessionsEndpointTests {
+class SessionsEndpointTests {
 
 	private static final Session session = new MapSession();
 
@@ -46,9 +46,9 @@ public class SessionsEndpointTests {
 	private final SessionsEndpoint endpoint = new SessionsEndpoint(this.repository);
 
 	@Test
-	public void sessionsForUsername() {
+	void sessionsForUsername() {
 		given(this.repository.findByPrincipalName("user"))
-				.willReturn(Collections.singletonMap(session.getId(), session));
+			.willReturn(Collections.singletonMap(session.getId(), session));
 		List<SessionDescriptor> result = this.endpoint.sessionsForUsername("user").getSessions();
 		assertThat(result).hasSize(1);
 		assertThat(result.get(0).getId()).isEqualTo(session.getId());
@@ -60,7 +60,7 @@ public class SessionsEndpointTests {
 	}
 
 	@Test
-	public void getSession() {
+	void getSession() {
 		given(this.repository.findById(session.getId())).willReturn(session);
 		SessionDescriptor result = this.endpoint.getSession(session.getId());
 		assertThat(result.getId()).isEqualTo(session.getId());
@@ -72,15 +72,15 @@ public class SessionsEndpointTests {
 	}
 
 	@Test
-	public void getSessionWithIdNotFound() {
+	void getSessionWithIdNotFound() {
 		given(this.repository.findById("not-found")).willReturn(null);
 		assertThat(this.endpoint.getSession("not-found")).isNull();
 	}
 
 	@Test
-	public void deleteSession() {
+	void deleteSession() {
 		this.endpoint.deleteSession(session.getId());
-		verify(this.repository).deleteById(session.getId());
+		then(this.repository).should().deleteById(session.getId());
 	}
 
 }

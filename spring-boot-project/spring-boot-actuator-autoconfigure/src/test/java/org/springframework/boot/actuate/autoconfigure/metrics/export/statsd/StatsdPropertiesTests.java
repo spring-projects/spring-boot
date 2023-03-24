@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.statsd;
 
 import io.micrometer.statsd.StatsdConfig;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,19 +26,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class StatsdPropertiesTests {
+class StatsdPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		StatsdProperties properties = new StatsdProperties();
 		StatsdConfig config = StatsdConfig.DEFAULT;
 		assertThat(properties.isEnabled()).isEqualTo(config.enabled());
 		assertThat(properties.getFlavor()).isEqualTo(config.flavor());
 		assertThat(properties.getHost()).isEqualTo(config.host());
 		assertThat(properties.getPort()).isEqualTo(config.port());
+		assertThat(properties.getProtocol()).isEqualTo(config.protocol());
 		assertThat(properties.getMaxPacketLength()).isEqualTo(config.maxPacketLength());
 		assertThat(properties.getPollingFrequency()).isEqualTo(config.pollingFrequency());
+		assertThat(properties.getStep()).isEqualTo(config.step());
 		assertThat(properties.isPublishUnchangedMeters()).isEqualTo(config.publishUnchangedMeters());
+		assertThat(properties.isBuffered()).isEqualTo(config.buffered());
 	}
 
 }

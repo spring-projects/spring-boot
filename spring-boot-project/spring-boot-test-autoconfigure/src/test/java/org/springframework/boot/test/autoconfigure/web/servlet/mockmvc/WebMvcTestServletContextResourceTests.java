@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,31 +19,28 @@ package org.springframework.boot.test.autoconfigure.web.servlet.mockmvc;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.servlet.ServletContext;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import jakarta.servlet.ServletContext;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link WebMvcTest} when loading resources via {@link ServletContext}.
+ * Tests for {@link WebMvcTest @WebMvcTest} when loading resources via
+ * {@link ServletContext}.
  *
  * @author Lorenzo Dee
  */
-@RunWith(SpringRunner.class)
 @WebMvcTest
-public class WebMvcTestServletContextResourceTests {
+class WebMvcTestServletContextResourceTests {
 
 	@Autowired
 	private ServletContext servletContext;
 
 	@Test
-	public void getResourceLocation() throws Exception {
+	void getResourceLocation() throws Exception {
 		testResource("/inwebapp", "src/main/webapp");
 		testResource("/inmetainfresources", "/META-INF/resources");
 		testResource("/inresources", "/resources");

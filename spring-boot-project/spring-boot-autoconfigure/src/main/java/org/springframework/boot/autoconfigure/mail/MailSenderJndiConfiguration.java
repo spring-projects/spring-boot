@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,9 @@
 
 package org.springframework.boot.autoconfigure.mail;
 
-import javax.mail.Session;
 import javax.naming.NamingException;
+
+import jakarta.mail.Session;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnJndi;
@@ -35,7 +36,7 @@ import org.springframework.mail.javamail.JavaMailSenderImpl;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Session.class)
 @ConditionalOnProperty(prefix = "spring.mail", name = "jndi-name")
 @ConditionalOnJndi
@@ -48,7 +49,7 @@ class MailSenderJndiConfiguration {
 	}
 
 	@Bean
-	public JavaMailSenderImpl mailSender(Session session) {
+	JavaMailSenderImpl mailSender(Session session) {
 		JavaMailSenderImpl sender = new JavaMailSenderImpl();
 		sender.setDefaultEncoding(this.properties.getDefaultEncoding().name());
 		sender.setSession(session);
@@ -57,7 +58,7 @@ class MailSenderJndiConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Session session() {
+	Session session() {
 		String jndiName = this.properties.getJndiName();
 		try {
 			return JndiLocatorDelegate.createDefaultResourceRefLocator().lookup(jndiName, Session.class);

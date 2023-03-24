@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,14 @@ import info.ganglia.gmetric4j.gmetric.GMetric;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring Ganglia metrics export.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring Ganglia
+ * metrics export.
  *
  * @author Jon Schneider
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.metrics.export.ganglia")
+@ConfigurationProperties(prefix = "management.ganglia.metrics.export")
 public class GangliaProperties {
 
 	/**
@@ -44,19 +45,9 @@ public class GangliaProperties {
 	private Duration step = Duration.ofMinutes(1);
 
 	/**
-	 * Base time unit used to report rates.
-	 */
-	private TimeUnit rateUnits = TimeUnit.SECONDS;
-
-	/**
 	 * Base time unit used to report durations.
 	 */
 	private TimeUnit durationUnits = TimeUnit.MILLISECONDS;
-
-	/**
-	 * Ganglia protocol version. Must be either 3.1 or 3.0.
-	 */
-	private String protocolVersion = "3.1";
 
 	/**
 	 * UDP addressing mode, either unicast or multicast.
@@ -64,7 +55,7 @@ public class GangliaProperties {
 	private GMetric.UDPAddressingMode addressingMode = GMetric.UDPAddressingMode.MULTICAST;
 
 	/**
-	 * Time to live for metrics on Ganglia. Set the multi-cast Time-To-Live to be one
+	 * Time to live for metrics on Ganglia. Set the multicast Time-To-Live to be one
 	 * greater than the number of hops (routers) between the hosts.
 	 */
 	private Integer timeToLive = 1;
@@ -95,28 +86,12 @@ public class GangliaProperties {
 		this.step = step;
 	}
 
-	public TimeUnit getRateUnits() {
-		return this.rateUnits;
-	}
-
-	public void setRateUnits(TimeUnit rateUnits) {
-		this.rateUnits = rateUnits;
-	}
-
 	public TimeUnit getDurationUnits() {
 		return this.durationUnits;
 	}
 
 	public void setDurationUnits(TimeUnit durationUnits) {
 		this.durationUnits = durationUnits;
-	}
-
-	public String getProtocolVersion() {
-		return this.protocolVersion;
-	}
-
-	public void setProtocolVersion(String protocolVersion) {
-		this.protocolVersion = protocolVersion;
 	}
 
 	public GMetric.UDPAddressingMode getAddressingMode() {

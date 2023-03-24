@@ -1,0 +1,148 @@
+[[build-tool-plugins.antlib]]
+== Spring Boot AntLib Module
+The Spring Boot AntLib module provides basic Spring Boot support for Apache Ant.
+You can use the module to create executable jars.
+To use the module, you need to declare an additional `spring-boot` namespace in your `build.xml`, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim"]
+----
+	<project xmlns:ivy="antlib:org.apache.ivy.ant"
+		xmlns:spring-boot="antlib:org.springframework.boot.ant"
+		name="myapp" default="build">
+		...
+	</project>
+----
+
+You need to remember to start Ant using the `-lib` option, as shown in the following example:
+
+[source,shell,indent=0,subs="verbatim,attributes"]
+----
+	$ ant -lib <directory containing spring-boot-antlib-{spring-boot-version}.jar>
+----
+
+TIP: The "`Using Spring Boot`" section includes a more complete example of <<using#using.build-systems.ant, using Apache Ant with `spring-boot-antlib`>>.
+
+
+
+[[build-tool-plugins.antlib.tasks]]
+=== Spring Boot Ant Tasks
+Once the `spring-boot-antlib` namespace has been declared, the following additional tasks are available:
+
+* <<build-tool-plugins#build-tool-plugins.antlib.tasks.exejar>>
+* <<build-tool-plugins#build-tool-plugins.antlib.findmainclass>>
+
+
+
+[[build-tool-plugins.antlib.tasks.exejar]]
+==== Using the "`exejar`" Task
+You can use the `exejar` task to create a Spring Boot executable jar.
+The following attributes are supported by the task:
+
+[cols="1,2,2"]
+|====
+| Attribute | Description | Required
+
+| `destfile`
+| The destination jar file to create
+| Yes
+
+| `classes`
+| The root directory of Java class files
+| Yes
+
+| `start-class`
+| The main application class to run
+| No _(the default is the first class found that declares a `main` method)_
+|====
+
+The following nested elements can be used with the task:
+
+[cols="1,4"]
+|====
+| Element | Description
+
+| `resources`
+| One or more {ant-docs}/Types/resources.html#collection[Resource Collections] describing a set of {ant-docs}/Types/resources.html[Resources] that should be added to the content of the created +jar+ file.
+
+| `lib`
+| One or more {ant-docs}/Types/resources.html#collection[Resource Collections] that should be added to the set of jar libraries that make up the runtime dependency classpath of the application.
+|====
+
+
+
+[[build-tool-plugins.antlib.tasks.examples]]
+==== Examples
+This section shows two examples of Ant tasks.
+
+.Specify +start-class+
+[source,xml,indent=0,subs="verbatim"]
+----
+	<spring-boot:exejar destfile="target/my-application.jar"
+			classes="target/classes" start-class="com.example.MyApplication">
+		<resources>
+			<fileset dir="src/main/resources" />
+		</resources>
+		<lib>
+			<fileset dir="lib" />
+		</lib>
+	</spring-boot:exejar>
+----
+
+.Detect +start-class+
+[source,xml,indent=0,subs="verbatim"]
+----
+	<exejar destfile="target/my-application.jar" classes="target/classes">
+		<lib>
+			<fileset dir="lib" />
+		</lib>
+	</exejar>
+----
+
+
+
+[[build-tool-plugins.antlib.findmainclass]]
+=== Using the "`findmainclass`" Task
+The `findmainclass` task is used internally by `exejar` to locate a class declaring a `main`.
+If necessary, you can also use this task directly in your build.
+The following attributes are supported:
+
+[cols="1,2,2"]
+|====
+| Attribute | Description | Required
+
+| `classesroot`
+| The root directory of Java class files
+| Yes _(unless `mainclass` is specified)_
+
+| `mainclass`
+| Can be used to short-circuit the `main` class search
+| No
+
+| `property`
+| The Ant property that should be set with the result
+| No _(result will be logged if unspecified)_
+|====
+
+
+
+[[build-tool-plugins.antlib.findmainclass.examples]]
+==== Examples
+This section contains three examples of using `findmainclass`.
+
+.Find and log
+[source,xml,indent=0,subs="verbatim"]
+----
+	<findmainclass classesroot="target/classes" />
+----
+
+.Find and set
+[source,xml,indent=0,subs="verbatim"]
+----
+	<findmainclass classesroot="target/classes" property="main-class" />
+----
+
+.Override and set
+[source,xml,indent=0,subs="verbatim"]
+----
+	<findmainclass mainclass="com.example.MainClass" property="main-class" />
+----

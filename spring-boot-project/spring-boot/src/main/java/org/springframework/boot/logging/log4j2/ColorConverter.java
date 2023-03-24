@@ -91,7 +91,7 @@ public final class ColorConverter extends LogEventPatternConverter {
 	 */
 	public static ColorConverter newInstance(Configuration config, String[] options) {
 		if (options.length < 1) {
-			LOGGER.error("Incorrect number of options on style. " + "Expected at least 1, received {}", options.length);
+			LOGGER.error("Incorrect number of options on style. Expected at least 1, received {}", options.length);
 			return null;
 		}
 		if (options[0] == null) {

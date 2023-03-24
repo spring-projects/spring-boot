@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 		LOG_CONFIGURATION_MESSAGES = Collections.unmodifiableSet(messages);
 	}
 
-	private static LoggedExceptionHandlerThreadLocal handler = new LoggedExceptionHandlerThreadLocal();
+	private static final LoggedExceptionHandlerThreadLocal handler = new LoggedExceptionHandlerThreadLocal();
 
 	private final UncaughtExceptionHandler parent;
 
@@ -52,11 +52,11 @@ class SpringBootExceptionHandler implements UncaughtExceptionHandler {
 		this.parent = parent;
 	}
 
-	public void registerLoggedException(Throwable exception) {
+	void registerLoggedException(Throwable exception) {
 		this.loggedExceptions.add(exception);
 	}
 
-	public void registerExitCode(int exitCode) {
+	void registerExitCode(int exitCode) {
 		this.exitCode = exitCode;
 	}
 

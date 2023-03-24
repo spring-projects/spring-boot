@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,8 @@
 
 package org.springframework.boot.test.context;
 
-import javax.servlet.ServletContext;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import jakarta.servlet.ServletContext;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -27,38 +25,37 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link SpringBootTest} configured with {@link WebEnvironment#MOCK}.
+ * Tests for {@link SpringBootTest @SpringBootTest} configured with
+ * {@link WebEnvironment#MOCK}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
 @SpringBootTest
 @DirtiesContext
 @WebAppConfiguration("src/mymain/mywebapp")
-public class SpringBootTestWebEnvironmentMockWithWebAppConfigurationTests {
+class SpringBootTestWebEnvironmentMockWithWebAppConfigurationTests {
 
 	@Autowired
 	private ServletContext servletContext;
 
 	@Test
-	public void resourcePath() {
+	void resourcePath() {
 		assertThat(this.servletContext).hasFieldOrPropertyWithValue("resourceBasePath", "src/mymain/mywebapp");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
-	protected static class Config {
+	static class Config {
 
 		@Bean
-		public static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
+		static PropertySourcesPlaceholderConfigurer propertyPlaceholder() {
 			return new PropertySourcesPlaceholderConfigurer();
 		}
 

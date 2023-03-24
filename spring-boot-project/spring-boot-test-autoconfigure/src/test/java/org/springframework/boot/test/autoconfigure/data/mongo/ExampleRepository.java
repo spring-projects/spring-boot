@@ -19,10 +19,10 @@ package org.springframework.boot.test.autoconfigure.data.mongo;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
- * Example repository used with {@link DataMongoTest} tests.
+ * Example repository used with {@link DataMongoTest @DataMongoTest} tests.
  *
  * @author Michael Simons
  */
-public interface ExampleRepository extends MongoRepository<ExampleDocument, String> {
+interface ExampleRepository extends MongoRepository<ExampleDocument, String> {
 
 }

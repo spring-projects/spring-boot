@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
+import org.springframework.core.log.LogMessage;
 
 /**
  * {@link ApplicationListener} to initialize the {@link Restarter}.
@@ -45,17 +46,17 @@ public class RestartApplicationListener implements ApplicationListener<Applicati
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ApplicationStartingEvent) {
-			onApplicationStartingEvent((ApplicationStartingEvent) event);
+		if (event instanceof ApplicationStartingEvent startingEvent) {
+			onApplicationStartingEvent(startingEvent);
 		}
-		if (event instanceof ApplicationPreparedEvent) {
-			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
+		if (event instanceof ApplicationPreparedEvent preparedEvent) {
+			onApplicationPreparedEvent(preparedEvent);
 		}
 		if (event instanceof ApplicationReadyEvent || event instanceof ApplicationFailedEvent) {
 			Restarter.getInstance().finish();
 		}
-		if (event instanceof ApplicationFailedEvent) {
-			onApplicationFailedEvent((ApplicationFailedEvent) event);
+		if (event instanceof ApplicationFailedEvent failedEvent) {
+			onApplicationFailedEvent(failedEvent);
 		}
 	}
 
@@ -63,17 +64,34 @@ public class RestartApplicationListener implements ApplicationListener<Applicati
 		// It's too early to use the Spring environment but we should still allow
 		// users to disable restart using a System property.
 		String enabled = System.getProperty(ENABLED_PROPERTY);
-		if (enabled == null || Boolean.parseBoolean(enabled)) {
+		RestartInitializer restartInitializer = null;
+		if (enabled == null) {
+			restartInitializer = new DefaultRestartInitializer();
+		}
+		else if (Boolean.parseBoolean(enabled)) {
+			restartInitializer = new DefaultRestartInitializer() {
+
+				@Override
+				protected boolean isDevelopmentClassLoader(ClassLoader classLoader) {
+					return true;
+				}
+
+			};
+			logger.info(LogMessage.format(
+					"Restart enabled irrespective of application packaging due to System property '%s' being set to true",
+					ENABLED_PROPERTY));
+		}
+		if (restartInitializer != null) {
 			String[] args = event.getArgs();
-			DefaultRestartInitializer initializer = new DefaultRestartInitializer();
 			boolean restartOnInitialize = !AgentReloader.isActive();
 			if (!restartOnInitialize) {
 				logger.info("Restart disabled due to an agent-based reloader being active");
 			}
-			Restarter.initialize(args, false, initializer, restartOnInitialize);
+			Restarter.initialize(args, false, restartInitializer, restartOnInitialize);
 		}
 		else {
-			logger.info("Restart disabled due to System property '" + ENABLED_PROPERTY + "' being set to false");
+			logger.info(LogMessage.format("Restart disabled due to System property '%s' being set to false",
+					ENABLED_PROPERTY));
 			Restarter.disable();
 		}
 	}

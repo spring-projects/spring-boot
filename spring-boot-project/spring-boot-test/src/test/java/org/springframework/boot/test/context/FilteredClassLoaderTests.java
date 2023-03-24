@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,13 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link FilteredClassLoader}.
@@ -33,38 +34,38 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Phillip Webb
  * @author Roy Jacobs
  */
-public class FilteredClassLoaderTests {
+class FilteredClassLoaderTests {
 
-	private static ClassPathResource TEST_RESOURCE = new ClassPathResource(
+	static ClassPathResource TEST_RESOURCE = new ClassPathResource(
 			"org/springframework/boot/test/context/FilteredClassLoaderTestsResource.txt");
 
 	@Test
-	public void loadClassWhenFilteredOnPackageShouldThrowClassNotFound() throws Exception {
+	void loadClassWhenFilteredOnPackageShouldThrowClassNotFound() throws Exception {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader(
 				FilteredClassLoaderTests.class.getPackage().getName())) {
 			assertThatExceptionOfType(ClassNotFoundException.class)
-					.isThrownBy(() -> classLoader.loadClass(getClass().getName()));
+				.isThrownBy(() -> Class.forName(getClass().getName(), false, classLoader));
 		}
 	}
 
 	@Test
-	public void loadClassWhenFilteredOnClassShouldThrowClassNotFound() throws Exception {
+	void loadClassWhenFilteredOnClassShouldThrowClassNotFound() throws Exception {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader(FilteredClassLoaderTests.class)) {
 			assertThatExceptionOfType(ClassNotFoundException.class)
-					.isThrownBy(() -> classLoader.loadClass(getClass().getName()));
+				.isThrownBy(() -> Class.forName(getClass().getName(), false, classLoader));
 		}
 	}
 
 	@Test
-	public void loadClassWhenNotFilteredShouldLoadClass() throws Exception {
+	void loadClassWhenNotFilteredShouldLoadClass() throws Exception {
 		FilteredClassLoader classLoader = new FilteredClassLoader((className) -> false);
-		Class<?> loaded = classLoader.loadClass(getClass().getName());
+		Class<?> loaded = Class.forName(getClass().getName(), false, classLoader);
 		assertThat(loaded.getName()).isEqualTo(getClass().getName());
 		classLoader.close();
 	}
 
 	@Test
-	public void loadResourceWhenFilteredOnResourceShouldReturnNotFound() throws Exception {
+	void loadResourceWhenFilteredOnResourceShouldReturnNotFound() throws Exception {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader(TEST_RESOURCE)) {
 			final URL loaded = classLoader.getResource(TEST_RESOURCE.getPath());
 			assertThat(loaded).isNull();
@@ -72,7 +73,7 @@ public class FilteredClassLoaderTests {
 	}
 
 	@Test
-	public void loadResourceWhenNotFilteredShouldLoadResource() throws Exception {
+	void loadResourceWhenNotFilteredShouldLoadResource() throws Exception {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader((resourceName) -> false)) {
 			final URL loaded = classLoader.getResource(TEST_RESOURCE.getPath());
 			assertThat(loaded).isNotNull();
@@ -80,7 +81,7 @@ public class FilteredClassLoaderTests {
 	}
 
 	@Test
-	public void loadResourcesWhenFilteredOnResourceShouldReturnNotFound() throws Exception {
+	void loadResourcesWhenFilteredOnResourceShouldReturnNotFound() throws Exception {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader(TEST_RESOURCE)) {
 			final Enumeration<URL> loaded = classLoader.getResources(TEST_RESOURCE.getPath());
 			assertThat(loaded.hasMoreElements()).isFalse();
@@ -88,7 +89,7 @@ public class FilteredClassLoaderTests {
 	}
 
 	@Test
-	public void loadResourcesWhenNotFilteredShouldLoadResource() throws Exception {
+	void loadResourcesWhenNotFilteredShouldLoadResource() throws Exception {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader((resourceName) -> false)) {
 			final Enumeration<URL> loaded = classLoader.getResources(TEST_RESOURCE.getPath());
 			assertThat(loaded.hasMoreElements()).isTrue();
@@ -96,7 +97,7 @@ public class FilteredClassLoaderTests {
 	}
 
 	@Test
-	public void loadResourceAsStreamWhenFilteredOnResourceShouldReturnNotFound() throws Exception {
+	void loadResourceAsStreamWhenFilteredOnResourceShouldReturnNotFound() throws Exception {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader(TEST_RESOURCE)) {
 			final InputStream loaded = classLoader.getResourceAsStream(TEST_RESOURCE.getPath());
 			assertThat(loaded).isNull();
@@ -104,10 +105,19 @@ public class FilteredClassLoaderTests {
 	}
 
 	@Test
-	public void loadResourceAsStreamWhenNotFilteredShouldLoadResource() throws Exception {
+	void loadResourceAsStreamWhenNotFilteredShouldLoadResource() throws Exception {
 		try (FilteredClassLoader classLoader = new FilteredClassLoader((resourceName) -> false)) {
 			final InputStream loaded = classLoader.getResourceAsStream(TEST_RESOURCE.getPath());
 			assertThat(loaded).isNotNull();
+		}
+	}
+
+	@Test
+	void publicDefineClassWhenFilteredThrowsException() throws Exception {
+		Class<FilteredClassLoaderTests> hiddenClass = FilteredClassLoaderTests.class;
+		try (FilteredClassLoader classLoader = new FilteredClassLoader(hiddenClass)) {
+			assertThatIllegalArgumentException()
+				.isThrownBy(() -> classLoader.publicDefineClass(hiddenClass.getName(), new byte[] {}, null));
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package org.springframework.boot.test.autoconfigure.orm.jpa;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnitUtil;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnitUtil;
 
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import org.springframework.util.Assert;
@@ -46,7 +46,7 @@ public class TestEntityManager {
 	}
 
 	/**
-	 * Make an instance managed and persistent then return it's ID. Delegates to
+	 * Make an instance managed and persistent then return its ID. Delegates to
 	 * {@link EntityManager#persist(Object)} then {@link #getId(Object)}.
 	 * <p>
 	 * Helpful when setting up test data in a test: <pre class="code">
@@ -61,7 +61,7 @@ public class TestEntityManager {
 	}
 
 	/**
-	 * Make an instance managed and persistent then return it's ID. Delegates to
+	 * Make an instance managed and persistent then return its ID. Delegates to
 	 * {@link EntityManager#persist(Object)} then {@link #getId(Object, Class)}.
 	 * <p>
 	 * Helpful when setting up test data in a test: <pre class="code">
@@ -75,7 +75,6 @@ public class TestEntityManager {
 	public <T> T persistAndGetId(Object entity, Class<T> idType) {
 		persist(entity);
 		return getId(entity, idType);
-
 	}
 
 	/**
@@ -235,7 +234,7 @@ public class TestEntityManager {
 	 */
 	public final EntityManager getEntityManager() {
 		EntityManager manager = EntityManagerFactoryUtils.getTransactionalEntityManager(this.entityManagerFactory);
-		Assert.state(manager != null, "No transactional EntityManager found");
+		Assert.state(manager != null, "No transactional EntityManager found, is your test running in a transaction?");
 		return manager;
 	}
 

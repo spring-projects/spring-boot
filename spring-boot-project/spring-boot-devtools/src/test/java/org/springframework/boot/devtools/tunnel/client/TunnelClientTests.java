@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,42 +20,43 @@ import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
+import java.time.Duration;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.awaitility.Awaitility;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link TunnelClient}.
  *
  * @author Phillip Webb
  */
-public class TunnelClientTests {
+class TunnelClientTests {
 
-	private MockTunnelConnection tunnelConnection = new MockTunnelConnection();
+	private final MockTunnelConnection tunnelConnection = new MockTunnelConnection();
 
 	@Test
-	public void listenPortMustNotBeNegative() {
+	void listenPortMustNotBeNegative() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TunnelClient(-5, this.tunnelConnection))
-				.withMessageContaining("ListenPort must be greater than or equal to 0");
+			.withMessageContaining("ListenPort must be greater than or equal to 0");
 	}
 
 	@Test
-	public void tunnelConnectionMustNotBeNull() {
+	void tunnelConnectionMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TunnelClient(1, null))
-				.withMessageContaining("TunnelConnection must not be null");
+			.withMessageContaining("TunnelConnection must not be null");
 	}
 
 	@Test
-	public void typicalTraffic() throws Exception {
+	void typicalTraffic() throws Exception {
 		TunnelClient client = new TunnelClient(0, this.tunnelConnection);
 		int port = client.start();
 		SocketChannel channel = SocketChannel.open(new InetSocketAddress(port));
@@ -68,46 +69,78 @@ public class TunnelClientTests {
 	}
 
 	@Test
-	public void socketChannelClosedTriggersTunnelClose() throws Exception {
+	void socketChannelClosedTriggersTunnelClose() throws Exception {
 		TunnelClient client = new TunnelClient(0, this.tunnelConnection);
 		int port = client.start();
 		SocketChannel channel = SocketChannel.open(new InetSocketAddress(port));
-		Thread.sleep(200);
+		Awaitility.await()
+			.atMost(Duration.ofSeconds(30))
+			.until(this.tunnelConnection::getOpenedTimes, (open) -> open == 1);
 		channel.close();
 		client.getServerThread().stopAcceptingConnections();
 		client.getServerThread().join(2000);
-		assertThat(this.tunnelConnection.getOpenedTimes()).isEqualTo(1);
+		assertThat(this.tunnelConnection.getOpenedTimes()).isOne();
 		assertThat(this.tunnelConnection.isOpen()).isFalse();
 	}
 
 	@Test
-	public void stopTriggersTunnelClose() throws Exception {
+	void stopTriggersTunnelClose() throws Exception {
 		TunnelClient client = new TunnelClient(0, this.tunnelConnection);
 		int port = client.start();
 		SocketChannel channel = SocketChannel.open(new InetSocketAddress(port));
-		Thread.sleep(200);
+		Awaitility.await()
+			.atMost(Duration.ofSeconds(30))
+			.until(this.tunnelConnection::getOpenedTimes, (times) -> times == 1);
+		assertThat(this.tunnelConnection.isOpen()).isTrue();
 		client.stop();
-		assertThat(this.tunnelConnection.getOpenedTimes()).isEqualTo(1);
 		assertThat(this.tunnelConnection.isOpen()).isFalse();
-		assertThat(channel.read(ByteBuffer.allocate(1))).isEqualTo(-1);
+		assertThat(readWithPossibleFailure(channel)).satisfiesAnyOf((result) -> assertThat(result).isEqualTo(-1),
+				(result) -> assertThat(result).isInstanceOf(SocketException.class));
+	}
+
+	private Object readWithPossibleFailure(SocketChannel channel) {
+		try {
+			return channel.read(ByteBuffer.allocate(1));
+		}
+		catch (Exception ex) {
+			return ex;
+		}
 	}
 
 	@Test
-	public void addListener() throws Exception {
+	void addListener() throws Exception {
 		TunnelClient client = new TunnelClient(0, this.tunnelConnection);
-		TunnelClientListener listener = mock(TunnelClientListener.class);
+		MockTunnelClientListener listener = new MockTunnelClientListener();
 		client.addListener(listener);
 		int port = client.start();
 		SocketChannel channel = SocketChannel.open(new InetSocketAddress(port));
-		Thread.sleep(200);
-		channel.close();
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(listener.onOpen::get, (open) -> open == 1);
+		assertThat(listener.onClose).hasValue(0);
 		client.getServerThread().stopAcceptingConnections();
+		channel.close();
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(listener.onClose::get, (close) -> close == 1);
 		client.getServerThread().join(2000);
-		verify(listener).onOpen(any(SocketChannel.class));
-		verify(listener).onClose(any(SocketChannel.class));
 	}
 
-	private static class MockTunnelConnection implements TunnelConnection {
+	static class MockTunnelClientListener implements TunnelClientListener {
+
+		private final AtomicInteger onOpen = new AtomicInteger();
+
+		private final AtomicInteger onClose = new AtomicInteger();
+
+		@Override
+		public void onOpen(SocketChannel socket) {
+			this.onOpen.incrementAndGet();
+		}
+
+		@Override
+		public void onClose(SocketChannel socket) {
+			this.onClose.incrementAndGet();
+		}
+
+	}
+
+	static class MockTunnelConnection implements TunnelConnection {
 
 		private final ByteArrayOutputStream written = new ByteArrayOutputStream();
 
@@ -122,22 +155,22 @@ public class TunnelClientTests {
 			return new TunnelChannel(incomingChannel, closeable);
 		}
 
-		public void verifyWritten(String expected) {
+		void verifyWritten(String expected) {
 			verifyWritten(expected.getBytes());
 		}
 
-		public void verifyWritten(byte[] expected) {
+		void verifyWritten(byte[] expected) {
 			synchronized (this.written) {
 				assertThat(this.written.toByteArray()).isEqualTo(expected);
 				this.written.reset();
 			}
 		}
 
-		public boolean isOpen() {
+		boolean isOpen() {
 			return this.open;
 		}
 
-		public int getOpenedTimes() {
+		int getOpenedTimes() {
 			return this.openedTimes;
 		}
 

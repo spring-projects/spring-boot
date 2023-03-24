@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,9 @@
 
 package org.springframework.boot.env;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.core.io.ByteArrayResource;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -30,17 +28,16 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  *
  * @author Madhura Bhave
  */
-@RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("snakeyaml-*.jar")
-public class NoSnakeYamlPropertySourceLoaderTests {
+class NoSnakeYamlPropertySourceLoaderTests {
 
-	private YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
+	private final YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
 
 	@Test
-	public void load() throws Exception {
+	void load() {
 		ByteArrayResource resource = new ByteArrayResource("foo:\n  bar: spam".getBytes());
 		assertThatIllegalStateException().isThrownBy(() -> this.loader.load("resource", resource))
-				.withMessageContaining("Attempted to load resource but snakeyaml was not found on the classpath");
+			.withMessageContaining("Attempted to load resource but snakeyaml was not found on the classpath");
 	}
 
 }

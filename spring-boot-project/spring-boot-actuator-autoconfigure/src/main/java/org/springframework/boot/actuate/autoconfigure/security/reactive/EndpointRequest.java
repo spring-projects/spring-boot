@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,8 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.security.reactive.ApplicationContextServerWebExchangeMatcher;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.security.web.server.util.matcher.OrServerWebExchangeMatcher;
 import org.springframework.security.web.server.util.matcher.PathPatternParserServerWebExchangeMatcher;
 import org.springframework.security.web.server.util.matcher.ServerWebExchangeMatcher;
@@ -115,11 +116,40 @@ public final class EndpointRequest {
 	}
 
 	/**
+	 * Base class for supported request matchers.
+	 */
+	private abstract static class AbstractWebExchangeMatcher<T> extends ApplicationContextServerWebExchangeMatcher<T> {
+
+		private ManagementPortType managementPortType;
+
+		AbstractWebExchangeMatcher(Class<? extends T> contextClass) {
+			super(contextClass);
+		}
+
+		@Override
+		protected boolean ignoreApplicationContext(ApplicationContext applicationContext) {
+			if (this.managementPortType == null) {
+				this.managementPortType = ManagementPortType.get(applicationContext.getEnvironment());
+			}
+			if (this.managementPortType == ManagementPortType.DIFFERENT) {
+				if (applicationContext.getParent() == null) {
+					return true;
+				}
+				String managementContextId = applicationContext.getParent().getId() + ":management";
+				if (!managementContextId.equals(applicationContext.getId())) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+	}
+
+	/**
 	 * The {@link ServerWebExchangeMatcher} used to match against {@link Endpoint actuator
 	 * endpoints}.
 	 */
-	public static final class EndpointServerWebExchangeMatcher
-			extends ApplicationContextServerWebExchangeMatcher<PathMappedEndpoints> {
+	public static final class EndpointServerWebExchangeMatcher extends AbstractWebExchangeMatcher<PathMappedEndpoints> {
 
 		private final List<Object> includes;
 
@@ -187,7 +217,7 @@ public final class EndpointRequest {
 			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
 			List<ServerWebExchangeMatcher> delegateMatchers = getDelegateMatchers(paths);
 			if (this.includeLinks && StringUtils.hasText(pathMappedEndpoints.getBasePath())) {
-				delegateMatchers.add(new PathPatternParserServerWebExchangeMatcher(pathMappedEndpoints.getBasePath()));
+				delegateMatchers.add(new LinksServerWebExchangeMatcher());
 			}
 			return new OrServerWebExchangeMatcher(delegateMatchers);
 		}
@@ -196,12 +226,38 @@ public final class EndpointRequest {
 			return source.stream().filter(Objects::nonNull).map(this::getEndpointId).map(pathMappedEndpoints::getPath);
 		}
 
+		@Override
+		protected Mono<MatchResult> matches(ServerWebExchange exchange, Supplier<PathMappedEndpoints> context) {
+			return this.delegate.matches(exchange);
+		}
+
+		private List<ServerWebExchangeMatcher> getDelegateMatchers(Set<String> paths) {
+			return paths.stream().map(this::getDelegateMatcher).collect(Collectors.toCollection(ArrayList::new));
+		}
+
+		private PathPatternParserServerWebExchangeMatcher getDelegateMatcher(String path) {
+			return new PathPatternParserServerWebExchangeMatcher(path + "/**");
+		}
+
+		@Override
+		public String toString() {
+			return String.format("EndpointRequestMatcher includes=%s, excludes=%s, includeLinks=%s",
+					toString(this.includes, "[*]"), toString(this.excludes, "[]"), this.includeLinks);
+		}
+
+		private String toString(List<Object> endpoints, String emptyValue) {
+			return (!endpoints.isEmpty()) ? endpoints.stream()
+				.map(this::getEndpointId)
+				.map(Object::toString)
+				.collect(Collectors.joining(", ", "[", "]")) : emptyValue;
+		}
+
 		private EndpointId getEndpointId(Object source) {
-			if (source instanceof EndpointId) {
-				return (EndpointId) source;
+			if (source instanceof EndpointId endpointId) {
+				return endpointId;
 			}
-			if (source instanceof String) {
-				return (EndpointId.of((String) source));
+			if (source instanceof String string) {
+				return EndpointId.of(string);
 			}
 			if (source instanceof Class) {
 				return getEndpointId((Class<?>) source);
@@ -210,36 +266,9 @@ public final class EndpointRequest {
 		}
 
 		private EndpointId getEndpointId(Class<?> source) {
-			Endpoint annotation = AnnotatedElementUtils.getMergedAnnotation(source, Endpoint.class);
-			Assert.state(annotation != null, () -> "Class " + source + " is not annotated with @Endpoint");
-			return EndpointId.of(annotation.id());
-		}
-
-		private List<ServerWebExchangeMatcher> getDelegateMatchers(Set<String> paths) {
-			return paths.stream().map((path) -> new PathPatternParserServerWebExchangeMatcher(path + "/**"))
-					.collect(Collectors.toList());
-		}
-
-		@Override
-		protected Mono<MatchResult> matches(ServerWebExchange exchange, Supplier<PathMappedEndpoints> context) {
-			if (!isManagementContext(exchange)) {
-				return MatchResult.notMatch();
-			}
-			return this.delegate.matches(exchange);
-		}
-
-		static boolean isManagementContext(ServerWebExchange exchange) {
-			ApplicationContext applicationContext = exchange.getApplicationContext();
-			if (ManagementPortType.get(applicationContext.getEnvironment()) == ManagementPortType.DIFFERENT) {
-				if (applicationContext.getParent() == null) {
-					return false;
-				}
-				String managementContextId = applicationContext.getParent().getId() + ":management";
-				if (!managementContextId.equals(applicationContext.getId())) {
-					return false;
-				}
-			}
-			return true;
+			MergedAnnotation<Endpoint> annotation = MergedAnnotations.from(source).get(Endpoint.class);
+			Assert.state(annotation.isPresent(), () -> "Class " + source + " is not annotated with @Endpoint");
+			return EndpointId.of(annotation.getString("id"));
 		}
 
 	}
@@ -247,8 +276,7 @@ public final class EndpointRequest {
 	/**
 	 * The {@link ServerWebExchangeMatcher} used to match against the links endpoint.
 	 */
-	public static final class LinksServerWebExchangeMatcher
-			extends ApplicationContextServerWebExchangeMatcher<WebEndpointProperties> {
+	public static final class LinksServerWebExchangeMatcher extends AbstractWebExchangeMatcher<WebEndpointProperties> {
 
 		private volatile ServerWebExchangeMatcher delegate;
 
@@ -263,16 +291,15 @@ public final class EndpointRequest {
 
 		private ServerWebExchangeMatcher createDelegate(WebEndpointProperties properties) {
 			if (StringUtils.hasText(properties.getBasePath())) {
-				return new PathPatternParserServerWebExchangeMatcher(properties.getBasePath());
+				return new OrServerWebExchangeMatcher(
+						new PathPatternParserServerWebExchangeMatcher(properties.getBasePath()),
+						new PathPatternParserServerWebExchangeMatcher(properties.getBasePath() + "/"));
 			}
 			return EMPTY_MATCHER;
 		}
 
 		@Override
 		protected Mono<MatchResult> matches(ServerWebExchange exchange, Supplier<WebEndpointProperties> context) {
-			if (!EndpointServerWebExchangeMatcher.isManagementContext(exchange)) {
-				return MatchResult.notMatch();
-			}
 			return this.delegate.matches(exchange);
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package org.springframework.boot.system;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,56 +27,74 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class JavaVersionTests {
+class JavaVersionTests {
 
 	@Test
-	public void getJavaVersionShouldBeAvailable() {
+	void getJavaVersionShouldBeAvailable() {
 		assertThat(JavaVersion.getJavaVersion()).isNotNull();
 	}
 
 	@Test
-	public void compareToWhenComparingSmallerToGreaterShouldBeLessThanZero() {
-		assertThat(JavaVersion.EIGHT.compareTo(JavaVersion.NINE)).isLessThan(0);
+	void compareToWhenComparingSmallerToGreaterShouldBeLessThanZero() {
+		assertThat(JavaVersion.SEVENTEEN).isLessThan(JavaVersion.EIGHTEEN);
 	}
 
 	@Test
-	public void compareToWhenComparingGreaterToSmallerShouldBeGreaterThanZero() {
-		assertThat(JavaVersion.NINE.compareTo(JavaVersion.EIGHT)).isGreaterThan(0);
+	void compareToWhenComparingGreaterToSmallerShouldBeGreaterThanZero() {
+		assertThat(JavaVersion.EIGHTEEN).isGreaterThan(JavaVersion.SEVENTEEN);
 	}
 
 	@Test
-	public void compareToWhenComparingSameShouldBeZero() {
-		assertThat(JavaVersion.EIGHT.compareTo(JavaVersion.EIGHT)).isEqualTo(0);
+	void compareToWhenComparingSameShouldBeZero() {
+		assertThat(JavaVersion.SEVENTEEN).isEqualByComparingTo(JavaVersion.SEVENTEEN);
 	}
 
 	@Test
-	public void isEqualOrNewerThanWhenComparingSameShouldBeTrue() {
-		assertThat(JavaVersion.EIGHT.isEqualOrNewerThan(JavaVersion.EIGHT)).isTrue();
+	void isEqualOrNewerThanWhenComparingSameShouldBeTrue() {
+		assertThat(JavaVersion.SEVENTEEN.isEqualOrNewerThan(JavaVersion.SEVENTEEN)).isTrue();
 	}
 
 	@Test
-	public void isEqualOrNewerThanWhenSmallerToGreaterShouldBeFalse() {
-		assertThat(JavaVersion.EIGHT.isEqualOrNewerThan(JavaVersion.NINE)).isFalse();
+	void isEqualOrNewerThanWhenSmallerToGreaterShouldBeFalse() {
+		assertThat(JavaVersion.SEVENTEEN.isEqualOrNewerThan(JavaVersion.EIGHTEEN)).isFalse();
 	}
 
 	@Test
-	public void isEqualOrNewerThanWhenGreaterToSmallerShouldBeTrue() {
-		assertThat(JavaVersion.NINE.isEqualOrNewerThan(JavaVersion.EIGHT)).isTrue();
+	void isEqualOrNewerThanWhenGreaterToSmallerShouldBeTrue() {
+		assertThat(JavaVersion.EIGHTEEN.isEqualOrNewerThan(JavaVersion.SEVENTEEN)).isTrue();
 	}
 
 	@Test
-	public void isOlderThanThanWhenComparingSameShouldBeFalse() {
-		assertThat(JavaVersion.EIGHT.isOlderThan(JavaVersion.EIGHT)).isFalse();
+	void isOlderThanThanWhenComparingSameShouldBeFalse() {
+		assertThat(JavaVersion.SEVENTEEN.isOlderThan(JavaVersion.SEVENTEEN)).isFalse();
 	}
 
 	@Test
-	public void isOlderThanWhenSmallerToGreaterShouldBeTrue() {
-		assertThat(JavaVersion.EIGHT.isOlderThan(JavaVersion.NINE)).isTrue();
+	void isOlderThanWhenSmallerToGreaterShouldBeTrue() {
+		assertThat(JavaVersion.SEVENTEEN.isOlderThan(JavaVersion.EIGHTEEN)).isTrue();
 	}
 
 	@Test
-	public void isOlderThanWhenGreaterToSmallerShouldBeFalse() {
-		assertThat(JavaVersion.NINE.isOlderThan(JavaVersion.EIGHT)).isFalse();
+	void isOlderThanWhenGreaterToSmallerShouldBeFalse() {
+		assertThat(JavaVersion.EIGHTEEN.isOlderThan(JavaVersion.SEVENTEEN)).isFalse();
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_17)
+	void currentJavaVersionSeventeen() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.SEVENTEEN);
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_18)
+	void currentJavaVersionEighteen() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.EIGHTEEN);
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_19)
+	void currentJavaVersionNineteen() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.NINETEEN);
 	}
 
 }

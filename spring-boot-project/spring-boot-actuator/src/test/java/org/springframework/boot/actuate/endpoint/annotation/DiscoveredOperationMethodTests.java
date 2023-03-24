@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,12 @@ package org.springframework.boot.actuate.endpoint.annotation;
 
 import java.lang.reflect.Method;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.boot.actuate.endpoint.Producible;
 import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.util.MimeType;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,28 +34,51 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class DiscoveredOperationMethodTests {
+class DiscoveredOperationMethodTests {
 
 	@Test
-	public void createWhenAnnotationAttributesIsNullShouldThrowException() {
+	void createWhenAnnotationAttributesIsNullShouldThrowException() {
 		Method method = ReflectionUtils.findMethod(getClass(), "example");
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DiscoveredOperationMethod(method, OperationType.READ, null))
-				.withMessageContaining("AnnotationAttributes must not be null");
+			.isThrownBy(() -> new DiscoveredOperationMethod(method, OperationType.READ, null))
+			.withMessageContaining("AnnotationAttributes must not be null");
 	}
 
 	@Test
-	public void getProducesMediaTypesShouldReturnMediaTypes() {
+	void getProducesMediaTypesShouldReturnMediaTypes() {
 		Method method = ReflectionUtils.findMethod(getClass(), "example");
 		AnnotationAttributes annotationAttributes = new AnnotationAttributes();
 		String[] produces = new String[] { "application/json" };
 		annotationAttributes.put("produces", produces);
+		annotationAttributes.put("producesFrom", Producible.class);
 		DiscoveredOperationMethod discovered = new DiscoveredOperationMethod(method, OperationType.READ,
 				annotationAttributes);
 		assertThat(discovered.getProducesMediaTypes()).containsExactly("application/json");
 	}
 
-	public void example() {
+	@Test
+	void getProducesMediaTypesWhenProducesFromShouldReturnMediaTypes() {
+		Method method = ReflectionUtils.findMethod(getClass(), "example");
+		AnnotationAttributes annotationAttributes = new AnnotationAttributes();
+		annotationAttributes.put("produces", new String[0]);
+		annotationAttributes.put("producesFrom", ExampleProducible.class);
+		DiscoveredOperationMethod discovered = new DiscoveredOperationMethod(method, OperationType.READ,
+				annotationAttributes);
+		assertThat(discovered.getProducesMediaTypes()).containsExactly("one/*", "two/*", "three/*");
+	}
+
+	void example() {
+	}
+
+	enum ExampleProducible implements Producible<ExampleProducible> {
+
+		ONE, TWO, THREE;
+
+		@Override
+		public MimeType getProducedMimeType() {
+			return new MimeType(toString().toLowerCase());
+		}
+
 	}
 
 }

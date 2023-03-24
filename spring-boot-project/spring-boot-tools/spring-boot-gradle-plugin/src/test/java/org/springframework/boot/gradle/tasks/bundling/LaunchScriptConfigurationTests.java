@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,10 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import org.gradle.api.Project;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -30,64 +31,82 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class LaunchScriptConfigurationTests {
+class LaunchScriptConfigurationTests {
 
 	private final AbstractArchiveTask task = mock(AbstractArchiveTask.class);
 
 	private final Project project = mock(Project.class);
 
-	@Before
-	public void setUp() {
+	@BeforeEach
+	void setUp() {
 		given(this.task.getProject()).willReturn(this.project);
 	}
 
 	@Test
-	public void initInfoProvidesUsesArchiveBaseNameByDefault() {
-		given(this.task.getBaseName()).willReturn("base-name");
+	void initInfoProvidesUsesArchiveBaseNameByDefault() {
+		Property<String> baseName = stringProperty("base-name");
+		given(this.task.getArchiveBaseName()).willReturn(baseName);
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoProvides",
 				"base-name");
 	}
 
 	@Test
-	public void initInfoShortDescriptionUsesDescriptionByDefault() {
+	void initInfoShortDescriptionUsesDescriptionByDefault() {
 		given(this.project.getDescription()).willReturn("Project description");
+		Property<String> baseName = stringProperty("base-name");
+		given(this.task.getArchiveBaseName()).willReturn(baseName);
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoShortDescription",
 				"Project description");
 	}
 
 	@Test
-	public void initInfoShortDescriptionUsesArchiveBaseNameWhenDescriptionIsNull() {
-		given(this.task.getBaseName()).willReturn("base-name");
+	void initInfoShortDescriptionUsesArchiveBaseNameWhenDescriptionIsNull() {
+		Property<String> baseName = stringProperty("base-name");
+		given(this.task.getArchiveBaseName()).willReturn(baseName);
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoShortDescription",
 				"base-name");
 	}
 
 	@Test
-	public void initInfoShortDescriptionUsesSingleLineVersionOfMultiLineProjectDescription() {
+	void initInfoShortDescriptionUsesSingleLineVersionOfMultiLineProjectDescription() {
 		given(this.project.getDescription()).willReturn("Project\ndescription");
+		Property<String> baseName = stringProperty("base-name");
+		given(this.task.getArchiveBaseName()).willReturn(baseName);
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoShortDescription",
 				"Project description");
 	}
 
 	@Test
-	public void initInfoDescriptionUsesArchiveBaseNameWhenDescriptionIsNull() {
-		given(this.task.getBaseName()).willReturn("base-name");
+	void initInfoDescriptionUsesArchiveBaseNameWhenDescriptionIsNull() {
+		Property<String> baseName = stringProperty("base-name");
+		given(this.task.getArchiveBaseName()).willReturn(baseName);
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoDescription",
 				"base-name");
 	}
 
 	@Test
-	public void initInfoDescriptionUsesProjectDescriptionByDefault() {
+	void initInfoDescriptionUsesProjectDescriptionByDefault() {
 		given(this.project.getDescription()).willReturn("Project description");
+		Property<String> baseName = stringProperty("base-name");
+		given(this.task.getArchiveBaseName()).willReturn(baseName);
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoDescription",
 				"Project description");
 	}
 
 	@Test
-	public void initInfoDescriptionUsesCorrectlyFormattedMultiLineProjectDescription() {
+	void initInfoDescriptionUsesCorrectlyFormattedMultiLineProjectDescription() {
 		given(this.project.getDescription()).willReturn("The\nproject\ndescription");
+		Property<String> baseName = stringProperty("base-name");
+		given(this.task.getArchiveBaseName()).willReturn(baseName);
 		assertThat(new LaunchScriptConfiguration(this.task).getProperties()).containsEntry("initInfoDescription",
 				"The\n#  project\n#  description");
+	}
+
+	@SuppressWarnings("unchecked")
+	private Property<String> stringProperty(String value) {
+		Property<String> property = mock(Property.class);
+		given(property.get()).willReturn(value);
+		return property;
 	}
 
 }

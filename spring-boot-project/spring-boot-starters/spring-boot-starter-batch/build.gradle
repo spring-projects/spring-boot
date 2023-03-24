@@ -1,0 +1,11 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Starter for using Spring Batch"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jdbc"))
+	api("org.springframework.batch:spring-batch-core")
+}

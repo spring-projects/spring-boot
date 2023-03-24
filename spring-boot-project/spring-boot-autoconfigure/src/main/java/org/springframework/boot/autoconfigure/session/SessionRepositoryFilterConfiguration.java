@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.session;
 import java.util.EnumSet;
 import java.util.stream.Collectors;
 
-import javax.servlet.DispatcherType;
+import jakarta.servlet.DispatcherType;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -33,13 +33,13 @@ import org.springframework.session.web.http.SessionRepositoryFilter;
  *
  * @author Andy Wilkinson
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(SessionRepositoryFilter.class)
 @EnableConfigurationProperties(SessionProperties.class)
 class SessionRepositoryFilterConfiguration {
 
 	@Bean
-	public FilterRegistrationBean<SessionRepositoryFilter<?>> sessionRepositoryFilterRegistration(
+	FilterRegistrationBean<SessionRepositoryFilter<?>> sessionRepositoryFilterRegistration(
 			SessionProperties sessionProperties, SessionRepositoryFilter<?> filter) {
 		FilterRegistrationBean<SessionRepositoryFilter<?>> registration = new FilterRegistrationBean<>(filter);
 		registration.setDispatcherTypes(getDispatcherTypes(sessionProperties));
@@ -52,8 +52,10 @@ class SessionRepositoryFilterConfiguration {
 		if (servletProperties.getFilterDispatcherTypes() == null) {
 			return null;
 		}
-		return servletProperties.getFilterDispatcherTypes().stream().map((type) -> DispatcherType.valueOf(type.name()))
-				.collect(Collectors.collectingAndThen(Collectors.toSet(), EnumSet::copyOf));
+		return servletProperties.getFilterDispatcherTypes()
+			.stream()
+			.map((type) -> DispatcherType.valueOf(type.name()))
+			.collect(Collectors.toCollection(() -> EnumSet.noneOf(DispatcherType.class)));
 	}
 
 }

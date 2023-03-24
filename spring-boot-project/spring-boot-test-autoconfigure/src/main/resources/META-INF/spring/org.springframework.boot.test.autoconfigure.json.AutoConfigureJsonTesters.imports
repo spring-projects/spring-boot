@@ -1,0 +1,5 @@
+# AutoConfigureJsonTesters auto-configuration imports
+org.springframework.boot.test.autoconfigure.json.JsonTestersAutoConfiguration
+org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration
+org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration
+org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration

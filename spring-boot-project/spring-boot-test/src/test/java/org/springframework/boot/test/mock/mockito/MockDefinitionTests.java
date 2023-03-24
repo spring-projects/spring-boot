@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 import org.mockito.Mockito;
 import org.mockito.mock.MockCreationSettings;
@@ -34,19 +34,19 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class MockDefinitionTests {
+class MockDefinitionTests {
 
 	private static final ResolvableType EXAMPLE_SERVICE_TYPE = ResolvableType.forClass(ExampleService.class);
 
 	@Test
-	public void classToMockMustNotBeNull() {
+	void classToMockMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new MockDefinition(null, null, null, null, false, null, null))
-				.withMessageContaining("TypeToMock must not be null");
+			.isThrownBy(() -> new MockDefinition(null, null, null, null, false, null, null))
+			.withMessageContaining("TypeToMock must not be null");
 	}
 
 	@Test
-	public void createWithDefaults() {
+	void createWithDefaults() {
 		MockDefinition definition = new MockDefinition(null, EXAMPLE_SERVICE_TYPE, null, null, false, null, null);
 		assertThat(definition.getName()).isNull();
 		assertThat(definition.getTypeToMock()).isEqualTo(EXAMPLE_SERVICE_TYPE);
@@ -58,7 +58,7 @@ public class MockDefinitionTests {
 	}
 
 	@Test
-	public void createExplicit() {
+	void createExplicit() {
 		QualifierDefinition qualifier = mock(QualifierDefinition.class);
 		MockDefinition definition = new MockDefinition("name", EXAMPLE_SERVICE_TYPE,
 				new Class<?>[] { ExampleExtraInterface.class }, Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE,
@@ -74,7 +74,7 @@ public class MockDefinitionTests {
 	}
 
 	@Test
-	public void createMock() {
+	void createMock() {
 		MockDefinition definition = new MockDefinition("name", EXAMPLE_SERVICE_TYPE,
 				new Class<?>[] { ExampleExtraInterface.class }, Answers.RETURNS_SMART_NULLS, true, MockReset.BEFORE,
 				null);
@@ -82,7 +82,7 @@ public class MockDefinitionTests {
 		MockCreationSettings<?> settings = Mockito.mockingDetails(mock).getMockCreationSettings();
 		assertThat(mock).isInstanceOf(ExampleService.class);
 		assertThat(mock).isInstanceOf(ExampleExtraInterface.class);
-		assertThat(settings.getMockName().toString()).isEqualTo("name");
+		assertThat(settings.getMockName()).hasToString("name");
 		assertThat(settings.getDefaultAnswer()).isEqualTo(Answers.RETURNS_SMART_NULLS);
 		assertThat(settings.isSerializable()).isTrue();
 		assertThat(MockReset.get(mock)).isEqualTo(MockReset.BEFORE);

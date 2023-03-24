@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.web;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -26,7 +26,6 @@ import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoCon
 import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.data.web.config.EnableSpringDataWebSupport;
@@ -38,19 +37,19 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's web support.
  * <p>
  * When in effect, the auto-configuration is the equivalent of enabling Spring Data's web
- * support through the {@link EnableSpringDataWebSupport} annotation.
+ * support through the {@link EnableSpringDataWebSupport @EnableSpringDataWebSupport}
+ * annotation.
  *
  * @author Andy Wilkinson
  * @author Vedran Pavic
  * @since 1.2.0
  */
-@Configuration
+@AutoConfiguration(after = RepositoryRestMvcAutoConfiguration.class)
 @EnableSpringDataWebSupport
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass({ PageableHandlerMethodArgumentResolver.class, WebMvcConfigurer.class })
 @ConditionalOnMissingBean(PageableHandlerMethodArgumentResolver.class)
 @EnableConfigurationProperties(SpringDataWebProperties.class)
-@AutoConfigureAfter(RepositoryRestMvcAutoConfiguration.class)
 public class SpringDataWebAutoConfiguration {
 
 	private final SpringDataWebProperties properties;

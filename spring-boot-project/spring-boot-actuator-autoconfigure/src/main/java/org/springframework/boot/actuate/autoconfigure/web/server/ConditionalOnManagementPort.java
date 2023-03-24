@@ -25,7 +25,8 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional} that matches based on the configuration of the management port.
+ * {@link Conditional @Conditional} that matches based on the configuration of the
+ * management port.
  *
  * @author Andy Wilkinson
  * @since 2.0.0

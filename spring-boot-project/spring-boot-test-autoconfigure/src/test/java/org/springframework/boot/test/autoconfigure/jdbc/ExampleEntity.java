@@ -17,7 +17,7 @@
 package org.springframework.boot.test.autoconfigure.jdbc;
 
 /**
- * Example entity used with {@link JdbcTest} tests.
+ * Example entity used with {@link JdbcTest @JdbcTest} tests.
  *
  * @author Stephane Nicoll
  */

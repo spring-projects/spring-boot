@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,14 +48,14 @@ public class WebServerFactoryCustomizerBeanPostProcessor implements BeanPostProc
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) {
 		Assert.isInstanceOf(ListableBeanFactory.class, beanFactory,
-				"WebServerCustomizerBeanPostProcessor can only be used " + "with a ListableBeanFactory");
+				"WebServerCustomizerBeanPostProcessor can only be used with a ListableBeanFactory");
 		this.beanFactory = (ListableBeanFactory) beanFactory;
 	}
 
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		if (bean instanceof WebServerFactory) {
-			postProcessBeforeInitialization((WebServerFactory) bean);
+		if (bean instanceof WebServerFactory webServerFactory) {
+			postProcessBeforeInitialization(webServerFactory);
 		}
 		return bean;
 	}
@@ -68,8 +68,8 @@ public class WebServerFactoryCustomizerBeanPostProcessor implements BeanPostProc
 	@SuppressWarnings("unchecked")
 	private void postProcessBeforeInitialization(WebServerFactory webServerFactory) {
 		LambdaSafe.callbacks(WebServerFactoryCustomizer.class, getCustomizers(), webServerFactory)
-				.withLogger(WebServerFactoryCustomizerBeanPostProcessor.class)
-				.invoke((customizer) -> customizer.customize(webServerFactory));
+			.withLogger(WebServerFactoryCustomizerBeanPostProcessor.class)
+			.invoke((customizer) -> customizer.customize(webServerFactory));
 	}
 
 	private Collection<WebServerFactoryCustomizer<?>> getCustomizers() {

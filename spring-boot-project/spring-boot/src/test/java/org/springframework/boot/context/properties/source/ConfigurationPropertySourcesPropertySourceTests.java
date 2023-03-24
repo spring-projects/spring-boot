@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.context.properties.source;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,21 +29,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class ConfigurationPropertySourcesPropertySourceTests {
+class ConfigurationPropertySourcesPropertySourceTests {
 
-	private List<ConfigurationPropertySource> configurationSources = new ArrayList<>();
+	private final List<ConfigurationPropertySource> configurationSources = new ArrayList<>();
 
-	private ConfigurationPropertySourcesPropertySource propertySource = new ConfigurationPropertySourcesPropertySource(
+	private final ConfigurationPropertySourcesPropertySource propertySource = new ConfigurationPropertySourcesPropertySource(
 			"test", this.configurationSources);
 
 	@Test
-	public void getPropertyShouldReturnValue() {
+	void getPropertyShouldReturnValue() {
 		this.configurationSources.add(new MockConfigurationPropertySource("foo.bar", "baz"));
 		assertThat(this.propertySource.getProperty("foo.bar")).isEqualTo("baz");
 	}
 
 	@Test
-	public void getPropertyWhenNameIsNotValidShouldReturnNull() {
+	void getPropertyWhenNameIsNotValidShouldReturnNull() {
 		this.configurationSources.add(new MockConfigurationPropertySource("foo.bar", "baz"));
 		assertThat(this.propertySource.getProperty("FOO.B-A-R")).isNull();
 		assertThat(this.propertySource.getProperty("FOO.B A R")).isNull();
@@ -51,37 +51,37 @@ public class ConfigurationPropertySourcesPropertySourceTests {
 	}
 
 	@Test
-	public void getPropertyWhenMultipleShouldReturnFirst() {
+	void getPropertyWhenMultipleShouldReturnFirst() {
 		this.configurationSources.add(new MockConfigurationPropertySource("foo.bar", "baz"));
 		this.configurationSources.add(new MockConfigurationPropertySource("foo.bar", "bill"));
 		assertThat(this.propertySource.getProperty("foo.bar")).isEqualTo("baz");
 	}
 
 	@Test
-	public void getPropertyWhenNoneShouldReturnFirst() {
+	void getPropertyWhenNoneShouldReturnFirst() {
 		this.configurationSources.add(new MockConfigurationPropertySource("foo.bar", "baz"));
 		assertThat(this.propertySource.getProperty("foo.foo")).isNull();
 	}
 
 	@Test
-	public void getPropertyOriginShouldReturnOrigin() {
+	void getPropertyOriginShouldReturnOrigin() {
 		this.configurationSources.add(new MockConfigurationPropertySource("foo.bar", "baz", "line1"));
-		assertThat(this.propertySource.getOrigin("foo.bar").toString()).isEqualTo("line1");
+		assertThat(this.propertySource.getOrigin("foo.bar")).hasToString("line1");
 	}
 
 	@Test
-	public void getPropertyOriginWhenMissingShouldReturnNull() {
+	void getPropertyOriginWhenMissingShouldReturnNull() {
 		this.configurationSources.add(new MockConfigurationPropertySource("foo.bar", "baz", "line1"));
 		assertThat(this.propertySource.getOrigin("foo.foo")).isNull();
 	}
 
 	@Test
-	public void getNameShouldReturnName() {
+	void getNameShouldReturnName() {
 		assertThat(this.propertySource.getName()).isEqualTo("test");
 	}
 
 	@Test
-	public void getSourceShouldReturnSource() {
+	void getSourceShouldReturnSource() {
 		assertThat(this.propertySource.getSource()).isSameAs(this.configurationSources);
 	}
 

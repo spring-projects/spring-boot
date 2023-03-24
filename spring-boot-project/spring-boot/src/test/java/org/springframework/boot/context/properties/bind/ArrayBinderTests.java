@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Answers;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -45,23 +46,18 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class ArrayBinderTests {
+class ArrayBinderTests {
 
 	private static final Bindable<List<Integer>> INTEGER_LIST = Bindable.listOf(Integer.class);
 
 	private static final Bindable<Integer[]> INTEGER_ARRAY = Bindable.of(Integer[].class);
 
-	private List<ConfigurationPropertySource> sources = new ArrayList<>();
+	private final List<ConfigurationPropertySource> sources = new ArrayList<>();
 
-	private Binder binder;
-
-	@Before
-	public void setup() {
-		this.binder = new Binder(this.sources);
-	}
+	private final Binder binder = new Binder(this.sources);
 
 	@Test
-	public void bindToArrayShouldReturnArray() {
+	void bindToArrayShouldReturnArray() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[0]", "1");
 		source.put("foo[1]", "2");
@@ -72,19 +68,19 @@ public class ArrayBinderTests {
 	}
 
 	@Test
-	public void bindToCollectionShouldTriggerOnSuccess() {
+	void bindToCollectionShouldTriggerOnSuccess() {
 		this.sources.add(new MockConfigurationPropertySource("foo[0]", "1", "line1"));
-		BindHandler handler = mock(BindHandler.class, Answers.CALLS_REAL_METHODS);
+		BindHandler handler = mockBindHandler();
 		this.binder.bind("foo", INTEGER_LIST, handler);
 		InOrder inOrder = inOrder(handler);
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo[0]")), eq(Bindable.of(Integer.class)),
-				any(), eq(1));
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(INTEGER_LIST), any(),
-				isA(List.class));
+		inOrder.verify(handler)
+			.onSuccess(eq(ConfigurationPropertyName.of("foo[0]")), eq(Bindable.of(Integer.class)), any(), eq(1));
+		inOrder.verify(handler)
+			.onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(INTEGER_LIST), any(), isA(List.class));
 	}
 
 	@Test
-	public void bindToArrayShouldReturnPrimitiveArray() {
+	void bindToArrayShouldReturnPrimitiveArray() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[0]", "1");
 		source.put("foo[1]", "2");
@@ -95,7 +91,7 @@ public class ArrayBinderTests {
 	}
 
 	@Test
-	public void bindToArrayWhenNestedShouldReturnPopulatedArray() {
+	void bindToArrayWhenNestedShouldReturnPopulatedArray() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[0][0]", "1");
 		source.put("foo[0][1]", "2");
@@ -105,13 +101,13 @@ public class ArrayBinderTests {
 		ResolvableType type = ResolvableType.forArrayComponent(INTEGER_ARRAY.getType());
 		Bindable<Integer[][]> target = Bindable.of(type);
 		Integer[][] result = this.binder.bind("foo", target).get();
-		assertThat(result).hasSize(2);
+		assertThat(result).hasDimensions(2, 2);
 		assertThat(result[0]).containsExactly(1, 2);
 		assertThat(result[1]).containsExactly(3, 4);
 	}
 
 	@Test
-	public void bindToArrayWhenNestedListShouldReturnPopulatedArray() {
+	void bindToArrayWhenNestedListShouldReturnPopulatedArray() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[0][0]", "1");
 		source.put("foo[0][1]", "2");
@@ -127,7 +123,7 @@ public class ArrayBinderTests {
 	}
 
 	@Test
-	public void bindToArrayWhenNotInOrderShouldReturnPopulatedArray() {
+	void bindToArrayWhenNotInOrderShouldReturnPopulatedArray() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[1]", "2");
 		source.put("foo[0]", "1");
@@ -138,25 +134,25 @@ public class ArrayBinderTests {
 	}
 
 	@Test
-	public void bindToArrayWhenNonSequentialShouldThrowException() {
+	void bindToArrayWhenNonSequentialShouldThrowException() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[0]", "2");
 		source.put("foo[1]", "1");
 		source.put("foo[3]", "3");
 		this.sources.add(source);
 		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.binder.bind("foo", INTEGER_ARRAY))
-				.satisfies((ex) -> {
-					Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
-							.getUnboundProperties();
-					assertThat(unbound.size()).isEqualTo(1);
-					ConfigurationProperty property = unbound.iterator().next();
-					assertThat(property.getName().toString()).isEqualTo("foo[3]");
-					assertThat(property.getValue()).isEqualTo("3");
-				});
+			.satisfies((ex) -> {
+				Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
+					.getUnboundProperties();
+				assertThat(unbound).hasSize(1);
+				ConfigurationProperty property = unbound.iterator().next();
+				assertThat(property.getName()).hasToString("foo[3]");
+				assertThat(property.getValue()).isEqualTo("3");
+			});
 	}
 
 	@Test
-	public void bindToArrayWhenNonIterableShouldReturnPopulatedArray() {
+	void bindToArrayWhenNonIterableShouldReturnPopulatedArray() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[1]", "2");
 		source.put("foo[0]", "1");
@@ -167,7 +163,7 @@ public class ArrayBinderTests {
 	}
 
 	@Test
-	public void bindToArrayWhenMultipleSourceShouldOnlyUseFirst() {
+	void bindToArrayWhenMultipleSourceShouldOnlyUseFirst() {
 		MockConfigurationPropertySource source1 = new MockConfigurationPropertySource();
 		source1.put("bar", "baz");
 		this.sources.add(source1);
@@ -185,7 +181,7 @@ public class ArrayBinderTests {
 	}
 
 	@Test
-	public void bindToArrayWhenHasExistingCollectionShouldReplaceAllContents() {
+	void bindToArrayWhenHasExistingCollectionShouldReplaceAllContents() {
 		this.sources.add(new MockConfigurationPropertySource("foo[0]", "1"));
 		Integer[] existing = new Integer[2];
 		existing[0] = 1000;
@@ -195,34 +191,34 @@ public class ArrayBinderTests {
 	}
 
 	@Test
-	public void bindToArrayWhenNoValueShouldReturnUnbound() {
+	void bindToArrayWhenNoValueShouldReturnUnbound() {
 		this.sources.add(new MockConfigurationPropertySource("faf.bar", "1"));
 		BindResult<Integer[]> result = this.binder.bind("foo", INTEGER_ARRAY);
 		assertThat(result.isBound()).isFalse();
 	}
 
 	@Test
-	public void bindToArrayShouldTriggerOnSuccess() {
+	void bindToArrayShouldTriggerOnSuccess() {
 		this.sources.add(new MockConfigurationPropertySource("foo[0]", "1", "line1"));
-		BindHandler handler = mock(BindHandler.class, Answers.CALLS_REAL_METHODS);
+		BindHandler handler = mockBindHandler();
 		Bindable<Integer[]> target = INTEGER_ARRAY;
 		this.binder.bind("foo", target, handler);
 		InOrder inOrder = inOrder(handler);
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo[0]")), eq(Bindable.of(Integer.class)),
-				any(), eq(1));
-		inOrder.verify(handler).onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(target), any(),
-				isA(Integer[].class));
+		inOrder.verify(handler)
+			.onSuccess(eq(ConfigurationPropertyName.of("foo[0]")), eq(Bindable.of(Integer.class)), any(), eq(1));
+		inOrder.verify(handler)
+			.onSuccess(eq(ConfigurationPropertyName.of("foo")), eq(target), any(), isA(Integer[].class));
 	}
 
 	@Test
-	public void bindToArrayWhenCommaListShouldReturnPopulatedArray() {
+	void bindToArrayWhenCommaListShouldReturnPopulatedArray() {
 		this.sources.add(new MockConfigurationPropertySource("foo", "1,2,3"));
 		int[] result = this.binder.bind("foo", Bindable.of(int[].class)).get();
 		assertThat(result).containsExactly(1, 2, 3);
 	}
 
 	@Test
-	public void bindToArrayWhenCommaListAndIndexedShouldOnlyUseFirst() {
+	void bindToArrayWhenCommaListAndIndexedShouldOnlyUseFirst() {
 		MockConfigurationPropertySource source1 = new MockConfigurationPropertySource();
 		source1.put("foo", "1,2");
 		this.sources.add(source1);
@@ -234,7 +230,7 @@ public class ArrayBinderTests {
 	}
 
 	@Test
-	public void bindToArrayWhenIndexedAndCommaListShouldOnlyUseFirst() {
+	void bindToArrayWhenIndexedAndCommaListShouldOnlyUseFirst() {
 		MockConfigurationPropertySource source1 = new MockConfigurationPropertySource();
 		source1.put("foo[0]", "1");
 		source1.put("foo[1]", "2");
@@ -246,23 +242,23 @@ public class ArrayBinderTests {
 	}
 
 	@Test
-	public void bindToArrayShouldBindCharArray() {
+	void bindToArrayShouldBindCharArray() {
 		this.sources.add(new MockConfigurationPropertySource("foo", "word"));
 		char[] result = this.binder.bind("foo", Bindable.of(char[].class)).get();
 		assertThat(result).containsExactly("word".toCharArray());
 	}
 
 	@Test
-	public void bindToArrayWhenEmptyStringShouldReturnEmptyArray() {
+	void bindToArrayWhenEmptyStringShouldReturnEmptyArray() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "");
 		this.sources.add(source);
 		String[] result = this.binder.bind("foo", Bindable.of(String[].class)).get();
-		assertThat(result).isNotNull().isEmpty();
+		assertThat(result).isEmpty();
 	}
 
 	@Test
-	public void bindToArrayWhenHasSpacesShouldTrim() {
+	void bindToArrayWhenHasSpacesShouldTrim() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "1,  2,3");
 		this.sources.add(source);
@@ -271,7 +267,7 @@ public class ArrayBinderTests {
 	}
 
 	@Test
-	public void bindToArrayShouldUsePropertyEditor() {
+	void bindToArrayShouldUsePropertyEditor() {
 		// gh-12166
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[0]", "java.lang.RuntimeException");
@@ -282,13 +278,40 @@ public class ArrayBinderTests {
 	}
 
 	@Test
-	public void bindToArrayWhenStringShouldUsePropertyEditor() {
+	void bindToArrayWhenStringShouldUsePropertyEditor() {
 		// gh-12166
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "java.lang.RuntimeException,java.lang.IllegalStateException");
 		this.sources.add(source);
 		assertThat(this.binder.bind("foo", Bindable.of(Class[].class)).get()).containsExactly(RuntimeException.class,
 				IllegalStateException.class);
+	}
+
+	private BindHandler mockBindHandler() {
+		BindHandler handler = mock(BindHandler.class);
+		given(handler.onStart(any(), any(), any())).willAnswer(InvocationArgument.index(1));
+		given(handler.onCreate(any(), any(), any(), any())).willAnswer(InvocationArgument.index(3));
+		given(handler.onSuccess(any(), any(), any(), any())).willAnswer(InvocationArgument.index(3));
+		return handler;
+	}
+
+	private static final class InvocationArgument<T> implements Answer<T> {
+
+		private final int index;
+
+		private InvocationArgument(int index) {
+			this.index = index;
+		}
+
+		@Override
+		public T answer(InvocationOnMock invocation) throws Throwable {
+			return invocation.getArgument(this.index);
+		}
+
+		private static <T> InvocationArgument<T> index(int index) {
+			return new InvocationArgument<>(index);
+		}
+
 	}
 
 }

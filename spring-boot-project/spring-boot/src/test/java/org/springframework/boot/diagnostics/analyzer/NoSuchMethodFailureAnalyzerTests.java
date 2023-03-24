@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,88 +16,109 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServlet;
+import java.util.List;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.diagnostics.FailureAnalysis;
+import org.springframework.boot.diagnostics.analyzer.NoSuchMethodFailureAnalyzer.ClassDescriptor;
 import org.springframework.boot.diagnostics.analyzer.NoSuchMethodFailureAnalyzer.NoSuchMethodDescriptor;
-import org.springframework.boot.testsupport.runner.classpath.ClassPathOverrides;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
+import org.springframework.data.r2dbc.mapping.R2dbcMappingContext;
+import org.springframework.util.MimeType;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link NoSuchMethodFailureAnalyzer}.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
-@RunWith(ModifiedClassPathRunner.class)
-@ClassPathOverrides("javax.servlet:servlet-api:2.5")
-public class NoSuchMethodFailureAnalyzerTests {
+@ClassPathOverrides({ "org.springframework:spring-core:5.3.12",
+		"org.springframework.data:spring-data-relational:1.1.7.RELEASE" })
+class NoSuchMethodFailureAnalyzerTests {
 
 	@Test
-	public void parseJava8ErrorMessage() {
+	void parseHotspotErrorMessage() {
 		NoSuchMethodDescriptor descriptor = new NoSuchMethodFailureAnalyzer().getNoSuchMethodDescriptor(
-				"javax.servlet.ServletContext.addServlet(Ljava/lang/String;Ljavax/servlet/Servlet;)"
-						+ "Ljavax/servlet/ServletRegistration$Dynamic;");
+				"'boolean org.springframework.util.MimeType.isMoreSpecific(org.springframework.util.MimeType)'");
 		assertThat(descriptor).isNotNull();
 		assertThat(descriptor.getErrorMessage())
-				.isEqualTo("javax.servlet.ServletContext.addServlet(Ljava/lang/String;Ljavax/servlet/Servlet;)"
-						+ "Ljavax/servlet/ServletRegistration$Dynamic;");
-		assertThat(descriptor.getClassName()).isEqualTo("javax.servlet.ServletContext");
-		assertThat(descriptor.getCandidateLocations().size()).isGreaterThan(1);
-		assertThat(descriptor.getActualLocation().toString()).contains("servlet-api-2.5.jar");
+			.isEqualTo("'boolean org.springframework.util.MimeType.isMoreSpecific(org.springframework.util.MimeType)'");
+		assertThat(descriptor.getClassName()).isEqualTo("org.springframework.util.MimeType");
+		assertThat(descriptor.getCandidateLocations()).hasSizeGreaterThan(1);
+		List<ClassDescriptor> typeHierarchy = descriptor.getTypeHierarchy();
+		assertThat(typeHierarchy).hasSize(1);
+		assertThat(typeHierarchy.get(0).getLocation()).asString().contains("spring-core-5.3.12.jar");
 	}
 
 	@Test
-	public void parseJavaOpenJ9ErrorMessage() {
+	void parseOpenJ9ErrorMessage() {
 		NoSuchMethodDescriptor descriptor = new NoSuchMethodFailureAnalyzer().getNoSuchMethodDescriptor(
-				"javax/servlet/ServletContext.addServlet(Ljava/lang/String;Ljavax/servlet/Servlet;)"
-						+ "Ljavax/servlet/ServletRegistration$Dynamic; (loaded from file...");
+				"org/springframework/util/MimeType.isMoreSpecific(Lorg/springframework/util/MimeType;)Z "
+						+ "(loaded from ...) "
+						+ "called from class org.springframework.boot.diagnostics.analyzer.NoSuchMethodFailureAnalyzerTests "
+						+ "(loaded from ... "
+						+ "by org.springframework.boot.testsupport.classpath.ModifiedClassPathClassLoader@e0ce6310).");
 		assertThat(descriptor).isNotNull();
 		assertThat(descriptor.getErrorMessage())
-				.isEqualTo("javax/servlet/ServletContext.addServlet(Ljava/lang/String;Ljavax/servlet/Servlet;)"
-						+ "Ljavax/servlet/ServletRegistration$Dynamic;");
-		assertThat(descriptor.getClassName()).isEqualTo("javax.servlet.ServletContext");
-		assertThat(descriptor.getCandidateLocations().size()).isGreaterThan(1);
-		assertThat(descriptor.getActualLocation().toString()).contains("servlet-api-2.5.jar");
+			.isEqualTo("org/springframework/util/MimeType.isMoreSpecific(Lorg/springframework/util/MimeType;)Z");
+		assertThat(descriptor.getClassName()).isEqualTo("org.springframework.util.MimeType");
+		assertThat(descriptor.getCandidateLocations()).hasSizeGreaterThan(1);
+		List<ClassDescriptor> typeHierarchy = descriptor.getTypeHierarchy();
+		assertThat(typeHierarchy).hasSize(1);
+		assertThat(typeHierarchy.get(0).getLocation()).asString().contains("spring-core-5.3.12.jar");
 	}
 
 	@Test
-	public void parseJavaImprovedHotspotErrorMessage() {
-		NoSuchMethodDescriptor descriptor = new NoSuchMethodFailureAnalyzer().getNoSuchMethodDescriptor(
-				"'javax.servlet.ServletRegistration$Dynamic javax.servlet.ServletContext.addServlet("
-						+ "java.lang.String, javax.servlet.Servlet)'");
-		assertThat(descriptor).isNotNull();
-		assertThat(descriptor.getErrorMessage())
-				.isEqualTo("'javax.servlet.ServletRegistration$Dynamic javax.servlet.ServletContext.addServlet("
-						+ "java.lang.String, javax.servlet.Servlet)'");
-		assertThat(descriptor.getClassName()).isEqualTo("javax.servlet.ServletContext");
-		assertThat(descriptor.getCandidateLocations().size()).isGreaterThan(1);
-		assertThat(descriptor.getActualLocation().toString()).contains("servlet-api-2.5.jar");
-	}
-
-	@Test
-	public void noSuchMethodErrorIsAnalyzed() {
-		Throwable failure = createFailure();
+	void whenAMethodOnAClassIsMissingThenNoSuchMethodErrorIsAnalyzed() {
+		Throwable failure = createFailureForMissingMethod();
 		assertThat(failure).isNotNull();
+		failure.printStackTrace();
 		FailureAnalysis analysis = new NoSuchMethodFailureAnalyzer().analyze(failure);
 		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription())
-				.contains(NoSuchMethodFailureAnalyzerTests.class.getName() + ".createFailure(").contains("addServlet(")
-				.contains("class, javax.servlet.ServletContext,");
+			.contains(NoSuchMethodFailureAnalyzerTests.class.getName() + ".createFailureForMissingMethod(")
+			.contains("isMoreSpecific(")
+			.contains("calling method's class, " + NoSuchMethodFailureAnalyzerTests.class.getName() + ",")
+			.contains("called method's class, org.springframework.util.MimeType,");
+		assertThat(analysis.getAction()).contains(NoSuchMethodFailureAnalyzerTests.class.getName())
+			.contains("org.springframework.util.MimeType");
 	}
 
-	private Throwable createFailure() {
+	@Test
+	void whenAnInheritedMethodIsMissingThenNoSuchMethodErrorIsAnalyzed() {
+		Throwable failure = createFailureForMissingInheritedMethod();
+		assertThat(failure).isNotNull();
+		FailureAnalysis analysis = new NoSuchMethodFailureAnalyzer().analyze(failure);
+		assertThat(analysis).isNotNull();
+		assertThat(analysis.getDescription()).contains(R2dbcMappingContext.class.getName() + ".<init>(")
+			.contains(R2dbcMappingContext.class.getName() + ".setForceQuote(")
+			.contains("calling method's class, org.springframework.data.r2dbc.mapping.R2dbcMappingContext,")
+			.contains("called method's class, org.springframework.data.r2dbc.mapping.R2dbcMappingContext,")
+			.contains("    org.springframework.data.r2dbc.mapping.R2dbcMappingContext")
+			.contains("    org.springframework.data.relational.core.mapping.RelationalMappingContext")
+			.contains("    org.springframework.data.mapping.context.AbstractMappingContext");
+		assertThat(analysis.getAction()).contains("org.springframework.data.r2dbc.mapping.R2dbcMappingContext");
+	}
+
+	private Throwable createFailureForMissingMethod() {
 		try {
-			ServletContext servletContext = mock(ServletContext.class);
-			servletContext.addServlet("example", new HttpServlet() {
-			});
+			System.out.println(MimeType.class.getProtectionDomain().getCodeSource().getLocation());
+			MimeType mimeType = new MimeType("application", "json");
+			System.out.println(mimeType.isMoreSpecific(null));
+			return null;
+		}
+		catch (Throwable ex) {
+			return ex;
+		}
+	}
+
+	private Throwable createFailureForMissingInheritedMethod() {
+		try {
+			new R2dbcMappingContext();
 			return null;
 		}
 		catch (Throwable ex) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,57 +18,59 @@ package org.springframework.boot.autoconfigure.hateoas;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.hateoas.EntityLinks;
-import org.springframework.hateoas.LinkDiscoverers;
-import org.springframework.hateoas.Resource;
-import org.springframework.hateoas.config.EnableEntityLinks;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.client.LinkDiscoverers;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
+import org.springframework.hateoas.mediatype.hal.HalConfiguration;
+import org.springframework.http.MediaType;
 import org.springframework.plugin.core.Plugin;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring HATEOAS's
- * {@link EnableHypermediaSupport}.
+ * {@link EnableHypermediaSupport @EnableHypermediaSupport}.
  *
  * @author Roy Clarkson
  * @author Oliver Gierke
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-@Configuration
-@ConditionalOnClass({ Resource.class, RequestMapping.class, Plugin.class })
-@ConditionalOnWebApplication
-@AutoConfigureAfter({ WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
+@AutoConfiguration(after = { WebMvcAutoConfiguration.class, JacksonAutoConfiguration.class,
 		HttpMessageConvertersAutoConfiguration.class, RepositoryRestMvcAutoConfiguration.class })
+@ConditionalOnClass({ EntityModel.class, RequestMapping.class, RequestMappingHandlerAdapter.class, Plugin.class })
+@ConditionalOnWebApplication
 @EnableConfigurationProperties(HateoasProperties.class)
-@Import(HypermediaHttpMessageConverterConfiguration.class)
 public class HypermediaAutoConfiguration {
 
-	@Configuration
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnClass(name = "com.fasterxml.jackson.databind.ObjectMapper")
+	@ConditionalOnProperty(prefix = "spring.hateoas", name = "use-hal-as-default-json-media-type",
+			matchIfMissing = true)
+	HalConfiguration applicationJsonHalConfiguration() {
+		return new HalConfiguration().withMediaType(MediaType.APPLICATION_JSON);
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(LinkDiscoverers.class)
 	@ConditionalOnClass(ObjectMapper.class)
 	@EnableHypermediaSupport(type = HypermediaType.HAL)
 	protected static class HypermediaConfiguration {
-
-	}
-
-	@Configuration
-	@ConditionalOnMissingBean(EntityLinks.class)
-	@EnableEntityLinks
-	protected static class EntityLinksConfiguration {
 
 	}
 

@@ -51,6 +51,8 @@ public class TypeExcludeFilter implements TypeFilter, BeanFactoryAware {
 
 	private BeanFactory beanFactory;
 
+	private Collection<TypeExcludeFilter> delegates;
+
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
 		this.beanFactory = beanFactory;
@@ -60,15 +62,22 @@ public class TypeExcludeFilter implements TypeFilter, BeanFactoryAware {
 	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
 			throws IOException {
 		if (this.beanFactory instanceof ListableBeanFactory && getClass() == TypeExcludeFilter.class) {
-			Collection<TypeExcludeFilter> delegates = ((ListableBeanFactory) this.beanFactory)
-					.getBeansOfType(TypeExcludeFilter.class).values();
-			for (TypeExcludeFilter delegate : delegates) {
+			for (TypeExcludeFilter delegate : getDelegates()) {
 				if (delegate.match(metadataReader, metadataReaderFactory)) {
 					return true;
 				}
 			}
 		}
 		return false;
+	}
+
+	private Collection<TypeExcludeFilter> getDelegates() {
+		Collection<TypeExcludeFilter> delegates = this.delegates;
+		if (delegates == null) {
+			delegates = ((ListableBeanFactory) this.beanFactory).getBeansOfType(TypeExcludeFilter.class).values();
+			this.delegates = delegates;
+		}
+		return delegates;
 	}
 
 	@Override

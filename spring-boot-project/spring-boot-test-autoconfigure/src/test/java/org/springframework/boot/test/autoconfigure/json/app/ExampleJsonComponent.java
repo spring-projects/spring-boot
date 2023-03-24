@@ -31,14 +31,15 @@ import org.springframework.boot.jackson.JsonObjectSerializer;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 
 /**
- * Example {@link JsonComponent} for use with {@link JsonTest @JsonTest} tests.
+ * Example {@link JsonComponent @JsonComponent} for use with {@link JsonTest @JsonTest}
+ * tests.
  *
  * @author Phillip Webb
  */
 @JsonComponent
 public class ExampleJsonComponent {
 
-	public static class Serializer extends JsonObjectSerializer<ExampleCustomObject> {
+	static class Serializer extends JsonObjectSerializer<ExampleCustomObject> {
 
 		@Override
 		protected void serializeObject(ExampleCustomObject value, JsonGenerator jgen, SerializerProvider provider)
@@ -48,7 +49,7 @@ public class ExampleJsonComponent {
 
 	}
 
-	public static class Deserializer extends JsonObjectDeserializer<ExampleCustomObject> {
+	static class Deserializer extends JsonObjectDeserializer<ExampleCustomObject> {
 
 		@Override
 		protected ExampleCustomObject deserializeObject(JsonParser jsonParser, DeserializationContext context,

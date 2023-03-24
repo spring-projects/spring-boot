@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,12 +40,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Annotation that can be used in combination with {@code @RunWith(SpringRunner.class)}
- * for a typical Data JDBC test. Can be used when a test focuses <strong>only</strong> on
+ * Annotation that can be used for a Data JDBC test that focuses <strong>only</strong> on
  * Data JDBC components.
  * <p>
- * Using this annotation will disable full auto-configuration and instead apply only
- * configuration relevant to Data JDBC tests.
+ * Using this annotation will disable full auto-configuration, scan for
+ * {@code AbstractJdbcConfiguration} subclasses, and apply only configuration relevant to
+ * Data JDBC tests.
  * <p>
  * By default, tests annotated with {@code @DataJdbcTest} are transactional and roll back
  * at the end of each test. They also use an embedded in-memory database (replacing any
@@ -57,6 +57,9 @@ import org.springframework.transaction.annotation.Transactional;
  * database, you should consider {@link SpringBootTest @SpringBootTest} combined with
  * {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase} rather than this
  * annotation.
+ * <p>
+ * When using JUnit 4, this annotation should be used in combination with
+ * {@code @RunWith(SpringRunner.class)}.
  *
  * @author Andy Wilkinson
  * @since 2.1.0
@@ -85,8 +88,8 @@ public @interface DataJdbcTest {
 
 	/**
 	 * Determines if default filtering should be used with
-	 * {@link SpringBootApplication @SpringBootApplication}. By default no beans are
-	 * included.
+	 * {@link SpringBootApplication @SpringBootApplication}. By default, only
+	 * {@code AbstractJdbcConfiguration} beans are included.
 	 * @see #includeFilters()
 	 * @see #excludeFilters()
 	 * @return if default filters should be used

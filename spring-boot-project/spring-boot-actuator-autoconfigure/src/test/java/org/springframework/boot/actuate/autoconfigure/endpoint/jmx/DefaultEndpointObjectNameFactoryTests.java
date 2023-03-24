@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,14 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.jmx.ExposableJmxEndpoint;
-import org.springframework.mock.env.MockEnvironment;
+import org.springframework.boot.autoconfigure.jmx.JmxProperties;
 import org.springframework.util.ObjectUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -39,45 +38,38 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-public class DefaultEndpointObjectNameFactoryTests {
+class DefaultEndpointObjectNameFactoryTests {
 
-	private final MockEnvironment environment = new MockEnvironment();
+	private final JmxEndpointProperties properties = new JmxEndpointProperties();
 
-	private final JmxEndpointProperties properties = new JmxEndpointProperties(this.environment);
+	private final JmxProperties jmxProperties = new JmxProperties();
 
 	private final MBeanServer mBeanServer = mock(MBeanServer.class);
 
 	private String contextId;
 
 	@Test
-	public void generateObjectName() {
+	void generateObjectName() {
 		ObjectName objectName = generateObjectName(endpoint(EndpointId.of("test")));
-		assertThat(objectName.toString()).isEqualTo("org.springframework.boot:type=Endpoint,name=Test");
+		assertThat(objectName).hasToString("org.springframework.boot:type=Endpoint,name=Test");
 	}
 
 	@Test
-	public void generateObjectNameWithCapitalizedId() {
+	void generateObjectNameWithCapitalizedId() {
 		ObjectName objectName = generateObjectName(endpoint(EndpointId.of("testEndpoint")));
-		assertThat(objectName.toString()).isEqualTo("org.springframework.boot:type=Endpoint,name=TestEndpoint");
+		assertThat(objectName).hasToString("org.springframework.boot:type=Endpoint,name=TestEndpoint");
 	}
 
 	@Test
-	public void generateObjectNameWithCustomDomain() {
+	void generateObjectNameWithCustomDomain() {
 		this.properties.setDomain("com.example.acme");
 		ObjectName objectName = generateObjectName(endpoint(EndpointId.of("test")));
-		assertThat(objectName.toString()).isEqualTo("com.example.acme:type=Endpoint,name=Test");
+		assertThat(objectName).hasToString("com.example.acme:type=Endpoint,name=Test");
 	}
 
 	@Test
-	public void generateObjectNameWithUniqueNames() {
-		this.environment.setProperty("spring.jmx.unique-names", "true");
-		assertUniqueObjectName();
-	}
-
-	@Test
-	@Deprecated
-	public void generateObjectNameWithUniqueNamesDeprecatedProperty() {
-		this.properties.setUniqueNames(true);
+	void generateObjectNameWithUniqueNames() {
+		this.jmxProperties.setUniqueNames(true);
 		assertUniqueObjectName();
 	}
 
@@ -85,21 +77,11 @@ public class DefaultEndpointObjectNameFactoryTests {
 		ExposableJmxEndpoint endpoint = endpoint(EndpointId.of("test"));
 		String id = ObjectUtils.getIdentityHexString(endpoint);
 		ObjectName objectName = generateObjectName(endpoint);
-		assertThat(objectName.toString()).isEqualTo("org.springframework.boot:type=Endpoint,name=Test,identity=" + id);
+		assertThat(objectName).hasToString("org.springframework.boot:type=Endpoint,name=Test,identity=" + id);
 	}
 
 	@Test
-	@Deprecated
-	public void generateObjectNameWithUniqueNamesDeprecatedPropertyMismatchMainProperty() {
-		this.environment.setProperty("spring.jmx.unique-names", "false");
-		this.properties.setUniqueNames(true);
-		assertThatIllegalArgumentException().isThrownBy(() -> generateObjectName(endpoint(EndpointId.of("test"))))
-				.withMessageContaining("spring.jmx.unique-names")
-				.withMessageContaining("management.endpoints.jmx.unique-names");
-	}
-
-	@Test
-	public void generateObjectNameWithStaticNames() {
+	void generateObjectNameWithStaticNames() {
 		this.properties.getStaticNames().setProperty("counter", "42");
 		this.properties.getStaticNames().setProperty("foo", "bar");
 		ObjectName objectName = generateObjectName(endpoint(EndpointId.of("test")));
@@ -109,20 +91,20 @@ public class DefaultEndpointObjectNameFactoryTests {
 	}
 
 	@Test
-	public void generateObjectNameWithDuplicate() throws MalformedObjectNameException {
+	void generateObjectNameWithDuplicate() throws MalformedObjectNameException {
 		this.contextId = "testContext";
 		given(this.mBeanServer.queryNames(new ObjectName("org.springframework.boot:type=Endpoint,name=Test,*"), null))
-				.willReturn(Collections.singleton(new ObjectName("org.springframework.boot:type=Endpoint,name=Test")));
+			.willReturn(Collections.singleton(new ObjectName("org.springframework.boot:type=Endpoint,name=Test")));
 		ObjectName objectName = generateObjectName(endpoint(EndpointId.of("test")));
-		assertThat(objectName.toString())
-				.isEqualTo("org.springframework.boot:type=Endpoint,name=Test,context=testContext");
+		assertThat(objectName).hasToString("org.springframework.boot:type=Endpoint,name=Test,context=testContext");
 
 	}
 
 	private ObjectName generateObjectName(ExposableJmxEndpoint endpoint) {
 		try {
-			return new DefaultEndpointObjectNameFactory(this.properties, this.environment, this.mBeanServer,
-					this.contextId).getObjectName(endpoint);
+			return new DefaultEndpointObjectNameFactory(this.properties, this.jmxProperties, this.mBeanServer,
+					this.contextId)
+				.getObjectName(endpoint);
 		}
 		catch (MalformedObjectNameException ex) {
 			throw new AssertionError("Invalid object name", ex);

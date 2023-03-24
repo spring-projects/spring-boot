@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,9 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import reactor.netty.http.HttpProtocol;
 import reactor.netty.http.server.HttpServer;
@@ -29,6 +31,7 @@ import reactor.netty.resources.LoopResources;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
@@ -43,13 +46,17 @@ import org.springframework.util.Assert;
  */
 public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFactory {
 
-	private List<NettyServerCustomizer> serverCustomizers = new ArrayList<>();
+	private Set<NettyServerCustomizer> serverCustomizers = new LinkedHashSet<>();
+
+	private final List<NettyRouteProvider> routeProviders = new ArrayList<>();
 
 	private Duration lifecycleTimeout;
 
 	private boolean useForwardHeaders;
 
 	private ReactorResourceFactory resourceFactory;
+
+	private Shutdown shutdown;
 
 	public NettyReactiveWebServerFactory() {
 	}
@@ -62,7 +69,15 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	public WebServer getWebServer(HttpHandler httpHandler) {
 		HttpServer httpServer = createHttpServer();
 		ReactorHttpHandlerAdapter handlerAdapter = new ReactorHttpHandlerAdapter(httpHandler);
-		return new NettyWebServer(httpServer, handlerAdapter, this.lifecycleTimeout);
+		NettyWebServer webServer = createNettyWebServer(httpServer, handlerAdapter, this.lifecycleTimeout,
+				getShutdown());
+		webServer.setRouteProviders(this.routeProviders);
+		return webServer;
+	}
+
+	NettyWebServer createNettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter,
+			Duration lifecycleTimeout, Shutdown shutdown) {
+		return new NettyWebServer(httpServer, handlerAdapter, lifecycleTimeout, shutdown);
 	}
 
 	/**
@@ -81,16 +96,27 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 */
 	public void setServerCustomizers(Collection<? extends NettyServerCustomizer> serverCustomizers) {
 		Assert.notNull(serverCustomizers, "ServerCustomizers must not be null");
-		this.serverCustomizers = new ArrayList<>(serverCustomizers);
+		this.serverCustomizers = new LinkedHashSet<>(serverCustomizers);
 	}
 
 	/**
-	 * Add {@link NettyServerCustomizer}s that should applied while building the server.
+	 * Add {@link NettyServerCustomizer}s that should be applied while building the
+	 * server.
 	 * @param serverCustomizers the customizers to add
 	 */
 	public void addServerCustomizers(NettyServerCustomizer... serverCustomizers) {
 		Assert.notNull(serverCustomizers, "ServerCustomizer must not be null");
 		this.serverCustomizers.addAll(Arrays.asList(serverCustomizers));
+	}
+
+	/**
+	 * Add {@link NettyRouteProvider}s that should be applied, in order, before the
+	 * handler for the Spring application.
+	 * @param routeProviders the route providers to add
+	 */
+	public void addRouteProviders(NettyRouteProvider... routeProviders) {
+		Assert.notNull(routeProviders, "NettyRouteProvider must not be null");
+		this.routeProviders.addAll(Arrays.asList(routeProviders));
 	}
 
 	/**
@@ -120,21 +146,28 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		this.resourceFactory = resourceFactory;
 	}
 
+	@Override
+	public void setShutdown(Shutdown shutdown) {
+		this.shutdown = shutdown;
+	}
+
+	@Override
+	public Shutdown getShutdown() {
+		return this.shutdown;
+	}
+
 	private HttpServer createHttpServer() {
 		HttpServer server = HttpServer.create();
 		if (this.resourceFactory != null) {
 			LoopResources resources = this.resourceFactory.getLoopResources();
 			Assert.notNull(resources, "No LoopResources: is ReactorResourceFactory not initialized yet?");
-			server = server.tcpConfiguration(
-					(tcpServer) -> tcpServer.runOn(resources).addressSupplier(this::getListenAddress));
+			server = server.runOn(resources).bindAddress(this::getListenAddress);
 		}
 		else {
-			server = server.tcpConfiguration((tcpServer) -> tcpServer.addressSupplier(this::getListenAddress));
+			server = server.bindAddress(this::getListenAddress);
 		}
 		if (getSsl() != null && getSsl().isEnabled()) {
-			SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(getSsl(), getHttp2(),
-					getSslStoreProvider());
-			server = sslServerCustomizer.apply(server);
+			server = customizeSslConfiguration(server);
 		}
 		if (getCompression() != null && getCompression().getEnabled()) {
 			CompressionCustomizer compressionCustomizer = new CompressionCustomizer(getCompression());
@@ -144,16 +177,25 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		return applyCustomizers(server);
 	}
 
+	@SuppressWarnings("deprecation")
+	private HttpServer customizeSslConfiguration(HttpServer httpServer) {
+		SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(getSsl(), getHttp2(),
+				getOrCreateSslStoreProvider());
+		return sslServerCustomizer.apply(httpServer);
+	}
+
 	private HttpProtocol[] listProtocols() {
+		List<HttpProtocol> protocols = new ArrayList<>();
+		protocols.add(HttpProtocol.HTTP11);
 		if (getHttp2() != null && getHttp2().isEnabled()) {
 			if (getSsl() != null && getSsl().isEnabled()) {
-				return new HttpProtocol[] { HttpProtocol.H2, HttpProtocol.HTTP11 };
+				protocols.add(HttpProtocol.H2);
 			}
 			else {
-				return new HttpProtocol[] { HttpProtocol.H2C, HttpProtocol.HTTP11 };
+				protocols.add(HttpProtocol.H2C);
 			}
 		}
-		return new HttpProtocol[] { HttpProtocol.HTTP11 };
+		return protocols.toArray(new HttpProtocol[0]);
 	}
 
 	private InetSocketAddress getListenAddress() {

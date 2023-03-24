@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException;
@@ -47,7 +47,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Madhura Bhave
  */
-public class CloudFoundrySecurityServiceTests {
+class CloudFoundrySecurityServiceTests {
 
 	private static final String CLOUD_CONTROLLER = "https://my-cloud-controller.com";
 
@@ -59,8 +59,8 @@ public class CloudFoundrySecurityServiceTests {
 
 	private MockRestServiceServer server;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockServerRestTemplateCustomizer mockServerCustomizer = new MockServerRestTemplateCustomizer();
 		RestTemplateBuilder builder = new RestTemplateBuilder(mockServerCustomizer);
 		this.securityService = new CloudFoundrySecurityService(builder, CLOUD_CONTROLLER, false);
@@ -68,7 +68,7 @@ public class CloudFoundrySecurityServiceTests {
 	}
 
 	@Test
-	public void skipSslValidationWhenTrue() {
+	void skipSslValidationWhenTrue() {
 		RestTemplateBuilder builder = new RestTemplateBuilder();
 		this.securityService = new CloudFoundrySecurityService(builder, CLOUD_CONTROLLER, true);
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(this.securityService, "restTemplate");
@@ -76,7 +76,7 @@ public class CloudFoundrySecurityServiceTests {
 	}
 
 	@Test
-	public void doNotskipSslValidationWhenFalse() {
+	void doNotSkipSslValidationWhenFalse() {
 		RestTemplateBuilder builder = new RestTemplateBuilder();
 		this.securityService = new CloudFoundrySecurityService(builder, CLOUD_CONTROLLER, false);
 		RestTemplate restTemplate = (RestTemplate) ReflectionTestUtils.getField(this.securityService, "restTemplate");
@@ -84,102 +84,106 @@ public class CloudFoundrySecurityServiceTests {
 	}
 
 	@Test
-	public void getAccessLevelWhenSpaceDeveloperShouldReturnFull() {
+	void getAccessLevelWhenSpaceDeveloperShouldReturnFull() {
 		String responseBody = "{\"read_sensitive_data\": true,\"read_basic_data\": true}";
 		this.server.expect(requestTo(CLOUD_CONTROLLER_PERMISSIONS))
-				.andExpect(header("Authorization", "bearer my-access-token"))
-				.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
+			.andExpect(header("Authorization", "bearer my-access-token"))
+			.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 		AccessLevel accessLevel = this.securityService.getAccessLevel("my-access-token", "my-app-id");
 		this.server.verify();
 		assertThat(accessLevel).isEqualTo(AccessLevel.FULL);
 	}
 
 	@Test
-	public void getAccessLevelWhenNotSpaceDeveloperShouldReturnRestricted() {
+	void getAccessLevelWhenNotSpaceDeveloperShouldReturnRestricted() {
 		String responseBody = "{\"read_sensitive_data\": false,\"read_basic_data\": true}";
 		this.server.expect(requestTo(CLOUD_CONTROLLER_PERMISSIONS))
-				.andExpect(header("Authorization", "bearer my-access-token"))
-				.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
+			.andExpect(header("Authorization", "bearer my-access-token"))
+			.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 		AccessLevel accessLevel = this.securityService.getAccessLevel("my-access-token", "my-app-id");
 		this.server.verify();
 		assertThat(accessLevel).isEqualTo(AccessLevel.RESTRICTED);
 	}
 
 	@Test
-	public void getAccessLevelWhenTokenIsNotValidShouldThrowException() {
+	void getAccessLevelWhenTokenIsNotValidShouldThrowException() {
 		this.server.expect(requestTo(CLOUD_CONTROLLER_PERMISSIONS))
-				.andExpect(header("Authorization", "bearer my-access-token")).andRespond(withUnauthorizedRequest());
+			.andExpect(header("Authorization", "bearer my-access-token"))
+			.andRespond(withUnauthorizedRequest());
 		assertThatExceptionOfType(CloudFoundryAuthorizationException.class)
-				.isThrownBy(() -> this.securityService.getAccessLevel("my-access-token", "my-app-id"))
-				.satisfies(reasonRequirement(Reason.INVALID_TOKEN));
+			.isThrownBy(() -> this.securityService.getAccessLevel("my-access-token", "my-app-id"))
+			.satisfies(reasonRequirement(Reason.INVALID_TOKEN));
 	}
 
 	@Test
-	public void getAccessLevelWhenForbiddenShouldThrowException() {
+	void getAccessLevelWhenForbiddenShouldThrowException() {
 		this.server.expect(requestTo(CLOUD_CONTROLLER_PERMISSIONS))
-				.andExpect(header("Authorization", "bearer my-access-token"))
-				.andRespond(withStatus(HttpStatus.FORBIDDEN));
+			.andExpect(header("Authorization", "bearer my-access-token"))
+			.andRespond(withStatus(HttpStatus.FORBIDDEN));
 		assertThatExceptionOfType(CloudFoundryAuthorizationException.class)
-				.isThrownBy(() -> this.securityService.getAccessLevel("my-access-token", "my-app-id"))
-				.satisfies(reasonRequirement(Reason.ACCESS_DENIED));
+			.isThrownBy(() -> this.securityService.getAccessLevel("my-access-token", "my-app-id"))
+			.satisfies(reasonRequirement(Reason.ACCESS_DENIED));
 	}
 
 	@Test
-	public void getAccessLevelWhenCloudControllerIsNotReachableThrowsException() {
+	void getAccessLevelWhenCloudControllerIsNotReachableThrowsException() {
 		this.server.expect(requestTo(CLOUD_CONTROLLER_PERMISSIONS))
-				.andExpect(header("Authorization", "bearer my-access-token")).andRespond(withServerError());
+			.andExpect(header("Authorization", "bearer my-access-token"))
+			.andRespond(withServerError());
 		assertThatExceptionOfType(CloudFoundryAuthorizationException.class)
-				.isThrownBy(() -> this.securityService.getAccessLevel("my-access-token", "my-app-id"))
-				.satisfies(reasonRequirement(Reason.SERVICE_UNAVAILABLE));
+			.isThrownBy(() -> this.securityService.getAccessLevel("my-access-token", "my-app-id"))
+			.satisfies(reasonRequirement(Reason.SERVICE_UNAVAILABLE));
 	}
 
 	@Test
-	public void fetchTokenKeysWhenSuccessfulShouldReturnListOfKeysFromUAA() {
+	void fetchTokenKeysWhenSuccessfulShouldReturnListOfKeysFromUAA() {
 		this.server.expect(requestTo(CLOUD_CONTROLLER + "/info"))
-				.andRespond(withSuccess("{\"token_endpoint\":\"https://my-uaa.com\"}", MediaType.APPLICATION_JSON));
-		String tokenKeyValue = "-----BEGIN PUBLIC KEY-----\n"
-				+ "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0m59l2u9iDnMbrXHfqkO\n"
-				+ "rn2dVQ3vfBJqcDuFUK03d+1PZGbVlNCqnkpIJ8syFppW8ljnWweP7+LiWpRoz0I7\n"
-				+ "fYb3d8TjhV86Y997Fl4DBrxgM6KTJOuE/uxnoDhZQ14LgOU2ckXjOzOdTsnGMKQB\n"
-				+ "LCl0vpcXBtFLMaSbpv1ozi8h7DJyVZ6EnFQZUWGdgTMhDrmqevfx95U/16c5WBDO\n"
-				+ "kqwIn7Glry9n9Suxygbf8g5AzpWcusZgDLIIZ7JTUldBb8qU2a0Dl4mvLZOn4wPo\n"
-				+ "jfj9Cw2QICsc5+Pwf21fP+hzf+1WSRHbnYv8uanRO0gZ8ekGaghM/2H6gqJbo2nI\n"
-				+ "JwIDAQAB\n-----END PUBLIC KEY-----";
+			.andRespond(withSuccess("{\"token_endpoint\":\"https://my-uaa.com\"}", MediaType.APPLICATION_JSON));
+		String tokenKeyValue = """
+				-----BEGIN PUBLIC KEY-----
+				MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0m59l2u9iDnMbrXHfqkO
+				rn2dVQ3vfBJqcDuFUK03d+1PZGbVlNCqnkpIJ8syFppW8ljnWweP7+LiWpRoz0I7
+				fYb3d8TjhV86Y997Fl4DBrxgM6KTJOuE/uxnoDhZQ14LgOU2ckXjOzOdTsnGMKQB
+				LCl0vpcXBtFLMaSbpv1ozi8h7DJyVZ6EnFQZUWGdgTMhDrmqevfx95U/16c5WBDO
+				kqwIn7Glry9n9Suxygbf8g5AzpWcusZgDLIIZ7JTUldBb8qU2a0Dl4mvLZOn4wPo
+				jfj9Cw2QICsc5+Pwf21fP+hzf+1WSRHbnYv8uanRO0gZ8ekGaghM/2H6gqJbo2nI
+				JwIDAQAB
+				-----END PUBLIC KEY-----""";
 		String responseBody = "{\"keys\" : [ {\"kid\":\"test-key\",\"value\" : \"" + tokenKeyValue.replace("\n", "\\n")
 				+ "\"} ]}";
 		this.server.expect(requestTo(UAA_URL + "/token_keys"))
-				.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
+			.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 		Map<String, String> tokenKeys = this.securityService.fetchTokenKeys();
 		this.server.verify();
-		assertThat(tokenKeys.get("test-key")).isEqualTo(tokenKeyValue);
+		assertThat(tokenKeys).containsEntry("test-key", tokenKeyValue);
 	}
 
 	@Test
-	public void fetchTokenKeysWhenNoKeysReturnedFromUAA() {
+	void fetchTokenKeysWhenNoKeysReturnedFromUAA() {
 		this.server.expect(requestTo(CLOUD_CONTROLLER + "/info"))
-				.andRespond(withSuccess("{\"token_endpoint\":\"" + UAA_URL + "\"}", MediaType.APPLICATION_JSON));
+			.andRespond(withSuccess("{\"token_endpoint\":\"" + UAA_URL + "\"}", MediaType.APPLICATION_JSON));
 		String responseBody = "{\"keys\": []}";
 		this.server.expect(requestTo(UAA_URL + "/token_keys"))
-				.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
+			.andRespond(withSuccess(responseBody, MediaType.APPLICATION_JSON));
 		Map<String, String> tokenKeys = this.securityService.fetchTokenKeys();
 		this.server.verify();
-		assertThat(tokenKeys).hasSize(0);
+		assertThat(tokenKeys).isEmpty();
 	}
 
 	@Test
-	public void fetchTokenKeysWhenUnsuccessfulShouldThrowException() {
+	void fetchTokenKeysWhenUnsuccessfulShouldThrowException() {
 		this.server.expect(requestTo(CLOUD_CONTROLLER + "/info"))
-				.andRespond(withSuccess("{\"token_endpoint\":\"" + UAA_URL + "\"}", MediaType.APPLICATION_JSON));
+			.andRespond(withSuccess("{\"token_endpoint\":\"" + UAA_URL + "\"}", MediaType.APPLICATION_JSON));
 		this.server.expect(requestTo(UAA_URL + "/token_keys")).andRespond(withServerError());
 		assertThatExceptionOfType(CloudFoundryAuthorizationException.class)
-				.isThrownBy(() -> this.securityService.fetchTokenKeys())
-				.satisfies(reasonRequirement(Reason.SERVICE_UNAVAILABLE));
+			.isThrownBy(() -> this.securityService.fetchTokenKeys())
+			.satisfies(reasonRequirement(Reason.SERVICE_UNAVAILABLE));
 	}
 
 	@Test
-	public void getUaaUrlShouldCallCloudControllerInfoOnlyOnce() {
+	void getUaaUrlShouldCallCloudControllerInfoOnlyOnce() {
 		this.server.expect(requestTo(CLOUD_CONTROLLER + "/info"))
-				.andRespond(withSuccess("{\"token_endpoint\":\"" + UAA_URL + "\"}", MediaType.APPLICATION_JSON));
+			.andRespond(withSuccess("{\"token_endpoint\":\"" + UAA_URL + "\"}", MediaType.APPLICATION_JSON));
 		String uaaUrl = this.securityService.getUaaUrl();
 		this.server.verify();
 		assertThat(uaaUrl).isEqualTo(UAA_URL);
@@ -189,11 +193,11 @@ public class CloudFoundrySecurityServiceTests {
 	}
 
 	@Test
-	public void getUaaUrlWhenCloudControllerUrlIsNotReachableShouldThrowException() {
+	void getUaaUrlWhenCloudControllerUrlIsNotReachableShouldThrowException() {
 		this.server.expect(requestTo(CLOUD_CONTROLLER + "/info")).andRespond(withServerError());
 		assertThatExceptionOfType(CloudFoundryAuthorizationException.class)
-				.isThrownBy(() -> this.securityService.getUaaUrl())
-				.satisfies(reasonRequirement(Reason.SERVICE_UNAVAILABLE));
+			.isThrownBy(() -> this.securityService.getUaaUrl())
+			.satisfies(reasonRequirement(Reason.SERVICE_UNAVAILABLE));
 	}
 
 	private Consumer<CloudFoundryAuthorizationException> reasonRequirement(Reason reason) {

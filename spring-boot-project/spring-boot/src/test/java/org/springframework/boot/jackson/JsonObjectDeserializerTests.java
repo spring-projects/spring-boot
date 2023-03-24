@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.NullNode;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.jackson.NameAndAgeJsonComponent.Deserializer;
+import org.springframework.boot.jackson.types.NameAndAge;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -42,12 +43,12 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class JsonObjectDeserializerTests {
+class JsonObjectDeserializerTests {
 
-	private TestJsonObjectDeserializer<Object> testDeserializer = new TestJsonObjectDeserializer<>();
+	private final TestJsonObjectDeserializer<Object> testDeserializer = new TestJsonObjectDeserializer<>();
 
 	@Test
-	public void deserializeObjectShouldReadJson() throws Exception {
+	void deserializeObjectShouldReadJson() throws Exception {
 		Deserializer deserializer = new NameAndAgeJsonComponent.Deserializer();
 		SimpleModule module = new SimpleModule();
 		module.addDeserializer(NameAndAge.class, deserializer);
@@ -59,20 +60,20 @@ public class JsonObjectDeserializerTests {
 	}
 
 	@Test
-	public void nullSafeValueWhenValueIsNullShouldReturnNull() {
+	void nullSafeValueWhenValueIsNullShouldReturnNull() {
 		String value = this.testDeserializer.testNullSafeValue(null, String.class);
 		assertThat(value).isNull();
 	}
 
 	@Test
-	public void nullSafeValueWhenClassIsNullShouldThrowException() {
+	void nullSafeValueWhenClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.testDeserializer.testNullSafeValue(mock(JsonNode.class), null))
-				.withMessageContaining("Type must not be null");
+			.isThrownBy(() -> this.testDeserializer.testNullSafeValue(mock(JsonNode.class), null))
+			.withMessageContaining("Type must not be null");
 	}
 
 	@Test
-	public void nullSafeValueWhenClassIsStringShouldReturnString() {
+	void nullSafeValueWhenClassIsStringShouldReturnString() {
 		JsonNode node = mock(JsonNode.class);
 		given(node.textValue()).willReturn("abc");
 		String value = this.testDeserializer.testNullSafeValue(node, String.class);
@@ -80,7 +81,7 @@ public class JsonObjectDeserializerTests {
 	}
 
 	@Test
-	public void nullSafeValueWhenClassIsBooleanShouldReturnBoolean() {
+	void nullSafeValueWhenClassIsBooleanShouldReturnBoolean() {
 		JsonNode node = mock(JsonNode.class);
 		given(node.booleanValue()).willReturn(true);
 		Boolean value = this.testDeserializer.testNullSafeValue(node, Boolean.class);
@@ -88,7 +89,7 @@ public class JsonObjectDeserializerTests {
 	}
 
 	@Test
-	public void nullSafeValueWhenClassIsLongShouldReturnLong() {
+	void nullSafeValueWhenClassIsLongShouldReturnLong() {
 		JsonNode node = mock(JsonNode.class);
 		given(node.longValue()).willReturn(10L);
 		Long value = this.testDeserializer.testNullSafeValue(node, Long.class);
@@ -96,7 +97,7 @@ public class JsonObjectDeserializerTests {
 	}
 
 	@Test
-	public void nullSafeValueWhenClassIsIntegerShouldReturnInteger() {
+	void nullSafeValueWhenClassIsIntegerShouldReturnInteger() {
 		JsonNode node = mock(JsonNode.class);
 		given(node.intValue()).willReturn(10);
 		Integer value = this.testDeserializer.testNullSafeValue(node, Integer.class);
@@ -104,7 +105,7 @@ public class JsonObjectDeserializerTests {
 	}
 
 	@Test
-	public void nullSafeValueWhenClassIsShortShouldReturnShort() {
+	void nullSafeValueWhenClassIsShortShouldReturnShort() {
 		JsonNode node = mock(JsonNode.class);
 		given(node.shortValue()).willReturn((short) 10);
 		Short value = this.testDeserializer.testNullSafeValue(node, Short.class);
@@ -112,7 +113,7 @@ public class JsonObjectDeserializerTests {
 	}
 
 	@Test
-	public void nullSafeValueWhenClassIsDoubleShouldReturnDouble() {
+	void nullSafeValueWhenClassIsDoubleShouldReturnDouble() {
 		JsonNode node = mock(JsonNode.class);
 		given(node.doubleValue()).willReturn(1.1D);
 		Double value = this.testDeserializer.testNullSafeValue(node, Double.class);
@@ -120,7 +121,7 @@ public class JsonObjectDeserializerTests {
 	}
 
 	@Test
-	public void nullSafeValueWhenClassIsFloatShouldReturnFloat() {
+	void nullSafeValueWhenClassIsFloatShouldReturnFloat() {
 		JsonNode node = mock(JsonNode.class);
 		given(node.floatValue()).willReturn(1.1F);
 		Float value = this.testDeserializer.testNullSafeValue(node, Float.class);
@@ -128,7 +129,7 @@ public class JsonObjectDeserializerTests {
 	}
 
 	@Test
-	public void nullSafeValueWhenClassIsBigDecimalShouldReturnBigDecimal() {
+	void nullSafeValueWhenClassIsBigDecimalShouldReturnBigDecimal() {
 		JsonNode node = mock(JsonNode.class);
 		given(node.decimalValue()).willReturn(BigDecimal.TEN);
 		BigDecimal value = this.testDeserializer.testNullSafeValue(node, BigDecimal.class);
@@ -136,7 +137,7 @@ public class JsonObjectDeserializerTests {
 	}
 
 	@Test
-	public void nullSafeValueWhenClassIsBigIntegerShouldReturnBigInteger() {
+	void nullSafeValueWhenClassIsBigIntegerShouldReturnBigInteger() {
 		JsonNode node = mock(JsonNode.class);
 		given(node.bigIntegerValue()).willReturn(BigInteger.TEN);
 		BigInteger value = this.testDeserializer.testNullSafeValue(node, BigInteger.class);
@@ -144,41 +145,40 @@ public class JsonObjectDeserializerTests {
 	}
 
 	@Test
-	public void nullSafeValueWhenClassIsUnknownShouldThrowException() {
+	void nullSafeValueWhenClassIsUnknownShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> this.testDeserializer.testNullSafeValue(mock(JsonNode.class), InputStream.class))
-				.withMessageContaining("Unsupported value type java.io.InputStream");
+			.isThrownBy(() -> this.testDeserializer.testNullSafeValue(mock(JsonNode.class), InputStream.class))
+			.withMessageContaining("Unsupported value type java.io.InputStream");
 
 	}
 
 	@Test
-	public void getRequiredNodeWhenTreeIsNullShouldThrowException() {
+	void getRequiredNodeWhenTreeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.testDeserializer.testGetRequiredNode(null, "test"))
-				.withMessageContaining("Tree must not be null");
+			.withMessageContaining("Tree must not be null");
 	}
 
 	@Test
-	public void getRequiredNodeWhenNodeIsNullShouldThrowException() {
+	void getRequiredNodeWhenNodeIsNullShouldThrowException() {
 		JsonNode tree = mock(JsonNode.class);
 		given(tree.get("test")).willReturn(null);
 		assertThatIllegalStateException().isThrownBy(() -> this.testDeserializer.testGetRequiredNode(tree, "test"))
-				.withMessageContaining("Missing JSON field 'test'");
+			.withMessageContaining("Missing JSON field 'test'");
 	}
 
 	@Test
-	public void getRequiredNodeWhenNodeIsNullNodeShouldThrowException() {
+	void getRequiredNodeWhenNodeIsNullNodeShouldThrowException() {
 		JsonNode tree = mock(JsonNode.class);
 		given(tree.get("test")).willReturn(NullNode.instance);
 		assertThatIllegalStateException().isThrownBy(() -> this.testDeserializer.testGetRequiredNode(tree, "test"))
-				.withMessageContaining("Missing JSON field 'test'");
+			.withMessageContaining("Missing JSON field 'test'");
 	}
 
 	@Test
-	public void getRequiredNodeWhenNodeIsFoundShouldReturnNode() {
+	void getRequiredNodeWhenNodeIsFoundShouldReturnNode() {
 		JsonNode node = mock(JsonNode.class);
-		JsonNode tree = node;
-		given(tree.get("test")).willReturn(node);
-		assertThat(this.testDeserializer.testGetRequiredNode(tree, "test")).isEqualTo(node);
+		given(node.get("test")).willReturn(node);
+		assertThat(this.testDeserializer.testGetRequiredNode(node, "test")).isEqualTo(node);
 	}
 
 	static class TestJsonObjectDeserializer<T> extends JsonObjectDeserializer<T> {
@@ -189,11 +189,11 @@ public class JsonObjectDeserializerTests {
 			return null;
 		}
 
-		public <D> D testNullSafeValue(JsonNode jsonNode, Class<D> type) {
+		<D> D testNullSafeValue(JsonNode jsonNode, Class<D> type) {
 			return nullSafeValue(jsonNode, type);
 		}
 
-		public JsonNode testGetRequiredNode(JsonNode tree, String fieldName) {
+		JsonNode testGetRequiredNode(JsonNode tree, String fieldName) {
 			return getRequiredNode(tree, fieldName);
 		}
 

@@ -33,13 +33,12 @@ import org.springframework.core.io.Resource;
  *
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(HazelcastInstance.class)
 class HazelcastJCacheCustomizationConfiguration {
 
 	@Bean
-	public HazelcastPropertiesCustomizer hazelcastPropertiesCustomizer(
-			ObjectProvider<HazelcastInstance> hazelcastInstance) {
+	HazelcastPropertiesCustomizer hazelcastPropertiesCustomizer(ObjectProvider<HazelcastInstance> hazelcastInstance) {
 		return new HazelcastPropertiesCustomizer(hazelcastInstance.getIfUnique());
 	}
 

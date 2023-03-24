@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.web.reactive.MockReactiveWebServerFactory;
@@ -32,53 +32,53 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
 /**
- * Tests for {@link ConditionalOnNotWebApplication}.
+ * Tests for {@link ConditionalOnNotWebApplication @ConditionalOnNotWebApplication}.
  *
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-public class ConditionalOnNotWebApplicationTests {
+class ConditionalOnNotWebApplicationTests {
 
 	@Test
-	public void testNotWebApplicationWithServletContext() {
+	void testNotWebApplicationWithServletContext() {
 		new WebApplicationContextRunner().withUserConfiguration(NotWebApplicationConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
-	public void testNotWebApplicationWithReactiveContext() {
+	void testNotWebApplicationWithReactiveContext() {
 		new ReactiveWebApplicationContextRunner()
-				.withUserConfiguration(ReactiveApplicationConfig.class, NotWebApplicationConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(String.class));
+			.withUserConfiguration(ReactiveApplicationConfig.class, NotWebApplicationConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(String.class));
 	}
 
 	@Test
-	public void testNotWebApplication() {
+	void testNotWebApplication() {
 		new ApplicationContextRunner().withUserConfiguration(NotWebApplicationConfiguration.class)
-				.run((context) -> assertThat(context).getBeans(String.class).containsExactly(entry("none", "none")));
+			.run((context) -> assertThat(context).getBeans(String.class).containsExactly(entry("none", "none")));
 	}
 
-	@Configuration
-	protected static class ReactiveApplicationConfig {
+	@Configuration(proxyBeanMethods = false)
+	static class ReactiveApplicationConfig {
 
 		@Bean
-		public ReactiveWebServerFactory reactiveWebServerFactory() {
+		ReactiveWebServerFactory reactiveWebServerFactory() {
 			return new MockReactiveWebServerFactory();
 		}
 
 		@Bean
-		public HttpHandler httpHandler() {
+		HttpHandler httpHandler() {
 			return (request, response) -> Mono.empty();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnNotWebApplication
-	protected static class NotWebApplicationConfiguration {
+	static class NotWebApplicationConfiguration {
 
 		@Bean
-		public String none() {
+		String none() {
 			return "none";
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 package org.springframework.boot.actuate.endpoint.invoke.convert;
 
+import java.lang.annotation.Annotation;
 import java.time.OffsetDateTime;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterMappingException;
@@ -30,43 +31,43 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ConversionServiceParameterValueMapper}.
  *
  * @author Phillip Webb
  */
-public class ConversionServiceParameterValueMapperTests {
+class ConversionServiceParameterValueMapperTests {
 
 	@Test
-	public void mapParameterShouldDelegateToConversionService() {
+	void mapParameterShouldDelegateToConversionService() {
 		DefaultFormattingConversionService conversionService = spy(new DefaultFormattingConversionService());
 		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(conversionService);
 		Object mapped = mapper.mapParameterValue(new TestOperationParameter(Integer.class), "123");
 		assertThat(mapped).isEqualTo(123);
-		verify(conversionService).convert("123", Integer.class);
+		then(conversionService).should().convert("123", Integer.class);
 	}
 
 	@Test
-	public void mapParameterWhenConversionServiceFailsShouldThrowParameterMappingException() {
+	void mapParameterWhenConversionServiceFailsShouldThrowParameterMappingException() {
 		ConversionService conversionService = mock(ConversionService.class);
 		RuntimeException error = new RuntimeException();
 		given(conversionService.convert(any(), any())).willThrow(error);
 		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(conversionService);
 		assertThatExceptionOfType(ParameterMappingException.class)
-				.isThrownBy(() -> mapper.mapParameterValue(new TestOperationParameter(Integer.class), "123"))
-				.satisfies((ex) -> {
-					assertThat(ex.getValue()).isEqualTo("123");
-					assertThat(ex.getParameter().getType()).isEqualTo(Integer.class);
-					assertThat(ex.getCause()).isEqualTo(error);
-				});
+			.isThrownBy(() -> mapper.mapParameterValue(new TestOperationParameter(Integer.class), "123"))
+			.satisfies((ex) -> {
+				assertThat(ex.getValue()).isEqualTo("123");
+				assertThat(ex.getParameter().getType()).isEqualTo(Integer.class);
+				assertThat(ex.getCause()).isEqualTo(error);
+			});
 	}
 
 	@Test
-	public void createShouldRegisterIsoOffsetDateTimeConverter() {
+	void createShouldRegisterIsoOffsetDateTimeConverter() {
 		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper();
 		Object mapped = mapper.mapParameterValue(new TestOperationParameter(OffsetDateTime.class),
 				"2011-12-03T10:15:30+01:00");
@@ -74,14 +75,14 @@ public class ConversionServiceParameterValueMapperTests {
 	}
 
 	@Test
-	public void createWithConversionServiceShouldNotRegisterIsoOffsetDateTimeConverter() {
+	void createWithConversionServiceShouldNotRegisterIsoOffsetDateTimeConverter() {
 		ConversionService conversionService = new DefaultConversionService();
 		ConversionServiceParameterValueMapper mapper = new ConversionServiceParameterValueMapper(conversionService);
 		assertThatExceptionOfType(ParameterMappingException.class).isThrownBy(() -> mapper
-				.mapParameterValue(new TestOperationParameter(OffsetDateTime.class), "2011-12-03T10:15:30+01:00"));
+			.mapParameterValue(new TestOperationParameter(OffsetDateTime.class), "2011-12-03T10:15:30+01:00"));
 	}
 
-	private static class TestOperationParameter implements OperationParameter {
+	static class TestOperationParameter implements OperationParameter {
 
 		private final Class<?> type;
 
@@ -102,6 +103,11 @@ public class ConversionServiceParameterValueMapperTests {
 		@Override
 		public boolean isMandatory() {
 			return false;
+		}
+
+		@Override
+		public <T extends Annotation> T getAnnotation(Class<T> annotation) {
+			return null;
 		}
 
 	}

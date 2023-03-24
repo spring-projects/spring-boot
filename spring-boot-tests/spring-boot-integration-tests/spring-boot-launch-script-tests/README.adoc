@@ -42,7 +42,7 @@ You're now ready to run the tests. Assuming that you're in the same directory as
 README, the tests can be launched as follows:
 
 ----
-$ mvn -Pdocker clean verify
+$ gradle intTest
 ----
 
 The first time the tests are run, Docker will create the container images that are used to

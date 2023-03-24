@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.restdocs;
 
-import org.springframework.boot.test.autoconfigure.web.reactive.WebTestClientBuilderCustomizer;
+import org.springframework.boot.test.web.reactive.server.WebTestClientBuilderCustomizer;
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentationConfigurer;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.StringUtils;

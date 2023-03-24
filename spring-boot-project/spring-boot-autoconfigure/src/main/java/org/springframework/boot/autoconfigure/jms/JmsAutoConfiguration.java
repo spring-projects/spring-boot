@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,11 @@ package org.springframework.boot.autoconfigure.jms;
 
 import java.time.Duration;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.Message;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.Message;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -48,14 +49,14 @@ import org.springframework.jms.support.destination.DestinationResolver;
  * @author Stephane Nicoll
  * @since 1.0.0
  */
-@Configuration
+@AutoConfiguration
 @ConditionalOnClass({ Message.class, JmsTemplate.class })
 @ConditionalOnBean(ConnectionFactory.class)
 @EnableConfigurationProperties(JmsProperties.class)
 @Import(JmsAnnotationDrivenConfiguration.class)
 public class JmsAutoConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	protected static class JmsTemplateConfiguration {
 
 		private final JmsProperties properties;
@@ -90,17 +91,21 @@ public class JmsAutoConfiguration {
 			map.from(properties::getDefaultDestination).whenNonNull().to(template::setDefaultDestinationName);
 			map.from(properties::getDeliveryDelay).whenNonNull().as(Duration::toMillis).to(template::setDeliveryDelay);
 			map.from(properties::determineQosEnabled).to(template::setExplicitQosEnabled);
-			map.from(properties::getDeliveryMode).whenNonNull().as(DeliveryMode::getValue)
-					.to(template::setDeliveryMode);
+			map.from(properties::getDeliveryMode)
+				.whenNonNull()
+				.as(DeliveryMode::getValue)
+				.to(template::setDeliveryMode);
 			map.from(properties::getPriority).whenNonNull().to(template::setPriority);
 			map.from(properties::getTimeToLive).whenNonNull().as(Duration::toMillis).to(template::setTimeToLive);
-			map.from(properties::getReceiveTimeout).whenNonNull().as(Duration::toMillis)
-					.to(template::setReceiveTimeout);
+			map.from(properties::getReceiveTimeout)
+				.whenNonNull()
+				.as(Duration::toMillis)
+				.to(template::setReceiveTimeout);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(JmsMessagingTemplate.class)
 	@Import(JmsTemplateConfiguration.class)
 	protected static class MessagingTemplateConfiguration {
@@ -108,8 +113,15 @@ public class JmsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(JmsMessageOperations.class)
 		@ConditionalOnSingleCandidate(JmsTemplate.class)
-		public JmsMessagingTemplate jmsMessagingTemplate(JmsTemplate jmsTemplate) {
-			return new JmsMessagingTemplate(jmsTemplate);
+		public JmsMessagingTemplate jmsMessagingTemplate(JmsProperties properties, JmsTemplate jmsTemplate) {
+			JmsMessagingTemplate messagingTemplate = new JmsMessagingTemplate(jmsTemplate);
+			mapTemplateProperties(properties.getTemplate(), messagingTemplate);
+			return messagingTemplate;
+		}
+
+		private void mapTemplateProperties(Template properties, JmsMessagingTemplate messagingTemplate) {
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(properties::getDefaultDestination).to(messagingTemplate::setDefaultDestinationName);
 		}
 
 	}

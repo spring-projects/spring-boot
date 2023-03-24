@@ -1,0 +1,4 @@
+[[using.whats-next]]
+== What to Read Next
+You should now understand how you can use Spring Boot and some best practices that you should follow.
+You can now go on to learn about specific _<<features#features, Spring Boot features>>_ in depth, or you could skip ahead and read about the "`<<actuator#actuator, production ready>>`" aspects of Spring Boot.

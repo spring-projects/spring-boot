@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,7 +86,7 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 		FAIL_ON_WRITE_ERROR_PROPERTIES = Collections.unmodifiableList(properties);
 	}
 
-	private static final AtomicBoolean created = new AtomicBoolean(false);
+	private static final AtomicBoolean created = new AtomicBoolean();
 
 	private int order = Ordered.HIGHEST_PRECEDENCE + 13;
 
@@ -160,7 +160,7 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 
 	private boolean failOnWriteError(SpringApplicationEvent event) {
 		String value = getProperty(event, FAIL_ON_WRITE_ERROR_PROPERTIES);
-		return (value != null) ? Boolean.parseBoolean(value) : false;
+		return Boolean.parseBoolean(value);
 	}
 
 	private String getProperty(SpringApplicationEvent event, List<Property> candidates) {
@@ -222,14 +222,14 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 		}
 
 		private Environment getEnvironment(SpringApplicationEvent event) {
-			if (event instanceof ApplicationEnvironmentPreparedEvent) {
-				return ((ApplicationEnvironmentPreparedEvent) event).getEnvironment();
+			if (event instanceof ApplicationEnvironmentPreparedEvent environmentPreparedEvent) {
+				return environmentPreparedEvent.getEnvironment();
 			}
-			if (event instanceof ApplicationPreparedEvent) {
-				return ((ApplicationPreparedEvent) event).getApplicationContext().getEnvironment();
+			if (event instanceof ApplicationPreparedEvent preparedEvent) {
+				return preparedEvent.getApplicationContext().getEnvironment();
 			}
-			if (event instanceof ApplicationReadyEvent) {
-				return ((ApplicationReadyEvent) event).getApplicationContext().getEnvironment();
+			if (event instanceof ApplicationReadyEvent readyEvent) {
+				return readyEvent.getApplicationContext().getEnvironment();
 			}
 			return null;
 		}

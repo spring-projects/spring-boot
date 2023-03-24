@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jms;
 
-import javax.jms.ConnectionFactory;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.ExceptionListener;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -38,8 +39,9 @@ import org.springframework.transaction.jta.JtaTransactionManager;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EnableJms.class)
 class JmsAnnotationDrivenConfiguration {
 
@@ -49,24 +51,28 @@ class JmsAnnotationDrivenConfiguration {
 
 	private final ObjectProvider<MessageConverter> messageConverter;
 
+	private final ObjectProvider<ExceptionListener> exceptionListener;
+
 	private final JmsProperties properties;
 
 	JmsAnnotationDrivenConfiguration(ObjectProvider<DestinationResolver> destinationResolver,
 			ObjectProvider<JtaTransactionManager> transactionManager, ObjectProvider<MessageConverter> messageConverter,
-			JmsProperties properties) {
+			ObjectProvider<ExceptionListener> exceptionListener, JmsProperties properties) {
 		this.destinationResolver = destinationResolver;
 		this.transactionManager = transactionManager;
 		this.messageConverter = messageConverter;
+		this.exceptionListener = exceptionListener;
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DefaultJmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer() {
+	DefaultJmsListenerContainerFactoryConfigurer jmsListenerContainerFactoryConfigurer() {
 		DefaultJmsListenerContainerFactoryConfigurer configurer = new DefaultJmsListenerContainerFactoryConfigurer();
 		configurer.setDestinationResolver(this.destinationResolver.getIfUnique());
 		configurer.setTransactionManager(this.transactionManager.getIfUnique());
 		configurer.setMessageConverter(this.messageConverter.getIfUnique());
+		configurer.setExceptionListener(this.exceptionListener.getIfUnique());
 		configurer.setJmsProperties(this.properties);
 		return configurer;
 	}
@@ -74,27 +80,27 @@ class JmsAnnotationDrivenConfiguration {
 	@Bean
 	@ConditionalOnSingleCandidate(ConnectionFactory.class)
 	@ConditionalOnMissingBean(name = "jmsListenerContainerFactory")
-	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
+	DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
 			DefaultJmsListenerContainerFactoryConfigurer configurer, ConnectionFactory connectionFactory) {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 		configurer.configure(factory, connectionFactory);
 		return factory;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableJms
 	@ConditionalOnMissingBean(name = JmsListenerConfigUtils.JMS_LISTENER_ANNOTATION_PROCESSOR_BEAN_NAME)
-	protected static class EnableJmsConfiguration {
+	static class EnableJmsConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnJndi
-	protected static class JndiConfiguration {
+	static class JndiConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(DestinationResolver.class)
-		public JndiDestinationResolver destinationResolver() {
+		JndiDestinationResolver destinationResolver() {
 			JndiDestinationResolver resolver = new JndiDestinationResolver();
 			resolver.setFallbackToDynamicDestination(true);
 			return resolver;

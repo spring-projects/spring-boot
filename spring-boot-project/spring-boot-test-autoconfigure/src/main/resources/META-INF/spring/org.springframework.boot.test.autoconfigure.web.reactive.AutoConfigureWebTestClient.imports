@@ -1,0 +1,6 @@
+# AutoConfigureWebClient auto-configuration imports
+org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveOAuth2ClientAutoConfiguration
+org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration
+org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration
+org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration
+org.springframework.boot.test.autoconfigure.web.reactive.WebTestClientAutoConfiguration

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 
 /**
- * Example entity used with {@link DataJdbcTest} tests.
+ * Example entity used with {@link DataJdbcTest @DataJdbcTest} tests.
  *
  * @author Andy Wilkinson
  */
@@ -30,9 +30,9 @@ public class ExampleEntity {
 	@Id
 	private Long id;
 
-	private String name;
+	private final String name;
 
-	private String reference;
+	private final String reference;
 
 	public ExampleEntity(String name, String reference) {
 		this.name = name;

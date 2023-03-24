@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,8 +96,12 @@ public final class LambdaSafe {
 
 	/**
 	 * Abstract base class for lambda safe callbacks.
+	 *
+	 * @param <C> the callback type
+	 * @param <A> the primary argument type
+	 * @param <SELF> the self class reference
 	 */
-	private abstract static class LambdaSafeCallback<C, A, SELF extends LambdaSafeCallback<C, A, SELF>> {
+	protected abstract static class LambdaSafeCallback<C, A, SELF extends LambdaSafeCallback<C, A, SELF>> {
 
 		private final Class<C> callbackType;
 
@@ -109,7 +113,7 @@ public final class LambdaSafe {
 
 		private Filter<C, A> filter = new GenericTypeFilter<>();
 
-		protected LambdaSafeCallback(Class<C> callbackType, A argument, Object[] additionalArguments) {
+		LambdaSafeCallback(Class<C> callbackType, A argument, Object[] additionalArguments) {
 			this.callbackType = callbackType;
 			this.argument = argument;
 			this.additionalArguments = additionalArguments;
@@ -143,7 +147,7 @@ public final class LambdaSafe {
 		 * @param filter the filter to use
 		 * @return this instance
 		 */
-		public SELF withFilter(Filter<C, A> filter) {
+		SELF withFilter(Filter<C, A> filter) {
 			Assert.notNull(filter, "Filter must not be null");
 			this.filter = filter;
 			return self();
@@ -295,8 +299,10 @@ public final class LambdaSafe {
 		public <R> Stream<R> invokeAnd(Function<C, R> invoker) {
 			Function<C, InvocationResult<R>> mapper = (callbackInstance) -> invoke(callbackInstance,
 					() -> invoker.apply(callbackInstance));
-			return this.callbackInstances.stream().map(mapper).filter(InvocationResult::hasResult)
-					.map(InvocationResult::get);
+			return this.callbackInstances.stream()
+				.map(mapper)
+				.filter(InvocationResult::hasResult)
+				.map(InvocationResult::get);
 		}
 
 	}

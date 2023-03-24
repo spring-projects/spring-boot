@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,15 @@
 
 package org.springframework.boot.autoconfigure.data.couchbase;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfigurer;
 import org.springframework.boot.autoconfigure.data.couchbase.city.City;
 import org.springframework.boot.autoconfigure.data.couchbase.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
@@ -39,76 +36,60 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  */
-public class CouchbaseRepositoriesAutoConfigurationTests {
+class CouchbaseRepositoriesAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class,
+				CouchbaseRepositoriesAutoConfiguration.class));
 
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
+	@Test
+	void couchbaseNotAvailable() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
 	}
 
 	@Test
-	public void couchbaseNotAvailable() {
-		load(null);
-		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
+	void defaultRepository() {
+		this.contextRunner.withUserConfiguration(DefaultConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(CityRepository.class));
 	}
 
 	@Test
-	public void defaultRepository() {
-		load(DefaultConfiguration.class);
-		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(1);
+	void reactiveRepositories() {
+		this.contextRunner.withUserConfiguration(DefaultConfiguration.class)
+			.withPropertyValues("spring.data.couchbase.repositories.type=reactive")
+			.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
 	}
 
 	@Test
-	public void reactiveRepositories() {
-		load(DefaultConfiguration.class, "spring.data.couchbase.repositories.type=reactive");
-		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
+	void disabledRepositories() {
+		this.contextRunner.withUserConfiguration(DefaultConfiguration.class)
+			.withPropertyValues("spring.data.couchbase.repositories.type=none")
+			.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
 	}
 
 	@Test
-	public void disabledRepositories() {
-		load(DefaultConfiguration.class, "spring.data.couchbase.repositories.type=none");
-		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
+	void noRepositoryAvailable() {
+		this.contextRunner.withUserConfiguration(NoRepositoryConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
 	}
 
-	@Test
-	public void noRepositoryAvailable() {
-		load(NoRepositoryConfiguration.class);
-		assertThat(this.context.getBeansOfType(CityRepository.class)).hasSize(0);
-	}
-
-	private void load(Class<?> config, String... environment) {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of(environment).applyTo(context);
-		if (config != null) {
-			context.register(config);
-		}
-		context.register(PropertyPlaceholderAutoConfiguration.class, CouchbaseAutoConfiguration.class,
-				CouchbaseDataAutoConfiguration.class, CouchbaseRepositoriesAutoConfiguration.class);
-		context.refresh();
-		this.context = context;
-	}
-
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	static class CouchbaseNotAvailableConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
-	@Import(CouchbaseTestConfigurer.class)
+	@Import(CouchbaseMockConfiguration.class)
 	static class DefaultConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyDataPackage.class)
-	@Import(CouchbaseTestConfigurer.class)
-	protected static class NoRepositoryConfiguration {
+	@Import(CouchbaseMockConfiguration.class)
+	static class NoRepositoryConfiguration {
 
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 	private final Function<ListableBeanFactory, Set<String>> dependsOn;
 
 	/**
-	 * Create an instance with target bean and factory bean classes and dependency names.
+	 * Create an instance with target bean, factory bean classes, and dependency names.
 	 * @param beanClass target bean class
 	 * @param factoryBeanClass target factory bean class
 	 * @param dependsOn dependency names
@@ -68,7 +68,7 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 	}
 
 	/**
-	 * Create an instance with target bean and factory bean classes and dependency types.
+	 * Create an instance with target bean, factory bean classes, and dependency types.
 	 * @param beanClass target bean class
 	 * @param factoryBeanClass target factory bean class
 	 * @param dependencyTypes dependency types
@@ -79,8 +79,8 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 		this.beanClass = beanClass;
 		this.factoryBeanClass = factoryBeanClass;
 		this.dependsOn = (beanFactory) -> Arrays.stream(dependencyTypes)
-				.flatMap((dependencyType) -> getBeanNames(beanFactory, dependencyType).stream())
-				.collect(Collectors.toSet());
+			.flatMap((dependencyType) -> getBeanNames(beanFactory, dependencyType).stream())
+			.collect(Collectors.toSet());
 	}
 
 	/**
@@ -139,8 +139,8 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 		}
 		catch (NoSuchBeanDefinitionException ex) {
 			BeanFactory parentBeanFactory = beanFactory.getParentBeanFactory();
-			if (parentBeanFactory instanceof ConfigurableListableBeanFactory) {
-				return getBeanDefinition(beanName, (ConfigurableListableBeanFactory) parentBeanFactory);
+			if (parentBeanFactory instanceof ConfigurableListableBeanFactory listableBeanFactory) {
+				return getBeanDefinition(beanName, listableBeanFactory);
 			}
 			throw ex;
 		}

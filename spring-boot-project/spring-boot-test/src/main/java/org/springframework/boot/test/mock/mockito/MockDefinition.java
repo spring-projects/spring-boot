@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.mockito.Answers;
 import org.mockito.MockSettings;
-import org.mockito.Mockito;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.core.style.ToStringCreator;
@@ -31,6 +30,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * A complete definition that can be used to create a Mockito mock.
@@ -71,7 +72,7 @@ class MockDefinition extends Definition {
 	 * Return the type that should be mocked.
 	 * @return the type to mock; never {@code null}
 	 */
-	public ResolvableType getTypeToMock() {
+	ResolvableType getTypeToMock() {
 		return this.typeToMock;
 	}
 
@@ -79,7 +80,7 @@ class MockDefinition extends Definition {
 	 * Return the extra interfaces.
 	 * @return the extra interfaces or an empty set
 	 */
-	public Set<Class<?>> getExtraInterfaces() {
+	Set<Class<?>> getExtraInterfaces() {
 		return this.extraInterfaces;
 	}
 
@@ -87,7 +88,7 @@ class MockDefinition extends Definition {
 	 * Return the answers mode.
 	 * @return the answers mode; never {@code null}
 	 */
-	public Answers getAnswer() {
+	Answers getAnswer() {
 		return this.answer;
 	}
 
@@ -95,7 +96,7 @@ class MockDefinition extends Definition {
 	 * Return if the mock is serializable.
 	 * @return if the mock is serializable
 	 */
-	public boolean isSerializable() {
+	boolean isSerializable() {
 		return this.serializable;
 	}
 
@@ -128,17 +129,21 @@ class MockDefinition extends Definition {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("name", getName()).append("typeToMock", this.typeToMock)
-				.append("extraInterfaces", this.extraInterfaces).append("answer", this.answer)
-				.append("serializable", this.serializable).append("reset", getReset()).toString();
+		return new ToStringCreator(this).append("name", getName())
+			.append("typeToMock", this.typeToMock)
+			.append("extraInterfaces", this.extraInterfaces)
+			.append("answer", this.answer)
+			.append("serializable", this.serializable)
+			.append("reset", getReset())
+			.toString();
 	}
 
-	public <T> T createMock() {
+	<T> T createMock() {
 		return createMock(getName());
 	}
 
 	@SuppressWarnings("unchecked")
-	public <T> T createMock(String name) {
+	<T> T createMock(String name) {
 		MockSettings settings = MockReset.withSettings(getReset());
 		if (StringUtils.hasLength(name)) {
 			settings.name(name);
@@ -150,7 +155,7 @@ class MockDefinition extends Definition {
 		if (this.serializable) {
 			settings.serializable();
 		}
-		return (T) Mockito.mock(this.typeToMock.resolve(), settings);
+		return (T) mock(this.typeToMock.resolve(), settings);
 	}
 
 }

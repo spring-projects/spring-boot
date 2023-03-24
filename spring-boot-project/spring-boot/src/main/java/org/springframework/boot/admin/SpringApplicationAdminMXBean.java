@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package org.springframework.boot.admin;
 
 /**
- * An MBean contract to control and monitor a running {@code SpringApplication} via JMX.
+ * An MBean contract to control and monitor a running {@code SpringApplication} over JMX.
  * Intended for internal use only.
  *
  * @author Stephane Nicoll

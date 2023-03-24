@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.integration.IntegrationGraphEndpoint;
 import org.springframework.context.annotation.Bean;
@@ -35,33 +35,35 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Tim Ysewyn
  */
-public class IntegrationGraphEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class IntegrationGraphEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void graph() throws Exception {
-		this.mockMvc.perform(get("/actuator/integrationgraph")).andExpect(status().isOk())
-				.andDo(MockMvcRestDocumentation.document("integrationgraph/graph"));
+	void graph() throws Exception {
+		this.mockMvc.perform(get("/actuator/integrationgraph"))
+			.andExpect(status().isOk())
+			.andDo(MockMvcRestDocumentation.document("integrationgraph/graph"));
 	}
 
 	@Test
-	public void rebuild() throws Exception {
-		this.mockMvc.perform(post("/actuator/integrationgraph")).andExpect(status().isNoContent())
-				.andDo(MockMvcRestDocumentation.document("integrationgraph/rebuild"));
+	void rebuild() throws Exception {
+		this.mockMvc.perform(post("/actuator/integrationgraph"))
+			.andExpect(status().isNoContent())
+			.andDo(MockMvcRestDocumentation.document("integrationgraph/rebuild"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableIntegration
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
-		public IntegrationGraphServer integrationGraphServer() {
+		IntegrationGraphServer integrationGraphServer() {
 			return new IntegrationGraphServer();
 		}
 
 		@Bean
-		public IntegrationGraphEndpoint endpoint() {
-			return new IntegrationGraphEndpoint(integrationGraphServer());
+		IntegrationGraphEndpoint endpoint(IntegrationGraphServer integrationGraphServer) {
+			return new IntegrationGraphEndpoint(integrationGraphServer);
 		}
 
 	}

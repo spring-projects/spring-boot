@@ -17,7 +17,6 @@
 package org.springframework.boot.test.web.htmlunit;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.gargoylesoftware.htmlunit.Page;
@@ -43,8 +42,7 @@ public class LocalHostWebClient extends WebClient {
 	}
 
 	@Override
-	public <P extends Page> P getPage(String url)
-			throws IOException, FailingHttpStatusCodeException, MalformedURLException {
+	public <P extends Page> P getPage(String url) throws IOException, FailingHttpStatusCodeException {
 		if (url.startsWith("/")) {
 			String port = this.environment.getProperty("local.server.port", "8080");
 			url = "http://localhost:" + port + url;

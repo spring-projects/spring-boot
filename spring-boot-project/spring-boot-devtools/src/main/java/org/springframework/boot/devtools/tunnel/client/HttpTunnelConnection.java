@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.devtools.tunnel.payload.HttpTunnelPayload;
 import org.springframework.boot.devtools.tunnel.payload.HttpTunnelPayloadForwarder;
+import org.springframework.core.log.LogMessage;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpRequest;
@@ -92,7 +93,7 @@ public class HttpTunnelConnection implements TunnelConnection {
 
 	@Override
 	public TunnelChannel open(WritableByteChannel incomingChannel, Closeable closeable) throws Exception {
-		logger.trace("Opening HTTP tunnel to " + this.uri);
+		logger.trace(LogMessage.format("Opening HTTP tunnel to %s", this.uri));
 		return new TunnelChannel(incomingChannel, closeable);
 	}
 
@@ -112,7 +113,7 @@ public class HttpTunnelConnection implements TunnelConnection {
 
 		private boolean open = true;
 
-		private AtomicLong requestSeq = new AtomicLong();
+		private final AtomicLong requestSeq = new AtomicLong();
 
 		public TunnelChannel(WritableByteChannel incomingChannel, Closeable closeable) {
 			this.forwarder = new HttpTunnelPayloadForwarder(incomingChannel);
@@ -152,7 +153,8 @@ public class HttpTunnelConnection implements TunnelConnection {
 					}
 					catch (IOException ex) {
 						if (ex instanceof ConnectException) {
-							logger.warn("Failed to connect to remote application at " + HttpTunnelConnection.this.uri);
+							logger.warn(LogMessage.format("Failed to connect to remote application at %s",
+									HttpTunnelConnection.this.uri));
 						}
 						else {
 							logger.trace("Unexpected connection error", ex);

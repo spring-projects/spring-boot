@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,15 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring metrics export to SignalFX.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring metrics export
+ * to SignalFX.
  *
  * @author Jon Schneider
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.metrics.export.signalfx")
+@ConfigurationProperties(prefix = "management.signalfx.metrics.export")
 public class SignalFxProperties extends StepRegistryProperties {
 
 	/**

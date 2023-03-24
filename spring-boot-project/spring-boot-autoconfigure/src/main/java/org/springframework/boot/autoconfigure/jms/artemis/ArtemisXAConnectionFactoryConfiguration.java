@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jms.artemis;
 
-import javax.jms.ConnectionFactory;
-import javax.transaction.TransactionManager;
-
+import jakarta.jms.ConnectionFactory;
+import jakarta.transaction.TransactionManager;
 import org.apache.activemq.artemis.jms.client.ActiveMQXAConnectionFactory;
 
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -36,7 +35,7 @@ import org.springframework.context.annotation.Primary;
  * @author Eddú Meléndez
  * @author Phillip Webb
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(ConnectionFactory.class)
 @ConditionalOnClass(TransactionManager.class)
 @ConditionalOnBean(XAConnectionFactoryWrapper.class)
@@ -44,17 +43,17 @@ class ArtemisXAConnectionFactoryConfiguration {
 
 	@Primary
 	@Bean(name = { "jmsConnectionFactory", "xaJmsConnectionFactory" })
-	public ConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory, ArtemisProperties properties,
+	ConnectionFactory jmsConnectionFactory(ListableBeanFactory beanFactory, ArtemisProperties properties,
 			XAConnectionFactoryWrapper wrapper) throws Exception {
 		return wrapper.wrapConnectionFactory(new ArtemisConnectionFactoryFactory(beanFactory, properties)
-				.createConnectionFactory(ActiveMQXAConnectionFactory.class));
+			.createConnectionFactory(ActiveMQXAConnectionFactory.class));
 	}
 
 	@Bean
-	public ActiveMQXAConnectionFactory nonXaJmsConnectionFactory(ListableBeanFactory beanFactory,
+	ActiveMQXAConnectionFactory nonXaJmsConnectionFactory(ListableBeanFactory beanFactory,
 			ArtemisProperties properties) {
 		return new ArtemisConnectionFactoryFactory(beanFactory, properties)
-				.createConnectionFactory(ActiveMQXAConnectionFactory.class);
+			.createConnectionFactory(ActiveMQXAConnectionFactory.class);
 	}
 
 }

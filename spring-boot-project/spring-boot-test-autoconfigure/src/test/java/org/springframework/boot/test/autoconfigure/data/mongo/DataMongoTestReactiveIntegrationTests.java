@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,23 +18,31 @@ package org.springframework.boot.test.autoconfigure.data.mongo;
 
 import java.time.Duration;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Sample tests for {@link DataMongoTest} using reactive repositories.
+ * Sample tests for {@link DataMongoTest @DataMongoTest} using reactive repositories.
  *
  * @author Stephane Nicoll
  */
-@RunWith(SpringRunner.class)
 @DataMongoTest
-public class DataMongoTestReactiveIntegrationTests {
+@Testcontainers(disabledWithoutDocker = true)
+class DataMongoTestReactiveIntegrationTests {
+
+	@Container
+	static final MongoDBContainer mongoDB = new MongoDBContainer(DockerImageNames.mongo()).withStartupAttempts(5)
+		.withStartupTimeout(Duration.ofMinutes(5));
 
 	@Autowired
 	private ReactiveMongoTemplate mongoTemplate;
@@ -42,8 +50,13 @@ public class DataMongoTestReactiveIntegrationTests {
 	@Autowired
 	private ExampleReactiveRepository exampleRepository;
 
+	@DynamicPropertySource
+	static void mongoProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.data.mongodb.uri", mongoDB::getReplicaSetUrl);
+	}
+
 	@Test
-	public void testRepository() {
+	void testRepository() {
 		ExampleDocument exampleDocument = new ExampleDocument();
 		exampleDocument.setText("Look, new @DataMongoTest!");
 		exampleDocument = this.exampleRepository.save(exampleDocument).block(Duration.ofSeconds(30));

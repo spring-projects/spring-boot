@@ -20,7 +20,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 /**
- * Example service used with {@link DataMongoTest} tests.
+ * Example service used with {@link DataMongoTest @DataMongoTest} tests.
  *
  * @author Michael Simons
  */

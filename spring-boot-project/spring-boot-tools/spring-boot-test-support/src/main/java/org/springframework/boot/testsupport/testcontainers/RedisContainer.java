@@ -16,8 +16,6 @@
 
 package org.springframework.boot.testsupport.testcontainers;
 
-import java.time.Duration;
-
 import org.testcontainers.containers.GenericContainer;
 
 /**
@@ -27,11 +25,11 @@ import org.testcontainers.containers.GenericContainer;
  * @author Madhura Bhave
  * @since 2.0.0
  */
-public class RedisContainer extends Container {
+public class RedisContainer extends GenericContainer<RedisContainer> {
 
 	public RedisContainer() {
-		super("redis:4.0.6", 6379,
-				(container) -> container.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10)));
+		super(DockerImageNames.redis());
+		addExposedPorts(6379);
 	}
 
 }

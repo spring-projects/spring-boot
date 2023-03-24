@@ -73,6 +73,15 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 	}
 
 	@Override
+	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Exception error)
+			throws Exception {
+		if (error instanceof UnboundConfigurationPropertiesException) {
+			throw error;
+		}
+		return super.onFailure(name, target, context, error);
+	}
+
+	@Override
 	public void onFinish(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result)
 			throws Exception {
 		if (context.getDepth() == 0) {
@@ -107,9 +116,7 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 
 	private boolean isUnbound(ConfigurationPropertyName name, ConfigurationPropertyName candidate) {
 		if (name.isAncestorOf(candidate)) {
-			if (!this.boundNames.contains(candidate) && !isOverriddenCollectionElement(candidate)) {
-				return true;
-			}
+			return !this.boundNames.contains(candidate) && !isOverriddenCollectionElement(candidate);
 		}
 		return false;
 	}
@@ -156,11 +163,11 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 			this.nestedPropertyName = nestedPropertyName;
 		}
 
-		public String getName() {
+		String getName() {
 			return this.name;
 		}
 
-		public String getNestedPropertyName() {
+		String getNestedPropertyName() {
 			return this.nestedPropertyName;
 		}
 

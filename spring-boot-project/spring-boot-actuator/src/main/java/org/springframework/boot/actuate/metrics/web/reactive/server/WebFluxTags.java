@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,16 @@
 
 package org.springframework.boot.actuate.metrics.web.reactive.server;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Pattern;
+
 import io.micrometer.core.instrument.Tag;
 
+import org.springframework.boot.actuate.metrics.http.Outcome;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.server.ServerWebExchange;
@@ -31,8 +38,12 @@ import org.springframework.web.util.pattern.PathPattern;
  * @author Jon Schneider
  * @author Andy Wilkinson
  * @author Michael McFadyen
+ * @author Brian Clozel
  * @since 2.0.0
+ * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
+ * {@link org.springframework.http.server.reactive.observation.ServerRequestObservationConvention}
  */
+@Deprecated(since = "3.0.0", forRemoval = true)
 public final class WebFluxTags {
 
 	private static final Tag URI_NOT_FOUND = Tag.of("uri", "NOT_FOUND");
@@ -45,17 +56,10 @@ public final class WebFluxTags {
 
 	private static final Tag EXCEPTION_NONE = Tag.of("exception", "None");
 
-	private static final Tag OUTCOME_UNKNOWN = Tag.of("outcome", "UNKNOWN");
+	private static final Pattern FORWARD_SLASHES_PATTERN = Pattern.compile("//+");
 
-	private static final Tag OUTCOME_INFORMATIONAL = Tag.of("outcome", "INFORMATIONAL");
-
-	private static final Tag OUTCOME_SUCCESS = Tag.of("outcome", "SUCCESS");
-
-	private static final Tag OUTCOME_REDIRECTION = Tag.of("outcome", "REDIRECTION");
-
-	private static final Tag OUTCOME_CLIENT_ERROR = Tag.of("outcome", "CLIENT_ERROR");
-
-	private static final Tag OUTCOME_SERVER_ERROR = Tag.of("outcome", "SERVER_ERROR");
+	private static final Set<String> DISCONNECTED_CLIENT_EXCEPTIONS = new HashSet<>(
+			Arrays.asList("AbortedException", "ClientAbortException", "EOFException", "EofException"));
 
 	private WebFluxTags() {
 	}
@@ -69,7 +73,7 @@ public final class WebFluxTags {
 	 * @return the method tag whose value is a capitalized method (e.g. GET).
 	 */
 	public static Tag method(ServerWebExchange exchange) {
-		return Tag.of("method", exchange.getRequest().getMethodValue());
+		return Tag.of("method", exchange.getRequest().getMethod().name());
 	}
 
 	/**
@@ -79,7 +83,7 @@ public final class WebFluxTags {
 	 * @return the status tag derived from the response status
 	 */
 	public static Tag status(ServerWebExchange exchange) {
-		HttpStatus status = exchange.getResponse().getStatusCode();
+		HttpStatusCode status = exchange.getResponse().getStatusCode();
 		if (status == null) {
 			status = HttpStatus.OK;
 		}
@@ -96,11 +100,32 @@ public final class WebFluxTags {
 	 * @return the uri tag derived from the exchange
 	 */
 	public static Tag uri(ServerWebExchange exchange) {
+		return uri(exchange, false);
+	}
+
+	/**
+	 * Creates a {@code uri} tag based on the URI of the given {@code exchange}. Uses the
+	 * {@link HandlerMapping#BEST_MATCHING_PATTERN_ATTRIBUTE} best matching pattern if
+	 * available. Falling back to {@code REDIRECTION} for 3xx responses, {@code NOT_FOUND}
+	 * for 404 responses, {@code root} for requests with no path info, and {@code UNKNOWN}
+	 * for all other requests.
+	 * @param exchange the exchange
+	 * @param ignoreTrailingSlash whether to ignore the trailing slash
+	 * @return the uri tag derived from the exchange
+	 */
+	public static Tag uri(ServerWebExchange exchange, boolean ignoreTrailingSlash) {
 		PathPattern pathPattern = exchange.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 		if (pathPattern != null) {
-			return Tag.of("uri", pathPattern.getPatternString());
+			String patternString = pathPattern.getPatternString();
+			if (ignoreTrailingSlash && patternString.length() > 1) {
+				patternString = removeTrailingSlash(patternString);
+			}
+			if (patternString.isEmpty()) {
+				return URI_ROOT;
+			}
+			return Tag.of("uri", patternString);
 		}
-		HttpStatus status = exchange.getResponse().getStatusCode();
+		HttpStatusCode status = exchange.getResponse().getStatusCode();
 		if (status != null) {
 			if (status.is3xxRedirection()) {
 				return URI_REDIRECTION;
@@ -119,7 +144,15 @@ public final class WebFluxTags {
 	private static String getPathInfo(ServerWebExchange exchange) {
 		String path = exchange.getRequest().getPath().value();
 		String uri = StringUtils.hasText(path) ? path : "/";
-		return uri.replaceAll("//+", "/").replaceAll("/$", "");
+		String singleSlashes = FORWARD_SLASHES_PATTERN.matcher(uri).replaceAll("/");
+		return removeTrailingSlash(singleSlashes);
+	}
+
+	private static String removeTrailingSlash(String text) {
+		if (!StringUtils.hasLength(text)) {
+			return text;
+		}
+		return text.endsWith("/") ? text.substring(0, text.length() - 1) : text;
 	}
 
 	/**
@@ -138,29 +171,21 @@ public final class WebFluxTags {
 
 	/**
 	 * Creates an {@code outcome} tag based on the response status of the given
-	 * {@code exchange}.
+	 * {@code exchange} and the exception thrown during request processing.
 	 * @param exchange the exchange
+	 * @param exception the termination signal sent by the publisher
 	 * @return the outcome tag derived from the response status
-	 * @since 2.1.0
+	 * @since 2.5.0
 	 */
-	public static Tag outcome(ServerWebExchange exchange) {
-		HttpStatus status = exchange.getResponse().getStatusCode();
-		if (status != null) {
-			if (status.is1xxInformational()) {
-				return OUTCOME_INFORMATIONAL;
+	public static Tag outcome(ServerWebExchange exchange, Throwable exception) {
+		if (exception != null) {
+			if (DISCONNECTED_CLIENT_EXCEPTIONS.contains(exception.getClass().getSimpleName())) {
+				return Outcome.UNKNOWN.asTag();
 			}
-			if (status.is2xxSuccessful()) {
-				return OUTCOME_SUCCESS;
-			}
-			if (status.is3xxRedirection()) {
-				return OUTCOME_REDIRECTION;
-			}
-			if (status.is4xxClientError()) {
-				return OUTCOME_CLIENT_ERROR;
-			}
-			return OUTCOME_SERVER_ERROR;
 		}
-		return OUTCOME_UNKNOWN;
+		HttpStatusCode statusCode = exchange.getResponse().getStatusCode();
+		Outcome outcome = (statusCode != null) ? Outcome.forStatus(statusCode.value()) : Outcome.SUCCESS;
+		return outcome.asTag();
 	}
 
 }

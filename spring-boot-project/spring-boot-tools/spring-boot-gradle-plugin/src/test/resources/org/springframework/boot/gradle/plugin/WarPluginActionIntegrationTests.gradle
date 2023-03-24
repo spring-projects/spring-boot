@@ -8,6 +8,6 @@ if (project.hasProperty('applyWarPlugin')) {
 
 task('taskExists') {
 	doFirst {
-		println "$taskName exists = ${tasks.findByName(taskName) != null}"
+		println "${taskName} exists = ${tasks.findByName(taskName) != null}"
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -155,6 +155,13 @@ public class JmsProperties {
 		 */
 		private Integer maxConcurrency;
 
+		/**
+		 * Timeout to use for receive calls. Use -1 for a no-wait receive or 0 for no
+		 * timeout at all. The latter is only feasible if not running within a transaction
+		 * manager and is generally discouraged since it prevents clean shutdown.
+		 */
+		private Duration receiveTimeout = Duration.ofSeconds(1);
+
 		public boolean isAutoStartup() {
 			return this.autoStartup;
 		}
@@ -193,6 +200,14 @@ public class JmsProperties {
 			}
 			return ((this.maxConcurrency != null) ? this.concurrency + "-" + this.maxConcurrency
 					: String.valueOf(this.concurrency));
+		}
+
+		public Duration getReceiveTimeout() {
+			return this.receiveTimeout;
+		}
+
+		public void setReceiveTimeout(Duration receiveTimeout) {
+			this.receiveTimeout = receiveTimeout;
 		}
 
 	}
@@ -305,11 +320,11 @@ public class JmsProperties {
 	}
 
 	/**
-	 * Translate the acknowledge modes defined on the {@link javax.jms.Session}.
+	 * Translate the acknowledge modes defined on the {@link jakarta.jms.Session}.
 	 *
 	 * <p>
-	 * {@link javax.jms.Session#SESSION_TRANSACTED} is not defined as we take care of this
-	 * already via a call to {@code setSessionTransacted}.
+	 * {@link jakarta.jms.Session#SESSION_TRANSACTED} is not defined as we take care of
+	 * this already through a call to {@code setSessionTransacted}.
 	 */
 	public enum AcknowledgeMode {
 
@@ -321,7 +336,7 @@ public class JmsProperties {
 
 		/**
 		 * Messages are acknowledged once the message listener implementation has called
-		 * {@link javax.jms.Message#acknowledge()}. This mode gives the application
+		 * {@link jakarta.jms.Message#acknowledge()}. This mode gives the application
 		 * (rather than the JMS provider) complete control over message acknowledgement.
 		 */
 		CLIENT(2),

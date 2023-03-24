@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ class CentralDirectoryParser {
 
 	private final List<CentralDirectoryVisitor> visitors = new ArrayList<>();
 
-	public <T extends CentralDirectoryVisitor> T addVisitor(T visitor) {
+	<T extends CentralDirectoryVisitor> T addVisitor(T visitor) {
 		this.visitors.add(visitor);
 		return visitor;
 	}
@@ -47,7 +47,7 @@ class CentralDirectoryParser {
 	 * @return the actual archive data without any prefix bytes
 	 * @throws IOException on error
 	 */
-	public RandomAccessData parse(RandomAccessData data, boolean skipPrefixBytes) throws IOException {
+	RandomAccessData parse(RandomAccessData data, boolean skipPrefixBytes) throws IOException {
 		CentralDirectoryEndRecord endRecord = new CentralDirectoryEndRecord(data);
 		if (skipPrefixBytes) {
 			data = getArchiveData(endRecord, data);
@@ -86,7 +86,7 @@ class CentralDirectoryParser {
 		}
 	}
 
-	private void visitFileHeader(int dataOffset, CentralDirectoryFileHeader fileHeader) {
+	private void visitFileHeader(long dataOffset, CentralDirectoryFileHeader fileHeader) {
 		for (CentralDirectoryVisitor visitor : this.visitors) {
 			visitor.visitFileHeader(fileHeader, dataOffset);
 		}

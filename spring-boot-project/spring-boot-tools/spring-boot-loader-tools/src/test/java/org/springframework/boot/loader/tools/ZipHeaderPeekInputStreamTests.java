@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,7 @@ package org.springframework.boot.loader.tools;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import org.junit.Test;
-
-import org.springframework.boot.loader.tools.JarWriter.ZipHeaderPeekInputStream;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,10 +28,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ZipHeaderPeekInputStreamTests {
+class ZipHeaderPeekInputStreamTests {
 
 	@Test
-	public void hasZipHeaderReturnsTrueWhenStreamStartsWithZipHeader() throws IOException {
+	void hasZipHeaderReturnsTrueWhenStreamStartsWithZipHeader() throws IOException {
 		try (ZipHeaderPeekInputStream in = new ZipHeaderPeekInputStream(
 				new ByteArrayInputStream(new byte[] { 0x50, 0x4b, 0x03, 0x04, 5, 6 }))) {
 			assertThat(in.hasZipHeader()).isTrue();
@@ -41,7 +39,7 @@ public class ZipHeaderPeekInputStreamTests {
 	}
 
 	@Test
-	public void hasZipHeaderReturnsFalseWhenStreamDoesNotStartWithZipHeader() throws IOException {
+	void hasZipHeaderReturnsFalseWhenStreamDoesNotStartWithZipHeader() throws IOException {
 		try (ZipHeaderPeekInputStream in = new ZipHeaderPeekInputStream(
 				new ByteArrayInputStream(new byte[] { 0, 1, 2, 3, 4, 5 }))) {
 			assertThat(in.hasZipHeader()).isFalse();
@@ -49,11 +47,11 @@ public class ZipHeaderPeekInputStreamTests {
 	}
 
 	@Test
-	public void readIndividualBytes() throws IOException {
+	void readIndividualBytes() throws IOException {
 		try (ZipHeaderPeekInputStream in = new ZipHeaderPeekInputStream(
 				new ByteArrayInputStream(new byte[] { 0, 1, 2, 3, 4, 5 }))) {
-			assertThat(in.read()).isEqualTo(0);
-			assertThat(in.read()).isEqualTo(1);
+			assertThat(in.read()).isZero();
+			assertThat(in.read()).isOne();
 			assertThat(in.read()).isEqualTo(2);
 			assertThat(in.read()).isEqualTo(3);
 			assertThat(in.read()).isEqualTo(4);
@@ -62,7 +60,7 @@ public class ZipHeaderPeekInputStreamTests {
 	}
 
 	@Test
-	public void readMultipleBytes() throws IOException {
+	void readMultipleBytes() throws IOException {
 		try (ZipHeaderPeekInputStream in = new ZipHeaderPeekInputStream(
 				new ByteArrayInputStream(new byte[] { 0, 1, 2, 3, 4, 5 }))) {
 			byte[] bytes = new byte[3];
@@ -75,7 +73,7 @@ public class ZipHeaderPeekInputStreamTests {
 	}
 
 	@Test
-	public void readingMoreThanEntireStreamReadsToEndOfStream() throws IOException {
+	void readingMoreThanEntireStreamReadsToEndOfStream() throws IOException {
 		try (ZipHeaderPeekInputStream in = new ZipHeaderPeekInputStream(
 				new ByteArrayInputStream(new byte[] { 0, 1, 2, 3, 4, 5 }))) {
 			byte[] bytes = new byte[8];
@@ -86,7 +84,7 @@ public class ZipHeaderPeekInputStreamTests {
 	}
 
 	@Test
-	public void readOfSomeOfTheHeaderThenMoreThanEntireStreamReadsToEndOfStream() throws IOException {
+	void readOfSomeOfTheHeaderThenMoreThanEntireStreamReadsToEndOfStream() throws IOException {
 		try (ZipHeaderPeekInputStream in = new ZipHeaderPeekInputStream(
 				new ByteArrayInputStream(new byte[] { 0, 1, 2, 3, 4, 5 }))) {
 			byte[] bytes = new byte[8];
@@ -98,16 +96,16 @@ public class ZipHeaderPeekInputStreamTests {
 	}
 
 	@Test
-	public void readMoreThanEntireStreamWhenStreamLengthIsLessThanZipHeaderLength() throws IOException {
+	void readMoreThanEntireStreamWhenStreamLengthIsLessThanZipHeaderLength() throws IOException {
 		try (ZipHeaderPeekInputStream in = new ZipHeaderPeekInputStream(new ByteArrayInputStream(new byte[] { 10 }))) {
 			byte[] bytes = new byte[8];
-			assertThat(in.read(bytes)).isEqualTo(1);
+			assertThat(in.read(bytes)).isOne();
 			assertThat(bytes).containsExactly(10, 0, 0, 0, 0, 0, 0, 0);
 		}
 	}
 
 	@Test
-	public void readMoreThanEntireStreamWhenStreamLengthIsSameAsHeaderLength() throws IOException {
+	void readMoreThanEntireStreamWhenStreamLengthIsSameAsHeaderLength() throws IOException {
 		try (ZipHeaderPeekInputStream in = new ZipHeaderPeekInputStream(
 				new ByteArrayInputStream(new byte[] { 1, 2, 3, 4 }))) {
 			byte[] bytes = new byte[8];
@@ -117,7 +115,7 @@ public class ZipHeaderPeekInputStreamTests {
 	}
 
 	@Test
-	public void readMoreThanEntireStreamWhenStreamLengthIsZero() throws IOException {
+	void readMoreThanEntireStreamWhenStreamLengthIsZero() throws IOException {
 		try (ZipHeaderPeekInputStream in = new ZipHeaderPeekInputStream(new ByteArrayInputStream(new byte[0]))) {
 			byte[] bytes = new byte[8];
 			assertThat(in.read(bytes)).isEqualTo(-1);

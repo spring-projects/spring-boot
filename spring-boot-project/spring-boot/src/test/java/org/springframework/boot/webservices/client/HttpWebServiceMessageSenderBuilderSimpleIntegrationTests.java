@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,9 @@ package org.springframework.boot.webservices.client;
 
 import java.time.Duration;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.ws.transport.WebServiceMessageSender;
@@ -36,22 +34,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@RunWith(ModifiedClassPathRunner.class)
-@ClassPathExclusions({ "httpclient-*.jar", "okhttp*.jar" })
-public class HttpWebServiceMessageSenderBuilderSimpleIntegrationTests {
+@ClassPathExclusions({ "httpclient5-*.jar", "okhttp*.jar" })
+class HttpWebServiceMessageSenderBuilderSimpleIntegrationTests {
 
 	private final HttpWebServiceMessageSenderBuilder builder = new HttpWebServiceMessageSenderBuilder();
 
 	@Test
-	public void buildUseUseSimpleClientByDefault() {
+	void buildUseUseSimpleClientByDefault() {
 		WebServiceMessageSender messageSender = this.builder.build();
 		assertSimpleClientRequestFactory(messageSender);
 	}
 
 	@Test
-	public void buildWithCustomTimeouts() {
+	void buildWithCustomTimeouts() {
 		WebServiceMessageSender messageSender = this.builder.setConnectTimeout(Duration.ofSeconds(5))
-				.setReadTimeout(Duration.ofSeconds(2)).build();
+			.setReadTimeout(Duration.ofSeconds(2))
+			.build();
 		SimpleClientHttpRequestFactory requestFactory = assertSimpleClientRequestFactory(messageSender);
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("connectTimeout", 5000);
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("readTimeout", 2000);

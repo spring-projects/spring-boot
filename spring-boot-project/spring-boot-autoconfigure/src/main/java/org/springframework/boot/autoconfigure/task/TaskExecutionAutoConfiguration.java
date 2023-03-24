@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,15 @@ package org.springframework.boot.autoconfigure.task;
 import java.util.concurrent.Executor;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.task.TaskExecutionProperties.Shutdown;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.task.TaskExecutorBuilder;
 import org.springframework.boot.task.TaskExecutorCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.TaskExecutor;
@@ -41,7 +42,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  * @since 2.1.0
  */
 @ConditionalOnClass(ThreadPoolTaskExecutor.class)
-@Configuration
+@AutoConfiguration
 @EnableConfigurationProperties(TaskExecutionProperties.class)
 public class TaskExecutionAutoConfiguration {
 
@@ -50,33 +51,24 @@ public class TaskExecutionAutoConfiguration {
 	 */
 	public static final String APPLICATION_TASK_EXECUTOR_BEAN_NAME = "applicationTaskExecutor";
 
-	private final TaskExecutionProperties properties;
-
-	private final ObjectProvider<TaskExecutorCustomizer> taskExecutorCustomizers;
-
-	private final ObjectProvider<TaskDecorator> taskDecorator;
-
-	public TaskExecutionAutoConfiguration(TaskExecutionProperties properties,
-			ObjectProvider<TaskExecutorCustomizer> taskExecutorCustomizers,
-			ObjectProvider<TaskDecorator> taskDecorator) {
-		this.properties = properties;
-		this.taskExecutorCustomizers = taskExecutorCustomizers;
-		this.taskDecorator = taskDecorator;
-	}
-
 	@Bean
 	@ConditionalOnMissingBean
-	public TaskExecutorBuilder taskExecutorBuilder() {
-		TaskExecutionProperties.Pool pool = this.properties.getPool();
+	public TaskExecutorBuilder taskExecutorBuilder(TaskExecutionProperties properties,
+			ObjectProvider<TaskExecutorCustomizer> taskExecutorCustomizers,
+			ObjectProvider<TaskDecorator> taskDecorator) {
+		TaskExecutionProperties.Pool pool = properties.getPool();
 		TaskExecutorBuilder builder = new TaskExecutorBuilder();
 		builder = builder.queueCapacity(pool.getQueueCapacity());
 		builder = builder.corePoolSize(pool.getCoreSize());
 		builder = builder.maxPoolSize(pool.getMaxSize());
 		builder = builder.allowCoreThreadTimeOut(pool.isAllowCoreThreadTimeout());
 		builder = builder.keepAlive(pool.getKeepAlive());
-		builder = builder.threadNamePrefix(this.properties.getThreadNamePrefix());
-		builder = builder.customizers(this.taskExecutorCustomizers.orderedStream()::iterator);
-		builder = builder.taskDecorator(this.taskDecorator.getIfUnique());
+		Shutdown shutdown = properties.getShutdown();
+		builder = builder.awaitTermination(shutdown.isAwaitTermination());
+		builder = builder.awaitTerminationPeriod(shutdown.getAwaitTerminationPeriod());
+		builder = builder.threadNamePrefix(properties.getThreadNamePrefix());
+		builder = builder.customizers(taskExecutorCustomizers.orderedStream()::iterator);
+		builder = builder.taskDecorator(taskDecorator.getIfUnique());
 		return builder;
 	}
 

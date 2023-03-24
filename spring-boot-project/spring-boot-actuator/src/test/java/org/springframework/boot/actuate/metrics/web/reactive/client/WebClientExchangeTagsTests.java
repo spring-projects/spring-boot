@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,12 @@ import java.io.IOException;
 import java.net.URI;
 
 import io.micrometer.core.instrument.Tag;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.web.reactive.function.client.ClientRequest;
 import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -34,11 +35,13 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link WebClientExchangeTags}
+ * Tests for {@link WebClientExchangeTags}.
  *
  * @author Brian Clozel
+ * @author Nishant Raut
  */
-public class WebClientExchangeTagsTests {
+@SuppressWarnings({ "deprecation", "removal" })
+class WebClientExchangeTagsTests {
 
 	private static final String URI_TEMPLATE_ATTRIBUTE = WebClient.class.getName() + ".uriTemplate";
 
@@ -46,63 +49,134 @@ public class WebClientExchangeTagsTests {
 
 	private ClientResponse response;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.request = ClientRequest.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot"))
-				.attribute(URI_TEMPLATE_ATTRIBUTE, "https://example.org/projects/{project}").build();
+			.attribute(URI_TEMPLATE_ATTRIBUTE, "https://example.org/projects/{project}")
+			.build();
 		this.response = mock(ClientResponse.class);
 	}
 
 	@Test
-	public void method() {
+	void method() {
 		assertThat(WebClientExchangeTags.method(this.request)).isEqualTo(Tag.of("method", "GET"));
 	}
 
 	@Test
-	public void uriWhenAbsoluteTemplateIsAvailableShouldReturnTemplate() {
+	void uriWhenAbsoluteTemplateIsAvailableShouldReturnTemplate() {
 		assertThat(WebClientExchangeTags.uri(this.request)).isEqualTo(Tag.of("uri", "/projects/{project}"));
 	}
 
 	@Test
-	public void uriWhenRelativeTemplateIsAvailableShouldReturnTemplate() {
+	void uriWhenRelativeTemplateIsAvailableShouldReturnTemplate() {
 		this.request = ClientRequest.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot"))
-				.attribute(URI_TEMPLATE_ATTRIBUTE, "/projects/{project}").build();
+			.attribute(URI_TEMPLATE_ATTRIBUTE, "/projects/{project}")
+			.build();
 		assertThat(WebClientExchangeTags.uri(this.request)).isEqualTo(Tag.of("uri", "/projects/{project}"));
 	}
 
 	@Test
-	public void uriWhenTemplateIsMissingShouldReturnPath() {
+	void uriWhenTemplateIsMissingShouldReturnPath() {
 		this.request = ClientRequest.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot"))
-				.build();
+			.build();
 		assertThat(WebClientExchangeTags.uri(this.request)).isEqualTo(Tag.of("uri", "/projects/spring-boot"));
 	}
 
 	@Test
-	public void clientName() {
-		assertThat(WebClientExchangeTags.clientName(this.request)).isEqualTo(Tag.of("clientName", "example.org"));
+	void uriWhenTemplateIsMissingShouldReturnPathWithQueryParams() {
+		this.request = ClientRequest
+			.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot?section=docs"))
+			.build();
+		assertThat(WebClientExchangeTags.uri(this.request))
+			.isEqualTo(Tag.of("uri", "/projects/spring-boot?section=docs"));
 	}
 
 	@Test
-	public void status() {
-		given(this.response.rawStatusCode()).willReturn(HttpStatus.OK.value());
-		assertThat(WebClientExchangeTags.status(this.response)).isEqualTo(Tag.of("status", "200"));
+	void clientName() {
+		assertThat(WebClientExchangeTags.clientName(this.request)).isEqualTo(Tag.of("client.name", "example.org"));
 	}
 
 	@Test
-	public void statusWhenIOException() {
-		assertThat(WebClientExchangeTags.status(new IOException())).isEqualTo(Tag.of("status", "IO_ERROR"));
+	void status() {
+		given(this.response.statusCode()).willReturn(HttpStatus.OK);
+		assertThat(WebClientExchangeTags.status(this.response, null)).isEqualTo(Tag.of("status", "200"));
 	}
 
 	@Test
-	public void statusWhenClientException() {
-		assertThat(WebClientExchangeTags.status(new IllegalArgumentException()))
-				.isEqualTo(Tag.of("status", "CLIENT_ERROR"));
+	void statusWhenIOException() {
+		assertThat(WebClientExchangeTags.status(null, new IOException())).isEqualTo(Tag.of("status", "IO_ERROR"));
 	}
 
 	@Test
-	public void statusWhenNonStandard() {
-		given(this.response.rawStatusCode()).willReturn(490);
-		assertThat(WebClientExchangeTags.status(this.response)).isEqualTo(Tag.of("status", "490"));
+	void statusWhenClientException() {
+		assertThat(WebClientExchangeTags.status(null, new IllegalArgumentException()))
+			.isEqualTo(Tag.of("status", "CLIENT_ERROR"));
+	}
+
+	@Test
+	void statusWhenNonStandard() {
+		given(this.response.statusCode()).willReturn(HttpStatusCode.valueOf(490));
+		assertThat(WebClientExchangeTags.status(this.response, null)).isEqualTo(Tag.of("status", "490"));
+	}
+
+	@Test
+	void statusWhenCancelled() {
+		assertThat(WebClientExchangeTags.status(null, null)).isEqualTo(Tag.of("status", "CLIENT_ERROR"));
+	}
+
+	@Test
+	void outcomeTagIsUnknownWhenResponseIsNull() {
+		Tag tag = WebClientExchangeTags.outcome(null);
+		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
+	}
+
+	@Test
+	void outcomeTagIsInformationalWhenResponseIs1xx() {
+		given(this.response.statusCode()).willReturn(HttpStatus.CONTINUE);
+		Tag tag = WebClientExchangeTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("INFORMATIONAL");
+	}
+
+	@Test
+	void outcomeTagIsSuccessWhenResponseIs2xx() {
+		given(this.response.statusCode()).willReturn(HttpStatus.OK);
+		Tag tag = WebClientExchangeTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("SUCCESS");
+	}
+
+	@Test
+	void outcomeTagIsRedirectionWhenResponseIs3xx() {
+		given(this.response.statusCode()).willReturn(HttpStatus.MOVED_PERMANENTLY);
+		Tag tag = WebClientExchangeTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("REDIRECTION");
+	}
+
+	@Test
+	void outcomeTagIsClientErrorWhenResponseIs4xx() {
+		given(this.response.statusCode()).willReturn(HttpStatus.BAD_REQUEST);
+		Tag tag = WebClientExchangeTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("CLIENT_ERROR");
+	}
+
+	@Test
+	void outcomeTagIsServerErrorWhenResponseIs5xx() {
+		given(this.response.statusCode()).willReturn(HttpStatus.BAD_GATEWAY);
+		Tag tag = WebClientExchangeTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("SERVER_ERROR");
+	}
+
+	@Test
+	void outcomeTagIsClientErrorWhenResponseIsNonStandardInClientSeries() {
+		given(this.response.statusCode()).willReturn(HttpStatusCode.valueOf(490));
+		Tag tag = WebClientExchangeTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("CLIENT_ERROR");
+	}
+
+	@Test
+	void outcomeTagIsUnknownWhenResponseStatusIsInUnknownSeries() {
+		given(this.response.statusCode()).willReturn(HttpStatusCode.valueOf(701));
+		Tag tag = WebClientExchangeTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
 	}
 
 }

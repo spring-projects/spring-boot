@@ -1,0 +1,8 @@
+[[getting-started.whats-next]]
+== What to Read Next
+Hopefully, this section provided some of the Spring Boot basics and got you on your way to writing your own applications.
+If you are a task-oriented type of developer, you might want to jump over to https://spring.io and follow some of the https://spring.io/guides/[getting started] guides that solve specific "`How do I do that with Spring?`" problems.
+We also have Spring Boot-specific "`<<howto#howto, How-to>>`" reference documentation.
+
+Otherwise, the next logical step is to read _<<using#using>>_.
+If you are really impatient, you could also jump ahead and read about _<<features#features, Spring Boot features>>_.

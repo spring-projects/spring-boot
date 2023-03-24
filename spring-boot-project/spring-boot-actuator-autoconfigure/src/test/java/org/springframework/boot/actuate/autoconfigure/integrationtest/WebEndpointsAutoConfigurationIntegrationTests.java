@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,14 @@
 
 package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.health.HealthEndpointWebExtension;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration;
@@ -34,14 +32,11 @@ import org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoCo
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.rest.RepositoryRestMvcAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.solr.SolrRepositoriesAutoConfiguration;
-import org.springframework.boot.autoconfigure.elasticsearch.jest.JestAutoConfiguration;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
-import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -53,28 +48,30 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class WebEndpointsAutoConfigurationIntegrationTests {
+class WebEndpointsAutoConfigurationIntegrationTests {
 
 	@Test
-	public void healthEndpointWebExtensionIsAutoConfigured() {
+	void healthEndpointWebExtensionIsAutoConfigured() {
 		servletWebRunner().run((context) -> context.getBean(WebEndpointTestApplication.class));
 		servletWebRunner().run((context) -> assertThat(context).hasSingleBean(HealthEndpointWebExtension.class));
 	}
 
 	@Test
-	public void healthEndpointReactiveWebExtensionIsAutoConfigured() {
+	void healthEndpointReactiveWebExtensionIsAutoConfigured() {
 		reactiveWebRunner()
-				.run((context) -> assertThat(context).hasSingleBean(ReactiveHealthEndpointWebExtension.class));
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveHealthEndpointWebExtension.class));
 	}
 
 	private WebApplicationContextRunner servletWebRunner() {
 		return new WebApplicationContextRunner()
-				.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class));
+			.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class))
+			.withPropertyValues("management.tracing.enabled=false", "management.defaults.metrics.export.enabled=false");
 	}
 
 	private ReactiveWebApplicationContextRunner reactiveWebRunner() {
 		return new ReactiveWebApplicationContextRunner()
-				.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class));
+			.withConfiguration(UserConfigurations.of(WebEndpointTestApplication.class))
+			.withPropertyValues("management.tracing.enabled=false", "management.defaults.metrics.export.enabled=false");
 	}
 
 	@EnableAutoConfiguration(exclude = { FlywayAutoConfiguration.class, LiquibaseAutoConfiguration.class,
@@ -82,11 +79,10 @@ public class WebEndpointsAutoConfigurationIntegrationTests {
 			Neo4jRepositoriesAutoConfiguration.class, MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 			MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class,
 			RepositoryRestMvcAutoConfiguration.class, HazelcastAutoConfiguration.class,
-			ElasticsearchAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class, JestAutoConfiguration.class,
-			SolrRepositoriesAutoConfiguration.class, SolrAutoConfiguration.class, RedisAutoConfiguration.class,
-			RedisRepositoriesAutoConfiguration.class, MetricsAutoConfiguration.class })
+			ElasticsearchDataAutoConfiguration.class, RedisAutoConfiguration.class,
+			RedisRepositoriesAutoConfiguration.class })
 	@SpringBootConfiguration
-	public static class WebEndpointTestApplication {
+	static class WebEndpointTestApplication {
 
 	}
 

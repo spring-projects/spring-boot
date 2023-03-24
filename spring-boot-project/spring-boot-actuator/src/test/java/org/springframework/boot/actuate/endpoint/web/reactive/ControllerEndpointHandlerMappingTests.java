@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.actuate.endpoint.web.reactive;
 import java.time.Duration;
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
@@ -46,50 +46,50 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class ControllerEndpointHandlerMappingTests {
+class ControllerEndpointHandlerMappingTests {
 
 	private final StaticApplicationContext context = new StaticApplicationContext();
 
 	@Test
-	public void mappingWithNoPrefix() throws Exception {
+	void mappingWithNoPrefix() {
 		ExposableControllerEndpoint first = firstEndpoint();
 		ExposableControllerEndpoint second = secondEndpoint();
 		ControllerEndpointHandlerMapping mapping = createMapping("", first, second);
 		assertThat(getHandler(mapping, HttpMethod.GET, "/first")).isEqualTo(handlerOf(first.getController(), "get"));
 		assertThat(getHandler(mapping, HttpMethod.POST, "/second"))
-				.isEqualTo(handlerOf(second.getController(), "save"));
+			.isEqualTo(handlerOf(second.getController(), "save"));
 		assertThat(getHandler(mapping, HttpMethod.GET, "/third")).isNull();
 	}
 
 	@Test
-	public void mappingWithPrefix() throws Exception {
+	void mappingWithPrefix() {
 		ExposableControllerEndpoint first = firstEndpoint();
 		ExposableControllerEndpoint second = secondEndpoint();
 		ControllerEndpointHandlerMapping mapping = createMapping("actuator", first, second);
 		assertThat(getHandler(mapping, HttpMethod.GET, "/actuator/first"))
-				.isEqualTo(handlerOf(first.getController(), "get"));
+			.isEqualTo(handlerOf(first.getController(), "get"));
 		assertThat(getHandler(mapping, HttpMethod.POST, "/actuator/second"))
-				.isEqualTo(handlerOf(second.getController(), "save"));
+			.isEqualTo(handlerOf(second.getController(), "save"));
 		assertThat(getHandler(mapping, HttpMethod.GET, "/first")).isNull();
 		assertThat(getHandler(mapping, HttpMethod.GET, "/second")).isNull();
 	}
 
 	@Test
-	public void mappingWithNoPath() throws Exception {
+	void mappingWithNoPath() {
 		ExposableControllerEndpoint pathless = pathlessEndpoint();
 		ControllerEndpointHandlerMapping mapping = createMapping("actuator", pathless);
 		assertThat(getHandler(mapping, HttpMethod.GET, "/actuator/pathless"))
-				.isEqualTo(handlerOf(pathless.getController(), "get"));
+			.isEqualTo(handlerOf(pathless.getController(), "get"));
 		assertThat(getHandler(mapping, HttpMethod.GET, "/pathless")).isNull();
 		assertThat(getHandler(mapping, HttpMethod.GET, "/")).isNull();
 	}
 
 	@Test
-	public void mappingNarrowedToMethod() throws Exception {
+	void mappingNarrowedToMethod() {
 		ExposableControllerEndpoint first = firstEndpoint();
 		ControllerEndpointHandlerMapping mapping = createMapping("actuator", first);
 		assertThatExceptionOfType(MethodNotAllowedException.class)
-				.isThrownBy(() -> getHandler(mapping, HttpMethod.POST, "/actuator/first"));
+			.isThrownBy(() -> getHandler(mapping, HttpMethod.POST, "/actuator/first"));
 	}
 
 	private Object getHandler(ControllerEndpointHandlerMapping mapping, HttpMethod method, String requestURI) {
@@ -133,30 +133,30 @@ public class ControllerEndpointHandlerMappingTests {
 	}
 
 	@ControllerEndpoint(id = "first")
-	private static class FirstTestMvcEndpoint {
+	static class FirstTestMvcEndpoint {
 
 		@GetMapping("/")
-		public String get() {
+		String get() {
 			return "test";
 		}
 
 	}
 
 	@ControllerEndpoint(id = "second")
-	private static class SecondTestMvcEndpoint {
+	static class SecondTestMvcEndpoint {
 
 		@PostMapping("/")
-		public void save() {
+		void save() {
 
 		}
 
 	}
 
 	@ControllerEndpoint(id = "pathless")
-	private static class PathlessControllerEndpoint {
+	static class PathlessControllerEndpoint {
 
 		@GetMapping
-		public String get() {
+		String get() {
 			return "test";
 		}
 

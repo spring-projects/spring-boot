@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.session;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.session.SessionsEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -33,28 +33,34 @@ import static org.mockito.Mockito.mock;
  *
  * @author Vedran Pavic
  */
-public class SessionsEndpointAutoConfigurationTests {
+class SessionsEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(SessionsEndpointAutoConfiguration.class))
-			.withUserConfiguration(SessionConfiguration.class);
+		.withConfiguration(AutoConfigurations.of(SessionsEndpointAutoConfiguration.class))
+		.withUserConfiguration(SessionConfiguration.class);
 
 	@Test
-	public void runShouldHaveEndpointBean() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(SessionsEndpoint.class));
+	void runShouldHaveEndpointBean() {
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=sessions")
+			.run((context) -> assertThat(context).hasSingleBean(SessionsEndpoint.class));
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+	void runWhenNotExposedShouldNotHaveEndpointBean() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(SessionsEndpoint.class));
+	}
+
+	@Test
+	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.sessions.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(SessionsEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(SessionsEndpoint.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SessionConfiguration {
 
 		@Bean
-		public FindByIndexNameSessionRepository<?> sessionRepository() {
+		FindByIndexNameSessionRepository<?> sessionRepository() {
 			return mock(FindByIndexNameSessionRepository.class);
 		}
 

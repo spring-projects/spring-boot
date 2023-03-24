@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.context.assertj;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.reactive.context.ConfigurableReactiveWebApplicationContext;
 
@@ -29,12 +29,12 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @see ApplicationContextAssertProviderTests
  */
-public class AssertableReactiveWebApplicationContextTests {
+class AssertableReactiveWebApplicationContextTests {
 
 	@Test
-	public void getShouldReturnProxy() {
+	void getShouldReturnProxy() {
 		AssertableReactiveWebApplicationContext context = AssertableReactiveWebApplicationContext
-				.get(() -> mock(ConfigurableReactiveWebApplicationContext.class));
+			.get(() -> mock(ConfigurableReactiveWebApplicationContext.class));
 		assertThat(context).isInstanceOf(ConfigurableReactiveWebApplicationContext.class);
 	}
 

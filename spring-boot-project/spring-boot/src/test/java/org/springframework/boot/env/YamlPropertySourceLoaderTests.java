@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.env;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
@@ -37,12 +37,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class YamlPropertySourceLoaderTests {
+class YamlPropertySourceLoaderTests {
 
-	private YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
+	private final YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
 
 	@Test
-	public void load() throws Exception {
+	void load() throws Exception {
 		ByteArrayResource resource = new ByteArrayResource("foo:\n  bar: spam".getBytes());
 		PropertySource<?> source = this.loader.load("resource", resource).get(0);
 		assertThat(source).isNotNull();
@@ -50,22 +50,22 @@ public class YamlPropertySourceLoaderTests {
 	}
 
 	@Test
-	public void orderedItems() throws Exception {
+	void orderedItems() throws Exception {
 		StringBuilder yaml = new StringBuilder();
 		List<String> expected = new ArrayList<>();
 		for (char c = 'a'; c <= 'z'; c++) {
-			yaml.append(c + ": value" + c + "\n");
+			yaml.append(c).append(": value").append(c).append("\n");
 			expected.add(String.valueOf(c));
 		}
 		ByteArrayResource resource = new ByteArrayResource(yaml.toString().getBytes());
 		EnumerablePropertySource<?> source = (EnumerablePropertySource<?>) this.loader.load("resource", resource)
-				.get(0);
+			.get(0);
 		assertThat(source).isNotNull();
 		assertThat(source.getPropertyNames()).isEqualTo(StringUtils.toStringArray(expected));
 	}
 
 	@Test
-	public void mergeItems() throws Exception {
+	void mergeItems() throws Exception {
 		StringBuilder yaml = new StringBuilder();
 		yaml.append("foo:\n  bar: spam\n");
 		yaml.append("---\n");
@@ -78,7 +78,7 @@ public class YamlPropertySourceLoaderTests {
 	}
 
 	@Test
-	public void timestampLikeItemsDoNotBecomeDates() throws Exception {
+	void timestampLikeItemsDoNotBecomeDates() throws Exception {
 		ByteArrayResource resource = new ByteArrayResource("foo: 2015-01-28".getBytes());
 		PropertySource<?> source = this.loader.load("resource", resource).get(0);
 		assertThat(source).isNotNull();
@@ -86,7 +86,7 @@ public class YamlPropertySourceLoaderTests {
 	}
 
 	@Test
-	public void loadOriginAware() throws Exception {
+	void loadOriginAware() throws Exception {
 		Resource resource = new ClassPathResource("test-yaml.yml", getClass());
 		List<PropertySource<?>> loaded = this.loader.load("resource", resource);
 		for (PropertySource<?> source : loaded) {

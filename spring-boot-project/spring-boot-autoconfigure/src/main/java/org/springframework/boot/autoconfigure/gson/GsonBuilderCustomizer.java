@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import com.google.gson.GsonBuilder;
 
 /**
  * Callback interface that can be implemented by beans wishing to further customize the
- * {@link Gson} via {@link GsonBuilder} retaining its default auto-configuration.
+ * {@link Gson} through {@link GsonBuilder} retaining its default auto-configuration.
  *
  * @author Ivan Golovko
  * @since 2.0.0

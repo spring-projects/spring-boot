@@ -21,7 +21,7 @@ import org.springframework.boot.context.configwarnings.orgspring.InOrgSpringPack
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ComponentScan(basePackageClasses = { InDefaultPackageConfiguration.class, InOrgSpringPackageConfiguration.class })
 public class InRealButScanningProblemPackages {
 

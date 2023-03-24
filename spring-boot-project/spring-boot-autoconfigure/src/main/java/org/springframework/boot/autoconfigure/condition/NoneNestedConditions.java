@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Condition;
  * be used to create composite conditions, for example:
  *
  * <pre class="code">
- * static class OnNeitherJndiNorProperty extends NoneOfNestedConditions {
+ * static class OnNeitherJndiNorProperty extends NoneNestedConditions {
  *
  *    OnNeitherJndiNorProperty() {
  *        super(ConfigurationPhase.PARSE_CONFIGURATION);
@@ -62,8 +62,9 @@ public abstract class NoneNestedConditions extends AbstractNestedCondition {
 	protected ConditionOutcome getFinalMatchOutcome(MemberMatchOutcomes memberOutcomes) {
 		boolean match = memberOutcomes.getMatches().isEmpty();
 		List<ConditionMessage> messages = new ArrayList<>();
-		messages.add(ConditionMessage.forCondition("NoneNestedConditions").because(
-				memberOutcomes.getMatches().size() + " matched " + memberOutcomes.getNonMatches().size() + " did not"));
+		messages.add(ConditionMessage.forCondition("NoneNestedConditions")
+			.because(memberOutcomes.getMatches().size() + " matched " + memberOutcomes.getNonMatches().size()
+					+ " did not"));
 		for (ConditionOutcome outcome : memberOutcomes.getAll()) {
 			messages.add(outcome.getConditionMessage());
 		}

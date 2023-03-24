@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * Example {@link Controller} used with {@link WebMvcTest} tests.
+ * Example {@link Controller @Controller} used with {@link WebMvcTest @WebMvcTest} tests.
  *
  * @author Phillip Webb
  */

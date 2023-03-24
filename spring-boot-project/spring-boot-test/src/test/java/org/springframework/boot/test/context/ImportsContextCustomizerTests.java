@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,9 @@ import java.util.Collections;
 import java.util.Set;
 
 import kotlin.Metadata;
-import org.junit.Test;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.spockframework.runtime.model.SpecMetadata;
 import spock.lang.Issue;
 import spock.lang.Stepwise;
@@ -40,36 +42,42 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ImportsContextCustomizerTests {
+class ImportsContextCustomizerTests {
 
 	@Test
-	public void importSelectorsCouldUseAnyAnnotations() {
+	void importSelectorsCouldUseAnyAnnotations() {
 		assertThat(new ImportsContextCustomizer(FirstImportSelectorAnnotatedClass.class))
-				.isNotEqualTo(new ImportsContextCustomizer(SecondImportSelectorAnnotatedClass.class));
+			.isNotEqualTo(new ImportsContextCustomizer(SecondImportSelectorAnnotatedClass.class));
 	}
 
 	@Test
-	public void determinableImportSelector() {
+	void determinableImportSelector() {
 		assertThat(new ImportsContextCustomizer(FirstDeterminableImportSelectorAnnotatedClass.class))
-				.isEqualTo(new ImportsContextCustomizer(SecondDeterminableImportSelectorAnnotatedClass.class));
+			.isEqualTo(new ImportsContextCustomizer(SecondDeterminableImportSelectorAnnotatedClass.class));
 	}
 
 	@Test
-	public void customizersForTestClassesWithDifferentKotlinMetadataAreEqual() {
+	void customizersForTestClassesWithDifferentKotlinMetadataAreEqual() {
 		assertThat(new ImportsContextCustomizer(FirstKotlinAnnotatedTestClass.class))
-				.isEqualTo(new ImportsContextCustomizer(SecondKotlinAnnotatedTestClass.class));
+			.isEqualTo(new ImportsContextCustomizer(SecondKotlinAnnotatedTestClass.class));
 	}
 
 	@Test
-	public void customizersForTestClassesWithDifferentSpockFrameworkAnnotationsAreEqual() {
+	void customizersForTestClassesWithDifferentSpockFrameworkAnnotationsAreEqual() {
 		assertThat(new ImportsContextCustomizer(FirstSpockFrameworkAnnotatedTestClass.class))
-				.isEqualTo(new ImportsContextCustomizer(SecondSpockFrameworkAnnotatedTestClass.class));
+			.isEqualTo(new ImportsContextCustomizer(SecondSpockFrameworkAnnotatedTestClass.class));
 	}
 
 	@Test
-	public void customizersForTestClassesWithDifferentSpockLangAnnotationsAreEqual() {
+	void customizersForTestClassesWithDifferentSpockLangAnnotationsAreEqual() {
 		assertThat(new ImportsContextCustomizer(FirstSpockLangAnnotatedTestClass.class))
-				.isEqualTo(new ImportsContextCustomizer(SecondSpockLangAnnotatedTestClass.class));
+			.isEqualTo(new ImportsContextCustomizer(SecondSpockLangAnnotatedTestClass.class));
+	}
+
+	@Test
+	void customizersForTestClassesWithDifferentJUnitAnnotationsAreEqual() {
+		assertThat(new ImportsContextCustomizer(FirstJUnitAnnotatedTestClass.class))
+			.isEqualTo(new ImportsContextCustomizer(SecondJUnitAnnotatedTestClass.class));
 	}
 
 	@Import(TestImportSelector.class)
@@ -97,32 +105,50 @@ public class ImportsContextCustomizerTests {
 	}
 
 	@Metadata(d2 = "foo")
+	@Import(TestImportSelector.class)
 	static class FirstKotlinAnnotatedTestClass {
 
 	}
 
 	@Metadata(d2 = "bar")
+	@Import(TestImportSelector.class)
 	static class SecondKotlinAnnotatedTestClass {
 
 	}
 
 	@SpecMetadata(filename = "foo", line = 10)
+	@Import(TestImportSelector.class)
 	static class FirstSpockFrameworkAnnotatedTestClass {
 
 	}
 
 	@SpecMetadata(filename = "bar", line = 10)
+	@Import(TestImportSelector.class)
 	static class SecondSpockFrameworkAnnotatedTestClass {
 
 	}
 
 	@Stepwise
+	@Import(TestImportSelector.class)
 	static class FirstSpockLangAnnotatedTestClass {
 
 	}
 
 	@Issue("1234")
+	@Import(TestImportSelector.class)
 	static class SecondSpockLangAnnotatedTestClass {
+
+	}
+
+	@Nested
+	@Import(TestImportSelector.class)
+	static class FirstJUnitAnnotatedTestClass {
+
+	}
+
+	@Tag("test")
+	@Import(TestImportSelector.class)
+	static class SecondJUnitAnnotatedTestClass {
 
 	}
 
@@ -159,7 +185,7 @@ public class ImportsContextCustomizerTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestConfig {
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,11 @@ package org.springframework.boot.devtools.remote.client;
 import java.io.IOException;
 import java.net.URI;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.devtools.autoconfigure.OptionalLiveReloadServer;
 import org.springframework.http.HttpMethod;
@@ -34,15 +35,16 @@ import org.springframework.http.client.ClientHttpResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DelayedLiveReloadTrigger}.
  *
  * @author Phillip Webb
  */
-public class DelayedLiveReloadTriggerTests {
+@ExtendWith(MockitoExtension.class)
+class DelayedLiveReloadTriggerTests {
 
 	private static final String URL = "http://localhost:8080";
 
@@ -66,61 +68,60 @@ public class DelayedLiveReloadTriggerTests {
 
 	private DelayedLiveReloadTrigger trigger;
 
-	@Before
-	public void setup() throws IOException {
-		MockitoAnnotations.initMocks(this);
-		given(this.errorRequest.execute()).willReturn(this.errorResponse);
-		given(this.okRequest.execute()).willReturn(this.okResponse);
-		given(this.errorResponse.getStatusCode()).willReturn(HttpStatus.INTERNAL_SERVER_ERROR);
-		given(this.okResponse.getStatusCode()).willReturn(HttpStatus.OK);
+	@BeforeEach
+	void setup() {
 		this.trigger = new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, URL);
 	}
 
 	@Test
-	public void liveReloadServerMustNotBeNull() {
+	void liveReloadServerMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DelayedLiveReloadTrigger(null, this.requestFactory, URL))
-				.withMessageContaining("LiveReloadServer must not be null");
+			.isThrownBy(() -> new DelayedLiveReloadTrigger(null, this.requestFactory, URL))
+			.withMessageContaining("LiveReloadServer must not be null");
 	}
 
 	@Test
-	public void requestFactoryMustNotBeNull() {
+	void requestFactoryMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, null, URL))
-				.withMessageContaining("RequestFactory must not be null");
+			.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, null, URL))
+			.withMessageContaining("RequestFactory must not be null");
 	}
 
 	@Test
-	public void urlMustNotBeNull() {
+	void urlMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, null))
-				.withMessageContaining("URL must not be empty");
+			.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, null))
+			.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
-	public void urlMustNotBeEmpty() {
+	void urlMustNotBeEmpty() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, ""))
-				.withMessageContaining("URL must not be empty");
+			.isThrownBy(() -> new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, ""))
+			.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
-	public void triggerReloadOnStatus() throws Exception {
+	void triggerReloadOnStatus() throws Exception {
+		given(this.errorRequest.execute()).willReturn(this.errorResponse);
+		given(this.okRequest.execute()).willReturn(this.okResponse);
+		given(this.errorResponse.getStatusCode()).willReturn(HttpStatus.INTERNAL_SERVER_ERROR);
+		given(this.okResponse.getStatusCode()).willReturn(HttpStatus.OK);
 		given(this.requestFactory.createRequest(new URI(URL), HttpMethod.GET)).willThrow(new IOException())
-				.willReturn(this.errorRequest, this.okRequest);
+			.willReturn(this.errorRequest, this.okRequest);
 		long startTime = System.currentTimeMillis();
 		this.trigger.setTimings(10, 200, 30000);
 		this.trigger.run();
 		assertThat(System.currentTimeMillis() - startTime).isGreaterThan(300L);
-		verify(this.liveReloadServer).triggerReload();
+		then(this.liveReloadServer).should().triggerReload();
 	}
 
 	@Test
-	public void timeout() throws Exception {
+	void timeout() throws Exception {
 		given(this.requestFactory.createRequest(new URI(URL), HttpMethod.GET)).willThrow(new IOException());
 		this.trigger.setTimings(10, 0, 10);
 		this.trigger.run();
-		verify(this.liveReloadServer, never()).triggerReload();
+		then(this.liveReloadServer).should(never()).triggerReload();
 	}
 
 }

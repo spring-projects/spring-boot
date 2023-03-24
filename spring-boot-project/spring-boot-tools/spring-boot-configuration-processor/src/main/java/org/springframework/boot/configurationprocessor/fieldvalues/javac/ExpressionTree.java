@@ -44,18 +44,18 @@ class ExpressionTree extends ReflectionWrapper {
 		super("com.sun.source.tree.ExpressionTree", instance);
 	}
 
-	public String getKind() throws Exception {
+	String getKind() throws Exception {
 		return findMethod("getKind").invoke(getInstance()).toString();
 	}
 
-	public Object getLiteralValue() throws Exception {
+	Object getLiteralValue() throws Exception {
 		if (this.literalTreeType.isAssignableFrom(getInstance().getClass())) {
 			return this.literalValueMethod.invoke(getInstance());
 		}
 		return null;
 	}
 
-	public Object getFactoryValue() throws Exception {
+	Object getFactoryValue() throws Exception {
 		if (this.methodInvocationTreeType.isAssignableFrom(getInstance().getClass())) {
 			List<?> arguments = (List<?>) this.methodInvocationArgumentsMethod.invoke(getInstance());
 			if (arguments.size() == 1) {
@@ -65,7 +65,7 @@ class ExpressionTree extends ReflectionWrapper {
 		return null;
 	}
 
-	public List<? extends ExpressionTree> getArrayExpression() throws Exception {
+	List<? extends ExpressionTree> getArrayExpression() throws Exception {
 		if (this.newArrayTreeType.isAssignableFrom(getInstance().getClass())) {
 			List<?> elements = (List<?>) this.arrayValueMethod.invoke(getInstance());
 			List<ExpressionTree> result = new ArrayList<>();

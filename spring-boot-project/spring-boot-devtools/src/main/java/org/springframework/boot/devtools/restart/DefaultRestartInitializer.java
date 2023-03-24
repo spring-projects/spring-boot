@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,8 @@
 package org.springframework.boot.devtools.restart;
 
 import java.net.URL;
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Set;
+
+import org.springframework.boot.devtools.system.DevToolsEnablementDeducer;
 
 /**
  * Default {@link RestartInitializer} that only enable initial restart when running a
@@ -32,55 +31,50 @@ import java.util.Set;
  */
 public class DefaultRestartInitializer implements RestartInitializer {
 
-	private static final Set<String> SKIPPED_STACK_ELEMENTS;
-
-	static {
-		Set<String> skipped = new LinkedHashSet<>();
-		skipped.add("org.junit.runners.");
-		skipped.add("org.junit.platform.");
-		skipped.add("org.springframework.boot.test.");
-		skipped.add("cucumber.runtime.");
-		SKIPPED_STACK_ELEMENTS = Collections.unmodifiableSet(skipped);
-	}
-
 	@Override
 	public URL[] getInitialUrls(Thread thread) {
 		if (!isMain(thread)) {
 			return null;
 		}
-		for (StackTraceElement element : thread.getStackTrace()) {
-			if (isSkippedStackElement(element)) {
-				return null;
-			}
+		if (!DevToolsEnablementDeducer.shouldEnable(thread)) {
+			return null;
 		}
 		return getUrls(thread);
 	}
 
 	/**
-	 * Returns if the thread is for a main invocation. By default checks the name of the
-	 * thread and the context classloader.
+	 * Returns if the thread is for a main invocation. By default {@link #isMain(Thread)
+	 * checks the name of the thread} and {@link #isDevelopmentClassLoader(ClassLoader)
+	 * the context classloader}.
 	 * @param thread the thread to check
 	 * @return {@code true} if the thread is a main invocation
+	 * @see #isMainThread
+	 * @see #isDevelopmentClassLoader(ClassLoader)
 	 */
 	protected boolean isMain(Thread thread) {
-		return thread.getName().equals("main")
-				&& thread.getContextClassLoader().getClass().getName().contains("AppClassLoader");
+		return isMainThread(thread) && isDevelopmentClassLoader(thread.getContextClassLoader());
 	}
 
 	/**
-	 * Checks if a specific {@link StackTraceElement} should cause the initializer to be
-	 * skipped.
-	 * @param element the stack element to check
-	 * @return {@code true} if the stack element means that the initializer should be
-	 * skipped
+	 * Returns whether the given {@code thread} is considered to be the main thread.
+	 * @param thread the thread to check
+	 * @return {@code true} if it's the main thread, otherwise {@code false}
+	 * @since 2.4.0
 	 */
-	private boolean isSkippedStackElement(StackTraceElement element) {
-		for (String skipped : SKIPPED_STACK_ELEMENTS) {
-			if (element.getClassName().startsWith(skipped)) {
-				return true;
-			}
-		}
-		return false;
+	protected boolean isMainThread(Thread thread) {
+		return thread.getName().equals("main");
+	}
+
+	/**
+	 * Returns whether the given {@code classLoader} is one that is typically used during
+	 * development.
+	 * @param classLoader the ClassLoader to check
+	 * @return {@code true} if it's a ClassLoader typically used during development,
+	 * otherwise {@code false}
+	 * @since 2.4.0
+	 */
+	protected boolean isDevelopmentClassLoader(ClassLoader classLoader) {
+		return classLoader.getClass().getName().contains("AppClassLoader");
 	}
 
 	/**

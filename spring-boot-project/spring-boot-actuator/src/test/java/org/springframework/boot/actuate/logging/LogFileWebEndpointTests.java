@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +18,20 @@ package org.springframework.boot.actuate.logging;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.logging.LogFile;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
 
 /**
  * Tests for {@link LogFileWebEndpoint}.
@@ -40,49 +40,46 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class LogFileWebEndpointTests {
-
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+class LogFileWebEndpointTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
 
 	private File logFile;
 
-	@Before
-	public void before() throws IOException {
-		this.logFile = this.temp.newFile();
+	@BeforeEach
+	void before(@TempDir Path temp) throws IOException {
+		this.logFile = Files.createTempFile(temp, "junit", null).toFile();
 		FileCopyUtils.copy("--TEST--".getBytes(), this.logFile);
 	}
 
 	@Test
-	public void nullResponseWithoutLogFile() {
+	void nullResponseWithoutLogFile() {
 		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(null, null);
 		assertThat(endpoint.logFile()).isNull();
 	}
 
 	@Test
-	public void nullResponseWithMissingLogFile() {
-		this.environment.setProperty("logging.file", "no_test.log");
+	void nullResponseWithMissingLogFile() {
+		this.environment.setProperty("logging.file.name", "no_test.log");
 		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(LogFile.get(this.environment), null);
 		assertThat(endpoint.logFile()).isNull();
 	}
 
 	@Test
-	public void resourceResponseWithLogFile() throws Exception {
-		this.environment.setProperty("logging.file", this.logFile.getAbsolutePath());
+	void resourceResponseWithLogFile() throws Exception {
+		this.environment.setProperty("logging.file.name", this.logFile.getAbsolutePath());
 		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(LogFile.get(this.environment), null);
 		Resource resource = endpoint.logFile();
 		assertThat(resource).isNotNull();
-		assertThat(StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8)).isEqualTo("--TEST--");
+		assertThat(contentOf(resource.getFile())).isEqualTo("--TEST--");
 	}
 
 	@Test
-	public void resourceResponseWithExternalLogFile() throws Exception {
+	void resourceResponseWithExternalLogFile() throws Exception {
 		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(null, this.logFile);
 		Resource resource = endpoint.logFile();
 		assertThat(resource).isNotNull();
-		assertThat(StreamUtils.copyToString(resource.getInputStream(), StandardCharsets.UTF_8)).isEqualTo("--TEST--");
+		assertThat(contentOf(resource.getFile())).isEqualTo("--TEST--");
 	}
 
 }

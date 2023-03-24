@@ -1,0 +1,12 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+// tag::main-class[]
+tasks.named("bootJar") {
+	manifest {
+		attributes 'Start-Class': 'com.example.ExampleApplication'
+	}
+}
+// end::main-class[]

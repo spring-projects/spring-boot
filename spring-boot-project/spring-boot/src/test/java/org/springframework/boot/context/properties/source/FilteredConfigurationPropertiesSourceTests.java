@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,10 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.Objects;
 
-import org.junit.Test;
-import org.mockito.Answers;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 /**
  * Test for {@link FilteredIterableConfigurationPropertiesSource}.
@@ -32,25 +29,24 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class FilteredConfigurationPropertiesSourceTests {
+class FilteredConfigurationPropertiesSourceTests {
 
 	@Test
-	public void createWhenSourceIsNullShouldThrowException() {
+	void createWhenSourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new FilteredConfigurationPropertiesSource(null, Objects::nonNull))
-				.withMessageContaining("Source must not be null");
+			.isThrownBy(() -> new FilteredConfigurationPropertiesSource(null, Objects::nonNull))
+			.withMessageContaining("Source must not be null");
 	}
 
 	@Test
-	public void createWhenFilterIsNullShouldThrowException() {
+	void createWhenFilterIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(
-						() -> new FilteredConfigurationPropertiesSource(new MockConfigurationPropertySource(), null))
-				.withMessageContaining("Filter must not be null");
+			.isThrownBy(() -> new FilteredConfigurationPropertiesSource(new MockConfigurationPropertySource(), null))
+			.withMessageContaining("Filter must not be null");
 	}
 
 	@Test
-	public void getValueShouldFilterNames() {
+	void getValueShouldFilterNames() {
 		ConfigurationPropertySource source = createTestSource();
 		ConfigurationPropertySource filtered = source.filter(this::noBrackets);
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("a");
@@ -62,28 +58,25 @@ public class FilteredConfigurationPropertiesSourceTests {
 	}
 
 	@Test
-	public void containsDescendantOfWhenSourceReturnsEmptyShouldReturnEmpty() {
+	void containsDescendantOfWhenSourceReturnsEmptyShouldReturnEmpty() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
-		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class, Answers.CALLS_REAL_METHODS);
-		given(source.containsDescendantOf(name)).willReturn(ConfigurationPropertyState.UNKNOWN);
+		ConfigurationPropertySource source = new KnownAncestorsConfigurationPropertySource().unknown(name);
 		ConfigurationPropertySource filtered = source.filter((n) -> true);
 		assertThat(filtered.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.UNKNOWN);
 	}
 
 	@Test
-	public void containsDescendantOfWhenSourceReturnsFalseShouldReturnFalse() {
+	void containsDescendantOfWhenSourceReturnsFalseShouldReturnFalse() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
-		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class, Answers.CALLS_REAL_METHODS);
-		given(source.containsDescendantOf(name)).willReturn(ConfigurationPropertyState.ABSENT);
+		ConfigurationPropertySource source = new KnownAncestorsConfigurationPropertySource().absent(name);
 		ConfigurationPropertySource filtered = source.filter((n) -> true);
 		assertThat(filtered.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.ABSENT);
 	}
 
 	@Test
-	public void containsDescendantOfWhenSourceReturnsTrueShouldReturnEmpty() {
+	void containsDescendantOfWhenSourceReturnsTrueShouldReturnEmpty() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("foo");
-		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class, Answers.CALLS_REAL_METHODS);
-		given(source.containsDescendantOf(name)).willReturn(ConfigurationPropertyState.PRESENT);
+		ConfigurationPropertySource source = new KnownAncestorsConfigurationPropertySource().present(name);
 		ConfigurationPropertySource filtered = source.filter((n) -> true);
 		assertThat(filtered.containsDescendantOf(name)).isEqualTo(ConfigurationPropertyState.UNKNOWN);
 	}
@@ -103,7 +96,7 @@ public class FilteredConfigurationPropertiesSourceTests {
 	}
 
 	private boolean noBrackets(ConfigurationPropertyName name) {
-		return name.toString().indexOf("[") == -1;
+		return !name.toString().contains("[");
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
@@ -38,7 +38,8 @@ import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.security.servlet.RequestMatcherProvider;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
 import org.springframework.boot.web.context.WebServerApplicationContext;
-import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -123,14 +124,18 @@ public final class EndpointRequest {
 
 		private volatile RequestMatcher delegate;
 
+		private ManagementPortType managementPortType;
+
 		AbstractRequestMatcher() {
 			super(WebApplicationContext.class);
 		}
 
 		@Override
 		protected boolean ignoreApplicationContext(WebApplicationContext applicationContext) {
-			ManagementPortType type = ManagementPortType.get(applicationContext.getEnvironment());
-			return type == ManagementPortType.DIFFERENT
+			if (this.managementPortType == null) {
+				this.managementPortType = ManagementPortType.get(applicationContext.getEnvironment());
+			}
+			return this.managementPortType == ManagementPortType.DIFFERENT
 					&& !WebServerApplicationContext.hasServerNamespace(applicationContext, "management");
 		}
 
@@ -243,12 +248,32 @@ public final class EndpointRequest {
 			return source.stream().filter(Objects::nonNull).map(this::getEndpointId).map(pathMappedEndpoints::getPath);
 		}
 
+		private List<RequestMatcher> getDelegateMatchers(RequestMatcherFactory requestMatcherFactory,
+				RequestMatcherProvider matcherProvider, Set<String> paths) {
+			return paths.stream()
+				.map((path) -> requestMatcherFactory.antPath(matcherProvider, path, "/**"))
+				.collect(Collectors.toCollection(ArrayList::new));
+		}
+
+		@Override
+		public String toString() {
+			return String.format("EndpointRequestMatcher includes=%s, excludes=%s, includeLinks=%s",
+					toString(this.includes, "[*]"), toString(this.excludes, "[]"), this.includeLinks);
+		}
+
+		private String toString(List<Object> endpoints, String emptyValue) {
+			return (!endpoints.isEmpty()) ? endpoints.stream()
+				.map(this::getEndpointId)
+				.map(Object::toString)
+				.collect(Collectors.joining(", ", "[", "]")) : emptyValue;
+		}
+
 		private EndpointId getEndpointId(Object source) {
-			if (source instanceof EndpointId) {
-				return (EndpointId) source;
+			if (source instanceof EndpointId endpointId) {
+				return endpointId;
 			}
-			if (source instanceof String) {
-				return (EndpointId.of((String) source));
+			if (source instanceof String string) {
+				return EndpointId.of(string);
 			}
 			if (source instanceof Class) {
 				return getEndpointId((Class<?>) source);
@@ -257,15 +282,9 @@ public final class EndpointRequest {
 		}
 
 		private EndpointId getEndpointId(Class<?> source) {
-			Endpoint annotation = AnnotatedElementUtils.getMergedAnnotation(source, Endpoint.class);
-			Assert.state(annotation != null, () -> "Class " + source + " is not annotated with @Endpoint");
-			return EndpointId.of(annotation.id());
-		}
-
-		private List<RequestMatcher> getDelegateMatchers(RequestMatcherFactory requestMatcherFactory,
-				RequestMatcherProvider matcherProvider, Set<String> paths) {
-			return paths.stream().map((path) -> requestMatcherFactory.antPath(matcherProvider, path, "/**"))
-					.collect(Collectors.toList());
+			MergedAnnotation<Endpoint> annotation = MergedAnnotations.from(source).get(Endpoint.class);
+			Assert.state(annotation.isPresent(), () -> "Class " + source + " is not annotated with @Endpoint");
+			return EndpointId.of(annotation.getString("id"));
 		}
 
 	}
@@ -294,7 +313,7 @@ public final class EndpointRequest {
 	 */
 	private static class RequestMatcherFactory {
 
-		public RequestMatcher antPath(RequestMatcherProvider matcherProvider, String... parts) {
+		RequestMatcher antPath(RequestMatcherProvider matcherProvider, String... parts) {
 			StringBuilder pattern = new StringBuilder();
 			for (String part : parts) {
 				pattern.append(part);

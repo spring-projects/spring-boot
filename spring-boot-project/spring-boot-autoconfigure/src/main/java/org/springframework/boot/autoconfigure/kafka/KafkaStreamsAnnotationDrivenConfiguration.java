@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -33,14 +34,16 @@ import org.springframework.core.env.Environment;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
+import org.springframework.kafka.core.CleanupConfig;
 
 /**
  * Configuration for Kafka Streams annotation-driven support.
  *
  * @author Gary Russell
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(StreamsBuilder.class)
 @ConditionalOnBean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_BUILDER_BEAN_NAME)
 class KafkaStreamsAnnotationDrivenConfiguration {
@@ -53,7 +56,7 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 
 	@ConditionalOnMissingBean
 	@Bean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
-	public KafkaStreamsConfiguration defaultKafkaStreamsConfig(Environment environment) {
+	KafkaStreamsConfiguration defaultKafkaStreamsConfig(Environment environment) {
 		Map<String, Object> streamsProperties = this.properties.buildStreamsProperties();
 		if (this.properties.getStreams().getApplicationId() == null) {
 			String applicationName = environment.getProperty("spring.application.name");
@@ -67,8 +70,10 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 	}
 
 	@Bean
-	public KafkaStreamsFactoryBeanConfigurer kafkaStreamsFactoryBeanConfigurer(
-			@Qualifier(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_BUILDER_BEAN_NAME) StreamsBuilderFactoryBean factoryBean) {
+	KafkaStreamsFactoryBeanConfigurer kafkaStreamsFactoryBeanConfigurer(
+			@Qualifier(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_BUILDER_BEAN_NAME) StreamsBuilderFactoryBean factoryBean,
+			ObjectProvider<StreamsBuilderFactoryBeanCustomizer> customizers) {
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(factoryBean));
 		return new KafkaStreamsFactoryBeanConfigurer(this.properties, factoryBean);
 	}
 
@@ -87,6 +92,9 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 		@Override
 		public void afterPropertiesSet() {
 			this.factoryBean.setAutoStartup(this.properties.getStreams().isAutoStartup());
+			KafkaProperties.Cleanup cleanup = this.properties.getStreams().getCleanup();
+			CleanupConfig cleanupConfig = new CleanupConfig(cleanup.isOnStartup(), cleanup.isOnShutdown());
+			this.factoryBean.setCleanupConfig(cleanupConfig);
 		}
 
 	}

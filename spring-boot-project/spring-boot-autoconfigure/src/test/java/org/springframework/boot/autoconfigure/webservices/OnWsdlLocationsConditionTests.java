@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.webservices;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -31,34 +31,34 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Eneias Silva
  * @author Stephane Nicoll
  */
-public class OnWsdlLocationsConditionTests {
+class OnWsdlLocationsConditionTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(TestConfig.class);
+		.withUserConfiguration(TestConfig.class);
 
 	@Test
-	public void wsdlLocationsNotDefined() {
+	void wsdlLocationsNotDefined() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean("foo"));
 	}
 
 	@Test
-	public void wsdlLocationsDefinedAsCommaSeparated() {
+	void wsdlLocationsDefinedAsCommaSeparated() {
 		this.contextRunner.withPropertyValues("spring.webservices.wsdl-locations=value1")
-				.run((context) -> assertThat(context).hasBean("foo"));
+			.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Test
-	public void wsdlLocationsDefinedAsList() {
+	void wsdlLocationsDefinedAsList() {
 		this.contextRunner.withPropertyValues("spring.webservices.wsdl-locations[0]=value1")
-				.run((context) -> assertThat(context).hasBean("foo"));
+			.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(OnWsdlLocationsCondition.class)
-	protected static class TestConfig {
+	static class TestConfig {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 

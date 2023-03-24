@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,12 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
 import java.io.File;
 
-import javax.servlet.Filter;
-
+import jakarta.servlet.Filter;
 import org.apache.catalina.Valve;
 import org.apache.catalina.valves.AccessLogValve;
-import org.eclipse.jetty.server.NCSARequestLog;
+import org.eclipse.jetty.server.CustomRequestLog;
 import org.eclipse.jetty.server.RequestLog;
+import org.eclipse.jetty.server.RequestLogWriter;
 import org.eclipse.jetty.server.Server;
 
 import org.springframework.beans.factory.BeanFactory;
@@ -49,6 +49,7 @@ import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,8 +59,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ManagementContextConfiguration} for Servlet web endpoint infrastructure when a
- * separate management context with a web server running on a different port is required.
+ * {@link ManagementContextConfiguration @ManagementContextConfiguration} for Servlet web
+ * endpoint infrastructure when a separate management context with a web server running on
+ * a different port is required.
  *
  * @author Dave Syer
  * @author Stephane Nicoll
@@ -67,43 +69,50 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Phillip Webb
  */
-@ManagementContextConfiguration(ManagementContextType.CHILD)
+@ManagementContextConfiguration(value = ManagementContextType.CHILD, proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 class ServletManagementChildContextConfiguration {
 
 	@Bean
-	public ServletManagementWebServerFactoryCustomizer servletManagementWebServerFactoryCustomizer(
+	ServletManagementWebServerFactoryCustomizer servletManagementWebServerFactoryCustomizer(
 			ListableBeanFactory beanFactory) {
 		return new ServletManagementWebServerFactoryCustomizer(beanFactory);
 	}
 
 	@Bean
 	@ConditionalOnClass(name = "io.undertow.Undertow")
-	public UndertowAccessLogCustomizer undertowManagementAccessLogCustomizer() {
+	UndertowAccessLogCustomizer undertowManagementAccessLogCustomizer() {
 		return new UndertowAccessLogCustomizer();
 	}
 
 	@Bean
 	@ConditionalOnClass(name = "org.apache.catalina.valves.AccessLogValve")
-	public TomcatAccessLogCustomizer tomcatManagementAccessLogCustomizer() {
+	TomcatAccessLogCustomizer tomcatManagementAccessLogCustomizer() {
 		return new TomcatAccessLogCustomizer();
 	}
 
 	@Bean
 	@ConditionalOnClass(name = "org.eclipse.jetty.server.Server")
-	public JettyAccessLogCustomizer jettyManagementAccessLogCustomizer() {
+	JettyAccessLogCustomizer jettyManagementAccessLogCustomizer() {
 		return new JettyAccessLogCustomizer();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ EnableWebSecurity.class, Filter.class })
 	@ConditionalOnBean(name = BeanIds.SPRING_SECURITY_FILTER_CHAIN, search = SearchStrategy.ANCESTORS)
 	static class ServletManagementContextSecurityConfiguration {
 
 		@Bean
-		public Filter springSecurityFilterChain(HierarchicalBeanFactory beanFactory) {
+		Filter springSecurityFilterChain(HierarchicalBeanFactory beanFactory) {
 			BeanFactory parent = beanFactory.getParentBeanFactory();
 			return parent.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN, Filter.class);
+		}
+
+		@Bean
+		@ConditionalOnBean(name = "securityFilterChainRegistration", search = SearchStrategy.ANCESTORS)
+		DelegatingFilterProxyRegistrationBean securityFilterChainRegistration(HierarchicalBeanFactory beanFactory) {
+			return beanFactory.getParentBeanFactory()
+				.getBean("securityFilterChainRegistration", DelegatingFilterProxyRegistrationBean.class);
 		}
 
 	}
@@ -121,7 +130,12 @@ class ServletManagementChildContextConfiguration {
 		protected void customize(ConfigurableServletWebServerFactory webServerFactory,
 				ManagementServerProperties managementServerProperties, ServerProperties serverProperties) {
 			super.customize(webServerFactory, managementServerProperties, serverProperties);
-			webServerFactory.setContextPath(managementServerProperties.getServlet().getContextPath());
+			webServerFactory.setContextPath(getContextPath(managementServerProperties));
+		}
+
+		private String getContextPath(ManagementServerProperties managementServerProperties) {
+			String basePath = managementServerProperties.getBasePath();
+			return StringUtils.hasText(basePath) ? basePath : "";
 		}
 
 	}
@@ -159,8 +173,8 @@ class ServletManagementChildContextConfiguration {
 
 		private AccessLogValve findAccessLogValve(TomcatServletWebServerFactory factory) {
 			for (Valve engineValve : factory.getEngineValves()) {
-				if (engineValve instanceof AccessLogValve) {
-					return (AccessLogValve) engineValve;
+				if (engineValve instanceof AccessLogValve accessLogValve) {
+					return accessLogValve;
 				}
 			}
 			return null;
@@ -188,17 +202,23 @@ class ServletManagementChildContextConfiguration {
 
 		private void customizeServer(Server server) {
 			RequestLog requestLog = server.getRequestLog();
-			if (requestLog != null && requestLog instanceof NCSARequestLog) {
-				customizeRequestLog((NCSARequestLog) requestLog);
+			if (requestLog instanceof CustomRequestLog customRequestLog) {
+				customizeRequestLog(customRequestLog);
 			}
 		}
 
-		private void customizeRequestLog(NCSARequestLog requestLog) {
-			String filename = requestLog.getFilename();
+		private void customizeRequestLog(CustomRequestLog requestLog) {
+			if (requestLog.getWriter() instanceof RequestLogWriter requestLogWriter) {
+				customizeRequestLogWriter(requestLogWriter);
+			}
+		}
+
+		private void customizeRequestLogWriter(RequestLogWriter writer) {
+			String filename = writer.getFileName();
 			if (StringUtils.hasLength(filename)) {
 				File file = new File(filename);
 				file = new File(file.getParentFile(), customizePrefix(file.getName()));
-				requestLog.setFilename(file.getPath());
+				writer.setFilename(file.getPath());
 			}
 		}
 

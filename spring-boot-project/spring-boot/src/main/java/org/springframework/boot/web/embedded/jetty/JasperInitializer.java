@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,7 @@ import java.net.URLConnection;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
 
-import javax.servlet.ServletContainerInitializer;
-
-import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
+import jakarta.servlet.ServletContainerInitializer;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 import org.eclipse.jetty.webapp.WebAppContext;
 
@@ -55,7 +53,7 @@ class JasperInitializer extends AbstractLifeCycle {
 		for (String className : INITIALIZER_CLASSES) {
 			try {
 				Class<?> initializerClass = ClassUtils.forName(className, null);
-				return (ServletContainerInitializer) initializerClass.newInstance();
+				return (ServletContainerInitializer) initializerClass.getDeclaredConstructor().newInstance();
 			}
 			catch (Exception ex) {
 				// Ignore
@@ -65,13 +63,14 @@ class JasperInitializer extends AbstractLifeCycle {
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	protected void doStart() throws Exception {
 		if (this.initializer == null) {
 			return;
 		}
 		if (ClassUtils.isPresent("org.apache.catalina.webresources.TomcatURLStreamHandlerFactory",
 				getClass().getClassLoader())) {
-			TomcatURLStreamHandlerFactory.register();
+			org.apache.catalina.webresources.TomcatURLStreamHandlerFactory.register();
 		}
 		else {
 			try {

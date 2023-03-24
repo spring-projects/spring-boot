@@ -18,11 +18,6 @@ package org.springframework.boot.autoconfigure.data.jdbc.city;
 
 import org.springframework.data.repository.CrudRepository;
 
-/**
- * Data JDBC repository for working with {@link City Cities}.
- *
- * @author Andy Wilkinson
- */
 public interface CityRepository extends CrudRepository<City, Long> {
 
 }

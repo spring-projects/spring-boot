@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.endpoint.invoke.reflect;
 
 import java.lang.reflect.Method;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
@@ -32,39 +32,39 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class OperationMethodTests {
+class OperationMethodTests {
 
-	private Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example", String.class);
+	private final Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example", String.class);
 
 	@Test
-	public void createWhenMethodIsNullShouldThrowException() {
+	void createWhenMethodIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OperationMethod(null, OperationType.READ))
-				.withMessageContaining("Method must not be null");
+			.withMessageContaining("Method must not be null");
 	}
 
 	@Test
-	public void createWhenOperationTypeIsNullShouldThrowException() {
+	void createWhenOperationTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OperationMethod(this.exampleMethod, null))
-				.withMessageContaining("OperationType must not be null");
+			.withMessageContaining("OperationType must not be null");
 	}
 
 	@Test
-	public void getMethodShouldReturnMethod() {
+	void getMethodShouldReturnMethod() {
 		OperationMethod operationMethod = new OperationMethod(this.exampleMethod, OperationType.READ);
 		assertThat(operationMethod.getMethod()).isEqualTo(this.exampleMethod);
 	}
 
 	@Test
-	public void getOperationTypeShouldReturnOperationType() {
+	void getOperationTypeShouldReturnOperationType() {
 		OperationMethod operationMethod = new OperationMethod(this.exampleMethod, OperationType.READ);
 		assertThat(operationMethod.getOperationType()).isEqualTo(OperationType.READ);
 	}
 
 	@Test
-	public void getParametersShouldReturnParameters() {
+	void getParametersShouldReturnParameters() {
 		OperationMethod operationMethod = new OperationMethod(this.exampleMethod, OperationType.READ);
 		OperationParameters parameters = operationMethod.getParameters();
-		assertThat(parameters.getParameterCount()).isEqualTo(1);
+		assertThat(parameters.getParameterCount()).isOne();
 		assertThat(parameters.iterator().next().getName()).isEqualTo("name");
 	}
 

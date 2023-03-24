@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,12 +80,12 @@ class CloudFoundrySecurityInterceptor {
 		try {
 			Token token = getToken(exchange.getRequest());
 			return this.tokenValidator.validate(token)
-					.then(this.cloudFoundrySecurityService.getAccessLevel(token.toString(), this.applicationId))
-					.filter((accessLevel) -> accessLevel.isAccessAllowed(id))
-					.switchIfEmpty(
-							Mono.error(new CloudFoundryAuthorizationException(Reason.ACCESS_DENIED, "Access denied")))
-					.doOnSuccess((accessLevel) -> exchange.getAttributes().put("cloudFoundryAccessLevel", accessLevel))
-					.then();
+				.then(this.cloudFoundrySecurityService.getAccessLevel(token.toString(), this.applicationId))
+				.filter((accessLevel) -> accessLevel.isAccessAllowed(id))
+				.switchIfEmpty(
+						Mono.error(new CloudFoundryAuthorizationException(Reason.ACCESS_DENIED, "Access denied")))
+				.doOnSuccess((accessLevel) -> exchange.getAttributes().put("cloudFoundryAccessLevel", accessLevel))
+				.then();
 		}
 		catch (CloudFoundryAuthorizationException ex) {
 			return Mono.error(ex);
@@ -93,8 +93,7 @@ class CloudFoundrySecurityInterceptor {
 	}
 
 	private Mono<SecurityResponse> getErrorResponse(Throwable throwable) {
-		if (throwable instanceof CloudFoundryAuthorizationException) {
-			CloudFoundryAuthorizationException cfException = (CloudFoundryAuthorizationException) throwable;
+		if (throwable instanceof CloudFoundryAuthorizationException cfException) {
 			return Mono.just(new SecurityResponse(cfException.getStatusCode(),
 					"{\"security_error\":\"" + cfException.getMessage() + "\"}"));
 		}

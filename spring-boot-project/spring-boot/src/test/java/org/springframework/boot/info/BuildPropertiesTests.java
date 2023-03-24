@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Properties;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,11 +32,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link BuildProperties}.
  *
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  */
-public class BuildPropertiesTests {
+class BuildPropertiesTests {
 
 	@Test
-	public void basicInfo() {
+	void basicInfo() {
 		Instant instant = Instant.now();
 		BuildProperties properties = new BuildProperties(
 				createProperties("com.example", "demo", "0.0.1", DateTimeFormatter.ISO_INSTANT.format(instant)));
@@ -45,12 +49,20 @@ public class BuildPropertiesTests {
 	}
 
 	@Test
-	public void noInfo() {
+	void noInfo() {
 		BuildProperties properties = new BuildProperties(new Properties());
 		assertThat(properties.getGroup()).isNull();
 		assertThat(properties.getArtifact()).isNull();
 		assertThat(properties.getVersion()).isNull();
 		assertThat(properties.getTime()).isNull();
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new BuildProperties.BuildPropertiesRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.resource().forResource("META-INF/build-info.properties"))
+			.accepts(runtimeHints);
 	}
 
 	private static Properties createProperties(String group, String artifact, String version, String buildTime) {

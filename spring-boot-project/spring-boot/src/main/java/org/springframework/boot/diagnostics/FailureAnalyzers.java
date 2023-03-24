@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package org.springframework.boot.diagnostics;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -28,80 +26,89 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.boot.SpringBootExceptionReporter;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.EnvironmentAware;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.SpringFactoriesLoader;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
+import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
+import org.springframework.core.io.support.SpringFactoriesLoader.FailureHandler;
+import org.springframework.core.log.LogMessage;
+import org.springframework.util.StringUtils;
 
 /**
  * Utility to trigger {@link FailureAnalyzer} and {@link FailureAnalysisReporter}
  * instances loaded from {@code spring.factories}.
  * <p>
- * A {@code FailureAnalyzer} that requires access to the {@link BeanFactory} in order to
- * perform its analysis can implement {@code BeanFactoryAware} to have the
- * {@code BeanFactory} injected prior to {@link FailureAnalyzer#analyze(Throwable)} being
- * called.
+ * A {@code FailureAnalyzer} that requires access to the {@link BeanFactory} or
+ * {@link Environment} in order to perform its analysis can implement a constructor that
+ * accepts arguments of one or both of these types.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 final class FailureAnalyzers implements SpringBootExceptionReporter {
 
 	private static final Log logger = LogFactory.getLog(FailureAnalyzers.class);
 
-	private final ClassLoader classLoader;
+	private final SpringFactoriesLoader springFactoriesLoader;
 
 	private final List<FailureAnalyzer> analyzers;
 
-	FailureAnalyzers(ConfigurableApplicationContext context) {
-		this(context, null);
+	public FailureAnalyzers(ConfigurableApplicationContext context) {
+		this(context,
+				SpringFactoriesLoader.forDefaultResourceLocation((context != null) ? context.getClassLoader() : null));
 	}
 
-	FailureAnalyzers(ConfigurableApplicationContext context, ClassLoader classLoader) {
-		Assert.notNull(context, "Context must not be null");
-		this.classLoader = (classLoader != null) ? classLoader : context.getClassLoader();
-		this.analyzers = loadFailureAnalyzers(this.classLoader);
-		prepareFailureAnalyzers(this.analyzers, context);
+	FailureAnalyzers(ConfigurableApplicationContext context, SpringFactoriesLoader springFactoriesLoader) {
+		this.springFactoriesLoader = springFactoriesLoader;
+		this.analyzers = loadFailureAnalyzers(context, this.springFactoriesLoader);
 	}
 
-	private List<FailureAnalyzer> loadFailureAnalyzers(ClassLoader classLoader) {
-		List<String> analyzerNames = SpringFactoriesLoader.loadFactoryNames(FailureAnalyzer.class, classLoader);
-		List<FailureAnalyzer> analyzers = new ArrayList<>();
-		for (String analyzerName : analyzerNames) {
-			try {
-				Constructor<?> constructor = ClassUtils.forName(analyzerName, classLoader).getDeclaredConstructor();
-				ReflectionUtils.makeAccessible(constructor);
-				analyzers.add((FailureAnalyzer) constructor.newInstance());
+	private static List<FailureAnalyzer> loadFailureAnalyzers(ConfigurableApplicationContext context,
+			SpringFactoriesLoader springFactoriesLoader) {
+		List<FailureAnalyzer> analyzers = springFactoriesLoader.load(FailureAnalyzer.class,
+				getArgumentResolver(context), FailureHandler.logging(logger));
+		List<FailureAnalyzer> awareAnalyzers = analyzers.stream()
+			.filter((analyzer) -> analyzer instanceof BeanFactoryAware || analyzer instanceof EnvironmentAware)
+			.toList();
+		if (!awareAnalyzers.isEmpty()) {
+			String awareAnalyzerNames = StringUtils.collectionToCommaDelimitedString(
+					awareAnalyzers.stream().map((analyzer) -> analyzer.getClass().getName()).toList());
+			logger.warn(LogMessage.format(
+					"FailureAnalyzers [%s] implement BeanFactoryAware or EnvironmentAware. "
+							+ "Support for these interfaces on FailureAnalyzers is deprecated, "
+							+ "and will be removed in a future release. "
+							+ "Instead provide a constructor that accepts BeanFactory or Environment parameters.",
+					awareAnalyzerNames));
+			if (context == null) {
+				logger.trace(LogMessage.format("Skipping [%s] due to missing context", awareAnalyzerNames));
+				return analyzers.stream().filter((analyzer) -> !awareAnalyzers.contains(analyzer)).toList();
 			}
-			catch (Throwable ex) {
-				logger.trace("Failed to load " + analyzerName, ex);
-			}
+			awareAnalyzers.forEach((analyzer) -> {
+				if (analyzer instanceof BeanFactoryAware beanFactoryAware) {
+					beanFactoryAware.setBeanFactory(context.getBeanFactory());
+				}
+				if (analyzer instanceof EnvironmentAware environmentAware) {
+					environmentAware.setEnvironment(context.getEnvironment());
+				}
+			});
 		}
-		AnnotationAwareOrderComparator.sort(analyzers);
 		return analyzers;
 	}
 
-	private void prepareFailureAnalyzers(List<FailureAnalyzer> analyzers, ConfigurableApplicationContext context) {
-		for (FailureAnalyzer analyzer : analyzers) {
-			prepareAnalyzer(context, analyzer);
+	private static ArgumentResolver getArgumentResolver(ConfigurableApplicationContext context) {
+		if (context == null) {
+			return null;
 		}
-	}
-
-	private void prepareAnalyzer(ConfigurableApplicationContext context, FailureAnalyzer analyzer) {
-		if (analyzer instanceof BeanFactoryAware) {
-			((BeanFactoryAware) analyzer).setBeanFactory(context.getBeanFactory());
-		}
-		if (analyzer instanceof EnvironmentAware) {
-			((EnvironmentAware) analyzer).setEnvironment(context.getEnvironment());
-		}
+		ArgumentResolver argumentResolver = ArgumentResolver.of(BeanFactory.class, context.getBeanFactory());
+		argumentResolver = argumentResolver.and(Environment.class, context.getEnvironment());
+		return argumentResolver;
 	}
 
 	@Override
 	public boolean reportException(Throwable failure) {
 		FailureAnalysis analysis = analyze(failure, this.analyzers);
-		return report(analysis, this.classLoader);
+		return report(analysis);
 	}
 
 	private FailureAnalysis analyze(Throwable failure, List<FailureAnalyzer> analyzers) {
@@ -113,17 +120,14 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 				}
 			}
 			catch (Throwable ex) {
-				if (logger.isDebugEnabled()) {
-					logger.debug("FailureAnalyzer " + analyzer + " failed", ex);
-				}
+				logger.trace(LogMessage.format("FailureAnalyzer %s failed", analyzer), ex);
 			}
 		}
 		return null;
 	}
 
-	private boolean report(FailureAnalysis analysis, ClassLoader classLoader) {
-		List<FailureAnalysisReporter> reporters = SpringFactoriesLoader.loadFactories(FailureAnalysisReporter.class,
-				classLoader);
+	private boolean report(FailureAnalysis analysis) {
+		List<FailureAnalysisReporter> reporters = this.springFactoriesLoader.load(FailureAnalysisReporter.class);
 		if (analysis == null || reporters.isEmpty()) {
 			return false;
 		}

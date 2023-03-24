@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,8 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.BinderTests.ExampleEnum;
 import org.springframework.boot.context.properties.bind.BinderTests.JavaBean;
@@ -46,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class CollectionBinderTests {
+class CollectionBinderTests {
 
 	private static final Bindable<List<Integer>> INTEGER_LIST = Bindable.listOf(Integer.class);
 
@@ -54,17 +52,12 @@ public class CollectionBinderTests {
 
 	private static final Bindable<Set<String>> STRING_SET = Bindable.setOf(String.class);
 
-	private List<ConfigurationPropertySource> sources = new ArrayList<>();
+	private final List<ConfigurationPropertySource> sources = new ArrayList<>();
 
-	private Binder binder;
-
-	@Before
-	public void setup() {
-		this.binder = new Binder(this.sources);
-	}
+	private Binder binder = new Binder(this.sources);
 
 	@Test
-	public void bindToCollectionShouldReturnPopulatedCollection() {
+	void bindToCollectionShouldReturnPopulatedCollection() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[0]", "1");
 		source.put("foo[1]", "2");
@@ -75,7 +68,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToSetShouldReturnPopulatedCollection() {
+	void bindToSetShouldReturnPopulatedCollection() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[0]", "a");
 		source.put("foo[1]", "b");
@@ -86,7 +79,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToCollectionWhenNestedShouldReturnPopulatedCollection() {
+	void bindToCollectionWhenNestedShouldReturnPopulatedCollection() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[0][0]", "1");
 		source.put("foo[0][1]", "2");
@@ -94,7 +87,7 @@ public class CollectionBinderTests {
 		source.put("foo[1][1]", "4");
 		this.sources.add(source);
 		Bindable<List<List<Integer>>> target = Bindable
-				.of(ResolvableType.forClassWithGenerics(List.class, INTEGER_LIST.getType()));
+			.of(ResolvableType.forClassWithGenerics(List.class, INTEGER_LIST.getType()));
 		List<List<Integer>> result = this.binder.bind("foo", target).get();
 		assertThat(result).hasSize(2);
 		assertThat(result.get(0)).containsExactly(1, 2);
@@ -102,7 +95,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToCollectionWhenNotInOrderShouldReturnPopulatedCollection() {
+	void bindToCollectionWhenNotInOrderShouldReturnPopulatedCollection() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[1]", "2");
 		source.put("foo[0]", "1");
@@ -113,25 +106,25 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToCollectionWhenNonSequentialShouldThrowException() {
+	void bindToCollectionWhenNonSequentialShouldThrowException() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[0]", "2");
 		source.put("foo[1]", "1");
 		source.put("foo[3]", "3");
 		this.sources.add(source);
 		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.binder.bind("foo", INTEGER_LIST))
-				.satisfies((ex) -> {
-					Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
-							.getUnboundProperties();
-					assertThat(unbound).hasSize(1);
-					ConfigurationProperty property = unbound.iterator().next();
-					assertThat(property.getName().toString()).isEqualTo("foo[3]");
-					assertThat(property.getValue()).isEqualTo("3");
-				});
+			.satisfies((ex) -> {
+				Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
+					.getUnboundProperties();
+				assertThat(unbound).hasSize(1);
+				ConfigurationProperty property = unbound.iterator().next();
+				assertThat(property.getName()).hasToString("foo[3]");
+				assertThat(property.getValue()).isEqualTo("3");
+			});
 	}
 
 	@Test
-	public void bindToNonScalarCollectionWhenNonSequentialShouldThrowException() {
+	void bindToNonScalarCollectionWhenNonSequentialShouldThrowException() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[0].value", "1");
 		source.put("foo[1].value", "2");
@@ -139,18 +132,18 @@ public class CollectionBinderTests {
 		this.sources.add(source);
 		Bindable<List<JavaBean>> target = Bindable.listOf(JavaBean.class);
 		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.binder.bind("foo", target))
-				.satisfies((ex) -> {
-					Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
-							.getUnboundProperties();
-					assertThat(unbound).hasSize(1);
-					ConfigurationProperty property = unbound.iterator().next();
-					assertThat(property.getName().toString()).isEqualTo("foo[4].value");
-					assertThat(property.getValue()).isEqualTo("4");
-				});
+			.satisfies((ex) -> {
+				Set<ConfigurationProperty> unbound = ((UnboundConfigurationPropertiesException) ex.getCause())
+					.getUnboundProperties();
+				assertThat(unbound).hasSize(1);
+				ConfigurationProperty property = unbound.iterator().next();
+				assertThat(property.getName()).hasToString("foo[4].value");
+				assertThat(property.getValue()).isEqualTo("4");
+			});
 	}
 
 	@Test
-	public void bindToCollectionWhenNonIterableShouldReturnPopulatedCollection() {
+	void bindToCollectionWhenNonIterableShouldReturnPopulatedCollection() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[1]", "2");
 		source.put("foo[0]", "1");
@@ -161,7 +154,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToCollectionWhenMultipleSourceShouldOnlyUseFirst() {
+	void bindToCollectionWhenMultipleSourceShouldOnlyUseFirst() {
 		MockConfigurationPropertySource source1 = new MockConfigurationPropertySource();
 		source1.put("bar", "baz");
 		this.sources.add(source1);
@@ -179,7 +172,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToCollectionWhenHasExistingCollectionShouldReplaceAllContents() {
+	void bindToCollectionWhenHasExistingCollectionShouldReplaceAllContents() {
 		this.sources.add(new MockConfigurationPropertySource("foo[0]", "1"));
 		List<Integer> existing = new LinkedList<>();
 		existing.add(1000);
@@ -190,7 +183,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToCollectionWhenHasExistingCollectionButNoValueShouldReturnUnbound() {
+	void bindToCollectionWhenHasExistingCollectionButNoValueShouldReturnUnbound() {
 		this.sources.add(new MockConfigurationPropertySource("faf[0]", "1"));
 		List<Integer> existing = new LinkedList<>();
 		existing.add(1000);
@@ -199,7 +192,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToCollectionShouldRespectCollectionType() {
+	void bindToCollectionShouldRespectCollectionType() {
 		this.sources.add(new MockConfigurationPropertySource("foo[0]", "1"));
 		ResolvableType type = ResolvableType.forClassWithGenerics(LinkedList.class, Integer.class);
 		Object defaultList = this.binder.bind("foo", INTEGER_LIST).get();
@@ -208,21 +201,21 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToCollectionWhenNoValueShouldReturnUnbound() {
+	void bindToCollectionWhenNoValueShouldReturnUnbound() {
 		this.sources.add(new MockConfigurationPropertySource("faf.bar", "1"));
 		BindResult<List<Integer>> result = this.binder.bind("foo", INTEGER_LIST);
 		assertThat(result.isBound()).isFalse();
 	}
 
 	@Test
-	public void bindToCollectionWhenCommaListShouldReturnPopulatedCollection() {
+	void bindToCollectionWhenCommaListShouldReturnPopulatedCollection() {
 		this.sources.add(new MockConfigurationPropertySource("foo", "1,2,3"));
 		List<Integer> result = this.binder.bind("foo", INTEGER_LIST).get();
 		assertThat(result).containsExactly(1, 2, 3);
 	}
 
 	@Test
-	public void bindToCollectionWhenCommaListWithPlaceholdersShouldReturnPopulatedCollection() {
+	void bindToCollectionWhenCommaListWithPlaceholdersShouldReturnPopulatedCollection() {
 		StandardEnvironment environment = new StandardEnvironment();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, "bar=1,2,3");
 		this.binder = new Binder(this.sources, new PropertySourcesPlaceholdersResolver(environment));
@@ -233,7 +226,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToCollectionWhenCommaListAndIndexedShouldOnlyUseFirst() {
+	void bindToCollectionWhenCommaListAndIndexedShouldOnlyUseFirst() {
 		MockConfigurationPropertySource source1 = new MockConfigurationPropertySource();
 		source1.put("foo", "1,2");
 		this.sources.add(source1);
@@ -245,7 +238,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToCollectionWhenIndexedAndCommaListShouldOnlyUseFirst() {
+	void bindToCollectionWhenIndexedAndCommaListShouldOnlyUseFirst() {
 		MockConfigurationPropertySource source1 = new MockConfigurationPropertySource();
 		source1.put("foo[0]", "1");
 		source1.put("foo[1]", "2");
@@ -257,7 +250,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToCollectionWhenItemContainsCommasShouldReturnPopulatedCollection() {
+	void bindToCollectionWhenItemContainsCommasShouldReturnPopulatedCollection() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[0]", "1,2");
 		source.put("foo[1]", "3");
@@ -267,16 +260,16 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToCollectionWhenEmptyStringShouldReturnEmptyCollection() {
+	void bindToCollectionWhenEmptyStringShouldReturnEmptyCollection() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "");
 		this.sources.add(source);
 		List<String> result = this.binder.bind("foo", STRING_LIST).get();
-		assertThat(result).isNotNull().isEmpty();
+		assertThat(result).isEmpty();
 	}
 
 	@Test
-	public void bindToNonScalarCollectionShouldReturnPopulatedCollection() {
+	void bindToNonScalarCollectionShouldReturnPopulatedCollection() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[0].value", "a");
 		source.put("foo[1].value", "b");
@@ -285,12 +278,12 @@ public class CollectionBinderTests {
 		Bindable<List<JavaBean>> target = Bindable.listOf(JavaBean.class);
 		List<JavaBean> result = this.binder.bind("foo", target).get();
 		assertThat(result).hasSize(3);
-		List<String> values = result.stream().map(JavaBean::getValue).collect(Collectors.toList());
+		List<String> values = result.stream().map(JavaBean::getValue).toList();
 		assertThat(values).containsExactly("a", "b", "c");
 	}
 
 	@Test
-	public void bindToImmutableCollectionShouldReturnPopulatedCollection() {
+	void bindToImmutableCollectionShouldReturnPopulatedCollection() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.values", "a,b,c");
 		this.sources.add(source);
@@ -299,7 +292,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToCollectionShouldAlsoCallSetterIfPresent() {
+	void bindToCollectionShouldAlsoCallSetterIfPresent() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.items", "a,b,c");
 		this.sources.add(source);
@@ -309,30 +302,32 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToCollectionWithNoDefaultConstructor() {
+	void bindToCollectionWithNoDefaultConstructor() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.items", "a,b,c,c");
 		this.sources.add(source);
 		ExampleCustomNoDefaultConstructorBean result = this.binder
-				.bind("foo", ExampleCustomNoDefaultConstructorBean.class).get();
+			.bind("foo", ExampleCustomNoDefaultConstructorBean.class)
+			.get();
 		assertThat(result.getItems()).hasSize(4);
 		assertThat(result.getItems()).containsExactly("a", "b", "c", "c");
 	}
 
 	@Test
-	public void bindToCollectionWithDefaultConstructor() {
+	void bindToCollectionWithDefaultConstructor() {
 		// gh-12322
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.items", "a,b,c,c");
 		this.sources.add(source);
 		ExampleCustomWithDefaultConstructorBean result = this.binder
-				.bind("foo", ExampleCustomWithDefaultConstructorBean.class).get();
+			.bind("foo", ExampleCustomWithDefaultConstructorBean.class)
+			.get();
 		assertThat(result.getItems()).hasSize(4);
 		assertThat(result.getItems()).containsExactly("a", "b", "c", "c");
 	}
 
 	@Test
-	public void bindToListShouldAllowDuplicateValues() {
+	void bindToListShouldAllowDuplicateValues() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.items", "a,b,c,c");
 		this.sources.add(source);
@@ -342,7 +337,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToSetShouldNotAllowDuplicateValues() {
+	void bindToSetShouldNotAllowDuplicateValues() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.items-set", "a,b,c,c");
 		this.sources.add(source);
@@ -352,7 +347,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToBeanWithNestedCollectionShouldPopulateCollection() {
+	void bindToBeanWithNestedCollectionShouldPopulateCollection() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value", "one");
 		source.put("foo.foos[0].value", "two");
@@ -366,7 +361,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToNestedCollectionWhenEmptyStringShouldReturnEmptyCollection() {
+	void bindToNestedCollectionWhenEmptyStringShouldReturnEmptyCollection() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value", "one");
 		source.put("foo.foos", "");
@@ -378,7 +373,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToCollectionShouldUsePropertyEditor() {
+	void bindToCollectionShouldUsePropertyEditor() {
 		// gh-12166
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo[0]", "java.lang.RuntimeException");
@@ -389,7 +384,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToCollectionWhenStringShouldUsePropertyEditor() {
+	void bindToCollectionWhenStringShouldUsePropertyEditor() {
 		// gh-12166
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo", "java.lang.RuntimeException,java.lang.IllegalStateException");
@@ -399,7 +394,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToBeanWithNestedCollectionAndNonIterableSourceShouldNotFail() {
+	void bindToBeanWithNestedCollectionAndNonIterableSourceShouldNotFail() {
 		// gh-10702
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		this.sources.add(source.nonIterable());
@@ -408,7 +403,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToBeanWithClonedArray() {
+	void bindToBeanWithClonedArray() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.bar[0]", "hello");
 		this.sources.add(source);
@@ -418,7 +413,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToBeanWithExceptionInGetterForExistingValue() {
+	void bindToBeanWithExceptionInGetterForExistingValue() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.values", "a,b,c");
 		this.sources.add(source);
@@ -427,7 +422,7 @@ public class CollectionBinderTests {
 	}
 
 	@Test
-	public void bindToBeanWithEnumSetCollection() {
+	void bindToBeanWithEnumSetCollection() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.values[0]", "foo-bar,bar-baz");
 		this.sources.add(source);
@@ -435,133 +430,133 @@ public class CollectionBinderTests {
 		assertThat(result.getValues().get(0)).containsExactly(ExampleEnum.FOO_BAR, ExampleEnum.BAR_BAZ);
 	}
 
-	public static class ExampleCollectionBean {
+	static class ExampleCollectionBean {
 
-		private List<String> items = new ArrayList<>();
+		private final List<String> items = new ArrayList<>();
 
 		private Set<String> itemsSet = new LinkedHashSet<>();
 
-		public List<String> getItems() {
+		List<String> getItems() {
 			return this.items;
 		}
 
-		public void setItems(List<String> items) {
+		void setItems(List<String> items) {
 			this.items.add("d");
 		}
 
-		public Set<String> getItemsSet() {
+		Set<String> getItemsSet() {
 			return this.itemsSet;
 		}
 
-		public void setItemsSet(Set<String> itemsSet) {
+		void setItemsSet(Set<String> itemsSet) {
 			this.itemsSet = itemsSet;
 		}
 
 	}
 
-	public static class ExampleCustomNoDefaultConstructorBean {
+	static class ExampleCustomNoDefaultConstructorBean {
 
 		private MyCustomNoDefaultConstructorList items = new MyCustomNoDefaultConstructorList(
 				Collections.singletonList("foo"));
 
-		public MyCustomNoDefaultConstructorList getItems() {
+		MyCustomNoDefaultConstructorList getItems() {
 			return this.items;
 		}
 
-		public void setItems(MyCustomNoDefaultConstructorList items) {
+		void setItems(MyCustomNoDefaultConstructorList items) {
 			this.items = items;
 		}
 
 	}
 
-	public static class MyCustomNoDefaultConstructorList extends ArrayList<String> {
+	static class MyCustomNoDefaultConstructorList extends ArrayList<String> {
 
-		public MyCustomNoDefaultConstructorList(List<String> items) {
+		MyCustomNoDefaultConstructorList(List<String> items) {
 			addAll(items);
 		}
 
 	}
 
-	public static class ExampleCustomWithDefaultConstructorBean {
+	static class ExampleCustomWithDefaultConstructorBean {
 
-		private MyCustomWithDefaultConstructorList items = new MyCustomWithDefaultConstructorList();
+		private final MyCustomWithDefaultConstructorList items = new MyCustomWithDefaultConstructorList();
 
-		public MyCustomWithDefaultConstructorList getItems() {
+		MyCustomWithDefaultConstructorList getItems() {
 			return this.items;
 		}
 
-		public void setItems(MyCustomWithDefaultConstructorList items) {
+		void setItems(MyCustomWithDefaultConstructorList items) {
 			this.items.clear();
 			this.items.addAll(items);
 		}
 
 	}
 
-	public static class MyCustomWithDefaultConstructorList extends ArrayList<String> {
+	static class MyCustomWithDefaultConstructorList extends ArrayList<String> {
 
 	}
 
-	public static class BeanWithNestedCollection {
+	static class BeanWithNestedCollection {
 
 		private String value;
 
 		private List<BeanWithNestedCollection> foos;
 
-		public List<BeanWithNestedCollection> getFoos() {
+		List<BeanWithNestedCollection> getFoos() {
 			return this.foos;
 		}
 
-		public void setFoos(List<BeanWithNestedCollection> foos) {
+		void setFoos(List<BeanWithNestedCollection> foos) {
 			this.foos = foos;
 		}
 
-		public String getValue() {
+		String getValue() {
 			return this.value;
 		}
 
-		public void setValue(String value) {
+		void setValue(String value) {
 			this.value = value;
 		}
 
 	}
 
-	public static class ClonedArrayBean {
+	static class ClonedArrayBean {
 
 		private String[] bar;
 
-		public String[] getBar() {
+		String[] getBar() {
 			return this.bar.clone();
 		}
 
-		public void setBar(String[] bar) {
+		void setBar(String[] bar) {
 			this.bar = bar;
 		}
 
 	}
 
-	public static class BeanWithGetterException {
+	static class BeanWithGetterException {
 
 		private List<String> values;
 
-		public void setValues(List<String> values) {
+		void setValues(List<String> values) {
 			this.values = values;
 		}
 
-		public List<String> getValues() {
+		List<String> getValues() {
 			return Collections.unmodifiableList(this.values);
 		}
 
 	}
 
-	public static class BeanWithEnumSetCollection {
+	static class BeanWithEnumSetCollection {
 
 		private List<EnumSet<ExampleEnum>> values;
 
-		public void setValues(List<EnumSet<ExampleEnum>> values) {
+		void setValues(List<EnumSet<ExampleEnum>> values) {
 			this.values = values;
 		}
 
-		public List<EnumSet<ExampleEnum>> getValues() {
+		List<EnumSet<ExampleEnum>> getValues() {
 			return this.values;
 		}
 

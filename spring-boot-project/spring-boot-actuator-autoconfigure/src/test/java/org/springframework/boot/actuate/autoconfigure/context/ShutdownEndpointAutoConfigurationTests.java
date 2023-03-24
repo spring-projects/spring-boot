@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.context;
 
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.actuate.context.ShutdownEndpoint;
@@ -33,27 +33,35 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class ShutdownEndpointAutoConfigurationTests {
+class ShutdownEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ShutdownEndpointAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ShutdownEndpointAutoConfiguration.class));
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void runShouldHaveEndpointBeanThatIsNotDisposable() {
-		this.contextRunner.withPropertyValues("management.endpoint.shutdown.enabled:true").run((context) -> {
-			assertThat(context).hasSingleBean(ShutdownEndpoint.class);
-			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-			Map<String, Object> disposableBeans = (Map<String, Object>) ReflectionTestUtils.getField(beanFactory,
-					"disposableBeans");
-			assertThat(disposableBeans).isEmpty();
-		});
+	void runShouldHaveEndpointBeanThatIsNotDisposable() {
+		this.contextRunner.withPropertyValues("management.endpoint.shutdown.enabled:true")
+			.withPropertyValues("management.endpoints.web.exposure.include=shutdown")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ShutdownEndpoint.class);
+				ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+				Map<String, Object> disposableBeans = (Map<String, Object>) ReflectionTestUtils.getField(beanFactory,
+						"disposableBeans");
+				assertThat(disposableBeans).isEmpty();
+			});
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
+	void runWhenNotExposedShouldNotHaveEndpointBean() {
+		this.contextRunner.withPropertyValues("management.endpoint.shutdown.enabled:true")
+			.run((context) -> assertThat(context).doesNotHaveBean(ShutdownEndpoint.class));
+	}
+
+	@Test
+	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.shutdown.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(ShutdownEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(ShutdownEndpoint.class));
 	}
 
 }

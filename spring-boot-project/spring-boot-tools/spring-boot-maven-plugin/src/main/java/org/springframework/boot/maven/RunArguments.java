@@ -44,11 +44,11 @@ class RunArguments {
 		}
 	}
 
-	public Deque<String> getArgs() {
+	Deque<String> getArgs() {
 		return this.args;
 	}
 
-	public String[] asArray() {
+	String[] asArray() {
 		return this.args.toArray(new String[0]);
 	}
 

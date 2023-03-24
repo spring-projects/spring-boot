@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,10 +33,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class JsonMarshallerTests {
+class JsonMarshallerTests {
 
 	@Test
-	public void marshallAndUnmarshal() throws Exception {
+	void marshallAndUnmarshal() throws Exception {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		metadata.add(ItemMetadata.newProperty("a", "b", StringBuffer.class.getName(), InputStream.class.getName(),
 				"sourceMethod", "desc", "x", new ItemDeprecation("Deprecation comment", "b.c.d")));
@@ -55,8 +55,11 @@ public class JsonMarshallerTests {
 		JsonMarshaller marshaller = new JsonMarshaller();
 		marshaller.write(metadata, outputStream);
 		ConfigurationMetadata read = marshaller.read(new ByteArrayInputStream(outputStream.toByteArray()));
-		assertThat(read).has(Metadata.withProperty("a.b", StringBuffer.class).fromSource(InputStream.class)
-				.withDescription("desc").withDefaultValue("x").withDeprecation("Deprecation comment", "b.c.d"));
+		assertThat(read).has(Metadata.withProperty("a.b", StringBuffer.class)
+			.fromSource(InputStream.class)
+			.withDescription("desc")
+			.withDefaultValue("x")
+			.withDeprecation("Deprecation comment", "b.c.d"));
 		assertThat(read).has(Metadata.withProperty("b.c.d"));
 		assertThat(read).has(Metadata.withProperty("c").withDefaultValue(123));
 		assertThat(read).has(Metadata.withProperty("d").withDefaultValue(true));
@@ -69,7 +72,7 @@ public class JsonMarshallerTests {
 	}
 
 	@Test
-	public void marshallOrderItems() throws IOException {
+	void marshallOrderItems() throws IOException {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		metadata.add(ItemHint.newHint("fff"));
 		metadata.add(ItemHint.newHint("eee"));
@@ -82,14 +85,14 @@ public class JsonMarshallerTests {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		JsonMarshaller marshaller = new JsonMarshaller();
 		marshaller.write(metadata, outputStream);
-		String json = new String(outputStream.toByteArray());
+		String json = outputStream.toString();
 		assertThat(json).containsSubsequence("\"groups\"", "\"com.acme.alpha\"", "\"com.acme.bravo\"", "\"properties\"",
 				"\"com.example.alpha.ccc\"", "\"com.example.alpha.ddd\"", "\"com.example.bravo.aaa\"",
 				"\"com.example.bravo.bbb\"", "\"hints\"", "\"eee\"", "\"fff\"");
 	}
 
 	@Test
-	public void marshallPutDeprecatedItemsAtTheEnd() throws IOException {
+	void marshallPutDeprecatedItemsAtTheEnd() throws IOException {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		metadata.add(ItemMetadata.newProperty("com.example.bravo", "bbb", null, null, null, null, null, null));
 		metadata.add(ItemMetadata.newProperty("com.example.bravo", "aaa", null, null, null, null, null,
@@ -100,9 +103,71 @@ public class JsonMarshallerTests {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		JsonMarshaller marshaller = new JsonMarshaller();
 		marshaller.write(metadata, outputStream);
-		String json = new String(outputStream.toByteArray());
+		String json = outputStream.toString();
 		assertThat(json).containsSubsequence("\"properties\"", "\"com.example.alpha.ddd\"", "\"com.example.bravo.bbb\"",
 				"\"com.example.alpha.ccc\"", "\"com.example.bravo.aaa\"");
+	}
+
+	@Test
+	void orderingForSameGroupNames() throws IOException {
+		ConfigurationMetadata metadata = new ConfigurationMetadata();
+		metadata.add(ItemMetadata.newGroup("com.acme.alpha", null, "com.example.Foo", null));
+		metadata.add(ItemMetadata.newGroup("com.acme.alpha", null, "com.example.Bar", null));
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		JsonMarshaller marshaller = new JsonMarshaller();
+		marshaller.write(metadata, outputStream);
+		String json = outputStream.toString();
+		assertThat(json).containsSubsequence("\"groups\"", "\"name\": \"com.acme.alpha\"",
+				"\"sourceType\": \"com.example.Bar\"", "\"name\": \"com.acme.alpha\"",
+				"\"sourceType\": \"com.example.Foo\"");
+	}
+
+	@Test
+	void orderingForSamePropertyNames() throws IOException {
+		ConfigurationMetadata metadata = new ConfigurationMetadata();
+		metadata.add(ItemMetadata.newProperty("com.example.bravo", "aaa", "java.lang.Boolean", "com.example.Foo", null,
+				null, null, null));
+		metadata.add(ItemMetadata.newProperty("com.example.bravo", "aaa", "java.lang.Integer", "com.example.Bar", null,
+				null, null, null));
+		metadata
+			.add(ItemMetadata.newProperty("com.example.alpha", "ddd", null, "com.example.Bar", null, null, null, null));
+		metadata
+			.add(ItemMetadata.newProperty("com.example.alpha", "ccc", null, "com.example.Foo", null, null, null, null));
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		JsonMarshaller marshaller = new JsonMarshaller();
+		marshaller.write(metadata, outputStream);
+		String json = outputStream.toString();
+		assertThat(json).containsSubsequence("\"groups\"", "\"properties\"", "\"com.example.alpha.ccc\"",
+				"com.example.Foo", "\"com.example.alpha.ddd\"", "com.example.Bar", "\"com.example.bravo.aaa\"",
+				"com.example.Bar", "\"com.example.bravo.aaa\"", "com.example.Foo");
+	}
+
+	@Test
+	void orderingForSameGroupWithNullSourceType() throws IOException {
+		ConfigurationMetadata metadata = new ConfigurationMetadata();
+		metadata.add(ItemMetadata.newGroup("com.acme.alpha", null, "com.example.Foo", null));
+		metadata.add(ItemMetadata.newGroup("com.acme.alpha", null, null, null));
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		JsonMarshaller marshaller = new JsonMarshaller();
+		marshaller.write(metadata, outputStream);
+		String json = outputStream.toString();
+		assertThat(json).containsSubsequence("\"groups\"", "\"name\": \"com.acme.alpha\"",
+				"\"name\": \"com.acme.alpha\"", "\"sourceType\": \"com.example.Foo\"");
+	}
+
+	@Test
+	void orderingForSamePropertyNamesWithNullSourceType() throws IOException {
+		ConfigurationMetadata metadata = new ConfigurationMetadata();
+		metadata.add(ItemMetadata.newProperty("com.example.bravo", "aaa", "java.lang.Boolean", null, null, null, null,
+				null));
+		metadata.add(ItemMetadata.newProperty("com.example.bravo", "aaa", "java.lang.Integer", "com.example.Bar", null,
+				null, null, null));
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		JsonMarshaller marshaller = new JsonMarshaller();
+		marshaller.write(metadata, outputStream);
+		String json = outputStream.toString();
+		assertThat(json).containsSubsequence("\"groups\"", "\"properties\"", "\"com.example.bravo.aaa\"",
+				"\"java.lang.Boolean\"", "\"com.example.bravo.aaa\"", "\"java.lang.Integer\"", "\"com.example.Bar");
 	}
 
 }

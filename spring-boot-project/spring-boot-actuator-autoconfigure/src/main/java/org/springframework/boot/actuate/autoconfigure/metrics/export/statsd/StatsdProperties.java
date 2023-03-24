@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,19 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.statsd;
 import java.time.Duration;
 
 import io.micrometer.statsd.StatsdFlavor;
+import io.micrometer.statsd.StatsdProtocol;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring StatsD metrics export.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring StatsD metrics
+ * export.
  *
  * @author Jon Schneider
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.metrics.export.statsd")
+@ConfigurationProperties(prefix = "management.statsd.metrics.export")
 public class StatsdProperties {
 
 	/**
@@ -53,6 +55,11 @@ public class StatsdProperties {
 	private Integer port = 8125;
 
 	/**
+	 * Protocol of the StatsD server to receive exported metrics.
+	 */
+	private StatsdProtocol protocol = StatsdProtocol.UDP;
+
+	/**
 	 * Total length of a single payload should be kept within your network's MTU.
 	 */
 	private Integer maxPacketLength = 1400;
@@ -65,9 +72,20 @@ public class StatsdProperties {
 	private Duration pollingFrequency = Duration.ofSeconds(10);
 
 	/**
+	 * Step size to use in computing windowed statistics like max. To get the most out of
+	 * these statistics, align the step interval to be close to your scrape interval.
+	 */
+	private Duration step = Duration.ofMinutes(1);
+
+	/**
 	 * Whether to send unchanged meters to the StatsD server.
 	 */
 	private boolean publishUnchangedMeters = true;
+
+	/**
+	 * Whether measurements should be buffered before sending to the StatsD server.
+	 */
+	private boolean buffered = true;
 
 	public boolean isEnabled() {
 		return this.enabled;
@@ -101,6 +119,14 @@ public class StatsdProperties {
 		this.port = port;
 	}
 
+	public StatsdProtocol getProtocol() {
+		return this.protocol;
+	}
+
+	public void setProtocol(StatsdProtocol protocol) {
+		this.protocol = protocol;
+	}
+
 	public Integer getMaxPacketLength() {
 		return this.maxPacketLength;
 	}
@@ -117,12 +143,28 @@ public class StatsdProperties {
 		this.pollingFrequency = pollingFrequency;
 	}
 
+	public Duration getStep() {
+		return this.step;
+	}
+
+	public void setStep(Duration step) {
+		this.step = step;
+	}
+
 	public boolean isPublishUnchangedMeters() {
 		return this.publishUnchangedMeters;
 	}
 
 	public void setPublishUnchangedMeters(boolean publishUnchangedMeters) {
 		this.publishUnchangedMeters = publishUnchangedMeters;
+	}
+
+	public boolean isBuffered() {
+		return this.buffered;
+	}
+
+	public void setBuffered(boolean buffered) {
+		this.buffered = buffered;
 	}
 
 }

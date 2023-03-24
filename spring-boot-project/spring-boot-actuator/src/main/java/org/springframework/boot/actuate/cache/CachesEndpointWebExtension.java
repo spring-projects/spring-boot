@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.cache;
 
-import org.springframework.boot.actuate.cache.CachesEndpoint.CacheEntry;
+import org.springframework.boot.actuate.cache.CachesEndpoint.CacheEntryDescriptor;
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
@@ -25,7 +25,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
 import org.springframework.lang.Nullable;
 
 /**
- * {@link EndpointWebExtension} for the {@link CachesEndpoint}.
+ * {@link EndpointWebExtension @EndpointWebExtension} for the {@link CachesEndpoint}.
  *
  * @author Stephane Nicoll
  * @since 2.1.0
@@ -40,9 +40,9 @@ public class CachesEndpointWebExtension {
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<CacheEntry> cache(@Selector String cache, @Nullable String cacheManager) {
+	public WebEndpointResponse<CacheEntryDescriptor> cache(@Selector String cache, @Nullable String cacheManager) {
 		try {
-			CacheEntry entry = this.delegate.cache(cache, cacheManager);
+			CacheEntryDescriptor entry = this.delegate.cache(cache, cacheManager);
 			int status = (entry != null) ? WebEndpointResponse.STATUS_OK : WebEndpointResponse.STATUS_NOT_FOUND;
 			return new WebEndpointResponse<>(entry, status);
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.data.redis;
 
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -31,16 +31,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class RedisReactiveAutoConfigurationTests {
+class RedisReactiveAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
-			AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class));
 
 	@Test
-	public void testDefaultRedisConfiguration() {
+	void testDefaultRedisConfiguration() {
 		this.contextRunner.run((context) -> {
 			Map<String, ?> beans = context.getBeansOfType(ReactiveRedisTemplate.class);
-			assertThat(beans).containsOnlyKeys("reactiveRedisTemplate");
+			assertThat(beans).containsOnlyKeys("reactiveRedisTemplate", "reactiveStringRedisTemplate");
 		});
 	}
 

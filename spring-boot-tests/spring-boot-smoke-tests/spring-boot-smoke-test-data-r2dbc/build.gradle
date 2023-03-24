@@ -1,0 +1,16 @@
+plugins {
+	id "java"
+	id "org.springframework.boot.conventions"
+}
+
+description = "Spring Boot Data R2DBC smoke test"
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-r2dbc"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-webflux"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
+
+	runtimeOnly("io.r2dbc:r2dbc-h2")
+
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+}

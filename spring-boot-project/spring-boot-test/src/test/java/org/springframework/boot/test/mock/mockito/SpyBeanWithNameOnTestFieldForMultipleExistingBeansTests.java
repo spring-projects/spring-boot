@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,48 +16,48 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.MockingDetails;
 import org.mockito.Mockito;
 
 import org.springframework.boot.test.mock.mockito.example.SimpleExampleStringGenericService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Test {@link SpyBean} on a test class field can be used to inject a spy instance when
- * there are multiple candidates and one is chosen using the name attribute.
+ * Test {@link SpyBean @SpyBean} on a test class field can be used to inject a spy
+ * instance when there are multiple candidates and one is chosen using the name attribute.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
-public class SpyBeanWithNameOnTestFieldForMultipleExistingBeansTests {
+@ExtendWith(SpringExtension.class)
+class SpyBeanWithNameOnTestFieldForMultipleExistingBeansTests {
 
 	@SpyBean(name = "two")
 	private SimpleExampleStringGenericService spy;
 
 	@Test
-	public void testSpying() {
+	void testSpying() {
 		MockingDetails mockingDetails = Mockito.mockingDetails(this.spy);
 		assertThat(mockingDetails.isSpy()).isTrue();
-		assertThat(mockingDetails.getMockCreationSettings().getMockName().toString()).isEqualTo("two");
+		assertThat(mockingDetails.getMockCreationSettings().getMockName()).hasToString("two");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class Config {
 
 		@Bean
-		public SimpleExampleStringGenericService one() {
+		SimpleExampleStringGenericService one() {
 			return new SimpleExampleStringGenericService("one");
 		}
 
 		@Bean
-		public SimpleExampleStringGenericService two() {
+		SimpleExampleStringGenericService two() {
 			return new SimpleExampleStringGenericService("two");
 		}
 

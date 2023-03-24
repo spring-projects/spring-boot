@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,33 +19,34 @@ package org.springframework.boot.test.web.reactive.server;
 import java.util.List;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
+import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.util.ClassUtils;
 
 /**
  * {@link ContextCustomizerFactory} for {@code WebTestClient}.
  *
  * @author Stephane Nicoll
+ * @author Andy Wilkinson
+ * @author Anugrah Singhal
  */
 class WebTestClientContextCustomizerFactory implements ContextCustomizerFactory {
 
-	private static final String WEB_TEST_CLIENT_CLASS = "org.springframework.web.reactive.function.client.WebClient";
+	private static final boolean webClientPresent;
+
+	static {
+		ClassLoader loader = WebTestClientContextCustomizerFactory.class.getClassLoader();
+		webClientPresent = ClassUtils.isPresent("org.springframework.web.reactive.function.client.WebClient", loader);
+	}
 
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
-		if (isWebClientPresent()
-				&& AnnotatedElementUtils.findMergedAnnotation(testClass, SpringBootTest.class) != null) {
-			return new WebTestClientContextCustomizer();
-		}
-		return null;
-	}
-
-	private boolean isWebClientPresent() {
-		return ClassUtils.isPresent(WEB_TEST_CLIENT_CLASS, getClass().getClassLoader());
+		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
+				SpringBootTest.class);
+		return (springBootTest != null && webClientPresent) ? new WebTestClientContextCustomizer() : null;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 import javax.sql.DataSource;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -35,39 +36,40 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Base class for tests for {@link DevToolsDataSourceAutoConfiguration}.
  *
  * @author Andy Wilkinson
  */
-public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
+abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 
 	@Test
-	public void singleManuallyConfiguredDataSourceIsNotClosed() throws SQLException {
-		ConfigurableApplicationContext context = createContext(SingleDataSourceConfiguration.class);
+	void singleManuallyConfiguredDataSourceIsNotClosed() throws Exception {
+		ConfigurableApplicationContext context = getContext(() -> createContext(SingleDataSourceConfiguration.class));
 		DataSource dataSource = context.getBean(DataSource.class);
 		Statement statement = configureDataSourceBehavior(dataSource);
-		verify(statement, never()).execute("SHUTDOWN");
+		then(statement).should(never()).execute("SHUTDOWN");
 	}
 
 	@Test
-	public void multipleDataSourcesAreIgnored() throws SQLException {
-		ConfigurableApplicationContext context = createContext(MultipleDataSourcesConfiguration.class);
+	void multipleDataSourcesAreIgnored() throws Exception {
+		ConfigurableApplicationContext context = getContext(
+				() -> createContext(MultipleDataSourcesConfiguration.class));
 		Collection<DataSource> dataSources = context.getBeansOfType(DataSource.class).values();
 		for (DataSource dataSource : dataSources) {
 			Statement statement = configureDataSourceBehavior(dataSource);
-			verify(statement, never()).execute("SHUTDOWN");
+			then(statement).should(never()).execute("SHUTDOWN");
 		}
 	}
 
 	@Test
-	public void emptyFactoryMethodMetadataIgnored() {
+	void emptyFactoryMethodMetadataIgnored() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		DataSource dataSource = mock(DataSource.class);
 		AnnotatedGenericBeanDefinition beanDefinition = new AnnotatedGenericBeanDefinition(dataSource.getClass());
@@ -80,17 +82,29 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 	protected final Statement configureDataSourceBehavior(DataSource dataSource) throws SQLException {
 		Connection connection = mock(Connection.class);
 		Statement statement = mock(Statement.class);
-		doReturn(connection).when(dataSource).getConnection();
+		willReturn(connection).given(dataSource).getConnection();
 		given(connection.createStatement()).willReturn(statement);
 		return statement;
 	}
 
+	protected ConfigurableApplicationContext getContext(Supplier<ConfigurableApplicationContext> supplier)
+			throws Exception {
+		AtomicReference<ConfigurableApplicationContext> atomicReference = new AtomicReference<>();
+		Thread thread = new Thread(() -> {
+			ConfigurableApplicationContext context = supplier.get();
+			atomicReference.getAndSet(context);
+		});
+		thread.start();
+		thread.join();
+		return atomicReference.get();
+	}
+
 	protected final ConfigurableApplicationContext createContext(Class<?>... classes) {
-		return this.createContext(null, classes);
+		return createContext(null, classes);
 	}
 
 	protected final ConfigurableApplicationContext createContext(String driverClassName, Class<?>... classes) {
-		return this.createContext(driverClassName, null, classes);
+		return createContext(driverClassName, null, classes);
 	}
 
 	protected final ConfigurableApplicationContext createContext(String driverClassName, String url,
@@ -108,45 +122,45 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		return context;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SingleDataSourceConfiguration {
 
 		@Bean
-		public DataSource dataSource() {
+		DataSource dataSource() {
 			return mock(DataSource.class);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class MultipleDataSourcesConfiguration {
 
 		@Bean
-		public DataSource dataSourceOne() {
+		DataSource dataSourceOne() {
 			return mock(DataSource.class);
 		}
 
 		@Bean
-		public DataSource dataSourceTwo() {
+		DataSource dataSourceTwo() {
 			return mock(DataSource.class);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class DataSourceSpyConfiguration {
 
 		@Bean
-		public DataSourceSpyBeanPostProcessor dataSourceSpyBeanPostProcessor() {
+		DataSourceSpyBeanPostProcessor dataSourceSpyBeanPostProcessor() {
 			return new DataSourceSpyBeanPostProcessor();
 		}
 
 	}
 
-	private static class DataSourceSpyBeanPostProcessor implements BeanPostProcessor {
+	static class DataSourceSpyBeanPostProcessor implements BeanPostProcessor {
 
 		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+		public Object postProcessBeforeInitialization(Object bean, String beanName) {
 			if (bean instanceof DataSource) {
 				bean = spy(bean);
 			}
@@ -154,7 +168,7 @@ public abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		}
 
 		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+		public Object postProcessAfterInitialization(Object bean, String beanName) {
 			return bean;
 		}
 

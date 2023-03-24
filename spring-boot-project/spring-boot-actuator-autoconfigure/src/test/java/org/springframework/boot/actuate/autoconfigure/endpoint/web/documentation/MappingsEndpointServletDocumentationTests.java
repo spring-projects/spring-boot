@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
 import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
@@ -33,18 +33,18 @@ import org.springframework.boot.actuate.web.mappings.servlet.FiltersMappingDescr
 import org.springframework.boot.actuate.web.mappings.servlet.ServletsMappingDescriptionProvider;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.JUnitRestDocumentation;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -61,42 +61,45 @@ import static org.springframework.restdocs.webtestclient.WebTestClientRestDocume
  *
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(RestDocumentationExtension.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class MappingsEndpointServletDocumentationTests extends AbstractEndpointDocumentationTests {
-
-	@Rule
-	public final JUnitRestDocumentation restDocumentation = new JUnitRestDocumentation();
+class MappingsEndpointServletDocumentationTests extends AbstractEndpointDocumentationTests {
 
 	@LocalServerPort
 	private int port;
 
 	private WebTestClient client;
 
-	@Before
-	public void webTestClient() {
-		this.client = WebTestClient.bindToServer().filter(documentationConfiguration(this.restDocumentation))
-				.baseUrl("http://localhost:" + this.port).build();
+	@BeforeEach
+	void webTestClient(RestDocumentationContextProvider restDocumentation) {
+		this.client = WebTestClient.bindToServer()
+			.filter(documentationConfiguration(restDocumentation))
+			.baseUrl("http://localhost:" + this.port)
+			.responseTimeout(Duration.ofMinutes(5))
+			.build();
 	}
 
 	@Test
-	public void mappings() throws Exception {
+	void mappings() {
 		ResponseFieldsSnippet commonResponseFields = responseFields(
 				fieldWithPath("contexts").description("Application contexts keyed by id."),
 				fieldWithPath("contexts.*.mappings").description("Mappings in the context, keyed by mapping type."),
 				subsectionWithPath("contexts.*.mappings.dispatcherServlets")
-						.description("Dispatcher servlet mappings, if any."),
+					.description("Dispatcher servlet mappings, if any."),
 				subsectionWithPath("contexts.*.mappings.servletFilters")
-						.description("Servlet filter mappings, if any."),
+					.description("Servlet filter mappings, if any."),
 				subsectionWithPath("contexts.*.mappings.servlets").description("Servlet mappings, if any."),
 				subsectionWithPath("contexts.*.mappings.dispatcherHandlers")
-						.description("Dispatcher handler mappings, if any.").optional().type(JsonFieldType.OBJECT),
+					.description("Dispatcher handler mappings, if any.")
+					.optional()
+					.type(JsonFieldType.OBJECT),
 				parentIdField());
 		List<FieldDescriptor> dispatcherServletFields = new ArrayList<>(Arrays.asList(
-				fieldWithPath("*").description(
-						"Dispatcher servlet mappings, if any, keyed by " + "dispatcher servlet bean name."),
-				fieldWithPath("*.[].details").optional().type(JsonFieldType.OBJECT)
-						.description("Additional implementation-specific " + "details about the mapping. Optional."),
+				fieldWithPath("*")
+					.description("Dispatcher servlet mappings, if any, keyed by dispatcher servlet bean name."),
+				fieldWithPath("*.[].details").optional()
+					.type(JsonFieldType.OBJECT)
+					.description("Additional implementation-specific details about the mapping. Optional."),
 				fieldWithPath("*.[].handler").description("Handler for the mapping."),
 				fieldWithPath("*.[].predicate").description("Predicate for the mapping.")));
 		List<FieldDescriptor> requestMappingConditions = Arrays.asList(
@@ -112,88 +115,92 @@ public class MappingsEndpointServletDocumentationTests extends AbstractEndpointD
 				requestMappingConditionField(".params").description("Details of the params condition."),
 				requestMappingConditionField(".params.[].name").description("Name of the parameter."),
 				requestMappingConditionField(".params.[].value")
-						.description("Required value of the parameter, if any."),
+					.description("Required value of the parameter, if any."),
 				requestMappingConditionField(".params.[].negated").description("Whether the value is negated."),
 				requestMappingConditionField(".patterns")
-						.description("Patterns identifying the paths handled by the mapping."),
+					.description("Patterns identifying the paths handled by the mapping."),
 				requestMappingConditionField(".produces").description("Details of the produces condition."),
 				requestMappingConditionField(".produces.[].mediaType").description("Produced media type."),
 				requestMappingConditionField(".produces.[].negated").description("Whether the media type is negated."));
 		List<FieldDescriptor> handlerMethod = Arrays.asList(
-				fieldWithPath("*.[].details.handlerMethod").optional().type(JsonFieldType.OBJECT)
-						.description("Details of the method, if any, " + "that will handle requests to this mapping."),
+				fieldWithPath("*.[].details.handlerMethod").optional()
+					.type(JsonFieldType.OBJECT)
+					.description("Details of the method, if any, that will handle requests to this mapping."),
 				fieldWithPath("*.[].details.handlerMethod.className")
-						.description("Fully qualified name of the class of the method."),
+					.description("Fully qualified name of the class of the method."),
 				fieldWithPath("*.[].details.handlerMethod.name").description("Name of the method."),
 				fieldWithPath("*.[].details.handlerMethod.descriptor")
-						.description("Descriptor of the method as specified in the Java " + "Language Specification."));
+					.description("Descriptor of the method as specified in the Java Language Specification."));
 		dispatcherServletFields.addAll(handlerMethod);
 		dispatcherServletFields.addAll(requestMappingConditions);
-		this.client.get().uri("/actuator/mappings").exchange().expectBody()
-				.consumeWith(document("mappings", commonResponseFields,
-						responseFields(beneathPath("contexts.*.mappings.dispatcherServlets")
-								.withSubsectionId("dispatcher-servlets"), dispatcherServletFields),
-						responseFields(
-								beneathPath("contexts.*.mappings.servletFilters").withSubsectionId("servlet-filters"),
-								fieldWithPath("[].servletNameMappings")
-										.description("Names of the servlets to which the filter is mapped."),
-								fieldWithPath("[].urlPatternMappings")
-										.description("URL pattern to which the filter is mapped."),
-								fieldWithPath("[].name").description("Name of the filter."),
-								fieldWithPath("[].className").description("Class name of the filter")),
-						responseFields(beneathPath("contexts.*.mappings.servlets").withSubsectionId("servlets"),
-								fieldWithPath("[].mappings").description("Mappings of the servlet."),
-								fieldWithPath("[].name").description("Name of the servlet."),
-								fieldWithPath("[].className").description("Class name of the servlet"))));
+		this.client.get()
+			.uri("/actuator/mappings")
+			.exchange()
+			.expectBody()
+			.consumeWith(document("mappings", commonResponseFields,
+					responseFields(beneathPath("contexts.*.mappings.dispatcherServlets")
+						.withSubsectionId("dispatcher-servlets"), dispatcherServletFields),
+					responseFields(
+							beneathPath("contexts.*.mappings.servletFilters").withSubsectionId("servlet-filters"),
+							fieldWithPath("[].servletNameMappings")
+								.description("Names of the servlets to which the filter is mapped."),
+							fieldWithPath("[].urlPatternMappings")
+								.description("URL pattern to which the filter is mapped."),
+							fieldWithPath("[].name").description("Name of the filter."),
+							fieldWithPath("[].className").description("Class name of the filter")),
+					responseFields(beneathPath("contexts.*.mappings.servlets").withSubsectionId("servlets"),
+							fieldWithPath("[].mappings").description("Mappings of the servlet."),
+							fieldWithPath("[].name").description("Name of the servlet."),
+							fieldWithPath("[].className").description("Class name of the servlet"))));
 	}
 
 	private FieldDescriptor requestMappingConditionField(String path) {
 		return fieldWithPath("*.[].details.requestMappingConditions" + path);
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
-		public TomcatServletWebServerFactory tomcat() {
+		TomcatServletWebServerFactory tomcat() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public DispatcherServletsMappingDescriptionProvider dispatcherServletsMappingDescriptionProvider() {
+		DispatcherServletsMappingDescriptionProvider dispatcherServletsMappingDescriptionProvider() {
 			return new DispatcherServletsMappingDescriptionProvider();
 		}
 
 		@Bean
-		public ServletsMappingDescriptionProvider servletsMappingDescriptionProvider() {
+		ServletsMappingDescriptionProvider servletsMappingDescriptionProvider() {
 			return new ServletsMappingDescriptionProvider();
 		}
 
 		@Bean
-		public FiltersMappingDescriptionProvider filtersMappingDescriptionProvider() {
+		FiltersMappingDescriptionProvider filtersMappingDescriptionProvider() {
 			return new FiltersMappingDescriptionProvider();
 		}
 
 		@Bean
-		public MappingsEndpoint mappingsEndpoint(Collection<MappingDescriptionProvider> descriptionProviders,
+		MappingsEndpoint mappingsEndpoint(Collection<MappingDescriptionProvider> descriptionProviders,
 				ConfigurableApplicationContext context) {
 			return new MappingsEndpoint(descriptionProviders, context);
 		}
 
 		@Bean
-		public ExampleController exampleController() {
+		ExampleController exampleController() {
 			return new ExampleController();
 		}
 
 	}
 
 	@RestController
-	private static class ExampleController {
+	static class ExampleController {
 
 		@PostMapping(path = "/", consumes = { MediaType.APPLICATION_JSON_VALUE, "!application/xml" },
 				produces = MediaType.TEXT_PLAIN_VALUE, headers = "X-Custom=Foo", params = "a!=alpha")
-		public String example() {
+		String example() {
 			return "Hello World";
 		}
 

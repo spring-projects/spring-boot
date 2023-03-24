@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,17 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import javax.annotation.PreDestroy;
-
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.client.MongoClient;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Mongo.
@@ -38,38 +36,36 @@ import org.springframework.core.env.Environment;
  * @author Phillip Webb
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 1.0.0
  */
-@Configuration
+@AutoConfiguration
 @ConditionalOnClass(MongoClient.class)
 @EnableConfigurationProperties(MongoProperties.class)
-@ConditionalOnMissingBean(type = "org.springframework.data.mongodb.MongoDbFactory")
+@ConditionalOnMissingBean(type = "org.springframework.data.mongodb.MongoDatabaseFactory")
 public class MongoAutoConfiguration {
 
-	private final MongoClientOptions options;
-
-	private final MongoClientFactory factory;
-
-	private MongoClient mongo;
-
-	public MongoAutoConfiguration(MongoProperties properties, ObjectProvider<MongoClientOptions> options,
-			Environment environment) {
-		this.options = options.getIfAvailable();
-		this.factory = new MongoClientFactory(properties, environment);
-	}
-
-	@PreDestroy
-	public void close() {
-		if (this.mongo != null) {
-			this.mongo.close();
-		}
-	}
-
 	@Bean
-	@ConditionalOnMissingBean(type = { "com.mongodb.MongoClient", "com.mongodb.client.MongoClient" })
-	public MongoClient mongo() {
-		this.mongo = this.factory.createMongoClient(this.options);
-		return this.mongo;
+	@ConditionalOnMissingBean(MongoClient.class)
+	public MongoClient mongo(ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers,
+			MongoClientSettings settings) {
+		return new MongoClientFactory(builderCustomizers.orderedStream().toList()).createMongoClient(settings);
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean(MongoClientSettings.class)
+	static class MongoClientSettingsConfiguration {
+
+		@Bean
+		MongoClientSettings mongoClientSettings() {
+			return MongoClientSettings.builder().build();
+		}
+
+		@Bean
+		MongoPropertiesClientSettingsBuilderCustomizer mongoPropertiesCustomizer(MongoProperties properties) {
+			return new MongoPropertiesClientSettingsBuilderCustomizer(properties);
+		}
+
 	}
 
 }

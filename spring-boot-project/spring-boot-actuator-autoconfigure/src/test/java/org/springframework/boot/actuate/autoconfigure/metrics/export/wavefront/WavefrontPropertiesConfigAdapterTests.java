@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,11 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 
 import java.net.URI;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapterTests;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PushRegistryPropertiesConfigAdapterTests;
+import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties;
+import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties.Metrics.Export;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,46 +30,56 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link WavefrontPropertiesConfigAdapter}.
  *
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  */
-public class WavefrontPropertiesConfigAdapterTests
-		extends StepRegistryPropertiesConfigAdapterTests<WavefrontProperties, WavefrontPropertiesConfigAdapter> {
+class WavefrontPropertiesConfigAdapterTests extends
+		PushRegistryPropertiesConfigAdapterTests<WavefrontProperties.Metrics.Export, WavefrontPropertiesConfigAdapter> {
 
 	@Override
-	protected WavefrontProperties createProperties() {
-		return new WavefrontProperties();
+	protected WavefrontProperties.Metrics.Export createProperties() {
+		return new WavefrontProperties.Metrics.Export();
 	}
 
 	@Override
-	protected WavefrontPropertiesConfigAdapter createConfigAdapter(WavefrontProperties properties) {
+	protected WavefrontPropertiesConfigAdapter createConfigAdapter(WavefrontProperties.Metrics.Export export) {
+		WavefrontProperties properties = new WavefrontProperties();
+		properties.getMetrics().setExport(export);
 		return new WavefrontPropertiesConfigAdapter(properties);
 	}
 
 	@Test
-	public void whenPropertiesUriIsSetAdapterUriReturnsIt() {
-		WavefrontProperties properties = createProperties();
-		properties.setUri(URI.create("https://wavefront.example.com"));
-		assertThat(createConfigAdapter(properties).uri()).isEqualTo("https://wavefront.example.com");
-	}
-
-	@Test
-	public void whenPropertiesSourceIsSetAdapterSourceReturnsIt() {
-		WavefrontProperties properties = createProperties();
-		properties.setSource("test");
-		assertThat(createConfigAdapter(properties).source()).isEqualTo("test");
-	}
-
-	@Test
-	public void whenPropertiesApiTokenIsSetAdapterApiTokenReturnsIt() {
-		WavefrontProperties properties = createProperties();
-		properties.setApiToken("ABC123");
-		assertThat(createConfigAdapter(properties).apiToken()).isEqualTo("ABC123");
-	}
-
-	@Test
-	public void whenPropertiesGlobalPrefixIsSetAdapterGlobalPrefixReturnsIt() {
-		WavefrontProperties properties = createProperties();
+	void whenPropertiesGlobalPrefixIsSetAdapterGlobalPrefixReturnsIt() {
+		Export properties = createProperties();
 		properties.setGlobalPrefix("test");
 		assertThat(createConfigAdapter(properties).globalPrefix()).isEqualTo("test");
+	}
+
+	@Override
+	protected void whenPropertiesBatchSizeIsSetAdapterBatchSizeReturnsIt() {
+		WavefrontProperties properties = new WavefrontProperties();
+		properties.getSender().setBatchSize(10042);
+		assertThat(createConfigAdapter(properties.getMetrics().getExport()).batchSize()).isEqualTo(10042);
+	}
+
+	@Test
+	void whenPropertiesUriIsSetAdapterUriReturnsIt() {
+		WavefrontProperties properties = new WavefrontProperties();
+		properties.setUri(URI.create("https://example.wavefront.com"));
+		assertThat(new WavefrontPropertiesConfigAdapter(properties).uri()).isEqualTo("https://example.wavefront.com");
+	}
+
+	@Test
+	void whenPropertiesApiTokenIsSetAdapterApiTokenReturnsIt() {
+		WavefrontProperties properties = new WavefrontProperties();
+		properties.setApiToken("my-token");
+		assertThat(new WavefrontPropertiesConfigAdapter(properties).apiToken()).isEqualTo("my-token");
+	}
+
+	@Test
+	void whenPropertiesSourceIsSetAdapterSourceReturnsIt() {
+		WavefrontProperties properties = new WavefrontProperties();
+		properties.setSource("DESKTOP-GA5");
+		assertThat(new WavefrontPropertiesConfigAdapter(properties).source()).isEqualTo("DESKTOP-GA5");
 	}
 
 }

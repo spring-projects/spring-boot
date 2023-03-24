@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,10 @@ package org.springframework.boot.web.servlet;
 
 import java.io.IOException;
 
-import javax.servlet.ServletContextAttributeEvent;
-import javax.servlet.ServletContextAttributeListener;
-import javax.servlet.annotation.WebListener;
-
-import org.junit.Test;
+import jakarta.servlet.ServletContextAttributeEvent;
+import jakarta.servlet.ServletContextAttributeListener;
+import jakarta.servlet.annotation.WebListener;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.support.SimpleBeanDefinitionRegistry;
@@ -36,20 +35,21 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class WebListenerHandlerTests {
+class WebListenerHandlerTests {
 
 	private final WebListenerHandler handler = new WebListenerHandler();
 
 	private final SimpleBeanDefinitionRegistry registry = new SimpleBeanDefinitionRegistry();
 
 	@Test
-	public void listener() throws IOException {
+	void listener() throws IOException {
 		AnnotatedBeanDefinition definition = mock(AnnotatedBeanDefinition.class);
 		given(definition.getBeanClassName()).willReturn(TestListener.class.getName());
-		given(definition.getMetadata()).willReturn(new SimpleMetadataReaderFactory()
-				.getMetadataReader(TestListener.class.getName()).getAnnotationMetadata());
+		given(definition.getMetadata())
+			.willReturn(new SimpleMetadataReaderFactory().getMetadataReader(TestListener.class.getName())
+				.getAnnotationMetadata());
 		this.handler.handle(definition, this.registry);
-		this.registry.getBeanDefinition(TestListener.class.getName());
+		this.registry.getBeanDefinition(TestListener.class.getName() + "Registrar");
 	}
 
 	@WebListener

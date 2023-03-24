@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,30 +18,33 @@ package org.springframework.boot.autoconfigure.security.servlet;
 
 import java.util.Collections;
 
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.rule.OutputCapture;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationManagerResolver;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.TestingAuthenticationProvider;
 import org.springframework.security.authentication.TestingAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -50,58 +53,79 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link UserDetailsServiceAutoConfiguration}.
  *
  * @author Madhura Bhave
+ * @author HaiTao Zhang
  */
-public class UserDetailsServiceAutoConfigurationTests {
+@ExtendWith(OutputCaptureExtension.class)
+class UserDetailsServiceAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(TestSecurityConfiguration.class)
-			.withConfiguration(AutoConfigurations.of(UserDetailsServiceAutoConfiguration.class));
-
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+		.withUserConfiguration(TestSecurityConfiguration.class)
+		.withConfiguration(AutoConfigurations.of(UserDetailsServiceAutoConfiguration.class));
 
 	@Test
-	public void testDefaultUsernamePassword() {
+	void testDefaultUsernamePassword(CapturedOutput output) {
 		this.contextRunner.run((context) -> {
 			UserDetailsService manager = context.getBean(UserDetailsService.class);
-			assertThat(this.outputCapture.toString()).contains("Using generated security password:");
+			assertThat(output).contains("Using generated security password:");
 			assertThat(manager.loadUserByUsername("user")).isNotNull();
 		});
 	}
 
 	@Test
-	public void defaultUserNotCreatedIfAuthenticationManagerBeanPresent() {
+	void defaultUserNotCreatedIfAuthenticationManagerBeanPresent(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestAuthenticationManagerConfiguration.class).run((context) -> {
 			AuthenticationManager manager = context.getBean(AuthenticationManager.class);
 			assertThat(manager)
-					.isEqualTo(context.getBean(TestAuthenticationManagerConfiguration.class).authenticationManager);
-			assertThat(this.outputCapture.toString()).doesNotContain("Using generated security password: ");
+				.isEqualTo(context.getBean(TestAuthenticationManagerConfiguration.class).authenticationManager);
+			assertThat(output).doesNotContain("Using generated security password: ");
 			TestingAuthenticationToken token = new TestingAuthenticationToken("foo", "bar");
 			assertThat(manager.authenticate(token)).isNotNull();
 		});
 	}
 
 	@Test
-	public void defaultUserNotCreatedIfUserDetailsServiceBeanPresent() {
+	void defaultUserNotCreatedIfAuthenticationManagerResolverBeanPresent(CapturedOutput output) {
+		this.contextRunner.withUserConfiguration(TestAuthenticationManagerResolverConfiguration.class)
+			.run((context) -> assertThat(output).doesNotContain("Using generated security password: "));
+	}
+
+	@Test
+	void defaultUserNotCreatedIfUserDetailsServiceBeanPresent(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestUserDetailsServiceConfiguration.class).run((context) -> {
 			UserDetailsService userDetailsService = context.getBean(UserDetailsService.class);
-			assertThat(this.outputCapture.toString()).doesNotContain("Using generated security password: ");
+			assertThat(output).doesNotContain("Using generated security password: ");
 			assertThat(userDetailsService.loadUserByUsername("foo")).isNotNull();
 		});
 	}
 
 	@Test
-	public void defaultUserNotCreatedIfAuthenticationProviderBeanPresent() {
+	void defaultUserNotCreatedIfAuthenticationProviderBeanPresent(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(TestAuthenticationProviderConfiguration.class).run((context) -> {
 			AuthenticationProvider provider = context.getBean(AuthenticationProvider.class);
-			assertThat(this.outputCapture.toString()).doesNotContain("Using generated security password: ");
+			assertThat(output).doesNotContain("Using generated security password: ");
 			TestingAuthenticationToken token = new TestingAuthenticationToken("foo", "bar");
 			assertThat(provider.authenticate(token)).isNotNull();
 		});
 	}
 
 	@Test
-	public void userDetailsServiceWhenPasswordEncoderAbsentAndDefaultPassword() {
+	void defaultUserNotCreatedIfResourceServerWithOpaqueIsUsed() {
+		this.contextRunner.withUserConfiguration(TestConfigWithIntrospectionClient.class).run((context) -> {
+			assertThat(context).hasSingleBean(OpaqueTokenIntrospector.class);
+			assertThat(context).doesNotHaveBean(UserDetailsService.class);
+		});
+	}
+
+	@Test
+	void defaultUserNotCreatedIfResourceServerWithJWTIsUsed() {
+		this.contextRunner.withUserConfiguration(TestConfigWithJwtDecoder.class).run((context) -> {
+			assertThat(context).hasSingleBean(JwtDecoder.class);
+			assertThat(context).doesNotHaveBean(UserDetailsService.class);
+		});
+	}
+
+	@Test
+	void userDetailsServiceWhenPasswordEncoderAbsentAndDefaultPassword() {
 		this.contextRunner.withUserConfiguration(TestSecurityConfiguration.class).run(((context) -> {
 			InMemoryUserDetailsManager userDetailsService = context.getBean(InMemoryUserDetailsManager.class);
 			String password = userDetailsService.loadUserByUsername("user").getPassword();
@@ -110,50 +134,51 @@ public class UserDetailsServiceAutoConfigurationTests {
 	}
 
 	@Test
-	public void userDetailsServiceWhenPasswordEncoderAbsentAndRawPassword() {
+	void userDetailsServiceWhenPasswordEncoderAbsentAndRawPassword() {
 		testPasswordEncoding(TestSecurityConfiguration.class, "secret", "{noop}secret");
 	}
 
 	@Test
-	public void userDetailsServiceWhenPasswordEncoderAbsentAndEncodedPassword() {
+	void userDetailsServiceWhenPasswordEncoderAbsentAndEncodedPassword() {
 		String password = "{bcrypt}$2a$10$sCBi9fy9814vUPf2ZRbtp.fR5/VgRk2iBFZ.ypu5IyZ28bZgxrVDa";
 		testPasswordEncoding(TestSecurityConfiguration.class, password, password);
 	}
 
 	@Test
-	public void userDetailsServiceWhenPasswordEncoderBeanPresent() {
+	void userDetailsServiceWhenPasswordEncoderBeanPresent() {
 		testPasswordEncoding(TestConfigWithPasswordEncoder.class, "secret", "secret");
 	}
 
 	@Test
-	public void userDetailsServiceWhenClientRegistrationRepositoryBeanPresent() {
+	void userDetailsServiceWhenClientRegistrationRepositoryBeanPresent() {
 		this.contextRunner.withUserConfiguration(TestConfigWithClientRegistrationRepository.class)
-				.run(((context) -> assertThat(context).doesNotHaveBean(InMemoryUserDetailsManager.class)));
+			.run(((context) -> assertThat(context).doesNotHaveBean(InMemoryUserDetailsManager.class)));
 	}
 
 	@Test
-	public void generatedPasswordShouldNotBePrintedIfAuthenticationManagerBuilderIsUsed() {
-		this.contextRunner.withUserConfiguration(TestConfigWithAuthenticationManagerBuilder.class)
-				.run(((context) -> assertThat(this.outputCapture.toString())
-						.doesNotContain("Using generated security password: ")));
+	void userDetailsServiceWhenRelyingPartyRegistrationRepositoryBeanPresent() {
+		this.contextRunner
+			.withBean(RelyingPartyRegistrationRepository.class, () -> mock(RelyingPartyRegistrationRepository.class))
+			.run(((context) -> assertThat(context).doesNotHaveBean(InMemoryUserDetailsManager.class)));
 	}
 
 	private void testPasswordEncoding(Class<?> configClass, String providedPassword, String expectedPassword) {
 		this.contextRunner.withUserConfiguration(configClass)
-				.withPropertyValues("spring.security.user.password=" + providedPassword).run(((context) -> {
-					InMemoryUserDetailsManager userDetailsService = context.getBean(InMemoryUserDetailsManager.class);
-					String password = userDetailsService.loadUserByUsername("user").getPassword();
-					assertThat(password).isEqualTo(expectedPassword);
-				}));
+			.withPropertyValues("spring.security.user.password=" + providedPassword)
+			.run(((context) -> {
+				InMemoryUserDetailsManager userDetailsService = context.getBean(InMemoryUserDetailsManager.class);
+				String password = userDetailsService.loadUserByUsername("user").getPassword();
+				assertThat(password).isEqualTo(expectedPassword);
+			}));
 	}
 
-	@Configuration
-	protected static class TestAuthenticationManagerConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class TestAuthenticationManagerConfiguration {
 
 		private AuthenticationManager authenticationManager;
 
 		@Bean
-		public AuthenticationManager myAuthenticationManager() {
+		AuthenticationManager myAuthenticationManager() {
 			AuthenticationProvider authenticationProvider = new TestingAuthenticationProvider();
 			this.authenticationManager = new ProviderManager(Collections.singletonList(authenticationProvider));
 			return this.authenticationManager;
@@ -161,68 +186,83 @@ public class UserDetailsServiceAutoConfigurationTests {
 
 	}
 
-	@Configuration
-	protected static class TestUserDetailsServiceConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class TestUserDetailsServiceConfiguration {
 
 		@Bean
-		public InMemoryUserDetailsManager myUserDetailsManager() {
+		InMemoryUserDetailsManager myUserDetailsManager() {
 			return new InMemoryUserDetailsManager(User.withUsername("foo").password("bar").roles("USER").build());
 		}
 
 	}
 
-	@Configuration
-	protected static class TestAuthenticationProviderConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class TestAuthenticationProviderConfiguration {
 
 		@Bean
-		public AuthenticationProvider myAuthenticationProvider() {
+		AuthenticationProvider myAuthenticationProvider() {
 			return new TestingAuthenticationProvider();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebSecurity
 	@EnableConfigurationProperties(SecurityProperties.class)
-	protected static class TestSecurityConfiguration {
+	static class TestSecurityConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(TestSecurityConfiguration.class)
-	protected static class TestConfigWithPasswordEncoder {
+	static class TestConfigWithPasswordEncoder {
 
 		@Bean
-		public PasswordEncoder passwordEncoder() {
+		PasswordEncoder passwordEncoder() {
 			return mock(PasswordEncoder.class);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(TestSecurityConfiguration.class)
-	protected static class TestConfigWithClientRegistrationRepository {
+	static class TestConfigWithClientRegistrationRepository {
 
 		@Bean
-		public ClientRegistrationRepository clientRegistrationRepository() {
+		ClientRegistrationRepository clientRegistrationRepository() {
 			return mock(ClientRegistrationRepository.class);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(TestSecurityConfiguration.class)
-	protected static class TestConfigWithAuthenticationManagerBuilder {
+	static class TestConfigWithJwtDecoder {
 
 		@Bean
-		public WebSecurityConfigurerAdapter webSecurityConfigurerAdapter() {
-			return new WebSecurityConfigurerAdapter() {
-				@Override
-				protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-					auth.inMemoryAuthentication().withUser("hero").password("{noop}hero").roles("HERO", "USER").and()
-							.withUser("user").password("{noop}user").roles("USER");
-				}
-			};
+		JwtDecoder jwtDecoder() {
+			return mock(JwtDecoder.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(TestSecurityConfiguration.class)
+	static class TestConfigWithIntrospectionClient {
+
+		@Bean
+		OpaqueTokenIntrospector introspectionClient() {
+			return mock(OpaqueTokenIntrospector.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestAuthenticationManagerResolverConfiguration {
+
+		@Bean
+		AuthenticationManagerResolver<?> authenticationManagerResolver() {
+			return mock(AuthenticationManagerResolver.class);
 		}
 
 	}

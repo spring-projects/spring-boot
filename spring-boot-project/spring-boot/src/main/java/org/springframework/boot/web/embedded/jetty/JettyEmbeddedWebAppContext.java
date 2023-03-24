@@ -32,7 +32,7 @@ class JettyEmbeddedWebAppContext extends WebAppContext {
 		return new JettyEmbeddedServletHandler();
 	}
 
-	public void deferredInitialize() throws Exception {
+	void deferredInitialize() throws Exception {
 		((JettyEmbeddedServletHandler) getServletHandler()).deferredInitialize();
 	}
 
@@ -42,7 +42,7 @@ class JettyEmbeddedWebAppContext extends WebAppContext {
 		public void initialize() throws Exception {
 		}
 
-		public void deferredInitialize() throws Exception {
+		void deferredInitialize() throws Exception {
 			super.initialize();
 		}
 

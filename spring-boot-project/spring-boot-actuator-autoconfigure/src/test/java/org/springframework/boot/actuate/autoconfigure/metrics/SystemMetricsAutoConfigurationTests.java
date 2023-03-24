@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,18 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.Collections;
+
+import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
 import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
 import io.micrometer.core.instrument.binder.system.UptimeMetrics;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
+import org.springframework.boot.actuate.metrics.system.DiskSpaceMetricsBinder;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -34,94 +40,120 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Chris Bono
  */
-public class SystemMetricsAutoConfigurationTests {
+class SystemMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(SystemMetricsAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(SystemMetricsAutoConfiguration.class));
 
 	@Test
-	public void autoConfiguresUptimeMetrics() {
+	void autoConfiguresUptimeMetrics() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(UptimeMetrics.class));
 	}
 
 	@Test
-	@Deprecated
-	public void allowsUptimeMetricsToBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.binders.uptime.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(UptimeMetrics.class));
+	void allowsCustomUptimeMetricsToBeUsed() {
+		this.contextRunner.withUserConfiguration(CustomUptimeMetricsConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(UptimeMetrics.class).hasBean("customUptimeMetrics"));
 	}
 
 	@Test
-	public void allowsCustomUptimeMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomUptimeMetricsConfiguration.class).run(
-				(context) -> assertThat(context).hasSingleBean(UptimeMetrics.class).hasBean("customUptimeMetrics"));
-	}
-
-	@Test
-	public void autoConfiguresProcessorMetrics() {
+	void autoConfiguresProcessorMetrics() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class));
 	}
 
 	@Test
-	@Deprecated
-	public void allowsProcessorMetricsToBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.binders.processor.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(ProcessorMetrics.class));
-	}
-
-	@Test
-	public void allowsCustomProcessorMetricsToBeUsed() {
+	void allowsCustomProcessorMetricsToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomProcessorMetricsConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class)
-						.hasBean("customProcessorMetrics"));
+			.run((context) -> assertThat(context).hasSingleBean(ProcessorMetrics.class)
+				.hasBean("customProcessorMetrics"));
 	}
 
 	@Test
-	public void autoConfiguresFileDescriptorMetrics() {
+	void autoConfiguresFileDescriptorMetrics() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(FileDescriptorMetrics.class));
 	}
 
 	@Test
-	@Deprecated
-	public void allowsFileDescriptorMetricsToBeDisabled() {
-		this.contextRunner.withPropertyValues("management.metrics.binders.files.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(FileDescriptorMetrics.class));
+	void allowsCustomFileDescriptorMetricsToBeUsed() {
+		this.contextRunner.withUserConfiguration(CustomFileDescriptorMetricsConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(FileDescriptorMetrics.class)
+				.hasBean("customFileDescriptorMetrics"));
 	}
 
 	@Test
-	public void allowsCustomFileDescriptorMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomFileDescriptorMetricsConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(FileDescriptorMetrics.class)
-						.hasBean("customFileDescriptorMetrics"));
+	void autoConfiguresDiskSpaceMetrics() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(DiskSpaceMetricsBinder.class));
 	}
 
-	@Configuration
+	@Test
+	void allowsCustomDiskSpaceMetricsToBeUsed() {
+		this.contextRunner.withUserConfiguration(CustomDiskSpaceMetricsConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(DiskSpaceMetricsBinder.class)
+				.hasBean("customDiskSpaceMetrics"));
+	}
+
+	@Test
+	void diskSpaceMetricsUsesDefaultPath() {
+		this.contextRunner.run((context) -> assertThat(context).hasBean("diskSpaceMetrics")
+			.getBean(DiskSpaceMetricsBinder.class)
+			.hasFieldOrPropertyWithValue("paths", Collections.singletonList(new File("."))));
+	}
+
+	@Test
+	void allowsDiskSpaceMetricsPathToBeConfiguredWithSinglePath() {
+		this.contextRunner.withPropertyValues("management.metrics.system.diskspace.paths:..")
+			.run((context) -> assertThat(context).hasBean("diskSpaceMetrics")
+				.getBean(DiskSpaceMetricsBinder.class)
+				.hasFieldOrPropertyWithValue("paths", Collections.singletonList(new File(".."))));
+	}
+
+	@Test
+	void allowsDiskSpaceMetricsPathToBeConfiguredWithMultiplePaths() {
+		this.contextRunner.withPropertyValues("management.metrics.system.diskspace.paths:.,..")
+			.run((context) -> assertThat(context).hasBean("diskSpaceMetrics")
+				.getBean(DiskSpaceMetricsBinder.class)
+				.hasFieldOrPropertyWithValue("paths", Arrays.asList(new File("."), new File(".."))));
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class CustomUptimeMetricsConfiguration {
 
 		@Bean
-		public UptimeMetrics customUptimeMetrics() {
+		UptimeMetrics customUptimeMetrics() {
 			return new UptimeMetrics();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomProcessorMetricsConfiguration {
 
 		@Bean
-		public ProcessorMetrics customProcessorMetrics() {
+		ProcessorMetrics customProcessorMetrics() {
 			return new ProcessorMetrics();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomFileDescriptorMetricsConfiguration {
 
 		@Bean
-		public FileDescriptorMetrics customFileDescriptorMetrics() {
+		FileDescriptorMetrics customFileDescriptorMetrics() {
 			return new FileDescriptorMetrics();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomDiskSpaceMetricsConfiguration {
+
+		@Bean
+		DiskSpaceMetricsBinder customDiskSpaceMetrics() {
+			return new DiskSpaceMetricsBinder(Collections.singletonList(new File(System.getProperty("user.dir"))),
+					Tags.empty());
 		}
 
 	}

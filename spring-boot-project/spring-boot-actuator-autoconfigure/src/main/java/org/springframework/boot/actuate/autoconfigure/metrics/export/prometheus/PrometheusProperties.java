@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,18 +20,26 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.micrometer.prometheus.HistogramFlavor;
+
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.ShutdownOperation;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring metrics export to Prometheus.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring metrics export
+ * to Prometheus.
  *
  * @author Jon Schneider
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.metrics.export.prometheus")
+@ConfigurationProperties(prefix = "management.prometheus.metrics.export")
 public class PrometheusProperties {
+
+	/**
+	 * Whether exporting of metrics to this backend is enabled.
+	 */
+	private boolean enabled = true;
 
 	/**
 	 * Whether to enable publishing descriptions as part of the scrape payload to
@@ -46,6 +54,11 @@ public class PrometheusProperties {
 	private final Pushgateway pushgateway = new Pushgateway();
 
 	/**
+	 * Histogram type for backing DistributionSummary and Timer.
+	 */
+	private HistogramFlavor histogramFlavor = HistogramFlavor.Prometheus;
+
+	/**
 	 * Step size (i.e. reporting frequency) to use.
 	 */
 	private Duration step = Duration.ofMinutes(1);
@@ -58,12 +71,28 @@ public class PrometheusProperties {
 		this.descriptions = descriptions;
 	}
 
+	public HistogramFlavor getHistogramFlavor() {
+		return this.histogramFlavor;
+	}
+
+	public void setHistogramFlavor(HistogramFlavor histogramFlavor) {
+		this.histogramFlavor = histogramFlavor;
+	}
+
 	public Duration getStep() {
 		return this.step;
 	}
 
 	public void setStep(Duration step) {
 		this.step = step;
+	}
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	public Pushgateway getPushgateway() {
@@ -76,14 +105,24 @@ public class PrometheusProperties {
 	public static class Pushgateway {
 
 		/**
-		 * Enable publishing via a Prometheus Pushgateway.
+		 * Enable publishing over a Prometheus Pushgateway.
 		 */
 		private Boolean enabled = false;
 
 		/**
 		 * Base URL for the Pushgateway.
 		 */
-		private String baseUrl = "localhost:9091";
+		private String baseUrl = "http://localhost:9091";
+
+		/**
+		 * Login user of the Prometheus Pushgateway.
+		 */
+		private String username;
+
+		/**
+		 * Login password of the Prometheus Pushgateway.
+		 */
+		private String password;
 
 		/**
 		 * Frequency with which to push metrics.
@@ -119,6 +158,22 @@ public class PrometheusProperties {
 
 		public void setBaseUrl(String baseUrl) {
 			this.baseUrl = baseUrl;
+		}
+
+		public String getUsername() {
+			return this.username;
+		}
+
+		public void setUsername(String username) {
+			this.username = username;
+		}
+
+		public String getPassword() {
+			return this.password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
 		}
 
 		public Duration getPushRate() {

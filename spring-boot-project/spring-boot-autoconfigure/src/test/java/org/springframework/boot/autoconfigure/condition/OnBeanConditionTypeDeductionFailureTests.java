@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,10 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.condition.OnBeanCondition.BeanTypeDeductionException;
-import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,21 +36,20 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Andy Wilkinson
  */
-@RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("jackson-core-*.jar")
-public class OnBeanConditionTypeDeductionFailureTests {
+class OnBeanConditionTypeDeductionFailureTests {
 
 	@Test
-	public void conditionalOnMissingBeanWithDeducedTypeThatIsPartiallyMissingFromClassPath() {
+	void conditionalOnMissingBeanWithDeducedTypeThatIsPartiallyMissingFromClassPath() {
 		assertThatExceptionOfType(Exception.class)
-				.isThrownBy(() -> new AnnotationConfigApplicationContext(ImportingConfiguration.class).close())
-				.satisfies((ex) -> {
-					Throwable beanTypeDeductionException = findNestedCause(ex, BeanTypeDeductionException.class);
-					assertThat(beanTypeDeductionException).hasMessage("Failed to deduce bean type for "
-							+ OnMissingBeanConfiguration.class.getName() + ".objectMapper");
-					assertThat(findNestedCause(beanTypeDeductionException, NoClassDefFoundError.class)).isNotNull();
+			.isThrownBy(() -> new AnnotationConfigApplicationContext(ImportingConfiguration.class).close())
+			.satisfies((ex) -> {
+				Throwable beanTypeDeductionException = findNestedCause(ex, BeanTypeDeductionException.class);
+				assertThat(beanTypeDeductionException).hasMessage("Failed to deduce bean type for "
+						+ OnMissingBeanConfiguration.class.getName() + ".objectMapper");
+				assertThat(findNestedCause(beanTypeDeductionException, NoClassDefFoundError.class)).isNotNull();
 
-				});
+			});
 	}
 
 	private Throwable findNestedCause(Throwable ex, Class<? extends Throwable> target) {
@@ -66,18 +63,18 @@ public class OnBeanConditionTypeDeductionFailureTests {
 		return null;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(OnMissingBeanImportSelector.class)
 	static class ImportingConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class OnMissingBeanConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ObjectMapper objectMapper() {
+		ObjectMapper objectMapper() {
 			return new ObjectMapper();
 		}
 

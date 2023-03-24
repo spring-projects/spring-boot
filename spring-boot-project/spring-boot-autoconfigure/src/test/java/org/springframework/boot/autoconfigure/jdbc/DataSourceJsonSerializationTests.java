@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.ser.SerializerFactory;
 import org.apache.tomcat.jdbc.pool.DataSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.convert.ConversionService;
@@ -50,37 +50,37 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-public class DataSourceJsonSerializationTests {
+class DataSourceJsonSerializationTests {
 
 	@Test
-	public void serializerFactory() throws Exception {
+	void serializerFactory() throws Exception {
 		DataSource dataSource = new DataSource();
 		SerializerFactory factory = BeanSerializerFactory.instance
-				.withSerializerModifier(new GenericSerializerModifier());
+			.withSerializerModifier(new GenericSerializerModifier());
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializerFactory(factory);
 		String value = mapper.writeValueAsString(dataSource);
-		assertThat(value.contains("\"url\":")).isTrue();
+		assertThat(value).contains("\"url\":");
 	}
 
 	@Test
-	public void serializerWithMixin() throws Exception {
+	void serializerWithMixin() throws Exception {
 		DataSource dataSource = new DataSource();
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.addMixIn(DataSource.class, DataSourceJson.class);
 		String value = mapper.writeValueAsString(dataSource);
-		assertThat(value.contains("\"url\":")).isTrue();
-		assertThat(StringUtils.countOccurrencesOf(value, "\"url\"")).isEqualTo(1);
+		assertThat(value).contains("\"url\":");
+		assertThat(StringUtils.countOccurrencesOf(value, "\"url\"")).isOne();
 	}
 
 	@JsonSerialize(using = TomcatDataSourceSerializer.class)
-	protected interface DataSourceJson {
+	interface DataSourceJson {
 
 	}
 
-	protected static class TomcatDataSourceSerializer extends JsonSerializer<DataSource> {
+	static class TomcatDataSourceSerializer extends JsonSerializer<DataSource> {
 
-		private ConversionService conversionService = new DefaultConversionService();
+		private final ConversionService conversionService = new DefaultConversionService();
 
 		@Override
 		public void serialize(DataSource value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
@@ -97,9 +97,9 @@ public class DataSourceJsonSerializationTests {
 
 	}
 
-	protected static class GenericSerializerModifier extends BeanSerializerModifier {
+	static class GenericSerializerModifier extends BeanSerializerModifier {
 
-		private ConversionService conversionService = new DefaultConversionService();
+		private final ConversionService conversionService = new DefaultConversionService();
 
 		@Override
 		public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc,

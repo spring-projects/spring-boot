@@ -1,0 +1,195 @@
+[[howto.logging]]
+== Logging
+Spring Boot has no mandatory logging dependency, except for the Commons Logging API, which is typically provided by Spring Framework's `spring-jcl` module.
+To use https://logback.qos.ch[Logback], you need to include it and `spring-jcl` on the classpath.
+The recommended way to do that is through the starters, which all depend on `spring-boot-starter-logging`.
+For a web application, you need only `spring-boot-starter-web`, since it depends transitively on the logging starter.
+If you use Maven, the following dependency adds logging for you:
+
+[source,xml,indent=0,subs="verbatim"]
+----
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+	</dependency>
+----
+
+Spring Boot has a `LoggingSystem` abstraction that attempts to configure logging based on the content of the classpath.
+If Logback is available, it is the first choice.
+
+If the only change you need to make to logging is to set the levels of various loggers, you can do so in `application.properties` by using the "logging.level" prefix, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	logging:
+	  level:
+	    org.springframework.web: "debug"
+	    org.hibernate: "error"
+----
+
+You can also set the location of a file to which to write the log (in addition to the console) by using `logging.file.name`.
+
+To configure the more fine-grained settings of a logging system, you need to use the native configuration format supported by the `LoggingSystem` in question.
+By default, Spring Boot picks up the native configuration from its default location for the system (such as `classpath:logback.xml` for Logback), but you can set the location of the config file by using the configprop:logging.config[] property.
+
+
+
+[[howto.logging.logback]]
+=== Configure Logback for Logging
+If you need to apply customizations to logback beyond those that can be achieved with `application.properties`, you will need to add a standard logback configuration file.
+You can add a `logback.xml` file to the root of your classpath for logback to find.
+You can also use `logback-spring.xml` if you want to use the <<features#features.logging.logback-extensions,Spring Boot Logback extensions>>.
+
+TIP: The Logback documentation has a https://logback.qos.ch/manual/configuration.html[dedicated section that covers configuration] in some detail.
+
+Spring Boot provides a number of logback configurations that can be `included` in your own configuration.
+These includes are designed to allow certain common Spring Boot conventions to be re-applied.
+
+The following files are provided under `org/springframework/boot/logging/logback/`:
+
+* `defaults.xml` - Provides conversion rules, pattern properties and common logger configurations.
+* `console-appender.xml` - Adds a `ConsoleAppender` using the `CONSOLE_LOG_PATTERN`.
+* `file-appender.xml` - Adds a `RollingFileAppender` using the `FILE_LOG_PATTERN` and `ROLLING_FILE_NAME_PATTERN` with appropriate settings.
+
+In addition, a legacy `base.xml` file is provided for compatibility with earlier versions of Spring Boot.
+
+A typical custom `logback.xml` file would look something like this:
+
+[source,xml,indent=0,subs="verbatim"]
+----
+	<?xml version="1.0" encoding="UTF-8"?>
+	<configuration>
+		<include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+		<include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+		<root level="INFO">
+			<appender-ref ref="CONSOLE" />
+		</root>
+		<logger name="org.springframework.web" level="DEBUG"/>
+	</configuration>
+----
+
+Your logback configuration file can also make use of System properties that the `LoggingSystem` takes care of creating for you:
+
+* `$\{PID}`: The current process ID.
+* `$\{LOG_FILE}`: Whether `logging.file.name` was set in Boot's external configuration.
+* `$\{LOG_PATH}`: Whether `logging.file.path` (representing a directory for log files to live in) was set in Boot's external configuration.
+* `$\{LOG_EXCEPTION_CONVERSION_WORD}`: Whether `logging.exception-conversion-word` was set in Boot's external configuration.
+* `$\{ROLLING_FILE_NAME_PATTERN}`: Whether `logging.pattern.rolling-file-name` was set in Boot's external configuration.
+
+Spring Boot also provides some nice ANSI color terminal output on a console (but not in a log file) by using a custom Logback converter.
+See the `CONSOLE_LOG_PATTERN` in the `defaults.xml` configuration for an example.
+
+If Groovy is on the classpath, you should be able to configure Logback with `logback.groovy` as well.
+If present, this setting is given preference.
+
+NOTE: Spring extensions are not supported with Groovy configuration.
+Any `logback-spring.groovy` files will not be detected.
+
+
+
+[[howto.logging.logback.file-only-output]]
+==== Configure Logback for File-only Output
+If you want to disable console logging and write output only to a file, you need a custom `logback-spring.xml` that imports `file-appender.xml` but not `console-appender.xml`, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim"]
+----
+	<?xml version="1.0" encoding="UTF-8"?>
+	<configuration>
+		<include resource="org/springframework/boot/logging/logback/defaults.xml" />
+		<property name="LOG_FILE" value="${LOG_FILE:-${LOG_PATH:-${LOG_TEMP:-${java.io.tmpdir:-/tmp}}/}spring.log}"/>
+		<include resource="org/springframework/boot/logging/logback/file-appender.xml" />
+		<root level="INFO">
+			<appender-ref ref="FILE" />
+		</root>
+	</configuration>
+----
+
+You also need to add `logging.file.name` to your `application.properties` or `application.yaml`, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	logging:
+	  file:
+	    name: "myapplication.log"
+----
+
+
+
+[[howto.logging.log4j]]
+=== Configure Log4j for Logging
+Spring Boot supports https://logging.apache.org/log4j/2.x/[Log4j 2] for logging configuration if it is on the classpath.
+If you use the starters for assembling dependencies, you have to exclude Logback and then include Log4j 2 instead.
+If you do not use the starters, you need to provide (at least) `spring-jcl` in addition to Log4j 2.
+
+The recommended path is through the starters, even though it requires some jiggling.
+The following example shows how to set up the starters in Maven:
+
+[source,xml,indent=0,subs="verbatim"]
+----
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter</artifactId>
+		<exclusions>
+			<exclusion>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-logging</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-log4j2</artifactId>
+	</dependency>
+----
+
+Gradle provides a few different ways to set up the starters.
+One way is to use a {gradle-docs}/resolution_rules.html#sec:module_replacement[module replacement].
+To do so, declare a dependency on the Log4j 2 starter and tell Gradle that any occurrences of the default logging starter should be replaced by the Log4j 2 starter, as shown in the following example:
+
+[source,gradle,indent=0,subs="verbatim"]
+----
+	dependencies {
+		implementation "org.springframework.boot:spring-boot-starter-log4j2"
+		modules {
+			module("org.springframework.boot:spring-boot-starter-logging") {
+				replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
+			}
+		}
+	}
+----
+
+NOTE: The Log4j starters gather together the dependencies for common logging requirements (such as having Tomcat use `java.util.logging` but configuring the output using Log4j 2).
+
+NOTE: To ensure that debug logging performed using `java.util.logging` is routed into Log4j 2, configure its https://logging.apache.org/log4j/2.x/log4j-jul/index.html[JDK logging adapter] by setting the `java.util.logging.manager` system property to `org.apache.logging.log4j.jul.LogManager`.
+
+
+
+[[howto.logging.log4j.yaml-or-json-config]]
+==== Use YAML or JSON to Configure Log4j 2
+In addition to its default XML configuration format, Log4j 2 also supports YAML and JSON configuration files.
+To configure Log4j 2 to use an alternative configuration file format, add the appropriate dependencies to the classpath and name your configuration files to match your chosen file format, as shown in the following example:
+
+[cols="10,75a,15a"]
+|===
+| Format | Dependencies | File names
+
+|YAML
+| `com.fasterxml.jackson.core:jackson-databind` + `com.fasterxml.jackson.dataformat:jackson-dataformat-yaml`
+| `log4j2.yaml` + `log4j2.yml`
+
+|JSON
+| `com.fasterxml.jackson.core:jackson-databind`
+| `log4j2.json` + `log4j2.jsn`
+|===
+
+
+
+[[howto.logging.log4j.composite-configuration]]
+==== Use Composite Configuration to Configure Log4j 2
+Log4j 2 has support for combining multiple configuration files into a single composite configuration.
+To use this support in Spring Boot, configure configprop:logging.log4j2.config.override[] with the locations of one or more secondary configuration files.
+The secondary configuration files will be merged with the primary configuration, whether the primary's source is Spring Boot's defaults, a standard location such as `log4j.xml`, or the location configured by the configprop:logging.config[] property.

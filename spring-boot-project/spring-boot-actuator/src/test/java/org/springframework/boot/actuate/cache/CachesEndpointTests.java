@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.cache.CachesEndpoint.CacheEntry;
+import org.springframework.boot.actuate.cache.CachesEndpoint.CacheEntryDescriptor;
 import org.springframework.boot.actuate.cache.CachesEndpoint.CacheManagerDescriptor;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -34,19 +34,19 @@ import org.springframework.cache.support.SimpleCacheManager;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link CachesEndpoint}.
  *
  * @author Stephane Nicoll
  */
-public class CachesEndpointTests {
+class CachesEndpointTests {
 
 	@Test
-	public void allCachesWithSingleCacheManager() {
+	void allCachesWithSingleCacheManager() {
 		CachesEndpoint endpoint = new CachesEndpoint(
 				Collections.singletonMap("test", new ConcurrentMapCacheManager("a", "b")));
 		Map<String, CacheManagerDescriptor> allDescriptors = endpoint.caches().getCacheManagers();
@@ -58,7 +58,7 @@ public class CachesEndpointTests {
 	}
 
 	@Test
-	public void allCachesWithSeveralCacheManagers() {
+	void allCachesWithSeveralCacheManagers() {
 		Map<String, CacheManager> cacheManagers = new LinkedHashMap<>();
 		cacheManagers.put("test", new ConcurrentMapCacheManager("a", "b"));
 		cacheManagers.put("another", new ConcurrentMapCacheManager("a", "c"));
@@ -70,10 +70,10 @@ public class CachesEndpointTests {
 	}
 
 	@Test
-	public void namedCacheWithSingleCacheManager() {
+	void namedCacheWithSingleCacheManager() {
 		CachesEndpoint endpoint = new CachesEndpoint(
 				Collections.singletonMap("test", new ConcurrentMapCacheManager("b", "a")));
-		CacheEntry entry = endpoint.cache("a", null);
+		CacheEntryDescriptor entry = endpoint.cache("a", null);
 		assertThat(entry).isNotNull();
 		assertThat(entry.getCacheManager()).isEqualTo("test");
 		assertThat(entry.getName()).isEqualTo("a");
@@ -81,78 +81,82 @@ public class CachesEndpointTests {
 	}
 
 	@Test
-	public void namedCacheWithSeveralCacheManagers() {
+	void namedCacheWithSeveralCacheManagers() {
 		Map<String, CacheManager> cacheManagers = new LinkedHashMap<>();
 		cacheManagers.put("test", new ConcurrentMapCacheManager("b", "dupe-cache"));
 		cacheManagers.put("another", new ConcurrentMapCacheManager("c", "dupe-cache"));
 		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
 		assertThatExceptionOfType(NonUniqueCacheException.class).isThrownBy(() -> endpoint.cache("dupe-cache", null))
-				.withMessageContaining("dupe-cache").withMessageContaining("test").withMessageContaining("another");
+			.withMessageContaining("dupe-cache")
+			.withMessageContaining("test")
+			.withMessageContaining("another");
 	}
 
 	@Test
-	public void namedCacheWithUnknownCache() {
+	void namedCacheWithUnknownCache() {
 		CachesEndpoint endpoint = new CachesEndpoint(
 				Collections.singletonMap("test", new ConcurrentMapCacheManager("b", "a")));
-		CacheEntry entry = endpoint.cache("unknown", null);
+		CacheEntryDescriptor entry = endpoint.cache("unknown", null);
 		assertThat(entry).isNull();
 	}
 
 	@Test
-	public void namedCacheWithWrongCacheManager() {
+	void namedCacheWithWrongCacheManager() {
 		Map<String, CacheManager> cacheManagers = new LinkedHashMap<>();
 		cacheManagers.put("test", new ConcurrentMapCacheManager("b", "a"));
 		cacheManagers.put("another", new ConcurrentMapCacheManager("c", "a"));
 		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
-		CacheEntry entry = endpoint.cache("c", "test");
+		CacheEntryDescriptor entry = endpoint.cache("c", "test");
 		assertThat(entry).isNull();
 	}
 
 	@Test
-	public void namedCacheWithSeveralCacheManagersWithCacheManagerFilter() {
+	void namedCacheWithSeveralCacheManagersWithCacheManagerFilter() {
 		Map<String, CacheManager> cacheManagers = new LinkedHashMap<>();
 		cacheManagers.put("test", new ConcurrentMapCacheManager("b", "a"));
 		cacheManagers.put("another", new ConcurrentMapCacheManager("c", "a"));
 		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
-		CacheEntry entry = endpoint.cache("a", "test");
+		CacheEntryDescriptor entry = endpoint.cache("a", "test");
 		assertThat(entry).isNotNull();
 		assertThat(entry.getCacheManager()).isEqualTo("test");
 		assertThat(entry.getName()).isEqualTo("a");
 	}
 
 	@Test
-	public void clearAllCaches() {
+	void clearAllCaches() {
 		Cache a = mockCache("a");
 		Cache b = mockCache("b");
 		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap("test", cacheManager(a, b)));
 		endpoint.clearCaches();
-		verify(a).clear();
-		verify(b).clear();
+		then(a).should().clear();
+		then(b).should().clear();
 	}
 
 	@Test
-	public void clearCache() {
+	void clearCache() {
 		Cache a = mockCache("a");
 		Cache b = mockCache("b");
 		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap("test", cacheManager(a, b)));
 		assertThat(endpoint.clearCache("a", null)).isTrue();
-		verify(a).clear();
-		verify(b, never()).clear();
+		then(a).should().clear();
+		then(b).should(never()).clear();
 	}
 
 	@Test
-	public void clearCacheWithSeveralCacheManagers() {
+	void clearCacheWithSeveralCacheManagers() {
 		Map<String, CacheManager> cacheManagers = new LinkedHashMap<>();
 		cacheManagers.put("test", cacheManager(mockCache("dupe-cache"), mockCache("b")));
 		cacheManagers.put("another", cacheManager(mockCache("dupe-cache")));
 		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
 		assertThatExceptionOfType(NonUniqueCacheException.class)
-				.isThrownBy(() -> endpoint.clearCache("dupe-cache", null)).withMessageContaining("dupe-cache")
-				.withMessageContaining("test").withMessageContaining("another");
+			.isThrownBy(() -> endpoint.clearCache("dupe-cache", null))
+			.withMessageContaining("dupe-cache")
+			.withMessageContaining("test")
+			.withMessageContaining("another");
 	}
 
 	@Test
-	public void clearCacheWithSeveralCacheManagersWithCacheManagerFilter() {
+	void clearCacheWithSeveralCacheManagersWithCacheManagerFilter() {
 		Map<String, CacheManager> cacheManagers = new LinkedHashMap<>();
 		Cache a = mockCache("a");
 		Cache b = mockCache("b");
@@ -161,25 +165,25 @@ public class CachesEndpointTests {
 		cacheManagers.put("another", cacheManager(anotherA));
 		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
 		assertThat(endpoint.clearCache("a", "another")).isTrue();
-		verify(a, never()).clear();
-		verify(anotherA).clear();
-		verify(b, never()).clear();
+		then(a).should(never()).clear();
+		then(anotherA).should().clear();
+		then(b).should(never()).clear();
 	}
 
 	@Test
-	public void clearCacheWithUnknownCache() {
+	void clearCacheWithUnknownCache() {
 		Cache a = mockCache("a");
 		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap("test", cacheManager(a)));
 		assertThat(endpoint.clearCache("unknown", null)).isFalse();
-		verify(a, never()).clear();
+		then(a).should(never()).clear();
 	}
 
 	@Test
-	public void clearCacheWithUnknownCacheManager() {
+	void clearCacheWithUnknownCacheManager() {
 		Cache a = mockCache("a");
 		CachesEndpoint endpoint = new CachesEndpoint(Collections.singletonMap("test", cacheManager(a)));
 		assertThat(endpoint.clearCache("a", "unknown")).isFalse();
-		verify(a, never()).clear();
+		then(a).should(never()).clear();
 	}
 
 	private CacheManager cacheManager(Cache... caches) {

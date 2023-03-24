@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,14 +40,15 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
- * {@link ManagementContextConfiguration} for Spring MVC infrastructure when a separate
- * management context with a web server running on a different port is required.
+ * {@link ManagementContextConfiguration @ManagementContextConfiguration} for Spring MVC
+ * infrastructure when a separate management context with a web server running on a
+ * different port is required.
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-@ManagementContextConfiguration(ManagementContextType.CHILD)
+@ManagementContextConfiguration(value = ManagementContextType.CHILD, proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(DispatcherServlet.class)
 @EnableWebMvc
@@ -60,18 +61,18 @@ class WebMvcEndpointChildContextConfiguration {
 	 */
 	@Bean
 	@ConditionalOnBean(ErrorAttributes.class)
-	public ManagementErrorEndpoint errorEndpoint(ErrorAttributes errorAttributes) {
-		return new ManagementErrorEndpoint(errorAttributes);
+	ManagementErrorEndpoint errorEndpoint(ErrorAttributes errorAttributes, ServerProperties serverProperties) {
+		return new ManagementErrorEndpoint(errorAttributes, serverProperties.getError());
 	}
 
 	@Bean
 	@ConditionalOnBean(ErrorAttributes.class)
-	public ManagementErrorPageCustomizer managementErrorPageCustomizer(ServerProperties serverProperties) {
+	ManagementErrorPageCustomizer managementErrorPageCustomizer(ServerProperties serverProperties) {
 		return new ManagementErrorPageCustomizer(serverProperties);
 	}
 
 	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
-	public DispatcherServlet dispatcherServlet() {
+	DispatcherServlet dispatcherServlet() {
 		DispatcherServlet dispatcherServlet = new DispatcherServlet();
 		// Ensure the parent configuration does not leak down to us
 		dispatcherServlet.setDetectAllHandlerAdapters(false);
@@ -82,28 +83,28 @@ class WebMvcEndpointChildContextConfiguration {
 	}
 
 	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
-	public DispatcherServletRegistrationBean dispatcherServletRegistrationBean(DispatcherServlet dispatcherServlet) {
+	DispatcherServletRegistrationBean dispatcherServletRegistrationBean(DispatcherServlet dispatcherServlet) {
 		return new DispatcherServletRegistrationBean(dispatcherServlet, "/");
 	}
 
 	@Bean(name = DispatcherServlet.HANDLER_MAPPING_BEAN_NAME)
-	public CompositeHandlerMapping compositeHandlerMapping() {
+	CompositeHandlerMapping compositeHandlerMapping() {
 		return new CompositeHandlerMapping();
 	}
 
 	@Bean(name = DispatcherServlet.HANDLER_ADAPTER_BEAN_NAME)
-	public CompositeHandlerAdapter compositeHandlerAdapter(ListableBeanFactory beanFactory) {
+	CompositeHandlerAdapter compositeHandlerAdapter(ListableBeanFactory beanFactory) {
 		return new CompositeHandlerAdapter(beanFactory);
 	}
 
 	@Bean(name = DispatcherServlet.HANDLER_EXCEPTION_RESOLVER_BEAN_NAME)
-	public CompositeHandlerExceptionResolver compositeHandlerExceptionResolver() {
+	CompositeHandlerExceptionResolver compositeHandlerExceptionResolver() {
 		return new CompositeHandlerExceptionResolver();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean({ RequestContextListener.class, RequestContextFilter.class })
-	public RequestContextFilter requestContextFilter() {
+	RequestContextFilter requestContextFilter() {
 		return new OrderedRequestContextFilter();
 	}
 
@@ -111,7 +112,7 @@ class WebMvcEndpointChildContextConfiguration {
 	 * {@link WebServerFactoryCustomizer} to add an {@link ErrorPage} so that the
 	 * {@link ManagementErrorEndpoint} can be used.
 	 */
-	private static class ManagementErrorPageCustomizer
+	static class ManagementErrorPageCustomizer
 			implements WebServerFactoryCustomizer<ConfigurableServletWebServerFactory>, Ordered {
 
 		private final ServerProperties properties;

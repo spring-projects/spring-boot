@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,25 @@
 
 package org.springframework.boot.maven;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.shared.artifact.filter.collection.ArtifactsFilter;
 import org.apache.maven.shared.artifact.filter.collection.ScopeFilter;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -37,10 +45,13 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-public class DependencyFilterMojoTests {
+class DependencyFilterMojoTests {
+
+	@TempDir
+	static Path temp;
 
 	@Test
-	public void filterDependencies() throws MojoExecutionException {
+	void filterDependencies() throws MojoExecutionException {
 		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(Collections.emptyList(), "com.foo");
 
 		Artifact artifact = createArtifact("com.bar", "one");
@@ -51,7 +62,7 @@ public class DependencyFilterMojoTests {
 	}
 
 	@Test
-	public void filterGroupIdExactMatch() throws MojoExecutionException {
+	void filterGroupIdExactMatch() throws MojoExecutionException {
 		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(Collections.emptyList(), "com.foo");
 
 		Artifact artifact = createArtifact("com.foo.bar", "one");
@@ -62,7 +73,7 @@ public class DependencyFilterMojoTests {
 	}
 
 	@Test
-	public void filterScopeKeepOrder() throws MojoExecutionException {
+	void filterScopeKeepOrder() throws MojoExecutionException {
 		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(Collections.emptyList(), "",
 				new ScopeFilter(null, Artifact.SCOPE_SYSTEM));
 		Artifact one = createArtifact("com.foo", "one");
@@ -73,7 +84,7 @@ public class DependencyFilterMojoTests {
 	}
 
 	@Test
-	public void filterGroupIdKeepOrder() throws MojoExecutionException {
+	void filterGroupIdKeepOrder() throws MojoExecutionException {
 		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(Collections.emptyList(), "com.foo");
 		Artifact one = createArtifact("com.foo", "one");
 		Artifact two = createArtifact("com.bar", "two");
@@ -84,7 +95,7 @@ public class DependencyFilterMojoTests {
 	}
 
 	@Test
-	public void filterExcludeKeepOrder() throws MojoExecutionException {
+	void filterExcludeKeepOrder() throws MojoExecutionException {
 		Exclude exclude = new Exclude();
 		exclude.setGroupId("com.bar");
 		exclude.setArtifactId("two");
@@ -97,18 +108,48 @@ public class DependencyFilterMojoTests {
 		assertThat(artifacts).containsExactly(one, three, four);
 	}
 
+	@Test
+	void excludeByJarType() throws MojoExecutionException {
+		TestableDependencyFilterMojo mojo = new TestableDependencyFilterMojo(Collections.emptyList(), "");
+		Artifact one = createArtifact("com.foo", "one", null, "dependencies-starter");
+		Artifact two = createArtifact("com.bar", "two");
+		Set<Artifact> artifacts = mojo.filterDependencies(one, two);
+		assertThat(artifacts).containsExactly(two);
+	}
+
 	private static Artifact createArtifact(String groupId, String artifactId) {
 		return createArtifact(groupId, artifactId, null);
 	}
 
 	private static Artifact createArtifact(String groupId, String artifactId, String scope) {
+		return createArtifact(groupId, artifactId, scope, null);
+	}
+
+	private static Artifact createArtifact(String groupId, String artifactId, String scope, String jarType) {
 		Artifact a = mock(Artifact.class);
 		given(a.getGroupId()).willReturn(groupId);
 		given(a.getArtifactId()).willReturn(artifactId);
 		if (scope != null) {
 			given(a.getScope()).willReturn(scope);
 		}
+		given(a.getFile()).willReturn(createArtifactFile(jarType));
 		return a;
+	}
+
+	private static File createArtifactFile(String jarType) {
+		Path jarPath = temp.resolve(UUID.randomUUID().toString() + ".jar");
+		Manifest manifest = new Manifest();
+		manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
+		if (jarType != null) {
+			manifest.getMainAttributes().putValue("Spring-Boot-Jar-Type", jarType);
+		}
+		try {
+			new JarOutputStream(new FileOutputStream(jarPath.toFile()), manifest).close();
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+		return jarPath.toFile();
 	}
 
 	private static final class TestableDependencyFilterMojo extends AbstractDependencyFilterMojo {
@@ -122,9 +163,9 @@ public class DependencyFilterMojoTests {
 			this.additionalFilters = additionalFilters;
 		}
 
-		public Set<Artifact> filterDependencies(Artifact... artifacts) throws MojoExecutionException {
+		Set<Artifact> filterDependencies(Artifact... artifacts) throws MojoExecutionException {
 			Set<Artifact> input = new LinkedHashSet<>(Arrays.asList(artifacts));
-			return filterDependencies(input, getFilters(this.additionalFilters));
+			return filterDependencies(input, this.additionalFilters);
 		}
 
 		@Override

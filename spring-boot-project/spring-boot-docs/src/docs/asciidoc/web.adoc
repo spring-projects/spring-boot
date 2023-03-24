@@ -1,0 +1,26 @@
+[[web]]
+= Web
+include::attributes.adoc[]
+
+Spring Boot is well suited for web application development.
+You can create a self-contained HTTP server by using embedded Tomcat, Jetty, Undertow, or Netty.
+Most web applications use the `spring-boot-starter-web` module to get up and running quickly.
+You can also choose to build reactive web applications by using the `spring-boot-starter-webflux` module.
+
+If you have not yet developed a Spring Boot web application, you can follow the "Hello World!" example in the _<<getting-started#getting-started.first-application, Getting started>>_ section.
+
+include::web/servlet.adoc[]
+
+include::web/reactive.adoc[]
+
+include::web/graceful-shutdown.adoc[]
+
+include::web/spring-security.adoc[]
+
+include::web/spring-session.adoc[]
+
+include::web/spring-graphql.adoc[]
+
+include::web/spring-hateoas.adoc[]
+
+include::web/whats-next.adoc[]

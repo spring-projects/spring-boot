@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.loader.jar;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
-import java.io.FilePermission;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -38,7 +37,7 @@ import java.security.Permission;
  */
 final class JarURLConnection extends java.net.JarURLConnection {
 
-	private static ThreadLocal<Boolean> useFastExceptions = new ThreadLocal<>();
+	private static final ThreadLocal<Boolean> useFastExceptions = new ThreadLocal<>();
 
 	private static final FileNotFoundException FILE_NOT_FOUND_EXCEPTION = new FileNotFoundException(
 			"Jar file or entry not found");
@@ -68,11 +67,9 @@ final class JarURLConnection extends java.net.JarURLConnection {
 
 	private static final JarEntryName EMPTY_JAR_ENTRY_NAME = new JarEntryName(new StringSequence(""));
 
-	private static final String READ_ACTION = "read";
-
 	private static final JarURLConnection NOT_FOUND_CONNECTION = JarURLConnection.notFound();
 
-	private final JarFile jarFile;
+	private final AbstractJarFile jarFile;
 
 	private Permission permission;
 
@@ -80,9 +77,9 @@ final class JarURLConnection extends java.net.JarURLConnection {
 
 	private final JarEntryName jarEntryName;
 
-	private JarEntry jarEntry;
+	private java.util.jar.JarEntry jarEntry;
 
-	private JarURLConnection(URL url, JarFile jarFile, JarEntryName jarEntryName) throws IOException {
+	private JarURLConnection(URL url, AbstractJarFile jarFile, JarEntryName jarEntryName) throws IOException {
 		// What we pass to super is ultimately ignored
 		super(EMPTY_JAR_URL);
 		this.url = url;
@@ -105,7 +102,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 	}
 
 	@Override
-	public JarFile getJarFile() throws IOException {
+	public java.util.jar.JarFile getJarFile() throws IOException {
 		connect();
 		return this.jarFile;
 	}
@@ -127,7 +124,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			if (spec.endsWith(SEPARATOR)) {
 				spec = spec.substring(0, spec.length() - SEPARATOR.length());
 			}
-			if (spec.indexOf(SEPARATOR) == -1) {
+			if (!spec.contains(SEPARATOR)) {
 				return new URL(spec);
 			}
 			return new URL("jar:" + spec);
@@ -138,7 +135,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 	}
 
 	@Override
-	public JarEntry getJarEntry() throws IOException {
+	public java.util.jar.JarEntry getJarEntry() throws IOException {
 		if (this.jarEntryName == null || this.jarEntryName.isEmpty()) {
 			return null;
 		}
@@ -163,7 +160,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			throw new IOException("no entry name specified");
 		}
 		connect();
-		InputStream inputStream = (this.jarEntryName.isEmpty() ? this.jarFile.getData().getInputStream()
+		InputStream inputStream = (this.jarEntryName.isEmpty() ? this.jarFile.getInputStream()
 				: this.jarFile.getInputStream(this.jarEntry));
 		if (inputStream == null) {
 			throwFileNotFound(this.jarEntryName, this.jarFile);
@@ -171,7 +168,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 		return inputStream;
 	}
 
-	private void throwFileNotFound(Object entry, JarFile jarFile) throws FileNotFoundException {
+	private void throwFileNotFound(Object entry, AbstractJarFile jarFile) throws FileNotFoundException {
 		if (Boolean.TRUE.equals(useFastExceptions.get())) {
 			throw FILE_NOT_FOUND_EXCEPTION;
 		}
@@ -196,7 +193,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			if (this.jarEntryName.isEmpty()) {
 				return this.jarFile.size();
 			}
-			JarEntry entry = getJarEntry();
+			java.util.jar.JarEntry entry = getJarEntry();
 			return (entry != null) ? (int) entry.getSize() : -1;
 		}
 		catch (IOException ex) {
@@ -221,7 +218,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			throw FILE_NOT_FOUND_EXCEPTION;
 		}
 		if (this.permission == null) {
-			this.permission = new FilePermission(this.jarFile.getRootJarFile().getFile().getPath(), READ_ACTION);
+			this.permission = this.jarFile.getPermission();
 		}
 		return this.permission;
 	}
@@ -232,7 +229,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			return 0;
 		}
 		try {
-			JarEntry entry = getJarEntry();
+			java.util.jar.JarEntry entry = getJarEntry();
 			return (entry != null) ? entry.getTime() : 0;
 		}
 		catch (IOException ex) {
@@ -266,7 +263,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 				&& !jarFile.containsEntry(jarEntryName.toString())) {
 			return NOT_FOUND_CONNECTION;
 		}
-		return new JarURLConnection(url, new JarFile(jarFile), jarEntryName);
+		return new JarURLConnection(url, jarFile.getWrapper(), jarEntryName);
 	}
 
 	private static int indexOfRootSpec(StringSequence file, String pathFromRoot) {
@@ -352,7 +349,7 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			return ((char) ((hi << 4) + lo));
 		}
 
-		public CharSequence toCharSequence() {
+		CharSequence toCharSequence() {
 			return this.name;
 		}
 
@@ -361,11 +358,11 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			return this.name.toString();
 		}
 
-		public boolean isEmpty() {
+		boolean isEmpty() {
 			return this.name.isEmpty();
 		}
 
-		public String getContentType() {
+		String getContentType() {
 			if (this.contentType == null) {
 				this.contentType = deduceContentType();
 			}
@@ -380,11 +377,11 @@ final class JarURLConnection extends java.net.JarURLConnection {
 			return type;
 		}
 
-		public static JarEntryName get(StringSequence spec) {
+		static JarEntryName get(StringSequence spec) {
 			return get(spec, 0);
 		}
 
-		public static JarEntryName get(StringSequence spec, int beginIndex) {
+		static JarEntryName get(StringSequence spec, int beginIndex) {
 			if (spec.length() <= beginIndex) {
 				return EMPTY_JAR_ENTRY_NAME;
 			}

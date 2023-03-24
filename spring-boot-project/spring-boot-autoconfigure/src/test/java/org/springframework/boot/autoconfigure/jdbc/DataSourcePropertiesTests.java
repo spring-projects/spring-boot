@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -30,11 +30,12 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Maciej Walkowiak
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Scott Frederick
  */
-public class DataSourcePropertiesTests {
+class DataSourcePropertiesTests {
 
 	@Test
-	public void determineDriver() {
+	void determineDriver() {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setUrl("jdbc:mysql://mydb");
 		assertThat(properties.getDriverClassName()).isNull();
@@ -42,7 +43,7 @@ public class DataSourcePropertiesTests {
 	}
 
 	@Test
-	public void determineDriverWithExplicitConfig() {
+	void determineDriverWithExplicitConfig() {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setUrl("jdbc:mysql://mydb");
 		properties.setDriverClassName("org.hsqldb.jdbcDriver");
@@ -51,24 +52,45 @@ public class DataSourcePropertiesTests {
 	}
 
 	@Test
-	public void determineUrl() throws Exception {
+	void determineUrlWithoutGenerateUniqueName() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
+		properties.setGenerateUniqueName(false);
 		properties.afterPropertiesSet();
 		assertThat(properties.getUrl()).isNull();
 		assertThat(properties.determineUrl()).isEqualTo(EmbeddedDatabaseConnection.H2.getUrl("testdb"));
 	}
 
 	@Test
-	public void determineUrlWithNoEmbeddedSupport() throws Exception {
+	void determineUrlWithNoEmbeddedSupport() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setBeanClassLoader(new FilteredClassLoader("org.h2", "org.apache.derby", "org.hsqldb"));
 		properties.afterPropertiesSet();
 		assertThatExceptionOfType(DataSourceProperties.DataSourceBeanCreationException.class)
-				.isThrownBy(properties::determineUrl).withMessageContaining("Failed to determine suitable jdbc url");
+			.isThrownBy(properties::determineUrl)
+			.withMessageContaining("Failed to determine suitable jdbc url");
 	}
 
 	@Test
-	public void determineUrlWithExplicitConfig() throws Exception {
+	void determineUrlWithSpecificEmbeddedConnection() throws Exception {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setGenerateUniqueName(false);
+		properties.setEmbeddedDatabaseConnection(EmbeddedDatabaseConnection.HSQLDB);
+		properties.afterPropertiesSet();
+		assertThat(properties.determineUrl()).isEqualTo(EmbeddedDatabaseConnection.HSQLDB.getUrl("testdb"));
+	}
+
+	@Test
+	void whenEmbeddedConnectionIsNoneAndNoUrlIsConfiguredThenDetermineUrlThrows() {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setGenerateUniqueName(false);
+		properties.setEmbeddedDatabaseConnection(EmbeddedDatabaseConnection.NONE);
+		assertThatExceptionOfType(DataSourceProperties.DataSourceBeanCreationException.class)
+			.isThrownBy(properties::determineUrl)
+			.withMessageContaining("Failed to determine suitable jdbc url");
+	}
+
+	@Test
+	void determineUrlWithExplicitConfig() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setUrl("jdbc:mysql://mydb");
 		properties.afterPropertiesSet();
@@ -77,9 +99,8 @@ public class DataSourcePropertiesTests {
 	}
 
 	@Test
-	public void determineUrlWithGenerateUniqueName() throws Exception {
+	void determineUrlWithGenerateUniqueName() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
-		properties.setGenerateUniqueName(true);
 		properties.afterPropertiesSet();
 		assertThat(properties.determineUrl()).isEqualTo(properties.determineUrl());
 
@@ -90,7 +111,7 @@ public class DataSourcePropertiesTests {
 	}
 
 	@Test
-	public void determineUsername() throws Exception {
+	void determineUsername() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.afterPropertiesSet();
 		assertThat(properties.getUsername()).isNull();
@@ -98,7 +119,25 @@ public class DataSourcePropertiesTests {
 	}
 
 	@Test
-	public void determineUsernameWithExplicitConfig() throws Exception {
+	void determineUsernameWhenEmpty() throws Exception {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setUsername("");
+		properties.afterPropertiesSet();
+		assertThat(properties.getUsername()).isEmpty();
+		assertThat(properties.determineUsername()).isEqualTo("sa");
+	}
+
+	@Test
+	void determineUsernameWhenNull() throws Exception {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setUsername(null);
+		properties.afterPropertiesSet();
+		assertThat(properties.getUsername()).isNull();
+		assertThat(properties.determineUsername()).isEqualTo("sa");
+	}
+
+	@Test
+	void determineUsernameWithExplicitConfig() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setUsername("foo");
 		properties.afterPropertiesSet();
@@ -107,15 +146,24 @@ public class DataSourcePropertiesTests {
 	}
 
 	@Test
-	public void determinePassword() throws Exception {
+	void determineUsernameWithNonEmbeddedUrl() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
+		properties.setUrl("jdbc:h2:~/test");
 		properties.afterPropertiesSet();
 		assertThat(properties.getPassword()).isNull();
-		assertThat(properties.determinePassword()).isEqualTo("");
+		assertThat(properties.determineUsername()).isNull();
 	}
 
 	@Test
-	public void determinePasswordWithExplicitConfig() throws Exception {
+	void determinePassword() throws Exception {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.afterPropertiesSet();
+		assertThat(properties.getPassword()).isNull();
+		assertThat(properties.determinePassword()).isEmpty();
+	}
+
+	@Test
+	void determinePasswordWithExplicitConfig() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setPassword("bar");
 		properties.afterPropertiesSet();
@@ -124,21 +172,12 @@ public class DataSourcePropertiesTests {
 	}
 
 	@Test
-	public void determineCredentialsForSchemaScripts() {
+	void determinePasswordWithNonEmbeddedUrl() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
-		properties.setSchemaUsername("foo");
-		properties.setSchemaPassword("bar");
-		assertThat(properties.getSchemaUsername()).isEqualTo("foo");
-		assertThat(properties.getSchemaPassword()).isEqualTo("bar");
-	}
-
-	@Test
-	public void determineCredentialsForDataScripts() {
-		DataSourceProperties properties = new DataSourceProperties();
-		properties.setDataUsername("foo");
-		properties.setDataPassword("bar");
-		assertThat(properties.getDataUsername()).isEqualTo("foo");
-		assertThat(properties.getDataPassword()).isEqualTo("bar");
+		properties.setUrl("jdbc:h2:~/test");
+		properties.afterPropertiesSet();
+		assertThat(properties.getPassword()).isNull();
+		assertThat(properties.determinePassword()).isNull();
 	}
 
 }

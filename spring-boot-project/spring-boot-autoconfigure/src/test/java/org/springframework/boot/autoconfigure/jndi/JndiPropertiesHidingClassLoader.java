@@ -36,7 +36,7 @@ public class JndiPropertiesHidingClassLoader extends ClassLoader {
 	@Override
 	public Enumeration<URL> getResources(String name) throws IOException {
 		if ("jndi.properties".equals(name)) {
-			return Collections.enumeration(Collections.emptyList());
+			return Collections.emptyEnumeration();
 		}
 		return super.getResources(name);
 	}

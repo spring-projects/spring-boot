@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Properties;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
@@ -32,9 +33,7 @@ import org.springframework.boot.info.GitProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.EncodedResource;
@@ -48,7 +47,7 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @author Madhura Bhave
  * @since 1.4.0
  */
-@Configuration
+@AutoConfiguration
 @EnableConfigurationProperties(ProjectInfoProperties.class)
 public class ProjectInfoAutoConfiguration {
 
@@ -95,12 +94,9 @@ public class ProjectInfoAutoConfiguration {
 
 	static class GitResourceAvailableCondition extends SpringBootCondition {
 
-		private final ResourceLoader defaultResourceLoader = new DefaultResourceLoader();
-
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ResourceLoader loader = context.getResourceLoader();
-			loader = (loader != null) ? loader : this.defaultResourceLoader;
 			Environment environment = context.getEnvironment();
 			String location = environment.getProperty("spring.info.git.location");
 			if (location == null) {

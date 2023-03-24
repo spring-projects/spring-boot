@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.security.reactive;
 import java.time.Duration;
 
 import org.assertj.core.api.AssertDelegateTarget;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -43,46 +43,48 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  */
-public class StaticResourceRequestTests {
+class StaticResourceRequestTests {
 
-	private StaticResourceRequest resourceRequest = StaticResourceRequest.INSTANCE;
+	private final StaticResourceRequest resourceRequest = StaticResourceRequest.INSTANCE;
 
 	@Test
-	public void atCommonLocationsShouldMatchCommonLocations() {
+	void atCommonLocationsShouldMatchCommonLocations() {
 		ServerWebExchangeMatcher matcher = this.resourceRequest.atCommonLocations();
 		assertMatcher(matcher).matches("/css/file.css");
 		assertMatcher(matcher).matches("/js/file.js");
 		assertMatcher(matcher).matches("/images/file.css");
 		assertMatcher(matcher).matches("/webjars/file.css");
-		assertMatcher(matcher).matches("/foo/favicon.ico");
+		assertMatcher(matcher).matches("/favicon.ico");
+		assertMatcher(matcher).matches("/favicon.png");
+		assertMatcher(matcher).matches("/icons/icon-48x48.png");
 		assertMatcher(matcher).doesNotMatch("/bar");
 	}
 
 	@Test
-	public void atCommonLocationsWithExcludeShouldNotMatchExcluded() {
+	void atCommonLocationsWithExcludeShouldNotMatchExcluded() {
 		ServerWebExchangeMatcher matcher = this.resourceRequest.atCommonLocations()
-				.excluding(StaticResourceLocation.CSS);
+			.excluding(StaticResourceLocation.CSS);
 		assertMatcher(matcher).doesNotMatch("/css/file.css");
 		assertMatcher(matcher).matches("/js/file.js");
 	}
 
 	@Test
-	public void atLocationShouldMatchLocation() {
+	void atLocationShouldMatchLocation() {
 		ServerWebExchangeMatcher matcher = this.resourceRequest.at(StaticResourceLocation.CSS);
 		assertMatcher(matcher).matches("/css/file.css");
 		assertMatcher(matcher).doesNotMatch("/js/file.js");
 	}
 
 	@Test
-	public void atLocationsFromSetWhenSetIsNullShouldThrowException() {
+	void atLocationsFromSetWhenSetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.at(null))
-				.withMessageContaining("Locations must not be null");
+			.withMessageContaining("Locations must not be null");
 	}
 
 	@Test
-	public void excludeFromSetWhenSetIsNullShouldThrowException() {
+	void excludeFromSetWhenSetIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.resourceRequest.atCommonLocations().excluding(null))
-				.withMessageContaining("Locations must not be null");
+			.withMessageContaining("Locations must not be null");
 	}
 
 	private RequestMatcherAssert assertMatcher(ServerWebExchangeMatcher matcher) {
@@ -91,7 +93,7 @@ public class StaticResourceRequestTests {
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}
 
-	private static class RequestMatcherAssert implements AssertDelegateTarget {
+	static class RequestMatcherAssert implements AssertDelegateTarget {
 
 		private final StaticApplicationContext context;
 
@@ -110,7 +112,8 @@ public class StaticResourceRequestTests {
 
 		private void matches(ServerWebExchange exchange) {
 			assertThat(this.matcher.matches(exchange).block(Duration.ofSeconds(30)).isMatch())
-					.as("Matches " + getRequestPath(exchange)).isTrue();
+				.as("Matches " + getRequestPath(exchange))
+				.isTrue();
 		}
 
 		void doesNotMatch(String path) {
@@ -121,7 +124,8 @@ public class StaticResourceRequestTests {
 
 		private void doesNotMatch(ServerWebExchange exchange) {
 			assertThat(this.matcher.matches(exchange).block(Duration.ofSeconds(30)).isMatch())
-					.as("Does not match " + getRequestPath(exchange)).isFalse();
+				.as("Does not match " + getRequestPath(exchange))
+				.isFalse();
 		}
 
 		private TestHttpWebHandlerAdapter webHandler() {
@@ -136,7 +140,7 @@ public class StaticResourceRequestTests {
 
 	}
 
-	private static class TestHttpWebHandlerAdapter extends HttpWebHandlerAdapter {
+	static class TestHttpWebHandlerAdapter extends HttpWebHandlerAdapter {
 
 		TestHttpWebHandlerAdapter(WebHandler delegate) {
 			super(delegate);

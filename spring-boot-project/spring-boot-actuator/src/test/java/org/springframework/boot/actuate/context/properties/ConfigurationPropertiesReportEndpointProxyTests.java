@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,22 @@
 
 package org.springframework.boot.actuate.context.properties;
 
+import java.util.Collections;
+import java.util.Map;
+
 import javax.sql.DataSource;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
@@ -35,6 +40,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,62 +50,102 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  */
-public class ConfigurationPropertiesReportEndpointProxyTests {
+class ConfigurationPropertiesReportEndpointProxyTests {
 
 	@Test
-	public void testWithProxyClass() {
+	void testWithProxyClass() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withUserConfiguration(Config.class,
 				SqlExecutor.class);
 		contextRunner.run((context) -> {
-			ApplicationConfigurationProperties applicationProperties = context
-					.getBean(ConfigurationPropertiesReportEndpoint.class).configurationProperties();
-			assertThat(applicationProperties.getContexts().get(context.getId()).getBeans().values().stream()
-					.map(ConfigurationPropertiesBeanDescriptor::getPrefix).filter("executor.sql"::equals).findFirst())
-							.isNotEmpty();
+			ConfigurationPropertiesDescriptor applicationProperties = context
+				.getBean(ConfigurationPropertiesReportEndpoint.class)
+				.configurationProperties();
+			assertThat(applicationProperties.getContexts()
+				.get(context.getId())
+				.getBeans()
+				.values()
+				.stream()
+				.map(ConfigurationPropertiesBeanDescriptor::getPrefix)
+				.filter("executor.sql"::equals)
+				.findFirst()).isNotEmpty();
 		});
 	}
 
-	@Configuration
+	@Test
+	void proxiedConstructorBoundPropertiesShouldBeAvailableInReport() {
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withUserConfiguration(ValidatedConfiguration.class)
+			.withPropertyValues("validated.name=baz");
+		contextRunner.run((context) -> {
+			ConfigurationPropertiesDescriptor applicationProperties = context
+				.getBean(ConfigurationPropertiesReportEndpoint.class)
+				.configurationProperties();
+			Map<String, Object> properties = applicationProperties.getContexts()
+				.get(context.getId())
+				.getBeans()
+				.values()
+				.stream()
+				.map(ConfigurationPropertiesBeanDescriptor::getProperties)
+				.findFirst()
+				.get();
+			assertThat(properties).containsEntry("name", "baz");
+		});
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@EnableTransactionManagement(proxyTargetClass = false)
 	@EnableConfigurationProperties
-	public static class Config {
+	static class Config {
 
 		@Bean
-		public ConfigurationPropertiesReportEndpoint endpoint() {
-			return new ConfigurationPropertiesReportEndpoint();
+		ConfigurationPropertiesReportEndpoint endpoint() {
+			return new ConfigurationPropertiesReportEndpoint(Collections.emptyList(), Show.ALWAYS);
 		}
 
 		@Bean
-		public PlatformTransactionManager transactionManager() {
-			return new DataSourceTransactionManager(dataSource());
+		PlatformTransactionManager transactionManager(DataSource dataSource) {
+			return new DataSourceTransactionManager(dataSource);
 		}
 
 		@Bean
-		public DataSource dataSource() {
+		MethodValidationPostProcessor testPostProcessor() {
+			return new MethodValidationPostProcessor();
+		}
+
+		@Bean
+		DataSource dataSource() {
 			return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.HSQL).build();
 		}
 
 	}
 
-	public interface Executor {
+	interface Executor {
 
 		void execute();
 
 	}
 
-	public abstract static class AbstractExecutor implements Executor {
+	abstract static class AbstractExecutor implements Executor {
 
 	}
 
 	@Component
 	@ConfigurationProperties("executor.sql")
-	public static class SqlExecutor extends AbstractExecutor {
+	static class SqlExecutor extends AbstractExecutor {
 
 		@Override
 		@Transactional(propagation = Propagation.REQUIRES_NEW)
 		public void execute() {
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(ValidatedConstructorBindingProperties.class)
+	@Import(Config.class)
+	static class ValidatedConfiguration {
 
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,17 @@
 package org.springframework.boot.configurationprocessor.tests;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepository;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepositoryJsonBuilder;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
+import org.springframework.util.CollectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,22 +36,30 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class ConfigurationProcessorIntegrationTests {
+class ConfigurationProcessorIntegrationTests {
 
 	private static ConfigurationMetadataRepository repository;
 
-	@BeforeClass
-	public static void readMetadata() throws IOException {
-		Resource resource = new ClassPathResource("META-INF/spring-configuration-metadata.json");
-		assertThat(resource.exists()).isTrue();
-		// Make sure the right file is detected
-		assertThat(resource.getURL().toString()).contains("spring-boot-configuration-processor-tests");
-		repository = ConfigurationMetadataRepositoryJsonBuilder.create(resource.getInputStream()).build();
+	@BeforeAll
+	static void readMetadata() throws IOException {
+		repository = ConfigurationMetadataRepositoryJsonBuilder.create(getResource().openStream()).build();
+	}
 
+	private static URL getResource() throws IOException {
+		ClassLoader classLoader = ConfigurationProcessorIntegrationTests.class.getClassLoader();
+		List<URL> urls = new ArrayList<>();
+		CollectionUtils.toIterator(classLoader.getResources("META-INF/spring-configuration-metadata.json"))
+			.forEachRemaining(urls::add);
+		for (URL url : urls) {
+			if (url.toString().contains("spring-boot-configuration-processor-tests")) {
+				return url;
+			}
+		}
+		throw new IllegalStateException("Unable to find correct configuration-metadata resource from " + urls);
 	}
 
 	@Test
-	public void extractTypeFromAnnotatedGetter() {
+	void extractTypeFromAnnotatedGetter() {
 		ConfigurationMetadataProperty property = repository.getAllProperties().get("annotated.name");
 		assertThat(property).isNotNull();
 		assertThat(property.getType()).isEqualTo("java.lang.String");

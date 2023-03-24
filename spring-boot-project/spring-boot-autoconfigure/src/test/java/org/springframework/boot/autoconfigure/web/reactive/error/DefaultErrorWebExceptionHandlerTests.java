@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,94 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.error;
 
-import org.junit.Test;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
+import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
+
+import org.springframework.boot.autoconfigure.web.ErrorProperties;
+import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
+import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
+import org.springframework.boot.web.reactive.error.ErrorAttributes;
+import org.springframework.context.ApplicationContext;
+import org.springframework.http.MediaType;
+import org.springframework.http.codec.HttpMessageReader;
+import org.springframework.http.codec.ServerCodecConfigurer;
+import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
+import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.reactive.function.server.ServerRequest;
+import org.springframework.web.reactive.result.view.View;
+import org.springframework.web.reactive.result.view.ViewResolver;
+import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link AbstractErrorWebExceptionHandler}.
+ * Tests for {@link DefaultErrorWebExceptionHandler}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
+ * @author Scott Frederick
  */
-public class DefaultErrorWebExceptionHandlerTests {
+class DefaultErrorWebExceptionHandlerTests {
 
 	@Test
-	public void disconnectedClientExceptionsMatchesFramework() {
+	void disconnectedClientExceptionsMatchesFramework() {
 		Object errorHandlers = ReflectionTestUtils.getField(AbstractErrorWebExceptionHandler.class,
 				"DISCONNECTED_CLIENT_EXCEPTIONS");
 		Object webHandlers = ReflectionTestUtils.getField(HttpWebHandlerAdapter.class,
 				"DISCONNECTED_CLIENT_EXCEPTIONS");
 		assertThat(errorHandlers).isNotNull().isEqualTo(webHandlers);
+	}
+
+	@Test
+	void nonStandardErrorStatusCodeShouldNotFail() {
+		ErrorAttributes errorAttributes = mock(ErrorAttributes.class);
+		given(errorAttributes.getErrorAttributes(any(), any())).willReturn(getErrorAttributes());
+		Resources resourceProperties = new Resources();
+		ErrorProperties errorProperties = new ErrorProperties();
+		ApplicationContext context = new AnnotationConfigReactiveWebApplicationContext();
+		DefaultErrorWebExceptionHandler exceptionHandler = new DefaultErrorWebExceptionHandler(errorAttributes,
+				resourceProperties, errorProperties, context);
+		setupViewResolver(exceptionHandler);
+		ServerWebExchange exchange = MockServerWebExchange
+			.from(MockServerHttpRequest.get("/some-other-path").accept(MediaType.TEXT_HTML));
+		exceptionHandler.handle(exchange, new RuntimeException()).block();
+	}
+
+	private Map<String, Object> getErrorAttributes() {
+		return Collections.singletonMap("status", 498);
+	}
+
+	private void setupViewResolver(DefaultErrorWebExceptionHandler exceptionHandler) {
+		View view = mock(View.class);
+		given(view.render(any(), any(), any())).willReturn(Mono.empty());
+		ViewResolver viewResolver = mock(ViewResolver.class);
+		given(viewResolver.resolveViewName(any(), any())).willReturn(Mono.just(view));
+		exceptionHandler.setViewResolvers(Collections.singletonList(viewResolver));
+	}
+
+	@Test
+	void acceptsTextHtmlShouldNotConsiderMediaAllEvenWithQuality() {
+		ErrorAttributes errorAttributes = mock(ErrorAttributes.class);
+		Resources resourceProperties = new Resources();
+		ErrorProperties errorProperties = new ErrorProperties();
+		ApplicationContext context = new AnnotationConfigReactiveWebApplicationContext();
+		DefaultErrorWebExceptionHandler exceptionHandler = new DefaultErrorWebExceptionHandler(errorAttributes,
+				resourceProperties, errorProperties, context);
+		MediaType allWithQuality = new MediaType(MediaType.ALL.getType(), MediaType.ALL.getSubtype(), 0.9);
+		MockServerWebExchange exchange = MockServerWebExchange
+			.from(MockServerHttpRequest.get("/test").accept(allWithQuality));
+		List<HttpMessageReader<?>> readers = ServerCodecConfigurer.create().getReaders();
+		ServerRequest request = ServerRequest.create(exchange, readers);
+		assertThat(exceptionHandler.acceptsTextHtml().test(request)).isFalse();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 /**
  * {@link ServletWebServerApplicationContext} that accepts annotated classes as input - in
@@ -45,14 +44,14 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
  * <p>
  * Note: In case of multiple {@code @Configuration} classes, later {@code @Bean}
  * definitions will override ones defined in earlier loaded files. This can be leveraged
- * to deliberately override certain bean definitions via an extra Configuration class.
+ * to deliberately override certain bean definitions through an extra Configuration class.
  *
  * @author Phillip Webb
  * @since 1.0.0
  * @see #register(Class...)
  * @see #scan(String...)
  * @see ServletWebServerApplicationContext
- * @see AnnotationConfigWebApplicationContext
+ * @see AnnotationConfigServletWebApplicationContext
  */
 public class AnnotationConfigServletWebServerApplicationContext extends ServletWebServerApplicationContext
 		implements AnnotationConfigRegistry {
@@ -142,8 +141,7 @@ public class AnnotationConfigServletWebServerApplicationContext extends ServletW
 	public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
 		this.reader.setBeanNameGenerator(beanNameGenerator);
 		this.scanner.setBeanNameGenerator(beanNameGenerator);
-		this.getBeanFactory().registerSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR,
-				beanNameGenerator);
+		getBeanFactory().registerSingleton(AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR, beanNameGenerator);
 	}
 
 	/**

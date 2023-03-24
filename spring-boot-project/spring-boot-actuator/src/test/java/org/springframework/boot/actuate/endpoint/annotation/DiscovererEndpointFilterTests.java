@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.endpoint.annotation;
 
 import java.util.Collection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
@@ -37,23 +37,23 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class DiscovererEndpointFilterTests {
+class DiscovererEndpointFilterTests {
 
 	@Test
-	public void createWhenDiscovererIsNullShouldThrowException() {
+	void createWhenDiscovererIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestDiscovererEndpointFilter(null))
-				.withMessageContaining("Discoverer must not be null");
+			.withMessageContaining("Discoverer must not be null");
 	}
 
 	@Test
-	public void matchWhenDiscoveredByDiscovererShouldReturnTrue() {
+	void matchWhenDiscoveredByDiscovererShouldReturnTrue() {
 		DiscovererEndpointFilter filter = new TestDiscovererEndpointFilter(TestDiscovererA.class);
 		DiscoveredEndpoint<?> endpoint = mockDiscoveredEndpoint(TestDiscovererA.class);
 		assertThat(filter.match(endpoint)).isTrue();
 	}
 
 	@Test
-	public void matchWhenNotDiscoveredByDiscovererShouldReturnFalse() {
+	void matchWhenNotDiscoveredByDiscovererShouldReturnFalse() {
 		DiscovererEndpointFilter filter = new TestDiscovererEndpointFilter(TestDiscovererA.class);
 		DiscoveredEndpoint<?> endpoint = mockDiscoveredEndpoint(TestDiscovererB.class);
 		assertThat(filter.match(endpoint)).isFalse();

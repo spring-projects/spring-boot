@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.management;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.management.HeapDumpWebEndpoint;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -28,21 +28,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class HeapDumpWebEndpointAutoConfigurationTests {
+class HeapDumpWebEndpointAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withPropertyValues("management.endpoints.web.exposure.include:*")
-			.withUserConfiguration(HeapDumpWebEndpointAutoConfiguration.class);
+		.withPropertyValues("management.endpoints.web.exposure.include:*")
+		.withUserConfiguration(HeapDumpWebEndpointAutoConfiguration.class);
 
 	@Test
-	public void runShouldCreateIndicator() {
+	void runShouldCreateIndicator() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(HeapDumpWebEndpoint.class));
 	}
 
 	@Test
-	public void runWhenDisabledShouldNotCreateIndicator() {
+	void runWhenDisabledShouldNotCreateIndicator() {
 		this.contextRunner.withPropertyValues("management.endpoint.heapdump.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(HeapDumpWebEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(HeapDumpWebEndpoint.class));
 	}
 
 }

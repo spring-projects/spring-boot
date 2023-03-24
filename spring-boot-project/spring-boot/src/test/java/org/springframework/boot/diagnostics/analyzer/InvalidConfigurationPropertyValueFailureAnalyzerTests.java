@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.diagnostics.analyzer;
 
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.diagnostics.FailureAnalysis;
@@ -34,21 +34,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link InvalidConfigurationPropertyValueFailureAnalyzer}.
  *
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
-public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
+class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
 
 	@Test
-	public void analysisWithNullEnvironment() {
+	void analysisWithNullEnvironment() {
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
 				"test.property", "invalid", "This is not valid.");
-		FailureAnalysis analysis = new InvalidConfigurationPropertyValueFailureAnalyzer().analyze(failure);
+		FailureAnalysis analysis = new InvalidConfigurationPropertyValueFailureAnalyzer(null).analyze(failure);
 		assertThat(analysis).isNull();
 	}
 
 	@Test
-	public void analysisWithKnownProperty() {
+	void analysisWithKnownProperty() {
 		MapPropertySource source = new MapPropertySource("test", Collections.singletonMap("test.property", "invalid"));
 		this.environment.getPropertySources().addFirst(OriginCapablePropertySource.get(source));
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
@@ -57,11 +58,12 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 		assertCommonParts(failure, analysis);
 		assertThat(analysis.getAction()).contains("Review the value of the property with the provided reason.");
 		assertThat(analysis.getDescription()).contains("Validation failed for the following reason")
-				.contains("This is not valid.").doesNotContain("Additionally, this property is also set");
+			.contains("This is not valid.")
+			.doesNotContain("Additionally, this property is also set");
 	}
 
 	@Test
-	public void analysisWithKnownPropertyAndNoReason() {
+	void analysisWithKnownPropertyAndNoReason() {
 		MapPropertySource source = new MapPropertySource("test", Collections.singletonMap("test.property", "invalid"));
 		this.environment.getPropertySources().addFirst(OriginCapablePropertySource.get(source));
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
@@ -69,11 +71,11 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 		FailureAnalysis analysis = performAnalysis(failure);
 		assertThat(analysis.getAction()).contains("Review the value of the property.");
 		assertThat(analysis.getDescription()).contains("No reason was provided.")
-				.doesNotContain("Additionally, this property is also set");
+			.doesNotContain("Additionally, this property is also set");
 	}
 
 	@Test
-	public void analysisWithKnownPropertyAndOtherCandidates() {
+	void analysisWithKnownPropertyAndOtherCandidates() {
 		MapPropertySource source = new MapPropertySource("test", Collections.singletonMap("test.property", "invalid"));
 		MapPropertySource additional = new MapPropertySource("additional",
 				Collections.singletonMap("test.property", "valid"));
@@ -87,27 +89,28 @@ public class InvalidConfigurationPropertyValueFailureAnalyzerTests {
 		assertCommonParts(failure, analysis);
 		assertThat(analysis.getAction()).contains("Review the value of the property with the provided reason.");
 		assertThat(analysis.getDescription())
-				.contains("Additionally, this property is also set in the following " + "property sources:")
-				.contains("In 'additional' with the value 'valid'")
-				.contains("In 'another' with the value 'test' (originating from 'TestOrigin test.property')");
+			.contains("Additionally, this property is also set in the following property sources:")
+			.contains("In 'additional' with the value 'valid'")
+			.contains("In 'another' with the value 'test' (originating from 'TestOrigin test.property')");
 	}
 
 	@Test
-	public void analysisWithUnknownKey() {
+	void analysisWithUnknownKey() {
 		InvalidConfigurationPropertyValueException failure = new InvalidConfigurationPropertyValueException(
 				"test.key.not.defined", "invalid", "This is not valid.");
 		assertThat(performAnalysis(failure)).isNull();
 	}
 
 	private void assertCommonParts(InvalidConfigurationPropertyValueException failure, FailureAnalysis analysis) {
-		assertThat(analysis.getDescription()).contains("test.property").contains("invalid")
-				.contains("TestOrigin test.property");
+		assertThat(analysis.getDescription()).contains("test.property")
+			.contains("invalid")
+			.contains("TestOrigin test.property");
 		assertThat(analysis.getCause()).isSameAs(failure);
 	}
 
 	private FailureAnalysis performAnalysis(InvalidConfigurationPropertyValueException failure) {
-		InvalidConfigurationPropertyValueFailureAnalyzer analyzer = new InvalidConfigurationPropertyValueFailureAnalyzer();
-		analyzer.setEnvironment(this.environment);
+		InvalidConfigurationPropertyValueFailureAnalyzer analyzer = new InvalidConfigurationPropertyValueFailureAnalyzer(
+				this.environment);
 		return analyzer.analyze(failure);
 	}
 

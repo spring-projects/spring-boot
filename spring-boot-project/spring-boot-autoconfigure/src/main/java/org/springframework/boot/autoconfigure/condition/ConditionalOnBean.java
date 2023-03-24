@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,10 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional} that only matches when beans meeting all the specified requirements
- * are already contained in the {@link BeanFactory}. All the requirements must be met for
- * the condition to match, but they do not have to be met by the same bean.
+ * {@link Conditional @Conditional} that only matches when beans meeting all the specified
+ * requirements are already contained in the {@link BeanFactory}. All the requirements
+ * must be met for the condition to match, but they do not have to be met by the same
+ * bean.
  * <p>
  * When placed on a {@code @Bean} method, the bean class defaults to the return type of
  * the factory method:
@@ -79,14 +80,13 @@ public @interface ConditionalOnBean {
 
 	/**
 	 * The annotation type decorating a bean that should be checked. The condition matches
-	 * when all of the annotations specified are defined on beans in the
-	 * {@link BeanFactory}.
+	 * when all the annotations specified are defined on beans in the {@link BeanFactory}.
 	 * @return the class-level annotation types to check
 	 */
 	Class<? extends Annotation>[] annotation() default {};
 
 	/**
-	 * The names of beans to check. The condition matches when all of the bean names
+	 * The names of beans to check. The condition matches when all the bean names
 	 * specified are contained in the {@link BeanFactory}.
 	 * @return the names of beans to check
 	 */

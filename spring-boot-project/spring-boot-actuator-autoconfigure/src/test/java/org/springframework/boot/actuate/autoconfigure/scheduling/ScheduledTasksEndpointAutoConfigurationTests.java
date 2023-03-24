@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.scheduling;
 
 import java.util.Collections;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -33,33 +33,40 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class ScheduledTasksEndpointAutoConfigurationTests {
+class ScheduledTasksEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ScheduledTasksEndpointAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ScheduledTasksEndpointAutoConfiguration.class));
 
 	@Test
-	public void endpointIsAutoConfigured() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ScheduledTasksEndpoint.class));
+	void endpointIsAutoConfigured() {
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=scheduledtasks")
+			.run((context) -> assertThat(context).hasSingleBean(ScheduledTasksEndpoint.class));
 	}
 
 	@Test
-	public void endpointCanBeDisabled() {
+	void endpointNotAutoConfiguredWhenNotExposed() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ScheduledTasksEndpoint.class));
+	}
+
+	@Test
+	void endpointCanBeDisabled() {
 		this.contextRunner.withPropertyValues("management.endpoint.scheduledtasks.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(ScheduledTasksEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(ScheduledTasksEndpoint.class));
 	}
 
 	@Test
-	public void endpointBacksOffWhenUserProvidedEndpointIsPresent() {
-		this.contextRunner.withUserConfiguration(CustomEndpointConfiguration.class).run(
-				(context) -> assertThat(context).hasSingleBean(ScheduledTasksEndpoint.class).hasBean("customEndpoint"));
+	void endpointBacksOffWhenUserProvidedEndpointIsPresent() {
+		this.contextRunner.withUserConfiguration(CustomEndpointConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(ScheduledTasksEndpoint.class)
+				.hasBean("customEndpoint"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class CustomEndpointConfiguration {
 
 		@Bean
-		public CustomEndpoint customEndpoint() {
+		CustomEndpoint customEndpoint() {
 			return new CustomEndpoint();
 		}
 

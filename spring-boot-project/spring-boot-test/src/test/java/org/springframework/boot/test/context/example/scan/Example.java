@@ -16,10 +16,8 @@
 
 package org.springframework.boot.test.context.example.scan;
 
-import org.springframework.boot.test.context.AnnotatedClassFinderTests;
-
 /**
- * Example class used in {@link AnnotatedClassFinderTests}.
+ * Example class used in {@code AnnotatedClassFinderTests}.
  *
  * @author Phillip Webb
  */

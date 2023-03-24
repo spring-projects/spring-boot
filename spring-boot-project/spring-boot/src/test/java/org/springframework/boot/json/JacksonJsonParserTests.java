@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,13 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link JacksonJsonParser}.
@@ -33,7 +34,7 @@ import static org.mockito.Mockito.verify;
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-public class JacksonJsonParserTests extends AbstractJsonParserTests {
+class JacksonJsonParserTests extends AbstractJsonParserTests {
 
 	@Override
 	protected JsonParser getParser() {
@@ -41,10 +42,18 @@ public class JacksonJsonParserTests extends AbstractJsonParserTests {
 	}
 
 	@Test
-	public void instanceWithSpecificObjectMapper() throws IOException {
+	@SuppressWarnings("unchecked")
+	void instanceWithSpecificObjectMapper() throws IOException {
 		ObjectMapper objectMapper = spy(new ObjectMapper());
 		new JacksonJsonParser(objectMapper).parseMap("{}");
-		verify(objectMapper).readValue(eq("{}"), any(TypeReference.class));
+		then(objectMapper).should().readValue(eq("{}"), any(TypeReference.class));
+	}
+
+	@Override
+	@Disabled("Jackson's array handling is no longer stack bound so protection has been removed.")
+	// https://github.com/FasterXML/jackson-databind/commit/8238ab41d0350fb915797c89d46777b4496b74fd
+	void listWithRepeatedOpenArray() throws IOException {
+
 	}
 
 }

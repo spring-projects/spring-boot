@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,16 +25,16 @@ import java.util.concurrent.Callable;
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.distribution.Distribution;
 import org.gradle.api.distribution.DistributionContainer;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.internal.IConventionAware;
 import org.gradle.api.plugins.ApplicationPlugin;
-import org.gradle.api.plugins.ApplicationPluginConvention;
+import org.gradle.api.plugins.JavaApplication;
+import org.gradle.api.tasks.TaskProvider;
 import org.gradle.jvm.application.scripts.TemplateBasedScriptGenerator;
-
-import org.springframework.boot.gradle.tasks.application.CreateBootStartScripts;
+import org.gradle.jvm.application.tasks.CreateStartScripts;
 
 /**
  * Action that is executed in response to the {@link ApplicationPlugin} being applied.
@@ -45,38 +45,47 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 
 	@Override
 	public void execute(Project project) {
-		ApplicationPluginConvention applicationConvention = project.getConvention()
-				.getPlugin(ApplicationPluginConvention.class);
+		JavaApplication javaApplication = project.getExtensions().getByType(JavaApplication.class);
 		DistributionContainer distributions = project.getExtensions().getByType(DistributionContainer.class);
 		Distribution distribution = distributions.create("boot");
-		if (distribution instanceof IConventionAware) {
-			((IConventionAware) distribution).getConventionMapping().map("baseName",
-					() -> applicationConvention.getApplicationName() + "-boot");
-		}
-		CreateBootStartScripts bootStartScripts = project.getTasks().create("bootStartScripts",
-				CreateBootStartScripts.class);
-		bootStartScripts.setDescription(
-				"Generates OS-specific start scripts to run the" + " project as a Spring Boot application.");
-		((TemplateBasedScriptGenerator) bootStartScripts.getUnixStartScriptGenerator())
-				.setTemplate(project.getResources().getText().fromString(loadResource("/unixStartScript.txt")));
-		((TemplateBasedScriptGenerator) bootStartScripts.getWindowsStartScriptGenerator())
-				.setTemplate(project.getResources().getText().fromString(loadResource("/windowsStartScript.txt")));
-		project.getConfigurations().all((configuration) -> {
-			if ("bootArchives".equals(configuration.getName())) {
-				CopySpec libCopySpec = project.copySpec().into("lib")
-						.from((Callable<FileCollection>) () -> configuration.getArtifacts().getFiles());
-				libCopySpec.setFileMode(0644);
-				distribution.getContents().with(libCopySpec);
-				bootStartScripts.setClasspath(configuration.getArtifacts().getFiles());
-			}
-		});
-		bootStartScripts.getConventionMapping().map("outputDir", () -> new File(project.getBuildDir(), "bootScripts"));
-		bootStartScripts.getConventionMapping().map("applicationName", applicationConvention::getApplicationName);
-		bootStartScripts.getConventionMapping().map("defaultJvmOpts",
-				applicationConvention::getApplicationDefaultJvmArgs);
+		distribution.getDistributionBaseName()
+			.convention((project.provider(() -> javaApplication.getApplicationName() + "-boot")));
+		TaskProvider<CreateStartScripts> bootStartScripts = project.getTasks()
+			.register("bootStartScripts", CreateStartScripts.class,
+					(task) -> configureCreateStartScripts(project, javaApplication, distribution, task));
 		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
 		binCopySpec.setFileMode(0755);
 		distribution.getContents().with(binCopySpec);
+	}
+
+	private void configureCreateStartScripts(Project project, JavaApplication javaApplication,
+			Distribution distribution, CreateStartScripts createStartScripts) {
+		createStartScripts
+			.setDescription("Generates OS-specific start scripts to run the project as a Spring Boot application.");
+		((TemplateBasedScriptGenerator) createStartScripts.getUnixStartScriptGenerator())
+			.setTemplate(project.getResources().getText().fromString(loadResource("/unixStartScript.txt")));
+		((TemplateBasedScriptGenerator) createStartScripts.getWindowsStartScriptGenerator())
+			.setTemplate(project.getResources().getText().fromString(loadResource("/windowsStartScript.txt")));
+		project.getConfigurations().all((configuration) -> {
+			if ("bootArchives".equals(configuration.getName())) {
+				distribution.getContents().with(artifactFilesToLibCopySpec(project, configuration));
+				createStartScripts.setClasspath(configuration.getArtifacts().getFiles());
+			}
+		});
+		createStartScripts.getConventionMapping()
+			.map("outputDir", () -> new File(project.getBuildDir(), "bootScripts"));
+		createStartScripts.getConventionMapping().map("applicationName", javaApplication::getApplicationName);
+		createStartScripts.getConventionMapping().map("defaultJvmOpts", javaApplication::getApplicationDefaultJvmArgs);
+	}
+
+	private CopySpec artifactFilesToLibCopySpec(Project project, Configuration configuration) {
+		CopySpec copySpec = project.copySpec().into("lib").from(artifactFiles(configuration));
+		copySpec.setFileMode(0644);
+		return copySpec;
+	}
+
+	private Callable<FileCollection> artifactFiles(Configuration configuration) {
+		return () -> configuration.getArtifacts().getFiles();
 	}
 
 	@Override
@@ -87,7 +96,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 	private String loadResource(String name) {
 		try (InputStreamReader reader = new InputStreamReader(getClass().getResourceAsStream(name))) {
 			char[] buffer = new char[4096];
-			int read = 0;
+			int read;
 			StringWriter writer = new StringWriter();
 			while ((read = reader.read(buffer)) > 0) {
 				writer.write(buffer, 0, read);

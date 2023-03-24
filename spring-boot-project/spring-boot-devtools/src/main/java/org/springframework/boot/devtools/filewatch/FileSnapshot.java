@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,14 +37,14 @@ class FileSnapshot {
 
 	FileSnapshot(File file) {
 		Assert.notNull(file, "File must not be null");
-		Assert.isTrue(file.isFile() || !file.exists(), "File must not be a folder");
+		Assert.isTrue(file.isFile() || !file.exists(), "File must not be a directory");
 		this.file = file;
 		this.exists = file.exists();
 		this.length = file.length();
 		this.lastModified = file.lastModified();
 	}
 
-	public File getFile() {
+	File getFile() {
 		return this.file;
 	}
 
@@ -56,8 +56,7 @@ class FileSnapshot {
 		if (obj == null) {
 			return false;
 		}
-		if (obj instanceof FileSnapshot) {
-			FileSnapshot other = (FileSnapshot) obj;
+		if (obj instanceof FileSnapshot other) {
 			boolean equals = this.file.equals(other.file);
 			equals = equals && this.exists == other.exists;
 			equals = equals && this.length == other.length;

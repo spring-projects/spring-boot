@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,18 @@
 
 package org.springframework.boot.test.autoconfigure.data.neo4j;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import java.time.Duration;
+
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.Neo4jContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.testsupport.testcontainers.SkippableContainer;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,31 +37,26 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Artsiom Yudovin
  */
-@RunWith(SpringRunner.class)
-@ContextConfiguration(initializers = DataNeo4jTestPropertiesIntegrationTests.Initializer.class)
+@Testcontainers(disabledWithoutDocker = true)
 @DataNeo4jTest(properties = "spring.profiles.active=test")
-public class DataNeo4jTestPropertiesIntegrationTests {
+class DataNeo4jTestPropertiesIntegrationTests {
 
-	@ClassRule
-	public static SkippableContainer<Neo4jContainer<?>> neo4j = new SkippableContainer<Neo4jContainer<?>>(
-			() -> new Neo4jContainer<>().withAdminPassword(null));
+	@Container
+	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>(DockerImageNames.neo4j()).withoutAuthentication()
+		.withStartupAttempts(5)
+		.withStartupTimeout(Duration.ofMinutes(10));
+
+	@DynamicPropertySource
+	static void neo4jProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.neo4j.uri", neo4j::getBoltUrl);
+	}
 
 	@Autowired
 	private Environment environment;
 
 	@Test
-	public void environmentWithNewProfile() {
+	void environmentWithNewProfile() {
 		assertThat(this.environment.getActiveProfiles()).containsExactly("test");
-	}
-
-	static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-
-		@Override
-		public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues.of("spring.data.neo4j.uri=" + neo4j.getContainer().getBoltUrl())
-					.applyTo(configurableApplicationContext.getEnvironment());
-		}
-
 	}
 
 }

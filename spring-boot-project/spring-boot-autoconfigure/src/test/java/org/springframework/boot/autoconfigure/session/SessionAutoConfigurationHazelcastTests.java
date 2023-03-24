@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,85 +16,108 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.time.Duration;
+
 import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.IMap;
-import org.junit.Test;
+import com.hazelcast.map.IMap;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
-import org.springframework.session.data.redis.RedisOperationsSessionRepository;
-import org.springframework.session.hazelcast.HazelcastFlushMode;
-import org.springframework.session.hazelcast.HazelcastSessionRepository;
-import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
+import org.springframework.session.FlushMode;
+import org.springframework.session.SaveMode;
+import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
+import org.springframework.session.data.redis.RedisIndexedSessionRepository;
+import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
+import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Hazelcast specific tests for {@link SessionAutoConfiguration}.
  *
  * @author Vedran Pavic
  */
-public class SessionAutoConfigurationHazelcastTests extends AbstractSessionAutoConfigurationTests {
+class SessionAutoConfigurationHazelcastTests extends AbstractSessionAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class))
-			.withUserConfiguration(HazelcastConfiguration.class);
+		.withClassLoader(new FilteredClassLoader(JdbcIndexedSessionRepository.class,
+				RedisIndexedSessionRepository.class, MongoIndexedSessionRepository.class))
+		.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class))
+		.withUserConfiguration(HazelcastConfiguration.class);
 
 	@Test
-	public void defaultConfig() {
-		this.contextRunner.withPropertyValues("spring.session.store-type=hazelcast").run(this::validateDefaultConfig);
+	void defaultConfig() {
+		this.contextRunner.run(this::validateDefaultConfig);
 	}
 
 	@Test
-	public void defaultConfigWithUniqueStoreImplementation() {
+	void hazelcastTakesPrecedenceOverMongo() {
 		this.contextRunner
-				.withClassLoader(new FilteredClassLoader(JdbcOperationsSessionRepository.class,
-						RedisOperationsSessionRepository.class, MongoOperationsSessionRepository.class))
-				.run(this::validateDefaultConfig);
+			.withClassLoader(
+					new FilteredClassLoader(RedisIndexedSessionRepository.class, JdbcIndexedSessionRepository.class))
+			.run(this::validateDefaultConfig);
+	}
+
+	@Test
+	void defaultConfigWithCustomTimeout() {
+		this.contextRunner.withPropertyValues("spring.session.timeout=1m").run((context) -> {
+			HazelcastIndexedSessionRepository repository = validateSessionRepository(context,
+					HazelcastIndexedSessionRepository.class);
+			assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", Duration.ofMinutes(1));
+		});
 	}
 
 	private void validateDefaultConfig(AssertableWebApplicationContext context) {
-		validateSessionRepository(context, HazelcastSessionRepository.class);
+		HazelcastIndexedSessionRepository repository = validateSessionRepository(context,
+				HazelcastIndexedSessionRepository.class);
+		assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval",
+				new ServerProperties().getServlet().getSession().getTimeout());
 		HazelcastInstance hazelcastInstance = context.getBean(HazelcastInstance.class);
-		verify(hazelcastInstance, times(1)).getMap("spring:session:sessions");
+		then(hazelcastInstance).should().getMap("spring:session:sessions");
 	}
 
 	@Test
-	public void customMapName() {
-		this.contextRunner.withPropertyValues("spring.session.store-type=hazelcast",
-				"spring.session.hazelcast.map-name=foo:bar:biz").run((context) -> {
-					validateSessionRepository(context, HazelcastSessionRepository.class);
-					HazelcastInstance hazelcastInstance = context.getBean(HazelcastInstance.class);
-					verify(hazelcastInstance, times(1)).getMap("foo:bar:biz");
-				});
+	void customMapName() {
+		this.contextRunner.withPropertyValues("spring.session.hazelcast.map-name=foo:bar:biz").run((context) -> {
+			validateSessionRepository(context, HazelcastIndexedSessionRepository.class);
+			HazelcastInstance hazelcastInstance = context.getBean(HazelcastInstance.class);
+			then(hazelcastInstance).should().getMap("foo:bar:biz");
+		});
 	}
 
 	@Test
-	public void customFlushMode() {
-		this.contextRunner.withPropertyValues("spring.session.store-type=hazelcast",
-				"spring.session.hazelcast.flush-mode=immediate").run((context) -> {
-					HazelcastSessionRepository repository = validateSessionRepository(context,
-							HazelcastSessionRepository.class);
-					assertThat(repository).hasFieldOrPropertyWithValue("hazelcastFlushMode",
-							HazelcastFlushMode.IMMEDIATE);
-				});
+	void customFlushMode() {
+		this.contextRunner.withPropertyValues("spring.session.hazelcast.flush-mode=immediate").run((context) -> {
+			HazelcastIndexedSessionRepository repository = validateSessionRepository(context,
+					HazelcastIndexedSessionRepository.class);
+			assertThat(repository).hasFieldOrPropertyWithValue("flushMode", FlushMode.IMMEDIATE);
+		});
 	}
 
-	@Configuration
+	@Test
+	void customSaveMode() {
+		this.contextRunner.withPropertyValues("spring.session.hazelcast.save-mode=on-get-attribute").run((context) -> {
+			HazelcastIndexedSessionRepository repository = validateSessionRepository(context,
+					HazelcastIndexedSessionRepository.class);
+			assertThat(repository).hasFieldOrPropertyWithValue("saveMode", SaveMode.ON_GET_ATTRIBUTE);
+		});
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class HazelcastConfiguration {
 
 		@Bean
 		@SuppressWarnings("unchecked")
-		public HazelcastInstance hazelcastInstance() {
+		HazelcastInstance hazelcastInstance() {
 			IMap<Object, Object> map = mock(IMap.class);
 			HazelcastInstance mock = mock(HazelcastInstance.class);
 			given(mock.getMap("spring:session:sessions")).willReturn(map);

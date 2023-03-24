@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,12 @@ package org.springframework.boot.autoconfigure;
 
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.AutoConfigurationPackages.Registrar;
 import org.springframework.boot.autoconfigure.packagestest.one.FirstConfiguration;
 import org.springframework.boot.autoconfigure.packagestest.two.SecondConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -37,24 +35,25 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Oliver Gierke
  */
 @SuppressWarnings("resource")
-public class AutoConfigurationPackagesTests {
+class AutoConfigurationPackagesTests {
 
 	@Test
-	public void setAndGet() {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ConfigWithRegistrar.class);
+	void setAndGet() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				ConfigWithAutoConfigurationPackage.class);
 		assertThat(AutoConfigurationPackages.get(context.getBeanFactory()))
-				.containsExactly(getClass().getPackage().getName());
+			.containsExactly(getClass().getPackage().getName());
 	}
 
 	@Test
-	public void getWithoutSet() {
+	void getWithoutSet() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(EmptyConfig.class);
 		assertThatIllegalStateException().isThrownBy(() -> AutoConfigurationPackages.get(context.getBeanFactory()))
-				.withMessageContaining("Unable to retrieve @EnableAutoConfiguration base packages");
+			.withMessageContaining("Unable to retrieve @EnableAutoConfiguration base packages");
 	}
 
 	@Test
-	public void detectsMultipleAutoConfigurationPackages() {
+	void detectsMultipleAutoConfigurationPackages() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(FirstConfiguration.class,
 				SecondConfiguration.class);
 		List<String> packages = AutoConfigurationPackages.get(context.getBeanFactory());
@@ -63,21 +62,43 @@ public class AutoConfigurationPackagesTests {
 		assertThat(packages).containsOnly(package1.getName(), package2.getName());
 	}
 
-	@Configuration
-	@Import(AutoConfigurationPackages.Registrar.class)
-	static class ConfigWithRegistrar {
+	@Test
+	void whenBasePackagesAreSpecifiedThenTheyAreRegistered() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				ConfigWithAutoConfigurationBasePackages.class);
+		List<String> packages = AutoConfigurationPackages.get(context.getBeanFactory());
+		assertThat(packages).containsExactly("com.example.alpha", "com.example.bravo");
+	}
+
+	@Test
+	void whenBasePackageClassesAreSpecifiedThenTheirPackagesAreRegistered() {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				ConfigWithAutoConfigurationBasePackageClasses.class);
+		List<String> packages = AutoConfigurationPackages.get(context.getBeanFactory());
+		assertThat(packages).containsOnly(FirstConfiguration.class.getPackage().getName(),
+				SecondConfiguration.class.getPackage().getName());
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@AutoConfigurationPackage
+	static class ConfigWithAutoConfigurationPackage {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
+	@AutoConfigurationPackage(basePackages = { "com.example.alpha", "com.example.bravo" })
+	static class ConfigWithAutoConfigurationBasePackages {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@AutoConfigurationPackage(basePackageClasses = { FirstConfiguration.class, SecondConfiguration.class })
+	static class ConfigWithAutoConfigurationBasePackageClasses {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class EmptyConfig {
-
-	}
-
-	/**
-	 * Test helper to allow {@link Registrar} to be referenced from other packages.
-	 */
-	public static class TestRegistrar extends Registrar {
 
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import java.beans.PropertyEditorSupport;
 import java.io.File;
 import java.text.ParseException;
 import java.time.Duration;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -27,30 +29,46 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import jakarta.annotation.PostConstruct;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.junit.After;
-import org.junit.Rule;
-import org.junit.Test;
-
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.properties.bind.BindException;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.convert.DataSizeUnit;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.convert.DurationFormat;
+import org.springframework.boot.convert.DurationStyle;
+import org.springframework.boot.convert.DurationUnit;
+import org.springframework.boot.convert.PeriodFormat;
+import org.springframework.boot.convert.PeriodStyle;
+import org.springframework.boot.convert.PeriodUnit;
+import org.springframework.boot.env.RandomValuePropertySource;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -60,6 +78,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.StandardEnvironment;
@@ -82,19 +101,18 @@ import org.springframework.validation.annotation.Validated;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link ConfigurationProperties} annotated beans. Covers
- * {@link EnableConfigurationProperties},
- * {@link ConfigurationPropertiesBindingPostProcessorRegistrar},
+ * Tests for {@link ConfigurationProperties @ConfigurationProperties}-annotated beans.
+ * Covers {@link EnableConfigurationProperties @EnableConfigurationProperties},
  * {@link ConfigurationPropertiesBindingPostProcessor} and
  * {@link ConfigurationPropertiesBinder}.
  *
@@ -103,16 +121,15 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Madhura Bhave
+ * @author Vladislav Kisel
  */
-public class ConfigurationPropertiesTests {
+@ExtendWith(OutputCaptureExtension.class)
+class ConfigurationPropertiesTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	@Rule
-	public OutputCapture output = new OutputCapture();
-
-	@After
-	public void cleanup() {
+	@AfterEach
+	void cleanup() {
 		this.context.close();
 		System.clearProperty("name");
 		System.clearProperty("nested.name");
@@ -120,7 +137,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadShouldBind() {
+	void loadShouldBind() {
 		load(BasicConfiguration.class, "name=foo");
 		assertThat(this.context.getBeanNamesForType(BasicProperties.class)).hasSize(1);
 		assertThat(this.context.containsBean(BasicProperties.class.getName())).isTrue();
@@ -128,7 +145,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadShouldBindNested() {
+	void loadShouldBindNested() {
 		load(NestedConfiguration.class, "name=foo", "nested.name=bar");
 		assertThat(this.context.getBeanNamesForType(NestedProperties.class)).hasSize(1);
 		assertThat(this.context.getBean(NestedProperties.class).name).isEqualTo("foo");
@@ -136,7 +153,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenUsingSystemPropertiesShouldBind() {
+	void loadWhenUsingSystemPropertiesShouldBind() {
 		System.setProperty("name", "foo");
 		load(BasicConfiguration.class);
 		assertThat(this.context.getBeanNamesForType(BasicProperties.class)).hasSize(1);
@@ -144,7 +161,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenUsingSystemPropertiesShouldBindNested() {
+	void loadWhenUsingSystemPropertiesShouldBindNested() {
 		System.setProperty("name", "foo");
 		System.setProperty("nested.name", "bar");
 		load(NestedConfiguration.class);
@@ -154,7 +171,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenHasIgnoreUnknownFieldsFalseAndNoUnknownFieldsShouldBind() {
+	void loadWhenHasIgnoreUnknownFieldsFalseAndNoUnknownFieldsShouldBind() {
 		removeSystemProperties();
 		load(IgnoreUnknownFieldsFalseConfiguration.class, "name=foo");
 		IgnoreUnknownFieldsFalseProperties bean = this.context.getBean(IgnoreUnknownFieldsFalseProperties.class);
@@ -162,50 +179,58 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenHasIgnoreUnknownFieldsFalseAndUnknownFieldsShouldFail() {
+	void loadWhenHasIgnoreUnknownFieldsFalseAndUnknownFieldsShouldFail() {
 		removeSystemProperties();
 		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
-				.isThrownBy(() -> load(IgnoreUnknownFieldsFalseConfiguration.class, "name=foo", "bar=baz"))
-				.withCauseInstanceOf(BindException.class);
+			.isThrownBy(() -> load(IgnoreUnknownFieldsFalseConfiguration.class, "name=foo", "bar=baz"))
+			.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
-	public void loadWhenHasIgnoreInvalidFieldsTrueAndInvalidFieldsShouldBind() {
+	void givenIgnoreUnknownFieldsFalseAndIgnoreInvalidFieldsTrueWhenThereAreUnknownFieldsThenBindingShouldFail() {
+		removeSystemProperties();
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class).isThrownBy(
+				() -> load(IgnoreUnknownFieldsFalseIgnoreInvalidFieldsTrueConfiguration.class, "name=foo", "bar=baz"))
+			.withCauseInstanceOf(BindException.class);
+	}
+
+	@Test
+	void loadWhenHasIgnoreInvalidFieldsTrueAndInvalidFieldsShouldBind() {
 		load(IgnoreInvalidFieldsFalseProperties.class, "com.example.bar=spam");
 		IgnoreInvalidFieldsFalseProperties bean = this.context.getBean(IgnoreInvalidFieldsFalseProperties.class);
-		assertThat(bean.getBar()).isEqualTo(0);
+		assertThat(bean.getBar()).isZero();
 	}
 
 	@Test
-	public void loadWhenHasPrefixShouldBind() {
+	void loadWhenHasPrefixShouldBind() {
 		load(PrefixConfiguration.class, "spring.foo.name=foo");
 		PrefixProperties bean = this.context.getBean(PrefixProperties.class);
 		assertThat(((BasicProperties) bean).name).isEqualTo("foo");
 	}
 
 	@Test
-	public void loadWhenPropertiesHaveAnnotationOnBaseClassShouldBind() {
+	void loadWhenPropertiesHaveAnnotationOnBaseClassShouldBind() {
 		load(AnnotationOnBaseClassConfiguration.class, "name=foo");
 		AnnotationOnBaseClassProperties bean = this.context.getBean(AnnotationOnBaseClassProperties.class);
 		assertThat(((BasicProperties) bean).name).isEqualTo("foo");
 	}
 
 	@Test
-	public void loadWhenBindingArrayShouldBind() {
+	void loadWhenBindingArrayShouldBind() {
 		load(BasicConfiguration.class, "name=foo", "array=1,2,3");
 		BasicProperties bean = this.context.getBean(BasicProperties.class);
 		assertThat(bean.array).containsExactly(1, 2, 3);
 	}
 
 	@Test
-	public void loadWhenBindingArrayFromYamlArrayShouldBind() {
+	void loadWhenBindingArrayFromYamlArrayShouldBind() {
 		load(BasicConfiguration.class, "name=foo", "list[0]=1", "list[1]=2", "list[2]=3");
 		BasicProperties bean = this.context.getBean(BasicProperties.class);
 		assertThat(bean.list).containsExactly(1, 2, 3);
 	}
 
 	@Test
-	public void loadWhenBindingOver256ElementsShouldBind() {
+	void loadWhenBindingOver256ElementsShouldBind() {
 		List<String> pairs = new ArrayList<>();
 		pairs.add("name:foo");
 		for (int i = 0; i < 1000; i++) {
@@ -217,45 +242,46 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenBindingWithoutAndAnnotationShouldFail() {
-		assertThatIllegalArgumentException().isThrownBy(() -> load(WithoutAndAnnotationConfiguration.class, "name:foo"))
-				.withMessageContaining("No ConfigurationProperties annotation found");
+	void loadWhenBindingWithoutAndAnnotationShouldFail() {
+		assertThatIllegalStateException().isThrownBy(() -> load(WithoutAndAnnotationConfiguration.class, "name:foo"))
+			.withMessageContaining("No ConfigurationProperties annotation found");
 	}
 
 	@Test
-	public void loadWhenBindingWithoutAnnotationValueShouldBind() {
+	void loadWhenBindingWithoutAnnotationValueShouldBind() {
 		load(WithoutAnnotationValueConfiguration.class, "name=foo");
 		WithoutAnnotationValueProperties bean = this.context.getBean(WithoutAnnotationValueProperties.class);
 		assertThat(bean.name).isEqualTo("foo");
 	}
 
 	@Test
-	public void loadWhenBindingWithDefaultsInXmlShouldBind() {
+	void loadWhenBindingWithDefaultsInXmlShouldBind() {
+		removeSystemProperties();
 		load(new Class<?>[] { BasicConfiguration.class, DefaultsInXmlConfiguration.class });
 		BasicProperties bean = this.context.getBean(BasicProperties.class);
 		assertThat(bean.name).isEqualTo("bar");
 	}
 
 	@Test
-	public void loadWhenBindingWithDefaultsInJavaConfigurationShouldBind() {
+	void loadWhenBindingWithDefaultsInJavaConfigurationShouldBind() {
 		load(DefaultsInJavaConfiguration.class);
 		BasicProperties bean = this.context.getBean(BasicProperties.class);
 		assertThat(bean.name).isEqualTo("bar");
 	}
 
 	@Test
-	public void loadWhenBindingTwoBeansShouldBind() {
+	void loadWhenBindingTwoBeansShouldBind() {
 		load(new Class<?>[] { WithoutAnnotationValueConfiguration.class, BasicConfiguration.class });
 		assertThat(this.context.getBean(BasicProperties.class)).isNotNull();
 		assertThat(this.context.getBean(WithoutAnnotationValueProperties.class)).isNotNull();
 	}
 
 	@Test
-	public void loadWhenBindingWithParentContextShouldBind() {
+	void loadWhenBindingWithParentContextShouldBind() {
 		AnnotationConfigApplicationContext parent = load(BasicConfiguration.class, "name=parent");
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.setParent(parent);
-		load(new Class[] { BasicConfiguration.class, BasicPropertiesConsumer.class }, "name=child");
+		load(new Class<?>[] { BasicConfiguration.class, BasicPropertiesConsumer.class }, "name=child");
 		assertThat(this.context.getBean(BasicProperties.class)).isNotNull();
 		assertThat(parent.getBean(BasicProperties.class)).isNotNull();
 		assertThat(this.context.getBean(BasicPropertiesConsumer.class).getName()).isEqualTo("parent");
@@ -263,7 +289,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenBindingOnlyParentContextShouldBind() {
+	void loadWhenBindingOnlyParentContextShouldBind() {
 		AnnotationConfigApplicationContext parent = load(BasicConfiguration.class, "name=foo");
 		this.context = new AnnotationConfigApplicationContext();
 		this.context.setParent(parent);
@@ -274,14 +300,14 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenPrefixedPropertiesDeclaredAsBeanShouldBind() {
+	void loadWhenPrefixedPropertiesDeclaredAsBeanShouldBind() {
 		load(PrefixPropertiesDeclaredAsBeanConfiguration.class, "spring.foo.name=foo");
 		PrefixProperties bean = this.context.getBean(PrefixProperties.class);
 		assertThat(((BasicProperties) bean).name).isEqualTo("foo");
 	}
 
 	@Test
-	public void loadWhenPrefixedPropertiesDeclaredAsAnnotationValueShouldBind() {
+	void loadWhenPrefixedPropertiesDeclaredAsAnnotationValueShouldBind() {
 		load(PrefixPropertiesDeclaredAsAnnotationValueConfiguration.class, "spring.foo.name=foo");
 		PrefixProperties bean = this.context.getBean("spring.foo-" + PrefixProperties.class.getName(),
 				PrefixProperties.class);
@@ -289,7 +315,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenMultiplePrefixedPropertiesDeclaredAsAnnotationValueShouldBind() {
+	void loadWhenMultiplePrefixedPropertiesDeclaredAsAnnotationValueShouldBind() {
 		load(MultiplePrefixPropertiesDeclaredAsAnnotationValueConfiguration.class, "spring.foo.name=foo",
 				"spring.bar.name=bar");
 		PrefixProperties bean1 = this.context.getBean(PrefixProperties.class);
@@ -299,50 +325,50 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenBindingToMapKeyWithPeriodShouldBind() {
+	void loadWhenBindingToMapKeyWithPeriodShouldBind() {
 		load(MapProperties.class, "mymap.key1.key2:value12", "mymap.key3:value3");
 		MapProperties bean = this.context.getBean(MapProperties.class);
 		assertThat(bean.mymap).containsOnly(entry("key3", "value3"), entry("key1.key2", "value12"));
 	}
 
 	@Test
-	public void loadWhenPrefixedPropertiesAreReplacedOnBeanMethodShouldBind() {
+	void loadWhenPrefixedPropertiesAreReplacedOnBeanMethodShouldBind() {
 		load(PrefixedPropertiesReplacedOnBeanMethodConfiguration.class, "external.name=bar", "spam.name=foo");
 		PrefixProperties bean = this.context.getBean(PrefixProperties.class);
 		assertThat(((BasicProperties) bean).name).isEqualTo("foo");
 	}
 
 	@Test
-	public void loadShouldBindToJavaTimeDuration() {
+	void loadShouldBindToJavaTimeDuration() {
 		load(BasicConfiguration.class, "duration=PT1M");
 		BasicProperties bean = this.context.getBean(BasicProperties.class);
 		assertThat(bean.getDuration().getSeconds()).isEqualTo(60);
 	}
 
 	@Test
-	public void loadWhenBindingToValidatedImplementationOfInterfaceShouldBind() {
+	void loadWhenBindingToValidatedImplementationOfInterfaceShouldBind() {
 		load(ValidatedImplementationConfiguration.class, "test.foo=bar");
 		ValidatedImplementationProperties bean = this.context.getBean(ValidatedImplementationProperties.class);
 		assertThat(bean.getFoo()).isEqualTo("bar");
 	}
 
 	@Test
-	public void loadWithPropertyPlaceholderValueShouldBind() {
+	void loadWithPropertyPlaceholderValueShouldBind() {
 		load(WithPropertyPlaceholderValueConfiguration.class, "default.value=foo");
 		WithPropertyPlaceholderValueProperties bean = this.context
-				.getBean(WithPropertyPlaceholderValueProperties.class);
+			.getBean(WithPropertyPlaceholderValueProperties.class);
 		assertThat(bean.getValue()).isEqualTo("foo");
 	}
 
 	@Test
-	public void loadWithPropertyPlaceholderShouldNotAlterPropertySourceOrder() {
+	void loadWithPropertyPlaceholderShouldNotAlterPropertySourceOrder() {
 		load(WithPropertyPlaceholderWithLocalPropertiesValueConfiguration.class, "com.example.bar=a");
 		SimplePrefixedProperties bean = this.context.getBean(SimplePrefixedProperties.class);
 		assertThat(bean.getBar()).isEqualTo("a");
 	}
 
 	@Test
-	public void loadWhenHasPostConstructShouldTriggerPostConstructWithBoundBean() {
+	void loadWhenHasPostConstructShouldTriggerPostConstructWithBoundBean() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("bar", "foo");
 		this.context.setEnvironment(environment);
@@ -353,12 +379,12 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadShouldNotInitializeFactoryBeans() {
+	void loadShouldNotInitializeFactoryBeans() {
 		WithFactoryBeanConfiguration.factoryBeanInitialized = false;
 		this.context = new AnnotationConfigApplicationContext() {
 
 			@Override
-			protected void onRefresh() throws BeansException {
+			protected void onRefresh() {
 				assertThat(WithFactoryBeanConfiguration.factoryBeanInitialized).as("Initialized too early").isFalse();
 				super.onRefresh();
 			}
@@ -374,7 +400,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenUsingRelaxedFormsShouldBindToEnum() {
+	void loadWhenUsingRelaxedFormsShouldBindToEnum() {
 		bindToEnum("test.theValue=FOO");
 		bindToEnum("test.theValue=foo");
 		bindToEnum("test.the-value=FoO");
@@ -389,7 +415,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenUsingRelaxedFormsShouldBindToEnumSet() {
+	void loadWhenUsingRelaxedFormsShouldBindToEnumSet() {
 		bindToEnumSet("test.the-values=foo,bar", FooEnum.FOO, FooEnum.BAR);
 		bindToEnumSet("test.the-values=foo", FooEnum.FOO);
 	}
@@ -402,14 +428,14 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadShouldBindToCharArray() {
+	void loadShouldBindToCharArray() {
 		load(WithCharArrayProperties.class, "test.chars=word");
 		WithCharArrayProperties bean = this.context.getBean(WithCharArrayProperties.class);
 		assertThat(bean.getChars()).isEqualTo("word".toCharArray());
 	}
 
 	@Test
-	public void loadWhenUsingRelaxedFormsAndOverrideShouldBind() {
+	void loadWhenUsingRelaxedFormsAndOverrideShouldBind() {
 		load(WithRelaxedNamesProperties.class, "test.FOO_BAR=test1", "test.FOO_BAR=test2", "test.BAR-B-A-Z=testa",
 				"test.BAR-B-A-Z=testb");
 		WithRelaxedNamesProperties bean = this.context.getBean(WithRelaxedNamesProperties.class);
@@ -418,24 +444,25 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadShouldBindToMap() {
+	void loadShouldBindToMap() {
 		load(WithMapProperties.class, "test.map.foo=bar");
 		WithMapProperties bean = this.context.getBean(WithMapProperties.class);
 		assertThat(bean.getMap()).containsOnly(entry("foo", "bar"));
 	}
 
 	@Test
-	public void loadShouldBindToMapWithNumericKey() {
+	void loadShouldBindToMapWithNumericKey() {
 		load(MapWithNumericKeyProperties.class, "sample.properties.1.name=One");
 		MapWithNumericKeyProperties bean = this.context.getBean(MapWithNumericKeyProperties.class);
 		assertThat(bean.getProperties().get("1").name).isEqualTo("One");
 	}
 
 	@Test
-	public void loadWhenUsingSystemPropertiesShouldBindToMap() {
-		this.context.getEnvironment().getPropertySources().addLast(
-				new SystemEnvironmentPropertySource(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-						Collections.singletonMap("TEST_MAP_FOO_BAR", "baz")));
+	void loadWhenUsingSystemPropertiesShouldBindToMap() {
+		this.context.getEnvironment()
+			.getPropertySources()
+			.addLast(new SystemEnvironmentPropertySource(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+					Collections.singletonMap("TEST_MAP_FOO_BAR", "baz")));
 		load(WithComplexMapProperties.class);
 		WithComplexMapProperties bean = this.context.getBean(WithComplexMapProperties.class);
 		assertThat(bean.getMap()).containsOnlyKeys("foo");
@@ -443,17 +470,33 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenDotsInSystemEnvironmentPropertiesShouldBind() {
-		this.context.getEnvironment().getPropertySources().addLast(
-				new SystemEnvironmentPropertySource(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-						Collections.singletonMap("com.example.bar", "baz")));
+	void loadWhenDotsInSystemEnvironmentPropertiesShouldBind() {
+		this.context.getEnvironment()
+			.getPropertySources()
+			.addLast(new SystemEnvironmentPropertySource(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+					Collections.singletonMap("com.example.bar", "baz")));
 		load(SimplePrefixedProperties.class);
 		SimplePrefixedProperties bean = this.context.getBean(SimplePrefixedProperties.class);
 		assertThat(bean.getBar()).isEqualTo("baz");
 	}
 
 	@Test
-	public void loadWhenOverridingPropertiesShouldBind() {
+	void loadWhenEnvironmentPrefixSetShouldBind() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		sources.replace(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+				new SystemEnvironmentPropertySource(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+						Collections.singletonMap("MY_SPRING_FOO_NAME", "Jane")));
+		SpringApplication application = new SpringApplication(PrefixConfiguration.class);
+		application.setApplicationContextFactory((webApplicationType) -> ConfigurationPropertiesTests.this.context);
+		application.setEnvironmentPrefix("my");
+		application.setEnvironment(this.context.getEnvironment());
+		application.run();
+		BasicProperties bean = this.context.getBean(BasicProperties.class);
+		assertThat(bean.name).isEqualTo("Jane");
+	}
+
+	@Test
+	void loadWhenOverridingPropertiesShouldBind() {
 		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
 		sources.addFirst(
 				new SystemEnvironmentPropertySource("system", Collections.singletonMap("SPRING_FOO_NAME", "Jane")));
@@ -464,58 +507,58 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenJsr303ConstraintDoesNotMatchShouldFail() {
+	void loadWhenJsr303ConstraintDoesNotMatchShouldFail() {
 		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
-				.isThrownBy(() -> load(ValidatedJsr303Configuration.class, "description="))
-				.withCauseInstanceOf(BindException.class);
+			.isThrownBy(() -> load(ValidatedJsr303Configuration.class, "description="))
+			.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
-	public void loadValidatedOnBeanMethodAndJsr303ConstraintDoesNotMatchShouldFail() {
+	void loadValidatedOnBeanMethodAndJsr303ConstraintDoesNotMatchShouldFail() {
 		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
-				.isThrownBy(() -> load(ValidatedOnBeanJsr303Configuration.class, "description="))
-				.withCauseInstanceOf(BindException.class);
+			.isThrownBy(() -> load(ValidatedOnBeanJsr303Configuration.class, "description="))
+			.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
-	public void loadWhenJsr303ConstraintDoesNotMatchOnNestedThatIsNotDirectlyAnnotatedShouldFail() {
+	void loadWhenJsr303ConstraintDoesNotMatchOnNestedThatIsNotDirectlyAnnotatedShouldFail() {
 		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
-				.isThrownBy(() -> load(ValidatedNestedJsr303Properties.class, "properties.description="))
-				.withCauseInstanceOf(BindException.class);
+			.isThrownBy(() -> load(ValidatedNestedJsr303Properties.class, "properties.description="))
+			.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
-	public void loadWhenJsr303ConstraintDoesNotMatchOnNestedThatIsNotDirectlyAnnotatedButIsValidShouldFail() {
+	void loadWhenJsr303ConstraintDoesNotMatchOnNestedThatIsNotDirectlyAnnotatedButIsValidShouldFail() {
 		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
-				.isThrownBy(() -> load(ValidatedValidNestedJsr303Properties.class))
-				.withCauseInstanceOf(BindException.class);
+			.isThrownBy(() -> load(ValidatedValidNestedJsr303Properties.class))
+			.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
-	public void loadWhenJsr303ConstraintMatchesShouldBind() {
+	void loadWhenJsr303ConstraintMatchesShouldBind() {
 		load(ValidatedJsr303Configuration.class, "description=foo");
 		ValidatedJsr303Properties bean = this.context.getBean(ValidatedJsr303Properties.class);
 		assertThat(bean.getDescription()).isEqualTo("foo");
 	}
 
 	@Test
-	public void loadWhenJsr303ConstraintDoesNotMatchAndNotValidatedAnnotationShouldBind() {
+	void loadWhenJsr303ConstraintDoesNotMatchAndNotValidatedAnnotationShouldBind() {
 		load(NonValidatedJsr303Configuration.class, "name=foo");
 		NonValidatedJsr303Properties bean = this.context.getBean(NonValidatedJsr303Properties.class);
 		assertThat(((BasicProperties) bean).name).isEqualTo("foo");
 	}
 
 	@Test
-	public void loadWhenHasMultiplePropertySourcesPlaceholderConfigurerShouldLogWarning() {
+	void loadWhenHasMultiplePropertySourcesPlaceholderConfigurerShouldLogWarning(CapturedOutput output) {
 		load(MultiplePropertySourcesPlaceholderConfigurerConfiguration.class);
-		assertThat(this.output.toString()).contains("Multiple PropertySourcesPlaceholderConfigurer beans registered");
+		assertThat(output).contains("Multiple PropertySourcesPlaceholderConfigurer beans registered");
 	}
 
 	@Test
-	public void loadWhenOverridingPropertiesWithPlaceholderResolutionInEnvironmentShouldBindWithOverride() {
+	void loadWhenOverridingPropertiesWithPlaceholderResolutionInEnvironmentShouldBindWithOverride() {
 		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
-		sources.addFirst(
-				new SystemEnvironmentPropertySource("system", Collections.singletonMap("COM_EXAMPLE_BAR", "10")));
+		sources
+			.addFirst(new SystemEnvironmentPropertySource("system", Collections.singletonMap("COM_EXAMPLE_BAR", "10")));
 		Map<String, Object> source = new HashMap<>();
 		source.put("com.example.bar", 5);
 		source.put("com.example.foo", "${com.example.bar}");
@@ -526,7 +569,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenHasUnboundElementsFromSystemEnvironmentShouldNotThrowException() {
+	void loadWhenHasUnboundElementsFromSystemEnvironmentShouldNotThrowException() {
 		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
 		sources.addFirst(new MapPropertySource("test", Collections.singletonMap("com.example.foo", 5)));
 		sources.addLast(new SystemEnvironmentPropertySource(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
@@ -537,7 +580,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadShouldSupportRebindableConfigurationProperties() {
+	void loadShouldSupportRebindableConfigurationProperties() {
 		// gh-9160
 		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
 		Map<String, Object> source = new LinkedHashMap<>();
@@ -555,7 +598,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenHasPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationProperties() {
+	void loadWhenHasPropertySourcesPlaceholderConfigurerShouldSupportRebindableConfigurationProperties() {
 		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
 		Map<String, Object> source = new LinkedHashMap<>();
 		source.put("example.one", "foo");
@@ -573,7 +616,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void customProtocolResolverIsInvoked() {
+	void customProtocolResolverIsInvoked() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "test.resource=application.properties");
 		ProtocolResolver protocolResolver = mock(ProtocolResolver.class);
@@ -581,11 +624,11 @@ public class ConfigurationPropertiesTests {
 		this.context.addProtocolResolver(protocolResolver);
 		this.context.register(PropertiesWithResource.class);
 		this.context.refresh();
-		verify(protocolResolver).resolve(eq("application.properties"), any(ResourceLoader.class));
+		then(protocolResolver).should().resolve(eq("application.properties"), any(ResourceLoader.class));
 	}
 
 	@Test
-	public void customProtocolResolver() {
+	void customProtocolResolver() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"test.resource=test:/application.properties");
@@ -600,7 +643,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadShouldUseConverterBean() {
+	void loadShouldUseConverterBean() {
 		prepareConverterContext(ConverterConfiguration.class, PersonProperties.class);
 		Person person = this.context.getBean(PersonProperties.class).getPerson();
 		assertThat(person.firstName).isEqualTo("John");
@@ -608,15 +651,28 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenConfigurationConverterIsNotQualifiedShouldNotConvert() {
-		assertThatExceptionOfType(BeanCreationException.class)
-				.isThrownBy(
-						() -> prepareConverterContext(NonQualifiedConverterConfiguration.class, PersonProperties.class))
-				.withCauseInstanceOf(BindException.class);
+	void loadWhenBeanFactoryConversionServiceAndConverterBean() {
+		DefaultConversionService conversionService = new DefaultConversionService();
+		conversionService.addConverter(new AlienConverter());
+		this.context.getBeanFactory().setConversionService(conversionService);
+		load(new Class<?>[] { ConverterConfiguration.class, PersonAndAlienProperties.class }, "test.person=John Smith",
+				"test.alien=Alf Tanner");
+		PersonAndAlienProperties properties = this.context.getBean(PersonAndAlienProperties.class);
+		assertThat(properties.getPerson().firstName).isEqualTo("John");
+		assertThat(properties.getPerson().lastName).isEqualTo("Smith");
+		assertThat(properties.getAlien().firstName).isEqualTo("Alf");
+		assertThat(properties.getAlien().lastName).isEqualTo("Tanner");
 	}
 
 	@Test
-	public void loadShouldUseGenericConverterBean() {
+	void loadWhenConfigurationConverterIsNotQualifiedShouldNotConvert() {
+		assertThatExceptionOfType(BeanCreationException.class)
+			.isThrownBy(() -> prepareConverterContext(NonQualifiedConverterConfiguration.class, PersonProperties.class))
+			.withCauseInstanceOf(BindException.class);
+	}
+
+	@Test
+	void loadShouldUseGenericConverterBean() {
 		prepareConverterContext(GenericConverterConfiguration.class, PersonProperties.class);
 		Person person = this.context.getBean(PersonProperties.class).getPerson();
 		assertThat(person.firstName).isEqualTo("John");
@@ -624,7 +680,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadShouldUseFormatterBean() {
+	void loadShouldUseFormatterBean() {
 		prepareConverterContext(FormatterConfiguration.class, PersonProperties.class);
 		Person person = this.context.getBean(PersonProperties.class).getPerson();
 		assertThat(person.firstName).isEqualTo("John");
@@ -632,15 +688,15 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenGenericConfigurationConverterIsNotQualifiedShouldNotConvert() {
+	void loadWhenGenericConfigurationConverterIsNotQualifiedShouldNotConvert() {
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(
 				() -> prepareConverterContext(NonQualifiedGenericConverterConfiguration.class, PersonProperties.class))
-				.withCauseInstanceOf(BindException.class);
+			.withCauseInstanceOf(BindException.class);
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	public void loadShouldBindToBeanWithGenerics() {
+	void loadShouldBindToBeanWithGenerics() {
 		load(GenericConfiguration.class, "foo.bar=hello");
 		AGenericClass foo = this.context.getBean(AGenericClass.class);
 		assertThat(foo.getBar()).isNotNull();
@@ -651,24 +707,24 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenHasConfigurationPropertiesValidatorShouldApplyValidator() {
+	void loadWhenHasConfigurationPropertiesValidatorShouldApplyValidator() {
 		assertThatExceptionOfType(Exception.class).isThrownBy(() -> load(WithCustomValidatorConfiguration.class))
-				.satisfies((ex) -> {
-					assertThat(ex).hasCauseInstanceOf(BindException.class);
-					assertThat(ex.getCause()).hasCauseExactlyInstanceOf(BindValidationException.class);
-				});
+			.satisfies((ex) -> {
+				assertThat(ex).hasCauseInstanceOf(BindException.class);
+				assertThat(ex.getCause()).hasCauseExactlyInstanceOf(BindValidationException.class);
+			});
 	}
 
 	@Test
-	public void loadWhenHasUnsupportedConfigurationPropertiesValidatorShouldBind() {
+	void loadWhenHasUnsupportedConfigurationPropertiesValidatorShouldBind() {
 		load(WithUnsupportedCustomValidatorConfiguration.class, "test.foo=bar");
 		WithSetterThatThrowsValidationExceptionProperties bean = this.context
-				.getBean(WithSetterThatThrowsValidationExceptionProperties.class);
+			.getBean(WithSetterThatThrowsValidationExceptionProperties.class);
 		assertThat(bean.getFoo()).isEqualTo("bar");
 	}
 
 	@Test
-	public void loadWhenConfigurationPropertiesIsAlsoValidatorShouldApplyValidator() {
+	void loadWhenConfigurationPropertiesIsAlsoValidatorShouldApplyValidator() {
 		assertThatExceptionOfType(Exception.class).isThrownBy(() -> load(ValidatorProperties.class)).satisfies((ex) -> {
 			assertThat(ex).hasCauseInstanceOf(BindException.class);
 			assertThat(ex.getCause()).hasCauseExactlyInstanceOf(BindValidationException.class);
@@ -676,24 +732,31 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenSetterThrowsValidationExceptionShouldFail() {
-		assertThatExceptionOfType(BeanCreationException.class)
-				.isThrownBy(() -> load(WithSetterThatThrowsValidationExceptionProperties.class, "test.foo=spam"))
-				.withCauseInstanceOf(BindException.class);
+	void loadWhenConfigurationPropertiesWithValidDefaultValuesShouldNotFail() {
+		AnnotationConfigApplicationContext context = load(ValidatorPropertiesWithDefaultValues.class);
+		ValidatorPropertiesWithDefaultValues bean = context.getBean(ValidatorPropertiesWithDefaultValues.class);
+		assertThat(bean.getBar()).isEqualTo("a");
 	}
 
 	@Test
-	public void loadWhenFailsShouldIncludeAnnotationDetails() {
+	void loadWhenSetterThrowsValidationExceptionShouldFail() {
+		assertThatExceptionOfType(BeanCreationException.class)
+			.isThrownBy(() -> load(WithSetterThatThrowsValidationExceptionProperties.class, "test.foo=spam"))
+			.withCauseInstanceOf(BindException.class);
+	}
+
+	@Test
+	void loadWhenFailsShouldIncludeAnnotationDetails() {
 		removeSystemProperties();
 		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
-				.isThrownBy(() -> load(IgnoreUnknownFieldsFalseConfiguration.class, "name=foo", "bar=baz"))
-				.withMessageContaining("Could not bind properties to "
-						+ "'ConfigurationPropertiesTests.IgnoreUnknownFieldsFalseProperties' : "
-						+ "prefix=, ignoreInvalidFields=false, ignoreUnknownFields=false;");
+			.isThrownBy(() -> load(IgnoreUnknownFieldsFalseConfiguration.class, "name=foo", "bar=baz"))
+			.withMessageContaining("Could not bind properties to "
+					+ "'ConfigurationPropertiesTests.IgnoreUnknownFieldsFalseProperties' : "
+					+ "prefix=, ignoreInvalidFields=false, ignoreUnknownFields=false");
 	}
 
 	@Test
-	public void loadWhenHasCustomPropertyEditorShouldBind() {
+	void loadWhenHasCustomPropertyEditorShouldBind() {
 		this.context.getBeanFactory().registerCustomEditor(Person.class, PersonPropertyEditor.class);
 		load(PersonProperties.class, "test.person=boot,spring");
 		PersonProperties bean = this.context.getBean(PersonProperties.class);
@@ -702,7 +765,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenBindingToListOfGenericClassShouldBind() {
+	void loadWhenBindingToListOfGenericClassShouldBind() {
 		// gh-12166
 		load(ListOfGenericClassProperties.class, "test.list=java.lang.RuntimeException");
 		ListOfGenericClassProperties bean = this.context.getBean(ListOfGenericClassProperties.class);
@@ -710,14 +773,14 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenBindingCurrentDirectoryToFileShouldBind() {
+	void loadWhenBindingCurrentDirectoryToFileShouldBind() {
 		load(FileProperties.class, "test.file=.");
 		FileProperties bean = this.context.getBean(FileProperties.class);
 		assertThat(bean.getFile()).isEqualTo(new File("."));
 	}
 
 	@Test
-	public void loadWhenBindingToDataSizeShouldBind() {
+	void loadWhenBindingToDataSizeShouldBind() {
 		load(DataSizeProperties.class, "test.size=10GB", "test.another-size=5");
 		DataSizeProperties bean = this.context.getBean(DataSizeProperties.class);
 		assertThat(bean.getSize()).isEqualTo(DataSize.ofGigabytes(10));
@@ -725,12 +788,12 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	public void loadWhenTopLevelConverterNotFoundExceptionShouldNotFail() {
+	void loadWhenTopLevelConverterNotFoundExceptionShouldNotFail() {
 		load(PersonProperties.class, "test=boot");
 	}
 
 	@Test
-	public void loadWhenConfigurationPropertiesContainsMapWithPositiveAndNegativeIntegerKeys() {
+	void loadWhenConfigurationPropertiesContainsMapWithPositiveAndNegativeIntegerKeys() {
 		// gh-14136
 		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
 		Map<String, Object> source = new HashMap<>();
@@ -742,9 +805,341 @@ public class ConfigurationPropertiesTests {
 		WithIntegerMapProperties bean = this.context.getBean(WithIntegerMapProperties.class);
 		Map<Integer, Foo> x = bean.getMap().get("x");
 		assertThat(x.get(-1).getA()).isEqualTo("baz");
-		assertThat(x.get(-1).getB()).isEqualTo(0);
+		assertThat(x.get(-1).getB()).isZero();
 		assertThat(x.get(1).getA()).isEqualTo("bar");
-		assertThat(x.get(1).getB()).isEqualTo(1);
+		assertThat(x.get(1).getB()).isOne();
+	}
+
+	@Test
+	void loadWhenConfigurationPropertiesInjectsAnotherBeanShouldNotFail() {
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
+			.isThrownBy(() -> load(OtherInjectPropertiesConfiguration.class))
+			.havingCause()
+			.isInstanceOf(BindException.class)
+			.withMessageContaining(OtherInjectedProperties.class.getName())
+			.withMessageContaining("Failed to bind properties under 'test'");
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersShouldBind() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.foo", "baz");
+		source.put("test.bar", "5");
+		sources.addLast(new MapPropertySource("test", source));
+		load(ConstructorParameterConfiguration.class);
+		ConstructorParameterProperties bean = this.context.getBean(ConstructorParameterProperties.class);
+		assertThat(bean.getFoo()).isEqualTo("baz");
+		assertThat(bean.getBar()).isEqualTo(5);
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithCustomDataUnitShouldBind() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.duration", "12");
+		source.put("test.size", "13");
+		source.put("test.period", "14");
+		sources.addLast(new MapPropertySource("test", source));
+		load(ConstructorParameterWithUnitConfiguration.class);
+		ConstructorParameterWithUnitProperties bean = this.context
+			.getBean(ConstructorParameterWithUnitProperties.class);
+		assertThat(bean.getDuration()).isEqualTo(Duration.ofDays(12));
+		assertThat(bean.getSize()).isEqualTo(DataSize.ofMegabytes(13));
+		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(14));
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithDefaultValuesShouldBind() {
+		load(ConstructorParameterConfiguration.class);
+		ConstructorParameterProperties bean = this.context.getBean(ConstructorParameterProperties.class);
+		assertThat(bean.getFoo()).isEqualTo("hello");
+		assertThat(bean.getBar()).isZero();
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithEmptyDefaultValueShouldBind() {
+		load(ConstructorParameterEmptyDefaultValueConfiguration.class);
+		ConstructorParameterEmptyDefaultValueProperties bean = this.context
+			.getBean(ConstructorParameterEmptyDefaultValueProperties.class);
+		assertThat(bean.getSet()).isEmpty();
+		assertThat(bean.getMap()).isEmpty();
+		assertThat(bean.getArray()).isEmpty();
+		assertThat(bean.getOptional()).isEmpty();
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithDefaultDataUnitShouldBind() {
+		load(ConstructorParameterWithUnitConfiguration.class);
+		ConstructorParameterWithUnitProperties bean = this.context
+			.getBean(ConstructorParameterWithUnitProperties.class);
+		assertThat(bean.getDuration()).isEqualTo(Duration.ofDays(2));
+		assertThat(bean.getSize()).isEqualTo(DataSize.ofMegabytes(3));
+		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(4));
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithCustomDataFormatShouldBind() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.duration", "12d");
+		source.put("test.period", "13y");
+		sources.addLast(new MapPropertySource("test", source));
+		load(ConstructorParameterWithFormatConfiguration.class);
+		ConstructorParameterWithFormatProperties bean = this.context
+			.getBean(ConstructorParameterWithFormatProperties.class);
+		assertThat(bean.getDuration()).isEqualTo(Duration.ofDays(12));
+		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(13));
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithNotMatchingCustomDurationFormatShouldFail() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.duration", "P12D");
+		sources.addLast(new MapPropertySource("test", source));
+		assertThatExceptionOfType(Exception.class)
+			.isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class))
+			.havingCause()
+			.isInstanceOf(BindException.class);
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithNotMatchingCustomPeriodFormatShouldFail() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.period", "P12D");
+		sources.addLast(new MapPropertySource("test", source));
+		assertThatExceptionOfType(Exception.class)
+			.isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class))
+			.havingCause()
+			.isInstanceOf(BindException.class);
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithDefaultDataFormatShouldBind() {
+		load(ConstructorParameterWithFormatConfiguration.class);
+		ConstructorParameterWithFormatProperties bean = this.context
+			.getBean(ConstructorParameterWithFormatProperties.class);
+		assertThat(bean.getDuration()).isEqualTo(Duration.ofDays(2));
+		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(3));
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersShouldValidate() {
+		assertThatExceptionOfType(Exception.class)
+			.isThrownBy(() -> load(ConstructorParameterValidationConfiguration.class))
+			.satisfies((ex) -> {
+				assertThat(ex).hasCauseInstanceOf(BindException.class);
+				assertThat(ex.getCause()).hasCauseExactlyInstanceOf(BindValidationException.class);
+			});
+	}
+
+	@Test
+	void loadWhenBindingOnBeanWithoutBeanDefinitionShouldBind() {
+		load(BasicConfiguration.class, "name=test");
+		BasicProperties bean = this.context.getBean(BasicProperties.class);
+		assertThat(bean.name).isEqualTo("test");
+		bean.name = "override";
+		this.context.getBean(ConfigurationPropertiesBindingPostProcessor.class)
+			.postProcessBeforeInitialization(bean, "does-not-exist");
+		assertThat(bean.name).isEqualTo("test");
+	}
+
+	@Test
+	void loadWhenBindingToNestedConstructorPropertiesShouldBind() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.name", "spring");
+		source.put("test.nested.age", "5");
+		sources.addLast(new MapPropertySource("test", source));
+		load(NestedConstructorPropertiesConfiguration.class);
+		NestedConstructorProperties bean = this.context.getBean(NestedConstructorProperties.class);
+		assertThat(bean.getName()).isEqualTo("spring");
+		assertThat(bean.getNested().getAge()).isEqualTo(5);
+	}
+
+	@Test // gh-18485
+	void loadWhenBindingToMultiConstructorConfigurationProperties() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.nested[0].name", "spring");
+		source.put("test.nested[0].age", "5");
+		sources.addLast(new MapPropertySource("test", source));
+		load(MultiConstructorConfigurationPropertiesConfiguration.class);
+		MultiConstructorConfigurationListProperties bean = this.context
+			.getBean(MultiConstructorConfigurationListProperties.class);
+		MultiConstructorConfigurationProperties nested = bean.getNested().get(0);
+		assertThat(nested.getName()).isEqualTo("spring");
+		assertThat(nested.getAge()).isEqualTo(5);
+	}
+
+	@Test // gh-18485
+	void loadWhenBindingToMultiConstructorConfigurationPropertiesUsingShortcutSyntax() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.nested[0]", "spring");
+		sources.addLast(new MapPropertySource("test", source));
+		load(MultiConstructorConfigurationPropertiesConfiguration.class);
+		MultiConstructorConfigurationListProperties bean = this.context
+			.getBean(MultiConstructorConfigurationListProperties.class);
+		MultiConstructorConfigurationProperties nested = bean.getNested().get(0);
+		assertThat(nested.getName()).isEqualTo("spring");
+		assertThat(nested.getAge()).isZero();
+	}
+
+	@Test // gh-18481
+	void loadWhenBindingToNestedConstructorPropertiesWithDeducedNestedShouldBind() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.name", "spring");
+		source.put("test.nested.age", "5");
+		sources.addLast(new MapPropertySource("test", source));
+		load(DeducedNestedConstructorPropertiesConfiguration.class);
+		DeducedNestedConstructorProperties bean = this.context.getBean(DeducedNestedConstructorProperties.class);
+		assertThat(bean.getName()).isEqualTo("spring");
+		assertThat(bean.getNested().getAge()).isEqualTo(5);
+	}
+
+	@Test
+	void loadWhenBindingToNestedPropertiesWithSyntheticConstructorShouldBind() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.nested.age", "5");
+		sources.addLast(new MapPropertySource("test", source));
+		load(SyntheticConstructorPropertiesConfiguration.class);
+		SyntheticNestedConstructorProperties bean = this.context.getBean(SyntheticNestedConstructorProperties.class);
+		assertThat(bean.getNested().getAge()).isEqualTo(5);
+	}
+
+	@Test
+	void loadWhenBindingToJavaBeanWithNestedConstructorBindingShouldBind() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.nested.age", "5");
+		sources.addLast(new MapPropertySource("test", source));
+		load(JavaBeanNestedConstructorBindingPropertiesConfiguration.class);
+		JavaBeanNestedConstructorBindingProperties bean = this.context
+			.getBean(JavaBeanNestedConstructorBindingProperties.class);
+		assertThat(bean.getNested().getAge()).isEqualTo(5);
+	}
+
+	@Test
+	void loadWhenBindingToNestedWithMultipleConstructorsShouldBind() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.nested.age", "5");
+		sources.addLast(new MapPropertySource("test", source));
+		load(NestedMultipleConstructorsConfiguration.class);
+		NestedMultipleConstructorProperties bean = this.context.getBean(NestedMultipleConstructorProperties.class);
+		assertThat(bean.getNested().getAge()).isEqualTo(5);
+	}
+
+	@Test
+	void loadWhenBindingToJavaBeanWithoutExplicitConstructorBindingOnNestedShouldUseSetterBasedBinding() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.nested.age", "5");
+		sources.addLast(new MapPropertySource("test", source));
+		load(JavaBeanNonDefaultConstructorPropertiesConfiguration.class);
+		JavaBeanNonDefaultConstructorProperties bean = this.context
+			.getBean(JavaBeanNonDefaultConstructorProperties.class);
+		assertThat(bean.getNested().getAge()).isEqualTo(10);
+	}
+
+	@Test // gh-18652
+	void loadWhenBeanFactoryContainsSingletonForConstructorBindingTypeShouldNotFail() {
+		ConfigurableListableBeanFactory beanFactory = this.context.getBeanFactory();
+		((BeanDefinitionRegistry) beanFactory).registerBeanDefinition("test",
+				new RootBeanDefinition(ConstructorParameterProperties.class));
+		beanFactory.registerSingleton("test", new ConstructorParameterProperties("bar", 5));
+		load(TestConfiguration.class);
+	}
+
+	@Test
+	void loadWhenConstructorBindingWithOuterClassDeducedConstructorBound() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.nested.outer.age", "5");
+		sources.addLast(new MapPropertySource("test", source));
+		load(ConstructorBindingWithOuterClassConstructorBoundConfiguration.class);
+		ConstructorBindingWithOuterClassConstructorBoundProperties bean = this.context
+			.getBean(ConstructorBindingWithOuterClassConstructorBoundProperties.class);
+		assertThat(bean.getNested().getOuter().getAge()).isEqualTo(5);
+	}
+
+	@Test
+	void loadWhenConstructorBindingWithOuterClassAndNestedAutowiredShouldThrowException() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.nested.age", "5");
+		sources.addLast(new MapPropertySource("test", source));
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class).isThrownBy(
+				() -> load(ConstructorBindingWithOuterClassConstructorBoundAndNestedAutowiredConfiguration.class));
+	}
+
+	@Test
+	void loadWhenConfigurationPropertiesPrefixMatchesPropertyInEnvironment() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test", "bar");
+		source.put("test.a", "baz");
+		sources.addLast(new MapPropertySource("test", source));
+		load(WithPublicStringConstructorPropertiesConfiguration.class);
+		WithPublicStringConstructorProperties bean = this.context.getBean(WithPublicStringConstructorProperties.class);
+		assertThat(bean.getA()).isEqualTo("baz");
+	}
+
+	@Test // gh-26201
+	void loadWhenBoundToRandomPropertyPlaceholder() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		sources.addFirst(new RandomValuePropertySource());
+		Map<String, Object> source = new HashMap<>();
+		source.put("com.example.bar", "${random.int[100,200]}");
+		sources.addLast(new MapPropertySource("test", source));
+		load(SimplePrefixedProperties.class);
+		SimplePrefixedProperties bean = this.context.getBean(SimplePrefixedProperties.class);
+		assertThat(bean.getBar()).isNotNull().containsOnlyDigits();
+	}
+
+	@Test
+	void boundPropertiesShouldBeRecorded() {
+		load(NestedConfiguration.class, "name=foo", "nested.name=bar");
+		BoundConfigurationProperties bound = BoundConfigurationProperties.get(this.context);
+		Set<ConfigurationPropertyName> keys = bound.getAll().keySet();
+		assertThat(keys.stream().map(ConfigurationPropertyName::toString)).contains("name", "nested.name");
+	}
+
+	@Test // gh-28592
+	void loadWhenBindingWithCustomConverterAndObjectToObjectMethod() {
+		this.context.getBeanFactory().setConversionService(ApplicationConversionService.getSharedInstance());
+		load(WithCustomConverterAndObjectToObjectMethodConfiguration.class, "test.item=foo");
+		WithCustomConverterAndObjectToObjectMethodProperties bean = this.context
+			.getBean(WithCustomConverterAndObjectToObjectMethodProperties.class);
+		assertThat(bean.getItem().getValue()).isEqualTo("foo");
+	}
+
+	@Test // gh-33710
+	void loadWhenConstructorUsedInBeanMethodAndNotAsConstructorBinding() {
+		load(ConstructorUsedInBeanMethodConfiguration.class, "test.two=bound-2");
+		ConstructorUsedDirectly bean = this.context.getBean(ConstructorUsedDirectly.class);
+		assertThat(bean.getOne()).isEqualTo("bean-method-1");
+		assertThat(bean.getTwo()).isEqualTo("bound-2");
+	}
+
+	@Test // gh-33409
+	void loadWhenConstructorUsedInNestedPropertyAndNotAsConstructorBinding() {
+		load(ConstructorUsedInNestedPropertyConfiguration.class, "test.nested.two=bound-2");
+		ConstructorUsedInNestedProperty bean = this.context.getBean(ConstructorUsedInNestedProperty.class);
+		assertThat(bean.getNested().getOne()).isEqualTo("nested-1");
+		assertThat(bean.getNested().getTwo()).isEqualTo("bound-2");
+	}
+
+	@Test // gh-34407
+	void loadWhenNestedRecordWithExistingInstance() {
+		load(NestedRecordInstancePropertiesConfiguration.class, "test.nested.name=spring");
+		NestedRecordInstanceProperties bean = this.context.getBean(NestedRecordInstanceProperties.class);
+		assertThat(bean.getNested().name()).isEqualTo("spring");
 	}
 
 	private AnnotationConfigApplicationContext load(Class<?> configuration, String... inlinedProperties) {
@@ -773,83 +1168,95 @@ public class ConfigurationPropertiesTests {
 		this.context = new AnnotationConfigApplicationContext();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties
+	static class TestConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(BasicProperties.class)
 	static class BasicConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(NestedProperties.class)
 	static class NestedConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(IgnoreUnknownFieldsFalseProperties.class)
 	static class IgnoreUnknownFieldsFalseConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(IgnoreUnknownFieldsFalseIgnoreInvalidFieldsTrueProperties.class)
+	static class IgnoreUnknownFieldsFalseIgnoreInvalidFieldsTrueConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(PrefixProperties.class)
 	static class PrefixConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(ValidatedJsr303Properties.class)
 	static class ValidatedJsr303Configuration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	static class ValidatedOnBeanJsr303Configuration {
 
 		@Bean
 		@Validated
-		public NonValidatedJsr303Properties properties() {
+		NonValidatedJsr303Properties properties() {
 			return new NonValidatedJsr303Properties();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(NonValidatedJsr303Properties.class)
 	static class NonValidatedJsr303Configuration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(AnnotationOnBaseClassProperties.class)
 	static class AnnotationOnBaseClassConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(WithoutAndAnnotationConfiguration.class)
 	static class WithoutAndAnnotationConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(WithoutAnnotationValueProperties.class)
 	static class WithoutAnnotationValueConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportResource("org/springframework/boot/context/properties/testProperties.xml")
 	static class DefaultsInXmlConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class DefaultsInJavaConfiguration {
 
 		@Bean
-		public BasicProperties basicProperties() {
+		BasicProperties basicProperties() {
 			BasicProperties test = new BasicProperties();
 			test.setName("bar");
 			return test;
@@ -857,53 +1264,53 @@ public class ConfigurationPropertiesTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	static class PrefixPropertiesDeclaredAsBeanConfiguration {
 
 		@Bean
-		public PrefixProperties prefixProperties() {
+		PrefixProperties prefixProperties() {
 			return new PrefixProperties();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(PrefixProperties.class)
 	static class PrefixPropertiesDeclaredAsAnnotationValueConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties({ PrefixProperties.class, AnotherPrefixProperties.class })
 	static class MultiplePrefixPropertiesDeclaredAsAnnotationValueConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	static class PrefixedPropertiesReplacedOnBeanMethodConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = "spam")
-		public PrefixProperties prefixProperties() {
+		PrefixProperties prefixProperties() {
 			return new PrefixProperties();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	static class ValidatedImplementationConfiguration {
 
 		@Bean
-		public ValidatedImplementationProperties testProperties() {
+		ValidatedImplementationProperties testProperties() {
 			return new ValidatedImplementationProperties();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	@ConfigurationProperties
 	static class WithPostConstructConfiguration {
@@ -912,39 +1319,39 @@ public class ConfigurationPropertiesTests {
 
 		private boolean initialized;
 
-		public void setBar(String bar) {
+		void setBar(String bar) {
 			this.bar = bar;
 		}
 
-		public String getBar() {
+		String getBar() {
 			return this.bar;
 		}
 
 		@PostConstruct
-		public void init() {
+		void init() {
 			assertThat(this.bar).isNotNull();
 			this.initialized = true;
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(WithPropertyPlaceholderValueProperties.class)
 	static class WithPropertyPlaceholderValueConfiguration {
 
 		@Bean
-		public static PropertySourcesPlaceholderConfigurer configurer() {
+		static PropertySourcesPlaceholderConfigurer configurer() {
 			return new PropertySourcesPlaceholderConfigurer();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(SimplePrefixedProperties.class)
 	static class WithPropertyPlaceholderWithLocalPropertiesValueConfiguration {
 
 		@Bean
-		public static PropertySourcesPlaceholderConfigurer configurer() {
+		static PropertySourcesPlaceholderConfigurer configurer() {
 			PropertySourcesPlaceholderConfigurer placeholderConfigurer = new PropertySourcesPlaceholderConfigurer();
 			Properties properties = new Properties();
 			properties.put("com.example.bar", "b");
@@ -954,38 +1361,38 @@ public class ConfigurationPropertiesTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	static class WithFactoryBeanConfiguration {
 
-		public static boolean factoryBeanInitialized;
+		static boolean factoryBeanInitialized;
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	static class MultiplePropertySourcesPlaceholderConfigurerConfiguration {
 
 		@Bean
-		public static PropertySourcesPlaceholderConfigurer configurer1() {
+		static PropertySourcesPlaceholderConfigurer configurer1() {
 			return new PropertySourcesPlaceholderConfigurer();
 		}
 
 		@Bean
-		public static PropertySourcesPlaceholderConfigurer configurer2() {
+		static PropertySourcesPlaceholderConfigurer configurer2() {
 			return new PropertySourcesPlaceholderConfigurer();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	static class PrototypePropertiesConfiguration {
 
 		@Bean
 		@Scope("prototype")
 		@ConfigurationProperties("example")
-		public PrototypeBean prototypeBean() {
+		PrototypeBean prototypeBean() {
 			return new PrototypeBean();
 		}
 
@@ -993,23 +1400,23 @@ public class ConfigurationPropertiesTests {
 
 	@EnableConfigurationProperties
 	@ConfigurationProperties(prefix = "test")
-	public static class PropertiesWithResource {
+	static class PropertiesWithResource {
 
 		private Resource resource;
 
-		public Resource getResource() {
+		Resource getResource() {
 			return this.resource;
 		}
 
-		public void setResource(Resource resource) {
+		void setResource(Resource resource) {
 			this.resource = resource;
 		}
 
 	}
 
-	private static class TestProtocolResolver implements ProtocolResolver {
+	static class TestProtocolResolver implements ProtocolResolver {
 
-		public static final String PREFIX = "test:/";
+		static final String PREFIX = "test:/";
 
 		@Override
 		public Resource resolve(String location, ResourceLoader resourceLoader) {
@@ -1022,39 +1429,39 @@ public class ConfigurationPropertiesTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ConverterConfiguration {
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		public Converter<String, Person> personConverter() {
+		Converter<String, Person> personConverter() {
 			return new PersonConverter();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class NonQualifiedConverterConfiguration {
 
 		@Bean
-		public Converter<String, Person> personConverter() {
+		Converter<String, Person> personConverter() {
 			return new PersonConverter();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class GenericConverterConfiguration {
 
 		@Bean
 		@ConfigurationPropertiesBinding
-		public GenericConverter genericPersonConverter() {
+		GenericConverter genericPersonConverter() {
 			return new GenericPersonConverter();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FormatterConfiguration {
 
 		@Bean
@@ -1065,45 +1472,45 @@ public class ConfigurationPropertiesTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class NonQualifiedGenericConverterConfiguration {
 
 		@Bean
-		public GenericConverter genericPersonConverter() {
+		GenericConverter genericPersonConverter() {
 			return new GenericPersonConverter();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	static class GenericConfiguration {
 
 		@Bean
 		@ConfigurationProperties("foo")
-		public AGenericClass<String> aBeanToBind() {
+		AGenericClass<String> aBeanToBind() {
 			return new AGenericClass<>();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(WithCustomValidatorProperties.class)
 	static class WithCustomValidatorConfiguration {
 
-		@Bean(name = ConfigurationPropertiesBindingPostProcessor.VALIDATOR_BEAN_NAME)
-		public CustomPropertiesValidator validator() {
+		@Bean(name = EnableConfigurationProperties.VALIDATOR_BEAN_NAME)
+		CustomPropertiesValidator validator() {
 			return new CustomPropertiesValidator();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(WithSetterThatThrowsValidationExceptionProperties.class)
 	static class WithUnsupportedCustomValidatorConfiguration {
 
-		@Bean(name = ConfigurationPropertiesBindingPostProcessor.VALIDATOR_BEAN_NAME)
-		public CustomPropertiesValidator validator() {
+		@Bean(name = EnableConfigurationProperties.VALIDATOR_BEAN_NAME)
+		CustomPropertiesValidator validator() {
 			return new CustomPropertiesValidator();
 		}
 
@@ -1113,11 +1520,11 @@ public class ConfigurationPropertiesTests {
 
 		private T bar;
 
-		public T getBar() {
+		T getBar() {
 			return this.bar;
 		}
 
-		public void setBar(T bar) {
+		void setBar(T bar) {
 			this.bar = bar;
 		}
 
@@ -1129,19 +1536,19 @@ public class ConfigurationPropertiesTests {
 
 		private String two;
 
-		public String getOne() {
+		String getOne() {
 			return this.one;
 		}
 
-		public void setOne(String one) {
+		void setOne(String one) {
 			this.one = one;
 		}
 
-		public String getTwo() {
+		String getTwo() {
 			return this.two;
 		}
 
-		public void setTwo(String two) {
+		void setTwo(String two) {
 			this.two = two;
 		}
 
@@ -1174,7 +1581,7 @@ public class ConfigurationPropertiesTests {
 	}
 
 	@ConfigurationProperties
-	static class BasicProperties {
+	public static class BasicProperties {
 
 		private String name;
 
@@ -1187,30 +1594,31 @@ public class ConfigurationPropertiesTests {
 		// No getter - you should be able to bind to a write-only bean
 
 		public void setName(String name) {
+			// Must be public for XML
 			this.name = name;
 		}
 
-		public void setArray(int... values) {
+		void setArray(int... values) {
 			this.array = values;
 		}
 
-		public int[] getArray() {
+		int[] getArray() {
 			return this.array;
 		}
 
-		public List<Integer> getList() {
+		List<Integer> getList() {
 			return this.list;
 		}
 
-		public void setList(List<Integer> list) {
+		void setList(List<Integer> list) {
 			this.list = list;
 		}
 
-		public Duration getDuration() {
+		Duration getDuration() {
 			return this.duration;
 		}
 
-		public void setDuration(Duration duration) {
+		void setDuration(Duration duration) {
 			this.duration = duration;
 		}
 
@@ -1223,19 +1631,19 @@ public class ConfigurationPropertiesTests {
 
 		private final Nested nested = new Nested();
 
-		public void setName(String name) {
+		void setName(String name) {
 			this.name = name;
 		}
 
-		public Nested getNested() {
+		Nested getNested() {
 			return this.nested;
 		}
 
-		protected static class Nested {
+		static class Nested {
 
 			private String name;
 
-			public void setName(String name) {
+			void setName(String name) {
 				this.name = name;
 			}
 
@@ -1248,17 +1656,22 @@ public class ConfigurationPropertiesTests {
 
 	}
 
+	@ConfigurationProperties(ignoreUnknownFields = false, ignoreInvalidFields = true)
+	static class IgnoreUnknownFieldsFalseIgnoreInvalidFieldsTrueProperties extends BasicProperties {
+
+	}
+
 	@EnableConfigurationProperties
 	@ConfigurationProperties(prefix = "com.example", ignoreInvalidFields = true)
 	static class IgnoreInvalidFieldsFalseProperties {
 
 		private long bar;
 
-		public void setBar(long bar) {
+		void setBar(long bar) {
 			this.bar = bar;
 		}
 
-		public long getBar() {
+		long getBar() {
 			return this.bar;
 		}
 
@@ -1279,11 +1692,11 @@ public class ConfigurationPropertiesTests {
 		@NotEmpty
 		private String description;
 
-		public String getDescription() {
+		String getDescription() {
 			return this.description;
 		}
 
-		public void setDescription(String description) {
+		void setDescription(String description) {
 			this.description = description;
 		}
 
@@ -1307,7 +1720,7 @@ public class ConfigurationPropertiesTests {
 
 		private Jsr303Properties properties;
 
-		public Jsr303Properties getProperties() {
+		Jsr303Properties getProperties() {
 			return this.properties;
 		}
 
@@ -1319,9 +1732,9 @@ public class ConfigurationPropertiesTests {
 	static class ValidatedValidNestedJsr303Properties {
 
 		@Valid
-		private List<Jsr303Properties> properties = Collections.singletonList(new Jsr303Properties());
+		private final List<Jsr303Properties> properties = Collections.singletonList(new Jsr303Properties());
 
-		public List<Jsr303Properties> getProperties() {
+		List<Jsr303Properties> getProperties() {
 			return this.properties;
 		}
 
@@ -1336,7 +1749,7 @@ public class ConfigurationPropertiesTests {
 
 		private String name;
 
-		public void setName(String name) {
+		void setName(String name) {
 			this.name = name;
 		}
 
@@ -1350,11 +1763,11 @@ public class ConfigurationPropertiesTests {
 
 		private Map<String, String> mymap;
 
-		public void setMymap(Map<String, String> mymap) {
+		void setMymap(Map<String, String> mymap) {
 			this.mymap = mymap;
 		}
 
-		public Map<String, String> getMymap() {
+		Map<String, String> getMymap() {
 			return this.mymap;
 		}
 
@@ -1367,11 +1780,11 @@ public class ConfigurationPropertiesTests {
 		private BasicProperties properties;
 
 		@PostConstruct
-		public void init() {
+		void init() {
 			assertThat(this.properties).isNotNull();
 		}
 
-		public String getName() {
+		String getName() {
 			return this.properties.name;
 		}
 
@@ -1395,7 +1808,7 @@ public class ConfigurationPropertiesTests {
 			return this.foo;
 		}
 
-		public void setFoo(String foo) {
+		void setFoo(String foo) {
 			this.foo = foo;
 		}
 
@@ -1408,11 +1821,11 @@ public class ConfigurationPropertiesTests {
 		@Value("${default.value}")
 		private String value;
 
-		public void setValue(String value) {
+		void setValue(String value) {
 			this.value = value;
 		}
 
-		public String getValue() {
+		String getValue() {
 			return this.value;
 		}
 
@@ -1426,19 +1839,19 @@ public class ConfigurationPropertiesTests {
 
 		private List<FooEnum> theValues;
 
-		public void setTheValue(FooEnum value) {
+		void setTheValue(FooEnum value) {
 			this.theValue = value;
 		}
 
-		public FooEnum getTheValue() {
+		FooEnum getTheValue() {
 			return this.theValue;
 		}
 
-		public List<FooEnum> getTheValues() {
+		List<FooEnum> getTheValues() {
 			return this.theValues;
 		}
 
-		public void setTheValues(List<FooEnum> theValues) {
+		void setTheValues(List<FooEnum> theValues) {
 			this.theValues = theValues;
 		}
 
@@ -1456,11 +1869,11 @@ public class ConfigurationPropertiesTests {
 
 		private char[] chars;
 
-		public char[] getChars() {
+		char[] getChars() {
 			return this.chars;
 		}
 
-		public void setChars(char[] chars) {
+		void setChars(char[] chars) {
 			this.chars = chars;
 		}
 
@@ -1474,19 +1887,19 @@ public class ConfigurationPropertiesTests {
 
 		private String barBAZ;
 
-		public String getFooBar() {
+		String getFooBar() {
 			return this.fooBar;
 		}
 
-		public void setFooBar(String fooBar) {
+		void setFooBar(String fooBar) {
 			this.fooBar = fooBar;
 		}
 
-		public String getBarBAZ() {
+		String getBarBAZ() {
 			return this.barBAZ;
 		}
 
-		public void setBarBAZ(String barBAZ) {
+		void setBarBAZ(String barBAZ) {
 			this.barBAZ = barBAZ;
 		}
 
@@ -1499,11 +1912,11 @@ public class ConfigurationPropertiesTests {
 
 		private Map<String, String> map;
 
-		public Map<String, String> getMap() {
+		Map<String, String> getMap() {
 			return this.map;
 		}
 
-		public void setMap(Map<String, String> map) {
+		void setMap(Map<String, String> map) {
 			this.map = map;
 		}
 
@@ -1515,11 +1928,11 @@ public class ConfigurationPropertiesTests {
 
 		private Map<String, Map<String, String>> map;
 
-		public Map<String, Map<String, String>> getMap() {
+		Map<String, Map<String, String>> getMap() {
 			return this.map;
 		}
 
-		public void setMap(Map<String, Map<String, String>> map) {
+		void setMap(Map<String, Map<String, String>> map) {
 			this.map = map;
 		}
 
@@ -1531,11 +1944,11 @@ public class ConfigurationPropertiesTests {
 
 		private Map<String, Map<Integer, Foo>> map;
 
-		public Map<String, Map<Integer, Foo>> getMap() {
+		Map<String, Map<Integer, Foo>> getMap() {
 			return this.map;
 		}
 
-		public void setMap(Map<String, Map<Integer, Foo>> map) {
+		void setMap(Map<String, Map<Integer, Foo>> map) {
 			this.map = map;
 		}
 
@@ -1549,19 +1962,19 @@ public class ConfigurationPropertiesTests {
 
 		private String bar;
 
-		public void setBar(String bar) {
-			this.bar = bar;
-		}
-
-		public String getBar() {
+		String getBar() {
 			return this.bar;
 		}
 
-		public int getFoo() {
+		void setBar(String bar) {
+			this.bar = bar;
+		}
+
+		int getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(int foo) {
+		void setFoo(int foo) {
 			this.foo = foo;
 		}
 
@@ -1573,12 +1986,38 @@ public class ConfigurationPropertiesTests {
 
 		private Person person;
 
-		public Person getPerson() {
+		Person getPerson() {
 			return this.person;
 		}
 
-		public void setPerson(Person person) {
+		void setPerson(Person person) {
 			this.person = person;
+		}
+
+	}
+
+	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	static class PersonAndAlienProperties {
+
+		private Person person;
+
+		private Alien alien;
+
+		Person getPerson() {
+			return this.person;
+		}
+
+		void setPerson(Person person) {
+			this.person = person;
+		}
+
+		Alien getAlien() {
+			return this.alien;
+		}
+
+		void setAlien(Alien alien) {
+			this.alien = alien;
 		}
 
 	}
@@ -1587,9 +2026,9 @@ public class ConfigurationPropertiesTests {
 	@ConfigurationProperties(prefix = "sample")
 	static class MapWithNumericKeyProperties {
 
-		private Map<String, BasicProperties> properties = new LinkedHashMap<>();
+		private final Map<String, BasicProperties> properties = new LinkedHashMap<>();
 
-		public Map<String, BasicProperties> getProperties() {
+		Map<String, BasicProperties> getProperties() {
 			return this.properties;
 		}
 
@@ -1611,11 +2050,11 @@ public class ConfigurationPropertiesTests {
 			ValidationUtils.rejectIfEmpty(errors, "foo", "TEST1");
 		}
 
-		public String getFoo() {
+		String getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(String foo) {
+		void setFoo(String foo) {
 			this.foo = foo;
 		}
 
@@ -1627,11 +2066,11 @@ public class ConfigurationPropertiesTests {
 
 		private String foo;
 
-		public String getFoo() {
+		String getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(String foo) {
+		void setFoo(String foo) {
 			this.foo = foo;
 			if (!foo.equals("bar")) {
 				throw new IllegalArgumentException("Wrong value for foo");
@@ -1645,11 +2084,11 @@ public class ConfigurationPropertiesTests {
 
 		private String foo;
 
-		public String getFoo() {
+		String getFoo() {
 			return this.foo;
 		}
 
-		public void setFoo(String foo) {
+		void setFoo(String foo) {
 			this.foo = foo;
 		}
 
@@ -1661,11 +2100,11 @@ public class ConfigurationPropertiesTests {
 
 		private List<Class<? extends Throwable>> list;
 
-		public List<Class<? extends Throwable>> getList() {
+		List<Class<? extends Throwable>> getList() {
 			return this.list;
 		}
 
-		public void setList(List<Class<? extends Throwable>> list) {
+		void setList(List<Class<? extends Throwable>> list) {
 			this.list = list;
 		}
 
@@ -1677,11 +2116,11 @@ public class ConfigurationPropertiesTests {
 
 		private File file;
 
-		public File getFile() {
+		File getFile() {
 			return this.file;
 		}
 
-		public void setFile(File file) {
+		void setFile(File file) {
 			this.file = file;
 		}
 
@@ -1696,21 +2135,198 @@ public class ConfigurationPropertiesTests {
 		@DataSizeUnit(DataUnit.KILOBYTES)
 		private DataSize anotherSize;
 
-		public DataSize getSize() {
+		DataSize getSize() {
 			return this.size;
 		}
 
-		public void setSize(DataSize size) {
+		void setSize(DataSize size) {
 			this.size = size;
 		}
 
-		public DataSize getAnotherSize() {
+		DataSize getAnotherSize() {
 			return this.anotherSize;
 		}
 
-		public void setAnotherSize(DataSize anotherSize) {
+		void setAnotherSize(DataSize anotherSize) {
 			this.anotherSize = anotherSize;
 		}
+
+	}
+
+	@ConfigurationProperties(prefix = "test")
+	static class OtherInjectedProperties {
+
+		final DataSizeProperties dataSizeProperties;
+
+		OtherInjectedProperties(ObjectProvider<DataSizeProperties> dataSizeProperties) {
+			this.dataSizeProperties = dataSizeProperties.getIfUnique();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(OtherInjectedProperties.class)
+	static class OtherInjectPropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties(prefix = "test")
+	@Validated
+	static class ConstructorParameterProperties {
+
+		@NotEmpty
+		private final String foo;
+
+		private final int bar;
+
+		ConstructorParameterProperties(@DefaultValue("hello") String foo, int bar) {
+			this.foo = foo;
+			this.bar = bar;
+		}
+
+		String getFoo() {
+			return this.foo;
+		}
+
+		int getBar() {
+			return this.bar;
+		}
+
+	}
+
+	@ConfigurationProperties(prefix = "test")
+	static class ConstructorParameterEmptyDefaultValueProperties {
+
+		private final Set<String> set;
+
+		private final Map<String, String> map;
+
+		private final int[] array;
+
+		private final Optional<String> optional;
+
+		ConstructorParameterEmptyDefaultValueProperties(@DefaultValue Set<String> set,
+				@DefaultValue Map<String, String> map, @DefaultValue int[] array,
+				@DefaultValue Optional<String> optional) {
+			this.set = set;
+			this.map = map;
+			this.array = array;
+			this.optional = optional;
+		}
+
+		Set<String> getSet() {
+			return this.set;
+		}
+
+		Map<String, String> getMap() {
+			return this.map;
+		}
+
+		int[] getArray() {
+			return this.array;
+		}
+
+		Optional<String> getOptional() {
+			return this.optional;
+		}
+
+	}
+
+	@ConfigurationProperties(prefix = "test")
+	static class ConstructorParameterWithUnitProperties {
+
+		private final Duration duration;
+
+		private final DataSize size;
+
+		private final Period period;
+
+		@ConstructorBinding
+		ConstructorParameterWithUnitProperties(@DefaultValue("2") @DurationUnit(ChronoUnit.DAYS) Duration duration,
+				@DefaultValue("3") @DataSizeUnit(DataUnit.MEGABYTES) DataSize size,
+				@DefaultValue("4") @PeriodUnit(ChronoUnit.YEARS) Period period) {
+			this.size = size;
+			this.duration = duration;
+			this.period = period;
+		}
+
+		Duration getDuration() {
+			return this.duration;
+		}
+
+		DataSize getSize() {
+			return this.size;
+		}
+
+		Period getPeriod() {
+			return this.period;
+		}
+
+	}
+
+	@ConfigurationProperties(prefix = "test")
+	static class ConstructorParameterWithFormatProperties {
+
+		private final Duration duration;
+
+		private final Period period;
+
+		ConstructorParameterWithFormatProperties(
+				@DefaultValue("2d") @DurationFormat(DurationStyle.SIMPLE) Duration duration,
+				@DefaultValue("3y") @PeriodFormat(PeriodStyle.SIMPLE) Period period) {
+			this.duration = duration;
+			this.period = period;
+		}
+
+		Duration getDuration() {
+			return this.duration;
+		}
+
+		Period getPeriod() {
+			return this.period;
+		}
+
+	}
+
+	@ConfigurationProperties(prefix = "test")
+	@Validated
+	static class ConstructorParameterValidatedProperties {
+
+		@NotEmpty
+		private final String foo;
+
+		ConstructorParameterValidatedProperties(String foo) {
+			this.foo = foo;
+		}
+
+		String getFoo() {
+			return this.foo;
+		}
+
+	}
+
+	@EnableConfigurationProperties(ConstructorParameterProperties.class)
+	static class ConstructorParameterConfiguration {
+
+	}
+
+	@EnableConfigurationProperties(ConstructorParameterEmptyDefaultValueProperties.class)
+	static class ConstructorParameterEmptyDefaultValueConfiguration {
+
+	}
+
+	@EnableConfigurationProperties(ConstructorParameterWithUnitProperties.class)
+	static class ConstructorParameterWithUnitConfiguration {
+
+	}
+
+	@EnableConfigurationProperties(ConstructorParameterWithFormatProperties.class)
+	static class ConstructorParameterWithFormatConfiguration {
+
+	}
+
+	@EnableConfigurationProperties(ConstructorParameterValidatedProperties.class)
+	static class ConstructorParameterValidationConfiguration {
 
 	}
 
@@ -1734,6 +2350,16 @@ public class ConfigurationPropertiesTests {
 		public Person convert(String source) {
 			String[] content = StringUtils.split(source, " ");
 			return new Person(content[0], content[1]);
+		}
+
+	}
+
+	static class AlienConverter implements Converter<String, Alien> {
+
+		@Override
+		public Alien convert(String source) {
+			String[] content = StringUtils.split(source, " ");
+			return new Alien(content[0], content[1]);
 		}
 
 	}
@@ -1771,7 +2397,7 @@ public class ConfigurationPropertiesTests {
 	static class PersonPropertyEditor extends PropertyEditorSupport {
 
 		@Override
-		public void setAsText(String text) throws IllegalArgumentException {
+		public void setAsText(String text) {
 			String[] content = text.split(",");
 			setValue(new Person(content[1], content[0]));
 		}
@@ -1799,28 +2425,543 @@ public class ConfigurationPropertiesTests {
 
 	}
 
+	static class Alien {
+
+		private final String firstName;
+
+		private final String lastName;
+
+		Alien(String firstName, String lastName) {
+			this.firstName = firstName;
+			this.lastName = lastName;
+		}
+
+		String getFirstName() {
+			return this.firstName;
+		}
+
+		String getLastName() {
+			return this.lastName;
+		}
+
+	}
+
 	static class Foo {
 
 		private String a;
 
 		private int b;
 
-		public String getA() {
+		String getA() {
 			return this.a;
 		}
 
-		public void setA(String a) {
+		void setA(String a) {
 			this.a = a;
 		}
 
-		public int getB() {
+		int getB() {
 			return this.b;
 		}
 
-		public void setB(int b) {
+		void setB(int b) {
 			this.b = b;
 		}
 
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(NestedConstructorProperties.class)
+	static class NestedConstructorPropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties("test")
+	static class NestedConstructorProperties {
+
+		private final String name;
+
+		private final Nested nested;
+
+		NestedConstructorProperties(String name, Nested nested) {
+			this.name = name;
+			this.nested = nested;
+		}
+
+		String getName() {
+			return this.name;
+		}
+
+		Nested getNested() {
+			return this.nested;
+		}
+
+		static class Nested {
+
+			private final int age;
+
+			@ConstructorBinding
+			Nested(int age) {
+				this.age = age;
+			}
+
+			int getAge() {
+				return this.age;
+			}
+
+		}
+
+	}
+
+	@ConfigurationProperties("test")
+	static class NestedMultipleConstructorProperties {
+
+		private final String name;
+
+		private final Nested nested;
+
+		NestedMultipleConstructorProperties(String name, Nested nested) {
+			this.name = name;
+			this.nested = nested;
+		}
+
+		String getName() {
+			return this.name;
+		}
+
+		Nested getNested() {
+			return this.nested;
+		}
+
+		static class Nested {
+
+			private int age;
+
+			Nested(String property) {
+
+			}
+
+			@ConstructorBinding
+			Nested(int age) {
+				this.age = age;
+			}
+
+			int getAge() {
+				return this.age;
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(NestedMultipleConstructorProperties.class)
+	static class NestedMultipleConstructorsConfiguration {
+
+	}
+
+	@ConfigurationProperties("test")
+	static class ConstructorBindingWithOuterClassConstructorBoundProperties {
+
+		private final Nested nested;
+
+		ConstructorBindingWithOuterClassConstructorBoundProperties(Nested nested) {
+			this.nested = nested;
+		}
+
+		Nested getNested() {
+			return this.nested;
+		}
+
+		static class Nested {
+
+			private Outer outer;
+
+			Outer getOuter() {
+				return this.outer;
+			}
+
+			void setOuter(Outer nested) {
+				this.outer = nested;
+			}
+
+		}
+
+	}
+
+	@ConfigurationProperties("test")
+	static class ConstructorBindingWithOuterClassConstructorBoundAndNestedAutowired {
+
+		private final Nested nested;
+
+		ConstructorBindingWithOuterClassConstructorBoundAndNestedAutowired(Nested nested) {
+			this.nested = nested;
+		}
+
+		Nested getNested() {
+			return this.nested;
+		}
+
+		static class Nested {
+
+			private final int age;
+
+			@Autowired
+			Nested(int age) {
+				this.age = age;
+			}
+
+			int getAge() {
+				return this.age;
+			}
+
+		}
+
+	}
+
+	static class Outer {
+
+		private final int age;
+
+		Outer(int age) {
+			this.age = age;
+		}
+
+		int getAge() {
+			return this.age;
+		}
+
+	}
+
+	@EnableConfigurationProperties(ConstructorBindingWithOuterClassConstructorBoundProperties.class)
+	static class ConstructorBindingWithOuterClassConstructorBoundConfiguration {
+
+	}
+
+	@EnableConfigurationProperties(ConstructorBindingWithOuterClassConstructorBoundAndNestedAutowired.class)
+	static class ConstructorBindingWithOuterClassConstructorBoundAndNestedAutowiredConfiguration {
+
+	}
+
+	@ConfigurationProperties("test")
+	static class MultiConstructorConfigurationListProperties {
+
+		private final List<MultiConstructorConfigurationProperties> nested = new ArrayList<>();
+
+		List<MultiConstructorConfigurationProperties> getNested() {
+			return this.nested;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(MultiConstructorConfigurationListProperties.class)
+	static class MultiConstructorConfigurationPropertiesConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(JavaBeanNestedConstructorBindingProperties.class)
+	static class JavaBeanNestedConstructorBindingPropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties("test")
+	static class JavaBeanNestedConstructorBindingProperties {
+
+		private Nested nested;
+
+		Nested getNested() {
+			return this.nested;
+		}
+
+		void setNested(Nested nested) {
+			this.nested = nested;
+		}
+
+		static final class Nested {
+
+			private final int age;
+
+			@ConstructorBinding
+			private Nested(int age) {
+				this.age = age;
+			}
+
+			int getAge() {
+				return this.age;
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(JavaBeanNonDefaultConstructorProperties.class)
+	static class JavaBeanNonDefaultConstructorPropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties("test")
+	static class JavaBeanNonDefaultConstructorProperties {
+
+		private Nested nested;
+
+		Nested getNested() {
+			return this.nested;
+		}
+
+		void setNested(Nested nested) {
+			this.nested = nested;
+		}
+
+		static final class Nested {
+
+			private int age;
+
+			private Nested() {
+
+			}
+
+			private Nested(int age) {
+				this.age = age;
+			}
+
+			int getAge() {
+				return this.age;
+			}
+
+			void setAge(int age) {
+				this.age = age + 5;
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(SyntheticNestedConstructorProperties.class)
+	static class SyntheticConstructorPropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties("test")
+	static class SyntheticNestedConstructorProperties {
+
+		private final Nested nested;
+
+		SyntheticNestedConstructorProperties(Nested nested) {
+			this.nested = nested;
+		}
+
+		Nested getNested() {
+			return this.nested;
+		}
+
+		static final class Nested {
+
+			private int age;
+
+			private Nested() {
+
+			}
+
+			int getAge() {
+				return this.age;
+			}
+
+			void setAge(int age) {
+				this.age = age;
+			}
+
+			static class AnotherNested {
+
+				private final Nested nested;
+
+				AnotherNested(String name) {
+					this.nested = new Nested();
+				}
+
+				Nested getNested() {
+					return this.nested;
+				}
+
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(DeducedNestedConstructorProperties.class)
+	static class DeducedNestedConstructorPropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties("test")
+	static class DeducedNestedConstructorProperties {
+
+		private final String name;
+
+		private final Nested nested;
+
+		DeducedNestedConstructorProperties(String name, Nested nested) {
+			this.name = name;
+			this.nested = nested;
+		}
+
+		String getName() {
+			return this.name;
+		}
+
+		Nested getNested() {
+			return this.nested;
+		}
+
+		static class Nested {
+
+			private final int age;
+
+			Nested(int age) {
+				this.age = age;
+			}
+
+			int getAge() {
+				return this.age;
+			}
+
+		}
+
+	}
+
+	@Configuration
+	@EnableConfigurationProperties(WithPublicStringConstructorProperties.class)
+	static class WithPublicStringConstructorPropertiesConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(WithCustomConverterAndObjectToObjectMethodProperties.class)
+	static class WithCustomConverterAndObjectToObjectMethodConfiguration {
+
+		@Bean
+		@ConfigurationPropertiesBinding
+		WithObjectToObjectMethodConverter withObjectToObjectMethodConverter() {
+			return new WithObjectToObjectMethodConverter();
+		}
+
+	}
+
+	@ConfigurationProperties("test")
+	static class WithCustomConverterAndObjectToObjectMethodProperties {
+
+		private WithPublicObjectToObjectMethod item;
+
+		WithPublicObjectToObjectMethod getItem() {
+			return this.item;
+		}
+
+		void setItem(WithPublicObjectToObjectMethod item) {
+			this.item = item;
+		}
+
+	}
+
+	static class WithObjectToObjectMethodConverter implements Converter<String, WithPublicObjectToObjectMethod> {
+
+		@Override
+		public WithPublicObjectToObjectMethod convert(String source) {
+			return new WithPublicObjectToObjectMethod(source);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties
+	static class ConstructorUsedInBeanMethodConfiguration {
+
+		@Bean
+		@ConfigurationProperties("test")
+		ConstructorUsedDirectly constructorUsedInBeanMethod() {
+			return new ConstructorUsedDirectly("bean-method-1", "bean-method-2");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(ConstructorUsedInNestedProperty.class)
+	static class ConstructorUsedInNestedPropertyConfiguration {
+
+	}
+
+	@ConfigurationProperties("test")
+	static class ConstructorUsedInNestedProperty {
+
+		@NestedConfigurationProperty
+		private ConstructorUsedDirectly nested = new ConstructorUsedDirectly("nested-1", "nested-2");
+
+		ConstructorUsedDirectly getNested() {
+			return this.nested;
+		}
+
+		void setNested(ConstructorUsedDirectly nested) {
+			this.nested = nested;
+		}
+
+	}
+
+	static class ConstructorUsedDirectly {
+
+		private String one;
+
+		private String two;
+
+		ConstructorUsedDirectly(String one, String two) {
+			this.one = one;
+			this.two = two;
+		}
+
+		String getOne() {
+			return this.one;
+		}
+
+		void setOne(String one) {
+			this.one = one;
+		}
+
+		String getTwo() {
+			return this.two;
+		}
+
+		void setTwo(String two) {
+			this.two = two;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(NestedRecordInstanceProperties.class)
+	static class NestedRecordInstancePropertiesConfiguration {
+
+	}
+
+	@ConfigurationProperties("test")
+	static class NestedRecordInstanceProperties {
+
+		@NestedConfigurationProperty
+		private NestedRecord nested = new NestedRecord("unnamed");
+
+		NestedRecord getNested() {
+			return this.nested;
+		}
+
+		void setNested(NestedRecord nestedRecord) {
+			this.nested = nestedRecord;
+		}
+
+	}
+
+	static record NestedRecord(String name) {
 	}
 
 }

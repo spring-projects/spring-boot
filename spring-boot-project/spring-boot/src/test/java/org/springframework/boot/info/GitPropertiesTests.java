@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@ package org.springframework.boot.info;
 
 import java.util.Properties;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,11 +29,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link GitProperties}.
  *
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  */
-public class GitPropertiesTests {
+class GitPropertiesTests {
 
 	@Test
-	public void basicInfo() {
+	void basicInfo() {
 		GitProperties properties = new GitProperties(
 				createProperties("master", "abcdefghijklmno", "abcdefg", "1457527123"));
 		assertThat(properties.getBranch()).isEqualTo("master");
@@ -39,7 +43,7 @@ public class GitPropertiesTests {
 	}
 
 	@Test
-	public void noInfo() {
+	void noInfo() {
 		GitProperties properties = new GitProperties(new Properties());
 		assertThat(properties.getBranch()).isNull();
 		assertThat(properties.getCommitId()).isNull();
@@ -48,7 +52,7 @@ public class GitPropertiesTests {
 	}
 
 	@Test
-	public void coerceEpochSecond() {
+	void coerceEpochSecond() {
 		GitProperties properties = new GitProperties(createProperties("master", "abcdefg", null, "1457527123"));
 		assertThat(properties.getCommitTime()).isNotNull();
 		assertThat(properties.get("commit.time")).isEqualTo("1457527123000");
@@ -56,7 +60,7 @@ public class GitPropertiesTests {
 	}
 
 	@Test
-	public void coerceDateString() {
+	void coerceDateString() {
 		GitProperties properties = new GitProperties(
 				createProperties("master", "abcdefg", null, "2016-03-04T14:36:33+0100"));
 		assertThat(properties.getCommitTime()).isNotNull();
@@ -65,7 +69,7 @@ public class GitPropertiesTests {
 	}
 
 	@Test
-	public void coerceUnsupportedFormat() {
+	void coerceUnsupportedFormat() {
 		GitProperties properties = new GitProperties(
 				createProperties("master", "abcdefg", null, "2016-03-04 15:22:24"));
 		assertThat(properties.getCommitTime()).isNull();
@@ -73,7 +77,7 @@ public class GitPropertiesTests {
 	}
 
 	@Test
-	public void shortCommitUsedIfPresent() {
+	void shortCommitUsedIfPresent() {
 		GitProperties properties = new GitProperties(
 				createProperties("master", "abcdefghijklmno", "abcdefgh", "1457527123"));
 		assertThat(properties.getCommitId()).isEqualTo("abcdefghijklmno");
@@ -81,17 +85,24 @@ public class GitPropertiesTests {
 	}
 
 	@Test
-	public void shortenCommitIdShorterThan7() {
+	void shortenCommitIdShorterThan7() {
 		GitProperties properties = new GitProperties(createProperties("master", "abc", null, "1457527123"));
 		assertThat(properties.getCommitId()).isEqualTo("abc");
 		assertThat(properties.getShortCommitId()).isEqualTo("abc");
 	}
 
 	@Test
-	public void shortenCommitIdLongerThan7() {
+	void shortenCommitIdLongerThan7() {
 		GitProperties properties = new GitProperties(createProperties("master", "abcdefghijklmno", null, "1457527123"));
 		assertThat(properties.getCommitId()).isEqualTo("abcdefghijklmno");
 		assertThat(properties.getShortCommitId()).isEqualTo("abcdefg");
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new GitProperties.GitPropertiesRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.resource().forResource("git.properties")).accepts(runtimeHints);
 	}
 
 	private static Properties createProperties(String branch, String commitId, String commitIdAbbrev,

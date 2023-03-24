@@ -1,0 +1,5 @@
+type Query {
+    greeting(name: String! = "Spring"): String!
+    bookById(id: ID): Book
+    books: BookConnection
+}

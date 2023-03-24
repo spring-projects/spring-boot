@@ -137,7 +137,7 @@ class FileSessionPersistence implements SessionPersistenceManager {
 			this.sessionData = new LinkedHashMap<>(session.getSessionData());
 		}
 
-		public PersistentSession getPersistentSession() {
+		PersistentSession getPersistentSession() {
 			return new PersistentSession(this.expiration, this.sessionData);
 		}
 

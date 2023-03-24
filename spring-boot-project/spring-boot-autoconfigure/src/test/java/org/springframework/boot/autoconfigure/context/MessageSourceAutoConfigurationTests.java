@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package org.springframework.boot.autoconfigure.context;
 
 import java.util.Locale;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -27,7 +27,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
-import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -42,19 +41,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Kedar Joshi
  */
-public class MessageSourceAutoConfigurationTests {
+class MessageSourceAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(MessageSourceAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(MessageSourceAutoConfiguration.class));
 
 	@Test
-	public void testDefaultMessageSource() {
+	void testDefaultMessageSource() {
 		this.contextRunner.run((context) -> assertThat(context.getMessage("foo", null, "Foo message", Locale.UK))
-				.isEqualTo("Foo message"));
+			.isEqualTo("Foo message"));
 	}
 
 	@Test
-	public void propertiesBundleWithSlashIsDetected() {
+	void propertiesBundleWithSlashIsDetected() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages").run((context) -> {
 			assertThat(context).hasSingleBean(MessageSource.class);
 			assertThat(context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
@@ -62,7 +61,7 @@ public class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void propertiesBundleWithDotIsDetected() {
+	void propertiesBundleWithDotIsDetected() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test.messages").run((context) -> {
 			assertThat(context).hasSingleBean(MessageSource.class);
 			assertThat(context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
@@ -70,24 +69,24 @@ public class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void testEncodingWorks() {
+	void testEncodingWorks() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/swedish")
-				.run((context) -> assertThat(context.getMessage("foo", null, "Foo message", Locale.UK))
-						.isEqualTo("Some text with some swedish öäå!"));
+			.run((context) -> assertThat(context.getMessage("foo", null, "Foo message", Locale.UK))
+				.isEqualTo("Some text with some swedish öäå!"));
 	}
 
 	@Test
-	public void testCacheDurationNoUnit() {
+	void testCacheDurationNoUnit() {
 		this.contextRunner
-				.withPropertyValues("spring.messages.basename:test/messages", "spring.messages.cache-duration=10")
-				.run(assertCache(10 * 1000));
+			.withPropertyValues("spring.messages.basename:test/messages", "spring.messages.cache-duration=10")
+			.run(assertCache(10 * 1000));
 	}
 
 	@Test
-	public void testCacheDurationWithUnit() {
+	void testCacheDurationWithUnit() {
 		this.contextRunner
-				.withPropertyValues("spring.messages.basename:test/messages", "spring.messages.cache-duration=1m")
-				.run(assertCache(60 * 1000));
+			.withPropertyValues("spring.messages.basename:test/messages", "spring.messages.cache-duration=1m")
+			.run(assertCache(60 * 1000));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertCache(long expected) {
@@ -98,120 +97,130 @@ public class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void testMultipleMessageSourceCreated() {
+	void testMultipleMessageSourceCreated() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages,test/messages2")
-				.run((context) -> {
-					assertThat(context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
-					assertThat(context.getMessage("foo-foo", null, "Foo-Foo message", Locale.UK)).isEqualTo("bar-bar");
-				});
+			.run((context) -> {
+				assertThat(context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
+				assertThat(context.getMessage("foo-foo", null, "Foo-Foo message", Locale.UK)).isEqualTo("bar-bar");
+			});
 	}
 
 	@Test
-	public void testBadEncoding() {
-		// Bad encoding just means the messages are ignored
-		this.contextRunner.withPropertyValues("spring.messages.encoding:rubbish")
-				.run((context) -> assertThat(context.getMessage("foo", null, "blah", Locale.UK)).isEqualTo("blah"));
+	@Disabled("Expected to fail per gh-1075")
+	void testMessageSourceFromPropertySourceAnnotation() {
+		this.contextRunner.withUserConfiguration(Config.class)
+			.run((context) -> assertThat(context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar"));
 	}
 
 	@Test
-	@Ignore("Expected to fail per gh-1075")
-	public void testMessageSourceFromPropertySourceAnnotation() {
-		this.contextRunner.withUserConfiguration(Config.class).run(
-				(context) -> assertThat(context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar"));
-	}
-
-	@Test
-	public void testFallbackDefault() {
+	void testFallbackDefault() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
-				.run((context) -> assertThat(context.getBean(MessageSource.class))
-						.hasFieldOrPropertyWithValue("fallbackToSystemLocale", true));
+			.run((context) -> assertThat(context.getBean(MessageSource.class))
+				.hasFieldOrPropertyWithValue("fallbackToSystemLocale", true));
 	}
 
 	@Test
-	public void testFallbackTurnOff() {
+	void testFallbackTurnOff() {
 		this.contextRunner
-				.withPropertyValues("spring.messages.basename:test/messages",
-						"spring.messages.fallback-to-system-locale:false")
-				.run((context) -> assertThat(context.getBean(MessageSource.class))
-						.hasFieldOrPropertyWithValue("fallbackToSystemLocale", false));
+			.withPropertyValues("spring.messages.basename:test/messages",
+					"spring.messages.fallback-to-system-locale:false")
+			.run((context) -> assertThat(context.getBean(MessageSource.class))
+				.hasFieldOrPropertyWithValue("fallbackToSystemLocale", false));
 	}
 
 	@Test
-	public void testFormatMessageDefault() {
+	void testFormatMessageDefault() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
-				.run((context) -> assertThat(context.getBean(MessageSource.class))
-						.hasFieldOrPropertyWithValue("alwaysUseMessageFormat", false));
+			.run((context) -> assertThat(context.getBean(MessageSource.class))
+				.hasFieldOrPropertyWithValue("alwaysUseMessageFormat", false));
 	}
 
 	@Test
-	public void testFormatMessageOn() {
+	void testFormatMessageOn() {
 		this.contextRunner
-				.withPropertyValues("spring.messages.basename:test/messages",
-						"spring.messages.always-use-message-format:true")
-				.run((context) -> assertThat(context.getBean(MessageSource.class))
-						.hasFieldOrPropertyWithValue("alwaysUseMessageFormat", true));
+			.withPropertyValues("spring.messages.basename:test/messages",
+					"spring.messages.always-use-message-format:true")
+			.run((context) -> assertThat(context.getBean(MessageSource.class))
+				.hasFieldOrPropertyWithValue("alwaysUseMessageFormat", true));
 	}
 
 	@Test
-	public void testUseCodeAsDefaultMessageDefault() {
+	void testUseCodeAsDefaultMessageDefault() {
 		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
-				.run((context) -> assertThat(context.getBean(MessageSource.class))
-						.hasFieldOrPropertyWithValue("useCodeAsDefaultMessage", false));
+			.run((context) -> assertThat(context.getBean(MessageSource.class))
+				.hasFieldOrPropertyWithValue("useCodeAsDefaultMessage", false));
 	}
 
 	@Test
-	public void testUseCodeAsDefaultMessageOn() {
+	void testUseCodeAsDefaultMessageOn() {
 		this.contextRunner
-				.withPropertyValues("spring.messages.basename:test/messages",
-						"spring.messages.use-code-as-default-message:true")
-				.run((context) -> assertThat(context.getBean(MessageSource.class))
-						.hasFieldOrPropertyWithValue("useCodeAsDefaultMessage", true));
+			.withPropertyValues("spring.messages.basename:test/messages",
+					"spring.messages.use-code-as-default-message:true")
+			.run((context) -> assertThat(context.getBean(MessageSource.class))
+				.hasFieldOrPropertyWithValue("useCodeAsDefaultMessage", true));
 	}
 
 	@Test
-	public void existingMessageSourceIsPreferred() {
-		this.contextRunner.withUserConfiguration(CustomMessageSource.class)
-				.run((context) -> assertThat(context.getMessage("foo", null, null, null)).isEqualTo("foo"));
+	void existingMessageSourceIsPreferred() {
+		this.contextRunner.withUserConfiguration(CustomMessageSourceConfiguration.class)
+			.run((context) -> assertThat(context.getMessage("foo", null, null, null)).isEqualTo("foo"));
 	}
 
 	@Test
-	public void existingMessageSourceInParentIsIgnored() {
+	void existingMessageSourceInParentIsIgnored() {
 		this.contextRunner.run((parent) -> this.contextRunner.withParent(parent)
-				.withPropertyValues("spring.messages.basename:test/messages")
-				.run((context) -> assertThat(context.getMessage("foo", null, "Foo message", Locale.UK))
-						.isEqualTo("bar")));
+			.withPropertyValues("spring.messages.basename:test/messages")
+			.run((context) -> assertThat(context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar")));
 	}
 
-	@Configuration
+	@Test
+	void messageSourceWithNonStandardBeanNameIsIgnored() {
+		this.contextRunner.withPropertyValues("spring.messages.basename:test/messages")
+			.withUserConfiguration(CustomBeanNameMessageSourceConfiguration.class)
+			.run((context) -> assertThat(context.getMessage("foo", null, Locale.US)).isEqualTo("bar"));
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@PropertySource("classpath:/switch-messages.properties")
-	protected static class Config {
+	static class Config {
 
 	}
 
-	@Configuration
-	protected static class CustomMessageSource {
+	@Configuration(proxyBeanMethods = false)
+	static class CustomMessageSourceConfiguration {
 
 		@Bean
-		public MessageSource messageSource() {
-			return new MessageSource() {
+		MessageSource messageSource() {
+			return new TestMessageSource();
+		}
 
-				@Override
-				public String getMessage(String code, Object[] args, String defaultMessage, Locale locale) {
-					return code;
-				}
+	}
 
-				@Override
-				public String getMessage(String code, Object[] args, Locale locale) throws NoSuchMessageException {
-					return code;
-				}
+	@Configuration(proxyBeanMethods = false)
+	static class CustomBeanNameMessageSourceConfiguration {
 
-				@Override
-				public String getMessage(MessageSourceResolvable resolvable, Locale locale)
-						throws NoSuchMessageException {
-					return resolvable.getCodes()[0];
-				}
+		@Bean
+		MessageSource codeReturningMessageSource() {
+			return new TestMessageSource();
+		}
 
-			};
+	}
+
+	static class TestMessageSource implements MessageSource {
+
+		@Override
+		public String getMessage(String code, Object[] args, String defaultMessage, Locale locale) {
+			return code;
+		}
+
+		@Override
+		public String getMessage(String code, Object[] args, Locale locale) {
+			return code;
+		}
+
+		@Override
+		public String getMessage(MessageSourceResolvable resolvable, Locale locale) {
+			return resolvable.getCodes()[0];
 		}
 
 	}

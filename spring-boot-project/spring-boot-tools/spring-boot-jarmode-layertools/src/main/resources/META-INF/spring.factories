@@ -1,0 +1,2 @@
+org.springframework.boot.loader.jarmode.JarMode=\
+org.springframework.boot.jarmode.layertools.LayerToolsJarMode

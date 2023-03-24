@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.reactive;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -27,23 +31,27 @@ import org.springframework.boot.autoconfigure.web.embedded.NettyWebServerFactory
 import org.springframework.boot.autoconfigure.web.embedded.TomcatWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.web.embedded.UndertowWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryCustomizer;
+import org.springframework.boot.autoconfigure.web.reactive.TomcatReactiveWebServerFactoryCustomizer;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.server.reactive.ContextPathCompositeHandler;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 
 /**
- * {@link ManagementContextConfiguration} for reactive web infrastructure when a separate
- * management context with a web server running on a different port is required.
+ * {@link ManagementContextConfiguration @ManagementContextConfiguration} for reactive web
+ * infrastructure when a separate management context with a web server running on a
+ * different port is required.
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @since 2.0.0
  */
 @EnableWebFlux
-@ManagementContextConfiguration(ManagementContextType.CHILD)
+@ManagementContextConfiguration(value = ManagementContextType.CHILD, proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 public class ReactiveManagementChildContextConfiguration {
 
@@ -54,17 +62,22 @@ public class ReactiveManagementChildContextConfiguration {
 	}
 
 	@Bean
-	public HttpHandler httpHandler(ApplicationContext applicationContext) {
-		return WebHttpHandlerBuilder.applicationContext(applicationContext).build();
+	public HttpHandler httpHandler(ApplicationContext applicationContext, ManagementServerProperties properties) {
+		HttpHandler httpHandler = WebHttpHandlerBuilder.applicationContext(applicationContext).build();
+		if (StringUtils.hasText(properties.getBasePath())) {
+			Map<String, HttpHandler> handlersMap = Collections.singletonMap(properties.getBasePath(), httpHandler);
+			return new ContextPathCompositeHandler(handlersMap);
+		}
+		return httpHandler;
 	}
 
-	class ReactiveManagementWebServerFactoryCustomizer
+	static class ReactiveManagementWebServerFactoryCustomizer
 			extends ManagementWebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory> {
 
 		ReactiveManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory) {
 			super(beanFactory, ReactiveWebServerFactoryCustomizer.class, TomcatWebServerFactoryCustomizer.class,
-					JettyWebServerFactoryCustomizer.class, UndertowWebServerFactoryCustomizer.class,
-					NettyWebServerFactoryCustomizer.class);
+					TomcatReactiveWebServerFactoryCustomizer.class, JettyWebServerFactoryCustomizer.class,
+					UndertowWebServerFactoryCustomizer.class, NettyWebServerFactoryCustomizer.class);
 		}
 
 	}

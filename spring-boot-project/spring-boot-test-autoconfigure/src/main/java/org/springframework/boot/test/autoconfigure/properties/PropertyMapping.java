@@ -27,8 +27,8 @@ import org.springframework.test.context.TestPropertySource;
 
 /**
  * Indicates that attributes from a test annotation should be mapped into a
- * {@link PropertySource}. Can be used at the type level, or on individual attributes. For
- * example, the following annotation declaration: <pre class="code">
+ * {@link PropertySource @PropertySource}. Can be used at the type level, or on individual
+ * attributes. For example, the following annotation declaration: <pre class="code">
  * &#064;Retention(RUNTIME)
  * &#064;PropertyMapping("my.example")
  * public &#064;interface Example {

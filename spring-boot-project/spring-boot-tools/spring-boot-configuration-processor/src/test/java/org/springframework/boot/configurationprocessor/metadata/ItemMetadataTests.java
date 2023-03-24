@@ -16,7 +16,7 @@
 
 package org.springframework.boot.configurationprocessor.metadata;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,20 +25,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class ItemMetadataTests {
+class ItemMetadataTests {
 
 	@Test
-	public void newItemMetadataPrefixWithCapitalizedPrefix() {
+	void newItemMetadataPrefixWithCapitalizedPrefix() {
 		assertThat(newItemMetadataPrefix("Prefix.", "value")).isEqualTo("prefix.value");
 	}
 
 	@Test
-	public void newItemMetadataPrefixWithCamelCaseSuffix() {
+	void newItemMetadataPrefixWithCamelCaseSuffix() {
 		assertThat(newItemMetadataPrefix("prefix.", "myValue")).isEqualTo("prefix.my-value");
 	}
 
 	@Test
-	public void newItemMetadataPrefixWithUpperCamelCaseSuffix() {
+	void newItemMetadataPrefixWithUpperCamelCaseSuffix() {
 		assertThat(newItemMetadataPrefix("prefix.", "MyValue")).isEqualTo("prefix.my-value");
 	}
 

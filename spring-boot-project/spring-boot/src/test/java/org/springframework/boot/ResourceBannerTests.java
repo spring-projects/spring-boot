@@ -21,8 +21,8 @@ import java.io.PrintStream;
 import java.util.Collections;
 import java.util.Map;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
@@ -39,16 +39,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Vedran Pavic
+ * @author Toshiaki Maki
  */
-public class ResourceBannerTests {
+class ResourceBannerTests {
 
-	@After
-	public void reset() {
+	@AfterEach
+	void reset() {
 		AnsiOutput.setEnabled(Enabled.DETECT);
 	}
 
 	@Test
-	public void renderVersions() {
+	void renderVersions() {
 		Resource resource = new ByteArrayResource(
 				"banner ${a} ${spring-boot.version} ${application.version}".getBytes());
 		String banner = printBanner(resource, "10.2", "2.0", null);
@@ -56,7 +57,7 @@ public class ResourceBannerTests {
 	}
 
 	@Test
-	public void renderWithoutVersions() {
+	void renderWithoutVersions() {
 		Resource resource = new ByteArrayResource(
 				"banner ${a} ${spring-boot.version} ${application.version}".getBytes());
 		String banner = printBanner(resource, null, null, null);
@@ -64,7 +65,7 @@ public class ResourceBannerTests {
 	}
 
 	@Test
-	public void renderFormattedVersions() {
+	void renderFormattedVersions() {
 		Resource resource = new ByteArrayResource(
 				"banner ${a}${spring-boot.formatted-version}${application.formatted-version}".getBytes());
 		String banner = printBanner(resource, "10.2", "2.0", null);
@@ -72,7 +73,7 @@ public class ResourceBannerTests {
 	}
 
 	@Test
-	public void renderWithoutFormattedVersions() {
+	void renderWithoutFormattedVersions() {
 		Resource resource = new ByteArrayResource(
 				"banner ${a}${spring-boot.formatted-version}${application.formatted-version}".getBytes());
 		String banner = printBanner(resource, null, null, null);
@@ -80,7 +81,7 @@ public class ResourceBannerTests {
 	}
 
 	@Test
-	public void renderWithColors() {
+	void renderWithColors() {
 		Resource resource = new ByteArrayResource("${Ansi.RED}This is red.${Ansi.NORMAL}".getBytes());
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
 		String banner = printBanner(resource, null, null, null);
@@ -88,7 +89,7 @@ public class ResourceBannerTests {
 	}
 
 	@Test
-	public void renderWithColorsButDisabled() {
+	void renderWithColorsButDisabled() {
 		Resource resource = new ByteArrayResource("${Ansi.RED}This is red.${Ansi.NORMAL}".getBytes());
 		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
 		String banner = printBanner(resource, null, null, null);
@@ -96,14 +97,30 @@ public class ResourceBannerTests {
 	}
 
 	@Test
-	public void renderWithTitle() {
+	void renderWith256Colors() {
+		Resource resource = new ByteArrayResource("${AnsiColor.208}This is orange.${Ansi.NORMAL}".getBytes());
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
+		String banner = printBanner(resource, null, null, null);
+		assertThat(banner).startsWith("\033[38;5;208mThis is orange.\u001B[0m");
+	}
+
+	@Test
+	void renderWith256ColorsButDisabled() {
+		Resource resource = new ByteArrayResource("${AnsiColor.208}This is orange.${Ansi.NORMAL}".getBytes());
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
+		String banner = printBanner(resource, null, null, null);
+		assertThat(banner).startsWith("This is orange.");
+	}
+
+	@Test
+	void renderWithTitle() {
 		Resource resource = new ByteArrayResource("banner ${application.title} ${a}".getBytes());
 		String banner = printBanner(resource, null, null, "title");
 		assertThat(banner).startsWith("banner title 1");
 	}
 
 	@Test
-	public void renderWithoutTitle() {
+	void renderWithoutTitle() {
 		Resource resource = new ByteArrayResource("banner ${application.title} ${a}".getBytes());
 		String banner = printBanner(resource, null, null, null);
 		assertThat(banner).startsWith("banner  1");
@@ -120,7 +137,7 @@ public class ResourceBannerTests {
 		return out.toString();
 	}
 
-	private static class MockResourceBanner extends ResourceBanner {
+	static class MockResourceBanner extends ResourceBanner {
 
 		private final String bootVersion;
 

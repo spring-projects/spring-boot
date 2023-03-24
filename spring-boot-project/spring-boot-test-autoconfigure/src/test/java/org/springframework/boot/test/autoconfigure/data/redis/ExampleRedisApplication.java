@@ -19,7 +19,8 @@ package org.springframework.boot.test.autoconfigure.data.redis;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 /**
- * Example {@link SpringBootApplication} used with {@link DataRedisTest} tests.
+ * Example {@link SpringBootApplication @SpringBootApplication} used with
+ * {@link DataRedisTest @DataRedisTest} tests.
  *
  * @author Jayaram Pradhan
  */

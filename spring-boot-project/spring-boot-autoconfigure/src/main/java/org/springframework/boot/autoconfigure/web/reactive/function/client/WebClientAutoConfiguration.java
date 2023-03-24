@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
-import java.util.List;
-
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -44,34 +42,28 @@ import org.springframework.web.reactive.function.client.WebClient;
  * @author Brian Clozel
  * @since 2.0.0
  */
-@Configuration
+@AutoConfiguration(after = { CodecsAutoConfiguration.class, ClientHttpConnectorAutoConfiguration.class })
 @ConditionalOnClass(WebClient.class)
-@AutoConfigureAfter({ CodecsAutoConfiguration.class, ClientHttpConnectorAutoConfiguration.class })
 public class WebClientAutoConfiguration {
-
-	private final WebClient.Builder webClientBuilder;
-
-	public WebClientAutoConfiguration(ObjectProvider<WebClientCustomizer> customizerProvider) {
-		this.webClientBuilder = WebClient.builder();
-		customizerProvider.orderedStream().forEach((customizer) -> customizer.customize(this.webClientBuilder));
-	}
 
 	@Bean
 	@Scope("prototype")
 	@ConditionalOnMissingBean
-	public WebClient.Builder webClientBuilder() {
-		return this.webClientBuilder.clone();
+	public WebClient.Builder webClientBuilder(ObjectProvider<WebClientCustomizer> customizerProvider) {
+		WebClient.Builder builder = WebClient.builder();
+		customizerProvider.orderedStream().forEach((customizer) -> customizer.customize(builder));
+		return builder;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(CodecCustomizer.class)
 	protected static class WebClientCodecsConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
 		@Order(0)
-		public WebClientCodecCustomizer exchangeStrategiesCustomizer(List<CodecCustomizer> codecCustomizers) {
-			return new WebClientCodecCustomizer(codecCustomizers);
+		public WebClientCodecCustomizer exchangeStrategiesCustomizer(ObjectProvider<CodecCustomizer> codecCustomizers) {
+			return new WebClientCodecCustomizer(codecCustomizers.orderedStream().toList());
 		}
 
 	}

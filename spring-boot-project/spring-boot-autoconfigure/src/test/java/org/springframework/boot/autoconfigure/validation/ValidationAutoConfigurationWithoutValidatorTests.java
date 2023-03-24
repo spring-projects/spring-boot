@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,12 @@
 
 package org.springframework.boot.autoconfigure.validation;
 
-import javax.validation.Validator;
+import jakarta.validation.Validator;
+import org.junit.jupiter.api.Test;
 
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,24 +31,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-@RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("hibernate-validator-*.jar")
-public class ValidationAutoConfigurationWithoutValidatorTests {
+class ValidationAutoConfigurationWithoutValidatorTests {
 
-	private AnnotationConfigApplicationContext context;
-
-	@After
-	public void close() {
-		if (this.context != null) {
-			this.context.close();
-		}
-	}
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class));
 
 	@Test
-	public void validationIsDisabled() {
-		this.context = new AnnotationConfigApplicationContext(ValidationAutoConfiguration.class);
-		assertThat(this.context.getBeansOfType(Validator.class)).isEmpty();
-		assertThat(this.context.getBeansOfType(MethodValidationPostProcessor.class)).isEmpty();
+	void validationIsDisabled() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).doesNotHaveBean(Validator.class);
+			assertThat(context).doesNotHaveBean(MethodValidationPostProcessor.class);
+		});
 	}
 
 }

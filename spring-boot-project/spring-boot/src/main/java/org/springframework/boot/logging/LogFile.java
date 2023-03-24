@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging;
 
+import java.io.File;
 import java.util.Properties;
 
 import org.springframework.core.env.Environment;
@@ -25,11 +26,12 @@ import org.springframework.util.StringUtils;
 
 /**
  * A reference to a log output file. Log output files are specified using
- * {@code logging.file} or {@code logging.path} {@link Environment} properties. If the
- * {@code logging.file} property is not specified {@code "spring.log"} will be written in
- * the {@code logging.path} directory.
+ * {@code logging.file.name} or {@code logging.file.path} {@link Environment} properties.
+ * If the {@code logging.file.name} property is not specified {@code "spring.log"} will be
+ * written in the {@code logging.file.path} directory.
  *
  * @author Phillip Webb
+ * @author Christian Carriere-Tisseur
  * @since 1.2.1
  * @see #get(PropertyResolver)
  */
@@ -38,14 +40,16 @@ public class LogFile {
 	/**
 	 * The name of the Spring property that contains the name of the log file. Names can
 	 * be an exact location or relative to the current directory.
+	 * @since 2.2.0
 	 */
-	public static final String FILE_PROPERTY = "logging.file";
+	public static final String FILE_NAME_PROPERTY = "logging.file.name";
 
 	/**
 	 * The name of the Spring property that contains the directory where log files are
 	 * written.
+	 * @since 2.2.0
 	 */
-	public static final String PATH_PROPERTY = "logging.path";
+	public static final String FILE_PATH_PROPERTY = "logging.file.path";
 
 	private final String file;
 
@@ -97,11 +101,7 @@ public class LogFile {
 		if (StringUtils.hasLength(this.file)) {
 			return this.file;
 		}
-		String path = this.path;
-		if (!path.endsWith("/")) {
-			path = path + "/";
-		}
-		return StringUtils.applyRelativePath(path, "spring.log");
+		return new File(this.path, "spring.log").getPath();
 	}
 
 	/**
@@ -112,8 +112,8 @@ public class LogFile {
 	 * suitable properties
 	 */
 	public static LogFile get(PropertyResolver propertyResolver) {
-		String file = propertyResolver.getProperty(FILE_PROPERTY);
-		String path = propertyResolver.getProperty(PATH_PROPERTY);
+		String file = propertyResolver.getProperty(FILE_NAME_PROPERTY);
+		String path = propertyResolver.getProperty(FILE_PATH_PROPERTY);
 		if (StringUtils.hasLength(file) || StringUtils.hasLength(path)) {
 			return new LogFile(file, path);
 		}

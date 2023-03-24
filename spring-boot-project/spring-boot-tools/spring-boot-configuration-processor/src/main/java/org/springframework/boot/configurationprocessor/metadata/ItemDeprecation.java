@@ -91,8 +91,8 @@ public class ItemDeprecation {
 
 	@Override
 	public String toString() {
-		return "ItemDeprecation{" + "reason='" + this.reason + '\'' + ", " + "replacement='" + this.replacement + '\''
-				+ ", " + "level='" + this.level + '\'' + '}';
+		return "ItemDeprecation{reason='" + this.reason + '\'' + ", replacement='" + this.replacement + '\''
+				+ ", level='" + this.level + '\'' + '}';
 	}
 
 	private boolean nullSafeEquals(Object o1, Object o2) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.util.function.Function;
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.dynatrace.DynatraceConfig;
 import io.micrometer.dynatrace.DynatraceMeterRegistry;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -37,54 +37,79 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-public class DynatraceMetricsExportAutoConfigurationTests {
+class DynatraceMetricsExportAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(DynatraceMetricsExportAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(DynatraceMetricsExportAutoConfiguration.class));
 
 	@Test
-	public void backsOffWithoutAClock() {
+	void backsOffWithoutAClock() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(DynatraceMeterRegistry.class));
 	}
 
 	@Test
-	public void failsWithoutAUri() {
+	void failsWithADeviceIdWithoutAUri() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.run((context) -> assertThat(context).hasFailed());
+			.withPropertyValues("management.dynatrace.metrics.export.v1.device-id:dev-1")
+			.run((context) -> assertThat(context).hasFailed());
 	}
 
 	@Test
-	public void autoConfiguresConfigAndMeterRegistry() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).with(mandatoryProperties())
-				.run((context) -> assertThat(context).hasSingleBean(DynatraceMeterRegistry.class)
-						.hasSingleBean(DynatraceConfig.class));
-	}
-
-	@Test
-	public void autoConfigurationCanBeDisabled() {
+	void autoConfiguresConfigAndMeterRegistry() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.withPropertyValues("management.metrics.export.dynatrace.enabled=false")
-				.run((context) -> assertThat(context).doesNotHaveBean(DynatraceMeterRegistry.class)
-						.doesNotHaveBean(DynatraceConfig.class));
+			.with(v1MandatoryProperties())
+			.run((context) -> assertThat(context).hasSingleBean(DynatraceMeterRegistry.class)
+				.hasSingleBean(DynatraceConfig.class));
 	}
 
 	@Test
-	public void allowsCustomConfigToBeUsed() {
+	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.withPropertyValues("management.defaults.metrics.export.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(DynatraceMeterRegistry.class)
+				.doesNotHaveBean(DynatraceConfig.class));
+	}
+
+	@Test
+	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.withPropertyValues("management.dynatrace.metrics.export.enabled=false")
+			.run((context) -> assertThat(context).doesNotHaveBean(DynatraceMeterRegistry.class)
+				.doesNotHaveBean(DynatraceConfig.class));
+	}
+
+	@Test
+	void allowsCustomConfigToBeUsed() {
 		this.contextRunner.withUserConfiguration(CustomConfigConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(DynatraceMeterRegistry.class)
-						.hasSingleBean(DynatraceConfig.class).hasBean("customConfig"));
+			.run((context) -> assertThat(context).hasSingleBean(DynatraceMeterRegistry.class)
+				.hasSingleBean(DynatraceConfig.class)
+				.hasBean("customConfig"));
 	}
 
 	@Test
-	public void allowsCustomRegistryToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class).with(mandatoryProperties())
-				.run((context) -> assertThat(context).hasSingleBean(DynatraceMeterRegistry.class)
-						.hasBean("customRegistry").hasSingleBean(DynatraceConfig.class));
+	void allowsCustomRegistryToBeUsed() {
+		this.contextRunner.withUserConfiguration(CustomRegistryConfiguration.class)
+			.with(v1MandatoryProperties())
+			.run((context) -> assertThat(context).hasSingleBean(DynatraceMeterRegistry.class)
+				.hasBean("customRegistry")
+				.hasSingleBean(DynatraceConfig.class));
 	}
 
 	@Test
-	public void stopsMeterRegistryWhenContextIsClosed() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class).with(mandatoryProperties()).run((context) -> {
+	void stopsMeterRegistryForV1ApiWhenContextIsClosed() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+			.with(v1MandatoryProperties())
+			.run((context) -> {
+				DynatraceMeterRegistry registry = context.getBean(DynatraceMeterRegistry.class);
+				assertThat(registry.isClosed()).isFalse();
+				context.close();
+				assertThat(registry.isClosed()).isTrue();
+			});
+	}
+
+	@Test
+	void stopsMeterRegistryForV2ApiWhenContextIsClosed() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class).run((context) -> {
 			DynatraceMeterRegistry registry = context.getBean(DynatraceMeterRegistry.class);
 			assertThat(registry.isClosed()).isFalse();
 			context.close();
@@ -92,51 +117,45 @@ public class DynatraceMetricsExportAutoConfigurationTests {
 		});
 	}
 
-	private Function<ApplicationContextRunner, ApplicationContextRunner> mandatoryProperties() {
+	private Function<ApplicationContextRunner, ApplicationContextRunner> v1MandatoryProperties() {
 		return (runner) -> runner.withPropertyValues(
-				"management.metrics.export.dynatrace.uri=https://dynatrace.example.com",
-				"management.metrics.export.dynatrace.api-token=abcde",
-				"management.metrics.export.dynatrace.device-id=test");
+				"management.dynatrace.metrics.export.uri=https://dynatrace.example.com",
+				"management.dynatrace.metrics.export.api-token=abcde",
+				"management.dynatrace.metrics.export.device-id=test");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
 		@Bean
-		public Clock clock() {
+		Clock clock() {
 			return Clock.SYSTEM;
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomConfigConfiguration {
 
 		@Bean
-		public DynatraceConfig customConfig() {
-			return (key) -> {
-				if ("dynatrace.uri".equals(key)) {
-					return "https://dynatrace.example.com";
-				}
-				if ("dynatrace.apiToken".equals(key)) {
-					return "abcde";
-				}
-				if ("dynatrace.deviceId".equals(key)) {
-					return "test";
-				}
-				return null;
+		DynatraceConfig customConfig() {
+			return (key) -> switch (key) {
+				case "dynatrace.uri" -> "https://dynatrace.example.com";
+				case "dynatrace.apiToken" -> "abcde";
+				case "dynatrace.deviceId" -> "test";
+				default -> null;
 			};
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
 	static class CustomRegistryConfiguration {
 
 		@Bean
-		public DynatraceMeterRegistry customRegistry(DynatraceConfig config, Clock clock) {
+		DynatraceMeterRegistry customRegistry(DynatraceConfig config, Clock clock) {
 			return new DynatraceMeterRegistry(config, clock);
 		}
 

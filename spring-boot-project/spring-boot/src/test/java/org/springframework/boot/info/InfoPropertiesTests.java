@@ -18,7 +18,7 @@ package org.springframework.boot.info;
 
 import java.util.Properties;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.env.PropertySource;
 
@@ -30,10 +30,10 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Stephane Nicoll
  */
-public class InfoPropertiesTests {
+class InfoPropertiesTests {
 
 	@Test
-	public void inputIsImmutable() {
+	void inputIsImmutable() {
 		Properties p = new Properties();
 		p.put("foo", "bar");
 		InfoProperties infoProperties = new InfoProperties(p);
@@ -43,7 +43,7 @@ public class InfoPropertiesTests {
 	}
 
 	@Test
-	public void iterator() {
+	void iterator() {
 		Properties p = new Properties();
 		p.put("one", "first");
 		p.put("two", "second");
@@ -56,7 +56,7 @@ public class InfoPropertiesTests {
 	}
 
 	@Test
-	public void removeNotSupported() {
+	void removeNotSupported() {
 		Properties p = new Properties();
 		p.put("foo", "bar");
 		InfoProperties infoProperties = new InfoProperties(p);
@@ -64,7 +64,7 @@ public class InfoPropertiesTests {
 	}
 
 	@Test
-	public void toPropertySources() {
+	void toPropertySources() {
 		Properties p = new Properties();
 		p.put("one", "first");
 		p.put("two", "second");
@@ -75,7 +75,7 @@ public class InfoPropertiesTests {
 		assertThat(source.getName()).isEqualTo("MyInfoProperties");
 	}
 
-	private static class MyInfoProperties extends InfoProperties {
+	static class MyInfoProperties extends InfoProperties {
 
 		MyInfoProperties(Properties entries) {
 			super(entries);

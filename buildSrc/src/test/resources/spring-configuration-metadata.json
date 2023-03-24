@@ -1,0 +1,9 @@
+{
+  "properties": [
+    {
+      "name": "example.counter",
+      "type": "java.lang.Integer",
+      "defaultValue": 0
+    }
+  ]
+}

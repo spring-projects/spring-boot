@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
+import org.springframework.core.log.LogMessage;
 
 /**
  * Manages an optional {@link LiveReloadServer}. The {@link LiveReloadServer} may
@@ -48,13 +49,14 @@ public class OptionalLiveReloadServer implements InitializingBean {
 		startServer();
 	}
 
-	void startServer() throws Exception {
+	void startServer() {
 		if (this.server != null) {
 			try {
+				int port = this.server.getPort();
 				if (!this.server.isStarted()) {
-					this.server.start();
+					port = this.server.start();
 				}
-				logger.info("LiveReload server is running on port " + this.server.getPort());
+				logger.info(LogMessage.format("LiveReload server is running on port %s", port));
 			}
 			catch (Exception ex) {
 				logger.warn("Unable to start LiveReload server");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.context.ShutdownEndpoint;
 import org.springframework.boot.actuate.session.SessionsEndpoint;
@@ -38,12 +38,12 @@ import org.springframework.session.Session;
 import org.springframework.test.context.TestPropertySource;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.queryParameters;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -54,7 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Andy Wilkinson
  */
 @TestPropertySource(properties = "spring.jackson.serialization.write-dates-as-timestamps=false")
-public class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	private static final Session sessionOne = createSession(Instant.now().minusSeconds(60 * 60 * 12),
 			Instant.now().minusSeconds(45));
@@ -70,43 +70,42 @@ public class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumenta
 			fieldWithPath("attributeNames").description("Names of the attributes stored in the session."),
 			fieldWithPath("creationTime").description("Timestamp of when the session was created."),
 			fieldWithPath("lastAccessedTime").description("Timestamp of when the session was last accessed."),
-			fieldWithPath("maxInactiveInterval").description(
-					"Maximum permitted period of inactivity, in seconds, " + "before the session will expire."),
+			fieldWithPath("maxInactiveInterval")
+				.description("Maximum permitted period of inactivity, in seconds, before the session will expire."),
 			fieldWithPath("expired").description("Whether the session has expired."));
 
 	@MockBean
 	private FindByIndexNameSessionRepository<Session> sessionRepository;
 
 	@Test
-	public void sessionsForUsername() throws Exception {
+	void sessionsForUsername() throws Exception {
 		Map<String, Session> sessions = new HashMap<>();
 		sessions.put(sessionOne.getId(), sessionOne);
 		sessions.put(sessionTwo.getId(), sessionTwo);
 		sessions.put(sessionThree.getId(), sessionThree);
 		given(this.sessionRepository.findByPrincipalName("alice")).willReturn(sessions);
-		this.mockMvc.perform(get("/actuator/sessions").param("username", "alice")).andExpect(status().isOk())
-				.andDo(document("sessions/username",
-						responseFields(fieldWithPath("sessions").description("Sessions for the given username."))
-								.andWithPrefix("sessions.[].", sessionFields),
-						requestParameters(parameterWithName("username").description("Name of the user."))));
+		this.mockMvc.perform(get("/actuator/sessions").param("username", "alice"))
+			.andExpect(status().isOk())
+			.andDo(document("sessions/username",
+					responseFields(fieldWithPath("sessions").description("Sessions for the given username."))
+						.andWithPrefix("sessions.[].", sessionFields),
+					queryParameters(parameterWithName("username").description("Name of the user."))));
 	}
 
 	@Test
-	public void sessionWithId() throws Exception {
-		Map<String, Session> sessions = new HashMap<>();
-		sessions.put(sessionOne.getId(), sessionOne);
-		sessions.put(sessionTwo.getId(), sessionTwo);
-		sessions.put(sessionThree.getId(), sessionThree);
+	void sessionWithId() throws Exception {
 		given(this.sessionRepository.findById(sessionTwo.getId())).willReturn(sessionTwo);
-		this.mockMvc.perform(get("/actuator/sessions/{id}", sessionTwo.getId())).andExpect(status().isOk())
-				.andDo(document("sessions/id", responseFields(sessionFields)));
+		this.mockMvc.perform(get("/actuator/sessions/{id}", sessionTwo.getId()))
+			.andExpect(status().isOk())
+			.andDo(document("sessions/id", responseFields(sessionFields)));
 	}
 
 	@Test
-	public void deleteASession() throws Exception {
-		this.mockMvc.perform(delete("/actuator/sessions/{id}", sessionTwo.getId())).andExpect(status().isNoContent())
-				.andDo(document("sessions/delete"));
-		verify(this.sessionRepository).deleteById(sessionTwo.getId());
+	void deleteASession() throws Exception {
+		this.mockMvc.perform(delete("/actuator/sessions/{id}", sessionTwo.getId()))
+			.andExpect(status().isNoContent())
+			.andDo(document("sessions/delete"));
+		then(this.sessionRepository).should().deleteById(sessionTwo.getId());
 	}
 
 	private static MapSession createSession(Instant creationTime, Instant lastAccessedTime) {
@@ -120,12 +119,12 @@ public class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumenta
 		return session;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
-		public SessionsEndpoint endpoint(FindByIndexNameSessionRepository<?> sessionRepository) {
+		SessionsEndpoint endpoint(FindByIndexNameSessionRepository<?> sessionRepository) {
 			return new SessionsEndpoint(sessionRepository);
 		}
 

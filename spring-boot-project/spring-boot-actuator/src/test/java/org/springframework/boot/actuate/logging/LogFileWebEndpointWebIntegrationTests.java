@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 package org.springframework.boot.actuate.logging;
 
 import java.io.File;
+import java.io.IOException;
 
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
+import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,37 +38,58 @@ import org.springframework.util.FileCopyUtils;
  *
  * @author Andy Wilkinson
  */
-@RunWith(WebEndpointRunners.class)
-public class LogFileWebEndpointWebIntegrationTests {
+class LogFileWebEndpointWebIntegrationTests {
 
-	private static WebTestClient client;
+	private WebTestClient client;
 
-	@ClassRule
-	public static final TemporaryFolder temp = new TemporaryFolder();
+	private static File tempFile;
 
-	private static File logFile;
-
-	@Test
-	public void getRequestProducesResponseWithLogFile() {
-		client.get().uri("/actuator/logfile").exchange().expectStatus().isOk().expectHeader()
-				.contentType("text/plain; charset=UTF-8").expectBody(String.class).isEqualTo("--TEST--");
+	@BeforeEach
+	void setUp(WebTestClient client) {
+		this.client = client;
 	}
 
-	@Test
-	public void getRequestThatAcceptsTextPlainProducesResponseWithLogFile() {
-		client.get().uri("/actuator/logfile").accept(MediaType.TEXT_PLAIN).exchange().expectStatus().isOk()
-				.expectHeader().contentType("text/plain; charset=UTF-8").expectBody(String.class).isEqualTo("--TEST--");
+	@BeforeAll
+	static void setup(@TempDir File temp) {
+		tempFile = temp;
 	}
 
-	@Configuration
+	@WebEndpointTest
+	void getRequestProducesResponseWithLogFile() {
+		this.client.get()
+			.uri("/actuator/logfile")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType("text/plain; charset=UTF-8")
+			.expectBody(String.class)
+			.isEqualTo("--TEST--");
+	}
+
+	@WebEndpointTest
+	void getRequestThatAcceptsTextPlainProducesResponseWithLogFile() {
+		this.client.get()
+			.uri("/actuator/logfile")
+			.accept(MediaType.TEXT_PLAIN)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType("text/plain; charset=UTF-8")
+			.expectBody(String.class)
+			.isEqualTo("--TEST--");
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
 		@Bean
-		public LogFileWebEndpoint logFileEndpoint() throws Exception {
-			logFile = temp.newFile();
+		LogFileWebEndpoint logFileEndpoint() throws IOException {
+			File logFile = new File(tempFile, "test.log");
 			FileCopyUtils.copy("--TEST--".getBytes(), logFile);
 			MockEnvironment environment = new MockEnvironment();
-			environment.setProperty("logging.file", logFile.getAbsolutePath());
+			environment.setProperty("logging.file.name", logFile.getAbsolutePath());
 			return new LogFileWebEndpoint(LogFile.get(environment), null);
 		}
 

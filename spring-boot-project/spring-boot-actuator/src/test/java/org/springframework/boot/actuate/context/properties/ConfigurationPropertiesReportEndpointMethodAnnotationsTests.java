@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,14 @@
 
 package org.springframework.boot.actuate.context.properties;
 
-import org.junit.Test;
+import java.util.Collections;
 
-import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
+import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
-import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationProperties;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationPropertiesDescriptor;
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -35,18 +38,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Andy Wilkinson
  */
-public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
+class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 
 	@Test
-	public void testNaming() {
+	void testNaming() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withUserConfiguration(Config.class)
-				.withPropertyValues("other.name:foo", "first.name:bar");
+			.withPropertyValues("other.name:foo", "first.name:bar");
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
-					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			ApplicationConfigurationProperties applicationProperties = endpoint.configurationProperties();
+				.getBean(ConfigurationPropertiesReportEndpoint.class);
+			ConfigurationPropertiesDescriptor applicationProperties = endpoint.configurationProperties();
 			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
-			ContextConfigurationProperties contextProperties = applicationProperties.getContexts().get(context.getId());
+			ContextConfigurationPropertiesDescriptor contextProperties = applicationProperties.getContexts()
+				.get(context.getId());
 			ConfigurationPropertiesBeanDescriptor other = contextProperties.getBeans().get("other");
 			assertThat(other).isNotNull();
 			assertThat(other.getPrefix()).isEqualTo("other");
@@ -56,15 +60,17 @@ public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 	}
 
 	@Test
-	public void prefixFromBeanMethodConfigurationPropertiesCanOverridePrefixOnClass() {
+	void prefixFromBeanMethodConfigurationPropertiesCanOverridePrefixOnClass() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withUserConfiguration(OverriddenPrefix.class).withPropertyValues("other.name:foo");
+			.withUserConfiguration(OverriddenPrefix.class)
+			.withPropertyValues("other.name:foo");
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
-					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			ApplicationConfigurationProperties applicationProperties = endpoint.configurationProperties();
+				.getBean(ConfigurationPropertiesReportEndpoint.class);
+			ConfigurationPropertiesDescriptor applicationProperties = endpoint.configurationProperties();
 			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
-			ContextConfigurationProperties contextProperties = applicationProperties.getContexts().get(context.getId());
+			ContextConfigurationPropertiesDescriptor contextProperties = applicationProperties.getContexts()
+				.get(context.getId());
 			ConfigurationPropertiesBeanDescriptor bar = contextProperties.getBeans().get("bar");
 			assertThat(bar).isNotNull();
 			assertThat(bar.getPrefix()).isEqualTo("other");
@@ -73,41 +79,41 @@ public class ConfigurationPropertiesReportEndpointMethodAnnotationsTests {
 		});
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
-	public static class Config {
+	static class Config {
 
 		@Bean
-		public ConfigurationPropertiesReportEndpoint endpoint() {
-			return new ConfigurationPropertiesReportEndpoint();
+		ConfigurationPropertiesReportEndpoint endpoint() {
+			return new ConfigurationPropertiesReportEndpoint(Collections.emptyList(), Show.ALWAYS);
 		}
 
 		@Bean
 		@ConfigurationProperties(prefix = "first")
-		public Foo foo() {
+		Foo foo() {
 			return new Foo();
 		}
 
 		@Bean
 		@ConfigurationProperties(prefix = "other")
-		public Foo other() {
+		Foo other() {
 			return new Foo();
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
-	public static class OverriddenPrefix {
+	static class OverriddenPrefix {
 
 		@Bean
-		public ConfigurationPropertiesReportEndpoint endpoint() {
-			return new ConfigurationPropertiesReportEndpoint();
+		ConfigurationPropertiesReportEndpoint endpoint() {
+			return new ConfigurationPropertiesReportEndpoint(Collections.emptyList(), Show.ALWAYS);
 		}
 
 		@Bean
 		@ConfigurationProperties(prefix = "other")
-		public Bar bar() {
+		Bar bar() {
 			return new Bar();
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,18 @@
 
 package org.springframework.boot.actuate.autoconfigure.context.properties;
 
-import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnEnabledEndpoint;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
 import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpointWebExtension;
+import org.springframework.boot.actuate.endpoint.SanitizingFunction;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the
@@ -30,29 +35,32 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Chris Bono
  * @since 2.0.0
  */
-@Configuration
-@ConditionalOnEnabledEndpoint(endpoint = ConfigurationPropertiesReportEndpoint.class)
+@AutoConfiguration
+@ConditionalOnAvailableEndpoint(endpoint = ConfigurationPropertiesReportEndpoint.class)
 @EnableConfigurationProperties(ConfigurationPropertiesReportEndpointProperties.class)
 public class ConfigurationPropertiesReportEndpointAutoConfiguration {
 
-	private final ConfigurationPropertiesReportEndpointProperties properties;
-
-	public ConfigurationPropertiesReportEndpointAutoConfiguration(
-			ConfigurationPropertiesReportEndpointProperties properties) {
-		this.properties = properties;
+	@Bean
+	@ConditionalOnMissingBean
+	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint(
+			ConfigurationPropertiesReportEndpointProperties properties,
+			ObjectProvider<SanitizingFunction> sanitizingFunctions) {
+		return new ConfigurationPropertiesReportEndpoint(sanitizingFunctions.orderedStream().toList(),
+				properties.getShowValues());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint() {
-		ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint();
-		String[] keysToSanitize = this.properties.getKeysToSanitize();
-		if (keysToSanitize != null) {
-			endpoint.setKeysToSanitize(keysToSanitize);
-		}
-		return endpoint;
+	@ConditionalOnBean(ConfigurationPropertiesReportEndpoint.class)
+	@ConditionalOnAvailableEndpoint(exposure = { EndpointExposure.WEB, EndpointExposure.CLOUD_FOUNDRY })
+	public ConfigurationPropertiesReportEndpointWebExtension configurationPropertiesReportEndpointWebExtension(
+			ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint,
+			ConfigurationPropertiesReportEndpointProperties properties) {
+		return new ConfigurationPropertiesReportEndpointWebExtension(configurationPropertiesReportEndpoint,
+				properties.getShowValues(), properties.getRoles());
 	}
 
 }

@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -33,27 +33,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Tests for {@link AllNestedConditions}.
  */
-public class AllNestedConditionsTests {
+class AllNestedConditionsTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
 	@Test
-	public void neither() {
+	void neither() {
 		this.contextRunner.withUserConfiguration(Config.class).run(match(false));
 	}
 
 	@Test
-	public void propertyA() {
+	void propertyA() {
 		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues("a:a").run(match(false));
 	}
 
 	@Test
-	public void propertyB() {
+	void propertyB() {
 		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues("b:b").run(match(false));
 	}
 
 	@Test
-	public void both() {
+	void both() {
 		this.contextRunner.withUserConfiguration(Config.class).withPropertyValues("a:a", "b:b").run(match(true));
 	}
 
@@ -68,12 +68,12 @@ public class AllNestedConditionsTests {
 		};
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(OnPropertyAAndBCondition.class)
-	public static class Config {
+	static class Config {
 
 		@Bean
-		public String myBean() {
+		String myBean() {
 			return "myBean";
 		}
 

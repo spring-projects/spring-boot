@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security.oauth2.resource.reactive;
 
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
+import org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.oauth2.jwt.ReactiveJwtDecoder;
-import org.springframework.security.oauth2.server.resource.BearerTokenAuthenticationToken;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Reactive OAuth2 resource server
@@ -35,13 +34,13 @@ import org.springframework.security.oauth2.server.resource.BearerTokenAuthentica
  * @author Madhura Bhave
  * @since 2.1.0
  */
-@Configuration
-@AutoConfigureBefore(ReactiveSecurityAutoConfiguration.class)
+@AutoConfiguration(
+		before = { ReactiveSecurityAutoConfiguration.class, ReactiveUserDetailsServiceAutoConfiguration.class })
 @EnableConfigurationProperties(OAuth2ResourceServerProperties.class)
-@ConditionalOnClass({ EnableWebFluxSecurity.class, BearerTokenAuthenticationToken.class, ReactiveJwtDecoder.class })
+@ConditionalOnClass({ EnableWebFluxSecurity.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
-@Import({ ReactiveOAuth2ResourceServerJwkConfiguration.class,
-		ReactiveOAuth2ResourceServerWebSecurityConfiguration.class })
+@Import({ ReactiveOAuth2ResourceServerConfiguration.JwtConfiguration.class,
+		ReactiveOAuth2ResourceServerConfiguration.OpaqueTokenConfiguration.class })
 public class ReactiveOAuth2ResourceServerAutoConfiguration {
 
 }

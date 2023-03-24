@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.autoconfigure.cache;
-
-import java.io.IOException;
 
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
@@ -42,23 +40,18 @@ import org.springframework.context.annotation.Configuration;
  * @author Stephane Nicoll
  * @see HazelcastConfigResourceCondition
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ HazelcastInstance.class, HazelcastCacheManager.class })
 @ConditionalOnMissingBean(CacheManager.class)
 @Conditional(CacheCondition.class)
 @ConditionalOnSingleCandidate(HazelcastInstance.class)
 class HazelcastCacheConfiguration {
 
-	private final CacheManagerCustomizers customizers;
-
-	HazelcastCacheConfiguration(CacheManagerCustomizers customizers) {
-		this.customizers = customizers;
-	}
-
 	@Bean
-	public HazelcastCacheManager cacheManager(HazelcastInstance existingHazelcastInstance) throws IOException {
+	HazelcastCacheManager cacheManager(CacheManagerCustomizers customizers,
+			HazelcastInstance existingHazelcastInstance) {
 		HazelcastCacheManager cacheManager = new HazelcastCacheManager(existingHazelcastInstance);
-		return this.customizers.customize(cacheManager);
+		return customizers.customize(cacheManager);
 	}
 
 }

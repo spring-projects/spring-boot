@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.diagnostics.analyzer;
 
 import java.util.function.Supplier;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.support.BeanDefinitionOverrideException;
 import org.springframework.boot.diagnostics.FailureAnalysis;
@@ -35,10 +35,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class BeanDefinitionOverrideFailureAnalyzerTests {
+class BeanDefinitionOverrideFailureAnalyzerTests {
 
 	@Test
-	public void analyzeBeanDefinitionOverrideException() {
+	void analyzeBeanDefinitionOverrideException() {
 		FailureAnalysis analysis = performAnalysis(BeanOverrideConfiguration.class);
 		String description = analysis.getDescription();
 		assertThat(description).contains("The bean 'testBean', defined in " + SecondConfiguration.class.getName()
@@ -47,15 +47,15 @@ public class BeanDefinitionOverrideFailureAnalyzerTests {
 	}
 
 	@Test
-	public void analyzeBeanDefinitionOverrideExceptionWithDefinitionsWithNoResourceDescription() {
+	void analyzeBeanDefinitionOverrideExceptionWithDefinitionsWithNoResourceDescription() {
 		FailureAnalysis analysis = performAnalysis((context) -> {
 			context.registerBean("testBean", String.class, (Supplier<String>) String::new);
 			context.registerBean("testBean", String.class, (Supplier<String>) String::new);
 		});
 		String description = analysis.getDescription();
 		assertThat(description)
-				.isEqualTo("The bean 'testBean' could not be registered. A bean with that name has already"
-						+ " been defined and overriding is disabled.");
+			.isEqualTo("The bean 'testBean' could not be registered. A bean with that name has already"
+					+ " been defined and overriding is disabled.");
 	}
 
 	private FailureAnalysis performAnalysis(Class<?> configuration) {
@@ -100,27 +100,27 @@ public class BeanDefinitionOverrideFailureAnalyzerTests {
 		}
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import({ FirstConfiguration.class, SecondConfiguration.class })
 	static class BeanOverrideConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FirstConfiguration {
 
 		@Bean
-		public String testBean() {
+		String testBean() {
 			return "test";
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SecondConfiguration {
 
 		@Bean
-		public String testBean() {
+		String testBean() {
 			return "test";
 		}
 

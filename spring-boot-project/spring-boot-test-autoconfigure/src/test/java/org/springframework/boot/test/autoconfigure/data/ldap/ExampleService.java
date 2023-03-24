@@ -21,7 +21,7 @@ import org.springframework.ldap.query.LdapQuery;
 import org.springframework.stereotype.Service;
 
 /**
- * Example service used with {@link DataLdapTest} tests.
+ * Example service used with {@link DataLdapTest @DataLdapTest} tests.
  *
  * @author Eddú Meléndez
  */

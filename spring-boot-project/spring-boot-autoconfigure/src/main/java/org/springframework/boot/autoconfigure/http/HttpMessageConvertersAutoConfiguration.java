@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,28 @@
 
 package org.springframework.boot.autoconfigure.http;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration.HttpMessageConvertersAutoConfigurationRuntimeHints;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration.NotReactiveWebApplicationCondition;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.core.env.Environment;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 
@@ -48,44 +55,55 @@ import org.springframework.http.converter.StringHttpMessageConverter;
  * @author Eddú Meléndez
  * @since 2.0.0
  */
-@Configuration
+@AutoConfiguration(
+		after = { GsonAutoConfiguration.class, JacksonAutoConfiguration.class, JsonbAutoConfiguration.class })
 @ConditionalOnClass(HttpMessageConverter.class)
-@AutoConfigureAfter({ GsonAutoConfiguration.class, JacksonAutoConfiguration.class, JsonbAutoConfiguration.class })
+@Conditional(NotReactiveWebApplicationCondition.class)
 @Import({ JacksonHttpMessageConvertersConfiguration.class, GsonHttpMessageConvertersConfiguration.class,
 		JsonbHttpMessageConvertersConfiguration.class })
+@ImportRuntimeHints(HttpMessageConvertersAutoConfigurationRuntimeHints.class)
 public class HttpMessageConvertersAutoConfiguration {
 
-	static final String PREFERRED_MAPPER_PROPERTY = "spring.http.converters.preferred-json-mapper";
-
-	private final List<HttpMessageConverter<?>> converters;
-
-	public HttpMessageConvertersAutoConfiguration(ObjectProvider<HttpMessageConverter<?>> convertersProvider) {
-		this.converters = convertersProvider.orderedStream().collect(Collectors.toList());
-	}
+	static final String PREFERRED_MAPPER_PROPERTY = "spring.mvc.converters.preferred-json-mapper";
 
 	@Bean
 	@ConditionalOnMissingBean
-	public HttpMessageConverters messageConverters() {
-		return new HttpMessageConverters(this.converters);
+	public HttpMessageConverters messageConverters(ObjectProvider<HttpMessageConverter<?>> converters) {
+		return new HttpMessageConverters(converters.orderedStream().toList());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(StringHttpMessageConverter.class)
-	@EnableConfigurationProperties(HttpProperties.class)
 	protected static class StringHttpMessageConverterConfiguration {
-
-		private final HttpProperties.Encoding properties;
-
-		protected StringHttpMessageConverterConfiguration(HttpProperties httpProperties) {
-			this.properties = httpProperties.getEncoding();
-		}
 
 		@Bean
 		@ConditionalOnMissingBean
-		public StringHttpMessageConverter stringHttpMessageConverter() {
-			StringHttpMessageConverter converter = new StringHttpMessageConverter(this.properties.getCharset());
+		public StringHttpMessageConverter stringHttpMessageConverter(Environment environment) {
+			Encoding encoding = Binder.get(environment).bindOrCreate("server.servlet.encoding", Encoding.class);
+			StringHttpMessageConverter converter = new StringHttpMessageConverter(encoding.getCharset());
 			converter.setWriteAcceptCharset(false);
 			return converter;
+		}
+
+	}
+
+	static class NotReactiveWebApplicationCondition extends NoneNestedConditions {
+
+		NotReactiveWebApplicationCondition() {
+			super(ConfigurationPhase.PARSE_CONFIGURATION);
+		}
+
+		@ConditionalOnWebApplication(type = Type.REACTIVE)
+		private static class ReactiveWebApplication {
+
+		}
+
+	}
+
+	static class HttpMessageConvertersAutoConfigurationRuntimeHints extends BindableRuntimeHintsRegistrar {
+
+		HttpMessageConvertersAutoConfigurationRuntimeHints() {
+			super(Encoding.class);
 		}
 
 	}

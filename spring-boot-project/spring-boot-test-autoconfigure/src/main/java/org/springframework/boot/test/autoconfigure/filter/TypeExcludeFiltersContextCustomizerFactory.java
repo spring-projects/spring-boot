@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,15 @@ package org.springframework.boot.test.autoconfigure.filter;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Set;
 
+import org.springframework.aot.AotDetector;
 import org.springframework.boot.context.TypeExcludeFilter;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
+import org.springframework.test.context.TestContextAnnotationUtils;
+import org.springframework.test.context.TestContextAnnotationUtils.AnnotationDescriptor;
+import org.springframework.util.ObjectUtils;
 
 /**
  * {@link ContextCustomizerFactory} to support
@@ -36,16 +38,27 @@ import org.springframework.test.context.ContextCustomizerFactory;
  */
 class TypeExcludeFiltersContextCustomizerFactory implements ContextCustomizerFactory {
 
+	private static final Class<?>[] NO_FILTERS = {};
+
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configurationAttributes) {
-		TypeExcludeFilters annotation = AnnotatedElementUtils.findMergedAnnotation(testClass, TypeExcludeFilters.class);
-		if (annotation != null) {
-			Set<Class<? extends TypeExcludeFilter>> filterClasses = new LinkedHashSet<>(
-					Arrays.asList(annotation.value()));
-			return new TypeExcludeFiltersContextCustomizer(testClass, filterClasses);
+		if (AotDetector.useGeneratedArtifacts()) {
+			return null;
 		}
-		return null;
+		AnnotationDescriptor<TypeExcludeFilters> descriptor = TestContextAnnotationUtils
+			.findAnnotationDescriptor(testClass, TypeExcludeFilters.class);
+		Class<?>[] filterClasses = (descriptor != null) ? descriptor.getAnnotation().value() : NO_FILTERS;
+		if (ObjectUtils.isEmpty(filterClasses)) {
+			return null;
+		}
+		return createContextCustomizer(descriptor.getRootDeclaringClass(), filterClasses);
+	}
+
+	@SuppressWarnings("unchecked")
+	private ContextCustomizer createContextCustomizer(Class<?> testClass, Class<?>[] filterClasses) {
+		return new TypeExcludeFiltersContextCustomizer(testClass,
+				new LinkedHashSet<>(Arrays.asList((Class<? extends TypeExcludeFilter>[]) filterClasses)));
 	}
 
 }

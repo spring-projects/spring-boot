@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,37 +19,39 @@ package org.springframework.boot.autoconfigure.web.embedded;
 import java.time.Duration;
 import java.util.Map;
 
-import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelOption;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
+import reactor.netty.http.server.HttpRequestDecoderSpec;
 import reactor.netty.http.server.HttpServer;
-import reactor.netty.tcp.TcpServer;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.web.embedded.netty.NettyReactiveWebServerFactory;
 import org.springframework.boot.web.embedded.netty.NettyServerCustomizer;
 import org.springframework.mock.env.MockEnvironment;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link NettyWebServerFactoryCustomizer}.
  *
  * @author Brian Clozel
  * @author Artsiom Yudovin
+ * @author Leo Li
  */
-public class NettyWebServerFactoryCustomizerTests {
+@ExtendWith(MockitoExtension.class)
+class NettyWebServerFactoryCustomizerTests {
 
 	private MockEnvironment environment;
 
@@ -60,9 +62,8 @@ public class NettyWebServerFactoryCustomizerTests {
 	@Captor
 	private ArgumentCaptor<NettyServerCustomizer> customizerCaptor;
 
-	@Before
-	public void setup() {
-		MockitoAnnotations.initMocks(this);
+	@BeforeEach
+	void setup() {
 		this.environment = new MockEnvironment();
 		this.serverProperties = new ServerProperties();
 		ConfigurationPropertySources.attach(this.environment);
@@ -70,85 +71,122 @@ public class NettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void deduceUseForwardHeaders() {
+	void deduceUseForwardHeaders() {
 		this.environment.setProperty("DYNO", "-");
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(true);
+		then(factory).should().setUseForwardHeaders(true);
 	}
 
 	@Test
-	public void defaultUseForwardHeaders() {
+	void defaultUseForwardHeaders() {
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(false);
+		then(factory).should().setUseForwardHeaders(false);
 	}
 
 	@Test
-	public void setUseForwardHeaders() {
-		this.serverProperties.setUseForwardHeaders(true);
+	void forwardHeadersWhenStrategyIsNativeShouldConfigureValve() {
+		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NATIVE);
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
-		verify(factory).setUseForwardHeaders(true);
+		then(factory).should().setUseForwardHeaders(true);
 	}
 
 	@Test
-	public void setServerConnectionTimeoutAsZero() {
-		setupServerConnectionTimeout(Duration.ZERO);
+	void forwardHeadersWhenStrategyIsNoneShouldNotConfigureValve() {
+		this.environment.setProperty("DYNO", "-");
+		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NONE);
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
-		verifyConnectionTimeout(factory, null);
+		then(factory).should().setUseForwardHeaders(false);
 	}
 
 	@Test
-	public void setServerConnectionTimeoutAsMinusOne() {
-		setupServerConnectionTimeout(Duration.ofNanos(-1));
-		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
-		this.customizer.customize(factory);
-		verifyConnectionTimeout(factory, 0);
-	}
-
-	@Test
-	public void setServerConnectionTimeout() {
-		setupServerConnectionTimeout(Duration.ofSeconds(1));
+	void setConnectionTimeout() {
+		this.serverProperties.getNetty().setConnectionTimeout(Duration.ofSeconds(1));
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
 		verifyConnectionTimeout(factory, 1000);
 	}
 
 	@Test
-	public void setConnectionTimeout() {
-		setupConnectionTimeout(Duration.ofSeconds(1));
+	void setIdleTimeout() {
+		this.serverProperties.getNetty().setIdleTimeout(Duration.ofSeconds(1));
 		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
-		verifyConnectionTimeout(factory, 1000);
+		verifyIdleTimeout(factory, Duration.ofSeconds(1));
 	}
 
-	@SuppressWarnings("unchecked")
-	private void verifyConnectionTimeout(NettyReactiveWebServerFactory factory, Integer expected) {
-		if (expected == null) {
-			verify(factory, never()).addServerCustomizers(any(NettyServerCustomizer.class));
-			return;
-		}
-		verify(factory, times(1)).addServerCustomizers(this.customizerCaptor.capture());
+	@Test
+	void setMaxKeepAliveRequests() {
+		this.serverProperties.getNetty().setMaxKeepAliveRequests(100);
+		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		verifyMaxKeepAliveRequests(factory, 100);
+	}
+
+	@Test
+	void configureHttpRequestDecoder() {
+		ServerProperties.Netty nettyProperties = this.serverProperties.getNetty();
+		nettyProperties.setValidateHeaders(false);
+		nettyProperties.setInitialBufferSize(DataSize.ofBytes(512));
+		nettyProperties.setH2cMaxContentLength(DataSize.ofKilobytes(1));
+		setMaxChunkSize(nettyProperties);
+		nettyProperties.setMaxInitialLineLength(DataSize.ofKilobytes(32));
+		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
+		this.customizer.customize(factory);
+		then(factory).should().addServerCustomizers(this.customizerCaptor.capture());
 		NettyServerCustomizer serverCustomizer = this.customizerCaptor.getValue();
 		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
-		TcpServer tcpConfiguration = ReflectionTestUtils.invokeMethod(httpServer, "tcpConfiguration");
-		ServerBootstrap bootstrap = tcpConfiguration.configure();
-		Map<Object, Object> options = (Map<Object, Object>) ReflectionTestUtils.getField(bootstrap, "options");
-		assertThat(options).containsEntry(ChannelOption.CONNECT_TIMEOUT_MILLIS, expected);
+		HttpRequestDecoderSpec decoder = httpServer.configuration().decoder();
+		assertThat(decoder.validateHeaders()).isFalse();
+		assertThat(decoder.initialBufferSize()).isEqualTo(nettyProperties.getInitialBufferSize().toBytes());
+		assertThat(decoder.h2cMaxContentLength()).isEqualTo(nettyProperties.getH2cMaxContentLength().toBytes());
+		assertMaxChunkSize(nettyProperties, decoder);
+		assertThat(decoder.maxInitialLineLength()).isEqualTo(nettyProperties.getMaxInitialLineLength().toBytes());
 	}
 
-	private void setupServerConnectionTimeout(Duration connectionTimeout) {
-		this.serverProperties.setUseForwardHeaders(null);
-		this.serverProperties.setMaxHttpHeaderSize(null);
-		this.serverProperties.setConnectionTimeout(connectionTimeout);
+	@SuppressWarnings("removal")
+	private void setMaxChunkSize(ServerProperties.Netty nettyProperties) {
+		nettyProperties.setMaxChunkSize(DataSize.ofKilobytes(16));
 	}
 
-	private void setupConnectionTimeout(Duration connectionTimeout) {
-		this.serverProperties.setUseForwardHeaders(null);
-		this.serverProperties.setMaxHttpHeaderSize(null);
-		this.serverProperties.getNetty().setConnectionTimeout(connectionTimeout);
+	@SuppressWarnings({ "deprecation", "removal" })
+	private void assertMaxChunkSize(ServerProperties.Netty nettyProperties, HttpRequestDecoderSpec decoder) {
+		assertThat(decoder.maxChunkSize()).isEqualTo(nettyProperties.getMaxChunkSize().toBytes());
+	}
+
+	private void verifyConnectionTimeout(NettyReactiveWebServerFactory factory, Integer expected) {
+		if (expected == null) {
+			then(factory).should(never()).addServerCustomizers(any(NettyServerCustomizer.class));
+			return;
+		}
+		then(factory).should(times(2)).addServerCustomizers(this.customizerCaptor.capture());
+		NettyServerCustomizer serverCustomizer = this.customizerCaptor.getAllValues().get(0);
+		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
+		Map<ChannelOption<?>, ?> options = httpServer.configuration().options();
+		assertThat(options.get(ChannelOption.CONNECT_TIMEOUT_MILLIS)).isEqualTo(expected);
+	}
+
+	private void verifyIdleTimeout(NettyReactiveWebServerFactory factory, Duration expected) {
+		if (expected == null) {
+			then(factory).should(never()).addServerCustomizers(any(NettyServerCustomizer.class));
+			return;
+		}
+		then(factory).should(times(2)).addServerCustomizers(this.customizerCaptor.capture());
+		NettyServerCustomizer serverCustomizer = this.customizerCaptor.getAllValues().get(0);
+		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
+		Duration idleTimeout = httpServer.configuration().idleTimeout();
+		assertThat(idleTimeout).isEqualTo(expected);
+	}
+
+	private void verifyMaxKeepAliveRequests(NettyReactiveWebServerFactory factory, int expected) {
+		then(factory).should(times(2)).addServerCustomizers(this.customizerCaptor.capture());
+		NettyServerCustomizer serverCustomizer = this.customizerCaptor.getAllValues().get(0);
+		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
+		int maxKeepAliveRequests = httpServer.configuration().maxKeepAliveRequests();
+		assertThat(maxKeepAliveRequests).isEqualTo(expected);
 	}
 
 }

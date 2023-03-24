@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jsonb;
 
-import javax.json.bind.Jsonb;
-
-import org.junit.Test;
+import jakarta.json.bind.Jsonb;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -30,13 +29,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eddú Meléndez
  */
-public class JsonbAutoConfigurationTests {
+class JsonbAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(JsonbAutoConfiguration.class));
 
 	@Test
-	public void jsonbRegistration() {
+	void jsonbRegistration() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(Jsonb.class);
 			Jsonb jsonb = context.getBean(Jsonb.class);

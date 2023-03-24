@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.jdbc.metadata;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.jdbc.core.ConnectionCallback;
@@ -29,51 +29,60 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @param <D> the data source pool metadata type
  * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  */
-public abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourcePoolMetadata<?>> {
+abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractDataSourcePoolMetadata<?>> {
 
 	/**
-	 * Return a data source metadata instance with a min size of 0 and max size of 2.
+	 * Return a data source metadata instance with a min size of 0 and max size of 2. Idle
+	 * connections are not reclaimed immediately.
 	 * @return the data source metadata
 	 */
 	protected abstract D getDataSourceMetadata();
 
 	@Test
-	public void getMaxPoolSize() {
-		assertThat(getDataSourceMetadata().getMax()).isEqualTo(Integer.valueOf(2));
+	void getMaxPoolSize() {
+		assertThat(getDataSourceMetadata().getMax()).isEqualTo(2);
 	}
 
 	@Test
-	public void getMinPoolSize() {
-		assertThat(getDataSourceMetadata().getMin()).isEqualTo(Integer.valueOf(0));
+	void getMinPoolSize() {
+		assertThat(getDataSourceMetadata().getMin()).isZero();
 	}
 
 	@Test
-	public void getPoolSizeNoConnection() {
+	void getPoolSizeNoConnection() {
 		// Make sure the pool is initialized
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
 		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> null);
-		assertThat(getDataSourceMetadata().getActive()).isEqualTo(Integer.valueOf(0));
-		assertThat(getDataSourceMetadata().getUsage()).isEqualTo(Float.valueOf(0));
+		assertThat(getDataSourceMetadata().getActive()).isZero();
+		assertThat(getDataSourceMetadata().getUsage()).isZero();
 	}
 
 	@Test
-	public void getPoolSizeOneConnection() {
+	void getPoolSizeOneConnection() {
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
 		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> {
-			assertThat(getDataSourceMetadata().getActive()).isEqualTo(Integer.valueOf(1));
-			assertThat(getDataSourceMetadata().getUsage()).isEqualTo(Float.valueOf(0.5F));
+			assertThat(getDataSourceMetadata().getActive()).isOne();
+			assertThat(getDataSourceMetadata().getUsage()).isEqualTo(0.5f);
 			return null;
 		});
 	}
 
 	@Test
-	public void getPoolSizeTwoConnections() {
+	void getIdle() {
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
+		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> null);
+		assertThat(getDataSourceMetadata().getIdle()).isOne();
+	}
+
+	@Test
+	void getPoolSizeTwoConnections() {
 		final JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSourceMetadata().getDataSource());
 		jdbcTemplate.execute((ConnectionCallback<Void>) (connection) -> {
 			jdbcTemplate.execute((ConnectionCallback<Void>) (connection1) -> {
 				assertThat(getDataSourceMetadata().getActive()).isEqualTo(2);
-				assertThat(getDataSourceMetadata().getUsage()).isEqualTo(1.0f);
+				assertThat(getDataSourceMetadata().getUsage()).isOne();
 				return null;
 			});
 			return null;
@@ -81,14 +90,16 @@ public abstract class AbstractDataSourcePoolMetadataTests<D extends AbstractData
 	}
 
 	@Test
-	public abstract void getValidationQuery();
+	abstract void getValidationQuery() throws Exception;
 
 	@Test
-	public abstract void getDefaultAutoCommit();
+	abstract void getDefaultAutoCommit() throws Exception;
 
 	protected DataSourceBuilder<?> initializeBuilder() {
-		return DataSourceBuilder.create().driverClassName("org.hsqldb.jdbc.JDBCDriver").url("jdbc:hsqldb:mem:test")
-				.username("sa");
+		return DataSourceBuilder.create()
+			.driverClassName("org.hsqldb.jdbc.JDBCDriver")
+			.url("jdbc:hsqldb:mem:test")
+			.username("sa");
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
@@ -41,8 +40,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 
 /**
- * Annotation that can be used in combination with {@code @RunWith(SpringRunner.class)}
- * for a typical Spring MVC test. Can be used when a test focuses <strong>only</strong> on
+ * Annotation that can be used for a Spring MVC test that focuses <strong>only</strong> on
  * Spring MVC components.
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
@@ -57,13 +55,17 @@ import org.springframework.test.web.servlet.MockMvc;
  * WebDriver). For more fine-grained control of MockMVC the
  * {@link AutoConfigureMockMvc @AutoConfigureMockMvc} annotation can be used.
  * <p>
- * Typically {@code @WebMvcTest} is used in combination with {@link MockBean @MockBean} or
+ * Typically {@code @WebMvcTest} is used in combination with
+ * {@link org.springframework.boot.test.mock.mockito.MockBean @MockBean} or
  * {@link Import @Import} to create any collaborators required by your {@code @Controller}
  * beans.
  * <p>
  * If you are looking to load your full application configuration and use MockMVC, you
  * should consider {@link SpringBootTest @SpringBootTest} combined with
  * {@link AutoConfigureMockMvc @AutoConfigureMockMvc} rather than this annotation.
+ * <p>
+ * When using JUnit 4, this annotation should be used in combination with
+ * {@code @RunWith(SpringRunner.class)}.
  *
  * @author Phillip Webb
  * @author Artsiom Yudovin
@@ -138,18 +140,6 @@ public @interface WebMvcTest {
 	 * @return exclude filters to apply
 	 */
 	Filter[] excludeFilters() default {};
-
-	/**
-	 * If Spring Security's {@link MockMvc} support should be auto-configured when it is
-	 * on the classpath. Also determines if
-	 * {@link org.springframework.security.config.annotation.web.WebSecurityConfigurer}
-	 * classes should be included in the application context. Defaults to {@code true}.
-	 * @return if Spring Security's MockMvc support is auto-configured
-	 * @deprecated since 2.1.0 in favor of Spring Security's testing support
-	 */
-	@Deprecated
-	@AliasFor(annotation = AutoConfigureMockMvc.class)
-	boolean secure() default true;
 
 	/**
 	 * Auto-configuration exclusions that should be applied for this test.

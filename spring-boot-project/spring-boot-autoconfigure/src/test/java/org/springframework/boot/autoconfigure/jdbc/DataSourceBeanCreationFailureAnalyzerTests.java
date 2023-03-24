@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,12 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.diagnostics.FailureAnalysis;
-import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.env.MockEnvironment;
@@ -36,14 +34,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  */
-@RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions({ "h2-*.jar", "hsqldb-*.jar" })
-public class DataSourceBeanCreationFailureAnalyzerTests {
+class DataSourceBeanCreationFailureAnalyzerTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
 
 	@Test
-	public void failureAnalysisIsPerformed() {
+	void failureAnalysisIsPerformed() {
 		FailureAnalysis failureAnalysis = performAnalysis(TestConfiguration.class);
 		assertThat(failureAnalysis.getDescription()).contains("'url' attribute is not specified",
 				"no embedded datasource could be configured", "Failed to determine a suitable driver class");
@@ -54,7 +51,7 @@ public class DataSourceBeanCreationFailureAnalyzerTests {
 	}
 
 	@Test
-	public void failureAnalysisIsPerformedWithActiveProfiles() {
+	void failureAnalysisIsPerformedWithActiveProfiles() {
 		this.environment.setActiveProfiles("first", "second");
 		FailureAnalysis failureAnalysis = performAnalysis(TestConfiguration.class);
 		assertThat(failureAnalysis.getAction()).contains("(the profiles first,second are currently active)");
@@ -63,8 +60,8 @@ public class DataSourceBeanCreationFailureAnalyzerTests {
 	private FailureAnalysis performAnalysis(Class<?> configuration) {
 		BeanCreationException failure = createFailure(configuration);
 		assertThat(failure).isNotNull();
-		DataSourceBeanCreationFailureAnalyzer failureAnalyzer = new DataSourceBeanCreationFailureAnalyzer();
-		failureAnalyzer.setEnvironment(this.environment);
+		DataSourceBeanCreationFailureAnalyzer failureAnalyzer = new DataSourceBeanCreationFailureAnalyzer(
+				this.environment);
 		return failureAnalyzer.analyze(failure);
 	}
 
@@ -82,7 +79,7 @@ public class DataSourceBeanCreationFailureAnalyzerTests {
 		}
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(DataSourceAutoConfiguration.class)
 	static class TestConfiguration {
 

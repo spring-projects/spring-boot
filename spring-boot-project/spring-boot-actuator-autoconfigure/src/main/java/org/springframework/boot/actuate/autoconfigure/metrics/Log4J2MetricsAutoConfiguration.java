@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import java.util.Collections;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.logging.Log4j2Metrics;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.spi.LoggerContext;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.Log4J2MetricsAutoConfiguration.Log4JCoreLoggerContextCondition;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -33,7 +31,6 @@ import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
@@ -42,9 +39,9 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
  * @author Andy Wilkinson
  * @since 2.1.0
  */
-@Configuration
-@AutoConfigureAfter(MetricsAutoConfiguration.class)
-@ConditionalOnClass({ Log4j2Metrics.class, LoggerContext.class, LogManager.class })
+@AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
+@ConditionalOnClass(value = { Log4j2Metrics.class, LogManager.class },
+		name = "org.apache.logging.log4j.core.LoggerContext")
 @ConditionalOnBean(MeterRegistry.class)
 @Conditional(Log4JCoreLoggerContextCondition.class)
 public class Log4J2MetricsAutoConfiguration {
@@ -52,20 +49,25 @@ public class Log4J2MetricsAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public Log4j2Metrics log4j2Metrics() {
-		return new Log4j2Metrics(Collections.emptyList(), (LoggerContext) LogManager.getContext(false));
+		return new Log4j2Metrics();
 	}
 
 	static class Log4JCoreLoggerContextCondition extends SpringBootCondition {
 
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
-			org.apache.logging.log4j.spi.LoggerContext loggerContext = LogManager.getContext(false);
-			if (loggerContext instanceof LoggerContext) {
-				return ConditionOutcome
-						.match("LoggerContext was an instance of org.apache.logging.log4j.spi.LoggerContext");
+			LoggerContext loggerContext = LogManager.getContext(false);
+			try {
+				if (Class.forName("org.apache.logging.log4j.core.LoggerContext").isInstance(loggerContext)) {
+					return ConditionOutcome
+						.match("LoggerContext was an instance of org.apache.logging.log4j.core.LoggerContext");
+				}
+			}
+			catch (Throwable ex) {
+				// Continue with no match
 			}
 			return ConditionOutcome
-					.noMatch("Logger context was not an instance of org.apache.logging.log4j.spi.LoggerContext");
+				.noMatch("Logger context was not an instance of org.apache.logging.log4j.core.LoggerContext");
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,13 @@ package org.springframework.boot.test.autoconfigure.properties;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.test.autoconfigure.properties.AnnotationsPropertySourceTests.DeeplyNestedAnnotations.Level1;
+import org.springframework.boot.test.autoconfigure.properties.AnnotationsPropertySourceTests.DeeplyNestedAnnotations.Level2;
+import org.springframework.boot.test.autoconfigure.properties.AnnotationsPropertySourceTests.EnclosingClass.PropertyMappedAnnotationOnEnclosingClass;
+import org.springframework.boot.test.autoconfigure.properties.AnnotationsPropertySourceTests.NestedAnnotations.Entry;
 import org.springframework.core.annotation.AliasFor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,65 +37,65 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class AnnotationsPropertySourceTests {
+class AnnotationsPropertySourceTests {
 
 	@Test
-	public void createWhenSourceIsNullShouldThrowException() {
+	void createWhenSourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new AnnotationsPropertySource(null))
-				.withMessageContaining("Property source must not be null");
+			.withMessageContaining("Property source must not be null");
 	}
 
 	@Test
-	public void propertiesWhenHasNoAnnotationShouldBeEmpty() {
+	void propertiesWhenHasNoAnnotationShouldBeEmpty() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(NoAnnotation.class);
 		assertThat(source.getPropertyNames()).isEmpty();
 		assertThat(source.getProperty("value")).isNull();
 	}
 
 	@Test
-	public void propertiesWhenHasTypeLevelAnnotationShouldUseAttributeName() {
+	void propertiesWhenHasTypeLevelAnnotationShouldUseAttributeName() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(TypeLevel.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
 		assertThat(source.getProperty("value")).isEqualTo("abc");
 	}
 
 	@Test
-	public void propertiesWhenHasTypeLevelWithPrefixShouldUsePrefixedName() {
+	void propertiesWhenHasTypeLevelWithPrefixShouldUsePrefixedName() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(TypeLevelWithPrefix.class);
 		assertThat(source.getPropertyNames()).containsExactly("test.value");
 		assertThat(source.getProperty("test.value")).isEqualTo("abc");
 	}
 
 	@Test
-	public void propertiesWhenHasAttributeLevelWithPrefixShouldUsePrefixedName() {
+	void propertiesWhenHasAttributeLevelWithPrefixShouldUsePrefixedName() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(AttributeLevelWithPrefix.class);
 		assertThat(source.getPropertyNames()).containsExactly("test");
 		assertThat(source.getProperty("test")).isEqualTo("abc");
 	}
 
 	@Test
-	public void propertiesWhenHasTypeAndAttributeLevelWithPrefixShouldUsePrefixedName() {
+	void propertiesWhenHasTypeAndAttributeLevelWithPrefixShouldUsePrefixedName() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(TypeAndAttributeLevelWithPrefix.class);
 		assertThat(source.getPropertyNames()).containsExactly("test.example");
 		assertThat(source.getProperty("test.example")).isEqualTo("abc");
 	}
 
 	@Test
-	public void propertiesWhenNotMappedAtTypeLevelShouldIgnoreAttributes() {
+	void propertiesWhenNotMappedAtTypeLevelShouldIgnoreAttributes() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(NotMappedAtTypeLevel.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
 		assertThat(source.getProperty("ignore")).isNull();
 	}
 
 	@Test
-	public void propertiesWhenNotMappedAtAttributeLevelShouldIgnoreAttributes() {
+	void propertiesWhenNotMappedAtAttributeLevelShouldIgnoreAttributes() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(NotMappedAtAttributeLevel.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
 		assertThat(source.getProperty("ignore")).isNull();
 	}
 
 	@Test
-	public void propertiesWhenContainsArraysShouldExpandNames() {
+	void propertiesWhenContainsArraysShouldExpandNames() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(Arrays.class);
 		assertThat(source.getPropertyNames()).contains("strings[0]", "strings[1]", "classes[0]", "classes[1]",
 				"ints[0]", "ints[1]", "longs[0]", "longs[1]", "floats[0]", "floats[1]", "doubles[0]", "doubles[1]",
@@ -112,20 +117,20 @@ public class AnnotationsPropertySourceTests {
 	}
 
 	@Test
-	public void propertiesWhenHasCamelCaseShouldConvertToKebabCase() {
+	void propertiesWhenHasCamelCaseShouldConvertToKebabCase() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(CamelCaseToKebabCase.class);
 		assertThat(source.getPropertyNames()).contains("camel-case-to-kebab-case");
 	}
 
 	@Test
-	public void propertiesFromMetaAnnotationsAreMapped() {
+	void propertiesFromMetaAnnotationsAreMapped() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(PropertiesFromSingleMetaAnnotation.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
 		assertThat(source.getProperty("value")).isEqualTo("foo");
 	}
 
 	@Test
-	public void propertiesFromMultipleMetaAnnotationsAreMappedUsingTheirOwnPropertyMapping() {
+	void propertiesFromMultipleMetaAnnotationsAreMappedUsingTheirOwnPropertyMapping() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(PropertiesFromMultipleMetaAnnotations.class);
 		assertThat(source.getPropertyNames()).containsExactly("value", "test.value", "test.example");
 		assertThat(source.getProperty("value")).isEqualTo("alpha");
@@ -134,26 +139,34 @@ public class AnnotationsPropertySourceTests {
 	}
 
 	@Test
-	public void propertyMappedAttributesCanBeAliased() {
+	void propertyMappedAttributesCanBeAliased() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(PropertyMappedAttributeWithAnAlias.class);
 		assertThat(source.getPropertyNames()).containsExactly("aliasing.value");
 		assertThat(source.getProperty("aliasing.value")).isEqualTo("baz");
 	}
 
 	@Test
-	public void selfAnnotatingAnnotationDoesNotCauseStackOverflow() {
+	void selfAnnotatingAnnotationDoesNotCauseStackOverflow() {
 		new AnnotationsPropertySource(PropertyMappedWithSelfAnnotatingAnnotation.class);
 	}
 
 	@Test
-	public void typeLevelAnnotationOnSuperClass() {
+	void typeLevelAnnotationOnSuperClass() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(PropertyMappedAnnotationOnSuperClass.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
 		assertThat(source.getProperty("value")).isEqualTo("abc");
 	}
 
 	@Test
-	public void aliasedPropertyMappedAttributeOnSuperClass() {
+	void typeLevelAnnotationOnEnclosingClass() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(
+				PropertyMappedAnnotationOnEnclosingClass.class);
+		assertThat(source.getPropertyNames()).containsExactly("value");
+		assertThat(source.getProperty("value")).isEqualTo("abc");
+	}
+
+	@Test
+	void aliasedPropertyMappedAttributeOnSuperClass() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(
 				AliasedPropertyMappedAnnotationOnSuperClass.class);
 		assertThat(source.getPropertyNames()).containsExactly("aliasing.value");
@@ -161,15 +174,35 @@ public class AnnotationsPropertySourceTests {
 	}
 
 	@Test
-	public void enumValueMapped() {
+	void enumValueMapped() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(EnumValueMapped.class);
 		assertThat(source.getProperty("testenum.value")).isEqualTo(EnumItem.TWO);
 	}
 
 	@Test
-	public void enumValueNotMapped() {
+	void enumValueNotMapped() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(EnumValueNotMapped.class);
 		assertThat(source.containsProperty("testenum.value")).isFalse();
+	}
+
+	@Test
+	void nestedAnnotationsMapped() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(PropertyMappedWithNestedAnnotations.class);
+		assertThat(source.getProperty("testnested")).isNull();
+		assertThat(source.getProperty("testnested.entries[0]")).isNull();
+		assertThat(source.getProperty("testnested.entries[0].value")).isEqualTo("one");
+		assertThat(source.getProperty("testnested.entries[1]")).isNull();
+		assertThat(source.getProperty("testnested.entries[1].value")).isEqualTo("two");
+	}
+
+	@Test
+	void deeplyNestedAnnotationsMapped() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(
+				PropertyMappedWithDeeplyNestedAnnotations.class);
+		assertThat(source.getProperty("testdeeplynested")).isNull();
+		assertThat(source.getProperty("testdeeplynested.level1")).isNull();
+		assertThat(source.getProperty("testdeeplynested.level1.level2")).isNull();
+		assertThat(source.getProperty("testdeeplynested.level1.level2.value")).isEqualTo("level2");
 	}
 
 	static class NoAnnotation {
@@ -363,6 +396,15 @@ public class AnnotationsPropertySourceTests {
 
 	}
 
+	@TypeLevelAnnotation("abc")
+	static class EnclosingClass {
+
+		class PropertyMappedAnnotationOnEnclosingClass {
+
+		}
+
+	}
+
 	static class AliasedPropertyMappedAnnotationOnSuperClass extends PropertyMappedAttributeWithAnAlias {
 
 	}
@@ -393,6 +435,63 @@ public class AnnotationsPropertySourceTests {
 		ONE,
 
 		TWO
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@PropertyMapping("testnested")
+	@interface NestedAnnotations {
+
+		Entry[] entries();
+
+		@Retention(RetentionPolicy.RUNTIME)
+		@interface Entry {
+
+			String value();
+
+		}
+
+	}
+
+	@NestedAnnotations(entries = { @Entry("one"), @Entry("two") })
+	static class PropertyMappedWithNestedAnnotations {
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@PropertyMapping("testdeeplynested")
+	@interface DeeplyNestedAnnotations {
+
+		Level1 level1();
+
+		@Retention(RetentionPolicy.RUNTIME)
+		@interface Level1 {
+
+			Level2 level2();
+
+		}
+
+		@Retention(RetentionPolicy.RUNTIME)
+		@interface Level2 {
+
+			String value();
+
+		}
+
+	}
+
+	@DeeplyNestedAnnotations(level1 = @Level1(level2 = @Level2("level2")))
+	static class PropertyMappedWithDeeplyNestedAnnotations {
+
+	}
+
+	@TypeLevelAnnotation("outer")
+	static class OuterWithTypeLevel {
+
+		@Nested
+		static class NestedClass {
+
+		}
 
 	}
 

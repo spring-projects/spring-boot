@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,14 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.data.ConditionalOnRepositoryType;
 import org.springframework.boot.autoconfigure.data.RepositoryType;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
@@ -43,9 +42,7 @@ import org.springframework.data.mongodb.repository.support.MongoRepositoryFactor
  * configured {@link org.springframework.data.mongodb.repository.MongoRepository}.
  * <p>
  * Once in effect, the auto-configuration is the equivalent of enabling Mongo repositories
- * using the
- * {@link org.springframework.data.mongodb.repository.config.EnableMongoRepositories}
- * annotation.
+ * using the {@link EnableMongoRepositories @EnableMongoRepositories} annotation.
  *
  * @author Dave Syer
  * @author Oliver Gierke
@@ -53,12 +50,11 @@ import org.springframework.data.mongodb.repository.support.MongoRepositoryFactor
  * @since 1.0.0
  * @see EnableMongoRepositories
  */
-@Configuration
+@AutoConfiguration(after = MongoDataAutoConfiguration.class)
 @ConditionalOnClass({ MongoClient.class, MongoRepository.class })
 @ConditionalOnMissingBean({ MongoRepositoryFactoryBean.class, MongoRepositoryConfigurationExtension.class })
 @ConditionalOnRepositoryType(store = "mongodb", type = RepositoryType.IMPERATIVE)
-@Import(MongoRepositoriesAutoConfigureRegistrar.class)
-@AutoConfigureAfter(MongoDataAutoConfiguration.class)
+@Import(MongoRepositoriesRegistrar.class)
 public class MongoRepositoriesAutoConfiguration {
 
 }

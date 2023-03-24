@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,44 +21,61 @@ import java.sql.SQLException;
 import org.jooq.Configuration;
 import org.jooq.ExecuteContext;
 import org.jooq.SQLDialect;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 
 import org.springframework.jdbc.BadSqlGrammarException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
 
 /**
  * Tests for {@link JooqExceptionTranslator}
  *
  * @author Andy Wilkinson
  */
-@RunWith(Parameterized.class)
-public class JooqExceptionTranslatorTests {
+class JooqExceptionTranslatorTests {
 
 	private final JooqExceptionTranslator exceptionTranslator = new JooqExceptionTranslator();
 
-	private final SQLDialect dialect;
+	@ParameterizedTest(name = "{0}")
+	@MethodSource
+	void exceptionTranslation(SQLDialect dialect, SQLException sqlException) {
+		ExecuteContext context = mock(ExecuteContext.class);
+		Configuration configuration = mock(Configuration.class);
+		given(context.configuration()).willReturn(configuration);
+		given(configuration.dialect()).willReturn(dialect);
+		given(context.sqlException()).willReturn(sqlException);
+		this.exceptionTranslator.exception(context);
+		ArgumentCaptor<RuntimeException> captor = ArgumentCaptor.forClass(RuntimeException.class);
+		then(context).should().exception(captor.capture());
+		assertThat(captor.getValue()).isInstanceOf(BadSqlGrammarException.class);
+	}
 
-	private final SQLException sqlException;
+	@Test
+	void whenExceptionCannotBeTranslatedThenExecuteContextExceptionIsNotCalled() {
+		ExecuteContext context = mock(ExecuteContext.class);
+		Configuration configuration = mock(Configuration.class);
+		given(context.configuration()).willReturn(configuration);
+		given(configuration.dialect()).willReturn(SQLDialect.POSTGRES);
+		given(context.sqlException()).willReturn(new SQLException(null, null, 123456789));
+		this.exceptionTranslator.exception(context);
+		then(context).should(never()).exception(any());
+	}
 
-	@Parameters(name = "{0}")
-	public static Object[] parameters() {
+	static Object[] exceptionTranslation() {
 		return new Object[] { new Object[] { SQLDialect.DERBY, sqlException("42802") },
 				new Object[] { SQLDialect.H2, sqlException(42000) },
 				new Object[] { SQLDialect.HSQLDB, sqlException(-22) },
 				new Object[] { SQLDialect.MARIADB, sqlException(1054) },
 				new Object[] { SQLDialect.MYSQL, sqlException(1054) },
 				new Object[] { SQLDialect.POSTGRES, sqlException("03000") },
-				new Object[] { SQLDialect.POSTGRES_9_3, sqlException("03000") },
-				new Object[] { SQLDialect.POSTGRES_9_4, sqlException("03000") },
-				new Object[] { SQLDialect.POSTGRES_9_5, sqlException("03000") },
 				new Object[] { SQLDialect.SQLITE, sqlException("21000") } };
 	}
 
@@ -68,25 +85,6 @@ public class JooqExceptionTranslatorTests {
 
 	private static SQLException sqlException(int vendorCode) {
 		return new SQLException(null, null, vendorCode);
-
-	}
-
-	public JooqExceptionTranslatorTests(SQLDialect dialect, SQLException sqlException) {
-		this.dialect = dialect;
-		this.sqlException = sqlException;
-	}
-
-	@Test
-	public void exceptionTranslation() {
-		ExecuteContext context = mock(ExecuteContext.class);
-		Configuration configuration = mock(Configuration.class);
-		given(context.configuration()).willReturn(configuration);
-		given(configuration.dialect()).willReturn(this.dialect);
-		given(context.sqlException()).willReturn(this.sqlException);
-		this.exceptionTranslator.exception(context);
-		ArgumentCaptor<RuntimeException> captor = ArgumentCaptor.forClass(RuntimeException.class);
-		verify(context).exception(captor.capture());
-		assertThat(captor.getValue()).isInstanceOf(BadSqlGrammarException.class);
 	}
 
 }

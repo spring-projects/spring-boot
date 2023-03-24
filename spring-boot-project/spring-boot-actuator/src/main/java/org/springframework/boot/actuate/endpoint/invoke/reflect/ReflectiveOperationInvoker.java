@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,10 @@
 package org.springframework.boot.actuate.endpoint.invoke.reflect;
 
 import java.lang.reflect.Method;
-import java.security.Principal;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.actuate.endpoint.InvocationContext;
-import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.MissingParametersException;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
@@ -48,7 +46,7 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 	private final ParameterValueMapper parameterValueMapper;
 
 	/**
-	 * Creates a new {code ReflectiveOperationInvoker} that will invoke the given
+	 * Creates a new {@code ReflectiveOperationInvoker} that will invoke the given
 	 * {@code method} on the given {@code target}. The given {@code parameterMapper} will
 	 * be used to map parameters to the required types and the given
 	 * {@code parameterNameMapper} will be used map parameters by name.
@@ -77,8 +75,10 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 	}
 
 	private void validateRequiredParameters(InvocationContext context) {
-		Set<OperationParameter> missing = this.operationMethod.getParameters().stream()
-				.filter((parameter) -> isMissing(context, parameter)).collect(Collectors.toSet());
+		Set<OperationParameter> missing = this.operationMethod.getParameters()
+			.stream()
+			.filter((parameter) -> isMissing(context, parameter))
+			.collect(Collectors.toSet());
 		if (!missing.isEmpty()) {
 			throw new MissingParametersException(missing);
 		}
@@ -88,26 +88,23 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 		if (!parameter.isMandatory()) {
 			return false;
 		}
-		if (Principal.class.equals(parameter.getType())) {
-			return context.getSecurityContext().getPrincipal() == null;
-		}
-		if (SecurityContext.class.equals(parameter.getType())) {
+		if (context.canResolve(parameter.getType())) {
 			return false;
 		}
 		return context.getArguments().get(parameter.getName()) == null;
 	}
 
 	private Object[] resolveArguments(InvocationContext context) {
-		return this.operationMethod.getParameters().stream().map((parameter) -> resolveArgument(parameter, context))
-				.toArray();
+		return this.operationMethod.getParameters()
+			.stream()
+			.map((parameter) -> resolveArgument(parameter, context))
+			.toArray();
 	}
 
 	private Object resolveArgument(OperationParameter parameter, InvocationContext context) {
-		if (Principal.class.equals(parameter.getType())) {
-			return context.getSecurityContext().getPrincipal();
-		}
-		if (SecurityContext.class.equals(parameter.getType())) {
-			return context.getSecurityContext();
+		Object resolvedByType = context.resolveArgument(parameter.getType());
+		if (resolvedByType != null) {
+			return resolvedByType;
 		}
 		Object value = context.getArguments().get(parameter.getName());
 		return this.parameterValueMapper.mapParameterValue(parameter, value);
@@ -115,8 +112,9 @@ public class ReflectiveOperationInvoker implements OperationInvoker {
 
 	@Override
 	public String toString() {
-		return new ToStringCreator(this).append("target", this.target).append("method", this.operationMethod)
-				.toString();
+		return new ToStringCreator(this).append("target", this.target)
+			.append("method", this.operationMethod)
+			.toString();
 	}
 
 }

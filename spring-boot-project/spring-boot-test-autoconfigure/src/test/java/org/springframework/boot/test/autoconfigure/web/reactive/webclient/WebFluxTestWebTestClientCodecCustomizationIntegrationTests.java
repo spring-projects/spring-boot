@@ -16,31 +16,28 @@
 
 package org.springframework.boot.test.autoconfigure.web.reactive.webclient;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 /**
- * Tests for {@link WebFluxTest} to validate the {@link WebTestClient WebTestClient's}
- * codecs are customized.
+ * Tests for {@link WebFluxTest @WebFluxTest} to validate the {@link WebTestClient
+ * WebTestClient's} codecs are customized.
  *
  * @author Andy Wilkinson
  */
-@RunWith(SpringRunner.class)
 @WithMockUser
 @WebFluxTest(controllers = JsonController.class)
-public class WebFluxTestWebTestClientCodecCustomizationIntegrationTests {
+class WebFluxTestWebTestClientCodecCustomizationIntegrationTests {
 
 	@Autowired
 	private WebTestClient webClient;
 
 	@Test
-	public void shouldBeAbleToCreatePojoViaParametersModule() {
+	void shouldBeAbleToCreatePojoViaParametersModule() {
 		this.webClient.get().uri("/json").exchange().expectStatus().isOk().expectBody(ExamplePojo.class);
 	}
 

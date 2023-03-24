@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>getting-started</artifactId>
+	<!-- ... -->
+	<!-- tag::different-versions[] -->
+	<properties>
+		<slf4j.version>1.7.30</slf4j.version>
+		<spring-data-releasetrain.version>Moore-SR6</spring-data-releasetrain.version>
+	</properties>
+	<!-- end::different-versions[] -->
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+

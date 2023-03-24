@@ -29,15 +29,11 @@ import org.springframework.util.ClassUtils;
  */
 public class ConfigurationPropertiesBindException extends BeanCreationException {
 
-	private final Class<?> beanType;
+	private final ConfigurationPropertiesBean bean;
 
-	private final ConfigurationProperties annotation;
-
-	ConfigurationPropertiesBindException(String beanName, Object bean, ConfigurationProperties annotation,
-			Exception cause) {
-		super(beanName, getMessage(bean, annotation), cause);
-		this.beanType = bean.getClass();
-		this.annotation = annotation;
+	ConfigurationPropertiesBindException(ConfigurationPropertiesBean bean, Exception cause) {
+		super(bean.getName(), getMessage(bean), cause);
+		this.bean = bean;
 	}
 
 	/**
@@ -45,7 +41,7 @@ public class ConfigurationPropertiesBindException extends BeanCreationException 
 	 * @return the bean type
 	 */
 	public Class<?> getBeanType() {
-		return this.beanType;
+		return this.bean.getType();
 	}
 
 	/**
@@ -53,12 +49,14 @@ public class ConfigurationPropertiesBindException extends BeanCreationException 
 	 * @return the configuration properties annotation
 	 */
 	public ConfigurationProperties getAnnotation() {
-		return this.annotation;
+		return this.bean.getAnnotation();
 	}
 
-	private static String getMessage(Object bean, ConfigurationProperties annotation) {
+	private static String getMessage(ConfigurationPropertiesBean bean) {
+		ConfigurationProperties annotation = bean.getAnnotation();
 		StringBuilder message = new StringBuilder();
-		message.append("Could not bind properties to '" + ClassUtils.getShortName(bean.getClass()) + "' : ");
+		message.append("Could not bind properties to '");
+		message.append(ClassUtils.getShortName(bean.getType())).append("' : ");
 		message.append("prefix=").append(annotation.prefix());
 		message.append(", ignoreInvalidFields=").append(annotation.ignoreInvalidFields());
 		message.append(", ignoreUnknownFields=").append(annotation.ignoreUnknownFields());

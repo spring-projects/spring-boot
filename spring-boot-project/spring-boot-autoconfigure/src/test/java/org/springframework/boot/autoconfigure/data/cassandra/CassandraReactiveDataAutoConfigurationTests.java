@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,23 @@
 
 package org.springframework.boot.autoconfigure.data.cassandra;
 
-import java.util.Set;
-
-import com.datastax.driver.core.Session;
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.core.ReactiveCassandraTemplate;
+import org.springframework.data.cassandra.core.convert.CassandraConverter;
 import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
+import org.springframework.data.domain.ManagedTypes;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link CassandraReactiveDataAutoConfiguration}.
@@ -44,39 +41,36 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Mark Paluch
  */
-public class CassandraReactiveDataAutoConfigurationTests {
+class CassandraReactiveDataAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void templateExists() {
-		load("spring.data.cassandra.keyspaceName:boot_test");
+	void templateExists() {
+		load("spring.cassandra.keyspaceName:boot_test");
 		assertThat(this.context.getBeanNamesForType(ReactiveCassandraTemplate.class)).hasSize(1);
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
-	public void entityScanShouldSetInitialEntitySet() {
-		load(EntityScanConfig.class, "spring.data.cassandra.keyspaceName:boot_test");
+	void entityScanShouldSetManagedTypes() {
+		load(EntityScanConfig.class, "spring.cassandra.keyspaceName:boot_test");
 		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
-		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
-				"initialEntitySet");
-		assertThat(initialEntitySet).containsOnly(City.class);
+		ManagedTypes managedTypes = (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
+		assertThat(managedTypes.toList()).containsOnly(City.class);
 	}
 
 	@Test
-	public void userTypeResolverShouldBeSet() {
-		load("spring.data.cassandra.keyspaceName:boot_test");
-		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
-		assertThat(ReflectionTestUtils.getField(mappingContext, "userTypeResolver"))
-				.isInstanceOf(SimpleUserTypeResolver.class);
+	void userTypeResolverShouldBeSet() {
+		load("spring.cassandra.keyspaceName:boot_test");
+		CassandraConverter cassandraConverter = this.context.getBean(CassandraConverter.class);
+		assertThat(cassandraConverter).extracting("userTypeResolver").isInstanceOf(SimpleUserTypeResolver.class);
 	}
 
 	private void load(String... environment) {
@@ -89,23 +83,13 @@ public class CassandraReactiveDataAutoConfigurationTests {
 		if (config != null) {
 			ctx.register(config);
 		}
-		ctx.register(TestConfiguration.class, CassandraAutoConfiguration.class, CassandraDataAutoConfiguration.class,
-				CassandraReactiveDataAutoConfiguration.class);
+		ctx.register(CassandraMockConfiguration.class, CassandraAutoConfiguration.class,
+				CassandraDataAutoConfiguration.class, CassandraReactiveDataAutoConfiguration.class);
 		ctx.refresh();
 		this.context = ctx;
 	}
 
-	@Configuration
-	static class TestConfiguration {
-
-		@Bean
-		public Session session() {
-			return mock(Session.class);
-		}
-
-	}
-
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EntityScan("org.springframework.boot.autoconfigure.data.cassandra.city")
 	static class EntityScanConfig {
 

@@ -40,6 +40,11 @@ public class LombokInnerClassProperties {
 
 	private Fourth fourth;
 
+	// Only there to record the source method
+	public SimpleLombokPojo getThird() {
+		return this.third;
+	}
+
 	@Data
 	public static class Foo {
 

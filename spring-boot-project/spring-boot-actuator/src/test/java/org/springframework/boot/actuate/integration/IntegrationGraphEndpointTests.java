@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,51 +16,57 @@
 
 package org.springframework.boot.actuate.integration;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
+import org.junit.jupiter.api.Test;
+
+import org.springframework.boot.actuate.integration.IntegrationGraphEndpoint.GraphDescriptor;
 import org.springframework.integration.graph.Graph;
 import org.springframework.integration.graph.IntegrationGraphServer;
+import org.springframework.integration.graph.IntegrationNode;
+import org.springframework.integration.graph.LinkNode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link IntegrationGraphEndpoint}.
  *
  * @author Tim Ysewyn
+ * @author Moritz Halbritter
  */
-public class IntegrationGraphEndpointTests {
+class IntegrationGraphEndpointTests {
 
-	@Mock
-	private IntegrationGraphServer integrationGraphServer;
+	private final IntegrationGraphServer server = mock(IntegrationGraphServer.class);
 
-	@InjectMocks
-	private IntegrationGraphEndpoint integrationGraphEndpoint;
+	private final IntegrationGraphEndpoint endpoint = new IntegrationGraphEndpoint(this.server);
 
-	@Before
-	public void setUp() {
-		MockitoAnnotations.initMocks(this);
+	@Test
+	void readOperationShouldReturnGraph() {
+		Graph graph = mock(Graph.class);
+		Map<String, Object> contentDescriptor = new LinkedHashMap<>();
+		Collection<IntegrationNode> nodes = new ArrayList<>();
+		Collection<LinkNode> links = new ArrayList<>();
+		given(graph.getContentDescriptor()).willReturn(contentDescriptor);
+		given(graph.getNodes()).willReturn(nodes);
+		given(graph.getLinks()).willReturn(links);
+		given(this.server.getGraph()).willReturn(graph);
+		GraphDescriptor descriptor = this.endpoint.graph();
+		then(this.server).should().getGraph();
+		assertThat(descriptor.getContentDescriptor()).isSameAs(contentDescriptor);
+		assertThat(descriptor.getNodes()).isSameAs(nodes);
+		assertThat(descriptor.getLinks()).isSameAs(links);
 	}
 
 	@Test
-	public void readOperationShouldReturnGraph() {
-		Graph mockedGraph = mock(Graph.class);
-		given(this.integrationGraphServer.getGraph()).willReturn(mockedGraph);
-		Graph graph = this.integrationGraphEndpoint.graph();
-		verify(this.integrationGraphServer).getGraph();
-		assertThat(graph).isEqualTo(mockedGraph);
-	}
-
-	@Test
-	public void writeOperationShouldRebuildGraph() {
-		this.integrationGraphEndpoint.rebuild();
-		verify(this.integrationGraphServer).rebuild();
+	void writeOperationShouldRebuildGraph() {
+		this.endpoint.rebuild();
+		then(this.server).should().rebuild();
 	}
 
 }

@@ -5,7 +5,7 @@ plugins {
 }
 
 bootWar {
-	mainClassName = 'com.example.Application'
+	mainClass = 'com.example.Application'
 }
 
 group = 'com.example'
@@ -14,7 +14,7 @@ version = '1.0'
 uploadBootArchives {
 	repositories {
 		mavenDeployer {
-		 	repository(url: "file:$buildDir/repo")
+		 	repository(url: "file:${buildDir}/repo")
 		}
 	}
 }

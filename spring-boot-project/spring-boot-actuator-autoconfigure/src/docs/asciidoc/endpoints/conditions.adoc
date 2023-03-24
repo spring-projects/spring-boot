@@ -1,0 +1,25 @@
+[[conditions]]
+= Conditions Evaluation Report (`conditions`)
+The `conditions` endpoint provides information about the evaluation of conditions on configuration and auto-configuration classes.
+
+
+
+[[conditions.retrieving]]
+== Retrieving the Report
+To retrieve the report, make a `GET` request to `/actuator/conditions`, as shown in the following curl-based example:
+
+include::{snippets}/conditions/curl-request.adoc[]
+
+The resulting response is similar to the following:
+
+include::{snippets}/conditions/http-response.adoc[]
+
+
+
+[[conditions.retrieving.response-structure]]
+=== Response Structure
+The response contains details of the application's condition evaluation.
+The following table describes the structure of the response:
+
+[cols="3,1,3"]
+include::{snippets}/conditions/response-fields.adoc[]

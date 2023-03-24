@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,8 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  */
 final class ConfigurationPropertiesJsr303Validator implements Validator {
 
-	private static final String[] VALIDATOR_CLASSES = { "javax.validation.Validator",
-			"javax.validation.ValidatorFactory", "javax.validation.bootstrap.GenericBootstrap" };
+	private static final String[] VALIDATOR_CLASSES = { "jakarta.validation.Validator",
+			"jakarta.validation.ValidatorFactory", "jakarta.validation.bootstrap.GenericBootstrap" };
 
 	private final Delegate delegate;
 
@@ -51,7 +51,7 @@ final class ConfigurationPropertiesJsr303Validator implements Validator {
 		this.delegate.validate(target, errors);
 	}
 
-	public static boolean isJsr303Present(ApplicationContext applicationContext) {
+	static boolean isJsr303Present(ApplicationContext applicationContext) {
 		ClassLoader classLoader = applicationContext.getClassLoader();
 		for (String validatorClass : VALIDATOR_CLASSES) {
 			if (!ClassUtils.isPresent(validatorClass, classLoader)) {
@@ -65,7 +65,7 @@ final class ConfigurationPropertiesJsr303Validator implements Validator {
 
 		Delegate(ApplicationContext applicationContext) {
 			setApplicationContext(applicationContext);
-			setMessageInterpolator(new MessageInterpolatorFactory().getObject());
+			setMessageInterpolator(new MessageInterpolatorFactory(applicationContext).getObject());
 			afterPropertiesSet();
 		}
 

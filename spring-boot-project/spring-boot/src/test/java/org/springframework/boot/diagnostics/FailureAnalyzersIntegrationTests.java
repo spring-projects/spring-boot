@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 
 package org.springframework.boot.diagnostics;
 
-import javax.annotation.PostConstruct;
-
-import org.junit.Rule;
-import org.junit.Test;
+import jakarta.annotation.PostConstruct;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.testsupport.rule.OutputCapture;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.context.annotation.Configuration;
 
@@ -35,23 +35,21 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Andy Wilkinson
  */
-public class FailureAnalyzersIntegrationTests {
-
-	@Rule
-	public OutputCapture outputCapture = new OutputCapture();
+@ExtendWith(OutputCaptureExtension.class)
+class FailureAnalyzersIntegrationTests {
 
 	@Test
-	public void analysisIsPerformed() {
-		assertThatExceptionOfType(Exception.class).isThrownBy(
-				() -> new SpringApplicationBuilder(TestConfiguration.class).web(WebApplicationType.NONE).run());
-		assertThat(this.outputCapture.toString()).contains("APPLICATION FAILED TO START");
+	void analysisIsPerformed(CapturedOutput output) {
+		assertThatExceptionOfType(Exception.class)
+			.isThrownBy(() -> new SpringApplicationBuilder(TestConfiguration.class).web(WebApplicationType.NONE).run());
+		assertThat(output).contains("APPLICATION FAILED TO START");
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
 		@PostConstruct
-		public void fail() {
+		void fail() {
 			throw new PortInUseException(8080);
 		}
 

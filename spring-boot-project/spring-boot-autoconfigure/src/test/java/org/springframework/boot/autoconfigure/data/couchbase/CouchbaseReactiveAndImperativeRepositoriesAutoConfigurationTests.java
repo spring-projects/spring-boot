@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,13 @@ package org.springframework.boot.autoconfigure.data.couchbase;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfigurationTests;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseTestConfigurer;
 import org.springframework.boot.autoconfigure.data.couchbase.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.couchbase.city.ReactiveCityRepository;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
@@ -46,40 +42,31 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
-
-	private AnnotationConfigApplicationContext context;
-
-	@After
-	public void close() {
-		this.context.close();
-	}
+class CouchbaseReactiveAndImperativeRepositoriesAutoConfigurationTests {
 
 	@Test
-	public void shouldCreateInstancesForReactiveAndImperativeRepositories() {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.datasource.initialization-mode:never").applyTo(this.context);
-		this.context.register(ImperativeAndReactiveConfiguration.class, BaseConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
-		assertThat(this.context.getBean(ReactiveCityRepository.class)).isNotNull();
+	void shouldCreateInstancesForReactiveAndImperativeRepositories() {
+		new ApplicationContextRunner()
+			.withUserConfiguration(ImperativeAndReactiveConfiguration.class, BaseConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(CityRepository.class)
+				.hasSingleBean(ReactiveCityRepository.class));
 	}
 
-	@Configuration
-	@TestAutoConfigurationPackage(CouchbaseAutoConfigurationTests.class)
+	@Configuration(proxyBeanMethods = false)
+	@TestAutoConfigurationPackage(CouchbaseAutoConfiguration.class)
 	@EnableCouchbaseRepositories(basePackageClasses = CityRepository.class)
 	@EnableReactiveCouchbaseRepositories(basePackageClasses = ReactiveCityRepository.class)
-	protected static class ImperativeAndReactiveConfiguration {
+	static class ImperativeAndReactiveConfiguration {
 
 	}
 
-	@Configuration
-	@Import({ CouchbaseTestConfigurer.class, Registrar.class })
-	protected static class BaseConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	@Import({ CouchbaseMockConfiguration.class, Registrar.class })
+	static class BaseConfiguration {
 
 	}
 
-	protected static class Registrar implements ImportSelector {
+	static class Registrar implements ImportSelector {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {

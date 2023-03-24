@@ -19,7 +19,7 @@ package org.springframework.boot.test.autoconfigure.data.mongo;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 /**
- * Example document used with {@link DataMongoTest} tests.
+ * Example document used with {@link DataMongoTest @DataMongoTest} tests.
  *
  * @author Michael Simons
  */

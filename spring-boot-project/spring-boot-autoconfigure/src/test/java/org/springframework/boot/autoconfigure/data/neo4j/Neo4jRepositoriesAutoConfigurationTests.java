@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,26 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
-import org.junit.After;
-import org.junit.Test;
-import org.neo4j.ogm.session.SessionFactory;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
-import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.alt.neo4j.CityNeo4jRepository;
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.neo4j.city.City;
 import org.springframework.boot.autoconfigure.data.neo4j.city.CityRepository;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.boot.autoconfigure.data.neo4j.city.ReactiveCityRepository;
+import org.springframework.boot.autoconfigure.data.neo4j.country.CountryRepository;
+import org.springframework.boot.autoconfigure.data.neo4j.country.ReactiveCountryRepository;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.neo4j.mapping.Neo4jMappingContext;
+import org.springframework.data.neo4j.core.transaction.Neo4jTransactionManager;
+import org.springframework.data.neo4j.repository.Neo4jRepository;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
+import org.springframework.data.neo4j.repository.support.ReactiveNeo4jRepositoryFactoryBean;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link Neo4jRepositoriesAutoConfiguration}.
@@ -43,75 +45,83 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Michael Hunger
  * @author Vince Bickers
  * @author Stephane Nicoll
+ * @author Michael J. Simons
  */
-public class Neo4jRepositoriesAutoConfigurationTests {
+class Neo4jRepositoriesAutoConfigurationTests {
 
-	private AnnotationConfigApplicationContext context;
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withUserConfiguration(MockedDriverConfiguration.class)
+		.withConfiguration(
+				AutoConfigurations.of(Neo4jDataAutoConfiguration.class, Neo4jRepositoriesAutoConfiguration.class));
 
-	@After
-	public void close() {
-		this.context.close();
+	@Test
+	void configurationWithDefaultRepositories() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(CityRepository.class));
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() {
-		prepareApplicationContext(TestConfiguration.class);
-		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
-		Neo4jMappingContext mappingContext = this.context.getBean(Neo4jMappingContext.class);
-		assertThat(mappingContext.getPersistentEntity(City.class)).isNotNull();
+	void configurationWithNoRepositories() {
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(Neo4jTransactionManager.class)
+				.doesNotHaveBean(Neo4jRepository.class));
 	}
 
 	@Test
-	public void testNoRepositoryConfiguration() {
-		prepareApplicationContext(EmptyConfiguration.class);
-		assertThat(this.context.getBean(SessionFactory.class)).isNotNull();
+	void configurationWithDisabledRepositories() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+			.withPropertyValues("spring.data.neo4j.repositories.type=none")
+			.run((context) -> assertThat(context).doesNotHaveBean(Neo4jRepository.class));
 	}
 
 	@Test
-	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
-		prepareApplicationContext(CustomizedConfiguration.class);
-		assertThat(this.context.getBean(CityNeo4jRepository.class)).isNotNull();
+	void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
+		this.contextRunner.withUserConfiguration(SortOfInvalidCustomConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(Neo4jTransactionManager.class)
+				.doesNotHaveBean(Neo4jRepository.class));
 	}
 
-	@Test(expected = NoSuchBeanDefinitionException.class)
-	public void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
-		prepareApplicationContext(SortOfInvalidCustomConfiguration.class);
-		this.context.getBean(CityRepository.class);
+	@Test
+	void shouldRespectAtEnableNeo4jRepositories() {
+		this.contextRunner.withUserConfiguration(SortOfInvalidCustomConfiguration.class, WithCustomRepositoryScan.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class)
+				.doesNotHaveBean(ReactiveCityRepository.class)
+				.hasSingleBean(CountryRepository.class)
+				.doesNotHaveBean(ReactiveCountryRepository.class));
 	}
 
-	private void prepareApplicationContext(Class<?>... configurationClasses) {
-		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.neo4j.uri=http://localhost:9797").applyTo(this.context);
-		this.context.register(configurationClasses);
-		this.context.register(Neo4jDataAutoConfiguration.class, Neo4jRepositoriesAutoConfiguration.class,
-				PropertyPlaceholderAutoConfiguration.class);
-		this.context.refresh();
+	@Configuration(proxyBeanMethods = false)
+	@EnableNeo4jRepositories(basePackageClasses = CountryRepository.class)
+	static class WithCustomRepositoryScan {
+
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
+	static class WithFakeEnabledReactiveNeo4jRepositories {
+
+		@Bean
+		ReactiveNeo4jRepositoryFactoryBean<?, ?, ?> reactiveNeo4jRepositoryFactoryBean() {
+			return mock(ReactiveNeo4jRepositoryFactoryBean.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
-	protected static class TestConfiguration {
+	static class TestConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyDataPackage.class)
-	protected static class EmptyConfiguration {
+	static class EmptyConfiguration {
 
 	}
 
-	@Configuration
-	@TestAutoConfigurationPackage(Neo4jRepositoriesAutoConfigurationTests.class)
-	@EnableNeo4jRepositories(basePackageClasses = CityNeo4jRepository.class)
-	protected static class CustomizedConfiguration {
-
-	}
-
-	@Configuration
-	// To not find any repositories
+	@Configuration(proxyBeanMethods = false)
 	@EnableNeo4jRepositories("foo.bar")
 	@TestAutoConfigurationPackage(Neo4jRepositoriesAutoConfigurationTests.class)
-	protected static class SortOfInvalidCustomConfiguration {
+	static class SortOfInvalidCustomConfiguration {
 
 	}
 

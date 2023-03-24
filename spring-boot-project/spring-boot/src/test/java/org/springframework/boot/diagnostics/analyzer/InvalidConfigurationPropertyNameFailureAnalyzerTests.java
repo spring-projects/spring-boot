@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -33,18 +33,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-public class InvalidConfigurationPropertyNameFailureAnalyzerTests {
+class InvalidConfigurationPropertyNameFailureAnalyzerTests {
 
-	private InvalidConfigurationPropertyNameFailureAnalyzer analyzer = new InvalidConfigurationPropertyNameFailureAnalyzer();
+	private final InvalidConfigurationPropertyNameFailureAnalyzer analyzer = new InvalidConfigurationPropertyNameFailureAnalyzer();
 
 	@Test
-	public void analysisWhenRootCauseIsBeanCreationFailureShouldContainBeanName() {
+	void analysisWhenRootCauseIsBeanCreationFailureShouldContainBeanName() {
 		BeanCreationException failure = createFailure(InvalidPrefixConfiguration.class);
 		FailureAnalysis analysis = this.analyzer.analyze(failure);
 		assertThat(analysis.getDescription())
-				.contains(String.format("%n    Invalid characters: %s%n    Bean: %s%n    Reason: %s", "'F', 'P'",
-						"invalidPrefixProperties", "Canonical names should be kebab-case ('-' separated), "
-								+ "lowercase alpha-numeric characters and must start with a letter"));
+			.contains(String.format("%n    Invalid characters: %s%n    Bean: %s%n    Reason: %s", "'F', 'P'",
+					"invalidPrefixProperties", "Canonical names should be kebab-case ('-' separated), "
+							+ "lowercase alpha-numeric characters and must start with a letter"));
 	}
 
 	private BeanCreationException createFailure(Class<?> configuration) {
@@ -60,12 +60,12 @@ public class InvalidConfigurationPropertyNameFailureAnalyzerTests {
 		}
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(InvalidPrefixProperties.class)
 	static class InvalidPrefixConfiguration {
 
 		@Bean(name = "invalidPrefixProperties")
-		public InvalidPrefixProperties invalidPrefixProperties() {
+		InvalidPrefixProperties invalidPrefixProperties() {
 			return new InvalidPrefixProperties();
 		}
 
@@ -76,11 +76,11 @@ public class InvalidConfigurationPropertyNameFailureAnalyzerTests {
 
 		private String value;
 
-		public String getValue() {
+		String getValue() {
 			return this.value;
 		}
 
-		public void setValue(String value) {
+		void setValue(String value) {
 			this.value = value;
 		}
 

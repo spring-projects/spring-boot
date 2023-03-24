@@ -1,0 +1,11 @@
+[[web.spring-hateoas]]
+== Spring HATEOAS
+If you develop a RESTful API that makes use of hypermedia, Spring Boot provides auto-configuration for Spring HATEOAS that works well with most applications.
+The auto-configuration replaces the need to use `@EnableHypermediaSupport` and registers a number of beans to ease building hypermedia-based applications, including a `LinkDiscoverers` (for client side support) and an `ObjectMapper` configured to correctly marshal responses into the desired representation.
+The `ObjectMapper` is customized by setting the various `spring.jackson.*` properties or, if one exists, by a `Jackson2ObjectMapperBuilder` bean.
+
+You can take control of Spring HATEOAS's configuration by using `@EnableHypermediaSupport`.
+Note that doing so disables the `ObjectMapper` customization described earlier.
+
+WARNING: `spring-boot-starter-hateoas` is specific to Spring MVC and should not be combined with Spring WebFlux.
+In order to use Spring HATEOAS with Spring WebFlux, you can add a direct dependency on `org.springframework.hateoas:spring-hateoas` along with `spring-boot-starter-webflux`.

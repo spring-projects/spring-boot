@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
@@ -33,15 +33,15 @@ import static org.mockito.Mockito.mock;
 /**
  * @author Stephane Nicoll
  */
-public class CacheManagerCustomizersTests {
+class CacheManagerCustomizersTests {
 
 	@Test
-	public void customizeWithNullCustomizersShouldDoNothing() {
+	void customizeWithNullCustomizersShouldDoNothing() {
 		new CacheManagerCustomizers(null).customize(mock(CacheManager.class));
 	}
 
 	@Test
-	public void customizeSimpleCacheManager() {
+	void customizeSimpleCacheManager() {
 		CacheManagerCustomizers customizers = new CacheManagerCustomizers(
 				Collections.singletonList(new CacheNamesCacheManagerCustomizer()));
 		ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager();
@@ -50,20 +50,20 @@ public class CacheManagerCustomizersTests {
 	}
 
 	@Test
-	public void customizeShouldCheckGeneric() {
+	void customizeShouldCheckGeneric() {
 		List<TestCustomizer<?>> list = new ArrayList<>();
 		list.add(new TestCustomizer<>());
 		list.add(new TestConcurrentMapCacheManagerCustomizer());
 		CacheManagerCustomizers customizers = new CacheManagerCustomizers(list);
 		customizers.customize(mock(CacheManager.class));
-		assertThat(list.get(0).getCount()).isEqualTo(1);
-		assertThat(list.get(1).getCount()).isEqualTo(0);
+		assertThat(list.get(0).getCount()).isOne();
+		assertThat(list.get(1).getCount()).isZero();
 		customizers.customize(mock(ConcurrentMapCacheManager.class));
 		assertThat(list.get(0).getCount()).isEqualTo(2);
-		assertThat(list.get(1).getCount()).isEqualTo(1);
+		assertThat(list.get(1).getCount()).isOne();
 		customizers.customize(mock(CaffeineCacheManager.class));
 		assertThat(list.get(0).getCount()).isEqualTo(3);
-		assertThat(list.get(1).getCount()).isEqualTo(1);
+		assertThat(list.get(1).getCount()).isOne();
 	}
 
 	static class CacheNamesCacheManagerCustomizer implements CacheManagerCustomizer<ConcurrentMapCacheManager> {
@@ -75,7 +75,7 @@ public class CacheManagerCustomizersTests {
 
 	}
 
-	private static class TestCustomizer<T extends CacheManager> implements CacheManagerCustomizer<T> {
+	static class TestCustomizer<T extends CacheManager> implements CacheManagerCustomizer<T> {
 
 		private int count;
 
@@ -84,13 +84,13 @@ public class CacheManagerCustomizersTests {
 			this.count++;
 		}
 
-		public int getCount() {
+		int getCount() {
 			return this.count;
 		}
 
 	}
 
-	private static class TestConcurrentMapCacheManagerCustomizer extends TestCustomizer<ConcurrentMapCacheManager> {
+	static class TestConcurrentMapCacheManagerCustomizer extends TestCustomizer<ConcurrentMapCacheManager> {
 
 	}
 

@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -33,31 +33,31 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class ResourceConditionTests {
+class ResourceConditionTests {
 
 	private ConfigurableApplicationContext context;
 
-	@After
-	public void tearDown() {
+	@AfterEach
+	void tearDown() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void defaultResourceAndNoExplicitKey() {
+	void defaultResourceAndNoExplicitKey() {
 		load(DefaultLocationConfiguration.class);
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
 	@Test
-	public void unknownDefaultLocationAndNoExplicitKey() {
+	void unknownDefaultLocationAndNoExplicitKey() {
 		load(UnknownDefaultLocationConfiguration.class);
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
 	@Test
-	public void unknownDefaultLocationAndExplicitKeyToResource() {
+	void unknownDefaultLocationAndExplicitKeyToResource() {
 		load(UnknownDefaultLocationConfiguration.class, "spring.foo.test.config=logging.properties");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
@@ -70,29 +70,29 @@ public class ResourceConditionTests {
 		this.context = applicationContext;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(DefaultLocationResourceCondition.class)
 	static class DefaultLocationConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(UnknownDefaultLocationResourceCondition.class)
 	static class UnknownDefaultLocationConfiguration {
 
 		@Bean
-		public String foo() {
+		String foo() {
 			return "foo";
 		}
 
 	}
 
-	private static class DefaultLocationResourceCondition extends ResourceCondition {
+	static class DefaultLocationResourceCondition extends ResourceCondition {
 
 		DefaultLocationResourceCondition() {
 			super("test", "spring.foo.test.config", "classpath:/logging.properties");
@@ -100,7 +100,7 @@ public class ResourceConditionTests {
 
 	}
 
-	private static class UnknownDefaultLocationResourceCondition extends ResourceCondition {
+	static class UnknownDefaultLocationResourceCondition extends ResourceCondition {
 
 		UnknownDefaultLocationResourceCondition() {
 			super("test", "spring.foo.test.config", "classpath:/this-file-does-not-exist.xml");

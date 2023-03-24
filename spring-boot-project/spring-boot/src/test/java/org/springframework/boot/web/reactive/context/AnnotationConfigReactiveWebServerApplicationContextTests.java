@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package org.springframework.boot.web.reactive.context;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext.ServerManager;
+import org.springframework.boot.web.reactive.context.WebServerManager.DelayedInitializationHttpHandler;
 import org.springframework.boot.web.reactive.context.config.ExampleReactiveWebServerApplicationConfiguration;
 import org.springframework.boot.web.reactive.server.MockReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
@@ -38,26 +38,26 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class AnnotationConfigReactiveWebServerApplicationContextTests {
+class AnnotationConfigReactiveWebServerApplicationContextTests {
 
 	private AnnotationConfigReactiveWebServerApplicationContext context;
 
 	@Test
-	public void createFromScan() {
+	void createFromScan() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext(
 				ExampleReactiveWebServerApplicationConfiguration.class.getPackage().getName());
 		verifyContext();
 	}
 
 	@Test
-	public void createFromConfigClass() {
+	void createFromConfigClass() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext(
 				ExampleReactiveWebServerApplicationConfiguration.class);
 		verifyContext();
 	}
 
 	@Test
-	public void registerAndRefresh() {
+	void registerAndRefresh() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext();
 		this.context.register(ExampleReactiveWebServerApplicationConfiguration.class);
 		this.context.refresh();
@@ -65,7 +65,7 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void multipleRegistersAndRefresh() {
+	void multipleRegistersAndRefresh() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext();
 		this.context.register(WebServerConfiguration.class);
 		this.context.register(HttpHandlerConfiguration.class);
@@ -75,7 +75,7 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void scanAndRefresh() {
+	void scanAndRefresh() {
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext();
 		this.context.scan(ExampleReactiveWebServerApplicationConfiguration.class.getPackage().getName());
 		this.context.refresh();
@@ -83,7 +83,7 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 	}
 
 	@Test
-	public void httpHandlerInitialization() {
+	void httpHandlerInitialization() {
 		// gh-14666
 		this.context = new AnnotationConfigReactiveWebServerApplicationContext(InitializationTestConfig.class);
 		verifyContext();
@@ -93,44 +93,44 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 		MockReactiveWebServerFactory factory = this.context.getBean(MockReactiveWebServerFactory.class);
 		HttpHandler expectedHandler = this.context.getBean(HttpHandler.class);
 		HttpHandler actualHandler = factory.getWebServer().getHttpHandler();
-		if (actualHandler instanceof ServerManager) {
-			actualHandler = ((ServerManager) actualHandler).getHandler();
+		if (actualHandler instanceof DelayedInitializationHttpHandler delayedHandler) {
+			actualHandler = delayedHandler.getHandler();
 		}
 		assertThat(actualHandler).isEqualTo(expectedHandler);
 	}
 
-	@Configuration
-	public static class WebServerConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class WebServerConfiguration {
 
 		@Bean
-		public ReactiveWebServerFactory webServerFactory() {
+		ReactiveWebServerFactory webServerFactory() {
 			return new MockReactiveWebServerFactory();
 		}
 
 	}
 
-	@Configuration
-	public static class HttpHandlerConfiguration {
+	@Configuration(proxyBeanMethods = false)
+	static class HttpHandlerConfiguration {
 
 		@Bean
-		public HttpHandler httpHandler() {
+		HttpHandler httpHandler() {
 			return mock(HttpHandler.class);
 		}
 
 	}
 
-	@Configuration
-	public static class InitializationTestConfig {
+	@Configuration(proxyBeanMethods = false)
+	static class InitializationTestConfig {
 
 		private static boolean addedListener;
 
 		@Bean
-		public ReactiveWebServerFactory webServerFactory() {
+		ReactiveWebServerFactory webServerFactory() {
 			return new MockReactiveWebServerFactory();
 		}
 
 		@Bean
-		public HttpHandler httpHandler() {
+		HttpHandler httpHandler() {
 			if (!addedListener) {
 				throw new RuntimeException(
 						"Handlers should be added after listeners, we're being initialized too early!");
@@ -139,12 +139,12 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 		}
 
 		@Bean
-		public Listener listener() {
+		Listener listener() {
 			return new Listener();
 		}
 
 		@Bean
-		public ApplicationEventMulticaster applicationEventMulticaster() {
+		ApplicationEventMulticaster applicationEventMulticaster() {
 			return new SimpleApplicationEventMulticaster() {
 
 				@Override
@@ -158,7 +158,7 @@ public class AnnotationConfigReactiveWebServerApplicationContextTests {
 			};
 		}
 
-		private static class Listener implements ApplicationListener<ContextRefreshedEvent> {
+		static class Listener implements ApplicationListener<ContextRefreshedEvent> {
 
 			@Override
 			public void onApplicationEvent(ContextRefreshedEvent event) {

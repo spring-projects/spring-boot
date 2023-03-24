@@ -3,8 +3,6 @@ plugins {
 	id 'org.springframework.boot' version '{version}'
 }
 
-applicationDefaultJvmArgs = ['-Dcom.foo=bar', '-Dcom.bar=baz']
-
-task echoJvmArguments {
-	println 'JVM arguments = ' + bootRun.jvmArgs
+application {
+	applicationDefaultJvmArgs = ['-Dcom.foo=bar', '-Dcom.bar=baz']
 }

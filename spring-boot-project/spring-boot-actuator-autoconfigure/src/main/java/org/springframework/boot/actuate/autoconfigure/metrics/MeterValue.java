@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,16 +25,18 @@ import org.springframework.boot.convert.DurationStyle;
 
 /**
  * A meter value that is used when configuring micrometer. Can be a String representation
- * of either a {@link Long} (applicable to timers and distribution summaries) or a
+ * of either a {@link Double} (applicable to timers and distribution summaries) or a
  * {@link Duration} (applicable to only timers).
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
+ * @since 2.2.0
  */
-final class MeterValue {
+public final class MeterValue {
 
 	private final Object value;
 
-	MeterValue(long value) {
+	MeterValue(double value) {
 		this.value = value;
 	}
 
@@ -43,34 +45,36 @@ final class MeterValue {
 	}
 
 	/**
-	 * Return the underlying value of the SLA in form suitable to apply to the given meter
-	 * type.
+	 * Return the underlying value in form suitable to apply to the given meter type.
 	 * @param meterType the meter type
 	 * @return the value or {@code null} if the value cannot be applied
 	 */
-	public Long getValue(Type meterType) {
+	public Double getValue(Type meterType) {
 		if (meterType == Type.DISTRIBUTION_SUMMARY) {
 			return getDistributionSummaryValue();
 		}
 		if (meterType == Type.TIMER) {
-			return getTimerValue();
+			Long timerValue = getTimerValue();
+			if (timerValue != null) {
+				return timerValue.doubleValue();
+			}
 		}
 		return null;
 	}
 
-	private Long getDistributionSummaryValue() {
-		if (this.value instanceof Long) {
-			return (Long) this.value;
+	private Double getDistributionSummaryValue() {
+		if (this.value instanceof Double doubleValue) {
+			return doubleValue;
 		}
 		return null;
 	}
 
 	private Long getTimerValue() {
-		if (this.value instanceof Long) {
-			return TimeUnit.MILLISECONDS.toNanos((long) this.value);
+		if (this.value instanceof Double doubleValue) {
+			return TimeUnit.MILLISECONDS.toNanos(doubleValue.longValue());
 		}
-		if (this.value instanceof Duration) {
-			return ((Duration) this.value).toNanos();
+		if (this.value instanceof Duration duration) {
+			return duration.toNanos();
 		}
 		return null;
 	}
@@ -82,23 +86,30 @@ final class MeterValue {
 	 * @return a {@link MeterValue} instance
 	 */
 	public static MeterValue valueOf(String value) {
-		if (isNumber(value)) {
-			return new MeterValue(Long.parseLong(value));
+		Duration duration = safeParseDuration(value);
+		if (duration != null) {
+			return new MeterValue(duration);
 		}
-		return new MeterValue(DurationStyle.detectAndParse(value));
+		return new MeterValue(Double.valueOf(value));
 	}
 
 	/**
-	 * Return a new {@link MeterValue} instance for the given long value.
+	 * Return a new {@link MeterValue} instance for the given double value.
 	 * @param value the source value
 	 * @return a {@link MeterValue} instance
+	 * @since 2.3.0
 	 */
-	public static MeterValue valueOf(long value) {
+	public static MeterValue valueOf(double value) {
 		return new MeterValue(value);
 	}
 
-	private static boolean isNumber(String value) {
-		return value.chars().allMatch(Character::isDigit);
+	private static Duration safeParseDuration(String value) {
+		try {
+			return DurationStyle.detectAndParse(value);
+		}
+		catch (IllegalArgumentException ex) {
+			return null;
+		}
 	}
 
 }

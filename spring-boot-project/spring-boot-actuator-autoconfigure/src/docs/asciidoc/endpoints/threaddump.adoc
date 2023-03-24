@@ -1,0 +1,38 @@
+[[threaddump]]
+= Thread Dump (`threaddump`)
+The `threaddump` endpoint provides a thread dump from the application's JVM.
+
+
+
+[[threaddump.retrieving-json]]
+== Retrieving the Thread Dump as JSON
+To retrieve the thread dump as JSON, make a `GET` request to `/actuator/threaddump` with an appropriate `Accept` header, as shown in the following curl-based example:
+
+include::{snippets}/threaddump/json/curl-request.adoc[]
+
+The resulting response is similar to the following:
+
+include::{snippets}/threaddump/json/http-response.adoc[]
+
+
+
+[[threaddump.retrieving-json.response-structure]]
+=== Response Structure
+The response contains details of the JVM's threads.
+The following table describes the structure of the response:
+
+[cols="3,1,2"]
+include::{snippets}/threaddump/json/response-fields.adoc[]
+
+
+
+[[threaddump.retrieving-text]]
+== Retrieving the Thread Dump as Text
+To retrieve the thread dump as text, make a `GET` request to `/actuator/threaddump` that
+accepts `text/plain`, as shown in the following curl-based example:
+
+include::{snippets}/threaddump/text/curl-request.adoc[]
+
+The resulting response is similar to the following:
+
+include::{snippets}/threaddump/text/http-response.adoc[]

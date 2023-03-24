@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,16 @@
 
 package org.springframework.boot.gradle.tasks.run;
 
+import java.io.File;
+import java.util.Set;
+
 import org.gradle.api.file.SourceDirectorySet;
+import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetOutput;
+import org.gradle.work.DisableCachingByDefault;
 
 /**
  * Custom {@link JavaExec} task for running a Spring Boot application.
@@ -27,7 +33,21 @@ import org.gradle.api.tasks.SourceSetOutput;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-public class BootRun extends JavaExec {
+@DisableCachingByDefault(because = "Application should always run")
+public abstract class BootRun extends JavaExec {
+
+	public BootRun() {
+		getOptimizedLaunch().convention(true);
+	}
+
+	/**
+	 * Returns the property for whether the JVM's launch should be optimized. The property
+	 * defaults to {@code true}.
+	 * @return whether the JVM's launch should be optimized
+	 * @since 3.0.0
+	 */
+	@Input
+	public abstract Property<Boolean> getOptimizedLaunch();
 
 	/**
 	 * Adds the {@link SourceDirectorySet#getSrcDirs() source directories} of the given
@@ -37,15 +57,20 @@ public class BootRun extends JavaExec {
 	 * @param sourceSet the source set
 	 */
 	public void sourceResources(SourceSet sourceSet) {
-		setClasspath(getProject().files(sourceSet.getResources().getSrcDirs(), getClasspath())
-				.filter((file) -> !file.equals(sourceSet.getOutput().getResourcesDir())));
+		File resourcesDir = sourceSet.getOutput().getResourcesDir();
+		Set<File> srcDirs = sourceSet.getResources().getSrcDirs();
+		setClasspath(getProject().files(srcDirs, getClasspath()).filter((file) -> !file.equals(resourcesDir)));
 	}
 
 	@Override
 	public void exec() {
+		if (getOptimizedLaunch().get()) {
+			setJvmArgs(getJvmArgs());
+			jvmArgs("-XX:TieredStopAtLevel=1");
+		}
 		if (System.console() != null) {
 			// Record that the console is available here for AnsiOutput to detect later
-			this.getEnvironment().put("spring.output.ansi.console-available", true);
+			getEnvironment().put("spring.output.ansi.console-available", true);
 		}
 		super.exec();
 	}

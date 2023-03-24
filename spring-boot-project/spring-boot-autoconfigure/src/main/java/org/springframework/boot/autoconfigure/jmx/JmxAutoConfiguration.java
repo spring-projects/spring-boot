@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,70 +18,61 @@ package org.springframework.boot.autoconfigure.jmx;
 
 import javax.management.MBeanServer;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
-import org.springframework.context.EnvironmentAware;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableMBeanExport;
-import org.springframework.context.annotation.MBeanExportConfiguration.SpecificPlatform;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.env.Environment;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource;
 import org.springframework.jmx.export.annotation.AnnotationMBeanExporter;
 import org.springframework.jmx.export.naming.ObjectNamingStrategy;
 import org.springframework.jmx.support.MBeanServerFactoryBean;
-import org.springframework.jmx.support.RegistrationPolicy;
 import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} to enable/disable Spring's
- * {@link EnableMBeanExport} mechanism based on configuration properties.
+ * {@link EnableMBeanExport @EnableMBeanExport} mechanism based on configuration
+ * properties.
  * <p>
- * To disable auto export of annotation beans set {@code spring.jmx.enabled: false}.
+ * To enable auto export of annotation beans set {@code spring.jmx.enabled: true}.
  *
  * @author Christian Dupuis
  * @author Madhura Bhave
  * @author Artsiom Yudovin
+ * @author Scott Frederick
  * @since 1.0.0
  */
-@Configuration
+@AutoConfiguration
+@EnableConfigurationProperties(JmxProperties.class)
 @ConditionalOnClass({ MBeanExporter.class })
-@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true", matchIfMissing = true)
-public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware {
+@ConditionalOnProperty(prefix = "spring.jmx", name = "enabled", havingValue = "true")
+public class JmxAutoConfiguration {
 
-	private Environment environment;
+	private final JmxProperties properties;
 
-	private BeanFactory beanFactory;
-
-	@Override
-	public void setEnvironment(Environment environment) {
-		this.environment = environment;
-	}
-
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		this.beanFactory = beanFactory;
+	public JmxAutoConfiguration(JmxProperties properties) {
+		this.properties = properties;
 	}
 
 	@Bean
 	@Primary
 	@ConditionalOnMissingBean(value = MBeanExporter.class, search = SearchStrategy.CURRENT)
-	public AnnotationMBeanExporter mbeanExporter(ObjectNamingStrategy namingStrategy) {
+	public AnnotationMBeanExporter mbeanExporter(ObjectNamingStrategy namingStrategy, BeanFactory beanFactory) {
 		AnnotationMBeanExporter exporter = new AnnotationMBeanExporter();
-		exporter.setRegistrationPolicy(RegistrationPolicy.FAIL_ON_EXISTING);
+		exporter.setRegistrationPolicy(this.properties.getRegistrationPolicy());
 		exporter.setNamingStrategy(namingStrategy);
-		String serverBean = this.environment.getProperty("spring.jmx.server", "mbeanServer");
+		String serverBean = this.properties.getServer();
 		if (StringUtils.hasLength(serverBean)) {
-			exporter.setServer(this.beanFactory.getBean(serverBean, MBeanServer.class));
+			exporter.setServer(beanFactory.getBean(serverBean, MBeanServer.class));
 		}
+		exporter.setEnsureUniqueRuntimeObjectNames(this.properties.isUniqueNames());
 		return exporter;
 	}
 
@@ -89,22 +80,17 @@ public class JmxAutoConfiguration implements EnvironmentAware, BeanFactoryAware 
 	@ConditionalOnMissingBean(value = ObjectNamingStrategy.class, search = SearchStrategy.CURRENT)
 	public ParentAwareNamingStrategy objectNamingStrategy() {
 		ParentAwareNamingStrategy namingStrategy = new ParentAwareNamingStrategy(new AnnotationJmxAttributeSource());
-		String defaultDomain = this.environment.getProperty("spring.jmx.default-domain");
+		String defaultDomain = this.properties.getDefaultDomain();
 		if (StringUtils.hasLength(defaultDomain)) {
 			namingStrategy.setDefaultDomain(defaultDomain);
 		}
-		boolean uniqueNames = this.environment.getProperty("spring.jmx.unique-names", Boolean.class, false);
-		namingStrategy.setEnsureUniqueRuntimeObjectNames(uniqueNames);
+		namingStrategy.setEnsureUniqueRuntimeObjectNames(this.properties.isUniqueNames());
 		return namingStrategy;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public MBeanServer mbeanServer() {
-		SpecificPlatform platform = SpecificPlatform.get();
-		if (platform != null) {
-			return platform.getMBeanServer();
-		}
 		MBeanServerFactoryBean factory = new MBeanServerFactoryBean();
 		factory.setLocateExistingServerIfPossible(true);
 		factory.afterPropertiesSet();

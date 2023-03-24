@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,26 @@
 package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.function.Supplier;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
-
+import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.health.HealthIndicatorAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.web.EndpointServlet;
 import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpoint;
+import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
@@ -45,6 +47,8 @@ import org.springframework.boot.test.context.assertj.AssertableWebApplicationCon
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.web.reactive.server.EntityExchangeResult;
@@ -60,23 +64,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Phillip Webb
  */
-public class WebMvcEndpointExposureIntegrationTests {
+class WebMvcEndpointExposureIntegrationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 			AnnotationConfigServletWebServerApplicationContext::new)
-					.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class,
-							DispatcherServletAutoConfiguration.class, JacksonAutoConfiguration.class,
-							HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
-							EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-							ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
-							ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
-							HttpTraceAutoConfiguration.class, HealthIndicatorAutoConfiguration.class))
-					.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL))
-					.withUserConfiguration(CustomMvcEndpoint.class, CustomServletEndpoint.class)
-					.withPropertyValues("server.port:0");
+		.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class, JacksonAutoConfiguration.class,
+				HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
+				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+				ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
+				ManagementContextAutoConfiguration.class, ServletManagementContextAutoConfiguration.class,
+				HttpExchangesAutoConfiguration.class, HealthContributorAutoConfiguration.class))
+		.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL))
+		.withUserConfiguration(CustomMvcEndpoint.class, CustomServletEndpoint.class,
+				HttpExchangeRepositoryConfiguration.class, AuditEventRepositoryConfiguration.class)
+		.withPropertyValues("server.port:0");
 
 	@Test
-	public void webEndpointsAreDisabledByDefault() {
+	void webEndpointsAreDisabledByDefault() {
 		this.contextRunner.run((context) -> {
 			WebTestClient client = createClient(context);
 			assertThat(isExposed(client, HttpMethod.GET, "beans")).isFalse();
@@ -86,18 +91,18 @@ public class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(client, HttpMethod.GET, "customservlet")).isFalse();
 			assertThat(isExposed(client, HttpMethod.GET, "env")).isFalse();
 			assertThat(isExposed(client, HttpMethod.GET, "health")).isTrue();
-			assertThat(isExposed(client, HttpMethod.GET, "info")).isTrue();
+			assertThat(isExposed(client, HttpMethod.GET, "info")).isFalse();
 			assertThat(isExposed(client, HttpMethod.GET, "mappings")).isFalse();
 			assertThat(isExposed(client, HttpMethod.POST, "shutdown")).isFalse();
 			assertThat(isExposed(client, HttpMethod.GET, "threaddump")).isFalse();
-			assertThat(isExposed(client, HttpMethod.GET, "httptrace")).isFalse();
+			assertThat(isExposed(client, HttpMethod.GET, "httpexchanges")).isFalse();
 		});
 	}
 
 	@Test
-	public void webEndpointsCanBeExposed() {
+	void webEndpointsCanBeExposed() {
 		WebApplicationContextRunner contextRunner = this.contextRunner
-				.withPropertyValues("management.endpoints.web.exposure.include=*");
+			.withPropertyValues("management.endpoints.web.exposure.include=*");
 		contextRunner.run((context) -> {
 			WebTestClient client = createClient(context);
 			assertThat(isExposed(client, HttpMethod.GET, "beans")).isTrue();
@@ -111,14 +116,14 @@ public class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(client, HttpMethod.GET, "mappings")).isTrue();
 			assertThat(isExposed(client, HttpMethod.POST, "shutdown")).isFalse();
 			assertThat(isExposed(client, HttpMethod.GET, "threaddump")).isTrue();
-			assertThat(isExposed(client, HttpMethod.GET, "httptrace")).isTrue();
+			assertThat(isExposed(client, HttpMethod.GET, "httpexchanges")).isTrue();
 		});
 	}
 
 	@Test
-	public void singleWebEndpointCanBeExposed() {
+	void singleWebEndpointCanBeExposed() {
 		WebApplicationContextRunner contextRunner = this.contextRunner
-				.withPropertyValues("management.endpoints.web.exposure.include=beans");
+			.withPropertyValues("management.endpoints.web.exposure.include=beans");
 		contextRunner.run((context) -> {
 			WebTestClient client = createClient(context);
 			assertThat(isExposed(client, HttpMethod.GET, "beans")).isTrue();
@@ -132,12 +137,12 @@ public class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(client, HttpMethod.GET, "mappings")).isFalse();
 			assertThat(isExposed(client, HttpMethod.POST, "shutdown")).isFalse();
 			assertThat(isExposed(client, HttpMethod.GET, "threaddump")).isFalse();
-			assertThat(isExposed(client, HttpMethod.GET, "httptrace")).isFalse();
+			assertThat(isExposed(client, HttpMethod.GET, "httpexchanges")).isFalse();
 		});
 	}
 
 	@Test
-	public void singleWebEndpointCanBeExcluded() {
+	void singleWebEndpointCanBeExcluded() {
 		WebApplicationContextRunner contextRunner = this.contextRunner.withPropertyValues(
 				"management.endpoints.web.exposure.include=*", "management.endpoints.web.exposure.exclude=shutdown");
 		contextRunner.run((context) -> {
@@ -153,20 +158,25 @@ public class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(client, HttpMethod.GET, "mappings")).isTrue();
 			assertThat(isExposed(client, HttpMethod.POST, "shutdown")).isFalse();
 			assertThat(isExposed(client, HttpMethod.GET, "threaddump")).isTrue();
-			assertThat(isExposed(client, HttpMethod.GET, "httptrace")).isTrue();
+			assertThat(isExposed(client, HttpMethod.GET, "httpexchanges")).isTrue();
 		});
 	}
 
 	private WebTestClient createClient(AssertableWebApplicationContext context) {
-		int port = context.getSourceApplicationContext(ServletWebServerApplicationContext.class).getWebServer()
-				.getPort();
+		int port = context.getSourceApplicationContext(ServletWebServerApplicationContext.class)
+			.getWebServer()
+			.getPort();
 		ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
-				.codecs((configurer) -> configurer.defaultCodecs().maxInMemorySize(512 * 1024)).build();
-		return WebTestClient.bindToServer().baseUrl("http://localhost:" + port).exchangeStrategies(exchangeStrategies)
-				.build();
+			.codecs((configurer) -> configurer.defaultCodecs().maxInMemorySize(-1))
+			.build();
+		return WebTestClient.bindToServer()
+			.baseUrl("http://localhost:" + port)
+			.exchangeStrategies(exchangeStrategies)
+			.responseTimeout(Duration.ofMinutes(5))
+			.build();
 	}
 
-	private boolean isExposed(WebTestClient client, HttpMethod method, String path) throws Exception {
+	private boolean isExposed(WebTestClient client, HttpMethod method, String path) {
 		path = "/actuator/" + path;
 		EntityExchangeResult<byte[]> result = client.method(method).uri(path).exchange().expectBody().returnResult();
 		if (result.getStatus() == HttpStatus.OK) {
@@ -176,14 +186,14 @@ public class WebMvcEndpointExposureIntegrationTests {
 			return false;
 		}
 		throw new IllegalStateException(
-				String.format("Unexpected %s HTTP status for " + "endpoint %s", result.getStatus(), path));
+				String.format("Unexpected %s HTTP status for endpoint %s", result.getStatus(), path));
 	}
 
 	@RestControllerEndpoint(id = "custommvc")
 	static class CustomMvcEndpoint {
 
 		@GetMapping("/")
-		public String main() {
+		String main() {
 			return "test";
 		}
 
@@ -202,6 +212,26 @@ public class WebMvcEndpointExposureIntegrationTests {
 				}
 
 			});
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class HttpExchangeRepositoryConfiguration {
+
+		@Bean
+		InMemoryHttpExchangeRepository httpExchangeRepository() {
+			return new InMemoryHttpExchangeRepository();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class AuditEventRepositoryConfiguration {
+
+		@Bean
+		InMemoryAuditEventRepository auditEventRepository() {
+			return new InMemoryAuditEventRepository();
 		}
 
 	}

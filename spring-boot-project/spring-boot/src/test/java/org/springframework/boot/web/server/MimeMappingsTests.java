@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,25 @@
 
 package org.springframework.boot.web.server;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
+import java.util.regex.Pattern;
 
-import org.junit.Test;
+import org.apache.catalina.startup.Tomcat;
+import org.junit.jupiter.api.Test;
+
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.boot.web.server.MimeMappings.DefaultMimeMappings;
+import org.springframework.boot.web.server.MimeMappings.Mapping;
+import org.springframework.boot.web.server.MimeMappings.MimeMappingsRuntimeHints;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -30,17 +43,18 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * Tests for {@link MimeMappings}.
  *
  * @author Phillip Webb
+ * @author Guirong Hu
  */
-public class MimeMappingsTests {
+class MimeMappingsTests {
 
 	@Test
-	public void defaultsCannotBeModified() {
+	void defaultsCannotBeModified() {
 		assertThatExceptionOfType(UnsupportedOperationException.class)
-				.isThrownBy(() -> MimeMappings.DEFAULT.add("foo", "foo/bar"));
+			.isThrownBy(() -> MimeMappings.DEFAULT.add("foo", "foo/bar"));
 	}
 
 	@Test
-	public void createFromExisting() {
+	void createFromExisting() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		MimeMappings clone = new MimeMappings(mappings);
@@ -50,7 +64,7 @@ public class MimeMappingsTests {
 	}
 
 	@Test
-	public void createFromMap() {
+	void createFromMap() {
 		Map<String, String> mappings = new HashMap<>();
 		mappings.put("foo", "bar");
 		MimeMappings clone = new MimeMappings(mappings);
@@ -60,7 +74,7 @@ public class MimeMappingsTests {
 	}
 
 	@Test
-	public void iterate() {
+	void iterate() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		mappings.add("baz", "boo");
@@ -75,12 +89,11 @@ public class MimeMappingsTests {
 	}
 
 	@Test
-	public void getAll() {
+	void getAll() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		mappings.add("baz", "boo");
-		List<MimeMappings.Mapping> mappingList = new ArrayList<>();
-		mappingList.addAll(mappings.getAll());
+		List<MimeMappings.Mapping> mappingList = new ArrayList<>(mappings.getAll());
 		assertThat(mappingList.get(0).getExtension()).isEqualTo("foo");
 		assertThat(mappingList.get(0).getMimeType()).isEqualTo("bar");
 		assertThat(mappingList.get(1).getExtension()).isEqualTo("baz");
@@ -88,20 +101,20 @@ public class MimeMappingsTests {
 	}
 
 	@Test
-	public void addNew() {
+	void addNew() {
 		MimeMappings mappings = new MimeMappings();
 		assertThat(mappings.add("foo", "bar")).isNull();
 	}
 
 	@Test
-	public void addReplacesExisting() {
+	void addReplacesExisting() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		assertThat(mappings.add("foo", "baz")).isEqualTo("bar");
 	}
 
 	@Test
-	public void remove() {
+	void remove() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		assertThat(mappings.remove("foo")).isEqualTo("bar");
@@ -109,20 +122,20 @@ public class MimeMappingsTests {
 	}
 
 	@Test
-	public void get() {
+	void get() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		assertThat(mappings.get("foo")).isEqualTo("bar");
 	}
 
 	@Test
-	public void getMissing() {
+	void getMissing() {
 		MimeMappings mappings = new MimeMappings();
 		assertThat(mappings.get("foo")).isNull();
 	}
 
 	@Test
-	public void makeUnmodifiable() {
+	void makeUnmodifiable() {
 		MimeMappings mappings = new MimeMappings();
 		mappings.add("foo", "bar");
 		MimeMappings unmodifiable = MimeMappings.unmodifiableMappings(mappings);
@@ -134,6 +147,89 @@ public class MimeMappingsTests {
 		}
 		mappings.remove("foo");
 		assertThat(unmodifiable.get("foo")).isNull();
+	}
+
+	@Test
+	void mimeTypesInDefaultMappingsAreCorrectlyStructured() {
+		String regName = "[A-Za-z0-9!#$&.+\\-^_]{1,127}";
+		Pattern pattern = Pattern.compile("^" + regName + "\\/" + regName + "$");
+		assertThat(MimeMappings.DEFAULT).allSatisfy((mapping) -> assertThat(mapping.getMimeType()).matches(pattern));
+	}
+
+	@Test
+	void getCommonTypeOnDefaultMimeMappingsDoesNotLoadMappings() {
+		DefaultMimeMappings mappings = new DefaultMimeMappings();
+		assertThat(mappings.get("json")).isEqualTo("application/json");
+		assertThat((Object) mappings).extracting("loaded").isNull();
+	}
+
+	@Test
+	void getExoticTypeOnDefaultMimeMappingsLoadsMappings() {
+		DefaultMimeMappings mappings = new DefaultMimeMappings();
+		assertThat(mappings.get("123")).isEqualTo("application/vnd.lotus-1-2-3");
+		assertThat((Object) mappings).extracting("loaded").isNotNull();
+	}
+
+	@Test
+	void iterateOnDefaultMimeMappingsLoadsMappings() {
+		DefaultMimeMappings mappings = new DefaultMimeMappings();
+		assertThat(mappings).isNotEmpty();
+		assertThat((Object) mappings).extracting("loaded").isNotNull();
+	}
+
+	@Test
+	void commonMappingsAreSubsetOfAllMappings() {
+		MimeMappings defaultMappings = new DefaultMimeMappings();
+		MimeMappings commonMappings = (MimeMappings) ReflectionTestUtils.getField(DefaultMimeMappings.class, "COMMON");
+		for (Mapping commonMapping : commonMappings) {
+			assertThat(defaultMappings.get(commonMapping.getExtension())).isEqualTo(commonMapping.getMimeType());
+		}
+	}
+
+	@Test
+	void lazyCopyWhenNotMutatedDelegates() {
+		DefaultMimeMappings mappings = new DefaultMimeMappings();
+		MimeMappings lazyCopy = MimeMappings.lazyCopy(mappings);
+		assertThat(lazyCopy.get("json")).isEqualTo("application/json");
+		assertThat((Object) mappings).extracting("loaded").isNull();
+	}
+
+	@Test
+	void lazyCopyWhenMutatedCreatesCopy() {
+		DefaultMimeMappings mappings = new DefaultMimeMappings();
+		MimeMappings lazyCopy = MimeMappings.lazyCopy(mappings);
+		lazyCopy.add("json", "other/json");
+		assertThat(lazyCopy.get("json")).isEqualTo("other/json");
+		assertThat((Object) mappings).extracting("loaded").isNotNull();
+	}
+
+	@Test
+	void lazyCopyWhenMutatedCreatesCopyOnlyOnce() {
+		MimeMappings mappings = new MimeMappings();
+		mappings.add("json", "one/json");
+		MimeMappings lazyCopy = MimeMappings.lazyCopy(mappings);
+		lazyCopy.add("first", "copy/yes");
+		assertThat(lazyCopy.get("json")).isEqualTo("one/json");
+		mappings.add("json", "two/json");
+		lazyCopy.add("second", "copy/no");
+		assertThat(lazyCopy.get("json")).isEqualTo("one/json");
+	}
+
+	@Test
+	void mimeMappingsMatchesTomcatDefaults() throws IOException {
+		Properties ourDefaultMimeMappings = PropertiesLoaderUtils
+			.loadProperties(new ClassPathResource("mime-mappings.properties", getClass()));
+		Properties tomcatDefaultMimeMappings = PropertiesLoaderUtils
+			.loadProperties(new ClassPathResource("MimeTypeMappings.properties", Tomcat.class));
+		assertThat(ourDefaultMimeMappings).isEqualTo(tomcatDefaultMimeMappings);
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new MimeMappingsRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.resource()
+			.forResource("org/springframework/boot/web/server/mime-mappings.properties")).accepts(runtimeHints);
 	}
 
 }

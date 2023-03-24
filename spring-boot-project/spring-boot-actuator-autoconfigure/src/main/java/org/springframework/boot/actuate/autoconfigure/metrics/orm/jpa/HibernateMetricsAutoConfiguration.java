@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,13 @@ package org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceException;
-
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.jpa.HibernateMetrics;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceException;
 import org.hibernate.SessionFactory;
+import org.hibernate.stat.HibernateMetrics;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -45,31 +44,42 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
 		SimpleMetricsExportAutoConfiguration.class })
-@ConditionalOnClass({ EntityManagerFactory.class, SessionFactory.class, MeterRegistry.class })
+@ConditionalOnClass({ EntityManagerFactory.class, SessionFactory.class, HibernateMetrics.class, MeterRegistry.class })
 @ConditionalOnBean({ EntityManagerFactory.class, MeterRegistry.class })
-public class HibernateMetricsAutoConfiguration {
+public class HibernateMetricsAutoConfiguration implements SmartInitializingSingleton {
 
 	private static final String ENTITY_MANAGER_FACTORY_SUFFIX = "entityManagerFactory";
 
-	private final MeterRegistry registry;
+	private final Map<String, EntityManagerFactory> entityManagerFactories;
 
-	public HibernateMetricsAutoConfiguration(MeterRegistry registry) {
-		this.registry = registry;
+	private final MeterRegistry meterRegistry;
+
+	public HibernateMetricsAutoConfiguration(Map<String, EntityManagerFactory> entityManagerFactories,
+			MeterRegistry meterRegistry) {
+		this.entityManagerFactories = entityManagerFactories;
+		this.meterRegistry = meterRegistry;
 	}
 
-	@Autowired
-	public void bindEntityManagerFactoriesToRegistry(Map<String, EntityManagerFactory> entityManagerFactories) {
-		entityManagerFactories.forEach(this::bindEntityManagerFactoryToRegistry);
+	@Override
+	public void afterSingletonsInstantiated() {
+		bindEntityManagerFactoriesToRegistry(this.entityManagerFactories, this.meterRegistry);
 	}
 
-	private void bindEntityManagerFactoryToRegistry(String beanName, EntityManagerFactory entityManagerFactory) {
+	public void bindEntityManagerFactoriesToRegistry(Map<String, EntityManagerFactory> entityManagerFactories,
+			MeterRegistry registry) {
+		entityManagerFactories.forEach((name, factory) -> bindEntityManagerFactoryToRegistry(name, factory, registry));
+	}
+
+	private void bindEntityManagerFactoryToRegistry(String beanName, EntityManagerFactory entityManagerFactory,
+			MeterRegistry registry) {
 		String entityManagerFactoryName = getEntityManagerFactoryName(beanName);
 		try {
 			new HibernateMetrics(entityManagerFactory.unwrap(SessionFactory.class), entityManagerFactoryName,
-					Collections.emptyList()).bindTo(this.registry);
+					Collections.emptyList())
+				.bindTo(registry);
 		}
 		catch (PersistenceException ex) {
 			// Continue

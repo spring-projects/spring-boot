@@ -23,7 +23,7 @@ package org.springframework.boot.configurationsample.simple;
  */
 public abstract class HierarchicalPropertiesGrandparent {
 
-	private String first;
+	private String first = "one";
 
 	public String getFirst() {
 		return this.first;

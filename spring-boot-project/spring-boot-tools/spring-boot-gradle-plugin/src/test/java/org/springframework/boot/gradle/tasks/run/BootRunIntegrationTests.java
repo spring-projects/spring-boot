@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,21 @@
 package org.springframework.boot.gradle.tasks.run;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.function.Consumer;
+import java.util.jar.Attributes;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 
+import org.assertj.core.api.Assumptions;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.gradle.util.GradleVersion;
+import org.junit.jupiter.api.TestTemplate;
 
-import org.springframework.boot.gradle.junit.GradleCompatibilitySuite;
-import org.springframework.boot.gradle.testkit.GradleBuild;
+import org.springframework.boot.gradle.junit.GradleCompatibility;
+import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,15 +41,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(GradleCompatibilitySuite.class)
-public class BootRunIntegrationTests {
+@GradleCompatibility(configurationCache = true)
+class BootRunIntegrationTests {
 
-	@Rule
-	public GradleBuild gradleBuild;
+	GradleBuild gradleBuild;
 
-	@Test
-	public void basicExecution() throws IOException {
-		copyApplication();
+	@TestTemplate
+	void basicExecution() throws IOException {
+		copyClasspathApplication();
 		new File(this.gradleBuild.getProjectDir(), "src/main/resources").mkdirs();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -53,9 +57,9 @@ public class BootRunIntegrationTests {
 		assertThat(result.getOutput()).doesNotContain(canonicalPathOf("src/main/resources"));
 	}
 
-	@Test
-	public void sourceResourcesCanBeUsed() throws IOException {
-		copyApplication();
+	@TestTemplate
+	void sourceResourcesCanBeUsed() throws IOException {
+		copyClasspathApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("1. " + canonicalPathOf("src/main/resources"));
@@ -63,43 +67,123 @@ public class BootRunIntegrationTests {
 		assertThat(result.getOutput()).doesNotContain(canonicalPathOf("build/resources/main"));
 	}
 
-	@Test
-	public void springBootExtensionMainClassNameIsUsed() throws IOException {
-		BuildResult result = this.gradleBuild.build("echoMainClassName");
-		assertThat(result.task(":echoMainClassName").getOutcome()).isEqualTo(TaskOutcome.UP_TO_DATE);
-		assertThat(result.getOutput()).contains("Main class name = com.example.CustomMainClass");
+	@TestTemplate
+	void springBootExtensionMainClassNameIsUsed() throws IOException {
+		copyMainClassApplication();
+		BuildResult result = this.gradleBuild.build("bootRun");
+		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("com.example.bootrun.main.CustomMainClass");
 	}
 
-	@Test
-	public void applicationPluginMainClassNameIsUsed() throws IOException {
-		BuildResult result = this.gradleBuild.build("echoMainClassName");
-		assertThat(result.task(":echoMainClassName").getOutcome()).isEqualTo(TaskOutcome.UP_TO_DATE);
-		assertThat(result.getOutput()).contains("Main class name = com.example.CustomMainClass");
+	@TestTemplate
+	void applicationPluginMainClassNameIsUsed() throws IOException {
+		copyMainClassApplication();
+		BuildResult result = this.gradleBuild.build("bootRun");
+		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("com.example.bootrun.main.CustomMainClass");
 	}
 
-	@Test
-	public void applicationPluginMainClassNameIsNotUsedWhenItIsNull() throws IOException {
-		copyApplication();
-		BuildResult result = this.gradleBuild.build("echoMainClassName");
-		assertThat(result.task(":echoMainClassName").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("Main class name = com.example.BootRunApplication");
+	@TestTemplate
+	void applicationPluginMainClassNameIsNotUsedWhenItIsNull() throws IOException {
+		copyClasspathApplication();
+		BuildResult result = this.gradleBuild.build("bootRun");
+		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput())
+			.contains("Main class name = com.example.bootrun.classpath.BootRunClasspathApplication");
 	}
 
-	@Test
-	public void applicationPluginJvmArgumentsAreUsed() throws IOException {
-		BuildResult result = this.gradleBuild.build("echoJvmArguments");
-		assertThat(result.task(":echoJvmArguments").getOutcome()).isEqualTo(TaskOutcome.UP_TO_DATE);
-		assertThat(result.getOutput()).contains("JVM arguments = [-Dcom.foo=bar, -Dcom.bar=baz]");
+	@TestTemplate
+	void defaultJvmArgs() throws IOException {
+		copyJvmArgsApplication();
+		BuildResult result = this.gradleBuild.build("bootRun");
+		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("-XX:TieredStopAtLevel=1");
 	}
 
-	private void copyApplication() throws IOException {
-		File output = new File(this.gradleBuild.getProjectDir(), "src/main/java/com/example");
+	@TestTemplate
+	void optimizedLaunchDisabledJvmArgs() throws IOException {
+		copyJvmArgsApplication();
+		BuildResult result = this.gradleBuild.build("bootRun");
+		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).doesNotContain("-Xverify:none").doesNotContain("-XX:TieredStopAtLevel=1");
+	}
+
+	@TestTemplate
+	void applicationPluginJvmArgumentsAreUsed() throws IOException {
+		if (this.gradleBuild.isConfigurationCache()) {
+			// https://github.com/gradle/gradle/pull/23924
+			GradleVersion gradleVersion = GradleVersion.version(this.gradleBuild.getGradleVersion());
+			Assumptions.assumeThat(gradleVersion)
+				.isLessThan(GradleVersion.version("8.0"))
+				.isGreaterThanOrEqualTo(GradleVersion.version("8.1-rc-1"));
+		}
+		copyJvmArgsApplication();
+		BuildResult result = this.gradleBuild.build("bootRun");
+		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("-Dcom.bar=baz")
+			.contains("-Dcom.foo=bar")
+			.contains("-XX:TieredStopAtLevel=1");
+	}
+
+	@TestTemplate
+	void jarTypeFilteringIsAppliedToTheClasspath() throws IOException {
+		copyClasspathApplication();
+		File flatDirRepository = new File(this.gradleBuild.getProjectDir(), "repository");
+		createDependenciesStarterJar(new File(flatDirRepository, "starter.jar"));
+		createStandardJar(new File(flatDirRepository, "standard.jar"));
+		BuildResult result = this.gradleBuild.build("bootRun");
+		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("standard.jar").doesNotContain("starter.jar");
+	}
+
+	@TestTemplate
+	void classesFromASecondarySourceSetCanBeOnTheClasspath() throws IOException {
+		File output = new File(this.gradleBuild.getProjectDir(), "src/secondary/java/com/example/bootrun/main");
 		output.mkdirs();
-		FileSystemUtils.copyRecursively(new File("src/test/java/com/example"), output);
+		FileSystemUtils.copyRecursively(new File("src/test/java/com/example/bootrun/main"), output);
+		BuildResult result = this.gradleBuild.build("bootRun");
+		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("com.example.bootrun.main.CustomMainClass");
+	}
+
+	private void copyMainClassApplication() throws IOException {
+		copyApplication("main");
+	}
+
+	private void copyClasspathApplication() throws IOException {
+		copyApplication("classpath");
+	}
+
+	private void copyJvmArgsApplication() throws IOException {
+		copyApplication("jvmargs");
+	}
+
+	private void copyApplication(String name) throws IOException {
+		File output = new File(this.gradleBuild.getProjectDir(), "src/main/java/com/example/bootrun/" + name);
+		output.mkdirs();
+		FileSystemUtils.copyRecursively(new File("src/test/java/com/example/bootrun/" + name), output);
 	}
 
 	private String canonicalPathOf(String path) throws IOException {
 		return new File(this.gradleBuild.getProjectDir(), path).getCanonicalPath();
+	}
+
+	private void createStandardJar(File location) throws IOException {
+		createJar(location, (attributes) -> {
+		});
+	}
+
+	private void createDependenciesStarterJar(File location) throws IOException {
+		createJar(location, (attributes) -> attributes.putValue("Spring-Boot-Jar-Type", "dependencies-starter"));
+	}
+
+	private void createJar(File location, Consumer<Attributes> attributesConfigurer) throws IOException {
+		location.getParentFile().mkdirs();
+		Manifest manifest = new Manifest();
+		Attributes attributes = manifest.getMainAttributes();
+		attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
+		attributesConfigurer.accept(attributes);
+		new JarOutputStream(new FileOutputStream(location), manifest).close();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,9 +53,8 @@ public class DelegatingApplicationListener implements ApplicationListener<Applic
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ApplicationEnvironmentPreparedEvent) {
-			List<ApplicationListener<ApplicationEvent>> delegates = getListeners(
-					((ApplicationEnvironmentPreparedEvent) event).getEnvironment());
+		if (event instanceof ApplicationEnvironmentPreparedEvent preparedEvent) {
+			List<ApplicationListener<ApplicationEvent>> delegates = getListeners(preparedEvent.getEnvironment());
 			if (delegates.isEmpty()) {
 				return;
 			}
@@ -81,7 +80,7 @@ public class DelegatingApplicationListener implements ApplicationListener<Applic
 				try {
 					Class<?> clazz = ClassUtils.forName(className, ClassUtils.getDefaultClassLoader());
 					Assert.isAssignable(ApplicationListener.class, clazz,
-							"class [" + className + "] must implement ApplicationListener");
+							() -> "class [" + className + "] must implement ApplicationListener");
 					listeners.add((ApplicationListener<ApplicationEvent>) BeanUtils.instantiateClass(clazz));
 				}
 				catch (Exception ex) {

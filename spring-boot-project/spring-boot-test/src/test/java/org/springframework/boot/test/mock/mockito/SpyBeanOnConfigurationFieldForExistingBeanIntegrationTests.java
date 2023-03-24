@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.example.ExampleService;
@@ -25,19 +25,19 @@ import org.springframework.boot.test.mock.mockito.example.ExampleServiceCaller;
 import org.springframework.boot.test.mock.mockito.example.SimpleExampleService;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
- * Test {@link SpyBean} on a field on a {@code @Configuration} class can be used to
- * replace existing beans.
+ * Test {@link SpyBean @SpyBean} on a field on a {@code @Configuration} class can be used
+ * to replace existing beans.
  *
  * @author Phillip Webb
  */
-@RunWith(SpringRunner.class)
-public class SpyBeanOnConfigurationFieldForExistingBeanIntegrationTests {
+@ExtendWith(SpringExtension.class)
+class SpyBeanOnConfigurationFieldForExistingBeanIntegrationTests {
 
 	@Autowired
 	private Config config;
@@ -46,12 +46,12 @@ public class SpyBeanOnConfigurationFieldForExistingBeanIntegrationTests {
 	private ExampleServiceCaller caller;
 
 	@Test
-	public void testSpying() {
+	void testSpying() {
 		assertThat(this.caller.sayGreeting()).isEqualTo("I say simple");
-		verify(this.config.exampleService).greeting();
+		then(this.config.exampleService).should().greeting();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import({ ExampleServiceCaller.class, SimpleExampleService.class })
 	static class Config {
 

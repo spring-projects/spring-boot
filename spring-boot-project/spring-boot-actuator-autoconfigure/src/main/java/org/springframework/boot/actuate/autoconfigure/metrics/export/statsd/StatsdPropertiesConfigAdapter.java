@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.time.Duration;
 
 import io.micrometer.statsd.StatsdConfig;
 import io.micrometer.statsd.StatsdFlavor;
+import io.micrometer.statsd.StatsdProtocol;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PropertiesConfigAdapter;
 
@@ -38,6 +39,11 @@ public class StatsdPropertiesConfigAdapter extends PropertiesConfigAdapter<Stats
 	@Override
 	public String get(String s) {
 		return null;
+	}
+
+	@Override
+	public String prefix() {
+		return "management.statsd.metrics.export";
 	}
 
 	@Override
@@ -61,6 +67,11 @@ public class StatsdPropertiesConfigAdapter extends PropertiesConfigAdapter<Stats
 	}
 
 	@Override
+	public StatsdProtocol protocol() {
+		return get(StatsdProperties::getProtocol, StatsdConfig.super::protocol);
+	}
+
+	@Override
 	public int maxPacketLength() {
 		return get(StatsdProperties::getMaxPacketLength, StatsdConfig.super::maxPacketLength);
 	}
@@ -71,8 +82,18 @@ public class StatsdPropertiesConfigAdapter extends PropertiesConfigAdapter<Stats
 	}
 
 	@Override
+	public Duration step() {
+		return get(StatsdProperties::getStep, StatsdConfig.super::step);
+	}
+
+	@Override
 	public boolean publishUnchangedMeters() {
 		return get(StatsdProperties::isPublishUnchangedMeters, StatsdConfig.super::publishUnchangedMeters);
+	}
+
+	@Override
+	public boolean buffered() {
+		return get(StatsdProperties::isBuffered, StatsdConfig.super::buffered);
 	}
 
 }

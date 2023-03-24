@@ -55,16 +55,20 @@ public abstract class AnsiOutput {
 	}
 
 	/**
+	 * Returns if ANSI output is enabled
+	 * @return if ANSI enabled, disabled or detected
+	 */
+	public static Enabled getEnabled() {
+		return AnsiOutput.enabled;
+	}
+
+	/**
 	 * Sets if the System.console() is known to be available.
 	 * @param consoleAvailable if the console is known to be available or {@code null} to
 	 * use standard detection logic.
 	 */
 	public static void setConsoleAvailable(Boolean consoleAvailable) {
 		AnsiOutput.consoleAvailable = consoleAvailable;
-	}
-
-	static Enabled getEnabled() {
-		return AnsiOutput.enabled;
 	}
 
 	/**

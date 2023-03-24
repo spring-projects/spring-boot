@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,11 +44,11 @@ class DocumentRoot {
 		this.logger = logger;
 	}
 
-	public File getDirectory() {
+	File getDirectory() {
 		return this.directory;
 	}
 
-	public void setDirectory(File directory) {
+	void setDirectory(File directory) {
 		this.directory = directory;
 	}
 
@@ -57,7 +57,7 @@ class DocumentRoot {
 	 * warning and returning {@code null} otherwise.
 	 * @return the valid document root
 	 */
-	public final File getValidDirectory() {
+	final File getValidDirectory() {
 		File file = this.directory;
 		file = (file != null) ? file : getWarFileDocumentRoot();
 		file = (file != null) ? file : getExplodedWarFileDocumentRoot();
@@ -103,8 +103,8 @@ class DocumentRoot {
 			}
 			String path;
 			URLConnection connection = location.openConnection();
-			if (connection instanceof JarURLConnection) {
-				path = ((JarURLConnection) connection).getJarFile().getName();
+			if (connection instanceof JarURLConnection jarURLConnection) {
+				path = jarURLConnection.getJarFile().getName();
 			}
 			else {
 				path = location.toURI().getPath();
@@ -120,7 +120,7 @@ class DocumentRoot {
 		}
 	}
 
-	public final File getExplodedWarFileDocumentRoot(File codeSourceFile) {
+	final File getExplodedWarFileDocumentRoot(File codeSourceFile) {
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Code archive: " + codeSourceFile);
 		}

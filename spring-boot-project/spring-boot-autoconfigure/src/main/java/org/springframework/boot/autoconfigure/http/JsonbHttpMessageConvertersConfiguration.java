@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.http;
 
-import javax.json.bind.Jsonb;
+import jakarta.json.bind.Jsonb;
 
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -35,18 +35,18 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
  *
  * @author Eddú Meléndez
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Jsonb.class)
 class JsonbHttpMessageConvertersConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(Jsonb.class)
 	@Conditional(PreferJsonbOrMissingJacksonAndGsonCondition.class)
-	protected static class JsonbHttpMessageConverterConfiguration {
+	static class JsonbHttpMessageConverterConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public JsonbHttpMessageConverter jsonbHttpMessageConverter(Jsonb jsonb) {
+		JsonbHttpMessageConverter jsonbHttpMessageConverter(Jsonb jsonb) {
 			JsonbHttpMessageConverter converter = new JsonbHttpMessageConverter();
 			converter.setJsonb(jsonb);
 			return converter;

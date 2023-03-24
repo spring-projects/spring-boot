@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,16 @@ import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Properties;
 
+import org.springframework.core.CollectionFactory;
+import org.springframework.util.StringUtils;
+
 /**
  * A {@code BuildPropertiesWriter} writes the {@code build-info.properties} for
  * consumption by the Actuator.
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  * @since 1.0.0
  */
 public final class BuildPropertiesWriter {
@@ -68,11 +72,11 @@ public final class BuildPropertiesWriter {
 	}
 
 	protected Properties createBuildInfo(ProjectDetails project) {
-		Properties properties = new Properties();
-		properties.put("build.group", project.getGroup());
-		properties.put("build.artifact", project.getArtifact());
-		properties.put("build.name", project.getName());
-		properties.put("build.version", project.getVersion());
+		Properties properties = CollectionFactory.createSortedProperties(true);
+		addIfHasValue(properties, "build.group", project.getGroup());
+		addIfHasValue(properties, "build.artifact", project.getArtifact());
+		addIfHasValue(properties, "build.name", project.getName());
+		addIfHasValue(properties, "build.version", project.getVersion());
 		if (project.getTime() != null) {
 			properties.put("build.time", DateTimeFormatter.ISO_INSTANT.format(project.getTime()));
 		}
@@ -80,6 +84,12 @@ public final class BuildPropertiesWriter {
 			project.getAdditionalProperties().forEach((name, value) -> properties.put("build." + name, value));
 		}
 		return properties;
+	}
+
+	private void addIfHasValue(Properties properties, String name, String value) {
+		if (StringUtils.hasText(value)) {
+			properties.put(name, value);
+		}
 	}
 
 	/**

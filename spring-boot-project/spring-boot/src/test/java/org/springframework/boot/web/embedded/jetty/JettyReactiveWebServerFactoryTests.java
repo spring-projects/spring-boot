@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,25 @@
 
 package org.springframework.boot.web.embedded.jetty;
 
+import java.net.ConnectException;
 import java.net.InetAddress;
+import java.time.Duration;
 import java.util.Arrays;
 
+import org.awaitility.Awaitility;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
+import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -41,7 +48,8 @@ import static org.mockito.Mockito.mock;
  * @author Brian Clozel
  * @author Madhura Bhave
  */
-public class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
+@Servlet5ClassPathOverrides
+class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
 	@Override
 	protected JettyReactiveWebServerFactory getFactory() {
@@ -49,22 +57,29 @@ public class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServe
 	}
 
 	@Test
-	public void setNullServerCustomizersShouldThrowException() {
+	@Override
+	@Disabled("Jetty 11 does not support User-Agent-based compression")
+	protected void noCompressionForUserAgent() {
+
+	}
+
+	@Test
+	void setNullServerCustomizersShouldThrowException() {
 		JettyReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setServerCustomizers(null))
-				.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
-	public void addNullServerCustomizersShouldThrowException() {
+	void addNullServerCustomizersShouldThrowException() {
 		JettyReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> factory.addServerCustomizers((JettyServerCustomizer[]) null))
-				.withMessageContaining("Customizers must not be null");
+			.isThrownBy(() -> factory.addServerCustomizers((JettyServerCustomizer[]) null))
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
-	public void jettyCustomizersShouldBeInvoked() {
+	void jettyCustomizersShouldBeInvoked() {
 		HttpHandler handler = mock(HttpHandler.class);
 		JettyReactiveWebServerFactory factory = getFactory();
 		JettyServerCustomizer[] configurations = new JettyServerCustomizer[4];
@@ -79,7 +94,7 @@ public class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServe
 	}
 
 	@Test
-	public void specificIPAddressNotReverseResolved() throws Exception {
+	void specificIPAddressNotReverseResolved() throws Exception {
 		JettyReactiveWebServerFactory factory = getFactory();
 		InetAddress localhost = InetAddress.getLocalHost();
 		factory.setAddress(InetAddress.getByAddress(localhost.getAddress()));
@@ -90,14 +105,14 @@ public class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServe
 	}
 
 	@Test
-	public void useForwardedHeaders() {
+	void useForwardedHeaders() {
 		JettyReactiveWebServerFactory factory = getFactory();
 		factory.setUseForwardHeaders(true);
 		assertForwardHeaderIsUsed(factory);
 	}
 
 	@Test
-	public void useServerResources() throws Exception {
+	void useServerResources() throws Exception {
 		JettyResourceFactory resourceFactory = new JettyResourceFactory();
 		resourceFactory.afterPropertiesSet();
 		JettyReactiveWebServerFactory factory = getFactory();
@@ -108,6 +123,29 @@ public class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServe
 		assertThat(connector.getByteBufferPool()).isEqualTo(resourceFactory.getByteBufferPool());
 		assertThat(connector.getExecutor()).isEqualTo(resourceFactory.getExecutor());
 		assertThat(connector.getScheduler()).isEqualTo(resourceFactory.getScheduler());
+	}
+
+	@Test
+	void whenServerIsShuttingDownGracefullyThenNewConnectionsCannotBeMade() {
+		JettyReactiveWebServerFactory factory = getFactory();
+		factory.setShutdown(Shutdown.GRACEFUL);
+		BlockingHandler blockingHandler = new BlockingHandler();
+		this.webServer = factory.getWebServer(blockingHandler);
+		this.webServer.start();
+		WebClient webClient = getWebClient(this.webServer.getPort()).build();
+		this.webServer.shutDownGracefully((result) -> {
+		});
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> {
+			blockingHandler.stopBlocking();
+			try {
+				webClient.get().retrieve().toBodilessEntity().block();
+				return false;
+			}
+			catch (RuntimeException ex) {
+				return ex.getCause() instanceof ConnectException;
+			}
+		});
+		this.webServer.stop();
 	}
 
 }

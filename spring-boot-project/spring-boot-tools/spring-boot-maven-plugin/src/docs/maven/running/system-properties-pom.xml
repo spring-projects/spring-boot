@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- tag::system-properties[] -->
+<project>
+	<build>
+		<properties>
+			<my.value>42</my.value>
+		</properties>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<systemPropertyVariables>
+						<property1>test</property1>
+						<property2>${my.value}</property2>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+<!-- end::system-properties[] -->
+
+

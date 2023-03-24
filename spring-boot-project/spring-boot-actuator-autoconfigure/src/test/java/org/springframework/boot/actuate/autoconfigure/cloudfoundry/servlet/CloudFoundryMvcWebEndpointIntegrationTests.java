@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,15 @@
 
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.servlet;
 
+import java.time.Duration;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException;
@@ -47,7 +49,6 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
@@ -63,75 +64,134 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  */
-public class CloudFoundryMvcWebEndpointIntegrationTests {
+class CloudFoundryMvcWebEndpointIntegrationTests {
 
-	private static TokenValidator tokenValidator = mock(TokenValidator.class);
+	private static final TokenValidator tokenValidator = mock(TokenValidator.class);
 
-	private static CloudFoundrySecurityService securityService = mock(CloudFoundrySecurityService.class);
+	private static final CloudFoundrySecurityService securityService = mock(CloudFoundrySecurityService.class);
 
 	@Test
-	public void operationWithSecurityInterceptorForbidden() {
+	void operationWithSecurityInterceptorForbidden() {
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.RESTRICTED);
 		load(TestEndpointConfiguration.class,
-				(client) -> client.get().uri("/cfApplication/test").accept(MediaType.APPLICATION_JSON)
-						.header("Authorization", "bearer " + mockAccessToken()).exchange().expectStatus()
-						.isEqualTo(HttpStatus.FORBIDDEN));
+				(client) -> client.get()
+					.uri("/cfApplication/test")
+					.accept(MediaType.APPLICATION_JSON)
+					.header("Authorization", "bearer " + mockAccessToken())
+					.exchange()
+					.expectStatus()
+					.isEqualTo(HttpStatus.FORBIDDEN));
 	}
 
 	@Test
-	public void operationWithSecurityInterceptorSuccess() {
+	void operationWithSecurityInterceptorSuccess() {
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.FULL);
 		load(TestEndpointConfiguration.class,
-				(client) -> client.get().uri("/cfApplication/test").accept(MediaType.APPLICATION_JSON)
-						.header("Authorization", "bearer " + mockAccessToken()).exchange().expectStatus()
-						.isEqualTo(HttpStatus.OK));
+				(client) -> client.get()
+					.uri("/cfApplication/test")
+					.accept(MediaType.APPLICATION_JSON)
+					.header("Authorization", "bearer " + mockAccessToken())
+					.exchange()
+					.expectStatus()
+					.isEqualTo(HttpStatus.OK));
 	}
 
 	@Test
-	public void responseToOptionsRequestIncludesCorsHeaders() {
+	void responseToOptionsRequestIncludesCorsHeaders() {
 		load(TestEndpointConfiguration.class,
-				(client) -> client.options().uri("/cfApplication/test").accept(MediaType.APPLICATION_JSON)
-						.header("Access-Control-Request-Method", "POST").header("Origin", "https://example.com")
-						.exchange().expectStatus().isOk().expectHeader()
-						.valueEquals("Access-Control-Allow-Origin", "https://example.com").expectHeader()
-						.valueEquals("Access-Control-Allow-Methods", "GET,POST"));
+				(client) -> client.options()
+					.uri("/cfApplication/test")
+					.accept(MediaType.APPLICATION_JSON)
+					.header("Access-Control-Request-Method", "POST")
+					.header("Origin", "https://example.com")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectHeader()
+					.valueEquals("Access-Control-Allow-Origin", "https://example.com")
+					.expectHeader()
+					.valueEquals("Access-Control-Allow-Methods", "GET,POST"));
 	}
 
 	@Test
-	public void linksToOtherEndpointsWithFullAccess() {
+	void linksToOtherEndpointsWithFullAccess() {
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.FULL);
 		load(TestEndpointConfiguration.class,
-				(client) -> client.get().uri("/cfApplication").accept(MediaType.APPLICATION_JSON)
-						.header("Authorization", "bearer " + mockAccessToken()).exchange().expectStatus().isOk()
-						.expectBody().jsonPath("_links.length()").isEqualTo(5).jsonPath("_links.self.href").isNotEmpty()
-						.jsonPath("_links.self.templated").isEqualTo(false).jsonPath("_links.info.href").isNotEmpty()
-						.jsonPath("_links.info.templated").isEqualTo(false).jsonPath("_links.env.href").isNotEmpty()
-						.jsonPath("_links.env.templated").isEqualTo(false).jsonPath("_links.test.href").isNotEmpty()
-						.jsonPath("_links.test.templated").isEqualTo(false).jsonPath("_links.test-part.href")
-						.isNotEmpty().jsonPath("_links.test-part.templated").isEqualTo(true));
+				(client) -> client.get()
+					.uri("/cfApplication")
+					.accept(MediaType.APPLICATION_JSON)
+					.header("Authorization", "bearer " + mockAccessToken())
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.jsonPath("_links.length()")
+					.isEqualTo(5)
+					.jsonPath("_links.self.href")
+					.isNotEmpty()
+					.jsonPath("_links.self.templated")
+					.isEqualTo(false)
+					.jsonPath("_links.info.href")
+					.isNotEmpty()
+					.jsonPath("_links.info.templated")
+					.isEqualTo(false)
+					.jsonPath("_links.env.href")
+					.isNotEmpty()
+					.jsonPath("_links.env.templated")
+					.isEqualTo(false)
+					.jsonPath("_links.test.href")
+					.isNotEmpty()
+					.jsonPath("_links.test.templated")
+					.isEqualTo(false)
+					.jsonPath("_links.test-part.href")
+					.isNotEmpty()
+					.jsonPath("_links.test-part.templated")
+					.isEqualTo(true));
 	}
 
 	@Test
-	public void linksToOtherEndpointsForbidden() {
+	void linksToOtherEndpointsForbidden() {
 		CloudFoundryAuthorizationException exception = new CloudFoundryAuthorizationException(Reason.INVALID_TOKEN,
 				"invalid-token");
 		willThrow(exception).given(tokenValidator).validate(any());
 		load(TestEndpointConfiguration.class,
-				(client) -> client.get().uri("/cfApplication").accept(MediaType.APPLICATION_JSON)
-						.header("Authorization", "bearer " + mockAccessToken()).exchange().expectStatus()
-						.isUnauthorized());
+				(client) -> client.get()
+					.uri("/cfApplication")
+					.accept(MediaType.APPLICATION_JSON)
+					.header("Authorization", "bearer " + mockAccessToken())
+					.exchange()
+					.expectStatus()
+					.isUnauthorized());
 	}
 
 	@Test
-	public void linksToOtherEndpointsWithRestrictedAccess() {
+	void linksToOtherEndpointsWithRestrictedAccess() {
 		given(securityService.getAccessLevel(any(), eq("app-id"))).willReturn(AccessLevel.RESTRICTED);
 		load(TestEndpointConfiguration.class,
-				(client) -> client.get().uri("/cfApplication").accept(MediaType.APPLICATION_JSON)
-						.header("Authorization", "bearer " + mockAccessToken()).exchange().expectStatus().isOk()
-						.expectBody().jsonPath("_links.length()").isEqualTo(2).jsonPath("_links.self.href").isNotEmpty()
-						.jsonPath("_links.self.templated").isEqualTo(false).jsonPath("_links.info.href").isNotEmpty()
-						.jsonPath("_links.info.templated").isEqualTo(false).jsonPath("_links.env").doesNotExist()
-						.jsonPath("_links.test").doesNotExist().jsonPath("_links.test-part").doesNotExist());
+				(client) -> client.get()
+					.uri("/cfApplication")
+					.accept(MediaType.APPLICATION_JSON)
+					.header("Authorization", "bearer " + mockAccessToken())
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectBody()
+					.jsonPath("_links.length()")
+					.isEqualTo(2)
+					.jsonPath("_links.self.href")
+					.isNotEmpty()
+					.jsonPath("_links.self.templated")
+					.isEqualTo(false)
+					.jsonPath("_links.info.href")
+					.isNotEmpty()
+					.jsonPath("_links.info.templated")
+					.isEqualTo(false)
+					.jsonPath("_links.env")
+					.doesNotExist()
+					.jsonPath("_links.test")
+					.doesNotExist()
+					.jsonPath("_links.test-part")
+					.doesNotExist());
 	}
 
 	private AnnotationConfigServletWebServerApplicationContext createApplicationContext(Class<?>... config) {
@@ -144,40 +204,39 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 
 	private void load(Class<?> configuration, Consumer<WebTestClient> clientConsumer) {
 		BiConsumer<ApplicationContext, WebTestClient> consumer = (context, client) -> clientConsumer.accept(client);
-		AnnotationConfigServletWebServerApplicationContext context = createApplicationContext(configuration,
-				CloudFoundryMvcConfiguration.class);
-		try {
+		try (AnnotationConfigServletWebServerApplicationContext context = createApplicationContext(configuration,
+				CloudFoundryMvcConfiguration.class)) {
 			consumer.accept(context,
-					WebTestClient.bindToServer().baseUrl("http://localhost:" + getPort(context)).build());
-		}
-		finally {
-			context.close();
+					WebTestClient.bindToServer()
+						.baseUrl("http://localhost:" + getPort(context))
+						.responseTimeout(Duration.ofMinutes(5))
+						.build());
 		}
 	}
 
 	private String mockAccessToken() {
 		return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJ0b3B0YWwu"
 				+ "Y29tIiwiZXhwIjoxNDI2NDIwODAwLCJhd2Vzb21lIjp0cnVlfQ."
-				+ Base64Utils.encodeToString("signature".getBytes());
+				+ Base64.getEncoder().encodeToString("signature".getBytes());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	static class CloudFoundryMvcConfiguration {
 
 		@Bean
-		public CloudFoundrySecurityInterceptor interceptor() {
+		CloudFoundrySecurityInterceptor interceptor() {
 			return new CloudFoundrySecurityInterceptor(tokenValidator, securityService, "app-id");
 		}
 
 		@Bean
-		public EndpointMediaTypes EndpointMediaTypes() {
+		EndpointMediaTypes EndpointMediaTypes() {
 			return new EndpointMediaTypes(Collections.singletonList("application/json"),
 					Collections.singletonList("application/json"));
 		}
 
 		@Bean
-		public CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
+		CloudFoundryWebEndpointServletHandlerMapping cloudFoundryWebEndpointServletHandlerMapping(
 				WebEndpointDiscoverer webEndpointDiscoverer, EndpointMediaTypes endpointMediaTypes,
 				CloudFoundrySecurityInterceptor interceptor) {
 			CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -189,7 +248,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 		}
 
 		@Bean
-		public WebEndpointDiscoverer webEndpointDiscoverer(ApplicationContext applicationContext,
+		WebEndpointDiscoverer webEndpointDiscoverer(ApplicationContext applicationContext,
 				EndpointMediaTypes endpointMediaTypes) {
 			ParameterValueMapper parameterMapper = new ConversionServiceParameterValueMapper(
 					DefaultConversionService.getSharedInstance());
@@ -198,17 +257,17 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 		}
 
 		@Bean
-		public EndpointDelegate endpointDelegate() {
+		EndpointDelegate endpointDelegate() {
 			return mock(EndpointDelegate.class);
 		}
 
 		@Bean
-		public TomcatServletWebServerFactory tomcat() {
+		TomcatServletWebServerFactory tomcat() {
 			return new TomcatServletWebServerFactory(0);
 		}
 
 		@Bean
-		public DispatcherServlet dispatcherServlet() {
+		DispatcherServlet dispatcherServlet() {
 			return new DispatcherServlet();
 		}
 
@@ -224,17 +283,17 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 		}
 
 		@ReadOperation
-		public Map<String, Object> readAll() {
+		Map<String, Object> readAll() {
 			return Collections.singletonMap("All", true);
 		}
 
 		@ReadOperation
-		public Map<String, Object> readPart(@Selector String part) {
+		Map<String, Object> readPart(@Selector String part) {
 			return Collections.singletonMap("part", part);
 		}
 
 		@WriteOperation
-		public void write(String foo, String bar) {
+		void write(String foo, String bar) {
 			this.endpointDelegate.write(foo, bar);
 		}
 
@@ -244,7 +303,7 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 	static class TestEnvEndpoint {
 
 		@ReadOperation
-		public Map<String, Object> readAll() {
+		Map<String, Object> readAll() {
 			return Collections.singletonMap("All", true);
 		}
 
@@ -254,34 +313,34 @@ public class CloudFoundryMvcWebEndpointIntegrationTests {
 	static class TestInfoEndpoint {
 
 		@ReadOperation
-		public Map<String, Object> readAll() {
+		Map<String, Object> readAll() {
 			return Collections.singletonMap("All", true);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(CloudFoundryMvcConfiguration.class)
-	protected static class TestEndpointConfiguration {
+	static class TestEndpointConfiguration {
 
 		@Bean
-		public TestEndpoint testEndpoint(EndpointDelegate endpointDelegate) {
+		TestEndpoint testEndpoint(EndpointDelegate endpointDelegate) {
 			return new TestEndpoint(endpointDelegate);
 		}
 
 		@Bean
-		public TestInfoEndpoint testInfoEnvEndpoint() {
+		TestInfoEndpoint testInfoEnvEndpoint() {
 			return new TestInfoEndpoint();
 		}
 
 		@Bean
-		public TestEnvEndpoint testEnvEndpoint() {
+		TestEnvEndpoint testEnvEndpoint() {
 			return new TestEnvEndpoint();
 		}
 
 	}
 
-	public interface EndpointDelegate {
+	interface EndpointDelegate {
 
 		void write();
 

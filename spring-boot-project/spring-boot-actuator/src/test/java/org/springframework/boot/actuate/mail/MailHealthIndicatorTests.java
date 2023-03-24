@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,17 +18,16 @@ package org.springframework.boot.actuate.mail;
 
 import java.util.Properties;
 
-import javax.mail.Address;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Provider;
-import javax.mail.Provider.Type;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.URLName;
-
-import org.junit.Before;
-import org.junit.Test;
+import jakarta.mail.Address;
+import jakarta.mail.Message;
+import jakarta.mail.MessagingException;
+import jakarta.mail.Provider;
+import jakarta.mail.Provider.Type;
+import jakarta.mail.Session;
+import jakarta.mail.Transport;
+import jakarta.mail.URLName;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
@@ -45,14 +44,14 @@ import static org.mockito.Mockito.mock;
  * @author Johannes Edmeier
  * @author Stephane Nicoll
  */
-public class MailHealthIndicatorTests {
+class MailHealthIndicatorTests {
 
 	private JavaMailSenderImpl mailSender;
 
 	private MailHealthIndicator indicator;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		Session session = Session.getDefaultInstance(new Properties());
 		session.addProvider(new Provider(Type.TRANSPORT, "success", SuccessTransport.class.getName(), "Test", "1.0.0"));
 		this.mailSender = mock(JavaMailSenderImpl.class);
@@ -63,27 +62,27 @@ public class MailHealthIndicatorTests {
 	}
 
 	@Test
-	public void smtpIsUp() {
+	void smtpIsUp() {
 		given(this.mailSender.getProtocol()).willReturn("success");
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("location")).isEqualTo("smtp.acme.org:25");
+		assertThat(health.getDetails()).containsEntry("location", "smtp.acme.org:25");
 	}
 
 	@Test
-	public void smtpIsDown() throws MessagingException {
+	void smtpIsDown() throws MessagingException {
 		willThrow(new MessagingException("A test exception")).given(this.mailSender).testConnection();
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("location")).isEqualTo("smtp.acme.org:25");
+		assertThat(health.getDetails()).containsEntry("location", "smtp.acme.org:25");
 		Object errorMessage = health.getDetails().get("error");
 		assertThat(errorMessage).isNotNull();
-		assertThat(errorMessage.toString().contains("A test exception")).isTrue();
+		assertThat(errorMessage.toString()).contains("A test exception");
 	}
 
-	public static class SuccessTransport extends Transport {
+	static class SuccessTransport extends Transport {
 
-		public SuccessTransport(Session session, URLName urlName) {
+		SuccessTransport(Session session, URLName urlName) {
 			super(session, urlName);
 		}
 

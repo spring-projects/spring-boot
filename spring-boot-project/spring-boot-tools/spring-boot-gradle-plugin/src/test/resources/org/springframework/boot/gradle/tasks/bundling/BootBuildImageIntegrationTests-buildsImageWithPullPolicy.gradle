@@ -1,0 +1,18 @@
+import org.springframework.boot.buildpack.platform.build.PullPolicy;
+
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+if (project.hasProperty('applyWarPlugin')) {
+	apply plugin: 'war'
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+bootBuildImage {
+	builder = "projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.1"
+	pullPolicy = PullPolicy.ALWAYS
+}

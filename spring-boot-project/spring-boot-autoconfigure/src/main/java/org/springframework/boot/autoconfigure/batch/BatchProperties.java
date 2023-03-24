@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,8 @@
 package org.springframework.boot.autoconfigure.batch;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceInitializationMode;
+import org.springframework.boot.sql.init.DatabaseInitializationMode;
+import org.springframework.transaction.annotation.Isolation;
 
 /**
  * Configuration properties for Spring Batch.
@@ -25,73 +26,112 @@ import org.springframework.boot.jdbc.DataSourceInitializationMode;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Vedran Pavic
+ * @author Mukul Kumar Chaundhyan
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.batch")
 public class BatchProperties {
 
-	private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
-			+ "batch/core/schema-@@platform@@.sql";
-
-	/**
-	 * Path to the SQL file to use to initialize the database schema.
-	 */
-	private String schema = DEFAULT_SCHEMA_LOCATION;
-
-	/**
-	 * Table prefix for all the batch meta-data tables.
-	 */
-	private String tablePrefix;
-
-	/**
-	 * Database schema initialization mode.
-	 */
-	private DataSourceInitializationMode initializeSchema = DataSourceInitializationMode.EMBEDDED;
-
 	private final Job job = new Job();
 
-	public String getSchema() {
-		return this.schema;
-	}
-
-	public void setSchema(String schema) {
-		this.schema = schema;
-	}
-
-	public String getTablePrefix() {
-		return this.tablePrefix;
-	}
-
-	public void setTablePrefix(String tablePrefix) {
-		this.tablePrefix = tablePrefix;
-	}
-
-	public DataSourceInitializationMode getInitializeSchema() {
-		return this.initializeSchema;
-	}
-
-	public void setInitializeSchema(DataSourceInitializationMode initializeSchema) {
-		this.initializeSchema = initializeSchema;
-	}
+	private final Jdbc jdbc = new Jdbc();
 
 	public Job getJob() {
 		return this.job;
 	}
 
+	public Jdbc getJdbc() {
+		return this.jdbc;
+	}
+
 	public static class Job {
 
 		/**
-		 * Comma-separated list of job names to execute on startup (for instance,
-		 * `job1,job2`). By default, all Jobs found in the context are executed.
+		 * Job name to execute on startup. Must be specified if multiple Jobs are found in
+		 * the context.
 		 */
-		private String names = "";
+		private String name = "";
 
-		public String getNames() {
-			return this.names;
+		public String getName() {
+			return this.name;
 		}
 
-		public void setNames(String names) {
-			this.names = names;
+		public void setName(String name) {
+			this.name = name;
+		}
+
+	}
+
+	public static class Jdbc {
+
+		private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
+				+ "batch/core/schema-@@platform@@.sql";
+
+		/**
+		 * Transaction isolation level to use when creating job meta-data for new jobs.
+		 * Auto-detected based on whether JPA is being used or not.
+		 */
+		private Isolation isolationLevelForCreate;
+
+		/**
+		 * Path to the SQL file to use to initialize the database schema.
+		 */
+		private String schema = DEFAULT_SCHEMA_LOCATION;
+
+		/**
+		 * Platform to use in initialization scripts if the @@platform@@ placeholder is
+		 * used. Auto-detected by default.
+		 */
+		private String platform;
+
+		/**
+		 * Table prefix for all the batch meta-data tables.
+		 */
+		private String tablePrefix;
+
+		/**
+		 * Database schema initialization mode.
+		 */
+		private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
+
+		public Isolation getIsolationLevelForCreate() {
+			return this.isolationLevelForCreate;
+		}
+
+		public void setIsolationLevelForCreate(Isolation isolationLevelForCreate) {
+			this.isolationLevelForCreate = isolationLevelForCreate;
+		}
+
+		public String getSchema() {
+			return this.schema;
+		}
+
+		public void setSchema(String schema) {
+			this.schema = schema;
+		}
+
+		public String getPlatform() {
+			return this.platform;
+		}
+
+		public void setPlatform(String platform) {
+			this.platform = platform;
+		}
+
+		public String getTablePrefix() {
+			return this.tablePrefix;
+		}
+
+		public void setTablePrefix(String tablePrefix) {
+			this.tablePrefix = tablePrefix;
+		}
+
+		public DatabaseInitializationMode getInitializeSchema() {
+			return this.initializeSchema;
+		}
+
+		public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
+			this.initializeSchema = initializeSchema;
 		}
 
 	}

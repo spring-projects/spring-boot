@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,11 @@ package org.springframework.boot.web.servlet.server;
 
 import java.util.Arrays;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.springframework.boot.testsupport.web.servlet.MockServletWebServer.RegisteredFilter;
 import org.springframework.boot.testsupport.web.servlet.MockServletWebServer.RegisteredServlet;
 import org.springframework.boot.web.server.WebServer;
-import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 
 import static org.mockito.Mockito.spy;
@@ -63,13 +62,14 @@ public class MockServletWebServerFactory extends AbstractServletWebServerFactory
 	public static class MockServletWebServer
 			extends org.springframework.boot.testsupport.web.servlet.MockServletWebServer implements WebServer {
 
-		public MockServletWebServer(ServletContextInitializer[] initializers, int port) {
-			super(Arrays.stream(initializers).map((initializer) -> (Initializer) initializer::onStartup)
-					.toArray(Initializer[]::new), port);
+		MockServletWebServer(ServletContextInitializer[] initializers, int port) {
+			super(Arrays.stream(initializers)
+				.map((initializer) -> (Initializer) initializer::onStartup)
+				.toArray(Initializer[]::new), port);
 		}
 
 		@Override
-		public void start() throws WebServerException {
+		public void start() {
 		}
 
 	}

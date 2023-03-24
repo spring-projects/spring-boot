@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,8 @@ import java.util.function.Function;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.OperationType;
-import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
-import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
 
 /**
@@ -43,22 +41,13 @@ public class CachingOperationInvokerAdvisor implements OperationInvokerAdvisor {
 	@Override
 	public OperationInvoker apply(EndpointId endpointId, OperationType operationType, OperationParameters parameters,
 			OperationInvoker invoker) {
-		if (operationType == OperationType.READ && !hasMandatoryParameter(parameters)) {
+		if (operationType == OperationType.READ && CachingOperationInvoker.isApplicable(parameters)) {
 			Long timeToLive = this.endpointIdTimeToLive.apply(endpointId);
 			if (timeToLive != null && timeToLive > 0) {
 				return new CachingOperationInvoker(invoker, timeToLive);
 			}
 		}
 		return invoker;
-	}
-
-	private boolean hasMandatoryParameter(OperationParameters parameters) {
-		for (OperationParameter parameter : parameters) {
-			if (parameter.isMandatory() && !SecurityContext.class.isAssignableFrom(parameter.getType())) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 }

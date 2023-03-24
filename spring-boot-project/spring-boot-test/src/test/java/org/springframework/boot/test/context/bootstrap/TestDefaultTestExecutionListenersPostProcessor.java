@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.context.bootstrap;
 
-import java.util.Set;
+import java.util.List;
 
 import org.springframework.boot.test.context.DefaultTestExecutionListenersPostProcessor;
 import org.springframework.test.context.TestContext;
@@ -28,12 +28,12 @@ import org.springframework.test.context.support.AbstractTestExecutionListener;
  *
  * @author Phillip Webb
  */
+@SuppressWarnings("removal")
 public class TestDefaultTestExecutionListenersPostProcessor implements DefaultTestExecutionListenersPostProcessor {
 
 	@Override
-	public Set<Class<? extends TestExecutionListener>> postProcessDefaultTestExecutionListeners(
-			Set<Class<? extends TestExecutionListener>> listeners) {
-		listeners.add(ExampleTestExecutionListener.class);
+	public List<TestExecutionListener> postProcessDefaultTestExecutionListeners(List<TestExecutionListener> listeners) {
+		listeners.add(new ExampleTestExecutionListener());
 		return listeners;
 	}
 
@@ -42,8 +42,7 @@ public class TestDefaultTestExecutionListenersPostProcessor implements DefaultTe
 		@Override
 		public void prepareTestInstance(TestContext testContext) throws Exception {
 			Object testInstance = testContext.getTestInstance();
-			if (testInstance instanceof SpringBootTestContextBootstrapperIntegrationTests) {
-				SpringBootTestContextBootstrapperIntegrationTests test = (SpringBootTestContextBootstrapperIntegrationTests) testInstance;
+			if (testInstance instanceof SpringBootTestContextBootstrapperIntegrationTests test) {
 				test.defaultTestExecutionListenersPostProcessorCalled = true;
 			}
 		}

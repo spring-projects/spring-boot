@@ -17,7 +17,7 @@
 package org.springframework.boot.test.autoconfigure.web.servlet;
 
 /**
- * MVC print options specified from {@link AutoConfigureMockMvc}.
+ * MVC print options specified from {@link AutoConfigureMockMvc @AutoConfigureMockMvc}.
  *
  * @author Phillip Webb
  * @since 1.4.0

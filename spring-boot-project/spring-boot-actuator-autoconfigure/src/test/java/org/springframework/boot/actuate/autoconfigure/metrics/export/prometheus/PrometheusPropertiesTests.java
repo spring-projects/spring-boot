@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
 
 import io.micrometer.prometheus.PrometheusConfig;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,13 +26,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class PrometheusPropertiesTests {
+class PrometheusPropertiesTests {
 
 	@Test
-	public void defaultValuesAreConsistent() {
+	void defaultValuesAreConsistent() {
 		PrometheusProperties properties = new PrometheusProperties();
 		PrometheusConfig config = PrometheusConfig.DEFAULT;
 		assertThat(properties.isDescriptions()).isEqualTo(config.descriptions());
+		assertThat(properties.getHistogramFlavor()).isEqualTo(config.histogramFlavor());
 		assertThat(properties.getStep()).isEqualTo(config.step());
 	}
 

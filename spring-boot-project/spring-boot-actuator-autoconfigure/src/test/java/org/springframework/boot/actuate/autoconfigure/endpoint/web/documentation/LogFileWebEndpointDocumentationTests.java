@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,15 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.logging.LogFileWebEndpoint;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.env.Environment;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
-import org.springframework.test.context.TestPropertySource;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -35,28 +34,31 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Andy Wilkinson
  */
-@TestPropertySource(
-		properties = "logging.file=src/test/resources/org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/sample.log")
-public class LogFileWebEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
+class LogFileWebEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
 	@Test
-	public void logFile() throws Exception {
-		this.mockMvc.perform(get("/actuator/logfile")).andExpect(status().isOk())
-				.andDo(MockMvcRestDocumentation.document("logfile/entire"));
+	void logFile() throws Exception {
+		this.mockMvc.perform(get("/actuator/logfile"))
+			.andExpect(status().isOk())
+			.andDo(MockMvcRestDocumentation.document("logfile/entire"));
 	}
 
 	@Test
-	public void logFileRange() throws Exception {
+	void logFileRange() throws Exception {
 		this.mockMvc.perform(get("/actuator/logfile").header("Range", "bytes=0-1023"))
-				.andExpect(status().isPartialContent()).andDo(MockMvcRestDocumentation.document("logfile/range"));
+			.andExpect(status().isPartialContent())
+			.andDo(MockMvcRestDocumentation.document("logfile/range"));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(BaseDocumentationConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
-		public LogFileWebEndpoint endpoint(Environment environment) {
+		LogFileWebEndpoint endpoint() {
+			MockEnvironment environment = new MockEnvironment();
+			environment.setProperty("logging.file.name",
+					"src/test/resources/org/springframework/boot/actuate/autoconfigure/endpoint/web/documentation/sample.log");
 			return new LogFileWebEndpoint(LogFile.get(environment), null);
 		}
 

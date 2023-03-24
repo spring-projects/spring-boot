@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.web.server;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -35,6 +36,7 @@ import org.springframework.util.Assert;
  * @author Ivan Sopov
  * @author Eddú Meléndez
  * @author Brian Clozel
+ * @author Scott Frederick
  * @since 2.0.0
  */
 public abstract class AbstractConfigurableWebServerFactory implements ConfigurableWebServerFactory {
@@ -54,6 +56,8 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	private Compression compression;
 
 	private String serverHeader;
+
+	private Shutdown shutdown = Shutdown.IMMEDIATE;
 
 	/**
 	 * Create a new {@link AbstractConfigurableWebServerFactory} instance.
@@ -162,6 +166,32 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 		this.serverHeader = serverHeader;
 	}
 
+	@Override
+	public void setShutdown(Shutdown shutdown) {
+		this.shutdown = shutdown;
+	}
+
+	/**
+	 * Returns the shutdown configuration that will be applied to the server.
+	 * @return the shutdown configuration
+	 * @since 2.3.0
+	 */
+	public Shutdown getShutdown() {
+		return this.shutdown;
+	}
+
+	/**
+	 * Return the provided {@link SslStoreProvider} or create one using {@link Ssl}
+	 * properties.
+	 * @return the {@code SslStoreProvider}
+	 */
+	public final SslStoreProvider getOrCreateSslStoreProvider() {
+		if (this.sslStoreProvider != null) {
+			return this.sslStoreProvider;
+		}
+		return SslStoreProviderFactory.from(this.ssl);
+	}
+
 	/**
 	 * Return the absolute temp dir for given web server.
 	 * @param prefix server name
@@ -169,9 +199,7 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	 */
 	protected final File createTempDir(String prefix) {
 		try {
-			File tempDir = File.createTempFile(prefix + ".", "." + getPort());
-			tempDir.delete();
-			tempDir.mkdir();
+			File tempDir = Files.createTempDirectory(prefix + "." + getPort() + ".").toFile();
 			tempDir.deleteOnExit();
 			return tempDir;
 		}

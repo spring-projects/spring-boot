@@ -1,0 +1,24 @@
+<settings>
+	<localRepository>localRepositoryPath</localRepository>
+	<profiles>
+		<profile>
+			<id>spring-repositories</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<repositories>
+				<repository>
+					<id>spring-snapshot</id>
+					<url>https://repo.spring.io/snapshot</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+				<repository>
+					<id>spring-milestone</id>
+					<url>https://repo.spring.io/milestone</url>
+				</repository>
+			</repositories>
+		</profile>
+	</profiles>
+</settings>

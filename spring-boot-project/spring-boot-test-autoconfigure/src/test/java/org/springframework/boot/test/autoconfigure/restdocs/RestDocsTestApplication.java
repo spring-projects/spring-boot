@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,18 @@
 
 package org.springframework.boot.test.autoconfigure.restdocs;
 
+import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 
 /**
- * Test application used with {@link AutoConfigureRestDocs} tests.
+ * Test application used with {@link AutoConfigureRestDocs @AutoConfigureRestDocs} tests.
  *
  * @author Andy Wilkinson
  */
-@SpringBootApplication(exclude = SecurityAutoConfiguration.class)
+@SpringBootApplication(exclude = { CassandraAutoConfiguration.class, SecurityAutoConfiguration.class,
+		ManagementWebSecurityAutoConfiguration.class })
 public class RestDocsTestApplication {
 
 }

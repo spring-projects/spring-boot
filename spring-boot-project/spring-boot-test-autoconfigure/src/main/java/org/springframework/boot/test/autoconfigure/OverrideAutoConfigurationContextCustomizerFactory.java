@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,15 @@ package org.springframework.boot.test.autoconfigure;
 
 import java.util.List;
 
+import org.springframework.aot.AotDetector;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
 import org.springframework.test.context.MergedContextConfiguration;
+import org.springframework.test.context.TestContextAnnotationUtils;
 
 /**
  * {@link ContextCustomizerFactory} to support
@@ -38,12 +39,13 @@ class OverrideAutoConfigurationContextCustomizerFactory implements ContextCustom
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configurationAttributes) {
-		OverrideAutoConfiguration annotation = AnnotatedElementUtils.findMergedAnnotation(testClass,
-				OverrideAutoConfiguration.class);
-		if (annotation != null && !annotation.enabled()) {
-			return new DisableAutoConfigurationContextCustomizer();
+		if (AotDetector.useGeneratedArtifacts()) {
+			return null;
 		}
-		return null;
+		OverrideAutoConfiguration overrideAutoConfiguration = TestContextAnnotationUtils.findMergedAnnotation(testClass,
+				OverrideAutoConfiguration.class);
+		boolean enabled = (overrideAutoConfiguration != null) ? overrideAutoConfiguration.enabled() : true;
+		return !enabled ? new DisableAutoConfigurationContextCustomizer() : null;
 	}
 
 	/**
@@ -58,7 +60,7 @@ class OverrideAutoConfigurationContextCustomizerFactory implements ContextCustom
 
 		@Override
 		public boolean equals(Object obj) {
-			return (obj != null && obj.getClass() == getClass());
+			return (obj != null) && (obj.getClass() == getClass());
 		}
 
 		@Override

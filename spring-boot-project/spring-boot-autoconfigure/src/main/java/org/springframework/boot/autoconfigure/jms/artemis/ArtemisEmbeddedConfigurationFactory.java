@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,12 @@ package org.springframework.boot.autoconfigure.jms.artemis;
 
 import java.io.File;
 
+import org.apache.activemq.artemis.api.core.QueueConfiguration;
 import org.apache.activemq.artemis.api.core.RoutingType;
 import org.apache.activemq.artemis.api.core.SimpleString;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
 import org.apache.activemq.artemis.core.config.Configuration;
 import org.apache.activemq.artemis.core.config.CoreAddressConfiguration;
-import org.apache.activemq.artemis.core.config.CoreQueueConfiguration;
 import org.apache.activemq.artemis.core.config.impl.ConfigurationImpl;
 import org.apache.activemq.artemis.core.remoting.impl.invm.InVMAcceptorFactory;
 import org.apache.activemq.artemis.core.server.JournalType;
@@ -48,7 +48,7 @@ class ArtemisEmbeddedConfigurationFactory {
 		this.properties = properties.getEmbedded();
 	}
 
-	public Configuration createConfiguration() {
+	Configuration createConfiguration() {
 		ConfigurationImpl configuration = new ConfigurationImpl();
 		configuration.setSecurityEnabled(false);
 		configuration.setPersistenceEnabled(this.properties.isPersistent());
@@ -69,15 +69,16 @@ class ArtemisEmbeddedConfigurationFactory {
 		configuration.setClusterPassword(this.properties.getClusterPassword());
 		configuration.addAddressConfiguration(createAddressConfiguration("DLQ"));
 		configuration.addAddressConfiguration(createAddressConfiguration("ExpiryQueue"));
-		configuration.addAddressesSetting("#",
+		configuration.addAddressSetting("#",
 				new AddressSettings().setDeadLetterAddress(SimpleString.toSimpleString("DLQ"))
-						.setExpiryAddress(SimpleString.toSimpleString("ExpiryQueue")));
+					.setExpiryAddress(SimpleString.toSimpleString("ExpiryQueue")));
 		return configuration;
 	}
 
 	private CoreAddressConfiguration createAddressConfiguration(String name) {
-		return new CoreAddressConfiguration().setName(name).addRoutingType(RoutingType.ANYCAST).addQueueConfiguration(
-				new CoreQueueConfiguration().setName(name).setRoutingType(RoutingType.ANYCAST).setAddress(name));
+		return new CoreAddressConfiguration().setName(name)
+			.addRoutingType(RoutingType.ANYCAST)
+			.addQueueConfiguration(new QueueConfiguration(name).setRoutingType(RoutingType.ANYCAST).setAddress(name));
 	}
 
 	private String getDataDir() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,11 +46,10 @@ public abstract class DependencyFilter extends AbstractArtifactsFilter {
 	}
 
 	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public Set filter(Set artifacts) throws ArtifactFilterException {
-		Set result = new HashSet();
-		for (Object artifact : artifacts) {
-			if (!filter((Artifact) artifact)) {
+	public Set<Artifact> filter(Set<Artifact> artifacts) throws ArtifactFilterException {
+		Set<Artifact> result = new HashSet<>();
+		for (Artifact artifact : artifacts) {
+			if (!filter(artifact)) {
 				result.add(artifact);
 			}
 		}

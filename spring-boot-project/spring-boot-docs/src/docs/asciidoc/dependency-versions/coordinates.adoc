@@ -1,0 +1,7 @@
+[[appendix.dependency-versions.coordinates]]
+== Managed Dependency Coordinates
+
+The following table provides details of all of the dependency versions that are provided by Spring Boot in its CLI (Command Line Interface), Maven dependency management, and Gradle plugin.
+When you declare a dependency on one of these artifacts without declaring a version, the version listed in the table is used.
+
+include::documented-coordinates.adoc[]

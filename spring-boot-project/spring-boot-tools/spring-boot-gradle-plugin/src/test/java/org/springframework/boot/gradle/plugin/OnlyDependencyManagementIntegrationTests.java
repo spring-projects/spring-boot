@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,10 @@
 
 package org.springframework.boot.gradle.plugin;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.TestTemplate;
 
-import org.springframework.boot.gradle.junit.GradleCompatibilitySuite;
-import org.springframework.boot.gradle.testkit.GradleBuild;
+import org.springframework.boot.gradle.junit.GradleCompatibility;
+import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,16 +29,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(GradleCompatibilitySuite.class)
-public class OnlyDependencyManagementIntegrationTests {
+@GradleCompatibility
+class OnlyDependencyManagementIntegrationTests {
 
-	@Rule
-	public GradleBuild gradleBuild;
+	GradleBuild gradleBuild;
 
-	@Test
-	public void dependencyManagementCanBeConfiguredUsingCoordinatesConstant() {
+	@TestTemplate
+	void dependencyManagementCanBeConfiguredUsingCoordinatesConstant() {
 		assertThat(this.gradleBuild.build("dependencyManagement").getOutput())
-				.contains("org.springframework.boot:spring-boot-starter ");
+			.contains("org.springframework.boot:spring-boot-starter ");
 	}
 
 }

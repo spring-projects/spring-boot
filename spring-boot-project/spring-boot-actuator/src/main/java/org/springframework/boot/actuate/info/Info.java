@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,7 @@ public final class Info {
 	private final Map<String, Object> details;
 
 	private Info(Builder builder) {
-		Map<String, Object> content = new LinkedHashMap<>();
-		content.putAll(builder.content);
+		Map<String, Object> content = new LinkedHashMap<>(builder.content);
 		this.details = Collections.unmodifiableMap(content);
 	}
 
@@ -72,8 +71,7 @@ public final class Info {
 		if (obj == this) {
 			return true;
 		}
-		if (obj != null && obj instanceof Info) {
-			Info other = (Info) obj;
+		if (obj instanceof Info other) {
 			return this.details.equals(other.details);
 		}
 		return false;

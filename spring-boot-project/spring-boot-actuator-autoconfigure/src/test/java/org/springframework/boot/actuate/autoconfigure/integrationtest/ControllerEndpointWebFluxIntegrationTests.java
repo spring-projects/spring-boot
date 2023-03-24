@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.audit.AuditAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
@@ -45,20 +45,20 @@ import org.springframework.web.bind.annotation.GetMapping;
  *
  * @author Phillip Webb
  */
-public class ControllerEndpointWebFluxIntegrationTests {
+class ControllerEndpointWebFluxIntegrationTests {
 
 	private AnnotationConfigReactiveWebApplicationContext context;
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		TestSecurityContextHolder.clearContext();
 		this.context.close();
 	}
 
 	@Test
-	public void endpointsCanBeAccessed() throws Exception {
+	void endpointsCanBeAccessed() {
 		TestSecurityContextHolder.getContext()
-				.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
+			.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigReactiveWebApplicationContext();
 		this.context.register(DefaultConfiguration.class, ExampleController.class);
 		TestPropertyValues.of("management.endpoints.web.exposure.include=*").applyTo(this.context);
@@ -80,7 +80,7 @@ public class ControllerEndpointWebFluxIntegrationTests {
 	static class ExampleController {
 
 		@GetMapping("/")
-		public String example() {
+		String example() {
 			return "Example";
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,13 @@ package org.springframework.boot.autoconfigure.webservices;
 
 import java.util.Collection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition;
 import org.springframework.xml.xsd.SimpleXsdSchema;
 
@@ -39,54 +38,57 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Eneias Silva
  */
-public class WebServicesAutoConfigurationTests {
+class WebServicesAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(WebServicesAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(WebServicesAutoConfiguration.class));
 
 	@Test
-	public void defaultConfiguration() {
+	void defaultConfiguration() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ServletRegistrationBean.class));
 	}
 
 	@Test
-	public void customPathMustBeginWithASlash() {
+	void customPathMustBeginWithASlash() {
 		this.contextRunner.withPropertyValues("spring.webservices.path=invalid")
-				.run((context) -> assertThat(context).getFailure().isInstanceOf(BeanCreationException.class)
-						.hasMessageContaining("Failed to bind properties under 'spring.webservices'"));
+			.run((context) -> assertThat(context).getFailure()
+				.isInstanceOf(BeanCreationException.class)
+				.rootCause()
+				.hasMessageContaining("Path must start with '/'"));
 	}
 
 	@Test
-	public void customPath() {
+	void customPath() {
 		this.contextRunner.withPropertyValues("spring.webservices.path=/valid")
-				.run((context) -> assertThat(getUrlMappings(context)).contains("/valid/*"));
+			.run((context) -> assertThat(getUrlMappings(context)).contains("/valid/*"));
 	}
 
 	@Test
-	public void customPathWithTrailingSlash() {
+	void customPathWithTrailingSlash() {
 		this.contextRunner.withPropertyValues("spring.webservices.path=/valid/")
-				.run((context) -> assertThat(getUrlMappings(context)).contains("/valid/*"));
+			.run((context) -> assertThat(getUrlMappings(context)).contains("/valid/*"));
 	}
 
 	@Test
-	public void customLoadOnStartup() {
+	void customLoadOnStartup() {
 		this.contextRunner.withPropertyValues("spring.webservices.servlet.load-on-startup=1").run((context) -> {
 			ServletRegistrationBean<?> registrationBean = context.getBean(ServletRegistrationBean.class);
-			assertThat(ReflectionTestUtils.getField(registrationBean, "loadOnStartup")).isEqualTo(1);
+			assertThat(registrationBean).extracting("loadOnStartup").isEqualTo(1);
 		});
 	}
 
 	@Test
-	public void customInitParameters() {
+	void customInitParameters() {
 		this.contextRunner
-				.withPropertyValues("spring.webservices.servlet.init.key1=value1",
-						"spring.webservices.servlet.init.key2=value2")
-				.run((context) -> assertThat(getServletRegistrationBean(context).getInitParameters())
-						.containsEntry("key1", "value1").containsEntry("key2", "value2"));
+			.withPropertyValues("spring.webservices.servlet.init.key1=value1",
+					"spring.webservices.servlet.init.key2=value2")
+			.run((context) -> assertThat(getServletRegistrationBean(context).getInitParameters())
+				.containsEntry("key1", "value1")
+				.containsEntry("key2", "value2"));
 	}
 
 	@Test
-	public void withWsdlBeans() {
+	void withWsdlBeans() {
 		this.contextRunner.withPropertyValues("spring.webservices.wsdl-locations=classpath:/wsdl").run((context) -> {
 			assertThat(context.getBeansOfType(SimpleWsdl11Definition.class)).containsOnlyKeys("service");
 			assertThat(context.getBeansOfType(SimpleXsdSchema.class)).containsOnlyKeys("types");
@@ -94,7 +96,7 @@ public class WebServicesAutoConfigurationTests {
 	}
 
 	@Test
-	public void withWsdlBeansAsList() {
+	void withWsdlBeansAsList() {
 		this.contextRunner.withPropertyValues("spring.webservices.wsdl-locations[0]=classpath:/wsdl").run((context) -> {
 			assertThat(context.getBeansOfType(SimpleWsdl11Definition.class)).containsOnlyKeys("service");
 			assertThat(context.getBeansOfType(SimpleXsdSchema.class)).containsOnlyKeys("types");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfigurationPackages;
+import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.config.IntegrationComponentScanRegistrar;
 
@@ -48,13 +48,12 @@ class IntegrationAutoConfigurationScanRegistrar extends IntegrationComponentScan
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 			final BeanDefinitionRegistry registry) {
-		super.registerBeanDefinitions(new StandardAnnotationMetadata(IntegrationComponentScanConfiguration.class, true),
+		super.registerBeanDefinitions(AnnotationMetadata.introspect(IntegrationComponentScanConfiguration.class),
 				registry);
 	}
 
 	@Override
-	protected Collection<String> getBasePackages(AnnotationMetadata importingClassMetadata,
-			BeanDefinitionRegistry registry) {
+	protected Collection<String> getBasePackages(AnnotationAttributes componentScan, BeanDefinitionRegistry registry) {
 		return (AutoConfigurationPackages.has(this.beanFactory) ? AutoConfigurationPackages.get(this.beanFactory)
 				: Collections.emptyList());
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,44 +16,44 @@
 
 package org.springframework.boot.test.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ApplicationContextTestUtils}.
  *
  * @author Stephane Nicoll
  */
-public class ApplicationContextTestUtilsTests {
+class ApplicationContextTestUtilsTests {
 
 	@Test
-	public void closeNull() {
+	void closeNull() {
 		ApplicationContextTestUtils.closeAll(null);
 	}
 
 	@Test
-	public void closeNonClosableContext() {
+	void closeNonClosableContext() {
 		ApplicationContext mock = mock(ApplicationContext.class);
 		ApplicationContextTestUtils.closeAll(mock);
 	}
 
 	@Test
-	public void closeContextAndParent() {
+	void closeContextAndParent() {
 		ConfigurableApplicationContext mock = mock(ConfigurableApplicationContext.class);
 		ConfigurableApplicationContext parent = mock(ConfigurableApplicationContext.class);
 		given(mock.getParent()).willReturn(parent);
 		given(parent.getParent()).willReturn(null);
 		ApplicationContextTestUtils.closeAll(mock);
-		verify(mock).getParent();
-		verify(mock).close();
-		verify(parent).getParent();
-		verify(parent).close();
+		then(mock).should().getParent();
+		then(mock).should().close();
+		then(parent).should().getParent();
+		then(parent).should().close();
 	}
 
 }

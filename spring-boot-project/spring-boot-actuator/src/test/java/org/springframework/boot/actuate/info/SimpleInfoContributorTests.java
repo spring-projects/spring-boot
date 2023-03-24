@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.info;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -26,15 +26,15 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Stephane Nicoll
  */
-public class SimpleInfoContributorTests {
+class SimpleInfoContributorTests {
 
 	@Test
-	public void prefixIsMandatory() {
+	void prefixIsMandatory() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new SimpleInfoContributor(null, new Object()));
 	}
 
 	@Test
-	public void mapSimpleObject() {
+	void mapSimpleObject() {
 		Object o = new Object();
 		Info info = contributeFrom("test", o);
 		assertThat(info.get("test")).isSameAs(o);

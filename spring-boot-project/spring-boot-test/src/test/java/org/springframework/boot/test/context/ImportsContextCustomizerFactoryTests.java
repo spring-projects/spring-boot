@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.test.context;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -39,50 +39,50 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class ImportsContextCustomizerFactoryTests {
+class ImportsContextCustomizerFactoryTests {
 
-	private ImportsContextCustomizerFactory factory = new ImportsContextCustomizerFactory();
+	private final ImportsContextCustomizerFactory factory = new ImportsContextCustomizerFactory();
 
 	@Test
-	public void getContextCustomizerWhenHasNoImportAnnotationShouldReturnNull() {
+	void getContextCustomizerWhenHasNoImportAnnotationShouldReturnNull() {
 		ContextCustomizer customizer = this.factory.createContextCustomizer(TestWithNoImport.class, null);
 		assertThat(customizer).isNull();
 	}
 
 	@Test
-	public void getContextCustomizerWhenHasImportAnnotationShouldReturnCustomizer() {
+	void getContextCustomizerWhenHasImportAnnotationShouldReturnCustomizer() {
 		ContextCustomizer customizer = this.factory.createContextCustomizer(TestWithImport.class, null);
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
-	public void getContextCustomizerWhenHasMetaImportAnnotationShouldReturnCustomizer() {
+	void getContextCustomizerWhenHasMetaImportAnnotationShouldReturnCustomizer() {
 		ContextCustomizer customizer = this.factory.createContextCustomizer(TestWithMetaImport.class, null);
 		assertThat(customizer).isNotNull();
 	}
 
 	@Test
-	public void contextCustomizerEqualsAndHashCode() {
+	void contextCustomizerEqualsAndHashCode() {
 		ContextCustomizer customizer1 = this.factory.createContextCustomizer(TestWithImport.class, null);
 		ContextCustomizer customizer2 = this.factory.createContextCustomizer(TestWithImport.class, null);
 		ContextCustomizer customizer3 = this.factory.createContextCustomizer(TestWithImportAndMetaImport.class, null);
 		ContextCustomizer customizer4 = this.factory.createContextCustomizer(TestWithSameImportAndMetaImport.class,
 				null);
-		assertThat(customizer1.hashCode()).isEqualTo(customizer1.hashCode());
-		assertThat(customizer1.hashCode()).isEqualTo(customizer2.hashCode());
+		assertThat(customizer1).hasSameHashCodeAs(customizer1);
+		assertThat(customizer1).hasSameHashCodeAs(customizer2);
 		assertThat(customizer1).isEqualTo(customizer1).isEqualTo(customizer2).isNotEqualTo(customizer3);
 		assertThat(customizer3).isEqualTo(customizer4);
 	}
 
 	@Test
-	public void getContextCustomizerWhenClassHasBeanMethodsShouldThrowException() {
+	void getContextCustomizerWhenClassHasBeanMethodsShouldThrowException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.factory.createContextCustomizer(TestWithImportAndBeanMethod.class, null))
-				.withMessageContaining("Test classes cannot include @Bean methods");
+			.isThrownBy(() -> this.factory.createContextCustomizer(TestWithImportAndBeanMethod.class, null))
+			.withMessageContaining("Test classes cannot include @Bean methods");
 	}
 
 	@Test
-	public void contextCustomizerImportsBeans() {
+	void contextCustomizerImportsBeans() {
 		ContextCustomizer customizer = this.factory.createContextCustomizer(TestWithImport.class, null);
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		customizer.customizeContext(context, mock(MergedContextConfiguration.class));
@@ -91,9 +91,9 @@ public class ImportsContextCustomizerFactoryTests {
 	}
 
 	@Test
-	public void selfAnnotatingAnnotationDoesNotCauseStackOverflow() {
+	void selfAnnotatingAnnotationDoesNotCauseStackOverflow() {
 		assertThat(this.factory.createContextCustomizer(TestWithImportAndSelfAnnotatingAnnotation.class, null))
-				.isNotNull();
+			.isNotNull();
 	}
 
 	static class TestWithNoImport {
@@ -122,12 +122,12 @@ public class ImportsContextCustomizerFactoryTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(ImportedBean.class)
 	static class TestWithImportAndBeanMethod {
 
 		@Bean
-		public String bean() {
+		String bean() {
 			return "bean";
 		}
 

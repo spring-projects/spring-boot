@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,14 +45,13 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
  */
 class ReactiveOAuth2ClientConfigurations {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Conditional(ClientsConfiguredCondition.class)
 	@ConditionalOnMissingBean(ReactiveClientRegistrationRepository.class)
 	static class ReactiveClientRegistrationRepositoryConfiguration {
 
 		@Bean
-		public InMemoryReactiveClientRegistrationRepository clientRegistrationRepository(
-				OAuth2ClientProperties properties) {
+		InMemoryReactiveClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties properties) {
 			List<ClientRegistration> registrations = new ArrayList<>(
 					OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties).values());
 			return new InMemoryReactiveClientRegistrationRepository(registrations);
@@ -60,33 +59,34 @@ class ReactiveOAuth2ClientConfigurations {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnBean(ReactiveClientRegistrationRepository.class)
 	static class ReactiveOAuth2ClientConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ReactiveOAuth2AuthorizedClientService authorizedClientService(
+		ReactiveOAuth2AuthorizedClientService authorizedClientService(
 				ReactiveClientRegistrationRepository clientRegistrationRepository) {
 			return new InMemoryReactiveOAuth2AuthorizedClientService(clientRegistrationRepository);
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
-		public ServerOAuth2AuthorizedClientRepository authorizedClientRepository(
+		ServerOAuth2AuthorizedClientRepository authorizedClientRepository(
 				ReactiveOAuth2AuthorizedClientService authorizedClientService) {
 			return new AuthenticatedPrincipalServerOAuth2AuthorizedClientRepository(authorizedClientService);
 		}
 
-		@Configuration
+		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 		static class SecurityWebFilterChainConfiguration {
 
 			@Bean
 			@ConditionalOnMissingBean
-			public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+			SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 				http.authorizeExchange().anyExchange().authenticated();
 				http.oauth2Login();
+				http.oauth2Client();
 				return http.build();
 			}
 

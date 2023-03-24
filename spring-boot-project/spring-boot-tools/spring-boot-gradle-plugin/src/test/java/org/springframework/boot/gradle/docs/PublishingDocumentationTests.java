@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,11 @@
 
 package org.springframework.boot.gradle.docs;
 
-import java.io.IOException;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.springframework.boot.gradle.junit.GradleMultiDslSuite;
-import org.springframework.boot.gradle.testkit.GradleBuild;
+import org.springframework.boot.gradle.junit.GradleMultiDslExtension;
+import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,22 +30,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Jean-Baptiste Nizet
  */
-@RunWith(GradleMultiDslSuite.class)
-public class PublishingDocumentationTests {
+@ExtendWith(GradleMultiDslExtension.class)
+class PublishingDocumentationTests {
 
-	@Rule
-	public GradleBuild gradleBuild;
+	GradleBuild gradleBuild;
 
-	@Test
-	public void mavenUpload() throws IOException {
-		assertThat(this.gradleBuild.script("src/main/gradle/publishing/maven").build("deployerRepository").getOutput())
-				.contains("https://repo.example.com");
-	}
-
-	@Test
-	public void mavenPublish() throws IOException {
-		assertThat(this.gradleBuild.script("src/main/gradle/publishing/maven-publish").build("publishingConfiguration")
-				.getOutput()).contains("MavenPublication").contains("https://repo.example.com");
+	@TestTemplate
+	void mavenPublish() {
+		assertThat(this.gradleBuild.script("src/docs/gradle/publishing/maven-publish")
+			.build("publishingConfiguration")
+			.getOutput()).contains("MavenPublication").contains("https://repo.example.com");
 	}
 
 }

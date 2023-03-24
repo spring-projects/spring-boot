@@ -1,0 +1,42 @@
+<md:EntityDescriptor entityID="https://idp.example.com/idp/shibboleth"
+        xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:shibmd="urn:mace:shibboleth:metadata:1.0"
+        xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
+        xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+    <md:IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+		<md:KeyDescriptor>
+            <ds:KeyInfo>
+                <ds:X509Data>
+                    <ds:X509Certificate>
+                        MIIDZjCCAk6gAwIBAgIVAL9O+PA7SXtlwZZY8MVSE9On1cVWMA0GCSqGSIb3DQEB
+                        BQUAMCkxJzAlBgNVBAMTHmlkZW0tcHVwYWdlbnQuZG16LWludC51bmltby5pdDAe
+                        Fw0xMzA3MjQwMDQ0MTRaFw0zMzA3MjQwMDQ0MTRaMCkxJzAlBgNVBAMTHmlkZW0t
+                        cHVwYWdlbnQuZG16LWludC51bmltby5pdDCCASIwDQYJKoZIhvcNAMIIDQADggEP
+                        ADCCAQoCggEBAIAcp/VyzZGXUF99kwj4NvL/Rwv4YvBgLWzpCuoxqHZ/hmBwJtqS
+                        v0y9METBPFbgsF3hCISnxbcmNVxf/D0MoeKtw1YPbsUmow/bFe+r72hZ+IVAcejN
+                        iDJ7t5oTjsRN1t1SqvVVk6Ryk5AZhpFW+W9pE9N6c7kJ16Rp2/mbtax9OCzxpece
+                        byi1eiLfIBmkcRawL/vCc2v6VLI18i6HsNVO3l2yGosKCbuSoGDx2fCdAOk/rgdz
+                        cWOvFsIZSKuD+FVbSS/J9GVs7yotsS4PRl4iX9UMnfDnOMfO7bcBgbXtDl4SCU1v
+                        dJrRw7IL/pLz34Rv9a8nYitrzrxtLOp3nYUCAwEAAaOBhDCBgTBgBgMIIDEEWTBX
+                        gh5pZGVtLXB1cGFnZW50LmRtei1pbnQudW5pbW8uaXSGNWh0dHBzOi8vaWRlbS1w
+                        dXBhZ2VudC5kbXotaW50LnVuaW1vLml0L2lkcC9zaGliYm9sZXRoMB0GA1UdDgQW
+                        BBT8PANzz+adGnTRe8ldcyxAwe4VnzANBgkqhkiG9w0BAQUFAAOCAQEAOEnO8Clu
+                        9z/Lf/8XOOsTdxJbV29DIF3G8KoQsB3dBsLwPZVEAQIP6ceS32Xaxrl6FMTDDNkL
+                        qUvvInUisw0+I5zZwYHybJQCletUWTnz58SC4C9G7FpuXHFZnOGtRcgGD1NOX4UU
+                        duus/4nVcGSLhDjszZ70Xtj0gw2Sn46oQPHTJ81QZ3Y9ih+Aj1c9OtUSBwtWZFkU
+                        yooAKoR8li68Yb21zN2N65AqV+ndL98M8xUYMKLONuAXStDeoVCipH6PJ09Z5U2p
+                        V5p4IQRV6QBsNw9CISJFuHzkVYTH5ZxzN80Ru46vh4y2M0Nu8GQ9I085KoZkrf5e
+                        Cq53OZt9ISjHEw==
+                    </ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+        </md:KeyDescriptor>
+        <md:SingleSignOnService
+                Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                Location="https://idp.example.com/sso"/>
+    </md:IDPSSODescriptor>
+    <md:ContactPerson contactType="technical">
+        <md:EmailAddress>mailto:technical.contact@example.com</md:EmailAddress>
+    </md:ContactPerson>
+</md:EntityDescriptor>

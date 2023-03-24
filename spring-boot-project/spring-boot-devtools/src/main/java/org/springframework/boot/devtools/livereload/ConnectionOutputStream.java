@@ -39,7 +39,7 @@ class ConnectionOutputStream extends FilterOutputStream {
 		this.out.write(b, off, len);
 	}
 
-	public void writeHttp(InputStream content, String contentType) throws IOException {
+	void writeHttp(InputStream content, String contentType) throws IOException {
 		byte[] bytes = FileCopyUtils.copyToByteArray(content);
 		writeHeaders("HTTP/1.1 200 OK", "Content-Type: " + contentType, "Content-Length: " + bytes.length,
 				"Connection: close");
@@ -47,7 +47,7 @@ class ConnectionOutputStream extends FilterOutputStream {
 		flush();
 	}
 
-	public void writeHeaders(String... headers) throws IOException {
+	void writeHeaders(String... headers) throws IOException {
 		StringBuilder response = new StringBuilder();
 		for (String header : headers) {
 			response.append(header).append("\r\n");

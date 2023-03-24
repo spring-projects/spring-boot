@@ -25,8 +25,8 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional} that only matches when the application context is a not a web
- * application context.
+ * {@link Conditional @Conditional} that only matches when the application context is a
+ * not a web application context.
  *
  * @author Dave Syer
  * @since 1.0.0

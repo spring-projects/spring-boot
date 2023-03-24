@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,22 @@
 
 package org.springframework.boot.context.properties.source;
 
+import java.util.List;
+import java.util.function.BiPredicate;
+
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.PropertySource;
 
 /**
  * Strategy used to provide a mapping between a {@link PropertySource} and a
  * {@link ConfigurationPropertySource}.
- * <P>
+ * <p>
  * Mappings should be provided for both {@link ConfigurationPropertyName
  * ConfigurationPropertyName} types and {@code String} based names. This allows the
  * {@link SpringConfigurationPropertySource} to first attempt any direct mappings (i.e.
  * map the {@link ConfigurationPropertyName} directly to the {@link PropertySource} name)
  * before falling back to {@link EnumerablePropertySource enumerating} property names,
- * mapping them to a {@link ConfigurationPropertyName} and checking for
- * {@link PropertyMapping#isApplicable(ConfigurationPropertyName) applicability}. See
+ * mapping them to a {@link ConfigurationPropertyName} and checking for applicability. See
  * {@link SpringConfigurationPropertySource} for more details.
  *
  * @author Phillip Webb
@@ -38,21 +40,34 @@ import org.springframework.core.env.PropertySource;
  */
 interface PropertyMapper {
 
-	PropertyMapping[] NO_MAPPINGS = {};
+	/**
+	 * The default ancestor of check.
+	 */
+	BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> DEFAULT_ANCESTOR_OF_CHECK = ConfigurationPropertyName::isAncestorOf;
 
 	/**
 	 * Provide mappings from a {@link ConfigurationPropertySource}
 	 * {@link ConfigurationPropertyName}.
 	 * @param configurationPropertyName the name to map
-	 * @return a stream of mappings or {@code Stream#empty()}
+	 * @return the mapped names or an empty list
 	 */
-	PropertyMapping[] map(ConfigurationPropertyName configurationPropertyName);
+	List<String> map(ConfigurationPropertyName configurationPropertyName);
 
 	/**
 	 * Provide mappings from a {@link PropertySource} property name.
 	 * @param propertySourceName the name to map
-	 * @return a stream of mappings or {@code Stream#empty()}
+	 * @return the mapped configuration property name or
+	 * {@link ConfigurationPropertyName#EMPTY}
 	 */
-	PropertyMapping[] map(String propertySourceName);
+	ConfigurationPropertyName map(String propertySourceName);
+
+	/**
+	 * Returns a {@link BiPredicate} that can be used to check if one name is an ancestor
+	 * of another when considering the mapping rules.
+	 * @return a predicate that can be used to check if one name is an ancestor of another
+	 */
+	default BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> getAncestorOfCheck() {
+		return DEFAULT_ANCESTOR_OF_CHECK;
+	}
 
 }

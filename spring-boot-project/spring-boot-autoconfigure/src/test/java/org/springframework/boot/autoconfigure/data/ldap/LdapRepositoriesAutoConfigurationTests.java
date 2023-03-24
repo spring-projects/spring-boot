@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.ldap;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -38,31 +38,31 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Eddú Meléndez
  */
-public class LdapRepositoriesAutoConfigurationTests {
+class LdapRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
 
-	@After
-	public void close() {
+	@AfterEach
+	void close() {
 		if (this.context != null) {
 			this.context.close();
 		}
 	}
 
 	@Test
-	public void testDefaultRepositoryConfiguration() {
+	void testDefaultRepositoryConfiguration() {
 		load(TestConfiguration.class);
 		assertThat(this.context.getBean(PersonRepository.class)).isNotNull();
 	}
 
 	@Test
-	public void testNoRepositoryConfiguration() {
+	void testNoRepositoryConfiguration() {
 		load(EmptyConfiguration.class);
 		assertThat(this.context.getBeanNamesForType(PersonRepository.class)).isEmpty();
 	}
 
 	@Test
-	public void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
+	void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		load(CustomizedConfiguration.class);
 		assertThat(this.context.getBean(PersonLdapRepository.class)).isNotNull();
 	}
@@ -76,22 +76,22 @@ public class LdapRepositoriesAutoConfigurationTests {
 		this.context.refresh();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(Person.class)
-	protected static class TestConfiguration {
+	static class TestConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyDataPackage.class)
-	protected static class EmptyConfiguration {
+	static class EmptyConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(LdapRepositoriesAutoConfigurationTests.class)
 	@EnableLdapRepositories(basePackageClasses = PersonLdapRepository.class)
-	protected static class CustomizedConfiguration {
+	static class CustomizedConfiguration {
 
 	}
 

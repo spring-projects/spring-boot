@@ -24,12 +24,15 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for task execution.
  *
  * @author Stephane Nicoll
+ * @author Filip Hrisafov
  * @since 2.1.0
  */
 @ConfigurationProperties("spring.task.execution")
 public class TaskExecutionProperties {
 
 	private final Pool pool = new Pool();
+
+	private final Shutdown shutdown = new Shutdown();
 
 	/**
 	 * Prefix to use for the names of newly created threads.
@@ -38,6 +41,10 @@ public class TaskExecutionProperties {
 
 	public Pool getPool() {
 		return this.pool;
+	}
+
+	public Shutdown getShutdown() {
+		return this.shutdown;
 	}
 
 	public String getThreadNamePrefix() {
@@ -117,6 +124,36 @@ public class TaskExecutionProperties {
 
 		public void setKeepAlive(Duration keepAlive) {
 			this.keepAlive = keepAlive;
+		}
+
+	}
+
+	public static class Shutdown {
+
+		/**
+		 * Whether the executor should wait for scheduled tasks to complete on shutdown.
+		 */
+		private boolean awaitTermination;
+
+		/**
+		 * Maximum time the executor should wait for remaining tasks to complete.
+		 */
+		private Duration awaitTerminationPeriod;
+
+		public boolean isAwaitTermination() {
+			return this.awaitTermination;
+		}
+
+		public void setAwaitTermination(boolean awaitTermination) {
+			this.awaitTermination = awaitTermination;
+		}
+
+		public Duration getAwaitTerminationPeriod() {
+			return this.awaitTerminationPeriod;
+		}
+
+		public void setAwaitTerminationPeriod(Duration awaitTerminationPeriod) {
+			this.awaitTerminationPeriod = awaitTerminationPeriod;
 		}
 
 	}

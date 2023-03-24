@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,23 @@
 package org.springframework.boot;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import groovy.lang.Closure;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.groovy.GroovyBeanDefinitionReader;
+import org.springframework.beans.factory.support.AbstractBeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionReader;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
-import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -40,9 +42,9 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.type.filter.AbstractTypeHierarchyTraversingFilter;
 import org.springframework.core.type.filter.TypeFilter;
-import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -52,17 +54,21 @@ import org.springframework.util.StringUtils;
  * {@link SpringApplication} for the types of sources that are supported.
  *
  * @author Phillip Webb
+ * @author Vladislav Kisel
+ * @author Sebastien Deleuze
  * @see #setBeanNameGenerator(BeanNameGenerator)
  */
 class BeanDefinitionLoader {
+
+	private static final Pattern GROOVY_CLOSURE_PATTERN = Pattern.compile(".*\\$_.*closure.*");
 
 	private final Object[] sources;
 
 	private final AnnotatedBeanDefinitionReader annotatedReader;
 
-	private final XmlBeanDefinitionReader xmlReader;
+	private final AbstractBeanDefinitionReader xmlReader;
 
-	private BeanDefinitionReader groovyReader;
+	private final BeanDefinitionReader groovyReader;
 
 	private final ClassPathBeanDefinitionScanner scanner;
 
@@ -80,9 +86,7 @@ class BeanDefinitionLoader {
 		this.sources = sources;
 		this.annotatedReader = new AnnotatedBeanDefinitionReader(registry);
 		this.xmlReader = new XmlBeanDefinitionReader(registry);
-		if (isGroovyPresent()) {
-			this.groovyReader = new GroovyBeanDefinitionReader(registry);
-		}
+		this.groovyReader = (isGroovyPresent() ? new GroovyBeanDefinitionReader(registry) : null);
 		this.scanner = new ClassPathBeanDefinitionScanner(registry);
 		this.scanner.addExcludeFilter(new ClassExcludeFilter(sources));
 	}
@@ -91,123 +95,122 @@ class BeanDefinitionLoader {
 	 * Set the bean name generator to be used by the underlying readers and scanner.
 	 * @param beanNameGenerator the bean name generator
 	 */
-	public void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
+	void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
 		this.annotatedReader.setBeanNameGenerator(beanNameGenerator);
-		this.xmlReader.setBeanNameGenerator(beanNameGenerator);
 		this.scanner.setBeanNameGenerator(beanNameGenerator);
+		this.xmlReader.setBeanNameGenerator(beanNameGenerator);
 	}
 
 	/**
 	 * Set the resource loader to be used by the underlying readers and scanner.
 	 * @param resourceLoader the resource loader
 	 */
-	public void setResourceLoader(ResourceLoader resourceLoader) {
+	void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
-		this.xmlReader.setResourceLoader(resourceLoader);
 		this.scanner.setResourceLoader(resourceLoader);
+		this.xmlReader.setResourceLoader(resourceLoader);
 	}
 
 	/**
 	 * Set the environment to be used by the underlying readers and scanner.
 	 * @param environment the environment
 	 */
-	public void setEnvironment(ConfigurableEnvironment environment) {
+	void setEnvironment(ConfigurableEnvironment environment) {
 		this.annotatedReader.setEnvironment(environment);
-		this.xmlReader.setEnvironment(environment);
 		this.scanner.setEnvironment(environment);
+		this.xmlReader.setEnvironment(environment);
 	}
 
 	/**
 	 * Load the sources into the reader.
-	 * @return the number of loaded beans
 	 */
-	public int load() {
-		int count = 0;
+	void load() {
 		for (Object source : this.sources) {
-			count += load(source);
+			load(source);
 		}
-		return count;
 	}
 
-	private int load(Object source) {
+	private void load(Object source) {
 		Assert.notNull(source, "Source must not be null");
-		if (source instanceof Class<?>) {
-			return load((Class<?>) source);
+		if (source instanceof Class<?> clazz) {
+			load(clazz);
+			return;
 		}
-		if (source instanceof Resource) {
-			return load((Resource) source);
+		if (source instanceof Resource resource) {
+			load(resource);
+			return;
 		}
-		if (source instanceof Package) {
-			return load((Package) source);
+		if (source instanceof Package pack) {
+			load(pack);
+			return;
 		}
-		if (source instanceof CharSequence) {
-			return load((CharSequence) source);
+		if (source instanceof CharSequence sequence) {
+			load(sequence);
+			return;
 		}
 		throw new IllegalArgumentException("Invalid source type " + source.getClass());
 	}
 
-	private int load(Class<?> source) {
+	private void load(Class<?> source) {
 		if (isGroovyPresent() && GroovyBeanDefinitionSource.class.isAssignableFrom(source)) {
 			// Any GroovyLoaders added in beans{} DSL can contribute beans here
 			GroovyBeanDefinitionSource loader = BeanUtils.instantiateClass(source, GroovyBeanDefinitionSource.class);
-			load(loader);
+			((GroovyBeanDefinitionReader) this.groovyReader).beans(loader.getBeans());
 		}
-		if (isComponent(source)) {
+		if (isEligible(source)) {
 			this.annotatedReader.register(source);
-			return 1;
 		}
-		return 0;
 	}
 
-	private int load(GroovyBeanDefinitionSource source) {
-		int before = this.xmlReader.getRegistry().getBeanDefinitionCount();
-		((GroovyBeanDefinitionReader) this.groovyReader).beans(source.getBeans());
-		int after = this.xmlReader.getRegistry().getBeanDefinitionCount();
-		return after - before;
-	}
-
-	private int load(Resource source) {
+	private void load(Resource source) {
 		if (source.getFilename().endsWith(".groovy")) {
 			if (this.groovyReader == null) {
 				throw new BeanDefinitionStoreException("Cannot load Groovy beans without Groovy on classpath");
 			}
-			return this.groovyReader.loadBeanDefinitions(source);
+			this.groovyReader.loadBeanDefinitions(source);
 		}
-		return this.xmlReader.loadBeanDefinitions(source);
+		else {
+			this.xmlReader.loadBeanDefinitions(source);
+		}
 	}
 
-	private int load(Package source) {
-		return this.scanner.scan(source.getName());
+	private void load(Package source) {
+		this.scanner.scan(source.getName());
 	}
 
-	private int load(CharSequence source) {
-		String resolvedSource = this.xmlReader.getEnvironment().resolvePlaceholders(source.toString());
+	private void load(CharSequence source) {
+		String resolvedSource = this.scanner.getEnvironment().resolvePlaceholders(source.toString());
 		// Attempt as a Class
 		try {
-			return load(ClassUtils.forName(resolvedSource, null));
+			load(ClassUtils.forName(resolvedSource, null));
+			return;
 		}
 		catch (IllegalArgumentException | ClassNotFoundException ex) {
 			// swallow exception and continue
 		}
-		// Attempt as resources
-		Resource[] resources = findResources(resolvedSource);
-		int loadCount = 0;
-		boolean atLeastOneResourceExists = false;
-		for (Resource resource : resources) {
-			if (isLoadCandidate(resource)) {
-				atLeastOneResourceExists = true;
-				loadCount += load(resource);
-			}
-		}
-		if (atLeastOneResourceExists) {
-			return loadCount;
+		// Attempt as Resources
+		if (loadAsResources(resolvedSource)) {
+			return;
 		}
 		// Attempt as package
 		Package packageResource = findPackage(resolvedSource);
 		if (packageResource != null) {
-			return load(packageResource);
+			load(packageResource);
+			return;
 		}
 		throw new IllegalArgumentException("Invalid source '" + resolvedSource + "'");
+	}
+
+	private boolean loadAsResources(String resolvedSource) {
+		boolean foundCandidate = false;
+		Resource[] resources = findResources(resolvedSource);
+		for (Resource resource : resources) {
+			if (isLoadCandidate(resource)) {
+				foundCandidate = true;
+				load(resource);
+			}
+		}
+		return foundCandidate;
 	}
 
 	private boolean isGroovyPresent() {
@@ -218,8 +221,8 @@ class BeanDefinitionLoader {
 		ResourceLoader loader = (this.resourceLoader != null) ? this.resourceLoader
 				: new PathMatchingResourcePatternResolver();
 		try {
-			if (loader instanceof ResourcePatternResolver) {
-				return ((ResourcePatternResolver) loader).getResources(source);
+			if (loader instanceof ResourcePatternResolver resolver) {
+				return resolver.getResources(source);
 			}
 			return new Resource[] { loader.getResource(source) };
 		}
@@ -232,15 +235,15 @@ class BeanDefinitionLoader {
 		if (resource == null || !resource.exists()) {
 			return false;
 		}
-		if (resource instanceof ClassPathResource) {
+		if (resource instanceof ClassPathResource classPathResource) {
 			// A simple package without a '.' may accidentally get loaded as an XML
 			// document if we're not careful. The result of getInputStream() will be
-			// a file list of the package content. We double check here that it's not
+			// a file list of the package content. We double-check here that it's not
 			// actually a package.
-			String path = ((ClassPathResource) resource).getPath();
+			String path = classPathResource.getPath();
 			if (path.indexOf('.') == -1) {
 				try {
-					return Package.getPackage(path) == null;
+					return getClass().getClassLoader().getDefinedPackage(path) == null;
 				}
 				catch (Exception ex) {
 					// Ignore
@@ -251,7 +254,7 @@ class BeanDefinitionLoader {
 	}
 
 	private Package findPackage(CharSequence source) {
-		Package pkg = Package.getPackage(source.toString());
+		Package pkg = getClass().getClassLoader().getDefinedPackage(source.toString());
 		if (pkg != null) {
 			return pkg;
 		}
@@ -259,7 +262,7 @@ class BeanDefinitionLoader {
 			// Attempt to find a class in this package
 			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(getClass().getClassLoader());
 			Resource[] resources = resolver
-					.getResources(ClassUtils.convertClassNameToResourcePath(source.toString()) + "/*.class");
+				.getResources(ClassUtils.convertClassNameToResourcePath(source.toString()) + "/*.class");
 			for (Resource resource : resources) {
 				String className = StringUtils.stripFilenameExtension(resource.getFilename());
 				load(Class.forName(source.toString() + "." + className));
@@ -269,22 +272,26 @@ class BeanDefinitionLoader {
 		catch (Exception ex) {
 			// swallow exception and continue
 		}
-		return Package.getPackage(source.toString());
+		return getClass().getClassLoader().getDefinedPackage(source.toString());
 	}
 
-	private boolean isComponent(Class<?> type) {
-		// This has to be a bit of a guess. The only way to be sure that this type is
-		// eligible is to make a bean definition out of it and try to instantiate it.
-		if (AnnotationUtils.findAnnotation(type, Component.class) != null) {
-			return true;
-		}
-		// Nested anonymous classes are not eligible for registration, nor are groovy
-		// closures
-		if (type.getName().matches(".*\\$_.*closure.*") || type.isAnonymousClass() || type.getConstructors() == null
-				|| type.getConstructors().length == 0) {
-			return false;
-		}
-		return true;
+	/**
+	 * Check whether the bean is eligible for registration.
+	 * @param type candidate bean type
+	 * @return true if the given bean type is eligible for registration, i.e. not a groovy
+	 * closure nor an anonymous class
+	 */
+	private boolean isEligible(Class<?> type) {
+		return !(type.isAnonymousClass() || isGroovyClosure(type) || hasNoConstructors(type));
+	}
+
+	private boolean isGroovyClosure(Class<?> type) {
+		return GROOVY_CLOSURE_PATTERN.matcher(type.getName()).matches();
+	}
+
+	private boolean hasNoConstructors(Class<?> type) {
+		Constructor<?>[] constructors = type.getDeclaredConstructors();
+		return ObjectUtils.isEmpty(constructors);
 	}
 
 	/**
