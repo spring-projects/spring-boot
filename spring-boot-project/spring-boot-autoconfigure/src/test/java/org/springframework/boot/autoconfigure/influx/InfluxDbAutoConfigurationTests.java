@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.influx;
 
+import java.net.URI;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -38,6 +39,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Sergey Kuptsov
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class InfluxDbAutoConfigurationTests {
 
@@ -47,6 +51,27 @@ class InfluxDbAutoConfigurationTests {
 	@Test
 	void influxDbRequiresUrl() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(InfluxDB.class));
+	}
+
+	@Test
+	void shouldUseConnectionDetails() {
+		this.contextRunner.withBean(InfluxDbConnectionDetails.class, this::influxDbConnectionDetails).run((context) -> {
+			assertThat(context).hasSingleBean(InfluxDB.class);
+			InfluxDB influxDb = context.getBean(InfluxDB.class);
+			assertThat(influxDb).hasFieldOrPropertyWithValue("hostName", "localhost");
+		});
+	}
+
+	@Test
+	void connectionDetailsOverwriteProperties() {
+		this.contextRunner.withBean(InfluxDbConnectionDetails.class, this::influxDbConnectionDetails)
+			.withPropertyValues("spring.influx.url=http://some-other-host", "spring.influx.user=user",
+					"spring.influx.password=password")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(InfluxDB.class);
+				InfluxDB influxDb = context.getBean(InfluxDB.class);
+				assertThat(influxDb).hasFieldOrPropertyWithValue("hostName", "localhost");
+			});
 	}
 
 	@Test
@@ -93,6 +118,27 @@ class InfluxDbAutoConfigurationTests {
 		Retrofit retrofit = (Retrofit) ReflectionTestUtils.getField(influxDb, "retrofit");
 		OkHttpClient callFactory = (OkHttpClient) retrofit.callFactory();
 		return callFactory.readTimeoutMillis();
+	}
+
+	private InfluxDbConnectionDetails influxDbConnectionDetails() {
+		return new InfluxDbConnectionDetails() {
+
+			@Override
+			public URI getUrl() {
+				return URI.create("http://localhost");
+			}
+
+			@Override
+			public String getUsername() {
+				return "user-1";
+			}
+
+			@Override
+			public String getPassword() {
+				return "password-1";
+			}
+
+		};
 	}
 
 	@Configuration(proxyBeanMethods = false)
