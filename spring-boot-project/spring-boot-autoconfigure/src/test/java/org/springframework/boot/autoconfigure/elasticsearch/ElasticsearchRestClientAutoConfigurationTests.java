@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.elasticsearch;
 
 import java.time.Duration;
+import java.util.List;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -32,6 +33,7 @@ import org.elasticsearch.client.sniff.Sniffer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -49,6 +51,8 @@ import static org.mockito.Mockito.mock;
  * @author Evgeniy Cheban
  * @author Filip Hrisafov
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
+ * @author Phillip Webb
  */
 class ElasticsearchRestClientAutoConfigurationTests {
 
@@ -241,6 +245,65 @@ class ElasticsearchRestClientAutoConfigurationTests {
 			assertThat(sniffer).isSameAs(customSniffer);
 			then(customSniffer).shouldHaveNoInteractions();
 		});
+	}
+
+	@Test
+	void connectionDetailsAreUsedIfAvailable() {
+		this.contextRunner.withUserConfiguration(ConnectionDetailsConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(RestClient.class);
+			RestClient restClient = context.getBean(RestClient.class);
+			assertThat(restClient).hasFieldOrPropertyWithValue("pathPrefix", "/some-path");
+			assertThat(restClient.getNodes().stream().map(Node::getHost).map(HttpHost::toString))
+				.containsExactly("http://elastic.example.com:9200");
+			assertThat(restClient)
+				.extracting("client.credentialsProvider", InstanceOfAssertFactories.type(CredentialsProvider.class))
+				.satisfies((credentialsProvider) -> {
+					Credentials uriCredentials = credentialsProvider
+						.getCredentials(new AuthScope("any.elastic.example.com", 80));
+					assertThat(uriCredentials.getUserPrincipal().getName()).isEqualTo("user-1");
+					assertThat(uriCredentials.getPassword()).isEqualTo("password-1");
+				})
+				.satisfies((credentialsProvider) -> {
+					Credentials uriCredentials = credentialsProvider
+						.getCredentials(new AuthScope("elastic.example.com", 9200));
+					assertThat(uriCredentials.getUserPrincipal().getName()).isEqualTo("node-user-1");
+					assertThat(uriCredentials.getPassword()).isEqualTo("node-password-1");
+				});
+
+		});
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ConnectionDetailsConfiguration {
+
+		@Bean
+		ElasticsearchConnectionDetails elasticsearchConnectionDetails() {
+			return new ElasticsearchConnectionDetails() {
+
+				@Override
+				public List<Node> getNodes() {
+					return List
+						.of(new Node("elastic.example.com", 9200, Protocol.HTTP, "node-user-1", "node-password-1"));
+				}
+
+				@Override
+				public String getUsername() {
+					return "user-1";
+				}
+
+				@Override
+				public String getPassword() {
+					return "password-1";
+				}
+
+				@Override
+				public String getPathPrefix() {
+					return "/some-path";
+				}
+
+			};
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
