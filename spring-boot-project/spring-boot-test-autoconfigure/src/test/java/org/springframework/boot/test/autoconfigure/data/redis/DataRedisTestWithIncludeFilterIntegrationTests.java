@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.stereotype.Service;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,12 +31,16 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration test with custom include filter for {@link DataRedisTest @DataRedisTest}.
  *
  * @author Jayaram Pradhan
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 @Testcontainers(disabledWithoutDocker = true)
 @DataRedisTest(includeFilters = @Filter(Service.class))
 class DataRedisTestWithIncludeFilterIntegrationTests {
 
 	@Container
+	@RedisServiceConnection
 	static final RedisContainer redis = new RedisContainer();
 
 	@Autowired
@@ -46,12 +48,6 @@ class DataRedisTestWithIncludeFilterIntegrationTests {
 
 	@Autowired
 	private ExampleService service;
-
-	@DynamicPropertySource
-	static void redisProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.data.redis.host", redis::getHost);
-		registry.add("spring.data.redis.port", redis::getFirstMappedPort);
-	}
 
 	@Test
 	void testService() {

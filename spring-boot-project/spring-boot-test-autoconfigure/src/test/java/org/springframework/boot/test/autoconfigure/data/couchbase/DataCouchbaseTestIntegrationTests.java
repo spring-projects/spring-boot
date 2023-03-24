@@ -26,11 +26,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.couchbase.CouchbaseServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -39,26 +38,23 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * Integration test for {@link DataCouchbaseTest @DataCouchbaseTest}.
  *
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-@DataCouchbaseTest(properties = "spring.couchbase.env.timeouts.connect=2m")
+@DataCouchbaseTest(
+		properties = { "spring.couchbase.env.timeouts.connect=2m", "spring.data.couchbase.bucket-name=cbbucket" })
 @Testcontainers(disabledWithoutDocker = true)
 class DataCouchbaseTestIntegrationTests {
 
 	private static final String BUCKET_NAME = "cbbucket";
 
 	@Container
+	@CouchbaseServiceConnection
 	static final CouchbaseContainer couchbase = new CouchbaseContainer(DockerImageNames.couchbase())
 		.withStartupAttempts(5)
 		.withStartupTimeout(Duration.ofMinutes(10))
 		.withBucket(new BucketDefinition(BUCKET_NAME));
-
-	@DynamicPropertySource
-	static void couchbaseProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.couchbase.connection-string", couchbase::getConnectionString);
-		registry.add("spring.couchbase.username", couchbase::getUsername);
-		registry.add("spring.couchbase.password", couchbase::getPassword);
-		registry.add("spring.data.couchbase.bucket-name", () -> BUCKET_NAME);
-	}
 
 	@Autowired
 	private CouchbaseTemplate couchbaseTemplate;
