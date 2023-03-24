@@ -374,6 +374,33 @@ If the port is the same for all your contact points you can use a shortcut and o
 TIP: Those two examples are identical as the port default to `9042`.
 If you need to configure the port, use `spring.cassandra.port`.
 
+The auto-configured `CqlSession` can be configured to use SSL for communication with the server by setting the properties as shown in this example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  cassandra:
+	    keyspace-name: "mykeyspace"
+	    contact-points: "cassandrahost1,cassandrahost2"
+	    local-datacenter: "datacenter1"
+	    ssl:
+	      enabled: true
+----
+
+Custom SSL trust material can be configured in an <<features#features.ssl,SSL bundle>> and applied to the `CqlSession` as shown in this example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  cassandra:
+	    keyspace-name: "mykeyspace"
+	    contact-points: "cassandrahost1,cassandrahost2"
+	    local-datacenter: "datacenter1"
+	    ssl:
+	      bundle: "example"
+----
+
+
 [NOTE]
 ====
 The Cassandra driver has its own configuration infrastructure that loads an `application.conf` at the root of the classpath.

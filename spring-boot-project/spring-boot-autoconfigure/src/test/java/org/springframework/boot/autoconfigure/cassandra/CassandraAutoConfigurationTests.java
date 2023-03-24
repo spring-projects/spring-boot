@@ -34,11 +34,14 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration.PropertiesCassandraConnectionDetails;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
@@ -50,11 +53,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class CassandraAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(CassandraAutoConfiguration.class, SslAutoConfiguration.class));
 
 	@Test
 	void cqlSessionBuildHasScopePrototype() {
@@ -65,6 +69,53 @@ class CassandraAutoConfigurationTests {
 			CqlSessionBuilder secondBuilder = context.getBean(CqlSessionBuilder.class);
 			assertThat(secondBuilder).hasFieldOrPropertyWithValue("keyspace", null);
 		});
+	}
+
+	@Test
+	void cqlSessionBuilderWithNoSslConfiguration() {
+		this.contextRunner.run((context) -> {
+			CqlSessionBuilder builder = context.getBean(CqlSessionBuilder.class);
+			assertThat(builder).hasFieldOrPropertyWithValue("programmaticSslFactory", false);
+		});
+	}
+
+	@Test
+	void cqlSessionBuilderWithSslEnabled() {
+		this.contextRunner.withPropertyValues("spring.cassandra.ssl.enabled=true").run((context) -> {
+			CqlSessionBuilder builder = context.getBean(CqlSessionBuilder.class);
+			assertThat(builder).hasFieldOrPropertyWithValue("programmaticSslFactory", true);
+		});
+	}
+
+	@Test
+	void cqlSessionBuilderWithSslBundle() {
+		this.contextRunner
+			.withPropertyValues("spring.cassandra.ssl.bundle=test-bundle",
+					"spring.ssl.bundle.jks.test-bundle.keystore.location=classpath:test.jks",
+					"spring.ssl.bundle.jks.test-bundle.keystore.password=secret",
+					"spring.ssl.bundle.jks.test-bundle.key.password=password")
+			.run((context) -> {
+				CqlSessionBuilder builder = context.getBean(CqlSessionBuilder.class);
+				assertThat(builder).hasFieldOrPropertyWithValue("programmaticSslFactory", true);
+			});
+	}
+
+	@Test
+	void cqlSessionBuilderWithSslBundleAndSslDisabled() {
+		this.contextRunner
+			.withPropertyValues("spring.cassandra.ssl.enabled=false", "spring.cassandra.ssl.bundle=test-bundle")
+			.run((context) -> {
+				CqlSessionBuilder builder = context.getBean(CqlSessionBuilder.class);
+				assertThat(builder).hasFieldOrPropertyWithValue("programmaticSslFactory", false);
+			});
+	}
+
+	@Test
+	void cqlSessionBuilderWithInvalidSslBundle() {
+		this.contextRunner.withPropertyValues("spring.cassandra.ssl.bundle=test-bundle")
+			.run((context) -> assertThatException().isThrownBy(() -> context.getBean(CqlSessionBuilder.class))
+				.withRootCauseInstanceOf(NoSuchSslBundleException.class)
+				.withMessageContaining("test-bundle"));
 	}
 
 	@Test

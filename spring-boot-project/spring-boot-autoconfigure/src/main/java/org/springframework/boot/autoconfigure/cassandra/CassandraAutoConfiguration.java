@@ -32,6 +32,7 @@ import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import com.datastax.oss.driver.api.core.config.DriverOption;
 import com.datastax.oss.driver.api.core.config.ProgrammaticDriverConfigLoaderBuilder;
+import com.datastax.oss.driver.api.core.ssl.ProgrammaticSslEngineFactory;
 import com.datastax.oss.driver.internal.core.config.typesafe.DefaultDriverConfigLoader;
 import com.datastax.oss.driver.internal.core.config.typesafe.DefaultProgrammaticDriverConfigLoaderBuilder;
 import com.typesafe.config.Config;
@@ -43,16 +44,22 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.Connection;
 import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.Controlconnection;
 import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.Request;
+import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.Ssl;
 import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.Throttler;
 import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.ThrottlerType;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.Resource;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Cassandra.
@@ -66,6 +73,7 @@ import org.springframework.core.io.Resource;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 1.3.0
  */
 @AutoConfiguration
@@ -106,10 +114,10 @@ public class CassandraAutoConfiguration {
 	@Scope("prototype")
 	public CqlSessionBuilder cassandraSessionBuilder(DriverConfigLoader driverConfigLoader,
 			CassandraConnectionDetails connectionDetails,
-			ObjectProvider<CqlSessionBuilderCustomizer> builderCustomizers) {
+			ObjectProvider<CqlSessionBuilderCustomizer> builderCustomizers, ObjectProvider<SslBundles> sslBundles) {
 		CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(driverConfigLoader);
 		configureAuthentication(builder, connectionDetails);
-		configureSsl(builder, connectionDetails);
+		configureSsl(builder, connectionDetails, sslBundles.getIfAvailable());
 		builder.withKeyspace(this.properties.getKeyspaceName());
 		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
@@ -122,15 +130,38 @@ public class CassandraAutoConfiguration {
 		}
 	}
 
-	private void configureSsl(CqlSessionBuilder builder, CassandraConnectionDetails connectionDetails) {
-		if (connectionDetails instanceof PropertiesCassandraConnectionDetails && this.properties.isSsl()) {
-			try {
-				builder.withSslContext(SSLContext.getDefault());
-			}
-			catch (NoSuchAlgorithmException ex) {
-				throw new IllegalStateException("Could not setup SSL default context for Cassandra", ex);
-			}
+	private void configureSsl(CqlSessionBuilder builder, CassandraConnectionDetails connectionDetails,
+			SslBundles sslBundles) {
+		if (!(connectionDetails instanceof PropertiesCassandraConnectionDetails)) {
+			return;
 		}
+		Ssl properties = this.properties.getSsl();
+		if (properties == null || !properties.isEnabled()) {
+			return;
+		}
+		String bundleName = properties.getBundle();
+		if (!StringUtils.hasLength(bundleName)) {
+			configureDefaultSslContext(builder);
+		}
+		else {
+			configureSsl(builder, sslBundles.getBundle(bundleName));
+		}
+	}
+
+	private void configureDefaultSslContext(CqlSessionBuilder builder) {
+		try {
+			builder.withSslContext(SSLContext.getDefault());
+		}
+		catch (NoSuchAlgorithmException ex) {
+			throw new IllegalStateException("Could not setup SSL default context for Cassandra", ex);
+		}
+	}
+
+	private void configureSsl(CqlSessionBuilder builder, SslBundle sslBundle) {
+		SslOptions options = sslBundle.getOptions();
+		String[] ciphers = (!CollectionUtils.isEmpty(options.getCiphers()) ? null
+				: options.getCiphers().toArray(String[]::new));
+		builder.withSslEngineFactory(new ProgrammaticSslEngineFactory(sslBundle.createSslContext(), ciphers));
 	}
 
 	@Bean(destroyMethod = "")
