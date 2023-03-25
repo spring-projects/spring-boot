@@ -109,13 +109,7 @@ public class CachingOperationInvoker implements OperationInvoker {
 
 	private void cleanExpiredCachedResponses(long accessTime) {
 		try {
-			Iterator<Entry<CacheKey, CachedResponse>> iterator = this.cachedResponses.entrySet().iterator();
-			while (iterator.hasNext()) {
-				Entry<CacheKey, CachedResponse> entry = iterator.next();
-				if (entry.getValue().isStale(accessTime, this.timeToLive)) {
-					iterator.remove();
-				}
-			}
+			this.cachedResponses.entrySet().removeIf(entry -> entry.getValue().isStale(accessTime, this.timeToLive));
 		}
 		catch (Exception ex) {
 		}
