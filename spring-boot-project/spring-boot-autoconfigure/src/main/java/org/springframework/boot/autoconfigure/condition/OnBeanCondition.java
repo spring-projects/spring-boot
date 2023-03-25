@@ -182,13 +182,7 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		for (String type : spec.getTypes()) {
 			Collection<String> typeMatches = getBeanNamesForType(classLoader, considerHierarchy, beanFactory, type,
 					parameterizedContainers);
-			Iterator<String> iterator = typeMatches.iterator();
-			while (iterator.hasNext()) {
-				String match = iterator.next();
-				if (beansIgnoredByType.contains(match) || ScopedProxyUtils.isScopedTarget(match)) {
-					iterator.remove();
-				}
-			}
+			typeMatches.removeIf(match -> beansIgnoredByType.contains(match) || ScopedProxyUtils.isScopedTarget(match));
 			if (typeMatches.isEmpty()) {
 				result.recordUnmatchedType(type);
 			}
