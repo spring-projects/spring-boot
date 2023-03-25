@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +32,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertyResolver;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.io.Resource;
 import org.springframework.core.log.LogMessage;
@@ -45,13 +45,14 @@ import org.springframework.util.StreamUtils;
  * @author Phillip Webb
  * @author Vedran Pavic
  * @author Toshiaki Maki
+ * @author Krzysztof Krason
  * @since 1.2.0
  */
 public class ResourceBanner implements Banner {
 
 	private static final Log logger = LogFactory.getLog(ResourceBanner.class);
 
-	private Resource resource;
+	private final Resource resource;
 
 	public ResourceBanner(Resource resource) {
 		Assert.notNull(resource, "Resource must not be null");
@@ -77,18 +78,25 @@ public class ResourceBanner implements Banner {
 	}
 
 	protected List<PropertyResolver> getPropertyResolvers(Environment environment, Class<?> sourceClass) {
-		List<PropertyResolver> resolvers = new ArrayList<>();
-		resolvers.add(environment);
-		resolvers.add(getVersionResolver(sourceClass));
-		resolvers.add(getAnsiResolver());
-		resolvers.add(getTitleResolver(sourceClass));
-		return resolvers;
+		MutablePropertySources propertySources = new MutablePropertySources();
+		propertySources.addLast(getEnvironmentSource(environment));
+		propertySources.addLast(getTitleSource(sourceClass));
+		propertySources.addLast(getAnsiSource());
+		propertySources.addLast(getVersionSource(sourceClass));
+		return Collections.singletonList(new PropertySourcesPropertyResolver(propertySources));
 	}
 
-	private PropertyResolver getVersionResolver(Class<?> sourceClass) {
-		MutablePropertySources propertySources = new MutablePropertySources();
-		propertySources.addLast(new MapPropertySource("version", getVersionsMap(sourceClass)));
-		return new PropertySourcesPropertyResolver(propertySources);
+	private PropertySource<Environment> getEnvironmentSource(Environment environment) {
+		return new PropertySource<Environment>("environment", environment) {
+			@Override
+			public Object getProperty(String name) {
+				return environment.getProperty(name);
+			}
+		};
+	}
+
+	private MapPropertySource getVersionSource(Class<?> sourceClass) {
+		return new MapPropertySource("version", getVersionsMap(sourceClass));
 	}
 
 	private Map<String, Object> getVersionsMap(Class<?> sourceClass) {
@@ -118,19 +126,15 @@ public class ResourceBanner implements Banner {
 		return format ? " (v" + version + ")" : version;
 	}
 
-	private PropertyResolver getAnsiResolver() {
-		MutablePropertySources sources = new MutablePropertySources();
-		sources.addFirst(new AnsiPropertySource("ansi", true));
-		return new PropertySourcesPropertyResolver(sources);
+	private AnsiPropertySource getAnsiSource() {
+		return new AnsiPropertySource("ansi", true);
 	}
 
-	private PropertyResolver getTitleResolver(Class<?> sourceClass) {
-		MutablePropertySources sources = new MutablePropertySources();
+	private MapPropertySource getTitleSource(Class<?> sourceClass) {
 		String applicationTitle = getApplicationTitle(sourceClass);
 		Map<String, Object> titleMap = Collections.singletonMap("application.title",
 				(applicationTitle != null) ? applicationTitle : "");
-		sources.addFirst(new MapPropertySource("title", titleMap));
-		return new PropertySourcesPropertyResolver(sources);
+		return new MapPropertySource("title", titleMap);
 	}
 
 	protected String getApplicationTitle(Class<?> sourceClass) {

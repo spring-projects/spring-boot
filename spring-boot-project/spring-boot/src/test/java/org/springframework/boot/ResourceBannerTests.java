@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,12 +40,28 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Vedran Pavic
  * @author Toshiaki Maki
+ * @author Krzysztof Krason
  */
 class ResourceBannerTests {
 
 	@AfterEach
 	void reset() {
 		AnsiOutput.setEnabled(Enabled.DETECT);
+	}
+
+	@Test
+	void doNotUseDefaultsIfValueExists() {
+		Resource resource = new ByteArrayResource(
+				"banner ${a:def} ${spring-boot.version:def} ${application.version:def}".getBytes());
+		String banner = printBanner(resource, "10.2", "1.0", null);
+		assertThat(banner).startsWith("banner 1 10.2 1.0");
+	}
+
+	@Test
+	void useDefaults() {
+		Resource resource = new ByteArrayResource("banner ${b:def1} ${c:def2} ${d:def3}".getBytes());
+		String banner = printBanner(resource, null, null, null);
+		assertThat(banner).startsWith("banner def1 def2 def3");
 	}
 
 	@Test
