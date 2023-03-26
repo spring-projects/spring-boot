@@ -71,6 +71,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -400,6 +402,21 @@ class BatchAutoConfigurationTests {
 				.hasBean("customInitializer"));
 	}
 
+	@Test
+	void userProvidedCustomConverter() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
+			.withUserConfiguration(RegisterCustomConverter.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(SpringBootBatchConfiguration.class);
+				ConfigurableConversionService configurableConversionService = context
+					.getBean(SpringBootBatchConfiguration.class)
+					.getConversionService();
+				assertThat(configurableConversionService.canConvert(RegisterCustomConverter.Foo.class,
+						RegisterCustomConverter.Bar.class))
+					.isTrue();
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	protected static class BatchDataSourceConfiguration {
 
@@ -677,6 +694,34 @@ class BatchAutoConfigurationTests {
 	@EnableBatchProcessing
 	@Configuration(proxyBeanMethods = false)
 	static class EnableBatchProcessingConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class RegisterCustomConverter {
+
+		@Bean
+		BatchConversionServiceCustomizer batchConversionServiceCustomizer() {
+			return (configurableConversionService) -> configurableConversionService
+				.addConverter(new FooToBarConverter());
+		}
+
+		static class Foo {
+
+		}
+
+		static class Bar {
+
+		}
+
+		static class FooToBarConverter implements Converter<Foo, Bar> {
+
+			@Override
+			public Bar convert(Foo source) {
+				return null;
+			}
+
+		}
 
 	}
 
