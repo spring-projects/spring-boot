@@ -1,11 +1,11 @@
 #!/usr/bin/ruby
 require 'json'
-require 'net/http'
+require 'net/https'
 require 'yaml'
 require 'logger'
 
 $log = Logger.new(STDOUT)
-$log.level = Logger::WARN
+$log.level = Logger::New
 
 class ForwardMerge
   attr_reader :issue, :milestone, :message, :line
