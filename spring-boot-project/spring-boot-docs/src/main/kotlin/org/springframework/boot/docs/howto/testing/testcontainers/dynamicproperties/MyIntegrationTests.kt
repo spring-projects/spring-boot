@@ -36,7 +36,7 @@ internal class MyIntegrationTests {
 	companion object {
 
 		@Container
-		var neo4j: Neo4jContainer<*> = Neo4jContainer<Nothing>("neo4j:4.2")
+		var neo4j: Neo4jContainer<*> = Neo4jContainer<Nothing>("neo4j:5")
 
 		@DynamicPropertySource
 		fun neo4jProperties(registry: DynamicPropertyRegistry) {
