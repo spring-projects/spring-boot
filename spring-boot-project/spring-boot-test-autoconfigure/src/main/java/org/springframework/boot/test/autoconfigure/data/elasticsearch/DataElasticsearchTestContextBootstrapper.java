@@ -17,8 +17,7 @@
 package org.springframework.boot.test.autoconfigure.data.elasticsearch;
 
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
+import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -31,10 +30,9 @@ class DataElasticsearchTestContextBootstrapper extends SpringBootTestContextBoot
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
-			.get(DataElasticsearchTest.class)
-			.getValue("properties", String[].class)
-			.orElse(null);
+		DataElasticsearchTest dataElasticsearchTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
+				DataElasticsearchTest.class);
+		return (dataElasticsearchTest != null) ? dataElasticsearchTest.properties() : null;
 	}
 
 }

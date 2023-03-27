@@ -18,6 +18,7 @@ package org.springframework.boot.test.autoconfigure.data.elasticsearch;
 
 import java.time.Duration;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -57,6 +58,21 @@ class DataElasticsearchTestPropertiesIntegrationTests {
 	@Test
 	void environmentWithNewProfile() {
 		assertThat(this.environment.getActiveProfiles()).containsExactly("test");
+	}
+
+	@Nested
+	class NestedTests {
+
+		@Autowired
+		private Environment innerEnvironment;
+
+		@Test
+		void propertiesFromEnclosingClassAffectNestedTests() {
+			assertThat(DataElasticsearchTestPropertiesIntegrationTests.this.environment.getActiveProfiles())
+				.containsExactly("test");
+			assertThat(this.innerEnvironment.getActiveProfiles()).containsExactly("test");
+		}
+
 	}
 
 }

@@ -17,8 +17,7 @@
 package org.springframework.boot.test.autoconfigure.data.redis;
 
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
+import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -30,10 +29,8 @@ class DataRedisTestContextBootstrapper extends SpringBootTestContextBootstrapper
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
-			.get(DataRedisTest.class)
-			.getValue("properties", String[].class)
-			.orElse(null);
+		DataRedisTest dataRedisTest = TestContextAnnotationUtils.findMergedAnnotation(testClass, DataRedisTest.class);
+		return (dataRedisTest != null) ? dataRedisTest.properties() : null;
 	}
 
 }

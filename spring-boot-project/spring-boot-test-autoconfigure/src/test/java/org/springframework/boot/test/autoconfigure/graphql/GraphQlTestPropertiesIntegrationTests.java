@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.data.couchbase;
+package org.springframework.boot.test.autoconfigure.graphql;
 
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -25,13 +25,13 @@ import org.springframework.core.env.Environment;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for the {@link DataCouchbaseTest#properties properties} attribute of
- * {@link DataCouchbaseTest @DataCouchbaseTest}.
+ * Tests for the {@link GraphQlTest#properties properties} attribute of
+ * {@link GraphQlTest @GraphQlTest}.
  *
- * @author Eddú Meléndez
+ * @author Andy Wilkinson
  */
-@DataCouchbaseTest(properties = "spring.profiles.active=test")
-class DataCouchbaseTestPropertiesIntegrationTests {
+@GraphQlTest(properties = "spring.profiles.active=test")
+class GraphQlTestPropertiesIntegrationTests {
 
 	@Autowired
 	private Environment environment;
@@ -49,7 +49,7 @@ class DataCouchbaseTestPropertiesIntegrationTests {
 
 		@Test
 		void propertiesFromEnclosingClassAffectNestedTests() {
-			assertThat(DataCouchbaseTestPropertiesIntegrationTests.this.environment.getActiveProfiles())
+			assertThat(GraphQlTestPropertiesIntegrationTests.this.environment.getActiveProfiles())
 				.containsExactly("test");
 			assertThat(this.innerEnvironment.getActiveProfiles()).containsExactly("test");
 		}
