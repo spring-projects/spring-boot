@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.data.r2dbc;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,21 @@ class DataR2dbcTestPropertiesIntegrationTests {
 	@Test
 	void environmentWithNewProfile() {
 		assertThat(this.environment.getActiveProfiles()).containsExactly("test");
+	}
+
+	@Nested
+	class NestedTests {
+
+		@Autowired
+		private Environment innerEnvironment;
+
+		@Test
+		void propertiesFromEnclosingClassAffectNestedTests() {
+			assertThat(DataR2dbcTestPropertiesIntegrationTests.this.environment.getActiveProfiles())
+				.containsExactly("test");
+			assertThat(this.innerEnvironment.getActiveProfiles()).containsExactly("test");
+		}
+
 	}
 
 }

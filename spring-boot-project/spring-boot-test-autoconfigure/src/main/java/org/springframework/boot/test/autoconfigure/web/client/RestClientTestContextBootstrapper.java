@@ -17,8 +17,7 @@
 package org.springframework.boot.test.autoconfigure.web.client;
 
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
+import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -30,10 +29,9 @@ class RestClientTestContextBootstrapper extends SpringBootTestContextBootstrappe
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
-			.get(RestClientTest.class)
-			.getValue("properties", String[].class)
-			.orElse(null);
+		RestClientTest restClientTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
+				RestClientTest.class);
+		return (restClientTest != null) ? restClientTest.properties() : null;
 	}
 
 }

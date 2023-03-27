@@ -17,8 +17,7 @@
 package org.springframework.boot.test.autoconfigure.data.cassandra;
 
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
+import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -31,10 +30,9 @@ class DataCassandraTestContextBootstrapper extends SpringBootTestContextBootstra
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
-			.get(DataCassandraTest.class)
-			.getValue("properties", String[].class)
-			.orElse(null);
+		DataCassandraTest dataCassandraTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
+				DataCassandraTest.class);
+		return (dataCassandraTest != null) ? dataCassandraTest.properties() : null;
 	}
 
 }

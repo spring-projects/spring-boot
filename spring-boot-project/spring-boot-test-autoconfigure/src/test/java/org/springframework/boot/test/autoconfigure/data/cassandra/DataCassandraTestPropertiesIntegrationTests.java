@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,14 @@ package org.springframework.boot.test.autoconfigure.data.cassandra;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.context.DriverContext;
 import com.datastax.oss.driver.api.core.type.codec.registry.CodecRegistry;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTestPropertiesIntegrationTests.CassandraMockConfiguration;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,6 +39,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Artsiom Yudovin
  */
+@Import(CassandraMockConfiguration.class)
 @DataCassandraTest(properties = "spring.profiles.active=test")
 class DataCassandraTestPropertiesIntegrationTests {
 
@@ -47,7 +51,22 @@ class DataCassandraTestPropertiesIntegrationTests {
 		assertThat(this.environment.getActiveProfiles()).containsExactly("test");
 	}
 
-	@TestConfiguration(proxyBeanMethods = false)
+	@Nested
+	class NestedTests {
+
+		@Autowired
+		private Environment innerEnvironment;
+
+		@Test
+		void propertiesFromEnclosingClassAffectNestedTests() {
+			assertThat(DataCassandraTestPropertiesIntegrationTests.this.environment.getActiveProfiles())
+				.containsExactly("test");
+			assertThat(this.innerEnvironment.getActiveProfiles()).containsExactly("test");
+		}
+
+	}
+
+	@TestConfiguration
 	static class CassandraMockConfiguration {
 
 		@Bean
