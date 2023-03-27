@@ -24,6 +24,7 @@ import java.util.List;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class PropertiesKafkaConnectionDetails implements KafkaConnectionDetails {
 
@@ -64,7 +65,7 @@ class PropertiesKafkaConnectionDetails implements KafkaConnectionDetails {
 	}
 
 	private Node asNode(String bootstrapNode) {
-		int separatorIndex = bootstrapNode.indexOf(':');
+		int separatorIndex = bootstrapNode.lastIndexOf(':');
 		if (separatorIndex == -1) {
 			return new Node(bootstrapNode, this.DEFAULT_PORT);
 		}

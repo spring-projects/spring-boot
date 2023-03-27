@@ -102,6 +102,7 @@ import static org.mockito.Mockito.never;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class KafkaAutoConfigurationTests {
 
@@ -110,7 +111,7 @@ class KafkaAutoConfigurationTests {
 
 	@Test
 	void consumerProperties() {
-		this.contextRunner.withPropertyValues("spring.kafka.bootstrap-servers=foo:1234",
+		this.contextRunner.withPropertyValues("spring.kafka.bootstrap-servers=foo:1234,PLAINTEXT://bar:2345",
 				"spring.kafka.properties.foo=bar", "spring.kafka.properties.baz=qux",
 				"spring.kafka.properties.foo.bar.baz=qux.fiz.buz", "spring.kafka.ssl.key-password=p1",
 				"spring.kafka.ssl.key-store-location=classpath:ksLoc", "spring.kafka.ssl.key-store-password=p2",
@@ -131,7 +132,7 @@ class KafkaAutoConfigurationTests {
 				Map<String, Object> configs = consumerFactory.getConfigurationProperties();
 				// common
 				assertThat(configs).containsEntry(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
-						Collections.singletonList("foo:1234"));
+						List.of("foo:1234", "PLAINTEXT://bar:2345"));
 				assertThat(configs).containsEntry(SslConfigs.SSL_KEY_PASSWORD_CONFIG, "p1");
 				assertThat((String) configs.get(SslConfigs.SSL_KEYSTORE_LOCATION_CONFIG))
 					.endsWith(File.separator + "ksLoc");
