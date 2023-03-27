@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Dbcp2JdbcConnectionDetailsBeanPostProcessorTests {
 
 	@Test
-	void setUsernamePasswordAndUrl() {
+	void setUsernamePasswordUrlAndDriverClassName() {
 		BasicDataSource dataSource = new BasicDataSource();
 		dataSource.setUrl("will-be-overwritten");
 		dataSource.setUsername("will-be-overwritten");
@@ -41,7 +41,7 @@ class Dbcp2JdbcConnectionDetailsBeanPostProcessorTests {
 		dataSource.setDriverClassName("will-be-overwritten");
 		new Dbcp2JdbcConnectionDetailsBeanPostProcessor(null).processDataSource(dataSource,
 				new TestJdbcConnectionDetails());
-		assertThat(dataSource.getUrl()).isEqualTo("jdbc:postgresql://postgres.example.com:12345/database-1");
+		assertThat(dataSource.getUrl()).isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
 		assertThat(dataSource.getUsername()).isEqualTo("user-1");
 		assertThat(dataSource.getPassword()).isEqualTo("password-1");
 		assertThat(dataSource.getDriverClassName()).isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());

@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class OracleUcpJdbcConnectionDetailsBeanPostProcessorTests {
 
 	@Test
-	void setUsernamePasswordAndUrl() throws SQLException {
+	void setUsernamePasswordUrlAndDriverClassName() throws SQLException {
 		PoolDataSourceImpl dataSource = new PoolDataSourceImpl();
 		dataSource.setURL("will-be-overwritten");
 		dataSource.setUser("will-be-overwritten");
@@ -44,7 +44,7 @@ class OracleUcpJdbcConnectionDetailsBeanPostProcessorTests {
 		dataSource.setConnectionFactoryClassName("will-be-overwritten");
 		new OracleUcpJdbcConnectionDetailsBeanPostProcessor(null).processDataSource(dataSource,
 				new TestJdbcConnectionDetails());
-		assertThat(dataSource.getURL()).isEqualTo("jdbc:postgresql://postgres.example.com:12345/database-1");
+		assertThat(dataSource.getURL()).isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
 		assertThat(dataSource.getUser()).isEqualTo("user-1");
 		assertThat(dataSource).extracting("password")
 			.extracting((password) -> ((OpaqueString) password).get())

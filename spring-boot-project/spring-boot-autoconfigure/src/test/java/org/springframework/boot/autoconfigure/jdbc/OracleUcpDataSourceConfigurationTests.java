@@ -26,6 +26,7 @@ import oracle.ucp.util.OpaqueString;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -124,8 +125,9 @@ class OracleUcpDataSourceConfigurationTests {
 				assertThat(oracleUcp).extracting("password")
 					.extracting((o) -> ((OpaqueString) o).get())
 					.isEqualTo("password-1");
-				assertThat(oracleUcp.getConnectionFactoryClassName()).isEqualTo("org.postgresql.Driver");
-				assertThat(oracleUcp.getURL()).isEqualTo("jdbc:postgresql://postgres.example.com:12345/database-1");
+				assertThat(oracleUcp.getConnectionFactoryClassName())
+					.isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());
+				assertThat(oracleUcp.getURL()).isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
 			});
 	}
 

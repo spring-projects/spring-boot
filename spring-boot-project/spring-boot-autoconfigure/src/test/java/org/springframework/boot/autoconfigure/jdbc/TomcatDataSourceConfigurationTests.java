@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -125,9 +126,10 @@ class TomcatDataSourceConfigurationTests {
 				org.apache.tomcat.jdbc.pool.DataSource tomcat = (org.apache.tomcat.jdbc.pool.DataSource) dataSource;
 				assertThat(tomcat.getPoolProperties().getUsername()).isEqualTo("user-1");
 				assertThat(tomcat.getPoolProperties().getPassword()).isEqualTo("password-1");
-				assertThat(tomcat.getPoolProperties().getDriverClassName()).isEqualTo("org.postgresql.Driver");
+				assertThat(tomcat.getPoolProperties().getDriverClassName())
+					.isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());
 				assertThat(tomcat.getPoolProperties().getUrl())
-					.isEqualTo("jdbc:postgresql://postgres.example.com:12345/database-1");
+					.isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
 			});
 	}
 

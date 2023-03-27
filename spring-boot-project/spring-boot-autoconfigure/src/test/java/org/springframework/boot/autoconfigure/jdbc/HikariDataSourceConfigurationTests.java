@@ -115,7 +115,7 @@ class HikariDataSourceConfigurationTests {
 						assertThat(hikari.getPassword()).isEqualTo("password-1");
 						assertThat(hikari.getDriverClassName()).isEqualTo("org.postgresql.Driver");
 						assertThat(hikari.getJdbcUrl())
-							.isEqualTo("jdbc:postgresql://postgres.example.com:12345/database-1");
+							.isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
 					});
 			});
 	}

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import org.springframework.boot.jdbc.DatabaseDriver;
+
 /**
  * {@link JdbcConnectionDetails} used in tests.
  *
@@ -25,7 +27,7 @@ class TestJdbcConnectionDetails implements JdbcConnectionDetails {
 
 	@Override
 	public String getJdbcUrl() {
-		return "jdbc:postgresql://postgres.example.com:12345/database-1";
+		return "jdbc:customdb://customdb.example.com:12345/database-1";
 	}
 
 	@Override
@@ -36,6 +38,16 @@ class TestJdbcConnectionDetails implements JdbcConnectionDetails {
 	@Override
 	public String getPassword() {
 		return "password-1";
+	}
+
+	@Override
+	public String getDriverClassName() {
+		return DatabaseDriver.POSTGRESQL.getDriverClassName();
+	}
+
+	@Override
+	public String getXaDataSourceClassName() {
+		return DatabaseDriver.POSTGRESQL.getXaDataSourceClassName();
 	}
 
 }

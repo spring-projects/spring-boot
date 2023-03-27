@@ -49,17 +49,18 @@ import org.springframework.util.StringUtils;
 abstract class DataSourceConfiguration {
 
 	@SuppressWarnings("unchecked")
-	protected static <T> T createDataSource(DataSourceProperties properties, Class<? extends DataSource> type) {
+	private static <T> T createDataSource(DataSourceProperties properties, Class<? extends DataSource> type) {
 		return (T) properties.initializeDataSourceBuilder().type(type).build();
 	}
 
 	@SuppressWarnings("unchecked")
-	protected static <T> T createDataSource(JdbcConnectionDetails connectionDetails, Class<? extends DataSource> type,
+	private static <T> T createDataSource(JdbcConnectionDetails connectionDetails, Class<? extends DataSource> type,
 			ClassLoader classLoader) {
 		return (T) DataSourceBuilder.create(classLoader)
 			.url(connectionDetails.getJdbcUrl())
 			.username(connectionDetails.getUsername())
 			.password(connectionDetails.getPassword())
+			.driverClassName(connectionDetails.getDriverClassName())
 			.type(type)
 			.build();
 	}
@@ -213,12 +214,7 @@ abstract class DataSourceConfiguration {
 				ObjectProvider<JdbcConnectionDetails> connectionDetailsProvider) {
 			JdbcConnectionDetails connectionDetails = connectionDetailsProvider.getIfAvailable();
 			if (connectionDetails != null) {
-				return DataSourceBuilder.create(properties.getClassLoader())
-					.url(connectionDetails.getJdbcUrl())
-					.username(connectionDetails.getUsername())
-					.password(connectionDetails.getPassword())
-					.type(properties.getType())
-					.build();
+				return createDataSource(connectionDetails, properties.getType(), properties.getClassLoader());
 			}
 			return properties.initializeDataSourceBuilder().build();
 		}

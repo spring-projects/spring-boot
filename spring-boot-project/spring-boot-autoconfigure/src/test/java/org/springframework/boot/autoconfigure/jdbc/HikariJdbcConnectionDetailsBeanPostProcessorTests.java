@@ -41,7 +41,7 @@ class HikariJdbcConnectionDetailsBeanPostProcessorTests {
 		dataSource.setDriverClassName(DatabaseDriver.H2.getDriverClassName());
 		new HikariJdbcConnectionDetailsBeanPostProcessor(null).processDataSource(dataSource,
 				new TestJdbcConnectionDetails());
-		assertThat(dataSource.getJdbcUrl()).isEqualTo("jdbc:postgresql://postgres.example.com:12345/database-1");
+		assertThat(dataSource.getJdbcUrl()).isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
 		assertThat(dataSource.getUsername()).isEqualTo("user-1");
 		assertThat(dataSource.getPassword()).isEqualTo("password-1");
 		assertThat(dataSource.getDriverClassName()).isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());

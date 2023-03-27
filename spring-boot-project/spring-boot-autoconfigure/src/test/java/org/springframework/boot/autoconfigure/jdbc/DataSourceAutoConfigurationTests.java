@@ -261,8 +261,8 @@ class DataSourceAutoConfigurationTests {
 				.satisfies((dbcp2) -> {
 					assertThat(dbcp2.getUsername()).isEqualTo("user-1");
 					assertThat(dbcp2.getPassword()).isEqualTo("password-1");
-					assertThat(dbcp2.getDriverClassName()).isEqualTo("org.postgresql.Driver");
-					assertThat(dbcp2.getUrl()).isEqualTo("jdbc:postgresql://postgres.example.com:12345/database-1");
+					assertThat(dbcp2.getDriverClassName()).isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());
+					assertThat(dbcp2.getUrl()).isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
 				});
 		});
 	}
@@ -278,8 +278,9 @@ class DataSourceAutoConfigurationTests {
 			TestDataSource source = (TestDataSource) dataSource;
 			assertThat(source.getUsername()).isEqualTo("user-1");
 			assertThat(source.getPassword()).isEqualTo("password-1");
-			assertThat(source.getDriver().getClass().getName()).isEqualTo("org.postgresql.Driver");
-			assertThat(source.getUrl()).isEqualTo("jdbc:postgresql://postgres.example.com:12345/database-1");
+			assertThat(source.getDriver().getClass().getName())
+				.isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());
+			assertThat(source.getUrl()).isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
 		});
 	}
 
