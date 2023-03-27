@@ -28,7 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class MyIntegrationTests {
 
 	@Container
-	static Neo4jContainer<?> neo4j = new Neo4jContainer<>("neo4j:4.2");
+	static Neo4jContainer<?> neo4j = new Neo4jContainer<>("neo4j:5");
 
 	@Test
 	void myTest() {
