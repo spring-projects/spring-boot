@@ -73,6 +73,7 @@ dependencies {
 	optional("org.testcontainers:neo4j")
 	optional("org.testcontainers:postgresql")
 	optional("org.testcontainers:rabbitmq")
+	optional("org.testcontainers:redpanda")
 	optional("org.testcontainers:r2dbc")
 	optional("org.testcontainers:testcontainers")
 	optional("io.micrometer:micrometer-tracing")
