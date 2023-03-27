@@ -2,7 +2,7 @@
 		"https://www.puppycrawl.com/dtds/configuration_1_3.dtd">
 <module name="Checker">
 	<property name="charset" value="UTF-8"/>
-	<property name="fileExtensions" value=""/>
+	<property name="fileExtensions" value="0"/>
 	<module name="io.spring.nohttp.checkstyle.check.NoHttpCheck">
 		<property name="allowlistFileName" value="${config_loc}/allowlist.lines"/>
 	</module>
