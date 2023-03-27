@@ -43,7 +43,11 @@ Here is a quick teaser of a complete Spring Boot application in Java:
 
 	}
 ----
+In the program above, the `@RestController` annotation is used in the controller layer of RESTful web services using Spring MVC. This `@RestController` annotation simplifies controller implementations by combining functionalities of annotations such as `@Controller` and `@ResponseBody`.
 
+`@SpringBootApplication` annotation denotes the main class within a Spring MVC project. 
+
+`@RequestMapping` annotation signifies the last segment of endpoint/child page to be associated with the class. It is crucial for mapping the web request to the corresponding spring controller method. Aside from the endpoint/child page value, you can also use `@RequestMapping` to specify the HTTP request method type for the endpoint. 
 
 
 == Getting Help
