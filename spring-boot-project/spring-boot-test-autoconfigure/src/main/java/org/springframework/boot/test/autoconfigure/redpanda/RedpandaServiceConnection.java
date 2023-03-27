@@ -16,14 +16,14 @@
 
 package org.springframework.boot.test.autoconfigure.redpanda;
 
-import org.springframework.boot.autoconfigure.kafka.KafkaConnectionDetails;
-import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnection;
-
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import org.springframework.boot.autoconfigure.kafka.KafkaConnectionDetails;
+import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnection;
 
 /**
  * Annotation that indicates that a field provides a Kafka service connection.

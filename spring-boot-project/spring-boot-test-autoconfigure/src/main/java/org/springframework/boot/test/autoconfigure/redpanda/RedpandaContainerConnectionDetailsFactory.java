@@ -16,13 +16,14 @@
 
 package org.springframework.boot.test.autoconfigure.redpanda;
 
+import java.net.URI;
+import java.util.List;
+
+import org.testcontainers.redpanda.RedpandaContainer;
+
 import org.springframework.boot.autoconfigure.kafka.KafkaConnectionDetails;
 import org.springframework.boot.test.autoconfigure.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.test.autoconfigure.service.connection.ContainerConnectionSource;
-import org.testcontainers.redpanda.RedpandaContainer;
-
-import java.net.URI;
-import java.util.List;
 
 /**
  * {@link ContainerConnectionDetailsFactory} for
