@@ -93,7 +93,7 @@ class AsciidoctorConventions {
 				.all(configuration::extendsFrom);
 			configuration.getDependencies()
 				.add(project.getDependencies()
-					.create("io.spring.asciidoctor.backends:spring-asciidoctor-backends:0.0.4"));
+					.create("io.spring.asciidoctor.backends:spring-asciidoctor-backends:0.0.5"));
 			configuration.getDependencies()
 				.add(project.getDependencies().create("org.asciidoctor:asciidoctorj-pdf:1.5.3"));
 		});
