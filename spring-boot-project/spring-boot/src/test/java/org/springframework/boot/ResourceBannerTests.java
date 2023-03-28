@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Vedran Pavic
  * @author Toshiaki Maki
+ * @author Krzysztof Krason
  */
 class ResourceBannerTests {
 
@@ -124,6 +125,15 @@ class ResourceBannerTests {
 		Resource resource = new ByteArrayResource("banner ${application.title} ${a}".getBytes());
 		String banner = printBanner(resource, null, null, null);
 		assertThat(banner).startsWith("banner  1");
+	}
+
+	@Test
+	void renderWithDefaultValues() {
+		Resource resource = new ByteArrayResource(
+				"banner ${a:default-a} ${b:default-b} ${spring-boot.version:default-boot-version} ${application.version:default-application-version}"
+					.getBytes());
+		String banner = printBanner(resource, "10.2", "1.0", null);
+		assertThat(banner).startsWith("banner 1 default-b 10.2 1.0");
 	}
 
 	private String printBanner(Resource resource, String bootVersion, String applicationVersion,
