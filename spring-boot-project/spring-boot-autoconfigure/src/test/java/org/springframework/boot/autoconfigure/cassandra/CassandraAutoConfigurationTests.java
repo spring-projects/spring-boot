@@ -301,6 +301,18 @@ class CassandraAutoConfigurationTests {
 	}
 
 	@Test
+	void placeholdersInReferenceConfAreResolvedAgainstConfigDerivedFromSpringCassandraProperties() {
+		this.contextRunner.withPropertyValues("spring.data.cassandra.request.timeout=60s").run((context) -> {
+			DriverExecutionProfile actual = context.getBean(DriverConfigLoader.class)
+				.getInitialConfig()
+				.getDefaultProfile();
+			assertThat(actual.getDuration(DefaultDriverOption.REQUEST_TIMEOUT)).isEqualTo(Duration.ofSeconds(60));
+			assertThat(actual.getDuration(DefaultDriverOption.METADATA_SCHEMA_REQUEST_TIMEOUT))
+				.isEqualTo(Duration.ofSeconds(60));
+		});
+	}
+
+	@Test
 	void driverConfigLoaderWithConfigCreateProfiles() {
 		String configLocation = "org/springframework/boot/autoconfigure/cassandra/profiles.conf";
 		this.contextRunner.withPropertyValues("spring.data.cassandra.config=" + configLocation).run((context) -> {
