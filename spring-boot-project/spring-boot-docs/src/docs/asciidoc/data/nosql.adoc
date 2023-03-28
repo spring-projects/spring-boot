@@ -455,7 +455,7 @@ Generally, you provide the https://github.com/couchbaselabs/sdk-rfcs/blob/master
 ----
 
 It is also possible to customize some of the `ClusterEnvironment` settings.
-For instance, the following configuration changes the timeout to open a new `Bucket` and enables SSL support:
+For instance, the following configuration changes the timeout to open a new `Bucket` and enables SSL support with a reference to a configured <<features#features.ssl,SSL bundle>>:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -465,8 +465,7 @@ For instance, the following configuration changes the timeout to open a new `Buc
 	      timeouts:
 	        connect: "3s"
 	      ssl:
-	        key-store: "/location/of/keystore.jks"
-	        key-store-password: "secret"
+	        bundle: "example"
 ----
 
 TIP: Check the `spring.couchbase.env.*` properties for more details.
