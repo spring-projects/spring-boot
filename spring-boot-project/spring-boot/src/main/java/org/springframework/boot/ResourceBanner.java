@@ -28,11 +28,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.ansi.AnsiPropertySource;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertyResolver;
-import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.io.Resource;
 import org.springframework.core.log.LogMessage;
@@ -79,20 +79,13 @@ public class ResourceBanner implements Banner {
 
 	protected List<PropertyResolver> getPropertyResolvers(Environment environment, Class<?> sourceClass) {
 		MutablePropertySources propertySources = new MutablePropertySources();
-		propertySources.addLast(getEnvironmentSource(environment));
+		if (environment instanceof ConfigurableEnvironment) {
+			((ConfigurableEnvironment) environment).getPropertySources().forEach(propertySources::addLast);
+		}
 		propertySources.addLast(getTitleSource(sourceClass));
 		propertySources.addLast(getAnsiSource());
 		propertySources.addLast(getVersionSource(sourceClass));
 		return Collections.singletonList(new PropertySourcesPropertyResolver(propertySources));
-	}
-
-	private PropertySource<Environment> getEnvironmentSource(Environment environment) {
-		return new PropertySource<Environment>("environment", environment) {
-			@Override
-			public Object getProperty(String name) {
-				return environment.getProperty(name);
-			}
-		};
 	}
 
 	private MapPropertySource getVersionSource(Class<?> sourceClass) {

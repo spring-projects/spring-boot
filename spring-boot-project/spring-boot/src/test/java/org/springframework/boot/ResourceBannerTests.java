@@ -50,21 +50,6 @@ class ResourceBannerTests {
 	}
 
 	@Test
-	void doNotUseDefaultsIfValueExists() {
-		Resource resource = new ByteArrayResource(
-				"banner ${a:def} ${spring-boot.version:def} ${application.version:def}".getBytes());
-		String banner = printBanner(resource, "10.2", "1.0", null);
-		assertThat(banner).startsWith("banner 1 10.2 1.0");
-	}
-
-	@Test
-	void useDefaults() {
-		Resource resource = new ByteArrayResource("banner ${b:def1} ${c:def2} ${d:def3}".getBytes());
-		String banner = printBanner(resource, null, null, null);
-		assertThat(banner).startsWith("banner def1 def2 def3");
-	}
-
-	@Test
 	void renderVersions() {
 		Resource resource = new ByteArrayResource(
 				"banner ${a} ${spring-boot.version} ${application.version}".getBytes());
@@ -140,6 +125,15 @@ class ResourceBannerTests {
 		Resource resource = new ByteArrayResource("banner ${application.title} ${a}".getBytes());
 		String banner = printBanner(resource, null, null, null);
 		assertThat(banner).startsWith("banner  1");
+	}
+
+	@Test
+	void renderWithDefaultValues() {
+		Resource resource = new ByteArrayResource(
+				"banner ${a:default-a} ${b:default-b} ${spring-boot.version:default-boot-version} ${application.version:default-application-version}"
+					.getBytes());
+		String banner = printBanner(resource, "10.2", "1.0", null);
+		assertThat(banner).startsWith("banner 1 default-b 10.2 1.0");
 	}
 
 	private String printBanner(Resource resource, String bootVersion, String applicationVersion,
