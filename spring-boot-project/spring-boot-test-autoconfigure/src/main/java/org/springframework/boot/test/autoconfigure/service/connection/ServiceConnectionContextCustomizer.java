@@ -78,4 +78,8 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 		return new RootBeanDefinition((Class<T>) instance.getClass(), () -> instance);
 	}
 
+	List<ContainerConnectionSource<?, ?, ?>> getSources() {
+		return this.sources;
+	}
+
 }

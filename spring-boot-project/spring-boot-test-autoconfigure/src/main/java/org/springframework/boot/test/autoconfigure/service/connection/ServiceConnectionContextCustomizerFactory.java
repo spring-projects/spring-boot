@@ -28,6 +28,7 @@ import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
+import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
@@ -44,12 +45,19 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
 		List<ContainerConnectionSource<?, ?, ?>> sources = new ArrayList<>();
-		ReflectionUtils.doWithFields(testClass, (field) -> {
+		findSources(testClass, sources);
+		return (sources.isEmpty()) ? null : new ServiceConnectionContextCustomizer(sources);
+	}
+
+	private void findSources(Class<?> clazz, List<ContainerConnectionSource<?, ?, ?>> sources) {
+		ReflectionUtils.doWithFields(clazz, (field) -> {
 			MergedAnnotations annotations = MergedAnnotations.from(field);
 			annotations.stream(ServiceConnection.class)
 				.forEach((annotation) -> sources.add(createSource(field, annotation)));
 		});
-		return (sources.isEmpty()) ? null : new ServiceConnectionContextCustomizer(sources);
+		if (TestContextAnnotationUtils.searchEnclosingClass(clazz)) {
+			findSources(clazz.getEnclosingClass(), sources);
+		}
 	}
 
 	private ContainerConnectionSource<?, ?, ?> createSource(Field field,
