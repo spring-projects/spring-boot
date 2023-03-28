@@ -17,6 +17,7 @@
 package org.springframework.boot.test.autoconfigure.service.connection;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +63,9 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 
 	private ContainerConnectionSource<?, ?, ?> createSource(Field field,
 			MergedAnnotation<ServiceConnection> annotation) {
+		if (!Modifier.isStatic(field.getModifiers())) {
+			throw new IllegalStateException("@ServiceConnection field '%s' must be static".formatted(field.getName()));
+		}
 		Class<? extends ConnectionDetails> connectionDetailsType = getConnectionDetailsType(annotation);
 		Object fieldValue = getFieldValue(field);
 		Assert.isInstanceOf(GenericContainer.class, fieldValue,

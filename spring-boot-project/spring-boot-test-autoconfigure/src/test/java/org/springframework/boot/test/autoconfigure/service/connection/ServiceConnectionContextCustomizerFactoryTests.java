@@ -24,6 +24,7 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
 import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnectionContextCustomizerFactoryTests.ServiceConnections.NestedClass;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link ServiceConnectionContextCustomizerFactory}.
@@ -55,6 +56,13 @@ public class ServiceConnectionContextCustomizerFactoryTests {
 		assertThat(customizer.getSources()).hasSize(3);
 	}
 
+	@Test
+	void whenClassHasNonStaticServiceConnectionThenCreateShouldFailWithHelpfulIllegalStateException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.factory.createContextCustomizer(NonStaticServiceConnection.class, null))
+			.withMessage("@ServiceConnection field 'service' must be static");
+	}
+
 	static class NoServiceConnections {
 
 	}
@@ -74,6 +82,13 @@ public class ServiceConnectionContextCustomizerFactoryTests {
 			private static GenericContainer<?> service3 = new GenericContainer<>("example");
 
 		}
+
+	}
+
+	static class NonStaticServiceConnection {
+
+		@ServiceConnection(TestConnectionDetails.class)
+		private GenericContainer<?> service = new GenericContainer<>("example");
 
 	}
 
