@@ -149,7 +149,7 @@ public class CassandraAutoConfiguration {
 			config = config.withFallback(loadConfig(this.properties.getConfig()));
 		}
 		config = config.withFallback(SPRING_BOOT_DEFAULTS);
-		config = config.withFallback(ConfigFactory.defaultReference());
+		config = config.withFallback(ConfigFactory.defaultReferenceUnresolved());
 		return config.resolve();
 	}
 
