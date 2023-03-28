@@ -218,6 +218,8 @@ Layout factories are always ignored if an explicit <<goals-repackage-parameters-
 === Dependency Exclusion
 By default, both the `repackage` and the `run` goals will include any `provided` dependencies that are defined in the project.
 A Spring Boot project should consider `provided` dependencies as "container" dependencies that are required to run the application.
+Generally speaking, Spring Boot projects are not used as dependencies and are therefore unlikely to have any `optional` dependencies.
+When a project does have optional dependencies they too will be included by the `repackage` and `run` goals.
 
 Some of these dependencies may not be required at all and should be excluded from the executable jar.
 For consistency, they should not be present either when running the application.
