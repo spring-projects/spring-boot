@@ -406,7 +406,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		int i2 = 0;
 		while (i1 < l1) {
 			if (i2 >= l2) {
-				return false;
+				return remainderIsNotAlphanumeric(e1, i, i1);
 			}
 			char ch1 = e1.charAt(i, i1);
 			char ch2 = e2.charAt(i, i2);

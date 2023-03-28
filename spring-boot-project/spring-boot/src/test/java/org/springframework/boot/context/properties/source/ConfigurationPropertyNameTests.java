@@ -703,6 +703,14 @@ class ConfigurationPropertyNameTests {
 	}
 
 	@Test
+	void equalsSymmetricWhenNameMatchesDueToRemovalOfTrailingDashes() {
+		ConfigurationPropertyName n1 = ConfigurationPropertyName.of("foobar");
+		ConfigurationPropertyName n2 = ConfigurationPropertyName.of("foobar--");
+		assertThat(n1).isEqualTo(n2);
+		assertThat(n2).isEqualTo(n1);
+	}
+
+	@Test
 	void isValidWhenValidShouldReturnTrue() {
 		assertThat(ConfigurationPropertyName.isValid("")).isTrue();
 		assertThat(ConfigurationPropertyName.isValid("foo")).isTrue();
