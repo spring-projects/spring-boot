@@ -32,5 +32,6 @@ org.springframework.boot.test.autoconfigure.mongo.MongoContainerConnectionDetail
 org.springframework.boot.test.autoconfigure.neo4j.Neo4jContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.r2dbc.MariaDbR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.r2dbc.MySqlR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.test.autoconfigure.r2dbc.OracleR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.r2dbc.PostgresR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.r2dbc.SqlServerR2dbcContainerConnectionDetailsFactory
