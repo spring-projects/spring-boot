@@ -58,6 +58,7 @@ The following service connection annotations are provided by `spring-boot-test-a
 - `@R2dbcServiceConnection`
 - `@RabbitServiceConnection`
 - `@RedisServiceConnection`
+- `@RedpandaServiceConnection`
 
 As with the earlier `@Neo4jConnectionDetails` example, each can be used on a container field. Doing so will automatically configure the application to connect to the service running in the container.
 
