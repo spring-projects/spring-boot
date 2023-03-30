@@ -23,13 +23,22 @@ import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import javax.net.ssl.SSLSocketFactory;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
+import okhttp3.OkHttpClient;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.core5.http.io.SocketConfig;
 
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -37,6 +46,7 @@ import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -45,6 +55,7 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 3.0.0
  */
 public final class ClientHttpRequestFactories {
@@ -134,25 +145,39 @@ public final class ClientHttpRequestFactories {
 	static class HttpComponents {
 
 		static HttpComponentsClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
-			HttpComponentsClientHttpRequestFactory requestFactory = createRequestFactory(settings.readTimeout());
+			HttpComponentsClientHttpRequestFactory requestFactory = createRequestFactory(settings.readTimeout(),
+					settings.sslBundle());
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
 			map.from(settings::bufferRequestBody).to(requestFactory::setBufferRequestBody);
 			return requestFactory;
 		}
 
-		private static HttpComponentsClientHttpRequestFactory createRequestFactory(Duration readTimeout) {
-			return (readTimeout != null) ? new HttpComponentsClientHttpRequestFactory(createHttpClient(readTimeout))
-					: new HttpComponentsClientHttpRequestFactory();
+		private static HttpComponentsClientHttpRequestFactory createRequestFactory(Duration readTimeout,
+				SslBundle sslBundle) {
+			return new HttpComponentsClientHttpRequestFactory(createHttpClient(readTimeout, sslBundle));
 		}
 
-		private static HttpClient createHttpClient(Duration readTimeout) {
-			SocketConfig socketConfig = SocketConfig.custom()
-				.setSoTimeout((int) readTimeout.toMillis(), TimeUnit.MILLISECONDS)
-				.build();
-			PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
-				.setDefaultSocketConfig(socketConfig)
-				.build();
+		private static HttpClient createHttpClient(Duration readTimeout, SslBundle sslBundle) {
+			PoolingHttpClientConnectionManagerBuilder connectionManagerBuilder = PoolingHttpClientConnectionManagerBuilder
+				.create();
+			if (readTimeout != null) {
+				SocketConfig socketConfig = SocketConfig.custom()
+					.setSoTimeout((int) readTimeout.toMillis(), TimeUnit.MILLISECONDS)
+					.build();
+				connectionManagerBuilder.setDefaultSocketConfig(socketConfig);
+			}
+			if (sslBundle != null) {
+				SslOptions options = sslBundle.getOptions();
+				String[] enabledProtocols = (!CollectionUtils.isEmpty(options.getEnabledProtocols()))
+						? options.getEnabledProtocols().toArray(String[]::new) : null;
+				String[] ciphers = (!CollectionUtils.isEmpty(options.getCiphers()))
+						? options.getCiphers().toArray(String[]::new) : null;
+				SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslBundle.createSslContext(),
+						enabledProtocols, ciphers, new DefaultHostnameVerifier());
+				connectionManagerBuilder.setSSLSocketFactory(socketFactory);
+			}
+			PoolingHttpClientConnectionManager connectionManager = connectionManagerBuilder.build();
 			return HttpClientBuilder.create().setConnectionManager(connectionManager).build();
 		}
 
@@ -166,11 +191,25 @@ public final class ClientHttpRequestFactories {
 		static OkHttp3ClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
 			Assert.state(settings.bufferRequestBody() == null,
 					() -> "OkHttp3ClientHttpRequestFactory does not support request body buffering");
-			OkHttp3ClientHttpRequestFactory requestFactory = new OkHttp3ClientHttpRequestFactory();
+			OkHttp3ClientHttpRequestFactory requestFactory = createRequestFactory(settings.sslBundle());
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
 			map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
 			return requestFactory;
+		}
+
+		private static OkHttp3ClientHttpRequestFactory createRequestFactory(SslBundle sslBundle) {
+			if (sslBundle != null) {
+				SSLSocketFactory socketFactory = sslBundle.createSslContext().getSocketFactory();
+				TrustManager[] trustManagers = sslBundle.getManagers().getTrustManagers();
+				Assert.state(trustManagers.length == 1,
+						"Trust material must be provided in the SSL bundle for OkHttp3ClientHttpRequestFactory");
+				OkHttpClient client = new OkHttpClient.Builder()
+					.sslSocketFactory(socketFactory, (X509TrustManager) trustManagers[0])
+					.build();
+				return new OkHttp3ClientHttpRequestFactory(client);
+			}
+			return new OkHttp3ClientHttpRequestFactory();
 		}
 
 	}

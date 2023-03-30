@@ -13,8 +13,9 @@ The following code shows a typical example:
 
 include::code:MyService[]
 
-TIP: `RestTemplateBuilder` includes a number of useful methods that can be used to quickly configure a `RestTemplate`.
-For example, to add BASIC auth support, you can use `builder.basicAuthentication("user", "password").build()`.
+`RestTemplateBuilder` includes a number of useful methods that can be used to quickly configure a `RestTemplate`.
+For example, to add BASIC authentication support, you can use `builder.basicAuthentication("user", "password").build()`.
+To add SSL support using an <<features#features.ssl.bundles,SSL bundle>>, you can use `builder.setSslBundle(sslBundle).build()`.
 
 
 
