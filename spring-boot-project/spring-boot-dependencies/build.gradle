@@ -14,6 +14,15 @@ bom {
 			issueLabels = ["type: dependency-upgrade"]
 		}
 	}
+	library("ActiveMQ", "5.18.1") {
+		group("org.apache.activemq") {
+			modules = [
+					"activemq-client",
+					"activemq-client-jakarta",
+					"activemq-openwire-legacy",
+			]
+		}
+	}
 	library("Angus Mail", "1.1.0") {
 		group("org.eclipse.angus") {
 			modules = [
