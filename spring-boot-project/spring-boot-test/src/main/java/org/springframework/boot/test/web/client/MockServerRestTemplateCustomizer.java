@@ -24,7 +24,9 @@ import java.util.function.Supplier;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.test.web.client.MockRestServiceServer.MockRestServiceServerBuilder;
 import org.springframework.test.web.client.RequestExpectationManager;
 import org.springframework.test.web.client.SimpleRequestExpectationManager;
 import org.springframework.util.Assert;
@@ -49,6 +51,7 @@ import org.springframework.web.client.RestTemplate;
  *
  * @author Phillip Webb
  * @author Moritz Halbritter
+ * @author Chinmoy Chakraborty
  * @since 1.4.0
  * @see #getServer()
  * @see #getServer(RestTemplate)
@@ -62,6 +65,8 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	private final Supplier<? extends RequestExpectationManager> expectationManagerSupplier;
 
 	private boolean detectRootUri = true;
+
+	private boolean bufferContent = false;
 
 	public MockServerRestTemplateCustomizer() {
 		this(SimpleRequestExpectationManager::new);
@@ -96,13 +101,25 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 		this.detectRootUri = detectRootUri;
 	}
 
+	/**
+	 * Use the {@link BufferingClientHttpRequestFactory} wrapper to buffer the input and
+	 * output streams, and for example, allow multiple reads of the response body.
+	 */
+	public void bufferContent(boolean bufferContent) {
+		this.bufferContent = bufferContent;
+	}
+
 	@Override
 	public void customize(RestTemplate restTemplate) {
 		RequestExpectationManager expectationManager = createExpectationManager();
 		if (this.detectRootUri) {
 			expectationManager = RootUriRequestExpectationManager.forRestTemplate(restTemplate, expectationManager);
 		}
-		MockRestServiceServer server = MockRestServiceServer.bindTo(restTemplate).build(expectationManager);
+		MockRestServiceServerBuilder serverBuilder = MockRestServiceServer.bindTo(restTemplate);
+		if (this.bufferContent) {
+			serverBuilder.bufferContent();
+		}
+		MockRestServiceServer server = serverBuilder.build(expectationManager);
 		this.expectationManagers.put(restTemplate, expectationManager);
 		this.servers.put(restTemplate, server);
 	}

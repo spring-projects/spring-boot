@@ -22,6 +22,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.test.web.client.RequestExpectationManager;
 import org.springframework.test.web.client.SimpleRequestExpectationManager;
 import org.springframework.test.web.client.UnorderedRequestExpectationManager;
@@ -176,6 +178,23 @@ class MockServerRestTemplateCustomizerTests {
 		RequestExpectationManager manager2 = this.customizer.getExpectationManagers().get(template2);
 		assertThat(this.customizer.getServer(template1)).extracting("expectationManager").isEqualTo(manager1);
 		assertThat(this.customizer.getServer(template2)).extracting("expectationManager").isEqualTo(manager2);
+	}
+
+	@Test
+	void bufferContentShouldBeFalseByDefault() {
+		MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer();
+		RestTemplate restTemplate = new RestTemplate();
+		customizer.customize(restTemplate);
+		assertThat(restTemplate.getRequestFactory()).isInstanceOf(ClientHttpRequestFactory.class);
+	}
+
+	@Test
+	void enableBufferContent() {
+		MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer();
+		RestTemplate restTemplate = new RestTemplate();
+		customizer.bufferContent(true);
+		customizer.customize(restTemplate);
+		assertThat(restTemplate.getRequestFactory()).isInstanceOf(BufferingClientHttpRequestFactory.class);
 	}
 
 }
