@@ -37,8 +37,6 @@ public abstract class AnsiOutput {
 
 	private static Boolean ansiCapable;
 
-	private static final String OPERATING_SYSTEM_NAME = System.getProperty("os.name").toLowerCase(Locale.ENGLISH);
-
 	private static final String ENCODE_START = "\033[";
 
 	private static final String ENCODE_END = "m";
@@ -155,7 +153,7 @@ public abstract class AnsiOutput {
 			if ((consoleAvailable == null) && (System.console() == null)) {
 				return false;
 			}
-			return !(OPERATING_SYSTEM_NAME.contains("win"));
+			return true;
 		}
 		catch (Throwable ex) {
 			return false;
