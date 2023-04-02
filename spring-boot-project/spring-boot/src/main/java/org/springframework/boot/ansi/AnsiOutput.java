@@ -16,8 +16,6 @@
 
 package org.springframework.boot.ansi;
 
-import java.util.Locale;
-
 import org.springframework.util.Assert;
 
 /**
