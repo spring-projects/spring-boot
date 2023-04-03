@@ -69,7 +69,6 @@ public class BatchProperties {
 
 		/**
 		 * Transaction isolation level to use when creating job meta-data for new jobs.
-		 * Auto-detected based on whether JPA is being used or not.
 		 */
 		private Isolation isolationLevelForCreate;
 
