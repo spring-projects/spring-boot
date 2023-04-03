@@ -134,10 +134,31 @@ If you run `mvn dependency:tree` again, you see that there are now a number of a
 
 [[getting-started.first-application.code]]
 === Writing the Code
-To finish our application, we need to create a single Java file.
-By default, Maven compiles sources from `src/main/java`, so you need to create that directory structure and then add a file named `src/main/java/MyApplication.java` to contain the following code:
+To finish our application, we need to create a single Java file in a package. We shall be creating a directory structure corresponding to this package.
+By default, Maven compiles sources from `src/main/java`. Our package is `com.example.myproject`, so, our directory will be `src/main/java/com/example/myproject`. We'll create a file named `src/main/java/com/example/myproject/MyApplication.java` to contain the following code:
 
-include::code:MyApplication[]
+```java
+package com.example.myproject;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@SpringBootApplication
+public class MyApplication {
+
+    @RequestMapping("/")
+    String home() {
+        return "Hello World!";
+    }
+
+    public static void main(String[] args) {
+        SpringApplication.run(MyApplication.class, args);
+    }
+
+}
+```
 
 Although there is not much code here, quite a lot is going on.
 We step through the important parts in the next few sections.
