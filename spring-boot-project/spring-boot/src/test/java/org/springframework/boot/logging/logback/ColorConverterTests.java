@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,6 +52,20 @@ class ColorConverterTests {
 	}
 
 	@Test
+	void black() {
+		this.converter.setOptionList(Collections.singletonList("black"));
+		String out = this.converter.transform(this.event, this.in);
+		assertThat(out).isEqualTo("\033[30min\033[0;39m");
+	}
+
+	@Test
+	void white() {
+		this.converter.setOptionList(Collections.singletonList("white"));
+		String out = this.converter.transform(this.event, this.in);
+		assertThat(out).isEqualTo("\033[37min\033[0;39m");
+	}
+
+	@Test
 	void faint() {
 		this.converter.setOptionList(Collections.singletonList("faint"));
 		String out = this.converter.transform(this.event, this.in);
@@ -101,24 +115,17 @@ class ColorConverterTests {
 	}
 
 	@Test
-	void white() {
-		this.converter.setOptionList(Collections.singletonList("white"));
-		String out = this.converter.transform(this.event, this.in);
-		assertThat(out).isEqualTo("\033[37min\033[0;39m");
-	}
-
-	@Test
-	void black() {
-		this.converter.setOptionList(Collections.singletonList("black"));
-		String out = this.converter.transform(this.event, this.in);
-		assertThat(out).isEqualTo("\033[30min\033[0;39m");
-	}
-
-	@Test
 	void brightBlack() {
 		this.converter.setOptionList(Collections.singletonList("bright_black"));
 		String out = this.converter.transform(this.event, this.in);
 		assertThat(out).isEqualTo("\033[90min\033[0;39m");
+	}
+
+	@Test
+	void brightWhite() {
+		this.converter.setOptionList(Collections.singletonList("bright_white"));
+		String out = this.converter.transform(this.event, this.in);
+		assertThat(out).isEqualTo("\033[97min\033[0;39m");
 	}
 
 	@Test
@@ -161,13 +168,6 @@ class ColorConverterTests {
 		this.converter.setOptionList(Collections.singletonList("bright_cyan"));
 		String out = this.converter.transform(this.event, this.in);
 		assertThat(out).isEqualTo("\033[96min\033[0;39m");
-	}
-
-	@Test
-	void brightWhite() {
-		this.converter.setOptionList(Collections.singletonList("bright_white"));
-		String out = this.converter.transform(this.event, this.in);
-		assertThat(out).isEqualTo("\033[97min\033[0;39m");
 	}
 
 	@Test
