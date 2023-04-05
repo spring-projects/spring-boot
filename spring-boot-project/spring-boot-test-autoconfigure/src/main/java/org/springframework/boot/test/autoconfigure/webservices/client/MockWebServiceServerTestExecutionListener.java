@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,9 @@ import org.springframework.ws.test.client.MockWebServiceServer;
  */
 public class MockWebServiceServerTestExecutionListener extends AbstractTestExecutionListener {
 
-	private static final String MOCK_SERVER_CLASS = "org.springframework.ws.test.client.MockWebServiceServer";
+	private static final boolean MOCK_SERVER_PRESENT = ClassUtils.isPresent(
+			"org.springframework.ws.test.client.MockWebServiceServer",
+			MockWebServiceServerTestExecutionListener.class.getClassLoader());
 
 	@Override
 	public int getOrder() {
@@ -42,7 +44,7 @@ public class MockWebServiceServerTestExecutionListener extends AbstractTestExecu
 
 	@Override
 	public void afterTestMethod(TestContext testContext) {
-		if (isMockWebServiceServerPresent()) {
+		if (MOCK_SERVER_PRESENT) {
 			ApplicationContext applicationContext = testContext.getApplicationContext();
 			String[] names = applicationContext.getBeanNamesForType(MockWebServiceServer.class, false, false);
 			for (String name : names) {
@@ -51,10 +53,6 @@ public class MockWebServiceServerTestExecutionListener extends AbstractTestExecu
 				mockServer.reset();
 			}
 		}
-	}
-
-	private boolean isMockWebServiceServerPresent() {
-		return ClassUtils.isPresent(MOCK_SERVER_CLASS, getClass().getClassLoader());
 	}
 
 }
