@@ -116,6 +116,7 @@ dependencies {
 	optional("org.springframework:spring-webflux")
 	optional("org.springframework:spring-webmvc")
 	optional("org.springframework.amqp:spring-rabbit")
+	optional("org.springframework.batch:spring-batch-core")
 	optional("org.springframework.data:spring-data-cassandra") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
