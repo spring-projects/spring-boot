@@ -25,7 +25,7 @@
 						<configuration>
 							<finalName>final-name</finalName>
 							<image>
-								<builder>projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.1</builder>
+								<builder>projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.2</builder>
 							</image>
 						</configuration>
 					</execution>

@@ -50,6 +50,8 @@ class Lifecycle implements Closeable {
 
 	private static final String PLATFORM_API_VERSION_KEY = "CNB_PLATFORM_API";
 
+	private static final String SOURCE_DATE_EPOCH_KEY = "SOURCE_DATE_EPOCH";
+
 	private static final String DOMAIN_SOCKET_PATH = "/var/run/docker.sock";
 
 	private final BuildLog log;
@@ -183,6 +185,9 @@ class Lifecycle implements Closeable {
 		phase.withEnv(PLATFORM_API_VERSION_KEY, this.platformVersion.toString());
 		if (this.request.getNetwork() != null) {
 			phase.withNetworkMode(this.request.getNetwork());
+		}
+		if (this.request.getCreatedDate() != null) {
+			phase.withEnv(SOURCE_DATE_EPOCH_KEY, Long.toString(this.request.getCreatedDate().getEpochSecond()));
 		}
 		return phase;
 	}

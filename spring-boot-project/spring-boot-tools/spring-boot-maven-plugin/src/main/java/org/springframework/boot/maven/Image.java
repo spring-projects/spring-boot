@@ -73,6 +73,8 @@ public class Image {
 
 	CacheInfo launchCache;
 
+	String createdDate;
+
 	/**
 	 * The name of the created image.
 	 * @return the image name
@@ -173,6 +175,18 @@ public class Image {
 		this.network = network;
 	}
 
+	/**
+	 * Returns the created date for the image.
+	 * @return the created date
+	 */
+	public String getCreatedDate() {
+		return this.createdDate;
+	}
+
+	public void setCreatedDate(String createdDate) {
+		this.createdDate = createdDate;
+	}
+
 	BuildRequest getBuildRequest(Artifact artifact, Function<Owner, TarArchive> applicationContent) {
 		return customize(BuildRequest.of(getOrDeduceName(artifact), applicationContent));
 	}
@@ -220,6 +234,9 @@ public class Image {
 		}
 		if (this.launchCache != null) {
 			request = request.withLaunchCache(this.launchCache.asCache());
+		}
+		if (StringUtils.hasText(this.createdDate)) {
+			request = request.withCreatedDate(this.createdDate);
 		}
 		return request;
 	}

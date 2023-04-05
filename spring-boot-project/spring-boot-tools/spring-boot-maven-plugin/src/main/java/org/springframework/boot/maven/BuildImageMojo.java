@@ -156,6 +156,14 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	String network;
 
 	/**
+	 * Alias for {@link Image#createdDate} to support configuration through command-line
+	 * property.
+	 * @since 3.1.0
+	 */
+	@Parameter(property = "spring-boot.build-image.createdDate", readonly = true)
+	String createdDate;
+
+	/**
 	 * Docker configuration options.
 	 * @since 2.4.0
 	 */
@@ -252,6 +260,9 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 		}
 		if (image.network == null && this.network != null) {
 			image.setNetwork(this.network);
+		}
+		if (image.createdDate == null && this.createdDate != null) {
+			image.setCreatedDate(this.createdDate);
 		}
 		return customize(image.getBuildRequest(this.project.getArtifact(), content));
 	}

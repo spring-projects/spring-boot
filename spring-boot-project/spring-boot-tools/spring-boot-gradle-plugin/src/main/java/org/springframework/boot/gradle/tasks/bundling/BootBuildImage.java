@@ -261,6 +261,16 @@ public abstract class BootBuildImage extends DefaultTask {
 	}
 
 	/**
+	 * Returns the date that will be used as the {@code Created} date of the image. When
+	 * {@code null}, a fixed date that enables build reproducibility will be used.
+	 * @return the created date
+	 */
+	@Input
+	@Optional
+	@Option(option = "createdDate", description = "The date to use as the created date of the image")
+	public abstract Property<String> getCreatedDate();
+
+	/**
 	 * Returns the Docker configuration the builder will use.
 	 * @return docker configuration.
 	 * @since 2.4.0
@@ -305,6 +315,7 @@ public abstract class BootBuildImage extends DefaultTask {
 		request = customizeTags(request);
 		request = customizeCaches(request);
 		request = request.withNetwork(getNetwork().getOrNull());
+		request = customizeCreatedDate(request);
 		return request;
 	}
 
@@ -383,6 +394,14 @@ public abstract class BootBuildImage extends DefaultTask {
 		}
 		if (this.launchCache.asCache() != null) {
 			request = request.withLaunchCache(this.launchCache.asCache());
+		}
+		return request;
+	}
+
+	private BuildRequest customizeCreatedDate(BuildRequest request) {
+		String createdDate = getCreatedDate().getOrNull();
+		if (createdDate != null) {
+			return request.withCreatedDate(createdDate);
 		}
 		return request;
 	}
