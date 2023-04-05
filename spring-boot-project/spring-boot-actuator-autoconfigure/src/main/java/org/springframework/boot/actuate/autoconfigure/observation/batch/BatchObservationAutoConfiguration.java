@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,21 +28,20 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for instrumentation of Spring Batch.
- * Jobs
+ * {@link EnableAutoConfiguration Auto-configuration} for instrumentation of Spring Batch
+ * Jobs.
  *
  * @author Mark Bonnekessel
- * @since 3.0.3
+ * @since 3.0.6
  */
 @AutoConfiguration(after = ObservationAutoConfiguration.class)
 @ConditionalOnBean(ObservationRegistry.class)
 @ConditionalOnClass({ ObservationRegistry.class, BatchObservabilityBeanPostProcessor.class })
-@SuppressWarnings("removal")
 public class BatchObservationAutoConfiguration {
 
 	@ConditionalOnMissingBean
 	@Bean
-	public BatchObservabilityBeanPostProcessor batchObservabilityBeanPostProcessor() {
+	public static BatchObservabilityBeanPostProcessor batchObservabilityBeanPostProcessor() {
 		return new BatchObservabilityBeanPostProcessor();
 	}
 
