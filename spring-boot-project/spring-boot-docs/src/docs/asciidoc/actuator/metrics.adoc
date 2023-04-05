@@ -858,10 +858,20 @@ NOTE: Only caches that are configured on startup are bound to the registry.
 For caches not defined in the cache’s configuration, such as caches created on the fly or programmatically after the startup phase, an explicit registration is required.
 A `CacheMetricsRegistrar` bean is made available to make that process easier.
 
+
+
+[[actuator.metrics.supported.spring-batch]]
+==== Spring Batch Metrics
+
+See the {spring-batch-docs}monitoring-and-metrics.html[Spring Batch reference documentation].
+
+
+
 [[actuator.metrics.supported.spring-graphql]]
 ==== Spring GraphQL Metrics
 
 See the {spring-graphql-docs}[Spring GraphQL reference documentation].
+
 
 
 [[actuator.metrics.supported.jdbc]]
