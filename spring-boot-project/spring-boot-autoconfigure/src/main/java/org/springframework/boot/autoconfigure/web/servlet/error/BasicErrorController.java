@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.servlet.error;
 
+import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -24,12 +25,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
@@ -49,6 +52,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Michael Stummvoll
  * @author Stephane Nicoll
  * @author Scott Frederick
+ * @author Yanming Zhou
  * @since 1.0.0
  * @see ErrorAttributes
  * @see ErrorProperties
@@ -59,26 +63,33 @@ public class BasicErrorController extends AbstractErrorController {
 
 	private final ErrorProperties errorProperties;
 
+	private final WebMvcProperties webMvcProperties;
+
 	/**
 	 * Create a new {@link BasicErrorController} instance.
 	 * @param errorAttributes the error attributes
 	 * @param errorProperties configuration properties
+	 * @param webMvcProperties webMvc properties
 	 */
-	public BasicErrorController(ErrorAttributes errorAttributes, ErrorProperties errorProperties) {
-		this(errorAttributes, errorProperties, Collections.emptyList());
+	public BasicErrorController(ErrorAttributes errorAttributes, ErrorProperties errorProperties,
+			WebMvcProperties webMvcProperties) {
+		this(errorAttributes, errorProperties, webMvcProperties, Collections.emptyList());
 	}
 
 	/**
 	 * Create a new {@link BasicErrorController} instance.
 	 * @param errorAttributes the error attributes
 	 * @param errorProperties configuration properties
+	 * @param webMvcProperties webMvc properties
 	 * @param errorViewResolvers error view resolvers
 	 */
 	public BasicErrorController(ErrorAttributes errorAttributes, ErrorProperties errorProperties,
-			List<ErrorViewResolver> errorViewResolvers) {
+			WebMvcProperties webMvcProperties, List<ErrorViewResolver> errorViewResolvers) {
 		super(errorAttributes, errorViewResolvers);
 		Assert.notNull(errorProperties, "ErrorProperties must not be null");
 		this.errorProperties = errorProperties;
+		Assert.notNull(webMvcProperties, "WebMvcProperties must not be null");
+		this.webMvcProperties = webMvcProperties;
 	}
 
 	@RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
@@ -92,13 +103,23 @@ public class BasicErrorController extends AbstractErrorController {
 	}
 
 	@RequestMapping
-	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
+	public ResponseEntity<?> error(HttpServletRequest request) {
 		HttpStatus status = getStatus(request);
 		if (status == HttpStatus.NO_CONTENT) {
 			return new ResponseEntity<>(status);
 		}
 		Map<String, Object> body = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.ALL));
-		return new ResponseEntity<>(body, status);
+		if (this.webMvcProperties.getProblemdetails().isEnabled()) {
+			String detail = (body.get("message") != null) ? body.get("message").toString() : "";
+			ProblemDetail pd = ProblemDetail.forStatusAndDetail(status, detail);
+			if (body.get("path") != null) {
+				pd.setInstance(URI.create(body.get("path").toString()));
+			}
+			return ResponseEntity.status(status).body(pd);
+		}
+		else {
+			return new ResponseEntity<>(body, status);
+		}
 	}
 
 	@ExceptionHandler(HttpMediaTypeNotAcceptableException.class)

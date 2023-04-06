@@ -80,6 +80,7 @@ import org.springframework.web.util.HtmlUtils;
  * @author Stephane Nicoll
  * @author Brian Clozel
  * @author Scott Frederick
+ * @author Yanming Zhou
  * @since 1.0.0
  */
 // Load before the main WebMvcAutoConfiguration so that the error View is available
@@ -103,9 +104,9 @@ public class ErrorMvcAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(value = ErrorController.class, search = SearchStrategy.CURRENT)
-	public BasicErrorController basicErrorController(ErrorAttributes errorAttributes,
+	public BasicErrorController basicErrorController(ErrorAttributes errorAttributes, WebMvcProperties webMvcProperties,
 			ObjectProvider<ErrorViewResolver> errorViewResolvers) {
-		return new BasicErrorController(errorAttributes, this.serverProperties.getError(),
+		return new BasicErrorController(errorAttributes, this.serverProperties.getError(), webMvcProperties,
 				errorViewResolvers.orderedStream().toList());
 	}
 
