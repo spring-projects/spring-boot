@@ -1256,7 +1256,7 @@ bom {
 			]
 		}
 	}
-	library("Selenium", "4.8.1") {
+	library("Selenium", "4.8.3") {
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"lift",
