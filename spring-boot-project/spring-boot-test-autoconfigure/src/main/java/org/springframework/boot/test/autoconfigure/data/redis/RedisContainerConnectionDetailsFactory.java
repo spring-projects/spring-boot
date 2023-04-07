@@ -51,19 +51,8 @@ class RedisContainerConnectionDetailsFactory
 		private RedisContainerConnectionDetails(
 				ContainerConnectionSource<RedisServiceConnection, RedisConnectionDetails, GenericContainer<?>> source) {
 			super(source);
-			this.standalone = new Standalone() {
-
-				@Override
-				public String getHost() {
-					return source.getContainer().getHost();
-				}
-
-				@Override
-				public int getPort() {
-					return source.getContainer().getFirstMappedPort();
-				}
-
-			};
+			this.standalone = Standalone.of(source.getContainer().getHost(),
+					source.getContainer().getFirstMappedPort());
 		}
 
 		@Override

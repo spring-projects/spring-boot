@@ -17,6 +17,7 @@
 package org.springframework.boot.test.autoconfigure.service.connection;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -24,7 +25,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
-import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
@@ -61,21 +61,21 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 
 	private void registerServiceConnection(BeanDefinitionRegistry registry, ContainerConnectionSource<?, ?, ?> source) {
 		ConnectionDetails connectionDetails = getConnectionDetails(source);
-		String beanName = source.getBeanName();
-		registry.registerBeanDefinition(beanName, createBeanDefinition(connectionDetails));
-	}
-
-	private <S> ConnectionDetails getConnectionDetails(S source) {
-		ConnectionDetailsFactory<S, ConnectionDetails> factory = this.factories.getConnectionDetailsFactory(source);
-		ConnectionDetails connectionDetails = factory.getConnectionDetails(source);
-		Assert.state(connectionDetails != null,
-				() -> "No connection details created by %s".formatted(factory.getClass().getName()));
-		return connectionDetails;
+		register(connectionDetails, registry, source.getBeanName());
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> BeanDefinition createBeanDefinition(T instance) {
-		return new RootBeanDefinition((Class<T>) instance.getClass(), () -> instance);
+	private <T> void register(ConnectionDetails connectionDetails, BeanDefinitionRegistry registry, String beanName) {
+		Class<T> beanType = (Class<T>) connectionDetails.getClass();
+		Supplier<T> beanSupplier = () -> (T) connectionDetails;
+		BeanDefinition beanDefinition = new RootBeanDefinition(beanType, beanSupplier);
+		registry.registerBeanDefinition(beanName, beanDefinition);
+	}
+
+	private <S> ConnectionDetails getConnectionDetails(S source) {
+		ConnectionDetails connectionDetails = this.factories.getConnectionDetails(source);
+		Assert.state(connectionDetails != null, () -> "No connection details created for %s".formatted(source));
+		return connectionDetails;
 	}
 
 	List<ContainerConnectionSource<?, ?, ?>> getSources() {
