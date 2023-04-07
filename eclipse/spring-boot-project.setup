@@ -91,8 +91,6 @@
     <requirement
         name="org.eclipse.wst.web_ui.feature.feature.group"/>
     <requirement
-        name="org.sonatype.m2e.buildhelper.feature.feature.group"/>
-    <requirement
         name="org.springframework.boot.ide.main.feature.feature.group"/>
     <requirement
         name="org.springframework.ide.eclipse.boot.dash.feature.feature.group"/>
@@ -139,7 +137,7 @@
             pattern="spring-boot.*"/>
         <operand
             xsi:type="workingsets:ExclusionPredicate"
-            excludedWorkingSet="//@setupTasks.8/@workingSets[name='spring-boot-smoke-tests']"/>
+            excludedWorkingSet="//@setupTasks.8/@workingSets[name='spring-boot-smoke-tests'] //@setupTasks.8/@workingSets[name='spring-boot-starters'] //@setupTasks.8/@workingSets[name='spring-boot-tests'] //@setupTasks.8/@workingSets[name='spring-boot-tools']"/>
       </predicate>
     </workingSet>
     <workingSet
