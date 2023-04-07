@@ -245,6 +245,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 					"projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.2")
 			.systemProperty("spring-boot.build-image.runImage", "projects.registry.vmware.com/springboot/run:tiny-cnb")
 			.systemProperty("spring-boot.build-image.createdDate", "2020-07-01T12:34:56Z")
+			.systemProperty("spring-boot.build-image.applicationDirectory", "/application")
 			.execute((project) -> {
 				assertThat(buildLog(project)).contains("Building image")
 					.contains("example.com/test/cmd-property-name:v1")
@@ -431,6 +432,21 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 				assertThat(createdDateTime.getMonth()).isEqualTo(current.getMonth());
 				assertThat(createdDateTime.getDayOfMonth()).isEqualTo(current.getDayOfMonth());
 				removeImage("build-image-current-created-date", "0.0.1.BUILD-SNAPSHOT");
+			});
+	}
+
+	@TestTemplate
+	void whenBuildImageIsInvokedWithApplicationDirectory(MavenBuild mavenBuild) {
+		String testBuildId = randomString();
+		mavenBuild.project("build-image-app-dir")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.systemProperty("test-build-id", testBuildId)
+			.execute((project) -> {
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-app-dir:0.0.1.BUILD-SNAPSHOT")
+					.contains("Successfully built image");
+				removeImage("build-image-app-dir", "0.0.1.BUILD-SNAPSHOT");
 			});
 	}
 

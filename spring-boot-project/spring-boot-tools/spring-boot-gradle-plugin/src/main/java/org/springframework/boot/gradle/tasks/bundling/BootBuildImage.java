@@ -271,6 +271,16 @@ public abstract class BootBuildImage extends DefaultTask {
 	public abstract Property<String> getCreatedDate();
 
 	/**
+	 * Returns the directory that contains application content in the image. When
+	 * {@code null}, a default location will be used.
+	 * @return the application directory
+	 */
+	@Input
+	@Optional
+	@Option(option = "applicationDirectory", description = "The directory containing application content in the image")
+	public abstract Property<String> getApplicationDirectory();
+
+	/**
 	 * Returns the Docker configuration the builder will use.
 	 * @return docker configuration.
 	 * @since 2.4.0
@@ -316,6 +326,7 @@ public abstract class BootBuildImage extends DefaultTask {
 		request = customizeCaches(request);
 		request = request.withNetwork(getNetwork().getOrNull());
 		request = customizeCreatedDate(request);
+		request = customizeApplicationDirectory(request);
 		return request;
 	}
 
@@ -402,6 +413,14 @@ public abstract class BootBuildImage extends DefaultTask {
 		String createdDate = getCreatedDate().getOrNull();
 		if (createdDate != null) {
 			return request.withCreatedDate(createdDate);
+		}
+		return request;
+	}
+
+	private BuildRequest customizeApplicationDirectory(BuildRequest request) {
+		String applicationDirectory = getApplicationDirectory().getOrNull();
+		if (applicationDirectory != null) {
+			return request.withApplicationDirectory(applicationDirectory);
 		}
 		return request;
 	}

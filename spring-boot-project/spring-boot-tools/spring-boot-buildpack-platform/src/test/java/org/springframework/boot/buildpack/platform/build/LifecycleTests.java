@@ -230,6 +230,17 @@ class LifecycleTests {
 	}
 
 	@Test
+	void executeWithApplicationDirectoryExecutesPhases() throws Exception {
+		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
+		BuildRequest request = getTestRequest().withApplicationDirectory("/application");
+		createLifecycle(request).execute();
+		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-app-dir.json"));
+		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+	}
+
+	@Test
 	void executeWithDockerHostAndRemoteAddressExecutesPhases() throws Exception {
 		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());

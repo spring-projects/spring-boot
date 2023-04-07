@@ -75,6 +75,8 @@ public class Image {
 
 	String createdDate;
 
+	String applicationDirectory;
+
 	/**
 	 * The name of the created image.
 	 * @return the image name
@@ -187,6 +189,18 @@ public class Image {
 		this.createdDate = createdDate;
 	}
 
+	/**
+	 * Returns the application content directory for the image.
+	 * @return the application directory
+	 */
+	public String getApplicationDirectory() {
+		return this.applicationDirectory;
+	}
+
+	public void setApplicationDirectory(String applicationDirectory) {
+		this.applicationDirectory = applicationDirectory;
+	}
+
 	BuildRequest getBuildRequest(Artifact artifact, Function<Owner, TarArchive> applicationContent) {
 		return customize(BuildRequest.of(getOrDeduceName(artifact), applicationContent));
 	}
@@ -237,6 +251,9 @@ public class Image {
 		}
 		if (StringUtils.hasText(this.createdDate)) {
 			request = request.withCreatedDate(this.createdDate);
+		}
+		if (StringUtils.hasText(this.applicationDirectory)) {
+			request = request.withApplicationDirectory(this.applicationDirectory);
 		}
 		return request;
 	}

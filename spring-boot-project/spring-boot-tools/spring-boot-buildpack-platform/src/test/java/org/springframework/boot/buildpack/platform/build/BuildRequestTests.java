@@ -292,6 +292,13 @@ class BuildRequestTests {
 			.withMessageContaining("'not a date'");
 	}
 
+	@Test
+	void withApplicationDirectorySetsApplicationDirectory() throws Exception {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest withAppDir = request.withApplicationDirectory("/application");
+		assertThat(withAppDir.getApplicationDirectory()).isEqualTo("/application");
+	}
+
 	private void hasExpectedJarContent(TarArchive archive) {
 		try {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

@@ -76,6 +76,8 @@ class Lifecycle implements Closeable {
 
 	private final VolumeName launchCacheVolume;
 
+	private final String applicationDirectory;
+
 	private boolean executed;
 
 	private boolean applicationVolumePopulated;
@@ -101,6 +103,7 @@ class Lifecycle implements Closeable {
 		this.applicationVolume = createRandomVolumeName("pack-app-");
 		this.buildCacheVolume = getBuildCacheVolumeName(request);
 		this.launchCacheVolume = getLaunchCacheVolumeName(request);
+		this.applicationDirectory = getApplicationDirectory(request);
 	}
 
 	protected VolumeName createRandomVolumeName(String prefix) {
@@ -126,6 +129,10 @@ class Lifecycle implements Closeable {
 			return VolumeName.of(cache.getVolume().getName());
 		}
 		return null;
+	}
+
+	private String getApplicationDirectory(BuildRequest request) {
+		return (request.getApplicationDirectory() != null) ? request.getApplicationDirectory() : Directory.APPLICATION;
 	}
 
 	private VolumeName createCacheVolumeName(BuildRequest request, String suffix) {
@@ -161,7 +168,7 @@ class Lifecycle implements Closeable {
 		phase.withDaemonAccess();
 		configureDaemonAccess(phase);
 		phase.withLogLevelArg();
-		phase.withArgs("-app", Directory.APPLICATION);
+		phase.withArgs("-app", this.applicationDirectory);
 		phase.withArgs("-platform", Directory.PLATFORM);
 		phase.withArgs("-run-image", this.request.getRunImage());
 		phase.withArgs("-layers", Directory.LAYERS);
@@ -176,7 +183,7 @@ class Lifecycle implements Closeable {
 		}
 		phase.withArgs(this.request.getName());
 		phase.withBinding(Binding.from(this.layersVolume, Directory.LAYERS));
-		phase.withBinding(Binding.from(this.applicationVolume, Directory.APPLICATION));
+		phase.withBinding(Binding.from(this.applicationVolume, this.applicationDirectory));
 		phase.withBinding(Binding.from(this.buildCacheVolume, Directory.CACHE));
 		phase.withBinding(Binding.from(this.launchCacheVolume, Directory.LAUNCH_CACHE));
 		if (this.request.getBindings() != null) {
@@ -245,7 +252,7 @@ class Lifecycle implements Closeable {
 		try {
 			TarArchive applicationContent = this.request.getApplicationContent(this.builder.getBuildOwner());
 			return this.docker.container()
-				.create(config, ContainerContent.of(applicationContent, Directory.APPLICATION));
+				.create(config, ContainerContent.of(applicationContent, this.applicationDirectory));
 		}
 		finally {
 			this.applicationVolumePopulated = true;

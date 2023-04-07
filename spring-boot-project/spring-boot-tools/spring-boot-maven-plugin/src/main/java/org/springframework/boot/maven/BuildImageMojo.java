@@ -164,6 +164,14 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 	String createdDate;
 
 	/**
+	 * Alias for {@link Image#applicationDirectory} to support configuration through
+	 * command-line property.
+	 * @since 3.1.0
+	 */
+	@Parameter(property = "spring-boot.build-image.applicationDirectory", readonly = true)
+	String applicationDirectory;
+
+	/**
 	 * Docker configuration options.
 	 * @since 2.4.0
 	 */
@@ -263,6 +271,9 @@ public abstract class BuildImageMojo extends AbstractPackagerMojo {
 		}
 		if (image.createdDate == null && this.createdDate != null) {
 			image.setCreatedDate(this.createdDate);
+		}
+		if (image.applicationDirectory == null && this.applicationDirectory != null) {
+			image.setApplicationDirectory(this.applicationDirectory);
 		}
 		return customize(image.getBuildRequest(this.project.getArtifact(), content));
 	}
