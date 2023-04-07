@@ -150,6 +150,7 @@ class UndertowWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	@Deprecated
 	void allowEncodedSlashes() {
 		bind("server.undertow.allow-encoded-slash=true");
 		assertThat(boundServerOption(UndertowOptions.ALLOW_ENCODED_SLASH)).isTrue();

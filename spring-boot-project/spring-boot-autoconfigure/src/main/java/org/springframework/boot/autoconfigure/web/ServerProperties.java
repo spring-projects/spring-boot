@@ -31,6 +31,7 @@ import java.util.Map;
 import io.undertow.UndertowOptions;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.web.server.Compression;
@@ -1576,10 +1577,13 @@ public class ServerProperties {
 			this.maxCookies = maxCookies;
 		}
 
+		@Deprecated
+		@DeprecatedConfigurationProperty(reason = "This option was interpreted improperly")
 		public boolean isAllowEncodedSlash() {
 			return this.allowEncodedSlash;
 		}
 
+		@Deprecated
 		public void setAllowEncodedSlash(boolean allowEncodedSlash) {
 			this.allowEncodedSlash = allowEncodedSlash;
 		}

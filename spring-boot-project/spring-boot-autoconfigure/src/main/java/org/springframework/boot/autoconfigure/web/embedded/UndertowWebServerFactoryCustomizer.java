@@ -87,6 +87,7 @@ public class UndertowWebServerFactoryCustomizer
 		map.from(this::getOrDeduceUseForwardHeaders).to(factory::setUseForwardHeaders);
 	}
 
+	@SuppressWarnings("deprecation")
 	private void mapUndertowProperties(ConfigurableUndertowWebServerFactory factory, ServerOptions serverOptions) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Undertow properties = this.serverProperties.getUndertow();
