@@ -21,11 +21,3 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 	testImplementation("org.apache.httpcomponents.client5:httpclient5")
 }
-
-eclipse {
-	wtp {
-		facet {
-			facet name: 'jst.web', version: '5.0'
-		}
-	}
-}
