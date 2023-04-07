@@ -59,6 +59,7 @@ dependencies {
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-docker-compose", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "configurationPropertiesMetadata"))
 
@@ -67,6 +68,7 @@ dependencies {
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator"))
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	implementation(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
+	implementation(project(path: ":spring-boot-project:spring-boot-docker-compose"))
 	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-cli"))
 	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation(project(path: ":spring-boot-project:spring-boot-test"))
