@@ -1,4 +1,4 @@
-# Spring Test ContextCustomizerFactories
+# Spring Test Context Customizer Factories
 org.springframework.test.context.ContextCustomizerFactory=\
 org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCustomizerFactory,\
 org.springframework.boot.test.autoconfigure.actuate.observability.ObservabilityContextCustomizerFactory,\
@@ -6,7 +6,7 @@ org.springframework.boot.test.autoconfigure.filter.TypeExcludeFiltersContextCust
 org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizerFactory,\
 org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizerFactory
 
-# Test Execution Listeners
+# Spring Test Execution Listeners
 org.springframework.test.context.TestExecutionListener=\
 org.springframework.boot.test.autoconfigure.restdocs.RestDocsTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerResetTestExecutionListener,\
@@ -14,5 +14,6 @@ org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrintOnlyOnFailur
 org.springframework.boot.test.autoconfigure.web.servlet.WebDriverTestExecutionListener,\
 org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceServerTestExecutionListener
 
+# Spring Test ApplcationContext Failure Processors
 org.springframework.test.context.ApplicationContextFailureProcessor=\
 org.springframework.boot.test.autoconfigure.ConditionReportApplicationContextFailureProcessor
