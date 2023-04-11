@@ -1,10 +1,10 @@
 plugins {
-    id "java-library"
+	id "java-library"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.integration-test"
-    id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.optional-dependencies"
 }
 
 description = "Spring Boot Developer Tools"
