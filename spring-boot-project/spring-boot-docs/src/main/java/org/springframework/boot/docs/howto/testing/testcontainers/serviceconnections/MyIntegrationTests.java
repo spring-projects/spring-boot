@@ -30,7 +30,7 @@ class MyIntegrationTests {
 
 	@Container
 	@Neo4jServiceConnection
-	static Neo4jContainer<?> neo4j = new Neo4jContainer<>("neo4j:4.2");
+	static Neo4jContainer<?> neo4j = new Neo4jContainer<>("neo4j:5");
 
 	@Test
 	void myTest() {

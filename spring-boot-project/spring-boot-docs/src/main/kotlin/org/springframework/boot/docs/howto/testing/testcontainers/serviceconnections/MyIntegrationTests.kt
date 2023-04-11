@@ -38,7 +38,7 @@ internal class MyIntegrationTests {
 
 		@Container
 		@Neo4jServiceConnection
-		var neo4j: Neo4jContainer<*> = Neo4jContainer<Nothing>("neo4j:4.2")
+		var neo4j: Neo4jContainer<*> = Neo4jContainer<Nothing>("neo4j:5")
 
 	}
 
