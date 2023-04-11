@@ -126,16 +126,6 @@ class XADataSourceAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class JdbcConnectionDetailsConfiguration {
-
-		@Bean
-		JdbcConnectionDetails jdbcConnectionDetails() {
-			return new TestJdbcConnectionDetails();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
 	static class WrapExisting {
 
 		@Bean
