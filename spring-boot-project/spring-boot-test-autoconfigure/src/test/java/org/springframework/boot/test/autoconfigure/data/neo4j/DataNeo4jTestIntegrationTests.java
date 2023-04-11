@@ -25,7 +25,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.neo4j.Neo4jServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.neo4j.Neo4jServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.neo4j.core.Neo4jTemplate;

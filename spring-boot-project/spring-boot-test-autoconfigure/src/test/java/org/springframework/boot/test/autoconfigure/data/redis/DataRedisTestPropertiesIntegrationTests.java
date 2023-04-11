@@ -22,6 +22,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.testcontainers.service.connection.redis.RedisServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.core.env.Environment;
 

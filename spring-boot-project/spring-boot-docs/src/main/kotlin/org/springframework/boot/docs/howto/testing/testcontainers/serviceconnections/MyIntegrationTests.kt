@@ -17,8 +17,8 @@
 package org.springframework.boot.docs.howto.testing.testcontainers.serviceconnection
 
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.autoconfigure.neo4j.Neo4jServiceConnection;
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.testcontainers.service.connection.neo4j.Neo4jServiceConnection;
 import org.springframework.test.context.DynamicPropertyRegistry
 import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.Neo4jContainer

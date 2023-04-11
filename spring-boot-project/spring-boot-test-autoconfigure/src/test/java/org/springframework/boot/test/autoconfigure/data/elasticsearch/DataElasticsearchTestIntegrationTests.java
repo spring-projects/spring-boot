@@ -26,7 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.elasticsearch.ElasticsearchServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.elasticsearch.ElasticsearchServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;

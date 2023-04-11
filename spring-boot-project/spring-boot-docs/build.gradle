@@ -70,6 +70,7 @@ dependencies {
 	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation(project(path: ":spring-boot-project:spring-boot-test"))
 	implementation(project(path: ":spring-boot-project:spring-boot-test-autoconfigure"))
+	implementation(project(path: ":spring-boot-project:spring-boot-testcontainers"))
 	implementation("ch.qos.logback:logback-classic")
 	implementation("com.zaxxer:HikariCP")
 	implementation("io.micrometer:micrometer-core")

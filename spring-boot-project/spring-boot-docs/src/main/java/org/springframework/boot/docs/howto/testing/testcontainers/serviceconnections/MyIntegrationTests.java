@@ -21,8 +21,8 @@ import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
-import org.springframework.boot.test.autoconfigure.neo4j.Neo4jServiceConnection;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.neo4j.Neo4jServiceConnection;
 
 @SpringBootTest
 @Testcontainers

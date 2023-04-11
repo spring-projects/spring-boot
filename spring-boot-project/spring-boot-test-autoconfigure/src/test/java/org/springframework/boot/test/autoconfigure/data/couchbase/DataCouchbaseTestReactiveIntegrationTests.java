@@ -25,7 +25,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.couchbase.CouchbaseServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.couchbase.CouchbaseServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.data.couchbase.core.ReactiveCouchbaseTemplate;
 

@@ -26,9 +26,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.redis.RedisServiceConnection;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.testcontainers.service.connection.redis.RedisServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;

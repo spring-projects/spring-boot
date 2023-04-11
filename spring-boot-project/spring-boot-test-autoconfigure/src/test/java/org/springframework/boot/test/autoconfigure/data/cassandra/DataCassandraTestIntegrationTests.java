@@ -26,9 +26,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.cassandra.CassandraServiceConnection;
 import org.springframework.boot.test.autoconfigure.data.redis.ExampleService;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.testcontainers.service.connection.cassandra.CassandraServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.CassandraContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;

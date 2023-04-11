@@ -25,8 +25,8 @@ import reactor.test.StepVerifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.flyway.FlywayConnectionDetails;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
-import org.springframework.boot.test.autoconfigure.r2dbc.R2dbcServiceConnection;
-import org.springframework.boot.test.autoconfigure.service.connection.ServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.r2dbc.R2dbcServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 
 import static org.assertj.core.api.Assertions.assertThat;

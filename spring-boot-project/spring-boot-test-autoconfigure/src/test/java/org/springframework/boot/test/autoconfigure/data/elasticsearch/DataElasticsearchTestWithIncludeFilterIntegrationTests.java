@@ -25,7 +25,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.elasticsearch.ElasticsearchServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.elasticsearch.ElasticsearchServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.stereotype.Service;

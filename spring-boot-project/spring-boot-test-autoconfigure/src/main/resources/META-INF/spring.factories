@@ -4,7 +4,6 @@ org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCust
 org.springframework.boot.test.autoconfigure.actuate.observability.ObservabilityContextCustomizerFactory,\
 org.springframework.boot.test.autoconfigure.filter.TypeExcludeFiltersContextCustomizerFactory,\
 org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizerFactory,\
-org.springframework.boot.test.autoconfigure.service.connection.ServiceConnectionContextCustomizerFactory,\
 org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizerFactory
 
 # Spring Test Execution Listeners
@@ -19,21 +18,3 @@ org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceSer
 org.springframework.test.context.ApplicationContextFailureProcessor=\
 org.springframework.boot.test.autoconfigure.ConditionReportApplicationContextFailureProcessor
 
-# Connection Details Factories
-org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
-org.springframework.boot.test.autoconfigure.amqp.RabbitContainerConnectionDetailsFactory,\
-org.springframework.boot.test.autoconfigure.cassandra.CassandraContainerConnectionDetailsFactory,\
-org.springframework.boot.test.autoconfigure.couchbase.CouchbaseContainerConnectionDetailsFactory,\
-org.springframework.boot.test.autoconfigure.data.redis.RedisContainerConnectionDetailsFactory,\
-org.springframework.boot.test.autoconfigure.elasticsearch.ElasticsearchContainerConnectionDetailsFactory,\
-org.springframework.boot.test.autoconfigure.flyway.FlywayContainerConnectionDetailsFactory,\
-org.springframework.boot.test.autoconfigure.influx.InfluxDbContainerConnectionDetailsFactory,\
-org.springframework.boot.test.autoconfigure.jdbc.JdbcContainerConnectionDetailsFactory,\
-org.springframework.boot.test.autoconfigure.kafka.KafkaContainerConnectionDetailsFactory,\
-org.springframework.boot.test.autoconfigure.liquibase.LiquibaseContainerConnectionDetailsFactory,\
-org.springframework.boot.test.autoconfigure.mongo.MongoContainerConnectionDetailsFactory,\
-org.springframework.boot.test.autoconfigure.neo4j.Neo4jContainerConnectionDetailsFactory,\
-org.springframework.boot.test.autoconfigure.r2dbc.MariaDbR2dbcContainerConnectionDetailsFactory,\
-org.springframework.boot.test.autoconfigure.r2dbc.MySqlR2dbcContainerConnectionDetailsFactory,\
-org.springframework.boot.test.autoconfigure.r2dbc.PostgresR2dbcContainerConnectionDetailsFactory,\
-org.springframework.boot.test.autoconfigure.r2dbc.SqlServerR2dbcContainerConnectionDetailsFactory

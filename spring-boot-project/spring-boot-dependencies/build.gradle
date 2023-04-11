@@ -1179,6 +1179,7 @@ bom {
 				"spring-boot",
 				"spring-boot-test",
 				"spring-boot-test-autoconfigure",
+				"spring-boot-testcontainers",
 				"spring-boot-actuator",
 				"spring-boot-actuator-autoconfigure",
 				"spring-boot-autoconfigure",
