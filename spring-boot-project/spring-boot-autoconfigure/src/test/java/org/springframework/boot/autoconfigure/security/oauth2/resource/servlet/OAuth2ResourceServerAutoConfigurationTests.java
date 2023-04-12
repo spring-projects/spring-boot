@@ -192,7 +192,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				assertThat(context.containsBean("jwtDecoderByIssuerUri")).isTrue();
 				SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 				Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
-					.getField(supplierJwtDecoderBean, "jwtDecoderSupplier");
+					.getField(supplierJwtDecoderBean, "delegate");
 				jwtDecoderSupplier.get();
 			});
 		// The last request is to the JWK Set endpoint to look up the algorithm
@@ -216,7 +216,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				assertThat(context.containsBean("jwtDecoderByIssuerUri")).isTrue();
 				SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 				Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
-					.getField(supplierJwtDecoderBean, "jwtDecoderSupplier");
+					.getField(supplierJwtDecoderBean, "delegate");
 				jwtDecoderSupplier.get();
 			});
 		// The last request is to the JWK Set endpoint to look up the algorithm
@@ -241,7 +241,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				assertThat(context.containsBean("jwtDecoderByIssuerUri")).isTrue();
 				SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 				Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
-					.getField(supplierJwtDecoderBean, "jwtDecoderSupplier");
+					.getField(supplierJwtDecoderBean, "delegate");
 				jwtDecoderSupplier.get();
 			});
 		// The last request is to the JWK Set endpoint to look up the algorithm
@@ -516,7 +516,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 			.run((context) -> {
 				SupplierJwtDecoder supplierJwtDecoderBean = context.getBean(SupplierJwtDecoder.class);
 				Supplier<JwtDecoder> jwtDecoderSupplier = (Supplier<JwtDecoder>) ReflectionTestUtils
-					.getField(supplierJwtDecoderBean, "jwtDecoderSupplier");
+					.getField(supplierJwtDecoderBean, "delegate");
 				JwtDecoder jwtDecoder = jwtDecoderSupplier.get();
 				validate(issuerUri, jwtDecoder);
 			});
