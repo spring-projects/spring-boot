@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientConfigurations.PropertiesElasticsearchConnectionDetails;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -248,9 +249,17 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	}
 
 	@Test
-	void connectionDetailsAreUsedIfAvailable() {
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner
+			.run((context) -> assertThat(context).hasSingleBean(PropertiesElasticsearchConnectionDetails.class));
+	}
+
+	@Test
+	void shouldUseCustomConnectionDetailsWhenDefined() {
 		this.contextRunner.withUserConfiguration(ConnectionDetailsConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(RestClient.class);
+			assertThat(context).hasSingleBean(RestClient.class)
+				.hasSingleBean(ElasticsearchConnectionDetails.class)
+				.doesNotHaveBean(PropertiesElasticsearchConnectionDetails.class);
 			RestClient restClient = context.getBean(RestClient.class);
 			assertThat(restClient).hasFieldOrPropertyWithValue("pathPrefix", "/some-path");
 			assertThat(restClient.getNodes().stream().map(Node::getHost).map(HttpHost::toString))

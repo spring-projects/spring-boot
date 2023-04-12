@@ -96,7 +96,14 @@ class XADataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldUseConnectionDetailsIfAvailable() {
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(XADataSourceAutoConfiguration.class))
+			.withUserConfiguration(FromProperties.class)
+			.run((context) -> assertThat(context).hasSingleBean(PropertiesJdbcConnectionDetails.class));
+	}
+
+	@Test
+	void shouldUseCustomConnectionDetailsWhenDefined() {
 		JdbcConnectionDetails connectionDetails = mock(JdbcConnectionDetails.class);
 		given(connectionDetails.getUsername()).willReturn("user-1");
 		given(connectionDetails.getPassword()).willReturn("password-1");
@@ -108,6 +115,8 @@ class XADataSourceAutoConfigurationTests {
 			.withUserConfiguration(FromProperties.class)
 			.withBean(JdbcConnectionDetails.class, () -> connectionDetails)
 			.run((context) -> {
+				assertThat(context).hasSingleBean(JdbcConnectionDetails.class)
+					.doesNotHaveBean(PropertiesJdbcConnectionDetails.class);
 				MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);
 				PGXADataSource dataSource = (PGXADataSource) wrapper.getXaDataSource();
 				assertThat(dataSource).isNotNull();

@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jdbc;
+package org.springframework.boot.autoconfigure.liquibase;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.jdbc.DatabaseDriver;
 
 /**
- * Details required to establish a connection to an SQL service using JDBC.
+ * Details required for Liquibase to establish a connection to an SQL service using JDBC.
  *
- * @author Moritz Halbritter
  * @author Andy Wilkinson
- * @author Phillip Webb
  * @since 3.1.0
  */
-public interface JdbcConnectionDetails extends ConnectionDetails {
+public interface LiquibaseConnectionDetails extends ConnectionDetails {
 
 	/**
 	 * Username for the database.
@@ -42,8 +40,8 @@ public interface JdbcConnectionDetails extends ConnectionDetails {
 	String getPassword();
 
 	/**
-	 * JDBC url for the database.
-	 * @return the JDBC url for the database
+	 * JDBC URL for the database.
+	 * @return the JDBC URL for the database
 	 */
 	String getJdbcUrl();
 
@@ -57,18 +55,6 @@ public interface JdbcConnectionDetails extends ConnectionDetails {
 	 */
 	default String getDriverClassName() {
 		return DatabaseDriver.fromJdbcUrl(getJdbcUrl()).getDriverClassName();
-	}
-
-	/**
-	 * Returns the name of the XA DataSource class. Defaults to the class name from the
-	 * driver specified in the JDBC URL.
-	 * @return the XA DataSource class name
-	 * @see #getJdbcUrl()
-	 * @see DatabaseDriver#fromJdbcUrl(String)
-	 * @see DatabaseDriver#getXaDataSourceClassName()
-	 */
-	default String getXaDataSourceClassName() {
-		return DatabaseDriver.fromJdbcUrl(getJdbcUrl()).getXaDataSourceClassName();
 	}
 
 }

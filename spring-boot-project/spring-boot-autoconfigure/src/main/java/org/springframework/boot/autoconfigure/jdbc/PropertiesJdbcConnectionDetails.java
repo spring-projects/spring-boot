@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.amqp;
-
-import java.util.ArrayList;
-import java.util.List;
+package org.springframework.boot.autoconfigure.jdbc;
 
 /**
- * Adapts {@link RabbitProperties} to {@link RabbitConnectionDetails}.
+ * Adapts {@link DataSourceProperties} to {@link JdbcConnectionDetails}.
  *
- * @author Moritz Halbritter
  * @author Andy Wilkinson
- * @author Phillip Webb
  */
-class PropertiesRabbitConnectionDetails implements RabbitConnectionDetails {
+final class PropertiesJdbcConnectionDetails implements JdbcConnectionDetails {
 
-	private final RabbitProperties properties;
+	private final DataSourceProperties properties;
 
-	PropertiesRabbitConnectionDetails(RabbitProperties properties) {
+	PropertiesJdbcConnectionDetails(DataSourceProperties properties) {
 		this.properties = properties;
 	}
 
@@ -45,18 +40,20 @@ class PropertiesRabbitConnectionDetails implements RabbitConnectionDetails {
 	}
 
 	@Override
-	public String getVirtualHost() {
-		return this.properties.determineVirtualHost();
+	public String getJdbcUrl() {
+		return this.properties.determineUrl();
 	}
 
 	@Override
-	public List<Address> getAddresses() {
-		List<Address> addresses = new ArrayList<>();
-		for (String address : this.properties.determineAddresses().split(",")) {
-			String[] components = address.split(":");
-			addresses.add(new Address(components[0], Integer.parseInt(components[1])));
-		}
-		return addresses;
+	public String getDriverClassName() {
+		return this.properties.determineDriverClassName();
+	}
+
+	@Override
+	public String getXaDataSourceClassName() {
+		return (this.properties.getXa().getDataSourceClassName() != null)
+				? this.properties.getXa().getDataSourceClassName()
+				: JdbcConnectionDetails.super.getXaDataSourceClassName();
 	}
 
 }

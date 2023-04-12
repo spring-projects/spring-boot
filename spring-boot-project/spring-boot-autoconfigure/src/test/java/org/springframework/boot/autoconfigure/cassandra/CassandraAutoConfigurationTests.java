@@ -33,6 +33,7 @@ import com.datastax.oss.driver.internal.core.session.throttling.RateLimitingRequ
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration.PropertiesCassandraConnectionDetails;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -95,13 +96,21 @@ class CassandraAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldUseConnectionDetails() {
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner
+			.run((context) -> assertThat(context).hasSingleBean(PropertiesCassandraConnectionDetails.class));
+	}
+
+	@Test
+	void shouldUseCustomConnectionDetailsWhenDefined() {
 		this.contextRunner
 			.withPropertyValues("spring.cassandra.contact-points=localhost:9042", "spring.cassandra.username=a-user",
 					"spring.cassandra.password=a-password", "spring.cassandra.local-datacenter=some-datacenter")
 			.withBean(CassandraConnectionDetails.class, this::cassandraConnectionDetails)
 			.run((context) -> {
-				assertThat(context).hasSingleBean(DriverConfigLoader.class);
+				assertThat(context).hasSingleBean(DriverConfigLoader.class)
+					.hasSingleBean(CassandraConnectionDetails.class)
+					.doesNotHaveBean(PropertiesCassandraConnectionDetails.class);
 				DriverExecutionProfile configuration = context.getBean(DriverConfigLoader.class)
 					.getInitialConfig()
 					.getDefaultProfile();

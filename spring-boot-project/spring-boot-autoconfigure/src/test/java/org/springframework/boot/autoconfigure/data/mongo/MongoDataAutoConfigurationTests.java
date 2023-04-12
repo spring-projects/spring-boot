@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.data.mongo.country.Country;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
+import org.springframework.boot.autoconfigure.mongo.PropertiesMongoConnectionDetails;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -223,6 +224,25 @@ class MongoDataAutoConfigurationTests {
 	void autoConfiguresIfUserProvidesMongoDatabaseFactoryButNoClient() {
 		this.contextRunner.withUserConfiguration(MongoDatabaseFactoryConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(MongoTemplate.class));
+	}
+
+	@Test
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PropertiesMongoConnectionDetails.class));
+	}
+
+	@Test
+	void shouldUseCustomConnectionDetailsWhenDefined() {
+		this.contextRunner.withBean(MongoConnectionDetails.class, () -> new MongoConnectionDetails() {
+
+			@Override
+			public ConnectionString getConnectionString() {
+				return new ConnectionString("mongodb://localhost/testdb");
+			}
+
+		})
+			.run((context) -> assertThat(context).hasSingleBean(MongoConnectionDetails.class)
+				.doesNotHaveBean(PropertiesMongoConnectionDetails.class));
 	}
 
 	private static void assertDomainTypesDiscovered(MongoMappingContext mappingContext, Class<?>... types) {

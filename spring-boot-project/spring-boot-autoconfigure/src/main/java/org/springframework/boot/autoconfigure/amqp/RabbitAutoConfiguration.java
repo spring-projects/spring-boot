@@ -82,22 +82,24 @@ public class RabbitAutoConfiguration {
 
 		private final RabbitProperties properties;
 
-		private final RabbitConnectionDetails connectionDetails;
-
 		protected RabbitConnectionFactoryCreator(RabbitProperties properties,
 				ObjectProvider<RabbitConnectionDetails> connectionDetails) {
 			this.properties = properties;
-			this.connectionDetails = connectionDetails
-				.getIfAvailable(() -> new PropertiesRabbitConnectionDetails(properties));
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(RabbitConnectionDetails.class)
+		RabbitConnectionDetails rabbitConnectionDetails() {
+			return new PropertiesRabbitConnectionDetails(this.properties);
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
 		RabbitConnectionFactoryBeanConfigurer rabbitConnectionFactoryBeanConfigurer(ResourceLoader resourceLoader,
-				ObjectProvider<CredentialsProvider> credentialsProvider,
+				RabbitConnectionDetails connectionDetails, ObjectProvider<CredentialsProvider> credentialsProvider,
 				ObjectProvider<CredentialsRefreshService> credentialsRefreshService) {
 			RabbitConnectionFactoryBeanConfigurer configurer = new RabbitConnectionFactoryBeanConfigurer(resourceLoader,
-					this.properties, this.connectionDetails);
+					this.properties, connectionDetails);
 			configurer.setCredentialsProvider(credentialsProvider.getIfUnique());
 			configurer.setCredentialsRefreshService(credentialsRefreshService.getIfUnique());
 			return configurer;
@@ -105,10 +107,10 @@ public class RabbitAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		CachingConnectionFactoryConfigurer rabbitConnectionFactoryConfigurer(
+		CachingConnectionFactoryConfigurer rabbitConnectionFactoryConfigurer(RabbitConnectionDetails connectionDetails,
 				ObjectProvider<ConnectionNameStrategy> connectionNameStrategy) {
 			CachingConnectionFactoryConfigurer configurer = new CachingConnectionFactoryConfigurer(this.properties,
-					this.connectionDetails);
+					connectionDetails);
 			configurer.setConnectionNameStrategy(connectionNameStrategy.getIfUnique());
 			return configurer;
 		}

@@ -26,9 +26,11 @@ org.springframework.boot.test.autoconfigure.cassandra.CassandraContainerConnecti
 org.springframework.boot.test.autoconfigure.couchbase.CouchbaseContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.data.redis.RedisContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.elasticsearch.ElasticsearchContainerConnectionDetailsFactory,\
+org.springframework.boot.test.autoconfigure.flyway.FlywayContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.influx.InfluxDbContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.jdbc.JdbcContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.kafka.KafkaContainerConnectionDetailsFactory,\
+org.springframework.boot.test.autoconfigure.liquibase.LiquibaseContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.mongo.MongoContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.neo4j.Neo4jContainerConnectionDetailsFactory,\
 org.springframework.boot.test.autoconfigure.r2dbc.MariaDbR2dbcContainerConnectionDetailsFactory,\
