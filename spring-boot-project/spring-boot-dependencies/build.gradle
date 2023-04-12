@@ -1710,7 +1710,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "2.4.11") {
+	library("Spring AMQP", "2.4.12-SNAPSHOT") {
 		prohibit {
 			versionRange "[3.0.0-M1,)"
 			because "it uses Spring Framework 6"
