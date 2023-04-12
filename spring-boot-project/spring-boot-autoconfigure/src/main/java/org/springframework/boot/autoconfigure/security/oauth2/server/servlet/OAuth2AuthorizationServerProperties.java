@@ -100,6 +100,16 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 		private String authorizationUri;
 
 		/**
+		 * Authorization Server's OAuth 2.0 Device Authorization Endpoint.
+		 */
+		private String deviceAuthorizationUri;
+
+		/**
+		 * Authorization Server's OAuth 2.0 Device Verification Endpoint.
+		 */
+		private String deviceVerificationUri;
+
+		/**
 		 * Authorization Server's OAuth 2.0 Token Endpoint.
 		 */
 		private String tokenUri;
@@ -131,6 +141,22 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 
 		public void setAuthorizationUri(String authorizationUri) {
 			this.authorizationUri = authorizationUri;
+		}
+
+		public String getDeviceAuthorizationUri() {
+			return this.deviceAuthorizationUri;
+		}
+
+		public void setDeviceAuthorizationUri(String deviceAuthorizationUri) {
+			this.deviceAuthorizationUri = deviceAuthorizationUri;
+		}
+
+		public String getDeviceVerificationUri() {
+			return this.deviceVerificationUri;
+		}
+
+		public void setDeviceVerificationUri(String deviceVerificationUri) {
+			this.deviceVerificationUri = deviceVerificationUri;
 		}
 
 		public String getTokenUri() {
@@ -431,6 +457,11 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 		private String accessTokenFormat;
 
 		/**
+		 * Time-to-live for a device code.
+		 */
+		private Duration deviceCodeTimeToLive;
+
+		/**
 		 * Whether refresh tokens are reused or a new refresh token is issued when
 		 * returning the access token response.
 		 */
@@ -468,6 +499,14 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 
 		public void setAccessTokenFormat(String accessTokenFormat) {
 			this.accessTokenFormat = accessTokenFormat;
+		}
+
+		public Duration getDeviceCodeTimeToLive() {
+			return this.deviceCodeTimeToLive;
+		}
+
+		public void setDeviceCodeTimeToLive(Duration deviceCodeTimeToLive) {
+			this.deviceCodeTimeToLive = deviceCodeTimeToLive;
 		}
 
 		public boolean isReuseRefreshTokens() {

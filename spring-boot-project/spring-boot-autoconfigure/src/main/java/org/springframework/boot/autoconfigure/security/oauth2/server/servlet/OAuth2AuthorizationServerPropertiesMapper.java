@@ -53,6 +53,8 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 		AuthorizationServerSettings.Builder builder = AuthorizationServerSettings.builder();
 		map.from(this.properties::getIssuer).to(builder::issuer);
 		map.from(endpoint::getAuthorizationUri).to(builder::authorizationEndpoint);
+		map.from(endpoint::getDeviceAuthorizationUri).to(builder::deviceAuthorizationEndpoint);
+		map.from(endpoint::getDeviceVerificationUri).to(builder::deviceVerificationEndpoint);
 		map.from(endpoint::getTokenUri).to(builder::tokenEndpoint);
 		map.from(endpoint::getJwkSetUri).to(builder::jwkSetEndpoint);
 		map.from(endpoint::getTokenRevocationUri).to(builder::tokenRevocationEndpoint);
@@ -111,6 +113,7 @@ final class OAuth2AuthorizationServerPropertiesMapper {
 		map.from(token::getAuthorizationCodeTimeToLive).to(builder::authorizationCodeTimeToLive);
 		map.from(token::getAccessTokenTimeToLive).to(builder::accessTokenTimeToLive);
 		map.from(token::getAccessTokenFormat).as(OAuth2TokenFormat::new).to(builder::accessTokenFormat);
+		map.from(token::getDeviceCodeTimeToLive).to(builder::deviceCodeTimeToLive);
 		map.from(token::isReuseRefreshTokens).to(builder::reuseRefreshTokens);
 		map.from(token::getRefreshTokenTimeToLive).to(builder::refreshTokenTimeToLive);
 		map.from(token::getIdTokenSignatureAlgorithm)
