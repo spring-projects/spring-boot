@@ -70,6 +70,7 @@ import org.springframework.core.env.Environment;
  * {@link EnableAutoConfiguration Auto-configuration} for OpenTelemetry.
  *
  * @author Moritz Halbritter
+ * @author Yanming Zhou
  * @since 3.0.0
  */
 @AutoConfiguration(before = MicrometerTracingAutoConfiguration.class)
@@ -101,12 +102,13 @@ public class OpenTelemetryAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	SdkTracerProvider otelSdkTracerProvider(Environment environment, ObjectProvider<SpanProcessor> spanProcessors,
-			Sampler sampler) {
+			Sampler sampler, ObjectProvider<SdkTracerProviderCustomizer> customizers) {
 		String applicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
 		SdkTracerProviderBuilder builder = SdkTracerProvider.builder()
 			.setSampler(sampler)
 			.setResource(Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, applicationName)));
 		spanProcessors.orderedStream().forEach(builder::addSpanProcessor);
+		customizers.forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
 
