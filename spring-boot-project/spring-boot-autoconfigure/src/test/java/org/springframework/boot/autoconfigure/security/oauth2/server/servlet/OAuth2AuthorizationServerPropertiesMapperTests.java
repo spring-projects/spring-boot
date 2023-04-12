@@ -89,6 +89,7 @@ class OAuth2AuthorizationServerPropertiesMapperTests {
 		token.setAccessTokenFormat("reference");
 		token.setAccessTokenTimeToLive(Duration.ofSeconds(300));
 		token.setRefreshTokenTimeToLive(Duration.ofHours(24));
+		token.setDeviceCodeTimeToLive(Duration.ofMinutes(30));
 		token.setReuseRefreshTokens(true);
 		token.setIdTokenSignatureAlgorithm("rs512");
 		return client;
@@ -99,6 +100,8 @@ class OAuth2AuthorizationServerPropertiesMapperTests {
 		this.properties.setIssuer("https://example.com");
 		OAuth2AuthorizationServerProperties.Endpoint endpoints = this.properties.getEndpoint();
 		endpoints.setAuthorizationUri("/authorize");
+		endpoints.setDeviceAuthorizationUri("/device_authorization");
+		endpoints.setDeviceVerificationUri("/device_verification");
 		endpoints.setTokenUri("/token");
 		endpoints.setJwkSetUri("/jwks");
 		endpoints.setTokenRevocationUri("/revoke");
@@ -110,6 +113,8 @@ class OAuth2AuthorizationServerPropertiesMapperTests {
 		AuthorizationServerSettings settings = this.mapper.asAuthorizationServerSettings();
 		assertThat(settings.getIssuer()).isEqualTo("https://example.com");
 		assertThat(settings.getAuthorizationEndpoint()).isEqualTo("/authorize");
+		assertThat(settings.getDeviceAuthorizationEndpoint()).isEqualTo("/device_authorization");
+		assertThat(settings.getDeviceVerificationEndpoint()).isEqualTo("/device_verification");
 		assertThat(settings.getTokenEndpoint()).isEqualTo("/token");
 		assertThat(settings.getJwkSetEndpoint()).isEqualTo("/jwks");
 		assertThat(settings.getTokenRevocationEndpoint()).isEqualTo("/revoke");

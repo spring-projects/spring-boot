@@ -124,6 +124,8 @@ class OAuth2AuthorizationServerAutoConfigurationTests {
 		this.contextRunner
 			.withPropertyValues(PROPERTIES_PREFIX + ".issuer=https://example.com",
 					PROPERTIES_PREFIX + ".endpoint.authorization-uri=/authorize",
+					PROPERTIES_PREFIX + ".endpoint.device-authorization-uri=/device_authorization",
+					PROPERTIES_PREFIX + ".endpoint.device-verification-uri=/device_verification",
 					PROPERTIES_PREFIX + ".endpoint.token-uri=/token", PROPERTIES_PREFIX + ".endpoint.jwk-set-uri=/jwks",
 					PROPERTIES_PREFIX + ".endpoint.token-revocation-uri=/revoke",
 					PROPERTIES_PREFIX + ".endpoint.token-introspection-uri=/introspect",
@@ -134,6 +136,8 @@ class OAuth2AuthorizationServerAutoConfigurationTests {
 				AuthorizationServerSettings settings = context.getBean(AuthorizationServerSettings.class);
 				assertThat(settings.getIssuer()).isEqualTo("https://example.com");
 				assertThat(settings.getAuthorizationEndpoint()).isEqualTo("/authorize");
+				assertThat(settings.getDeviceAuthorizationEndpoint()).isEqualTo("/device_authorization");
+				assertThat(settings.getDeviceVerificationEndpoint()).isEqualTo("/device_verification");
 				assertThat(settings.getTokenEndpoint()).isEqualTo("/token");
 				assertThat(settings.getJwkSetEndpoint()).isEqualTo("/jwks");
 				assertThat(settings.getTokenRevocationEndpoint()).isEqualTo("/revoke");
