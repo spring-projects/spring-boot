@@ -86,7 +86,7 @@ public class StandardConfigDataLocationResolver
 	public StandardConfigDataLocationResolver(Log logger, Binder binder, ResourceLoader resourceLoader) {
 		this.logger = logger;
 		this.propertySourceLoaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class,
-				getClass().getClassLoader());
+				resourceLoader.getClassLoader() == null ? getClass().getClassLoader() : resourceLoader.getClassLoader());
 		this.configNames = getConfigNames(binder);
 		this.resourceLoader = new LocationResourceLoader(resourceLoader);
 	}
