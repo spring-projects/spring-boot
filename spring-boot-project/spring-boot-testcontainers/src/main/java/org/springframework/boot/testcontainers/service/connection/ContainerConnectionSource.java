@@ -16,23 +16,25 @@
 
 package org.springframework.boot.testcontainers.service.connection;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
+import java.util.Set;
 
-import org.testcontainers.containers.GenericContainer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.testcontainers.containers.Container;
+import org.testcontainers.utility.DockerImageName;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
 import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.log.LogMessage;
+import org.springframework.util.StringUtils;
 
 /**
  * Passed to {@link ContainerConnectionDetailsFactory} to provide details of the
- * {@link ServiceConnection @ServiceConnection} annotation {@link GenericContainer} field
- * that provides the service.
+ * {@link ServiceConnection @ServiceConnection} annotated {@link Container} that provides
+ * the service.
  *
- * @param <A> the source annotation type. The annotation will mergable to a
- * {@link ServiceConnection @ServiceConnection}
  * @param <D> the connection details type
  * @param <C> the generic container type
  * @author Moritz Halbritter
@@ -41,58 +43,77 @@ import org.springframework.core.annotation.MergedAnnotation;
  * @since 3.1.0
  * @see ContainerConnectionDetailsFactory
  */
-public final class ContainerConnectionSource<A extends Annotation, D extends ConnectionDetails, C extends GenericContainer<?>>
+public final class ContainerConnectionSource<D extends ConnectionDetails, C extends Container<?>>
 		implements OriginProvider {
 
-	private final Class<D> connectionDetailsType;
+	private static final Log logger = LogFactory.getLog(ContainerConnectionSource.class);
 
-	private final Field field;
+	private final String beanNameSuffix;
 
-	private final A annotation;
+	private final Origin origin;
 
 	private final C container;
 
-	private final AnnotatedFieldOrigin origin;
+	private String acceptedConnectionName;
 
-	@SuppressWarnings("unchecked")
-	ContainerConnectionSource(Class<D> connectionDetailsType, Field field,
-			MergedAnnotation<ServiceConnection> annotation, C container) {
-		this(connectionDetailsType, field, (A) annotation.getRoot().synthesize(), container);
-	}
+	private Set<Class<?>> acceptedConnectionDetailsTypes;
 
-	ContainerConnectionSource(Class<D> connectionDetailsType, Field field, A annotation, C container) {
-		this.connectionDetailsType = connectionDetailsType;
-		this.field = field;
-		this.annotation = annotation;
+	ContainerConnectionSource(String beanNameSuffix, Origin origin, C container,
+			MergedAnnotation<ServiceConnection> annotation) {
+		this.beanNameSuffix = beanNameSuffix;
+		this.origin = origin;
 		this.container = container;
-		this.origin = new AnnotatedFieldOrigin(field, annotation);
+		this.acceptedConnectionName = getConnectionName(container, annotation.getString("name"));
+		this.acceptedConnectionDetailsTypes = Set.of(annotation.getClassArray("type"));
 	}
 
-	boolean accepts(Class<?> annotationType, Class<?> connectionDetailsType, Class<?> containerType) {
-		return annotationType.isInstance(this.annotation)
-				&& connectionDetailsType.isAssignableFrom(this.connectionDetailsType)
-				&& containerType.isInstance(this.container);
+	ContainerConnectionSource(String beanNameSuffix, Origin origin, C container, ServiceConnection annotation) {
+		this.beanNameSuffix = beanNameSuffix;
+		this.origin = origin;
+		this.container = container;
+		this.acceptedConnectionName = getConnectionName(container, annotation.name());
+		this.acceptedConnectionDetailsTypes = Set.of(annotation.type());
 	}
 
-	String getBeanName() {
-		return this.field.getName() + this.connectionDetailsType.getSimpleName() + "ConnectedContainer";
+	private static String getConnectionName(Container<?> container, String connectionName) {
+		if (StringUtils.hasLength(connectionName)) {
+			return connectionName;
+		}
+		try {
+			DockerImageName imageName = DockerImageName.parse(container.getDockerImageName());
+			imageName.assertValid();
+			return imageName.getRepository();
+		}
+		catch (IllegalArgumentException ex) {
+			return container.getDockerImageName();
+		}
 	}
 
-	/**
-	 * Return the source annotation that provided the connection to the container. This
-	 * annotation will be mergable to {@link ServiceConnection @ServiceConnection}.
-	 * @return the source annotation
-	 */
-	public A getAnnotation() {
-		return this.annotation;
+	boolean accepts(String connectionName, Class<?> connectionDetailsType, Class<?> containerType) {
+		if (!containerType.isInstance(this.container)) {
+			logger.trace(LogMessage.of(() -> "%s not accepted as %s is not an instance of %s".formatted(this,
+					this.container.getClass().getName(), containerType.getName())));
+			return false;
+		}
+		if (StringUtils.hasLength(connectionName) && !connectionName.equalsIgnoreCase(this.acceptedConnectionName)) {
+			logger.trace(LogMessage.of(() -> "%s not accepted as connection names '%s' and '%s' do not match"
+				.formatted(this, connectionName, this.acceptedConnectionName)));
+			return false;
+		}
+		if (!this.acceptedConnectionDetailsTypes.isEmpty() && !this.acceptedConnectionDetailsTypes.stream()
+			.anyMatch((candidate) -> candidate.isAssignableFrom(connectionDetailsType))) {
+			logger.trace(LogMessage.of(() -> "%s not accepted as connection details type %s not in %s".formatted(this,
+					connectionDetailsType, this.acceptedConnectionDetailsTypes)));
+			return false;
+		}
+		logger.trace(LogMessage
+			.of(() -> "%s accepted for connection name '%s', connection details type %s, container type %s"
+				.formatted(this, connectionName, connectionDetailsType.getName(), containerType.getName())));
+		return true;
 	}
 
-	/**
-	 * Return the {@link GenericContainer} that implements the service being connected to.
-	 * @return the {@link GenericContainer} providing the service
-	 */
-	public C getContainer() {
-		return this.container;
+	String getBeanNameSuffix() {
+		return this.beanNameSuffix;
 	}
 
 	@Override
@@ -100,9 +121,17 @@ public final class ContainerConnectionSource<A extends Annotation, D extends Con
 		return this.origin;
 	}
 
+	/**
+	 * Return the {@link Container} that implements the service being connected to.
+	 * @return the {@link Container} providing the service
+	 */
+	public C getContainer() {
+		return this.container;
+	}
+
 	@Override
 	public String toString() {
-		return "ServiceConnectedContainer for %s".formatted(this.origin);
+		return "@ServiceConnection source for %s".formatted(this.origin);
 	}
 
 }

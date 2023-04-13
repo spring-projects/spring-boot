@@ -22,14 +22,14 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.neo4j.Neo4jServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 @SpringBootTest
 @Testcontainers
 class MyIntegrationTests {
 
 	@Container
-	@Neo4jServiceConnection
+	@ServiceConnection
 	static Neo4jContainer<?> neo4j = new Neo4jContainer<>("neo4j:5");
 
 	@Test

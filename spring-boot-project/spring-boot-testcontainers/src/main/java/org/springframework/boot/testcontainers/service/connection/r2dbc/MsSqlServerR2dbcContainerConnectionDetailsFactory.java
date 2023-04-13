@@ -21,25 +21,28 @@ import org.testcontainers.containers.MSSQLR2DBCDatabaseContainer;
 import org.testcontainers.containers.MSSQLServerContainer;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
-import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ConnectionDetailsFactory} for
- * {@link R2dbcServiceConnection @R2dbcServiceConnection}- annotated
- * {@link MSSQLServerContainer} fields.
+ * {@link ContainerConnectionDetailsFactory} to create {@link R2dbcConnectionDetails} from
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link MSSQLServerContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class SqlServerR2dbcContainerConnectionDetailsFactory extends
-		ContainerConnectionDetailsFactory<R2dbcServiceConnection, R2dbcConnectionDetails, MSSQLServerContainer<?>> {
+class MsSqlServerR2dbcContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<R2dbcConnectionDetails, MSSQLServerContainer<?>> {
+
+	MsSqlServerR2dbcContainerConnectionDetailsFactory() {
+		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
+	}
 
 	@Override
 	public R2dbcConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<R2dbcServiceConnection, R2dbcConnectionDetails, MSSQLServerContainer<?>> source) {
+			ContainerConnectionSource<R2dbcConnectionDetails, MSSQLServerContainer<?>> source) {
 		return new R2dbcDatabaseContainerConnectionDetails(source.getContainer());
 	}
 

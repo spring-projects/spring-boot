@@ -24,18 +24,18 @@ import org.springframework.boot.testcontainers.service.connection.ContainerConne
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ContainerConnectionDetailsFactory} for
- * {@link ServiceConnection @ServiceConnection}-annotated {@link JdbcDatabaseContainer}
- * fields that should produce {@link FlywayConnectionDetails}.
+ * {@link ContainerConnectionDetailsFactory} to create {@link FlywayConnectionDetails}
+ * from a {@link ServiceConnection @ServiceConnection}-annotated
+ * {@link JdbcDatabaseContainer}.
  *
  * @author Andy Wilkinson
  */
-class FlywayContainerConnectionDetailsFactory extends
-		ContainerConnectionDetailsFactory<ServiceConnection, FlywayConnectionDetails, JdbcDatabaseContainer<?>> {
+class FlywayContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<FlywayConnectionDetails, JdbcDatabaseContainer<?>> {
 
 	@Override
 	protected FlywayConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<ServiceConnection, FlywayConnectionDetails, JdbcDatabaseContainer<?>> source) {
+			ContainerConnectionSource<FlywayConnectionDetails, JdbcDatabaseContainer<?>> source) {
 		return new FlywayContainerConnectionDetails(source);
 	}
 
@@ -48,7 +48,7 @@ class FlywayContainerConnectionDetailsFactory extends
 		private final JdbcDatabaseContainer<?> container;
 
 		private FlywayContainerConnectionDetails(
-				ContainerConnectionSource<ServiceConnection, FlywayConnectionDetails, JdbcDatabaseContainer<?>> source) {
+				ContainerConnectionSource<FlywayConnectionDetails, JdbcDatabaseContainer<?>> source) {
 			super(source);
 			this.container = source.getContainer();
 		}

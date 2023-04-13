@@ -21,25 +21,28 @@ import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.containers.MariaDBR2DBCDatabaseContainer;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
-import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ConnectionDetailsFactory} for
- * {@link R2dbcServiceConnection @R2dbcServiceConnection}- annotated
- * {@link MariaDBContainer} fields.
+ * {@link ContainerConnectionDetailsFactory} to create {@link R2dbcConnectionDetails} from
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link MariaDBContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
 class MariaDbR2dbcContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<R2dbcServiceConnection, R2dbcConnectionDetails, MariaDBContainer<?>> {
+		extends ContainerConnectionDetailsFactory<R2dbcConnectionDetails, MariaDBContainer<?>> {
+
+	MariaDbR2dbcContainerConnectionDetailsFactory() {
+		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
+	}
 
 	@Override
 	public R2dbcConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<R2dbcServiceConnection, R2dbcConnectionDetails, MariaDBContainer<?>> source) {
+			ContainerConnectionSource<R2dbcConnectionDetails, MariaDBContainer<?>> source) {
 		return new R2dbcDatabaseContainerConnectionDetails(source.getContainer());
 	}
 

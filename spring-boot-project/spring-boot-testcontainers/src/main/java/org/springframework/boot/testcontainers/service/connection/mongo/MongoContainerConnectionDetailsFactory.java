@@ -22,22 +22,26 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ContainerConnectionDetailsFactory} for
- * {@link MongoServiceConnection @MongoServiceConnection}-annotated
- * {@link MongoDBContainer} fields.
+ * {@link ContainerConnectionDetailsFactory} to create {@link MongoConnectionDetails} from
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link MongoDBContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
 class MongoContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<MongoServiceConnection, MongoConnectionDetails, MongoDBContainer> {
+		extends ContainerConnectionDetailsFactory<MongoConnectionDetails, MongoDBContainer> {
+
+	MongoContainerConnectionDetailsFactory() {
+		super(ANY_CONNECTION_NAME, "com.mongodb.ConnectionString");
+	}
 
 	@Override
 	protected MongoConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<MongoServiceConnection, MongoConnectionDetails, MongoDBContainer> source) {
+			ContainerConnectionSource<MongoConnectionDetails, MongoDBContainer> source) {
 		return new MongoContainerConnectionDetails(source);
 	}
 
@@ -50,7 +54,7 @@ class MongoContainerConnectionDetailsFactory
 		private final ConnectionString connectionString;
 
 		private MongoContainerConnectionDetails(
-				ContainerConnectionSource<MongoServiceConnection, MongoConnectionDetails, MongoDBContainer> source) {
+				ContainerConnectionSource<MongoConnectionDetails, MongoDBContainer> source) {
 			super(source);
 			this.connectionString = new ConnectionString(source.getContainer().getReplicaSetUrl());
 		}

@@ -16,27 +16,33 @@
 
 package org.springframework.boot.testcontainers.service.connection.redis;
 
+import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ContainerConnectionDetailsFactory} for
- * {@link RedisServiceConnection @RedisServiceConnection}-annotated
- * {@link GenericContainer} fields.
+ * {@link ContainerConnectionDetailsFactory} to create {@link RedisConnectionDetails} from
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link GenericContainer} using
+ * the {@code "redis"} image.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
 class RedisContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<RedisServiceConnection, RedisConnectionDetails, GenericContainer<?>> {
+		extends ContainerConnectionDetailsFactory<RedisConnectionDetails, Container<?>> {
+
+	RedisContainerConnectionDetailsFactory() {
+		super("redis");
+	}
 
 	@Override
 	public RedisConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<RedisServiceConnection, RedisConnectionDetails, GenericContainer<?>> source) {
+			ContainerConnectionSource<RedisConnectionDetails, Container<?>> source) {
 		return new RedisContainerConnectionDetails(source);
 	}
 
@@ -49,7 +55,7 @@ class RedisContainerConnectionDetailsFactory
 		private final Standalone standalone;
 
 		private RedisContainerConnectionDetails(
-				ContainerConnectionSource<RedisServiceConnection, RedisConnectionDetails, GenericContainer<?>> source) {
+				ContainerConnectionSource<RedisConnectionDetails, Container<?>> source) {
 			super(source);
 			this.standalone = Standalone.of(source.getContainer().getHost(),
 					source.getContainer().getFirstMappedPort());

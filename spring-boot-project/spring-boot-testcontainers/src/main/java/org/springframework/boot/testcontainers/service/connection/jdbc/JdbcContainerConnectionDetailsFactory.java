@@ -21,22 +21,22 @@ import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ContainerConnectionDetailsFactory} for
- * {@link JdbcServiceConnection @JdbcServiceConnection}-annotated
- * {@link JdbcDatabaseContainer} fields.
+ * {@link ContainerConnectionDetailsFactory} to create {@link JdbcConnectionDetails} from
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link JdbcDatabaseContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class JdbcContainerConnectionDetailsFactory extends
-		ContainerConnectionDetailsFactory<JdbcServiceConnection, JdbcConnectionDetails, JdbcDatabaseContainer<?>> {
+class JdbcContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<JdbcConnectionDetails, JdbcDatabaseContainer<?>> {
 
 	@Override
 	protected JdbcConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<JdbcServiceConnection, JdbcConnectionDetails, JdbcDatabaseContainer<?>> source) {
+			ContainerConnectionSource<JdbcConnectionDetails, JdbcDatabaseContainer<?>> source) {
 		return new JdbcContainerConnectionDetails(source);
 	}
 
@@ -49,7 +49,7 @@ class JdbcContainerConnectionDetailsFactory extends
 		private final JdbcDatabaseContainer<?> container;
 
 		private JdbcContainerConnectionDetails(
-				ContainerConnectionSource<JdbcServiceConnection, JdbcConnectionDetails, JdbcDatabaseContainer<?>> source) {
+				ContainerConnectionSource<JdbcConnectionDetails, JdbcDatabaseContainer<?>> source) {
 			super(source);
 			this.container = source.getContainer();
 		}

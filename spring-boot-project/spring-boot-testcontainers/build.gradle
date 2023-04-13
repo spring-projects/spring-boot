@@ -1,5 +1,6 @@
 plugins {
 	id "java-library"
+	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.optional-dependencies"
@@ -28,6 +29,7 @@ dependencies {
 	optional("org.testcontainers:rabbitmq")
 	optional("org.testcontainers:r2dbc")
 
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.awaitility:awaitility")

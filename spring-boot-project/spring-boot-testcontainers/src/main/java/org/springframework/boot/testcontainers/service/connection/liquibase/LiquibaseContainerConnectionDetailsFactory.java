@@ -24,18 +24,18 @@ import org.springframework.boot.testcontainers.service.connection.ContainerConne
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ContainerConnectionDetailsFactory} for
- * {@link ServiceConnection @ServiceConnection}-annotated {@link JdbcDatabaseContainer}
- * fields that should produce {@link LiquibaseConnectionDetails}.
+ * {@link ContainerConnectionDetailsFactory} to create {@link LiquibaseConnectionDetails}
+ * from a {@link ServiceConnection @ServiceConnection}-annotated
+ * {@link JdbcDatabaseContainer}.
  *
  * @author Andy Wilkinson
  */
-class LiquibaseContainerConnectionDetailsFactory extends
-		ContainerConnectionDetailsFactory<ServiceConnection, LiquibaseConnectionDetails, JdbcDatabaseContainer<?>> {
+class LiquibaseContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<LiquibaseConnectionDetails, JdbcDatabaseContainer<?>> {
 
 	@Override
 	protected LiquibaseConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<ServiceConnection, LiquibaseConnectionDetails, JdbcDatabaseContainer<?>> source) {
+			ContainerConnectionSource<LiquibaseConnectionDetails, JdbcDatabaseContainer<?>> source) {
 		return new LiquibaseContainerConnectionDetails(source);
 	}
 
@@ -48,7 +48,7 @@ class LiquibaseContainerConnectionDetailsFactory extends
 		private final JdbcDatabaseContainer<?> container;
 
 		private LiquibaseContainerConnectionDetails(
-				ContainerConnectionSource<ServiceConnection, LiquibaseConnectionDetails, JdbcDatabaseContainer<?>> source) {
+				ContainerConnectionSource<LiquibaseConnectionDetails, JdbcDatabaseContainer<?>> source) {
 			super(source);
 			this.container = source.getContainer();
 		}

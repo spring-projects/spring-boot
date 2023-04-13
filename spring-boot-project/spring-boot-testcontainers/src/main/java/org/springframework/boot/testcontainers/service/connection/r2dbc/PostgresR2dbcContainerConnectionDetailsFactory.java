@@ -21,24 +21,28 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.containers.PostgreSQLR2DBCDatabaseContainer;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
-import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ConnectionDetailsFactory} for {@link R2dbcServiceConnection @R2dbcConnection}
- * annotated {@link PostgreSQLContainer} fields.
+ * {@link ContainerConnectionDetailsFactory} to create {@link R2dbcConnectionDetails} from
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link PostgreSQLContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class PostgresR2dbcContainerConnectionDetailsFactory extends
-		ContainerConnectionDetailsFactory<R2dbcServiceConnection, R2dbcConnectionDetails, PostgreSQLContainer<?>> {
+class PostgresR2dbcContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<R2dbcConnectionDetails, PostgreSQLContainer<?>> {
+
+	PostgresR2dbcContainerConnectionDetailsFactory() {
+		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
+	}
 
 	@Override
 	public R2dbcConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<R2dbcServiceConnection, R2dbcConnectionDetails, PostgreSQLContainer<?>> source) {
+			ContainerConnectionSource<R2dbcConnectionDetails, PostgreSQLContainer<?>> source) {
 		return new R2dbcDatabaseContainerConnectionDetails(source.getContainer());
 	}
 

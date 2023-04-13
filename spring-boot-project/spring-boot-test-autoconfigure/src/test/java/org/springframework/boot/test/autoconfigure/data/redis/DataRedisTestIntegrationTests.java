@@ -25,7 +25,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.testcontainers.service.connection.redis.RedisServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.core.RedisOperations;
@@ -48,7 +48,7 @@ class DataRedisTestIntegrationTests {
 	private static final Charset CHARSET = StandardCharsets.UTF_8;
 
 	@Container
-	@RedisServiceConnection
+	@ServiceConnection
 	static RedisContainer redis = new RedisContainer();
 
 	@Autowired

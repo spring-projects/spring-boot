@@ -21,15 +21,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.testcontainers.containers.Container;
+
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
-import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
+import org.springframework.core.annotation.AliasFor;
 
 /**
- * Annotation used to indicate that a field provides a service that can be connected to.
- * Typically used to meta-annotate a higher-level annotation.
- * <p>
- * When used, a {@link ConnectionDetailsFactory} must be registered in
- * {@code spring.factories} to provide {@link ConnectionDetails} for the field value.
+ * Annotation used to indicate that a field or method is a
+ * {@link ContainerConnectionSource} which provides a service that can be connected to.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -37,14 +36,35 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
  * @since 3.1.0
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.FIELD, ElementType.ANNOTATION_TYPE })
+@Target({ ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE })
 public @interface ServiceConnection {
 
 	/**
-	 * The type of {@link ConnectionDetails} that can describe how to connect to the
-	 * service.
-	 * @return the connection type
+	 * The name of the service being connected to. If not specified, the image name will
+	 * be used. Container names are used to determine the connection details that should
+	 * be created when a technology-specific {@link Container} subclass is not available.
+	 * This attribute is an alias for {@link #name()}.
+	 * @return the name of the service
+	 * @see #name()
 	 */
-	Class<? extends ConnectionDetails> value();
+	@AliasFor("name")
+	String value() default "";
+
+	/**
+	 * The name of the service being connected to. If not specified, the image name will
+	 * be used. Container names are used to determine the connection details that should
+	 * be created when a technology-specific {@link Container} subclass is not available.
+	 * @return the name of the service
+	 * @see #value()
+	 */
+	@AliasFor("value")
+	String name() default "";
+
+	/**
+	 * A restriction to types of {@link ConnectionDetails} that can be created from this
+	 * connection. The default value does not restrict the types that can be created.
+	 * @return the connection detail types that can be created to establish the connection
+	 */
+	Class<? extends ConnectionDetails>[] type() default {};
 
 }

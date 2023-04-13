@@ -21,9 +21,9 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Container;
 
-import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
+import org.springframework.boot.origin.Origin;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.test.context.ContextConfigurationAttributes;
@@ -31,10 +31,14 @@ import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
 import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
- * {@link ContextCustomizerFactory} to support service connections in tests.
+ * Spring Test {@link ContextCustomizerFactory} to support
+ * {@link ServiceConnection @ServiceConnection} annotated {@link Container} fields in
+ * tests.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -45,12 +49,12 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
-		List<ContainerConnectionSource<?, ?, ?>> sources = new ArrayList<>();
+		List<ContainerConnectionSource<?, ?>> sources = new ArrayList<>();
 		findSources(testClass, sources);
 		return (sources.isEmpty()) ? null : new ServiceConnectionContextCustomizer(sources);
 	}
 
-	private void findSources(Class<?> clazz, List<ContainerConnectionSource<?, ?, ?>> sources) {
+	private void findSources(Class<?> clazz, List<ContainerConnectionSource<?, ?>> sources) {
 		ReflectionUtils.doWithFields(clazz, (field) -> {
 			MergedAnnotations annotations = MergedAnnotations.from(field);
 			annotations.stream(ServiceConnection.class)
@@ -61,23 +65,17 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 		}
 	}
 
-	private ContainerConnectionSource<?, ?, ?> createSource(Field field,
-			MergedAnnotation<ServiceConnection> annotation) {
-		if (!Modifier.isStatic(field.getModifiers())) {
-			throw new IllegalStateException("@ServiceConnection field '%s' must be static".formatted(field.getName()));
-		}
-		Class<? extends ConnectionDetails> connectionDetailsType = getConnectionDetailsType(annotation);
+	private ContainerConnectionSource<?, ?> createSource(Field field, MergedAnnotation<ServiceConnection> annotation) {
+		Assert.state(Modifier.isStatic(field.getModifiers()),
+				() -> "@ServiceConnection field '%s' must be static".formatted(field.getName()));
+		String beanNameSuffix = StringUtils.capitalize(ClassUtils.getShortNameAsProperty(field.getDeclaringClass()))
+				+ StringUtils.capitalize(field.getName());
+		Origin origin = new FieldOrigin(field);
 		Object fieldValue = getFieldValue(field);
-		Assert.isInstanceOf(GenericContainer.class, fieldValue,
-				"Field %s must be a %s".formatted(field.getName(), GenericContainer.class.getName()));
-		GenericContainer<?> container = (GenericContainer<?>) fieldValue;
-		return new ContainerConnectionSource<>(connectionDetailsType, field, annotation, container);
-	}
-
-	@SuppressWarnings("unchecked")
-	private Class<? extends ConnectionDetails> getConnectionDetailsType(
-			MergedAnnotation<ServiceConnection> annotation) {
-		return (Class<? extends ConnectionDetails>) annotation.getClass(MergedAnnotation.VALUE);
+		Assert.state(Container.class.isInstance(fieldValue), () -> "Field '%s' in %s must be a %s"
+			.formatted(field.getName(), field.getDeclaringClass().getName(), Container.class.getName()));
+		Container<?> container = (Container<?>) fieldValue;
+		return new ContainerConnectionSource<>(beanNameSuffix, origin, container, annotation);
 	}
 
 	private Object getFieldValue(Field field) {

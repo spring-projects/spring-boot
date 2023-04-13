@@ -16,12 +16,13 @@
 
 package org.springframework.boot.testcontainers.service.connection;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
-
-import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnectionContextCustomizerFactoryTests.ServiceConnections.NestedClass;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -29,19 +30,21 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 /**
  * Tests for {@link ServiceConnectionContextCustomizerFactory}.
  *
+ * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-public class ServiceConnectionContextCustomizerFactoryTests {
+class ServiceConnectionContextCustomizerFactoryTests {
 
 	private final ServiceConnectionContextCustomizerFactory factory = new ServiceConnectionContextCustomizerFactory();
 
 	@Test
-	void whenClassHasNoServiceConnectionsThenCreateReturnsNull() {
+	void createContextCustomizerWhenNoServiceConnectionsReturnsNull() {
 		assertThat(this.factory.createContextCustomizer(NoServiceConnections.class, null)).isNull();
 	}
 
 	@Test
-	void whenClassHasServiceConnectionsThenCreateReturnsCustomizer() {
+	void createContextCustomizerWhenClassHasServiceConnectionsReturnsCustomizer() {
 		ServiceConnectionContextCustomizer customizer = (ServiceConnectionContextCustomizer) this.factory
 			.createContextCustomizer(ServiceConnections.class, null);
 		assertThat(customizer).isNotNull();
@@ -49,37 +52,79 @@ public class ServiceConnectionContextCustomizerFactoryTests {
 	}
 
 	@Test
-	void whenEnclosingClassHasServiceConnectionsThenCreateReturnsCustomizer() {
+	void createContextCustomizerWhenEnclosingClassHasServiceConnectionsReturnsCustomizer() {
 		ServiceConnectionContextCustomizer customizer = (ServiceConnectionContextCustomizer) this.factory
-			.createContextCustomizer(NestedClass.class, null);
+			.createContextCustomizer(ServiceConnections.NestedClass.class, null);
 		assertThat(customizer).isNotNull();
 		assertThat(customizer.getSources()).hasSize(3);
 	}
 
 	@Test
-	void whenClassHasNonStaticServiceConnectionThenCreateShouldFailWithHelpfulIllegalStateException() {
+	void createContextCustomizerWhenClassHasNonStaticServiceConnectionFailsWithHepfulException() {
 		assertThatIllegalStateException()
 			.isThrownBy(() -> this.factory.createContextCustomizer(NonStaticServiceConnection.class, null))
 			.withMessage("@ServiceConnection field 'service' must be static");
+
+	}
+
+	@Test
+	void createContextCustomizerWhenClassHasAnnotationOnNonConnectionFieldFailsWithHepfulException() {
+		assertThatIllegalStateException()
+			.isThrownBy(() -> this.factory.createContextCustomizer(ServiceConnectionOnWrongFieldType.class, null))
+			.withMessage("Field 'service2' in " + ServiceConnectionOnWrongFieldType.class.getName()
+					+ " must be a org.testcontainers.containers.Container");
+	}
+
+	@Test
+	void createContextCustomizerCreatesCustomizerSourceWithSensibleBeanNameSuffix() {
+		ServiceConnectionContextCustomizer customizer = (ServiceConnectionContextCustomizer) this.factory
+			.createContextCustomizer(SingleServiceConnection.class, null);
+		ContainerConnectionSource<?, ?> source = customizer.getSources().get(0);
+		assertThat(source.getBeanNameSuffix()).isEqualTo("SingleServiceConnectionService1");
+	}
+
+	@Test
+	void createContextCustomizerCreatesCustomizerSourceWithSensibleOrigin() {
+		ServiceConnectionContextCustomizer customizer = (ServiceConnectionContextCustomizer) this.factory
+			.createContextCustomizer(SingleServiceConnection.class, null);
+		ContainerConnectionSource<?, ?> source = customizer.getSources().get(0);
+		assertThat(source.getOrigin())
+			.hasToString("ServiceConnectionContextCustomizerFactoryTests.SingleServiceConnection.service1");
+	}
+
+	@Test
+	void createContextCustomizerCreatesCustomizerSourceWithSensibleToString() {
+		ServiceConnectionContextCustomizer customizer = (ServiceConnectionContextCustomizer) this.factory
+			.createContextCustomizer(SingleServiceConnection.class, null);
+		ContainerConnectionSource<?, ?> source = customizer.getSources().get(0);
+		assertThat(source).hasToString(
+				"@ServiceConnection source for ServiceConnectionContextCustomizerFactoryTests.SingleServiceConnection.service1");
 	}
 
 	static class NoServiceConnections {
 
 	}
 
+	static class SingleServiceConnection {
+
+		@ServiceConnection
+		private static GenericContainer<?> service1 = new MockContainer();
+
+	}
+
 	static class ServiceConnections {
 
-		@ServiceConnection(TestConnectionDetails.class)
-		private static GenericContainer<?> service1 = new GenericContainer<>("example");
+		@ServiceConnection
+		private static Container<?> service1 = new MockContainer();
 
-		@ServiceConnection(TestConnectionDetails.class)
-		private static GenericContainer<?> service2 = new GenericContainer<>("example");
+		@ServiceConnection
+		private static Container<?> service2 = new MockContainer();
 
 		@Nested
 		class NestedClass {
 
-			@ServiceConnection(TestConnectionDetails.class)
-			private static GenericContainer<?> service3 = new GenericContainer<>("example");
+			@ServiceConnection
+			private static Container<?> service3 = new MockContainer();
 
 		}
 
@@ -87,12 +132,35 @@ public class ServiceConnectionContextCustomizerFactoryTests {
 
 	static class NonStaticServiceConnection {
 
-		@ServiceConnection(TestConnectionDetails.class)
-		private GenericContainer<?> service = new GenericContainer<>("example");
+		@ServiceConnection
+		private Container<?> service = new MockContainer("example");
 
 	}
 
-	static class TestConnectionDetails implements ConnectionDetails {
+	static class ServiceConnectionOnWrongFieldType {
+
+		@ServiceConnection
+		private static InputStream service2 = new ByteArrayInputStream(new byte[0]);
+
+	}
+
+	static class MockContainer extends GenericContainer<MockContainer> {
+
+		private final String dockerImageName;
+
+		MockContainer() {
+			this("example");
+		}
+
+		MockContainer(String dockerImageName) {
+			super(dockerImageName);
+			this.dockerImageName = dockerImageName;
+		}
+
+		@Override
+		public String getDockerImageName() {
+			return this.dockerImageName;
+		}
 
 	}
 

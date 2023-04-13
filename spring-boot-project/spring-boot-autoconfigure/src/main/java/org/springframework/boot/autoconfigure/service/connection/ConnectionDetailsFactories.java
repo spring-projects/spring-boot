@@ -17,14 +17,17 @@
 package org.springframework.boot.autoconfigure.service.connection;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.io.support.SpringFactoriesLoader;
-import org.springframework.core.style.ToStringCreator;
+import org.springframework.util.Assert;
 
 /**
  * A registry of {@link ConnectionDetailsFactory} instances.
@@ -49,30 +52,55 @@ public class ConnectionDetailsFactories {
 		registrations.filter(Objects::nonNull).forEach(this.registrations::add);
 	}
 
-	public <S> ConnectionDetails getConnectionDetails(S source) {
-		return getConnectionDetailsFactory(source).getConnectionDetails(source);
+	/**
+	 * Return a {@link Map} of {@link ConnectionDetails} interface type to
+	 * {@link ConnectionDetails} instance created from the factories associated with the
+	 * given source.
+	 * @param <S> the source type
+	 * @param source the source
+	 * @return a list of {@link ConnectionDetails} instances.
+	 */
+	public <S> Map<Class<?>, ConnectionDetails> getConnectionDetails(S source) {
+		List<Registration<S, ?>> registrations = getRegistrations(source);
+		Map<Class<?>, ConnectionDetails> result = new LinkedHashMap<>();
+		for (Registration<S, ?> registration : registrations) {
+			ConnectionDetails connectionDetails = registration.factory().getConnectionDetails(source);
+			if (connectionDetails != null) {
+				Class<?> connectionDetailsType = registration.connectionDetailsType();
+				ConnectionDetails previous = result.put(connectionDetailsType, connectionDetails);
+				Assert.state(previous == null, () -> "Duplicate connection details supplied for %s"
+					.formatted(connectionDetailsType.getName()));
+			}
+		}
+		return Map.copyOf(result);
 	}
 
 	@SuppressWarnings("unchecked")
-	public <S> ConnectionDetailsFactory<S, ConnectionDetails> getConnectionDetailsFactory(S source) {
+	<S> List<Registration<S, ?>> getRegistrations(S source) {
 		Class<S> sourceType = (Class<S>) source.getClass();
-		List<ConnectionDetailsFactory<S, ConnectionDetails>> result = new ArrayList<>();
+		List<Registration<S, ?>> result = new ArrayList<>();
 		for (Registration<?, ?> candidate : this.registrations) {
 			if (candidate.sourceType().isAssignableFrom(sourceType)) {
-				result.add((ConnectionDetailsFactory<S, ConnectionDetails>) candidate.factory());
+				result.add((Registration<S, ?>) candidate);
 			}
 		}
 		if (result.isEmpty()) {
 			throw new ConnectionDetailsFactoryNotFoundException(source);
 		}
-		AnnotationAwareOrderComparator.sort(result);
-		return (result.size() != 1) ? new CompositeConnectionDetailsFactory<>(result) : result.get(0);
+		result.sort(Comparator.comparing(Registration::factory, AnnotationAwareOrderComparator.INSTANCE));
+		return List.copyOf(result);
 	}
 
 	/**
 	 * A {@link ConnectionDetailsFactory} registration.
+	 *
+	 * @param <S> the source type
+	 * @param <D> the connection details type
+	 * @param sourceType the source type
+	 * @param connectionDetailsType the connection details type
+	 * @param factory the factory
 	 */
-	private record Registration<S, D extends ConnectionDetails>(Class<S> sourceType, Class<D> connectionDetailsType,
+	record Registration<S, D extends ConnectionDetails>(Class<S> sourceType, Class<D> connectionDetailsType,
 			ConnectionDetailsFactory<S, D> factory) {
 
 		@SuppressWarnings("unchecked")
@@ -83,39 +111,6 @@ public class ConnectionDetailsFactories {
 				return new Registration<>((Class<S>) generics[0], (Class<D>) generics[1], factory);
 			}
 			return null;
-		}
-
-	}
-
-	/**
-	 * Composite {@link ConnectionDetailsFactory} implementation.
-	 *
-	 * @param <S> the source type
-	 */
-	static class CompositeConnectionDetailsFactory<S> implements ConnectionDetailsFactory<S, ConnectionDetails> {
-
-		private final List<ConnectionDetailsFactory<S, ConnectionDetails>> delegates;
-
-		CompositeConnectionDetailsFactory(List<ConnectionDetailsFactory<S, ConnectionDetails>> delegates) {
-			this.delegates = delegates;
-		}
-
-		@Override
-		public ConnectionDetails getConnectionDetails(S source) {
-			return this.delegates.stream()
-				.map((delegate) -> delegate.getConnectionDetails(source))
-				.filter(Objects::nonNull)
-				.findFirst()
-				.orElse(null);
-		}
-
-		List<ConnectionDetailsFactory<S, ConnectionDetails>> getDelegates() {
-			return this.delegates;
-		}
-
-		@Override
-		public String toString() {
-			return new ToStringCreator(this).append("delegates", this.delegates).toString();
 		}
 
 	}

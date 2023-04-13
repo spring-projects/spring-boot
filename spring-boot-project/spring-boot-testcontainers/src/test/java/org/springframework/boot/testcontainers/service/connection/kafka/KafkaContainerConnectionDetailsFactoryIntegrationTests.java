@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.testcontainers.service.connection.amqp;
+package org.springframework.boot.testcontainers.service.connection.kafka;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -22,26 +22,26 @@ import java.util.List;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.RabbitMQContainer;
+import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
-import org.springframework.amqp.rabbit.annotation.Queue;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
-import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link RabbitServiceConnection}.
+ * Tests for {@link KafkaContainerConnectionDetailsFactory}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -49,32 +49,29 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)
-class RabbitServiceConnectionTests {
+@TestPropertySource(properties = { "spring.kafka.consumer.group-id=test-group",
+		"spring.kafka.consumer.auto-offset-reset=earliest" })
+class KafkaContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
-	@RabbitServiceConnection
-	static final RabbitMQContainer rabbit = new RabbitMQContainer(DockerImageName.parse("rabbitmq:3.11-alpine"));
-
-	@Autowired(required = false)
-	private RabbitConnectionDetails connectionDetails;
+	@ServiceConnection
+	static final KafkaContainer kafka = new KafkaContainer(DockerImageNames.kafka());
 
 	@Autowired
-	private RabbitTemplate rabbitTemplate;
+	private KafkaTemplate<String, String> kafkaTemplate;
 
 	@Autowired
 	private TestListener listener;
 
 	@Test
-	void connectionCanBeMadeToRabbitContainer() {
-		assertThat(this.connectionDetails).isNotNull();
-		this.rabbitTemplate.convertAndSend("test", "message");
+	void connectionCanBeMadeToKafkaContainer() {
+		this.kafkaTemplate.send("test-topic", "test-data");
 		Awaitility.waitAtMost(Duration.ofMinutes(4))
-			.untilAsserted(() -> assertThat(this.listener.messages).containsExactly("message"));
-
+			.untilAsserted(() -> assertThat(this.listener.messages).containsExactly("test-data"));
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ImportAutoConfiguration(RabbitAutoConfiguration.class)
+	@ImportAutoConfiguration(KafkaAutoConfiguration.class)
 	static class TestConfiguration {
 
 		@Bean
@@ -88,7 +85,7 @@ class RabbitServiceConnectionTests {
 
 		private final List<String> messages = new ArrayList<>();
 
-		@RabbitListener(queuesToDeclare = @Queue("test"))
+		@KafkaListener(topics = "test-topic")
 		void processMessage(String message) {
 			this.messages.add(message);
 		}

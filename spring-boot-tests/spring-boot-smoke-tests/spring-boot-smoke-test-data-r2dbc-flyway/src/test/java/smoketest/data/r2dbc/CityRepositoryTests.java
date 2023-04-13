@@ -23,10 +23,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.test.StepVerifier;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.flyway.FlywayConnectionDetails;
 import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testcontainers.service.connection.r2dbc.R2dbcServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,8 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CityRepositoryTests {
 
 	@Container
-	@R2dbcServiceConnection
-	@ServiceConnection(FlywayConnectionDetails.class)
+	@ServiceConnection
 	static PostgreSQLContainer<?> postgresql = new PostgreSQLContainer<>(DockerImageNames.postgresql())
 		.withDatabaseName("test_flyway");
 

@@ -8,7 +8,6 @@ org.springframework.boot.testcontainers.service.connection.amqp.RabbitContainerC
 org.springframework.boot.testcontainers.service.connection.cassandra.CassandraContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.couchbase.CouchbaseContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.flyway.FlywayContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.redis.RedisContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.elasticsearch.ElasticsearchContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.influx.InfluxDbContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.jdbc.JdbcContainerConnectionDetailsFactory,\
@@ -17,6 +16,7 @@ org.springframework.boot.testcontainers.service.connection.liquibase.LiquibaseCo
 org.springframework.boot.testcontainers.service.connection.mongo.MongoContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.neo4j.Neo4jContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.MariaDbR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.r2dbc.MsSqlServerR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.MySqlR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.PostgresR2dbcContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.r2dbc.SqlServerR2dbcContainerConnectionDetailsFactory
+org.springframework.boot.testcontainers.service.connection.redis.RedisContainerConnectionDetailsFactory

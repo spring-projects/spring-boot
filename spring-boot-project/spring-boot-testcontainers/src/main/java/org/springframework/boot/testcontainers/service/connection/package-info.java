@@ -15,6 +15,6 @@
  */
 
 /**
- * General support for auto-configuration of service connections in tests.
+ * General support for service connections in tests.
  */
 package org.springframework.boot.testcontainers.service.connection;

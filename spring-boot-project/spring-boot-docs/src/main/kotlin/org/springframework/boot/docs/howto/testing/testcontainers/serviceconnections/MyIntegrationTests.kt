@@ -17,13 +17,12 @@
 package org.springframework.boot.docs.howto.testing.testcontainers.serviceconnection
 
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.testcontainers.service.connection.neo4j.Neo4jServiceConnection;
-import org.springframework.test.context.DynamicPropertyRegistry
-import org.springframework.test.context.DynamicPropertySource
 import org.testcontainers.containers.Neo4jContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
+
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 @SpringBootTest
 @Testcontainers
@@ -37,7 +36,7 @@ internal class MyIntegrationTests {
 	companion object {
 
 		@Container
-		@Neo4jServiceConnection
+		@ServiceConnection
 		var neo4j: Neo4jContainer<*> = Neo4jContainer<Nothing>("neo4j:5")
 
 	}

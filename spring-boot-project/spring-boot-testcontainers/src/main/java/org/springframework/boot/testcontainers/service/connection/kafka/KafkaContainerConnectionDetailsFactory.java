@@ -24,22 +24,22 @@ import org.testcontainers.containers.KafkaContainer;
 import org.springframework.boot.autoconfigure.kafka.KafkaConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ContainerConnectionDetailsFactory} for
- * {@link KafkaServiceConnection @KafkaServiceConnection}-annotated {@link KafkaContainer}
- * fields.
+ * {@link ContainerConnectionDetailsFactory} to create {@link KafkaConnectionDetails} from
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link KafkaContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
 class KafkaContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<KafkaServiceConnection, KafkaConnectionDetails, KafkaContainer> {
+		extends ContainerConnectionDetailsFactory<KafkaConnectionDetails, KafkaContainer> {
 
 	@Override
 	protected KafkaConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<KafkaServiceConnection, KafkaConnectionDetails, KafkaContainer> source) {
+			ContainerConnectionSource<KafkaConnectionDetails, KafkaContainer> source) {
 		return new KafkaContainerConnectionDetails(source);
 	}
 
@@ -52,7 +52,7 @@ class KafkaContainerConnectionDetailsFactory
 		private final KafkaContainer container;
 
 		private KafkaContainerConnectionDetails(
-				ContainerConnectionSource<KafkaServiceConnection, KafkaConnectionDetails, KafkaContainer> source) {
+				ContainerConnectionSource<KafkaConnectionDetails, KafkaContainer> source) {
 			super(source);
 			this.container = source.getContainer();
 		}

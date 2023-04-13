@@ -16,31 +16,26 @@
 
 package org.springframework.boot.testcontainers.service.connection;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.Objects;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 
 /**
- * {@link Origin} backed by a {@link Field} and an {@link Annotation}.
+ * {@link Origin} backed by a {@link Field}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class AnnotatedFieldOrigin implements Origin {
+class FieldOrigin implements Origin {
 
 	private final Field field;
 
-	private final Annotation annotation;
-
-	AnnotatedFieldOrigin(Field field, Annotation annotation) {
+	FieldOrigin(Field field) {
 		Assert.notNull(field, "Field must not be null");
-		Assert.notNull(annotation, "Annotation must not be null");
 		this.field = field;
-		this.annotation = annotation;
 	}
 
 	@Override
@@ -51,18 +46,18 @@ class AnnotatedFieldOrigin implements Origin {
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		AnnotatedFieldOrigin other = (AnnotatedFieldOrigin) obj;
-		return this.field.equals(other.field) && this.annotation.equals(other.annotation);
+		FieldOrigin other = (FieldOrigin) obj;
+		return this.field.equals(other.field);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.field, this.annotation);
+		return this.field.hashCode();
 	}
 
 	@Override
 	public String toString() {
-		return this.annotation + " " + this.field;
+		return ClassUtils.getShortName(this.field.getDeclaringClass()) + "." + this.field.getName();
 	}
 
 }

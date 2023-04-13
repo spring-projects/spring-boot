@@ -25,7 +25,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.testcontainers.service.connection.couchbase.CouchbaseServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.stereotype.Service;
@@ -48,7 +48,7 @@ class DataCouchbaseTestWithIncludeFilterIntegrationTests {
 	private static final String BUCKET_NAME = "cbbucket";
 
 	@Container
-	@CouchbaseServiceConnection
+	@ServiceConnection
 	static final CouchbaseContainer couchbase = new CouchbaseContainer(DockerImageNames.couchbase())
 		.withStartupAttempts(5)
 		.withStartupTimeout(Duration.ofMinutes(10))

@@ -26,7 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.testcontainers.service.connection.cassandra.CassandraServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.CassandraContainer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -51,7 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DataCassandraTestWithIncludeFilterIntegrationTests {
 
 	@Container
-	@CassandraServiceConnection
+	@ServiceConnection
 	static final CassandraContainer cassandra = new CassandraContainer();
 
 	@Autowired

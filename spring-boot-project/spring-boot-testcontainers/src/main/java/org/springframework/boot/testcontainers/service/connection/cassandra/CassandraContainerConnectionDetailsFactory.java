@@ -23,22 +23,23 @@ import org.testcontainers.containers.CassandraContainer;
 import org.springframework.boot.autoconfigure.cassandra.CassandraConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ContainerConnectionDetailsFactory} for
- * {@link CassandraServiceConnection @CassandraServiceConnection}-annotated
- * {@link CassandraContainer} fields.
+ * {@link ContainerConnectionDetailsFactory} to create {@link CassandraConnectionDetails}
+ * from a {@link ServiceConnection @ServiceConnection}-annotated
+ * {@link CassandraContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class CassandraContainerConnectionDetailsFactory extends
-		ContainerConnectionDetailsFactory<CassandraServiceConnection, CassandraConnectionDetails, CassandraContainer<?>> {
+class CassandraContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<CassandraConnectionDetails, CassandraContainer<?>> {
 
 	@Override
 	protected CassandraConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<CassandraServiceConnection, CassandraConnectionDetails, CassandraContainer<?>> source) {
+			ContainerConnectionSource<CassandraConnectionDetails, CassandraContainer<?>> source) {
 		return new CassandraContainerConnectionDetails(source);
 	}
 
@@ -51,7 +52,7 @@ class CassandraContainerConnectionDetailsFactory extends
 		private final CassandraContainer<?> container;
 
 		private CassandraContainerConnectionDetails(
-				ContainerConnectionSource<CassandraServiceConnection, CassandraConnectionDetails, CassandraContainer<?>> source) {
+				ContainerConnectionSource<CassandraConnectionDetails, CassandraContainer<?>> source) {
 			super(source);
 			this.container = source.getContainer();
 		}

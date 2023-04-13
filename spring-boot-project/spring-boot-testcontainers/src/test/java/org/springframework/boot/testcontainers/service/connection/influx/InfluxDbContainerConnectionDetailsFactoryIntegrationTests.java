@@ -21,18 +21,19 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.InfluxDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.influx.InfluxDbAutoConfiguration;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link InfluxDbServiceConnection}.
+ * Tests for {@link InfluxDbContainerConnectionDetailsFactory}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -40,21 +41,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)
-class InfluxDbServiceConnectionTests {
-
-	private static final String INFLUXDB_VERSION = "2.6.1";
+class InfluxDbContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
-	@InfluxDbServiceConnection
-	static final InfluxDBContainer<?> influxDbService = new InfluxDBContainer<>(
-			DockerImageName.parse("influxdb").withTag(INFLUXDB_VERSION));
+	@ServiceConnection
+	static final InfluxDBContainer<?> influxDbService = new InfluxDBContainer<>(DockerImageNames.influxDb());
 
 	@Autowired
 	private InfluxDB influxDb;
 
 	@Test
 	void connectionCanBeMadeToInfluxDbContainer() {
-		assertThat(this.influxDb.version()).isEqualTo("v" + INFLUXDB_VERSION);
+		assertThat(this.influxDb.version()).isEqualTo("v" + DockerImageNames.influxDb().getVersionPart());
 	}
 
 	@Configuration(proxyBeanMethods = false)

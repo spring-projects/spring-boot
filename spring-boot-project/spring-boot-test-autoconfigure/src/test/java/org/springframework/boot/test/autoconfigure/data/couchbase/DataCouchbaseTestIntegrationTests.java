@@ -26,7 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.testcontainers.service.connection.couchbase.CouchbaseServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
@@ -50,7 +50,7 @@ class DataCouchbaseTestIntegrationTests {
 	private static final String BUCKET_NAME = "cbbucket";
 
 	@Container
-	@CouchbaseServiceConnection
+	@ServiceConnection
 	static final CouchbaseContainer couchbase = new CouchbaseContainer(DockerImageNames.couchbase())
 		.withStartupAttempts(5)
 		.withStartupTimeout(Duration.ofMinutes(10))

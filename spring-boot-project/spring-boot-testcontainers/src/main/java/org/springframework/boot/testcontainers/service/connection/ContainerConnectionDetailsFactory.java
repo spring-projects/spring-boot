@@ -16,9 +16,9 @@
 
 package org.springframework.boot.testcontainers.service.connection;
 
-import java.lang.annotation.Annotation;
+import java.util.Arrays;
 
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Container;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
@@ -26,13 +26,13 @@ import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ObjectUtils;
 
 /**
  * Base class for {@link ConnectionDetailsFactory} implementations that provide
  * {@link ConnectionDetails} from a {@link ContainerConnectionSource}.
  *
- * @param <A> the source annotation type. The annotation will be mergable to a
- * {@link ServiceConnection @ServiceConnection}.
  * @param <D> the connection details type
  * @param <C> the generic container type
  * @author Moritz Halbritter
@@ -40,17 +40,58 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @since 3.1.0
  */
-public abstract class ContainerConnectionDetailsFactory<A extends Annotation, D extends ConnectionDetails, C extends GenericContainer<?>>
-		implements ConnectionDetailsFactory<ContainerConnectionSource<A, D, C>, D> {
+public abstract class ContainerConnectionDetailsFactory<D extends ConnectionDetails, C extends Container<?>>
+		implements ConnectionDetailsFactory<ContainerConnectionSource<D, C>, D> {
+
+	/**
+	 * Constant passed to the constructor when any connection name is accepted.
+	 */
+	protected static final String ANY_CONNECTION_NAME = null;
+
+	private final String connectionName;
+
+	private final String[] requiredClassNames;
+
+	/**
+	 * Create a new {@link ContainerConnectionDetailsFactory} instance that accepts
+	 * {@link #ANY_CONNECTION_NAME any connection name}.
+	 */
+	protected ContainerConnectionDetailsFactory() {
+		this(ANY_CONNECTION_NAME);
+	}
+
+	/**
+	 * Create a new {@link ContainerConnectionDetailsFactory} instance with the given
+	 * connection name restriction.
+	 * @param connectionName the required connection name or {@link #ANY_CONNECTION_NAME}
+	 * @param requiredClassNames the names of classes that must be present
+	 */
+	protected ContainerConnectionDetailsFactory(String connectionName, String... requiredClassNames) {
+		this.connectionName = connectionName;
+		this.requiredClassNames = requiredClassNames;
+	}
 
 	@Override
-	public final D getConnectionDetails(ContainerConnectionSource<A, D, C> source) {
-		Class<?>[] generics = resolveGenerics();
-		Class<?> annotationType = generics[0];
-		Class<?> connectionDetailsType = generics[1];
-		Class<?> containerType = generics[2];
-		return (!source.accepts(annotationType, connectionDetailsType, containerType)) ? null
-				: getContainerConnectionDetails(source);
+	public final D getConnectionDetails(ContainerConnectionSource<D, C> source) {
+		if (!hasRequiredClasses()) {
+			return null;
+		}
+		try {
+			Class<?>[] generics = resolveGenerics();
+			Class<?> connectionDetailsType = generics[0];
+			Class<?> containerType = generics[1];
+			if (source.accepts(this.connectionName, connectionDetailsType, containerType)) {
+				return getContainerConnectionDetails(source);
+			}
+		}
+		catch (NoClassDefFoundError ex) {
+		}
+		return null;
+	}
+
+	private boolean hasRequiredClasses() {
+		return ObjectUtils.isEmpty(this.requiredClassNames) || Arrays.stream(this.requiredClassNames)
+			.allMatch((requiredClassName) -> ClassUtils.isPresent(requiredClassName, null));
 	}
 
 	private Class<?>[] resolveGenerics() {
@@ -64,7 +105,7 @@ public abstract class ContainerConnectionDetailsFactory<A extends Annotation, D 
 	 * @param source the source
 	 * @return the service connection or {@code null}.
 	 */
-	protected abstract D getContainerConnectionDetails(ContainerConnectionSource<A, D, C> source);
+	protected abstract D getContainerConnectionDetails(ContainerConnectionSource<D, C> source);
 
 	/**
 	 * Convenient base class for {@link ConnectionDetails} results that are backed by a
@@ -78,7 +119,7 @@ public abstract class ContainerConnectionDetailsFactory<A extends Annotation, D 
 		 * Create a new {@link ContainerConnectionDetails} instance.
 		 * @param source the source {@link ContainerConnectionSource}
 		 */
-		protected ContainerConnectionDetails(ContainerConnectionSource<?, ?, ?> source) {
+		protected ContainerConnectionDetails(ContainerConnectionSource<?, ?> source) {
 			Assert.notNull(source, "Source must not be null");
 			this.origin = source.getOrigin();
 		}

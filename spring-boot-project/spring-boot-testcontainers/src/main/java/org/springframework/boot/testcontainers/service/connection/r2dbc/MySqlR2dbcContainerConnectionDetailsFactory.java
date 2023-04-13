@@ -21,25 +21,28 @@ import org.testcontainers.containers.MySQLContainer;
 import org.testcontainers.containers.MySQLR2DBCDatabaseContainer;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
-import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ConnectionDetailsFactory} for
- * {@link R2dbcServiceConnection @R2dbcServiceConnection}- annotated
- * {@link MySQLContainer} fields.
+ * {@link ContainerConnectionDetailsFactory} to create {@link R2dbcConnectionDetails} from
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link MySQLContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
 class MySqlR2dbcContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<R2dbcServiceConnection, R2dbcConnectionDetails, MySQLContainer<?>> {
+		extends ContainerConnectionDetailsFactory<R2dbcConnectionDetails, MySQLContainer<?>> {
+
+	MySqlR2dbcContainerConnectionDetailsFactory() {
+		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
+	}
 
 	@Override
 	public R2dbcConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<R2dbcServiceConnection, R2dbcConnectionDetails, MySQLContainer<?>> source) {
+			ContainerConnectionSource<R2dbcConnectionDetails, MySQLContainer<?>> source) {
 		return new R2dbcDatabaseContainerConnectionDetails(source.getContainer());
 	}
 

@@ -23,22 +23,23 @@ import org.testcontainers.containers.InfluxDBContainer;
 import org.springframework.boot.autoconfigure.influx.InfluxDbConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ContainerConnectionDetailsFactory} for
- * {@link InfluxDbServiceConnection @InfluxDbServiceConnection}-annotated
- * {@link InfluxDBContainer} fields.
+ * {@link ContainerConnectionDetailsFactory} to create {@link InfluxDbConnectionDetails}
+ * from a {@link ServiceConnection @ServiceConnection}-annotated
+ * {@link InfluxDBContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class InfluxDbContainerConnectionDetailsFactory extends
-		ContainerConnectionDetailsFactory<InfluxDbServiceConnection, InfluxDbConnectionDetails, InfluxDBContainer<?>> {
+class InfluxDbContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<InfluxDbConnectionDetails, InfluxDBContainer<?>> {
 
 	@Override
 	protected InfluxDbConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<InfluxDbServiceConnection, InfluxDbConnectionDetails, InfluxDBContainer<?>> source) {
+			ContainerConnectionSource<InfluxDbConnectionDetails, InfluxDBContainer<?>> source) {
 		return new InfluxDbContainerConnectionDetails(source);
 	}
 
@@ -51,7 +52,7 @@ class InfluxDbContainerConnectionDetailsFactory extends
 		private final InfluxDBContainer<?> container;
 
 		private InfluxDbContainerConnectionDetails(
-				ContainerConnectionSource<InfluxDbServiceConnection, InfluxDbConnectionDetails, InfluxDBContainer<?>> source) {
+				ContainerConnectionSource<InfluxDbConnectionDetails, InfluxDBContainer<?>> source) {
 			super(source);
 			this.container = source.getContainer();
 		}

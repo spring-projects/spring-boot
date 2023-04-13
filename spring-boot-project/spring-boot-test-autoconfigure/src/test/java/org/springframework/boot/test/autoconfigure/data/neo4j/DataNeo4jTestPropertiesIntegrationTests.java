@@ -25,7 +25,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.testcontainers.service.connection.neo4j.Neo4jServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.core.env.Environment;
 
@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DataNeo4jTestPropertiesIntegrationTests {
 
 	@Container
-	@Neo4jServiceConnection
+	@ServiceConnection
 	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>(DockerImageNames.neo4j()).withoutAuthentication()
 		.withStartupAttempts(5)
 		.withStartupTimeout(Duration.ofMinutes(10));

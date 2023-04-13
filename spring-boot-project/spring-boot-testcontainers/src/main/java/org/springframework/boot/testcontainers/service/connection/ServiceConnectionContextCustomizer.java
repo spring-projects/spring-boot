@@ -17,21 +17,17 @@
 package org.springframework.boot.testcontainers.service.connection;
 
 import java.util.List;
-import java.util.function.Supplier;
 
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
-import org.springframework.util.Assert;
 
 /**
- * {@link ContextCustomizer} to support registering {@link ConnectionDetails}.
+ * Spring Test {@link ContextCustomizer} to support registering {@link ConnectionDetails}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -39,46 +35,30 @@ import org.springframework.util.Assert;
  */
 class ServiceConnectionContextCustomizer implements ContextCustomizer {
 
-	private final ConnectionDetailsFactories factories = new ConnectionDetailsFactories();
+	private final List<ContainerConnectionSource<?, ?>> sources;
 
-	private final List<ContainerConnectionSource<?, ?, ?>> sources;
+	private final ConnectionDetailsFactories connectionDetailsFactories;
 
-	ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?, ?, ?>> sources) {
+	ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?, ?>> sources) {
+		this(sources, new ConnectionDetailsFactories());
+	}
+
+	ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?, ?>> sources,
+			ConnectionDetailsFactories connectionDetailsFactories) {
 		this.sources = sources;
+		this.connectionDetailsFactories = connectionDetailsFactories;
 	}
 
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
 		if (beanFactory instanceof BeanDefinitionRegistry registry) {
-			registerServiceConnections(registry);
+			new ContainerConnectionSourcesRegistrar(beanFactory, this.connectionDetailsFactories, this.sources)
+				.registerBeanDefinitions(registry);
 		}
 	}
 
-	private void registerServiceConnections(BeanDefinitionRegistry registry) {
-		this.sources.forEach((source) -> registerServiceConnection(registry, source));
-	}
-
-	private void registerServiceConnection(BeanDefinitionRegistry registry, ContainerConnectionSource<?, ?, ?> source) {
-		ConnectionDetails connectionDetails = getConnectionDetails(source);
-		register(connectionDetails, registry, source.getBeanName());
-	}
-
-	@SuppressWarnings("unchecked")
-	private <T> void register(ConnectionDetails connectionDetails, BeanDefinitionRegistry registry, String beanName) {
-		Class<T> beanType = (Class<T>) connectionDetails.getClass();
-		Supplier<T> beanSupplier = () -> (T) connectionDetails;
-		BeanDefinition beanDefinition = new RootBeanDefinition(beanType, beanSupplier);
-		registry.registerBeanDefinition(beanName, beanDefinition);
-	}
-
-	private <S> ConnectionDetails getConnectionDetails(S source) {
-		ConnectionDetails connectionDetails = this.factories.getConnectionDetails(source);
-		Assert.state(connectionDetails != null, () -> "No connection details created for %s".formatted(source));
-		return connectionDetails;
-	}
-
-	List<ContainerConnectionSource<?, ?, ?>> getSources() {
+	List<ContainerConnectionSource<?, ?>> getSources() {
 		return this.sources;
 	}
 

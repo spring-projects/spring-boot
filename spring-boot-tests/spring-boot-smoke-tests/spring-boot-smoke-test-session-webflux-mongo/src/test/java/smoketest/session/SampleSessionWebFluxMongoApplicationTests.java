@@ -28,7 +28,7 @@ import reactor.util.function.Tuples;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.boot.testcontainers.service.connection.mongo.MongoServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -49,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleSessionWebFluxMongoApplicationTests {
 
 	@Container
-	@MongoServiceConnection
+	@ServiceConnection
 	private static final MongoDBContainer mongo = new MongoDBContainer(DockerImageNames.mongo()).withStartupAttempts(3)
 		.withStartupTimeout(Duration.ofMinutes(2));
 

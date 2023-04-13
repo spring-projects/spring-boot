@@ -24,7 +24,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.testcontainers.service.connection.elasticsearch.ElasticsearchServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchTemplate;
 
@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DataElasticsearchTestReactiveIntegrationTests {
 
 	@Container
-	@ElasticsearchServiceConnection
+	@ServiceConnection
 	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())
 		.withStartupAttempts(5)
 		.withStartupTimeout(Duration.ofMinutes(10));

@@ -21,7 +21,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.testcontainers.service.connection.redis.RedisServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.stereotype.Service;
@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DataRedisTestWithIncludeFilterIntegrationTests {
 
 	@Container
-	@RedisServiceConnection
+	@ServiceConnection
 	static final RedisContainer redis = new RedisContainer();
 
 	@Autowired

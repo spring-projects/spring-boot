@@ -21,22 +21,23 @@ import org.testcontainers.couchbase.CouchbaseContainer;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ContainerConnectionDetailsFactory} for
- * {@link CouchbaseServiceConnection @CouchbaseServiceConnection}-annotated
- * {@link CouchbaseContainer} fields.
+ * {@link ContainerConnectionDetailsFactory} to create {@link CouchbaseConnectionDetails}
+ * from a {@link ServiceConnection @ServiceConnection}-annotated
+ * {@link CouchbaseContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class CouchbaseContainerConnectionDetailsFactory extends
-		ContainerConnectionDetailsFactory<CouchbaseServiceConnection, CouchbaseConnectionDetails, CouchbaseContainer> {
+class CouchbaseContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<CouchbaseConnectionDetails, CouchbaseContainer> {
 
 	@Override
 	protected CouchbaseConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<CouchbaseServiceConnection, CouchbaseConnectionDetails, CouchbaseContainer> source) {
+			ContainerConnectionSource<CouchbaseConnectionDetails, CouchbaseContainer> source) {
 		return new CouchbaseContainerConnectionDetails(source);
 	}
 
@@ -49,7 +50,7 @@ class CouchbaseContainerConnectionDetailsFactory extends
 		private final CouchbaseContainer container;
 
 		private CouchbaseContainerConnectionDetails(
-				ContainerConnectionSource<CouchbaseServiceConnection, CouchbaseConnectionDetails, CouchbaseContainer> source) {
+				ContainerConnectionSource<CouchbaseConnectionDetails, CouchbaseContainer> source) {
 			super(source);
 			this.container = source.getContainer();
 		}

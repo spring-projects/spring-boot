@@ -25,7 +25,7 @@ import reactor.test.StepVerifier;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.testcontainers.service.connection.redis.RedisServiceConnection;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.redis.core.ReactiveRedisOperations;
@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class DataRedisTestReactiveIntegrationTests {
 
 	@Container
-	@RedisServiceConnection
+	@ServiceConnection
 	static RedisContainer redis = new RedisContainer();
 
 	@Autowired

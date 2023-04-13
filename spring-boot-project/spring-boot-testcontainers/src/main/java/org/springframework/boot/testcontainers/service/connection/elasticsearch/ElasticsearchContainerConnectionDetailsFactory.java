@@ -18,30 +18,31 @@ package org.springframework.boot.testcontainers.service.connection.elasticsearch
 
 import java.util.List;
 
-import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ContainerConnectionDetailsFactory} for
- * {@link ElasticsearchServiceConnection @ElasticsearchServiceConnection}-annotated
- * {@link GenericContainer} fields.
+ * {@link ContainerConnectionDetailsFactory} to create
+ * {@link ElasticsearchConnectionDetails} from a
+ * {@link ServiceConnection @ServiceConnection}-annotated {@link ElasticsearchContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class ElasticsearchContainerConnectionDetailsFactory extends
-		ContainerConnectionDetailsFactory<ElasticsearchServiceConnection, ElasticsearchConnectionDetails, GenericContainer<?>> {
+class ElasticsearchContainerConnectionDetailsFactory
+		extends ContainerConnectionDetailsFactory<ElasticsearchConnectionDetails, ElasticsearchContainer> {
 
 	private static final int DEFAULT_PORT = 9200;
 
 	@Override
 	protected ElasticsearchConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<ElasticsearchServiceConnection, ElasticsearchConnectionDetails, GenericContainer<?>> source) {
+			ContainerConnectionSource<ElasticsearchConnectionDetails, ElasticsearchContainer> source) {
 		return new ElasticsearchContainerConnectionDetails(source);
 	}
 
@@ -55,7 +56,7 @@ class ElasticsearchContainerConnectionDetailsFactory extends
 		private final List<Node> nodes;
 
 		private ElasticsearchContainerConnectionDetails(
-				ContainerConnectionSource<ElasticsearchServiceConnection, ElasticsearchConnectionDetails, GenericContainer<?>> source) {
+				ContainerConnectionSource<ElasticsearchConnectionDetails, ElasticsearchContainer> source) {
 			super(source);
 			this.nodes = List.of(new Node(source.getContainer().getHost(),
 					source.getContainer().getMappedPort(DEFAULT_PORT), Protocol.HTTP, null, null));

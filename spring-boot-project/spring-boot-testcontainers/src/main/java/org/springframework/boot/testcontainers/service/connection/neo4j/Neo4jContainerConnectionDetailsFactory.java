@@ -25,22 +25,26 @@ import org.testcontainers.containers.Neo4jContainer;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ContainerConnectionDetailsFactory} for
- * {@link Neo4jServiceConnection @Neo4jServiceConnection}-annotated {@link Neo4jContainer}
- * fields.
+ * {@link ContainerConnectionDetailsFactory} to create {@link Neo4jConnectionDetails} from
+ * a {@link ServiceConnection @ServiceConnection}-annotated {@link Neo4jContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
 class Neo4jContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<Neo4jServiceConnection, Neo4jConnectionDetails, Neo4jContainer<?>> {
+		extends ContainerConnectionDetailsFactory<Neo4jConnectionDetails, Neo4jContainer<?>> {
+
+	Neo4jContainerConnectionDetailsFactory() {
+		super(ANY_CONNECTION_NAME, "org.neo4j.driver.AuthToken");
+	}
 
 	@Override
 	protected Neo4jConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<Neo4jServiceConnection, Neo4jConnectionDetails, Neo4jContainer<?>> source) {
+			ContainerConnectionSource<Neo4jConnectionDetails, Neo4jContainer<?>> source) {
 		return new Neo4jContainerConnectionDetails(source);
 	}
 
@@ -53,7 +57,7 @@ class Neo4jContainerConnectionDetailsFactory
 		private final Neo4jContainer<?> container;
 
 		private Neo4jContainerConnectionDetails(
-				ContainerConnectionSource<Neo4jServiceConnection, Neo4jConnectionDetails, Neo4jContainer<?>> source) {
+				ContainerConnectionSource<Neo4jConnectionDetails, Neo4jContainer<?>> source) {
 			super(source);
 			this.container = source.getContainer();
 		}

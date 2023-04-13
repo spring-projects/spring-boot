@@ -24,22 +24,23 @@ import org.testcontainers.containers.RabbitMQContainer;
 import org.springframework.boot.autoconfigure.amqp.RabbitConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 /**
- * {@link ContainerConnectionDetailsFactory} for
- * {@link RabbitServiceConnection @RabbitServiceConnection}-annotated
- * {@link RabbitMQContainer} fields.
+ * {@link ContainerConnectionDetailsFactory} to create {@link RabbitConnectionDetails}
+ * from a {@link ServiceConnection @ServiceConnection}-annotated
+ * {@link RabbitMQContainer}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
 class RabbitContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<RabbitServiceConnection, RabbitConnectionDetails, RabbitMQContainer> {
+		extends ContainerConnectionDetailsFactory<RabbitConnectionDetails, RabbitMQContainer> {
 
 	@Override
 	protected RabbitConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<RabbitServiceConnection, RabbitConnectionDetails, RabbitMQContainer> source) {
+			ContainerConnectionSource<RabbitConnectionDetails, RabbitMQContainer> source) {
 		return new RabbitMqContainerConnectionDetails(source);
 	}
 
@@ -52,7 +53,7 @@ class RabbitContainerConnectionDetailsFactory
 		private final RabbitMQContainer container;
 
 		private RabbitMqContainerConnectionDetails(
-				ContainerConnectionSource<RabbitServiceConnection, RabbitConnectionDetails, RabbitMQContainer> source) {
+				ContainerConnectionSource<RabbitConnectionDetails, RabbitMQContainer> source) {
 			super(source);
 			this.container = source.getContainer();
 		}
