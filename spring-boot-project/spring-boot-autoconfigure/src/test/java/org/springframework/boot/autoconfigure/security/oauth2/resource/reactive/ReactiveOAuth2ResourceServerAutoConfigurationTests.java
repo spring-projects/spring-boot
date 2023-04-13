@@ -53,6 +53,7 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimValidator;
 import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
@@ -122,9 +123,9 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 					"spring.security.oauth2.resourceserver.jwt.jws-algorithms=RS512")
 			.run((context) -> {
 				NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = context.getBean(NimbusReactiveJwtDecoder.class);
-				assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$2.arg$1.jwsAlgs")
-					.asInstanceOf(InstanceOfAssertFactories.collection(JWSAlgorithm.class))
-					.containsExactlyInAnyOrder(JWSAlgorithm.RS512);
+				assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$1.signatureAlgorithms")
+					.asInstanceOf(InstanceOfAssertFactories.collection(SignatureAlgorithm.class))
+					.containsExactlyInAnyOrder(SignatureAlgorithm.RS512);
 			});
 	}
 
@@ -135,9 +136,10 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 					"spring.security.oauth2.resourceserver.jwt.jws-algorithms=RS256, RS384, RS512")
 			.run((context) -> {
 				NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = context.getBean(NimbusReactiveJwtDecoder.class);
-				assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$2.arg$1.jwsAlgs")
-					.asInstanceOf(InstanceOfAssertFactories.collection(JWSAlgorithm.class))
-					.containsExactlyInAnyOrder(JWSAlgorithm.RS256, JWSAlgorithm.RS384, JWSAlgorithm.RS512);
+				assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$1.signatureAlgorithms")
+					.asInstanceOf(InstanceOfAssertFactories.collection(SignatureAlgorithm.class))
+					.containsExactlyInAnyOrder(SignatureAlgorithm.RS256, SignatureAlgorithm.RS384,
+							SignatureAlgorithm.RS512);
 			});
 	}
 
