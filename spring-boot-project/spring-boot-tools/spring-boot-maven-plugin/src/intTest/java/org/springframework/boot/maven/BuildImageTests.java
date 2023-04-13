@@ -427,7 +427,7 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 					.inspect(ImageReference
 						.of("docker.io/library/build-image-current-created-date:0.0.1.BUILD-SNAPSHOT"));
 				OffsetDateTime createdDateTime = OffsetDateTime.parse(image.getCreated());
-				OffsetDateTime current = OffsetDateTime.now();
+				OffsetDateTime current = OffsetDateTime.now().withOffsetSameInstant(createdDateTime.getOffset());
 				assertThat(createdDateTime.getYear()).isEqualTo(current.getYear());
 				assertThat(createdDateTime.getMonth()).isEqualTo(current.getMonth());
 				assertThat(createdDateTime.getDayOfMonth()).isEqualTo(current.getDayOfMonth());

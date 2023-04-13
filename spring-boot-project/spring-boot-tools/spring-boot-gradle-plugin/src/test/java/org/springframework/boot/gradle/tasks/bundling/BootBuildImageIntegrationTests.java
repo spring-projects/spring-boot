@@ -322,7 +322,7 @@ class BootBuildImageIntegrationTests {
 		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
 		Image image = new DockerApi().image().inspect(ImageReference.of("docker.io/library/" + projectName));
 		OffsetDateTime createdDateTime = OffsetDateTime.parse(image.getCreated());
-		OffsetDateTime current = OffsetDateTime.now();
+		OffsetDateTime current = OffsetDateTime.now().withOffsetSameInstant(createdDateTime.getOffset());
 		assertThat(createdDateTime.getYear()).isEqualTo(current.getYear());
 		assertThat(createdDateTime.getMonth()).isEqualTo(current.getMonth());
 		assertThat(createdDateTime.getDayOfMonth()).isEqualTo(current.getDayOfMonth());
