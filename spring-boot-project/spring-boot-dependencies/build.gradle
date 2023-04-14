@@ -766,6 +766,10 @@ bom {
 		}
 	}
 	library("Liquibase", "4.20.0") {
+		prohibit {
+			versionRange "[4.21.0,4.21.1)"
+			because "https://github.com/liquibase/liquibase/issues/4135"
+		}
 		group("org.liquibase") {
 			modules = [
 				"liquibase-cdi",
