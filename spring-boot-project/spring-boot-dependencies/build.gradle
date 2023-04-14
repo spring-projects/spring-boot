@@ -243,11 +243,7 @@ bom {
 			]
 		}
 	}
-	library("Flyway", "9.15.2") {
-		prohibit {
-			versionRange "[9.16.0,)"
-			because "https://github.com/flyway/flyway/issues/3636"
-		}
+	library("Flyway", "9.16.3") {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-core",
