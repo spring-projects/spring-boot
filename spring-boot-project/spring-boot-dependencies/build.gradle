@@ -73,7 +73,7 @@ bom {
 			]
 		}
 	}
-	library("Brave", "5.15.0") {
+	library("Brave", "5.15.1") {
 		group("io.zipkin.brave") {
 			imports = [
 				"brave-bom"
