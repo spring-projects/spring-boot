@@ -1029,7 +1029,7 @@ bom {
 			]
 		}
 	}
-	library("OpenTelemetry", "1.24.0") {
+	library("OpenTelemetry", "1.25.0") {
 		group("io.opentelemetry") {
 			imports = [
 				"opentelemetry-bom"
