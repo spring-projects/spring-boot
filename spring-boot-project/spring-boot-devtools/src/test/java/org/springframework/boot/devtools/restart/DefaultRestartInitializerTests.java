@@ -103,7 +103,7 @@ class DefaultRestartInitializerTests {
 		DefaultRestartInitializer initializer = new DefaultRestartInitializer();
 		ClassLoader classLoader = new MockAppClassLoader(getClass().getClassLoader());
 		Thread thread = mock(Thread.class);
-		thread.setName("main");
+		given(thread.getName()).willReturn("main");
 		StackTraceElement element = new StackTraceElement(s, "someMethod", "someFile", 123);
 		given(thread.getStackTrace()).willReturn(new StackTraceElement[] { element });
 		given(thread.getContextClassLoader()).willReturn(classLoader);
