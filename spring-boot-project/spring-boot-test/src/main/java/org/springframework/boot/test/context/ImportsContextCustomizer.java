@@ -20,7 +20,6 @@ import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,6 +42,7 @@ import org.springframework.context.annotation.ImportSelector;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.AnnotationFilter;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.Order;
@@ -51,6 +51,8 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.util.ReflectionUtils;
+
+import static org.springframework.core.annotation.AnnotationFilter.packages;
 
 /**
  * {@link ContextCustomizer} to allow {@code @Import} annotations to be used directly on
@@ -216,17 +218,20 @@ class ImportsContextCustomizer implements ContextCustomizer {
 	 */
 	static class ContextCustomizerKey {
 
-		private static final Predicate<String> IGNORE_ANNOTATION = or(packages("java.lang.annotation"),
+		private static final AnnotationFilter ANNOTATION_FILTERS = or(
+				packages("java.lang.annotation"),
 				packages("org.spockframework", "spock"),
-				or(Predicate.isEqual("kotlin.Metadata"), isInKotlinAnnotationPackage()), packages(("org.junit")));
+				or(isEqualTo("kotlin.Metadata"), packages("kotlin.annotation")),
+				packages(("org.junit")));
 
 		private final Object key;
 
 		ContextCustomizerKey(Class<?> testClass) {
-			var mergedAnnotations = MergedAnnotations.search(MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
-				.withAnnotationFilter(IGNORE_ANNOTATION::test)
-				.from(testClass);
-			var determinedImports = determineImports(mergedAnnotations, testClass);
+			MergedAnnotations mergedAnnotations =
+					MergedAnnotations.search(MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
+							.withAnnotationFilter(ANNOTATION_FILTERS)
+							.from(testClass);
+			Set<Object> determinedImports = determineImports(mergedAnnotations, testClass);
 			if (determinedImports != null) {
 				this.key = determinedImports;
 			}
@@ -295,27 +300,15 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			return this.key.toString();
 		}
 
-		private static Predicate<String> isInKotlinAnnotationPackage() {
-			return packages("kotlin.annotation");
-		}
-
-		@SafeVarargs
-		private static <T> Predicate<T> or(Predicate<T>... predicates) {
-			return (x) -> {
-				for (var predicate : predicates) {
-					if (predicate.test(x)) {
-						return true;
-					}
-				}
-				return false;
-			};
-		}
-
-		private static Predicate<String> packages(String... packages) {
-			var starts = Stream.of(packages).map((p) -> p + ".").toList();
-			return (packageName) -> starts.stream().anyMatch(packageName::startsWith);
-		}
-
 	}
 
+	static AnnotationFilter or(AnnotationFilter... filters) {
+		return typeName ->
+				Stream.of(filters)
+						.anyMatch(filter -> filter.matches(typeName));
+	}
+
+	static AnnotationFilter isEqualTo(String expectedTypeName) {
+		return typeName -> typeName.equals(expectedTypeName);
+	}
 }
