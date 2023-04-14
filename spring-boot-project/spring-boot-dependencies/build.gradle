@@ -435,7 +435,7 @@ bom {
 			]
 		}
 	}
-	library("Jackson Bom", "2.14.2") {
+	library("Jackson Bom", "2.15.0-rc2") {
 		group("com.fasterxml.jackson") {
 			imports = [
 				"jackson-bom"
