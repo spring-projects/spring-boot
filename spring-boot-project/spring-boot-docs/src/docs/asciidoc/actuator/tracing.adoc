@@ -95,6 +95,7 @@ All tracer implementations need the `org.springframework.boot:spring-boot-starte
 
 * `io.micrometer:micrometer-tracing-bridge-brave` - which is needed to bridge the Micrometer Observation API to Brave.
 * `io.zipkin.reporter2:zipkin-reporter-brave` - which is needed to report traces to Zipkin.
+* Point the property `management.zipkin.tracing.endpoint` to the Zipkin server
 
 NOTE: If your project doesn't use Spring MVC or Spring WebFlux, the `io.zipkin.reporter2:zipkin-sender-urlconnection` dependency is needed, too.
 
