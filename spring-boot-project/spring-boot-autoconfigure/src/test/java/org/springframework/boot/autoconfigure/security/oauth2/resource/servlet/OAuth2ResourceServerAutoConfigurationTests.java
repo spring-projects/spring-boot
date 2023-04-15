@@ -664,16 +664,14 @@ class OAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	static Jwt.Builder jwt() {
-		// @formatter:off
 		return Jwt.withTokenValue("token")
-				.header("alg", "none")
-				.expiresAt(Instant.MAX)
-				.issuedAt(Instant.MIN)
-				.issuer("https://issuer.example.org")
-				.jti("jti")
-				.notBefore(Instant.MIN)
-				.subject("mock-test-subject");
-		// @formatter:on
+			.header("alg", "none")
+			.expiresAt(Instant.MAX)
+			.issuedAt(Instant.MIN)
+			.issuer("https://issuer.example.org")
+			.jti("jti")
+			.notBefore(Instant.MIN)
+			.subject("mock-test-subject");
 	}
 
 	@Configuration(proxyBeanMethods = false)
