@@ -73,6 +73,7 @@ import org.springframework.web.server.WebFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 /**
  * Tests for {@link ReactiveOAuth2ResourceServerAutoConfiguration}.
@@ -698,7 +699,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				exchanges.pathMatchers("/message/**").hasRole("ADMIN");
 				exchanges.anyExchange().authenticated();
 			});
-			http.httpBasic();
+			http.httpBasic(withDefaults());
 			return http.build();
 		}
 

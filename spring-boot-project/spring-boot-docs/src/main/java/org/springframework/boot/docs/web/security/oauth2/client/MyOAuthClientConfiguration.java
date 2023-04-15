@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ public class MyOAuthClientConfiguration {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
-		http.oauth2Login((login) -> login.redirectionEndpoint().baseUri("custom-callback"));
+		http.oauth2Login((login) -> login.redirectionEndpoint((endpoint) -> endpoint.baseUri("custom-callback")));
 		return http.build();
 	}
 

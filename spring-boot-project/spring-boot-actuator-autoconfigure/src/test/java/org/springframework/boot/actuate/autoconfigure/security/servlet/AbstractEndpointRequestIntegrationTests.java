@@ -48,6 +48,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 /**
  * Abstract base class for {@link EndpointRequest} tests.
  *
@@ -195,7 +197,7 @@ abstract class AbstractEndpointRequestIntegrationTests {
 				requests.requestMatchers(EndpointRequest.toAnyEndpoint()).authenticated();
 				requests.anyRequest().hasRole("ADMIN");
 			});
-			http.httpBasic();
+			http.httpBasic(withDefaults());
 			return http.build();
 		}
 

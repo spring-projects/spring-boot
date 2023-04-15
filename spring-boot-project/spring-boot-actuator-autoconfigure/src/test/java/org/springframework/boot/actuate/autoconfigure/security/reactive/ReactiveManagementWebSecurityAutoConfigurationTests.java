@@ -47,7 +47,6 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.http.server.reactive.MockServerHttpResponse;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.WebFilterChainProxy;
@@ -57,6 +56,7 @@ import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 /**
  * Tests for {@link ReactiveManagementWebSecurityAutoConfiguration}.
@@ -164,7 +164,7 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 				exchanges.pathMatchers("/foo").permitAll();
 				exchanges.anyExchange().authenticated();
 			});
-			http.formLogin(Customizer.withDefaults());
+			http.formLogin(withDefaults());
 			return http.build();
 		}
 
@@ -192,7 +192,7 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 
 		private List<SecurityWebFilterChain> getFilterChains(ServerHttpSecurity http) {
 			http.authorizeExchange((exchanges) -> exchanges.anyExchange().authenticated());
-			http.formLogin(Customizer.withDefaults());
+			http.formLogin(withDefaults());
 			return Collections.singletonList(http.build());
 		}
 
