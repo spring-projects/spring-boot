@@ -56,22 +56,7 @@ class DefaultRunningServiceTests {
 	@BeforeEach
 	void setup() throws Exception {
 		this.composeFile = createComposeFile();
-		DockerHost host = DockerHost.get("192.168.1.1", () -> Collections.emptyList());
-		String id = "123";
-		String name = "my-service";
-		String image = "redis";
-		String state = "running";
-		DockerCliComposePsResponse psResponse = new DockerCliComposePsResponse(id, name, image, state);
-		Map<String, String> labels = Map.of("spring", "boot");
-		Map<String, ExposedPort> exposedPorts = Map.of("8080/tcp", new ExposedPort());
-		List<String> env = List.of("a=b");
-		Config config = new Config(image, labels, exposedPorts, env);
-		Map<String, List<HostPort>> ports = Map.of("8080/tcp", List.of(new HostPort(null, "9090")));
-		NetworkSettings networkSettings = new NetworkSettings(ports);
-		HostConfig hostConfig = new HostConfig("bridge");
-		DockerCliInspectResponse inspectResponse = new DockerCliInspectResponse(id, config, networkSettings,
-				hostConfig);
-		this.runningService = new DefaultRunningService(host, this.composeFile, psResponse, inspectResponse);
+		this.runningService = createRunningService(true);
 	}
 
 	private DockerComposeFile createComposeFile() throws IOException {
@@ -93,6 +78,13 @@ class DefaultRunningServiceTests {
 	@Test
 	void imageReturnsImageFromPsResponse() {
 		assertThat(this.runningService.image()).hasToString("redis");
+	}
+
+	@Test // gh-34992
+	void imageWhenUsingEarlierDockerVersionReturnsImageFromInspectResult() {
+		DefaultRunningService runningService = createRunningService(false);
+		assertThat(runningService.image()).hasToString("redis");
+
 	}
 
 	@Test
@@ -120,6 +112,26 @@ class DefaultRunningServiceTests {
 	@Test
 	void toStringReturnsServiceName() {
 		assertThat(this.runningService).hasToString("my-service");
+	}
+
+	private DefaultRunningService createRunningService(boolean psResponseHasImage) {
+		DockerHost host = DockerHost.get("192.168.1.1", () -> Collections.emptyList());
+		String id = "123";
+		String name = "my-service";
+		String image = "redis";
+		String state = "running";
+		DockerCliComposePsResponse psResponse = new DockerCliComposePsResponse(id, name,
+				(!psResponseHasImage) ? null : image, state);
+		Map<String, String> labels = Map.of("spring", "boot");
+		Map<String, ExposedPort> exposedPorts = Map.of("8080/tcp", new ExposedPort());
+		List<String> env = List.of("a=b");
+		Config config = new Config(image, labels, exposedPorts, env);
+		Map<String, List<HostPort>> ports = Map.of("8080/tcp", List.of(new HostPort(null, "9090")));
+		NetworkSettings networkSettings = new NetworkSettings(ports);
+		HostConfig hostConfig = new HostConfig("bridge");
+		DockerCliInspectResponse inspectResponse = new DockerCliInspectResponse(id, config, networkSettings,
+				hostConfig);
+		return new DefaultRunningService(host, this.composeFile, psResponse, inspectResponse);
 	}
 
 }

@@ -45,11 +45,12 @@ class DefaultRunningService implements RunningService, OriginProvider {
 
 	private DockerEnv env;
 
-	DefaultRunningService(DockerHost host, DockerComposeFile composeFile, DockerCliComposePsResponse psResponse,
+	DefaultRunningService(DockerHost host, DockerComposeFile composeFile, DockerCliComposePsResponse composePsResponse,
 			DockerCliInspectResponse inspectResponse) {
-		this.origin = new DockerComposeOrigin(composeFile, psResponse.name());
-		this.name = psResponse.name();
-		this.image = ImageReference.of(psResponse.image());
+		this.origin = new DockerComposeOrigin(composeFile, composePsResponse.name());
+		this.name = composePsResponse.name();
+		this.image = ImageReference
+			.of((composePsResponse.image() != null) ? composePsResponse.image() : inspectResponse.config().image());
 		this.host = host;
 		this.ports = new DefaultConnectionPorts(inspectResponse);
 		this.env = new DockerEnv(inspectResponse.config().env());
