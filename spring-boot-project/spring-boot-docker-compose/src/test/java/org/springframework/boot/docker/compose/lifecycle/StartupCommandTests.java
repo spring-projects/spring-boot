@@ -19,6 +19,7 @@ package org.springframework.boot.docker.compose.lifecycle;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.docker.compose.core.DockerCompose;
+import org.springframework.boot.logging.LogLevel;
 
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -36,14 +37,14 @@ class StartupCommandTests {
 
 	@Test
 	void applyToWhenUp() {
-		StartupCommand.UP.applyTo(this.dockerCompose);
-		then(this.dockerCompose).should().up();
+		StartupCommand.UP.applyTo(this.dockerCompose, LogLevel.INFO);
+		then(this.dockerCompose).should().up(LogLevel.INFO);
 	}
 
 	@Test
 	void applyToWhenStart() {
-		StartupCommand.START.applyTo(this.dockerCompose);
-		then(this.dockerCompose).should().start();
+		StartupCommand.START.applyTo(this.dockerCompose, LogLevel.INFO);
+		then(this.dockerCompose).should().start(LogLevel.INFO);
 	}
 
 }

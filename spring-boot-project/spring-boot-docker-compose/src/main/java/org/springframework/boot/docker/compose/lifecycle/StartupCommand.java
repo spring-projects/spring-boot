@@ -16,9 +16,10 @@
 
 package org.springframework.boot.docker.compose.lifecycle;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import org.springframework.boot.docker.compose.core.DockerCompose;
+import org.springframework.boot.logging.LogLevel;
 
 /**
  * Command used to startup docker compose.
@@ -40,14 +41,14 @@ public enum StartupCommand {
 	 */
 	START(DockerCompose::start);
 
-	private final Consumer<DockerCompose> action;
+	private final BiConsumer<DockerCompose, LogLevel> action;
 
-	StartupCommand(Consumer<DockerCompose> action) {
+	StartupCommand(BiConsumer<DockerCompose, LogLevel> action) {
 		this.action = action;
 	}
 
-	void applyTo(DockerCompose dockerCompose) {
-		this.action.accept(dockerCompose);
+	void applyTo(DockerCompose dockerCompose, LogLevel logLevel) {
+		this.action.accept(dockerCompose, logLevel);
 	}
 
 }

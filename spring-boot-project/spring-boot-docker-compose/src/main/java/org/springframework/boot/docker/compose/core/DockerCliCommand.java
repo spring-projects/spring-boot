@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.boot.logging.LogLevel;
+
 /**
  * Commands that can be executed by the {@link DockerCli}.
  *
@@ -34,6 +36,8 @@ abstract sealed class DockerCliCommand<R> {
 
 	private final Type type;
 
+	private final LogLevel logLevel;
+
 	private final Class<?> responseType;
 
 	private final boolean listResponse;
@@ -41,7 +45,13 @@ abstract sealed class DockerCliCommand<R> {
 	private final List<String> command;
 
 	private DockerCliCommand(Type type, Class<?> responseType, boolean listResponse, String... command) {
+		this(type, LogLevel.OFF, responseType, listResponse, command);
+	}
+
+	private DockerCliCommand(Type type, LogLevel logLevel, Class<?> responseType, boolean listResponse,
+			String... command) {
 		this.type = type;
+		this.logLevel = logLevel;
 		this.responseType = responseType;
 		this.listResponse = listResponse;
 		this.command = List.of(command);
@@ -49,6 +59,10 @@ abstract sealed class DockerCliCommand<R> {
 
 	Type getType() {
 		return this.type;
+	}
+
+	LogLevel getLogLevel() {
+		return this.logLevel;
 	}
 
 	List<String> getCommand() {
@@ -148,8 +162,8 @@ abstract sealed class DockerCliCommand<R> {
 	 */
 	static final class ComposeUp extends DockerCliCommand<Void> {
 
-		ComposeUp() {
-			super(Type.DOCKER_COMPOSE, Void.class, false, "up", "--no-color", "--quiet-pull", "--detach", "--wait");
+		ComposeUp(LogLevel logLevel) {
+			super(Type.DOCKER_COMPOSE, logLevel, Void.class, false, "up", "--no-color", "--detach", "--wait");
 		}
 
 	}
@@ -170,8 +184,8 @@ abstract sealed class DockerCliCommand<R> {
 	 */
 	static final class ComposeStart extends DockerCliCommand<Void> {
 
-		ComposeStart() {
-			super(Type.DOCKER_COMPOSE, Void.class, false, "start", "--no-color", "--quiet-pull", "--detach", "--wait");
+		ComposeStart(LogLevel logLevel) {
+			super(Type.DOCKER_COMPOSE, logLevel, Void.class, false, "start", "--no-color", "--detach", "--wait");
 		}
 
 	}

@@ -43,7 +43,6 @@ import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -132,10 +131,10 @@ class DockerComposeLifecycleManagerTests {
 		this.lifecycleManager.startup();
 		assertThat(listener.getEvent()).isNull();
 		then(this.dockerCompose).should().hasDefinedServices();
-		then(this.dockerCompose).should(never()).up();
-		then(this.dockerCompose).should(never()).start();
-		then(this.dockerCompose).should(never()).down(isA(Duration.class));
-		then(this.dockerCompose).should(never()).stop(isA(Duration.class));
+		then(this.dockerCompose).should(never()).up(any());
+		then(this.dockerCompose).should(never()).start(any());
+		then(this.dockerCompose).should(never()).down(any());
+		then(this.dockerCompose).should(never()).stop(any());
 	}
 
 	@Test
@@ -147,10 +146,10 @@ class DockerComposeLifecycleManagerTests {
 		this.lifecycleManager.startup();
 		this.shutdownHandlers.run();
 		assertThat(listener.getEvent()).isNotNull();
-		then(this.dockerCompose).should().up();
-		then(this.dockerCompose).should(never()).start();
-		then(this.dockerCompose).should().down(isA(Duration.class));
-		then(this.dockerCompose).should(never()).stop(isA(Duration.class));
+		then(this.dockerCompose).should().up(any());
+		then(this.dockerCompose).should(never()).start(any());
+		then(this.dockerCompose).should().down(any());
+		then(this.dockerCompose).should(never()).stop(any());
 	}
 
 	@Test
@@ -162,10 +161,10 @@ class DockerComposeLifecycleManagerTests {
 		this.lifecycleManager.startup();
 		this.shutdownHandlers.run();
 		assertThat(listener.getEvent()).isNotNull();
-		then(this.dockerCompose).should(never()).up();
-		then(this.dockerCompose).should(never()).start();
-		then(this.dockerCompose).should(never()).down(isA(Duration.class));
-		then(this.dockerCompose).should(never()).stop(isA(Duration.class));
+		then(this.dockerCompose).should(never()).up(any());
+		then(this.dockerCompose).should(never()).start(any());
+		then(this.dockerCompose).should(never()).down(any());
+		then(this.dockerCompose).should(never()).stop(any());
 	}
 
 	@Test
@@ -177,10 +176,10 @@ class DockerComposeLifecycleManagerTests {
 		this.lifecycleManager.startup();
 		this.shutdownHandlers.run();
 		assertThat(listener.getEvent()).isNotNull();
-		then(this.dockerCompose).should(never()).up();
-		then(this.dockerCompose).should(never()).start();
-		then(this.dockerCompose).should(never()).down(isA(Duration.class));
-		then(this.dockerCompose).should(never()).stop(isA(Duration.class));
+		then(this.dockerCompose).should(never()).up(any());
+		then(this.dockerCompose).should(never()).start(any());
+		then(this.dockerCompose).should(never()).down(any());
+		then(this.dockerCompose).should(never()).stop(any());
 	}
 
 	@Test
@@ -192,10 +191,10 @@ class DockerComposeLifecycleManagerTests {
 		this.lifecycleManager.startup();
 		this.shutdownHandlers.run();
 		assertThat(listener.getEvent()).isNotNull();
-		then(this.dockerCompose).should().up();
-		then(this.dockerCompose).should(never()).start();
-		then(this.dockerCompose).should(never()).down(isA(Duration.class));
-		then(this.dockerCompose).should(never()).stop(isA(Duration.class));
+		then(this.dockerCompose).should().up(any());
+		then(this.dockerCompose).should(never()).start(any());
+		then(this.dockerCompose).should(never()).down(any());
+		then(this.dockerCompose).should(never()).stop(any());
 		this.shutdownHandlers.assertNoneAdded();
 	}
 
@@ -209,10 +208,10 @@ class DockerComposeLifecycleManagerTests {
 		this.lifecycleManager.startup();
 		this.shutdownHandlers.run();
 		assertThat(listener.getEvent()).isNotNull();
-		then(this.dockerCompose).should(never()).up();
-		then(this.dockerCompose).should().start();
-		then(this.dockerCompose).should().down(isA(Duration.class));
-		then(this.dockerCompose).should(never()).stop(isA(Duration.class));
+		then(this.dockerCompose).should(never()).up(any());
+		then(this.dockerCompose).should().start(any());
+		then(this.dockerCompose).should().down(any());
+		then(this.dockerCompose).should(never()).stop(any());
 	}
 
 	@Test
@@ -225,10 +224,10 @@ class DockerComposeLifecycleManagerTests {
 		this.lifecycleManager.startup();
 		this.shutdownHandlers.run();
 		assertThat(listener.getEvent()).isNotNull();
-		then(this.dockerCompose).should().up();
-		then(this.dockerCompose).should(never()).start();
-		then(this.dockerCompose).should(never()).down(isA(Duration.class));
-		then(this.dockerCompose).should().stop(isA(Duration.class));
+		then(this.dockerCompose).should().up(any());
+		then(this.dockerCompose).should(never()).start(any());
+		then(this.dockerCompose).should(never()).down(any());
+		then(this.dockerCompose).should().stop(any());
 	}
 
 	@Test

@@ -42,6 +42,13 @@ class ProcessRunnerTests {
 	}
 
 	@Test
+	void runWhenHasOutputConsumer() {
+		StringBuilder output = new StringBuilder();
+		this.processRunner.run(output::append, "docker", "--version");
+		assertThat(output.toString()).isNotEmpty();
+	}
+
+	@Test
 	void runWhenProcessDoesNotStart() {
 		assertThatExceptionOfType(ProcessStartException.class)
 			.isThrownBy(() -> this.processRunner.run("iverymuchdontexist", "--version"));

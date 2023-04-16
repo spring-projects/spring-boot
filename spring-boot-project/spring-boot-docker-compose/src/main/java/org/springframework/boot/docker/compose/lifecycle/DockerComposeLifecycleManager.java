@@ -110,7 +110,7 @@ class DockerComposeLifecycleManager {
 		Startup startup = this.properties.getStartup();
 		Shutdown shutdown = this.properties.getShutdown();
 		if (lifecycleManagement.shouldStartup() && !dockerCompose.hasRunningServices()) {
-			startup.getCommand().applyTo(dockerCompose);
+			startup.getCommand().applyTo(dockerCompose, startup.getLogLevel());
 			if (lifecycleManagement.shouldShutdown()) {
 				this.shutdownHandlers.add(() -> shutdown.getCommand().applyTo(dockerCompose, shutdown.getTimeout()));
 			}

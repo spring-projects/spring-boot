@@ -21,11 +21,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.docker.compose.core.DockerCliCommand.Type;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.core.log.LogMessage;
 
 /**
@@ -116,8 +118,16 @@ class DockerCli {
 	<R> R run(DockerCliCommand<R> dockerCommand) {
 		List<String> command = createCommand(dockerCommand.getType());
 		command.addAll(dockerCommand.getCommand());
-		String json = this.processRunner.run(command.toArray(new String[0]));
+		Consumer<String> outputConsumer = createOutputConsumer(dockerCommand.getLogLevel());
+		String json = this.processRunner.run(outputConsumer, command.toArray(new String[0]));
 		return dockerCommand.deserialize(json);
+	}
+
+	private Consumer<String> createOutputConsumer(LogLevel logLevel) {
+		if (logLevel == null || logLevel == LogLevel.OFF) {
+			return null;
+		}
+		return (line) -> logLevel.log(this.logger, line);
 	}
 
 	private <R> List<String> createCommand(Type type) {

@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.logging.LogLevel;
 
 /**
  * Configuration properties for the 'docker compose'.
@@ -136,12 +137,25 @@ public class DockerComposeProperties {
 		 */
 		private StartupCommand command = StartupCommand.UP;
 
+		/**
+		 * Log level for output.
+		 */
+		private LogLevel logLevel = LogLevel.INFO;
+
 		public StartupCommand getCommand() {
 			return this.command;
 		}
 
 		public void setCommand(StartupCommand command) {
 			this.command = command;
+		}
+
+		public LogLevel getLogLevel() {
+			return this.logLevel;
+		}
+
+		public void setLogLevel(LogLevel logLevel) {
+			this.logLevel = logLevel;
 		}
 
 	}

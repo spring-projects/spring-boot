@@ -27,6 +27,7 @@ import org.springframework.boot.docker.compose.core.DockerCliInspectResponse.Con
 import org.springframework.boot.docker.compose.core.DockerCliInspectResponse.ExposedPort;
 import org.springframework.boot.docker.compose.core.DockerCliInspectResponse.HostConfig;
 import org.springframework.boot.docker.compose.core.DockerCliInspectResponse.NetworkSettings;
+import org.springframework.boot.logging.LogLevel;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -50,8 +51,8 @@ class DefaultDockerComposeTests {
 	@Test
 	void upRunsUpCommand() {
 		DefaultDockerCompose compose = new DefaultDockerCompose(this.cli, HOST);
-		compose.up();
-		then(this.cli).should().run(new DockerCliCommand.ComposeUp());
+		compose.up(LogLevel.OFF);
+		then(this.cli).should().run(new DockerCliCommand.ComposeUp(LogLevel.OFF));
 	}
 
 	@Test
@@ -65,8 +66,8 @@ class DefaultDockerComposeTests {
 	@Test
 	void startRunsStartCommand() {
 		DefaultDockerCompose compose = new DefaultDockerCompose(this.cli, HOST);
-		compose.start();
-		then(this.cli).should().run(new DockerCliCommand.ComposeStart());
+		compose.start(LogLevel.OFF);
+		then(this.cli).should().run(new DockerCliCommand.ComposeStart(LogLevel.OFF));
 	}
 
 	@Test

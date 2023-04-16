@@ -21,6 +21,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.logging.LogLevel;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -66,9 +68,10 @@ class DockerCliCommandTests {
 
 	@Test
 	void composeUp() {
-		DockerCliCommand<?> command = new DockerCliCommand.ComposeUp();
+		DockerCliCommand<?> command = new DockerCliCommand.ComposeUp(LogLevel.INFO);
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
-		assertThat(command.getCommand()).containsExactly("up", "--no-color", "--quiet-pull", "--detach", "--wait");
+		assertThat(command.getLogLevel()).isEqualTo(LogLevel.INFO);
+		assertThat(command.getCommand()).containsExactly("up", "--no-color", "--detach", "--wait");
 		assertThat(command.deserialize("[]")).isNull();
 	}
 
@@ -82,9 +85,10 @@ class DockerCliCommandTests {
 
 	@Test
 	void composeStart() {
-		DockerCliCommand<?> command = new DockerCliCommand.ComposeStart();
+		DockerCliCommand<?> command = new DockerCliCommand.ComposeStart(LogLevel.INFO);
 		assertThat(command.getType()).isEqualTo(DockerCliCommand.Type.DOCKER_COMPOSE);
-		assertThat(command.getCommand()).containsExactly("start", "--no-color", "--quiet-pull", "--detach", "--wait");
+		assertThat(command.getLogLevel()).isEqualTo(LogLevel.INFO);
+		assertThat(command.getCommand()).containsExactly("start", "--no-color", "--detach", "--wait");
 		assertThat(command.deserialize("[]")).isNull();
 	}
 

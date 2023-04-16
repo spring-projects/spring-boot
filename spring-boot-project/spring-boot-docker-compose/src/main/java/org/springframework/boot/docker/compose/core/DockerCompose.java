@@ -20,6 +20,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.boot.logging.LogLevel;
+
 /**
  * Provides a high-level API to work with Docker compose.
  *
@@ -38,8 +40,9 @@ public interface DockerCompose {
 	/**
 	 * Run {@code docker compose up} to startup services. Waits until all contains are
 	 * started and healthy.
+	 * @param logLevel the log level used to report progress
 	 */
-	void up();
+	void up(LogLevel logLevel);
 
 	/**
 	 * Run {@code docker compose down} to shutdown any running services.
@@ -51,8 +54,9 @@ public interface DockerCompose {
 	/**
 	 * Run {@code docker compose start} to startup services. Waits until all contains are
 	 * started and healthy.
+	 * @param logLevel the log level used to report progress
 	 */
-	void start();
+	void start(LogLevel logLevel);
 
 	/**
 	 * Run {@code docker compose stop} to shutdown any running services.

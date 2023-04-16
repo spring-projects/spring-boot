@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.boot.logging.LogLevel;
+
 /**
  * Default {@link DockerCompose} implementation backed by {@link DockerCli}.
  *
@@ -43,8 +45,8 @@ class DefaultDockerCompose implements DockerCompose {
 	}
 
 	@Override
-	public void up() {
-		this.cli.run(new DockerCliCommand.ComposeUp());
+	public void up(LogLevel logLevel) {
+		this.cli.run(new DockerCliCommand.ComposeUp(logLevel));
 	}
 
 	@Override
@@ -53,8 +55,8 @@ class DefaultDockerCompose implements DockerCompose {
 	}
 
 	@Override
-	public void start() {
-		this.cli.run(new DockerCliCommand.ComposeStart());
+	public void start(LogLevel logLevel) {
+		this.cli.run(new DockerCliCommand.ComposeStart(logLevel));
 	}
 
 	@Override
