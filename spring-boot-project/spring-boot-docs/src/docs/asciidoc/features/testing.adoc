@@ -1006,6 +1006,44 @@ The above configuration allows Neo4j-related beans in the application to communi
 
 
 
+[[features.testing.testcontainers.at-development-time]]
+==== Using Testcontainers at Development Time
+As well as using Testcontainers for integration testing, it's also possible to use them at development time.
+This approach allows developers to quickly start containers for the services that the application depends on, removing the need to manually provision things like database servers.
+Using Testcontaners in this way provides functionality similar to Docker Compose, except that your container configuration is in Java rather than YAML.
+
+To use Testcontainers at development time you need to launch your application using your "`test`" classpath rather than "`main`".
+This will allow you to access all declared test dependencies and give you a natural place to write your test configuration.
+
+To create a test launchable version of your application you should create an "`Application`" class in the `src/test` directory.
+For example, if your main application is in `src/main/java/com/example/MyApplication.java`, you should create `src/test/java/com/example/TestMyApplication.java`
+
+The `TestMyApplication` class can use the `SpringApplication.from(...)` method to launch the real application:
+
+include::code:launch/TestMyApplication[]
+
+You'll also need to define the `Container` instances that you want to start along with your application.
+To do this, you need to make sure that the `spring-boot-testcontainers` module has been added as a `test` dependency.
+Once that has been done, you can create a `@TestConfiguration` class that declares `@Bean` methods for the containers you want to start.
+
+You can also annotate your `@Bean` methods with `@ServiceConnection` in order to create `ConnectionDetails` beans.
+See <<features#features.testing.testcontainers.service-connections, the service connections>> section above for details of the supported technologies.
+
+A typical Testcontainers configuration would look like this:
+
+include::code:test/MyContainersConfiguration[]
+
+NOTE: The lifecycle of `Container` beans is automatically managed by Spring Boot.
+Containers will be started and stopped automatically.
+
+Once you have defined your test configuration, you can use the `with(...)` method to attach it to your test launcher:
+
+include::code:test/TestMyApplication[]
+
+You can now launch `TestMyApplication` as you would any regular Java `main` method application to start your application and the containers that it needs to run.
+
+
+
 [[features.testing.utilities]]
 === Test Utilities
 A few test utility classes that are generally useful when testing your application are packaged as part of `spring-boot`.
