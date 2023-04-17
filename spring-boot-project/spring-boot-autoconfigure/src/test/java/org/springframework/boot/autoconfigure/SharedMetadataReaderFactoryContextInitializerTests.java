@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -35,10 +34,10 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.annotation.AnnotationConfigUtils;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
@@ -83,11 +82,9 @@ class SharedMetadataReaderFactoryContextInitializerTests {
 		context.refresh();
 		ConfigurationClassPostProcessor bean = context.getBean(ConfigurationClassPostProcessor.class);
 		assertThat(bean).isSameAs(configurationAnnotationPostProcessor);
-		ArgumentCaptor<MetadataReaderFactory> metadataReaderFactory = ArgumentCaptor
-			.forClass(MetadataReaderFactory.class);
-		then(configurationAnnotationPostProcessor).should().setMetadataReaderFactory(metadataReaderFactory.capture());
-		assertThat(metadataReaderFactory.getValue())
-			.isInstanceOf(ConcurrentReferenceCachingMetadataReaderFactory.class);
+		then(configurationAnnotationPostProcessor).should()
+			.setMetadataReaderFactory(assertArg((metadataReaderFactory) -> assertThat(metadataReaderFactory)
+				.isInstanceOf(ConcurrentReferenceCachingMetadataReaderFactory.class)));
 	}
 
 	static class TestConfig {
