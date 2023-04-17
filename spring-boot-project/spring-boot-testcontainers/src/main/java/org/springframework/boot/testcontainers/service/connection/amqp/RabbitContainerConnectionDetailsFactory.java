@@ -69,11 +69,6 @@ class RabbitContainerConnectionDetailsFactory
 		}
 
 		@Override
-		public String getVirtualHost() {
-			return null;
-		}
-
-		@Override
 		public List<Address> getAddresses() {
 			URI uri = URI.create(this.container.getAmqpUrl());
 			return List.of(new Address(uri.getHost(), uri.getPort()));

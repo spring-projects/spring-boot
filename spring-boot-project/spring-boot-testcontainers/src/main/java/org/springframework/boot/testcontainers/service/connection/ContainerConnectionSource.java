@@ -54,9 +54,9 @@ public final class ContainerConnectionSource<D extends ConnectionDetails, C exte
 
 	private final C container;
 
-	private String acceptedConnectionName;
+	private final String acceptedConnectionName;
 
-	private Set<Class<?>> acceptedConnectionDetailsTypes;
+	private final Set<Class<?>> acceptedConnectionDetailsTypes;
 
 	ContainerConnectionSource(String beanNameSuffix, Origin origin, C container,
 			MergedAnnotation<ServiceConnection> annotation) {
@@ -100,8 +100,8 @@ public final class ContainerConnectionSource<D extends ConnectionDetails, C exte
 				.formatted(this, connectionName, this.acceptedConnectionName)));
 			return false;
 		}
-		if (!this.acceptedConnectionDetailsTypes.isEmpty() && !this.acceptedConnectionDetailsTypes.stream()
-			.anyMatch((candidate) -> candidate.isAssignableFrom(connectionDetailsType))) {
+		if (!this.acceptedConnectionDetailsTypes.isEmpty() && this.acceptedConnectionDetailsTypes.stream()
+			.noneMatch((candidate) -> candidate.isAssignableFrom(connectionDetailsType))) {
 			logger.trace(LogMessage.of(() -> "%s not accepted as connection details type %s not in %s".formatted(this,
 					connectionDetailsType, this.acceptedConnectionDetailsTypes)));
 			return false;

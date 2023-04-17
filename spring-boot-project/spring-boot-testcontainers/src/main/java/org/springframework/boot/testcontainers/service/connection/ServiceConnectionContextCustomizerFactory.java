@@ -72,8 +72,8 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 				+ StringUtils.capitalize(field.getName());
 		Origin origin = new FieldOrigin(field);
 		Object fieldValue = getFieldValue(field);
-		Assert.state(Container.class.isInstance(fieldValue), () -> "Field '%s' in %s must be a %s"
-			.formatted(field.getName(), field.getDeclaringClass().getName(), Container.class.getName()));
+		Assert.state(fieldValue instanceof Container, () -> "Field '%s' in %s must be a %s".formatted(field.getName(),
+				field.getDeclaringClass().getName(), Container.class.getName()));
 		Container<?> container = (Container<?>) fieldValue;
 		return new ContainerConnectionSource<>(beanNameSuffix, origin, container, annotation);
 	}
