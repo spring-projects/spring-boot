@@ -105,6 +105,7 @@ Needed dependencies:
 
 
 When using OpenTelemetry:
+
 * `io.micrometer:micrometer-tracing-bridge-otel` - which is needed to bridge the Micrometer Observation API to OpenTelemetry.
 
 
