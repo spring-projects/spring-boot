@@ -57,7 +57,7 @@ public abstract class PackageTangleCheck extends DefaultTask {
 	public PackageTangleCheck() {
 		getOutputDirectory().convention(getProject().getLayout().getBuildDirectory().dir(getName()));
 	}
-
+这行用于测试
 	@TaskAction
 	void checkForPackageTangles() throws IOException {
 		JavaClasses javaClasses = new ClassFileImporter()
