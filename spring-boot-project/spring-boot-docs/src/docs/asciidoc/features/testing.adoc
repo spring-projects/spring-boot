@@ -930,6 +930,8 @@ include::code:MyIntegrationTests[]
 Thanks to `@ServiceConnection`, the above configuration allows Neo4j-related beans in the application to communicate with Neo4j running inside the Testcontainers-managed Docker container.
 This is done by automatically defining a `Neo4jConnectionDetails` bean which is then used by the Neo4j auto-configuration, overriding any connection-related configuration properties.
 
+NOTE: You'll need to add the `spring-boot-testcontainers` module as a test dependency in order to use service connections with Testcontainers.
+
 Service connection annotations are processed by `ContainerConnectionDetailsFactory` classes registered with `spring.factories`.
 A `ContainerConnectionDetailsFactory` can create a `ConnectionDetails` bean based on a specific `Container` subclass, or the Docker image name.
 
