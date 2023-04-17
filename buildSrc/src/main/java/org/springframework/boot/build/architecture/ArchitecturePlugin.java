@@ -18,7 +18,7 @@ package org.springframework.boot.build.architecture;
 
 import java.util.ArrayList;
 import java.util.List;
-
+这行用于测试
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
