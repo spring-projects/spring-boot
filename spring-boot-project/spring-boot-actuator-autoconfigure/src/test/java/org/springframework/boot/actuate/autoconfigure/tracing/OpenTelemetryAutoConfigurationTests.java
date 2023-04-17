@@ -33,6 +33,7 @@ import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.context.propagation.TextMapPropagator;
 import io.opentelemetry.extension.trace.propagation.B3Propagator;
+import io.opentelemetry.sdk.trace.IdGenerator;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SpanProcessor;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
@@ -54,6 +55,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Vedran Pavic
  */
 class OpenTelemetryAutoConfigurationTests {
 
@@ -203,6 +205,16 @@ class OpenTelemetryAutoConfigurationTests {
 			.run((context) -> assertThat(context).hasBean("w3cTextMapPropagatorWithoutBaggage"));
 	}
 
+	@Test
+	void shouldAllowCustomIdGenerator() {
+		this.contextRunner.withUserConfiguration(CustomIdGeneratorConfiguration.class).run((context) -> {
+			IdGenerator customIdGenerator = context.getBean("customIdGenerator", IdGenerator.class);
+			assertThat(customIdGenerator).isNotNull();
+			assertThat(context).getBean(SdkTracerProvider.class).extracting("sharedState.idGenerator")
+					.isEqualTo(customIdGenerator);
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	private static class CustomConfiguration {
 
@@ -274,6 +286,16 @@ class OpenTelemetryAutoConfigurationTests {
 		@Bean
 		SpanCustomizer customSpanCustomizer() {
 			return mock(SpanCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static class CustomIdGeneratorConfiguration {
+
+		@Bean
+		IdGenerator customIdGenerator() {
+			return mock(IdGenerator.class);
 		}
 
 	}

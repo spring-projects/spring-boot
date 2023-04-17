@@ -46,6 +46,7 @@ import io.opentelemetry.context.propagation.TextMapPropagator;
 import io.opentelemetry.extension.trace.propagation.B3Propagator;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.resources.Resource;
+import io.opentelemetry.sdk.trace.IdGenerator;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
 import io.opentelemetry.sdk.trace.SpanProcessor;
@@ -100,12 +101,13 @@ public class OpenTelemetryAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	SdkTracerProvider otelSdkTracerProvider(Environment environment, ObjectProvider<SpanProcessor> spanProcessors,
-			Sampler sampler) {
+	SdkTracerProvider otelSdkTracerProvider(Environment environment, ObjectProvider<IdGenerator> idGenerator,
+			ObjectProvider<SpanProcessor> spanProcessors, Sampler sampler) {
 		String applicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
 		SdkTracerProviderBuilder builder = SdkTracerProvider.builder()
 			.setSampler(sampler)
 			.setResource(Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, applicationName)));
+		idGenerator.ifUnique(builder::setIdGenerator);
 		spanProcessors.orderedStream().forEach(builder::addSpanProcessor);
 		return builder.build();
 	}
