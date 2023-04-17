@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import retrofit2.Retrofit;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.influx.InfluxDbAutoConfiguration.PropertiesInfluxDbConnectionDetails;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -54,9 +55,17 @@ class InfluxDbAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldUseConnectionDetails() {
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner.withPropertyValues("spring.influx.url=http://localhost")
+			.run((context) -> assertThat(context).hasSingleBean(PropertiesInfluxDbConnectionDetails.class));
+	}
+
+	@Test
+	void shouldUseCustomConnectionDetailsWhenDefined() {
 		this.contextRunner.withBean(InfluxDbConnectionDetails.class, this::influxDbConnectionDetails).run((context) -> {
-			assertThat(context).hasSingleBean(InfluxDB.class);
+			assertThat(context).hasSingleBean(InfluxDB.class)
+				.hasSingleBean(InfluxDbConnectionDetails.class)
+				.doesNotHaveBean(PropertiesInfluxDbConnectionDetails.class);
 			InfluxDB influxDb = context.getBean(InfluxDB.class);
 			assertThat(influxDb).hasFieldOrPropertyWithValue("hostName", "localhost");
 		});

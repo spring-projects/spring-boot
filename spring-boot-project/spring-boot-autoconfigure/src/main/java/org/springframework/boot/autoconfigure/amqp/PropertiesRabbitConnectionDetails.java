@@ -25,13 +25,12 @@ import java.util.List;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 3.1.0
  */
-public class PropertiesRabbitConnectionDetails implements RabbitConnectionDetails {
+class PropertiesRabbitConnectionDetails implements RabbitConnectionDetails {
 
 	private final RabbitProperties properties;
 
-	public PropertiesRabbitConnectionDetails(RabbitProperties properties) {
+	PropertiesRabbitConnectionDetails(RabbitProperties properties) {
 		this.properties = properties;
 	}
 

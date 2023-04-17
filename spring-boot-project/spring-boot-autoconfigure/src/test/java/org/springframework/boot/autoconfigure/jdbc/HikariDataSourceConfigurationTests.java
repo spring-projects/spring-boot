@@ -104,10 +104,12 @@ class HikariDataSourceConfigurationTests {
 	}
 
 	@Test
-	void usesConnectionDetailsIfAvailable() {
-		this.contextRunner.withUserConfiguration(ConnectionDetailsConfiguration.class)
+	void usesCustomConnectionDetailsWhenDefined() {
+		this.contextRunner.withBean(JdbcConnectionDetails.class, TestJdbcConnectionDetails::new)
 			.withPropertyValues(PREFIX + "url=jdbc:broken", PREFIX + "username=alice", PREFIX + "password=secret")
 			.run((context) -> {
+				assertThat(context).hasSingleBean(JdbcConnectionDetails.class)
+					.doesNotHaveBean(PropertiesJdbcConnectionDetails.class);
 				DataSource dataSource = context.getBean(DataSource.class);
 				assertThat(dataSource).asInstanceOf(InstanceOfAssertFactories.type(HikariDataSource.class))
 					.satisfies((hikari) -> {

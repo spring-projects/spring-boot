@@ -20,7 +20,8 @@ This goal is similar to `build-image` but does not fork the lifecycle to make su
 In the rest of this section, `build-image` is used to refer to either the `build-image` or `build-image-no-fork` goals.
 
 TIP: While the buildpack runs from an <<packaging,executable archive>>, it is not necessary to execute the `repackage` goal first as the executable archive is created automatically if necessary.
-When the `build-image` repackages the application, it applies the same settings as the `repackage` goal would, that is dependencies can be excluded using one of the exclude options, and Devtools is automatically excluded by default (you can control that using the `excludeDevtools` property).
+When the `build-image` repackages the application, it applies the same settings as the `repackage` goal would, that is dependencies can be excluded using one of the exclude options.
+The `spring-boot-devtools` and `spring-boot-docker-compose` modules are automatically excluded by default (you can control this using the `excludeDevtools` and `excludeDockerCompose` properties).
 
 
 
@@ -202,6 +203,19 @@ The values provided to the `tags` option should be full image references in the 
 | `launchCache`
 | A cache containing layers created by buildpacks and used by the image launching process.
 | A named volume in the Docker daemon, with a name derived from the image name.
+
+| `createdDate` +
+(`spring-boot.build-image.createdDate`)
+| A date that will be used to set the `Created` field in the generated image's metadata.
+The value must be a string in the ISO 8601 instant format, or `now` to use the current date and time.
+| A fixed date that enables https://buildpacks.io/docs/features/reproducibility/[build reproducibility].
+
+
+| `applicationDirectory` +
+(`spring-boot.build-image.applicationDirectory`)
+| The path to a directory that application contents will be uploaded to in the builder image.
+Application contents will also be in this location in the generated image.
+| `/workspace`
 
 |===
 

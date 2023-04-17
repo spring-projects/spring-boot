@@ -495,8 +495,15 @@ class RedisAutoConfigurationTests {
 	}
 
 	@Test
-	void usesStandaloneFromConnectionDetailsIfAvailable() {
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PropertiesRedisConnectionDetails.class));
+	}
+
+	@Test
+	void usesStandaloneFromCustomConnectionDetails() {
 		this.contextRunner.withUserConfiguration(ConnectionDetailsStandaloneConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(RedisConnectionDetails.class)
+				.doesNotHaveBean(PropertiesRedisConnectionDetails.class);
 			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 			assertThat(cf.isUseSsl()).isFalse();
 			RedisStandaloneConfiguration configuration = cf.getStandaloneConfiguration();
@@ -509,8 +516,10 @@ class RedisAutoConfigurationTests {
 	}
 
 	@Test
-	void usesSentinelFromConnectionDetailsIfAvailable() {
+	void usesSentinelFromCustomConnectionDetails() {
 		this.contextRunner.withUserConfiguration(ConnectionDetailsSentinelConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(RedisConnectionDetails.class)
+				.doesNotHaveBean(PropertiesRedisConnectionDetails.class);
 			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 			assertThat(cf.isUseSsl()).isFalse();
 			RedisSentinelConfiguration configuration = cf.getSentinelConfiguration();
@@ -526,8 +535,10 @@ class RedisAutoConfigurationTests {
 	}
 
 	@Test
-	void usesClusterFromConnectionDetailsIfAvailable() {
+	void usesClusterFromCustomConnectionDetails() {
 		this.contextRunner.withUserConfiguration(ConnectionDetailsClusterConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(RedisConnectionDetails.class)
+				.doesNotHaveBean(PropertiesRedisConnectionDetails.class);
 			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 			assertThat(cf.isUseSsl()).isFalse();
 			RedisClusterConfiguration configuration = cf.getClusterConfiguration();

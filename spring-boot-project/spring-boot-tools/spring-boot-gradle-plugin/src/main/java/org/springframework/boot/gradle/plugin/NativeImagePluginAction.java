@@ -24,7 +24,6 @@ import org.graalvm.buildtools.gradle.NativeImagePlugin;
 import org.graalvm.buildtools.gradle.dsl.GraalVMExtension;
 import org.graalvm.buildtools.gradle.dsl.GraalVMReachabilityMetadataRepositoryExtension;
 import org.gradle.api.Action;
-import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -96,15 +95,6 @@ class NativeImagePluginAction implements PluginApplicationAction {
 	private GraalVMExtension configureGraalVmExtension(Project project) {
 		GraalVMExtension extension = project.getExtensions().getByType(GraalVMExtension.class);
 		extension.getToolchainDetection().set(false);
-		extension.getBinaries().configureEach((options) -> {
-			try {
-				options.getRequiredVersion().convention("22.3");
-			}
-			catch (NoSuchMethodError ex) {
-				throw new GradleException("Incompatible version of org.graalvm.buildtools.native plugin. "
-						+ "Please upgrade to 0.9.17 or later.");
-			}
-		});
 		return extension;
 	}
 

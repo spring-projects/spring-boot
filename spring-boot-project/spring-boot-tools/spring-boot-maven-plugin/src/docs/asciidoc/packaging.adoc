@@ -18,8 +18,8 @@ The original (that is non-executable) artifact is renamed to `.original` by defa
 
 NOTE: The `outputFileNameMapping` feature of the `maven-war-plugin` is currently not supported.
 
-Devtools is automatically excluded by default (you can control that using the `excludeDevtools` property).
-In order to make that work with `war` packaging, the `spring-boot-devtools` dependency must be set as `optional` or with the `provided` scope.
+The `spring-boot-devtools` and `spring-boot-docker-compose` modules are automatically excluded by default (you can control this using the `excludeDevtools` and `excludeDockerCompose` properties).
+In order to make that work with `war` packaging, the `spring-boot-devtools` and `spring-boot-docker-compose` dependencies must be set as `optional` or with the `provided` scope.
 
 The plugin rewrites your manifest, and in particular it manages the `Main-Class` and `Start-Class` entries.
 If the defaults don't work you have to configure the values in the Spring Boot plugin, not in the jar plugin.
@@ -218,6 +218,8 @@ Layout factories are always ignored if an explicit <<goals-repackage-parameters-
 === Dependency Exclusion
 By default, both the `repackage` and the `run` goals will include any `provided` dependencies that are defined in the project.
 A Spring Boot project should consider `provided` dependencies as "container" dependencies that are required to run the application.
+Generally speaking, Spring Boot projects are not used as dependencies and are therefore unlikely to have any `optional` dependencies.
+When a project does have optional dependencies they too will be included by the `repackage` and `run` goals.
 
 Some of these dependencies may not be required at all and should be excluded from the executable jar.
 For consistency, they should not be present either when running the application.

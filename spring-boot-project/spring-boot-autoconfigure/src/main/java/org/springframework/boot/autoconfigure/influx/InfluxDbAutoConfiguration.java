@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.influx.InfluxDbAutoConfiguration.InfluxDBCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -48,17 +49,21 @@ import org.springframework.context.annotation.Conditional;
  */
 @AutoConfiguration
 @ConditionalOnClass(InfluxDB.class)
+@Conditional(InfluxDBCondition.class)
 @EnableConfigurationProperties(InfluxDbProperties.class)
 public class InfluxDbAutoConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean(InfluxDbConnectionDetails.class)
+	PropertiesInfluxDbConnectionDetails influxDbConnectionDetails(InfluxDbProperties properties) {
+		return new PropertiesInfluxDbConnectionDetails(properties);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean
-	@Conditional(InfluxDBCondition.class)
-	public InfluxDB influxDb(InfluxDbProperties properties, ObjectProvider<InfluxDbOkHttpClientBuilderProvider> builder,
-			ObjectProvider<InfluxDbCustomizer> customizers,
-			ObjectProvider<InfluxDbConnectionDetails> connectionDetailsProvider) {
-		InfluxDbConnectionDetails connectionDetails = connectionDetailsProvider
-			.getIfAvailable(() -> new PropertiesInfluxDbConnectionDetails(properties));
+	public InfluxDB influxDb(InfluxDbConnectionDetails connectionDetails,
+			ObjectProvider<InfluxDbOkHttpClientBuilderProvider> builder,
+			ObjectProvider<InfluxDbCustomizer> customizers) {
 		InfluxDB influxDb = new InfluxDBImpl(connectionDetails.getUrl().toString(), connectionDetails.getUsername(),
 				connectionDetails.getPassword(), determineBuilder(builder.getIfAvailable()));
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(influxDb));

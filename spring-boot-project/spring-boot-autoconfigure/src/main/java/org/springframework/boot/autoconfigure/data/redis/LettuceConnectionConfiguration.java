@@ -64,9 +64,9 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
 			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
-			ObjectProvider<RedisConnectionDetails> connectionDetailsProvider) {
-		super(properties, standaloneConfigurationProvider, sentinelConfigurationProvider, clusterConfigurationProvider,
-				connectionDetailsProvider);
+			RedisConnectionDetails connectionDetails) {
+		super(properties, connectionDetails, standaloneConfigurationProvider, sentinelConfigurationProvider,
+				clusterConfigurationProvider);
 	}
 
 	@Bean(destroyMethod = "shutdown")

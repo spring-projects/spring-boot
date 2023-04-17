@@ -9,7 +9,7 @@ Explicit build support is provided for the following build tools:
 | Build Tool | Version
 
 | Maven
-| 3.5+
+| 3.6.3 or later
 
 | Gradle
 | 7.x (7.5 or later) and 8.x

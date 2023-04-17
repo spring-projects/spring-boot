@@ -48,8 +48,8 @@ class RemoteDevtoolsSecurityConfiguration {
 	@Order(SecurityProperties.BASIC_AUTH_ORDER - 1)
 	SecurityFilterChain devtoolsSecurityFilterChain(HttpSecurity http) throws Exception {
 		http.securityMatcher(new AntPathRequestMatcher(this.url));
-		http.authorizeHttpRequests().anyRequest().anonymous();
-		http.csrf().disable();
+		http.authorizeHttpRequests((requests) -> requests.anyRequest().anonymous());
+		http.csrf((csrf) -> csrf.disable());
 		return http.build();
 	}
 

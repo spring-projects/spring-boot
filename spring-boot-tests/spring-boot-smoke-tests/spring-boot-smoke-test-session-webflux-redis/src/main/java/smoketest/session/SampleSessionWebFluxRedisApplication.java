@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.context.WebSessionServerSecurityContextRepository;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 @SpringBootApplication
 public class SampleSessionWebFluxRedisApplication {
 
@@ -32,17 +34,10 @@ public class SampleSessionWebFluxRedisApplication {
 
 	@Bean
 	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-		// @formatter:off
-		return http
-			.authorizeExchange()
-				.anyExchange().authenticated()
-				.and()
-			.httpBasic().securityContextRepository(new WebSessionServerSecurityContextRepository())
-				.and()
-			.formLogin()
-				.and()
-			.build();
-		// @formatter:on
+		http.authorizeExchange((exchange) -> exchange.anyExchange().authenticated());
+		http.httpBasic((basic) -> basic.securityContextRepository(new WebSessionServerSecurityContextRepository()));
+		http.formLogin(withDefaults());
+		return http.build();
 	}
 
 }

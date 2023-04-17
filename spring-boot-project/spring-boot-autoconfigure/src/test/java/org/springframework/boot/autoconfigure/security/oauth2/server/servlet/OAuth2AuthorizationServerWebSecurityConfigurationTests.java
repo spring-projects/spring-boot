@@ -28,7 +28,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.BeanIds;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -53,6 +52,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 /**
  * Tests for {@link OAuth2AuthorizationServerWebSecurityConfiguration}.
@@ -170,7 +170,7 @@ class OAuth2AuthorizationServerWebSecurityConfigurationTests {
 		@Bean
 		@Order(2)
 		SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-			return http.httpBasic(Customizer.withDefaults()).build();
+			return http.httpBasic(withDefaults()).build();
 		}
 
 	}

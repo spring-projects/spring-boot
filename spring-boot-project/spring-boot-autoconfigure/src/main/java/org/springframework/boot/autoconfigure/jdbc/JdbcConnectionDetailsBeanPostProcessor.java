@@ -24,7 +24,10 @@ import org.springframework.core.PriorityOrdered;
 
 /**
  * Abstract base class for DataSource bean post processors which apply values from
- * {@link JdbcConnectionDetails}. Acts on beans named 'dataSource' of type {@code T}.
+ * {@link JdbcConnectionDetails}. Property-based connection details
+ * ({@link PropertiesJdbcConnectionDetails} are ignored as the expectation is that they
+ * will have already been applied by configuration property binding. Acts on beans named
+ * 'dataSource' of type {@code T}.
  *
  * @param <T> type of the datasource
  * @author Moritz Halbritter
@@ -48,7 +51,9 @@ abstract class JdbcConnectionDetailsBeanPostProcessor<T> implements BeanPostProc
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		if (this.dataSourceClass.isAssignableFrom(bean.getClass()) && "dataSource".equals(beanName)) {
 			JdbcConnectionDetails connectionDetails = this.connectionDetailsProvider.getObject();
-			return processDataSource((T) bean, connectionDetails);
+			if (!(connectionDetails instanceof PropertiesJdbcConnectionDetails)) {
+				return processDataSource((T) bean, connectionDetails);
+			}
 		}
 		return bean;
 	}

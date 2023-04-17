@@ -105,8 +105,13 @@ class Neo4jAutoConfigurationTests {
 				.hasMessageContaining("'%s' is not a supported scheme.", invalidScheme));
 	}
 
+	@Test
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PropertiesNeo4jConnectionDetails.class));
+	}
+
 	@Bean
-	void usesCustomConnectionDetails() {
+	void shouldUseCustomConnectionDetailsWhenDefined() {
 		this.contextRunner.withBean(Neo4jConnectionDetails.class, () -> new Neo4jConnectionDetails() {
 
 			@Override
@@ -115,7 +120,9 @@ class Neo4jAutoConfigurationTests {
 			}
 
 		}).run((context) -> {
-			assertThat(context).hasSingleBean(Driver.class);
+			assertThat(context).hasSingleBean(Driver.class)
+				.hasSingleBean(Neo4jConnectionDetails.class)
+				.doesNotHaveBean(PropertiesNeo4jConnectionDetails.class);
 			Driver driver = context.getBean(Driver.class);
 			assertThat(driver.isEncrypted()).isTrue();
 		});

@@ -163,7 +163,7 @@ class SpringApplicationShutdownHook implements Runnable {
 	/**
 	 * The handler actions for this shutdown hook.
 	 */
-	private class Handlers implements SpringApplicationShutdownHandlers {
+	private class Handlers implements SpringApplicationShutdownHandlers, Runnable {
 
 		private final Set<Runnable> actions = Collections.newSetFromMap(new IdentityHashMap<>());
 
@@ -187,6 +187,12 @@ class SpringApplicationShutdownHook implements Runnable {
 
 		Set<Runnable> getActions() {
 			return this.actions;
+		}
+
+		@Override
+		public void run() {
+			SpringApplicationShutdownHook.this.run();
+			SpringApplicationShutdownHook.this.reset();
 		}
 
 	}

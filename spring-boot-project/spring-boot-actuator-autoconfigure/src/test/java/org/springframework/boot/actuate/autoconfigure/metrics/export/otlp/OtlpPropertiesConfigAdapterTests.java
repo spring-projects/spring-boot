@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
 import java.util.Map;
 
+import io.micrometer.registry.otlp.AggregationTemporality;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,6 +35,21 @@ class OtlpPropertiesConfigAdapterTests {
 		OtlpProperties properties = new OtlpProperties();
 		properties.setUrl("http://another-url:4318/v1/metrics");
 		assertThat(new OtlpPropertiesConfigAdapter(properties).url()).isEqualTo("http://another-url:4318/v1/metrics");
+	}
+
+	@Test
+	void whenPropertiesAggregationTemporalityIsNotSetAdapterAggregationTemporalityReturnsCumulative() {
+		OtlpProperties properties = new OtlpProperties();
+		assertThat(new OtlpPropertiesConfigAdapter(properties).aggregationTemporality())
+			.isSameAs(AggregationTemporality.CUMULATIVE);
+	}
+
+	@Test
+	void whenPropertiesAggregationTemporalityIsSetAdapterAggregationTemporalityReturnsIt() {
+		OtlpProperties properties = new OtlpProperties();
+		properties.setAggregationTemporality(AggregationTemporality.DELTA);
+		assertThat(new OtlpPropertiesConfigAdapter(properties).aggregationTemporality())
+			.isSameAs(AggregationTemporality.DELTA);
 	}
 
 	@Test

@@ -49,8 +49,9 @@ import org.gradle.testkit.runner.GradleRunner;
 import org.gradle.util.GradleVersion;
 import org.jetbrains.kotlin.gradle.model.KotlinProject;
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin;
-import org.jetbrains.kotlin.gradle.plugin.KotlinPlugin;
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformJvmPlugin;
 import org.jetbrains.kotlin.project.model.LanguageSettings;
+import org.jetbrains.kotlin.tooling.core.KotlinToolingVersion;
 import org.tomlj.Toml;
 
 import org.springframework.asm.ClassVisitor;
@@ -118,7 +119,9 @@ public class GradleBuild {
 				new File(pathOfJarContaining(DependencyManagementPlugin.class)),
 				new File(pathOfJarContaining("org.jetbrains.kotlin.cli.common.PropertiesKt")),
 				new File(pathOfJarContaining("org.jetbrains.kotlin.compilerRunner.KotlinLogger")),
-				new File(pathOfJarContaining(KotlinPlugin.class)), new File(pathOfJarContaining(KotlinProject.class)),
+				new File(pathOfJarContaining(KotlinPlatformJvmPlugin.class)),
+				new File(pathOfJarContaining(KotlinProject.class)),
+				new File(pathOfJarContaining(KotlinToolingVersion.class)),
 				new File(pathOfJarContaining("org.jetbrains.kotlin.daemon.client.KotlinCompilerClient")),
 				new File(pathOfJarContaining(KotlinCompilerPluginSupportPlugin.class)),
 				new File(pathOfJarContaining(LanguageSettings.class)),

@@ -63,11 +63,9 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 	@ConditionalOnMissingBean
 	@Bean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
 	KafkaStreamsConfiguration defaultKafkaStreamsConfig(Environment environment,
-			ObjectProvider<KafkaConnectionDetails> connectionDetailsProvider) {
-		KafkaConnectionDetails connectionDetails = connectionDetailsProvider
-			.getIfAvailable(() -> new PropertiesKafkaConnectionDetails(this.properties));
+			KafkaConnectionDetails connectionDetails) {
 		Map<String, Object> properties = this.properties.buildStreamsProperties();
-		applyKafkaConnectionDetailsForStreams(connectionDetails, properties);
+		applyKafkaConnectionDetailsForStreams(properties, connectionDetails);
 		if (this.properties.getStreams().getApplicationId() == null) {
 			String applicationName = environment.getProperty("spring.application.name");
 			if (applicationName == null) {
@@ -87,8 +85,8 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 		return new KafkaStreamsFactoryBeanConfigurer(this.properties, factoryBean);
 	}
 
-	private void applyKafkaConnectionDetailsForStreams(KafkaConnectionDetails connectionDetails,
-			Map<String, Object> properties) {
+	private void applyKafkaConnectionDetailsForStreams(Map<String, Object> properties,
+			KafkaConnectionDetails connectionDetails) {
 		properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
 				nodesToStringList(connectionDetails.getStreamsBootstrapNodes()));
 		if (!(connectionDetails instanceof PropertiesKafkaConnectionDetails)) {

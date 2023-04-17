@@ -17,13 +17,17 @@
 package org.springframework.boot.autoconfigure.service.connection;
 
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.io.support.SpringFactoriesLoader;
-import org.springframework.core.style.ToStringCreator;
+import org.springframework.util.Assert;
 
 /**
  * A registry of {@link ConnectionDetailsFactory} instances.
@@ -35,103 +39,78 @@ import org.springframework.core.style.ToStringCreator;
  */
 public class ConnectionDetailsFactories {
 
-	private List<FactoryDetails> registeredFactories = new ArrayList<>();
+	private List<Registration<?, ?>> registrations = new ArrayList<>();
 
 	public ConnectionDetailsFactories() {
 		this(SpringFactoriesLoader.forDefaultResourceLocation(ConnectionDetailsFactory.class.getClassLoader()));
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	ConnectionDetailsFactories(SpringFactoriesLoader loader) {
 		List<ConnectionDetailsFactory> factories = loader.load(ConnectionDetailsFactory.class);
-		factories.stream().map(this::factoryDetails).filter(Objects::nonNull).forEach(this::register);
+		Stream<Registration<?, ?>> registrations = factories.stream().map(Registration::get);
+		registrations.filter(Objects::nonNull).forEach(this.registrations::add);
+	}
+
+	/**
+	 * Return a {@link Map} of {@link ConnectionDetails} interface type to
+	 * {@link ConnectionDetails} instance created from the factories associated with the
+	 * given source.
+	 * @param <S> the source type
+	 * @param source the source
+	 * @return a list of {@link ConnectionDetails} instances.
+	 */
+	public <S> Map<Class<?>, ConnectionDetails> getConnectionDetails(S source) {
+		List<Registration<S, ?>> registrations = getRegistrations(source);
+		Map<Class<?>, ConnectionDetails> result = new LinkedHashMap<>();
+		for (Registration<S, ?> registration : registrations) {
+			ConnectionDetails connectionDetails = registration.factory().getConnectionDetails(source);
+			if (connectionDetails != null) {
+				Class<?> connectionDetailsType = registration.connectionDetailsType();
+				ConnectionDetails previous = result.put(connectionDetailsType, connectionDetails);
+				Assert.state(previous == null, () -> "Duplicate connection details supplied for %s"
+					.formatted(connectionDetailsType.getName()));
+			}
+		}
+		return Map.copyOf(result);
 	}
 
 	@SuppressWarnings("unchecked")
-	private FactoryDetails factoryDetails(ConnectionDetailsFactory<?, ?> factory) {
-		ResolvableType connectionDetailsFactory = findConnectionDetailsFactory(
-				ResolvableType.forClass(factory.getClass()));
-		if (connectionDetailsFactory != null) {
-			ResolvableType input = connectionDetailsFactory.getGeneric(0);
-			ResolvableType output = connectionDetailsFactory.getGeneric(1);
-			return new FactoryDetails(input.getRawClass(), (Class<? extends ConnectionDetails>) output.getRawClass(),
-					factory);
-		}
-		return null;
-	}
-
-	private ResolvableType findConnectionDetailsFactory(ResolvableType type) {
-		try {
-			ResolvableType[] interfaces = type.getInterfaces();
-			for (ResolvableType iface : interfaces) {
-				if (iface.getRawClass().equals(ConnectionDetailsFactory.class)) {
-					return iface;
-				}
+	<S> List<Registration<S, ?>> getRegistrations(S source) {
+		Class<S> sourceType = (Class<S>) source.getClass();
+		List<Registration<S, ?>> result = new ArrayList<>();
+		for (Registration<?, ?> candidate : this.registrations) {
+			if (candidate.sourceType().isAssignableFrom(sourceType)) {
+				result.add((Registration<S, ?>) candidate);
 			}
 		}
-		catch (TypeNotPresentException ex) {
-			// A type referenced by the factory is not present. Skip it.
-		}
-		ResolvableType superType = type.getSuperType();
-		return ResolvableType.NONE.equals(superType) ? null : findConnectionDetailsFactory(superType);
-	}
-
-	private void register(FactoryDetails details) {
-		this.registeredFactories.add(details);
-	}
-
-	@SuppressWarnings("unchecked")
-	public <S> ConnectionDetailsFactory<S, ConnectionDetails> getConnectionDetailsFactory(S source) {
-		Class<S> input = (Class<S>) source.getClass();
-		List<ConnectionDetailsFactory<S, ConnectionDetails>> matchingFactories = new ArrayList<>();
-		for (FactoryDetails factoryDetails : this.registeredFactories) {
-			if (factoryDetails.input.isAssignableFrom(input)) {
-				matchingFactories.add((ConnectionDetailsFactory<S, ConnectionDetails>) factoryDetails.factory);
-			}
-		}
-		if (matchingFactories.isEmpty()) {
+		if (result.isEmpty()) {
 			throw new ConnectionDetailsFactoryNotFoundException(source);
 		}
-		else {
-			if (matchingFactories.size() == 1) {
-				return matchingFactories.get(0);
-			}
-			AnnotationAwareOrderComparator.sort(matchingFactories);
-			return new CompositeConnectionDetailsFactory<>(matchingFactories);
-		}
+		result.sort(Comparator.comparing(Registration::factory, AnnotationAwareOrderComparator.INSTANCE));
+		return List.copyOf(result);
 	}
 
-	private record FactoryDetails(Class<?> input, Class<? extends ConnectionDetails> output,
-			ConnectionDetailsFactory<?, ?> factory) {
-	}
+	/**
+	 * A {@link ConnectionDetailsFactory} registration.
+	 *
+	 * @param <S> the source type
+	 * @param <D> the connection details type
+	 * @param sourceType the source type
+	 * @param connectionDetailsType the connection details type
+	 * @param factory the factory
+	 */
+	record Registration<S, D extends ConnectionDetails>(Class<S> sourceType, Class<D> connectionDetailsType,
+			ConnectionDetailsFactory<S, D> factory) {
 
-	static class CompositeConnectionDetailsFactory<S> implements ConnectionDetailsFactory<S, ConnectionDetails> {
-
-		private final List<ConnectionDetailsFactory<S, ConnectionDetails>> delegates;
-
-		CompositeConnectionDetailsFactory(List<ConnectionDetailsFactory<S, ConnectionDetails>> delegates) {
-			this.delegates = delegates;
-		}
-
-		@Override
 		@SuppressWarnings("unchecked")
-		public ConnectionDetails getConnectionDetails(Object source) {
-			for (ConnectionDetailsFactory<S, ConnectionDetails> delegate : this.delegates) {
-				ConnectionDetails connectionDetails = delegate.getConnectionDetails((S) source);
-				if (connectionDetails != null) {
-					return connectionDetails;
-				}
+		private static <S, D extends ConnectionDetails> Registration<S, D> get(ConnectionDetailsFactory<S, D> factory) {
+			ResolvableType type = ResolvableType.forClass(ConnectionDetailsFactory.class, factory.getClass());
+			if (!type.hasUnresolvableGenerics()) {
+				Class<?>[] generics = type.resolveGenerics();
+				return new Registration<>((Class<S>) generics[0], (Class<D>) generics[1], factory);
 			}
 			return null;
-		}
-
-		@Override
-		public String toString() {
-			return new ToStringCreator(this).append("delegates", this.delegates).toString();
-		}
-
-		List<ConnectionDetailsFactory<S, ConnectionDetails>> getDelegates() {
-			return this.delegates;
 		}
 
 	}

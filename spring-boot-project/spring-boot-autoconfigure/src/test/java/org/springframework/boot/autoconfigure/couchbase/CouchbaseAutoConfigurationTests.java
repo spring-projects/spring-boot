@@ -34,6 +34,7 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration.PropertiesCouchbaseConnectionDetails;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -64,10 +65,20 @@ class CouchbaseAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldUseConnectionDetails() {
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
+			.withPropertyValues("spring.couchbase.connection-string=localhost")
+			.run((context) -> assertThat(context).hasSingleBean(PropertiesCouchbaseConnectionDetails.class));
+	}
+
+	@Test
+	void shouldUseCustomConnectionDetailsWhenDefined() {
 		this.contextRunner.withBean(CouchbaseConnectionDetails.class, this::couchbaseConnectionDetails)
 			.run((context) -> {
-				assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
+				assertThat(context).hasSingleBean(ClusterEnvironment.class)
+					.hasSingleBean(Cluster.class)
+					.hasSingleBean(CouchbaseConnectionDetails.class)
+					.doesNotHaveBean(PropertiesCouchbaseConnectionDetails.class);
 				Cluster cluster = context.getBean(Cluster.class);
 				assertThat(cluster.core()).extracting("connectionString.hosts")
 					.asList()

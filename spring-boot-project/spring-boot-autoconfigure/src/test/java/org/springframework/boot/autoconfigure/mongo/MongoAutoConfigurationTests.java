@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.mongo;
 
 import java.util.concurrent.TimeUnit;
 
+import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -82,6 +83,25 @@ class MongoAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.uri:mongodb://localhost/test?appname=auto-config")
 			.withUserConfiguration(SimpleCustomizerConfig.class)
 			.run((context) -> assertThat(getSettings(context).getApplicationName()).isEqualTo("overridden-name"));
+	}
+
+	@Test
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PropertiesMongoConnectionDetails.class));
+	}
+
+	@Test
+	void shouldUseCustomConnectionDetailsWhenDefined() {
+		this.contextRunner.withBean(MongoConnectionDetails.class, () -> new MongoConnectionDetails() {
+
+			@Override
+			public ConnectionString getConnectionString() {
+				return new ConnectionString("mongodb://localhost");
+			}
+
+		})
+			.run((context) -> assertThat(context).hasSingleBean(MongoConnectionDetails.class)
+				.doesNotHaveBean(PropertiesMongoConnectionDetails.class));
 	}
 
 	private MongoClientSettings getSettings(AssertableApplicationContext context) {

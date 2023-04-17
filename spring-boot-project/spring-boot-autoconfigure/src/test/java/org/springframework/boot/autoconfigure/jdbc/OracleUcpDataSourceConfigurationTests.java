@@ -28,8 +28,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -114,10 +112,12 @@ class OracleUcpDataSourceConfigurationTests {
 	}
 
 	@Test
-	void usesJdbcConnectionDetailsIfAvailable() {
-		this.contextRunner.withUserConfiguration(ConnectionDetailsConfiguration.class)
+	void usesCustomJdbcConnectionDetailsWhenDefined() {
+		this.contextRunner.withBean(JdbcConnectionDetails.class, TestJdbcConnectionDetails::new)
 			.withPropertyValues(PREFIX + "url=jdbc:broken", PREFIX + "username=alice", PREFIX + "password=secret")
 			.run((context) -> {
+				assertThat(context).hasSingleBean(JdbcConnectionDetails.class)
+					.doesNotHaveBean(PropertiesJdbcConnectionDetails.class);
 				DataSource dataSource = context.getBean(DataSource.class);
 				assertThat(dataSource).isInstanceOf(PoolDataSourceImpl.class);
 				PoolDataSourceImpl oracleUcp = (PoolDataSourceImpl) dataSource;
@@ -129,16 +129,6 @@ class OracleUcpDataSourceConfigurationTests {
 					.isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());
 				assertThat(oracleUcp.getURL()).isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
 			});
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ConnectionDetailsConfiguration {
-
-		@Bean
-		JdbcConnectionDetails jdbcConnectionDetails() {
-			return new TestJdbcConnectionDetails();
-		}
-
 	}
 
 }

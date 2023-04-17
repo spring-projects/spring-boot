@@ -15,7 +15,19 @@ configurations {
 		// Downgrade SLF4J is required for tests to run in Eclipse
 		resolutionStrategy.force("org.slf4j:slf4j-api:1.7.36")
 	}
+	all {
+		resolutionStrategy {
+			eachDependency { dependency ->
+				// Downgrade Jackson as Gradle cannot cope with 2.15.0's multi-version
+				// jar files with bytecode in META-INF/versions/19
+				if (dependency.requested.group.startsWith("com.fasterxml.jackson")) {
+					dependency.useVersion("2.14.2")
+				}
+			}
+		}
+	}
 }
+
 dependencies {
 	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-section-ids")
 

@@ -16,11 +16,13 @@
 
 package org.springframework.boot.test.autoconfigure.data.redis;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.core.env.Environment;
 
@@ -40,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DataRedisTestPropertiesIntegrationTests {
 
 	@Container
-	@RedisServiceConnection
+	@ServiceConnection
 	static final RedisContainer redis = new RedisContainer();
 
 	@Autowired
@@ -49,6 +51,21 @@ class DataRedisTestPropertiesIntegrationTests {
 	@Test
 	void environmentWithNewProfile() {
 		assertThat(this.environment.getActiveProfiles()).containsExactly("test");
+	}
+
+	@Nested
+	class NestedTests {
+
+		@Autowired
+		private Environment innerEnvironment;
+
+		@Test
+		void propertiesFromEnclosingClassAffectNestedTests() {
+			assertThat(DataRedisTestPropertiesIntegrationTests.this.environment.getActiveProfiles())
+				.containsExactly("test");
+			assertThat(this.innerEnvironment.getActiveProfiles()).containsExactly("test");
+		}
+
 	}
 
 }

@@ -30,7 +30,7 @@ import org.springframework.boot.jdbc.DatabaseDriver;
 public interface JdbcConnectionDetails extends ConnectionDetails {
 
 	/**
-	 * Hostname for the database.
+	 * Username for the database.
 	 * @return the username for the database
 	 */
 	String getUsername();
