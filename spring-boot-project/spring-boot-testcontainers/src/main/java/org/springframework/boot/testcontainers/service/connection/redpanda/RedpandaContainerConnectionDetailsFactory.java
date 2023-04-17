@@ -49,8 +49,7 @@ class RedpandaContainerConnectionDetailsFactory
 
 		private final RedpandaContainer container;
 
-		private RedpandaContainerConnectionDetails(
-				ContainerConnectionSource<RedpandaContainer> source) {
+		private RedpandaContainerConnectionDetails(ContainerConnectionSource<RedpandaContainer> source) {
 			super(source);
 			this.container = source.getContainer();
 		}
