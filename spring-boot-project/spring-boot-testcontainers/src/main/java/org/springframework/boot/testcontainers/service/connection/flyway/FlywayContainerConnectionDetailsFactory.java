@@ -35,7 +35,7 @@ class FlywayContainerConnectionDetailsFactory
 
 	@Override
 	protected FlywayConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<FlywayConnectionDetails, JdbcDatabaseContainer<?>> source) {
+			ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
 		return new FlywayContainerConnectionDetails(source);
 	}
 
@@ -47,8 +47,7 @@ class FlywayContainerConnectionDetailsFactory
 
 		private final JdbcDatabaseContainer<?> container;
 
-		private FlywayContainerConnectionDetails(
-				ContainerConnectionSource<FlywayConnectionDetails, JdbcDatabaseContainer<?>> source) {
+		private FlywayContainerConnectionDetails(ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
 			super(source);
 			this.container = source.getContainer();
 		}

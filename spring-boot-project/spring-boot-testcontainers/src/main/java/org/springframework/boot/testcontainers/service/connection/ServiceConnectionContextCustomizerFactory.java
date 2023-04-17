@@ -49,12 +49,12 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
-		List<ContainerConnectionSource<?, ?>> sources = new ArrayList<>();
+		List<ContainerConnectionSource<?>> sources = new ArrayList<>();
 		findSources(testClass, sources);
 		return (sources.isEmpty()) ? null : new ServiceConnectionContextCustomizer(sources);
 	}
 
-	private void findSources(Class<?> clazz, List<ContainerConnectionSource<?, ?>> sources) {
+	private void findSources(Class<?> clazz, List<ContainerConnectionSource<?>> sources) {
 		ReflectionUtils.doWithFields(clazz, (field) -> {
 			MergedAnnotations annotations = MergedAnnotations.from(field);
 			annotations.stream(ServiceConnection.class)
@@ -65,7 +65,7 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 		}
 	}
 
-	private ContainerConnectionSource<?, ?> createSource(Field field, MergedAnnotation<ServiceConnection> annotation) {
+	private ContainerConnectionSource<?> createSource(Field field, MergedAnnotation<ServiceConnection> annotation) {
 		Assert.state(Modifier.isStatic(field.getModifiers()),
 				() -> "@ServiceConnection field '%s' must be static".formatted(field.getName()));
 		String beanNameSuffix = StringUtils.capitalize(ClassUtils.getShortNameAsProperty(field.getDeclaringClass()))

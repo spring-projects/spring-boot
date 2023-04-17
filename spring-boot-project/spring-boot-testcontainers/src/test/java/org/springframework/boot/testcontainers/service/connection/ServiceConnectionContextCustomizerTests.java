@@ -60,7 +60,7 @@ class ServiceConnectionContextCustomizerTests {
 
 	private MergedAnnotation<ServiceConnection> annotation;
 
-	private ContainerConnectionSource<?, ?> source;
+	private ContainerConnectionSource<?> source;
 
 	private ConnectionDetailsFactories factories;
 

@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 import org.testcontainers.containers.Container;
 import org.testcontainers.utility.DockerImageName;
 
-import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginProvider;
 import org.springframework.core.annotation.MergedAnnotation;
@@ -35,7 +34,6 @@ import org.springframework.util.StringUtils;
  * {@link ServiceConnection @ServiceConnection} annotated {@link Container} that provides
  * the service.
  *
- * @param <D> the connection details type
  * @param <C> the generic container type
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -43,8 +41,7 @@ import org.springframework.util.StringUtils;
  * @since 3.1.0
  * @see ContainerConnectionDetailsFactory
  */
-public final class ContainerConnectionSource<D extends ConnectionDetails, C extends Container<?>>
-		implements OriginProvider {
+public final class ContainerConnectionSource<C extends Container<?>> implements OriginProvider {
 
 	private static final Log logger = LogFactory.getLog(ContainerConnectionSource.class);
 

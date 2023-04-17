@@ -40,7 +40,7 @@ class RabbitContainerConnectionDetailsFactory
 
 	@Override
 	protected RabbitConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<RabbitConnectionDetails, RabbitMQContainer> source) {
+			ContainerConnectionSource<RabbitMQContainer> source) {
 		return new RabbitMqContainerConnectionDetails(source);
 	}
 
@@ -52,8 +52,7 @@ class RabbitContainerConnectionDetailsFactory
 
 		private final RabbitMQContainer container;
 
-		private RabbitMqContainerConnectionDetails(
-				ContainerConnectionSource<RabbitConnectionDetails, RabbitMQContainer> source) {
+		private RabbitMqContainerConnectionDetails(ContainerConnectionSource<RabbitMQContainer> source) {
 			super(source);
 			this.container = source.getContainer();
 		}

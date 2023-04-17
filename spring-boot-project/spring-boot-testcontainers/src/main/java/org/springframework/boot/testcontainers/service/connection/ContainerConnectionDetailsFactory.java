@@ -41,7 +41,7 @@ import org.springframework.util.ObjectUtils;
  * @since 3.1.0
  */
 public abstract class ContainerConnectionDetailsFactory<D extends ConnectionDetails, C extends Container<?>>
-		implements ConnectionDetailsFactory<ContainerConnectionSource<D, C>, D> {
+		implements ConnectionDetailsFactory<ContainerConnectionSource<C>, D> {
 
 	/**
 	 * Constant passed to the constructor when any connection name is accepted.
@@ -72,7 +72,7 @@ public abstract class ContainerConnectionDetailsFactory<D extends ConnectionDeta
 	}
 
 	@Override
-	public final D getConnectionDetails(ContainerConnectionSource<D, C> source) {
+	public final D getConnectionDetails(ContainerConnectionSource<C> source) {
 		if (!hasRequiredClasses()) {
 			return null;
 		}
@@ -105,7 +105,7 @@ public abstract class ContainerConnectionDetailsFactory<D extends ConnectionDeta
 	 * @param source the source
 	 * @return the service connection or {@code null}.
 	 */
-	protected abstract D getContainerConnectionDetails(ContainerConnectionSource<D, C> source);
+	protected abstract D getContainerConnectionDetails(ContainerConnectionSource<C> source);
 
 	/**
 	 * Convenient base class for {@link ConnectionDetails} results that are backed by a
@@ -119,7 +119,7 @@ public abstract class ContainerConnectionDetailsFactory<D extends ConnectionDeta
 		 * Create a new {@link ContainerConnectionDetails} instance.
 		 * @param source the source {@link ContainerConnectionSource}
 		 */
-		protected ContainerConnectionDetails(ContainerConnectionSource<?, ?> source) {
+		protected ContainerConnectionDetails(ContainerConnectionSource<?> source) {
 			Assert.notNull(source, "Source must not be null");
 			this.origin = source.getOrigin();
 		}

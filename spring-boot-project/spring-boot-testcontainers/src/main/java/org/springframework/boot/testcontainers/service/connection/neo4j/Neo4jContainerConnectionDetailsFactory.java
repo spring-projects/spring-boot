@@ -44,7 +44,7 @@ class Neo4jContainerConnectionDetailsFactory
 
 	@Override
 	protected Neo4jConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<Neo4jConnectionDetails, Neo4jContainer<?>> source) {
+			ContainerConnectionSource<Neo4jContainer<?>> source) {
 		return new Neo4jContainerConnectionDetails(source);
 	}
 
@@ -56,8 +56,7 @@ class Neo4jContainerConnectionDetailsFactory
 
 		private final Neo4jContainer<?> container;
 
-		private Neo4jContainerConnectionDetails(
-				ContainerConnectionSource<Neo4jConnectionDetails, Neo4jContainer<?>> source) {
+		private Neo4jContainerConnectionDetails(ContainerConnectionSource<Neo4jContainer<?>> source) {
 			super(source);
 			this.container = source.getContainer();
 		}

@@ -41,8 +41,7 @@ class MariaDbR2dbcContainerConnectionDetailsFactory
 	}
 
 	@Override
-	public R2dbcConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<R2dbcConnectionDetails, MariaDBContainer<?>> source) {
+	public R2dbcConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<MariaDBContainer<?>> source) {
 		return new R2dbcDatabaseContainerConnectionDetails(source.getContainer());
 	}
 

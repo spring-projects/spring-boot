@@ -35,7 +35,7 @@ class LiquibaseContainerConnectionDetailsFactory
 
 	@Override
 	protected LiquibaseConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<LiquibaseConnectionDetails, JdbcDatabaseContainer<?>> source) {
+			ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
 		return new LiquibaseContainerConnectionDetails(source);
 	}
 
@@ -47,8 +47,7 @@ class LiquibaseContainerConnectionDetailsFactory
 
 		private final JdbcDatabaseContainer<?> container;
 
-		private LiquibaseContainerConnectionDetails(
-				ContainerConnectionSource<LiquibaseConnectionDetails, JdbcDatabaseContainer<?>> source) {
+		private LiquibaseContainerConnectionDetails(ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
 			super(source);
 			this.container = source.getContainer();
 		}
