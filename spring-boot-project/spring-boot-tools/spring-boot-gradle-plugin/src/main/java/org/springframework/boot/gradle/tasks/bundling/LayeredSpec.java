@@ -223,18 +223,20 @@ public class LayeredSpec {
 	/**
 	 * Base class for specs that control the layers to which a category of content should
 	 * belong.
+	 *
+	 * @param <S> the type of {@link IntoLayerSpec} used by this spec
 	 */
-	public abstract static class IntoLayersSpec implements Serializable {
+	public abstract static class IntoLayersSpec<S extends IntoLayerSpec> implements Serializable {
 
 		private final List<IntoLayerSpec> intoLayers;
 
-		private final Function<String, IntoLayerSpec> specFactory;
+		private final Function<String, S> specFactory;
 
 		boolean isEmpty() {
 			return this.intoLayers.isEmpty();
 		}
 
-		IntoLayersSpec(Function<String, IntoLayerSpec> specFactory, IntoLayerSpec... spec) {
+		IntoLayersSpec(Function<String, S> specFactory, IntoLayerSpec... spec) {
 			this.intoLayers = new ArrayList<>(Arrays.asList(spec));
 			this.specFactory = specFactory;
 		}
@@ -247,8 +249,8 @@ public class LayeredSpec {
 			intoLayer(layer, Closures.asAction(closure));
 		}
 
-		public void intoLayer(String layer, Action<IntoLayerSpec> action) {
-			IntoLayerSpec spec = this.specFactory.apply(layer);
+		public void intoLayer(String layer, Action<S> action) {
+			S spec = this.specFactory.apply(layer);
 			action.execute(spec);
 			this.intoLayers.add(spec);
 		}
@@ -384,7 +386,7 @@ public class LayeredSpec {
 	 * An {@link IntoLayersSpec} that controls the layers to which application classes and
 	 * resources belong.
 	 */
-	public static class ApplicationSpec extends IntoLayersSpec {
+	public static class ApplicationSpec extends IntoLayersSpec<IntoLayerSpec> {
 
 		/**
 		 * Creates a new {@code ApplicationSpec} with the given {@code contents}.
@@ -413,7 +415,7 @@ public class LayeredSpec {
 	/**
 	 * An {@link IntoLayersSpec} that controls the layers to which dependencies belong.
 	 */
-	public static class DependenciesSpec extends IntoLayersSpec implements Serializable {
+	public static class DependenciesSpec extends IntoLayersSpec<DependenciesIntoLayerSpec> implements Serializable {
 
 		/**
 		 * Creates a new {@code DependenciesSpec} with the given {@code contents}.
@@ -428,10 +430,11 @@ public class LayeredSpec {
 					(spec) -> ((DependenciesIntoLayerSpec) spec).asLibrarySelector(LibraryContentFilter::new));
 		}
 
-		private static final class IntoLayerSpecFactory implements Function<String, IntoLayerSpec>, Serializable {
+		private static final class IntoLayerSpecFactory
+				implements Function<String, DependenciesIntoLayerSpec>, Serializable {
 
 			@Override
-			public IntoLayerSpec apply(String layer) {
+			public DependenciesIntoLayerSpec apply(String layer) {
 				return new DependenciesIntoLayerSpec(layer);
 			}
 
