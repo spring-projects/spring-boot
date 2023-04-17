@@ -42,7 +42,7 @@ class MsSqlServerR2dbcContainerConnectionDetailsFactory
 
 	@Override
 	public R2dbcConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<R2dbcConnectionDetails, MSSQLServerContainer<?>> source) {
+			ContainerConnectionSource<MSSQLServerContainer<?>> source) {
 		return new R2dbcDatabaseContainerConnectionDetails(source.getContainer());
 	}
 

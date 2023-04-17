@@ -42,7 +42,7 @@ class PostgresR2dbcContainerConnectionDetailsFactory
 
 	@Override
 	public R2dbcConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<R2dbcConnectionDetails, PostgreSQLContainer<?>> source) {
+			ContainerConnectionSource<PostgreSQLContainer<?>> source) {
 		return new R2dbcDatabaseContainerConnectionDetails(source.getContainer());
 	}
 

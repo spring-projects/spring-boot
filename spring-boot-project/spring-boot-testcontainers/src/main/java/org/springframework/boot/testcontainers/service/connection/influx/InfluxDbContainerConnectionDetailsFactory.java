@@ -39,7 +39,7 @@ class InfluxDbContainerConnectionDetailsFactory
 
 	@Override
 	protected InfluxDbConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<InfluxDbConnectionDetails, InfluxDBContainer<?>> source) {
+			ContainerConnectionSource<InfluxDBContainer<?>> source) {
 		return new InfluxDbContainerConnectionDetails(source);
 	}
 
@@ -51,8 +51,7 @@ class InfluxDbContainerConnectionDetailsFactory
 
 		private final InfluxDBContainer<?> container;
 
-		private InfluxDbContainerConnectionDetails(
-				ContainerConnectionSource<InfluxDbConnectionDetails, InfluxDBContainer<?>> source) {
+		private InfluxDbContainerConnectionDetails(ContainerConnectionSource<InfluxDBContainer<?>> source) {
 			super(source);
 			this.container = source.getContainer();
 		}

@@ -40,8 +40,7 @@ class MongoContainerConnectionDetailsFactory
 	}
 
 	@Override
-	protected MongoConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<MongoConnectionDetails, MongoDBContainer> source) {
+	protected MongoConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<MongoDBContainer> source) {
 		return new MongoContainerConnectionDetails(source);
 	}
 
@@ -53,8 +52,7 @@ class MongoContainerConnectionDetailsFactory
 
 		private final ConnectionString connectionString;
 
-		private MongoContainerConnectionDetails(
-				ContainerConnectionSource<MongoConnectionDetails, MongoDBContainer> source) {
+		private MongoContainerConnectionDetails(ContainerConnectionSource<MongoDBContainer> source) {
 			super(source);
 			this.connectionString = new ConnectionString(source.getContainer().getReplicaSetUrl());
 		}

@@ -50,7 +50,7 @@ class ContainerConnectionDetailsFactoryTests {
 
 	private MergedAnnotation<ServiceConnection> annotation;
 
-	private ContainerConnectionSource<?, ?> source;
+	private ContainerConnectionSource<?> source;
 
 	@BeforeEach
 	void setup() {
@@ -87,7 +87,7 @@ class ContainerConnectionDetailsFactoryTests {
 	@Test
 	void getConnectionDetailsWhenContainerTypeDoesNotMatchReturnsNull() {
 		ElasticsearchContainer container = mock(ElasticsearchContainer.class);
-		ContainerConnectionSource<?, ?> source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin,
+		ContainerConnectionSource<?> source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin,
 				container, this.annotation);
 		TestContainerConnectionDetailsFactory factory = new TestContainerConnectionDetailsFactory();
 		ConnectionDetails connectionDetails = getConnectionDetails(factory, source);
@@ -103,7 +103,7 @@ class ContainerConnectionDetailsFactoryTests {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private ConnectionDetails getConnectionDetails(ConnectionDetailsFactory<?, ?> factory,
-			ContainerConnectionSource<?, ?> source) {
+			ContainerConnectionSource<?> source) {
 		return ((ConnectionDetailsFactory) factory).getConnectionDetails(source);
 	}
 
@@ -123,14 +123,14 @@ class ContainerConnectionDetailsFactoryTests {
 
 		@Override
 		protected JdbcConnectionDetails getContainerConnectionDetails(
-				ContainerConnectionSource<JdbcConnectionDetails, JdbcDatabaseContainer<?>> source) {
+				ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
 			return new TestContainerConnectionDetails(source);
 		}
 
 		static class TestContainerConnectionDetails extends ContainerConnectionDetails
 				implements JdbcConnectionDetails {
 
-			TestContainerConnectionDetails(ContainerConnectionSource<?, ?> source) {
+			TestContainerConnectionDetails(ContainerConnectionSource<?> source) {
 				super(source);
 			}
 

@@ -50,7 +50,7 @@ class ContainerConnectionSourceTests {
 
 	private MergedAnnotation<ServiceConnection> annotation;
 
-	private ContainerConnectionSource<?, ?> source;
+	private ContainerConnectionSource<?> source;
 
 	@BeforeEach
 	void setup() {
