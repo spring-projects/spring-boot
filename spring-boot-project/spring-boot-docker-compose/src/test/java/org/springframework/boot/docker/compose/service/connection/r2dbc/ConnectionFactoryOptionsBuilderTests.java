@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import io.r2dbc.spi.ConnectionFactoryOptions;
+import io.r2dbc.spi.Option;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.docker.compose.core.ConnectionPorts;
@@ -52,16 +53,29 @@ class ConnectionFactoryOptionsBuilderTests {
 	void buildBuildsOptions() {
 		RunningService service = mockService(456);
 		ConnectionFactoryOptions options = this.builder.build(service, "mydb", "user", "pass");
-		assertThat(options).hasToString(
-				"ConnectionFactoryOptions{options={database=mydb, host=myhost, driver=mydb, password=REDACTED, port=456, user=user}}");
+		assertThat(options).isEqualTo(ConnectionFactoryOptions.builder()
+			.option(ConnectionFactoryOptions.DATABASE, "mydb")
+			.option(ConnectionFactoryOptions.HOST, "myhost")
+			.option(ConnectionFactoryOptions.PORT, 456)
+			.option(ConnectionFactoryOptions.DRIVER, "mydb")
+			.option(ConnectionFactoryOptions.PASSWORD, "pass")
+			.option(ConnectionFactoryOptions.USER, "user")
+			.build());
 	}
 
 	@Test
 	void buildWhenHasParamsLabelBuildsOptions() {
 		RunningService service = mockService(456, Map.of("org.springframework.boot.r2dbc.parameters", "foo=bar"));
 		ConnectionFactoryOptions options = this.builder.build(service, "mydb", "user", "pass");
-		assertThat(options).hasToString(
-				"ConnectionFactoryOptions{options={foo=bar, database=mydb, host=myhost, driver=mydb, password=REDACTED, port=456, user=user}}");
+		assertThat(options).isEqualTo(ConnectionFactoryOptions.builder()
+			.option(ConnectionFactoryOptions.DATABASE, "mydb")
+			.option(ConnectionFactoryOptions.HOST, "myhost")
+			.option(ConnectionFactoryOptions.PORT, 456)
+			.option(ConnectionFactoryOptions.DRIVER, "mydb")
+			.option(ConnectionFactoryOptions.PASSWORD, "pass")
+			.option(ConnectionFactoryOptions.USER, "user")
+			.option(Option.valueOf("foo"), "bar")
+			.build());
 	}
 
 	@Test
