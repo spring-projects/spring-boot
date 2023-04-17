@@ -22,6 +22,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.testsupport.process.DisabledIfProcessUnavailable;
+import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
+@DisabledIfDockerUnavailable
 @DisabledIfProcessUnavailable({ "docker", "compose" })
 class DockerCliTests {
 

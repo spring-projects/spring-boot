@@ -25,6 +25,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationShutdownHandlers;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.testsupport.process.DisabledIfProcessUnavailable;
+import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -36,6 +37,7 @@ import org.springframework.util.function.ThrowingSupplier;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  */
+@DisabledIfDockerUnavailable
 @DisabledIfProcessUnavailable({ "docker", "compose" })
 public abstract class AbstractDockerComposeIntegrationTests {
 
