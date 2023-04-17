@@ -100,12 +100,16 @@ NOTE: If your project doesn't use Spring MVC or Spring WebFlux, the `io.zipkin.r
 * Point the property `management.wavefront.uri` to the Wavefront server
 
 Needed dependencies:
+
 * `io.micrometer:micrometer-tracing-reporter-wavefront` - which is needed to report traces to Wavefront.
+
 
 When using OpenTelemetry:
 * `io.micrometer:micrometer-tracing-bridge-otel` - which is needed to bridge the Micrometer Observation API to OpenTelemetry.
 
+
 When using Brave:
+
 * `io.micrometer:micrometer-tracing-bridge-brave` - which is needed to bridge the Micrometer Observation API to Brave.
 
 
