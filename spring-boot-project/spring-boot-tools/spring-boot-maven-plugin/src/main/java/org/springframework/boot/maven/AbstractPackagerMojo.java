@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,6 +98,13 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	private boolean excludeDevtools = true;
 
 	/**
+	 * Exclude Spring Boot dev services from the repackaged archive.
+	 * @since 3.1.0
+	 */
+	@Parameter(property = "spring-boot.repackage.excludeDockerCompose", defaultValue = "true")
+	private boolean excludeDockerCompose = true;
+
+	/**
 	 * Include system scoped dependencies.
 	 * @since 1.4.0
 	 */
@@ -194,6 +201,13 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 			Exclude exclude = new Exclude();
 			exclude.setGroupId("org.springframework.boot");
 			exclude.setArtifactId("spring-boot-devtools");
+			ExcludeFilter filter = new ExcludeFilter(exclude);
+			filters.add(filter);
+		}
+		if (this.excludeDockerCompose) {
+			Exclude exclude = new Exclude();
+			exclude.setGroupId("org.springframework.boot");
+			exclude.setArtifactId("spring-boot-docker-compose");
 			ExcludeFilter filter = new ExcludeFilter(exclude);
 			filters.add(filter);
 		}
