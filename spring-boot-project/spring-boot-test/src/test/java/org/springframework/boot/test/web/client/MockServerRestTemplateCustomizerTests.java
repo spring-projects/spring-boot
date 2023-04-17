@@ -106,7 +106,23 @@ class MockServerRestTemplateCustomizerTests {
 		this.customizer.customize(new RestTemplateBuilder().rootUri("https://example.com").build());
 		assertThat(this.customizer.getServer()).extracting("expectationManager")
 			.isInstanceOf(SimpleRequestExpectationManager.class);
+	}
 
+	@Test
+	void bufferContentShouldDefaultToFalse() {
+		MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer();
+		RestTemplate restTemplate = new RestTemplate();
+		customizer.customize(restTemplate);
+		assertThat(restTemplate.getRequestFactory()).isInstanceOf(ClientHttpRequestFactory.class);
+	}
+
+	@Test
+	void setBufferContentShouldEnableContentBuffering() {
+		MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer();
+		RestTemplate restTemplate = new RestTemplate();
+		customizer.setBufferContent(true);
+		customizer.customize(restTemplate);
+		assertThat(restTemplate.getRequestFactory()).isInstanceOf(BufferingClientHttpRequestFactory.class);
 	}
 
 	@Test
@@ -178,23 +194,6 @@ class MockServerRestTemplateCustomizerTests {
 		RequestExpectationManager manager2 = this.customizer.getExpectationManagers().get(template2);
 		assertThat(this.customizer.getServer(template1)).extracting("expectationManager").isEqualTo(manager1);
 		assertThat(this.customizer.getServer(template2)).extracting("expectationManager").isEqualTo(manager2);
-	}
-
-	@Test
-	void bufferContentShouldBeFalseByDefault() {
-		MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer();
-		RestTemplate restTemplate = new RestTemplate();
-		customizer.customize(restTemplate);
-		assertThat(restTemplate.getRequestFactory()).isInstanceOf(ClientHttpRequestFactory.class);
-	}
-
-	@Test
-	void enableBufferContent() {
-		MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer();
-		RestTemplate restTemplate = new RestTemplate();
-		customizer.bufferContent(true);
-		customizer.customize(restTemplate);
-		assertThat(restTemplate.getRequestFactory()).isInstanceOf(BufferingClientHttpRequestFactory.class);
 	}
 
 }

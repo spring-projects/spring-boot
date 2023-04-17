@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,10 +102,13 @@ public class MockServerRestTemplateCustomizer implements RestTemplateCustomizer 
 	}
 
 	/**
-	 * Use the {@link BufferingClientHttpRequestFactory} wrapper to buffer the input and
-	 * output streams, and for example, allow multiple reads of the response body.
+	 * Set if the {@link BufferingClientHttpRequestFactory} wrapper should be used to
+	 * buffer the input and output streams, and for example, allow multiple reads of the
+	 * response body.
+	 * @param bufferContent if request and response content should be buffered
+	 * @since 3.1.0
 	 */
-	public void bufferContent(boolean bufferContent) {
+	public void setBufferContent(boolean bufferContent) {
 		this.bufferContent = bufferContent;
 	}
 
