@@ -39,8 +39,7 @@ class OracleR2dbcContainerConnectionDetailsFactory
 	}
 
 	@Override
-	public R2dbcConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<OracleContainer> source) {
+	public R2dbcConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<OracleContainer> source) {
 		return new R2dbcDatabaseContainerConnectionDetails(source.getContainer());
 	}
 
