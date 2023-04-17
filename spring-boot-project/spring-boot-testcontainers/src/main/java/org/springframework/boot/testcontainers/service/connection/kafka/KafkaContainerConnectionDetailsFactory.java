@@ -38,8 +38,7 @@ class KafkaContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<KafkaConnectionDetails, KafkaContainer> {
 
 	@Override
-	protected KafkaConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<KafkaConnectionDetails, KafkaContainer> source) {
+	protected KafkaConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
 		return new KafkaContainerConnectionDetails(source);
 	}
 
@@ -51,8 +50,7 @@ class KafkaContainerConnectionDetailsFactory
 
 		private final KafkaContainer container;
 
-		private KafkaContainerConnectionDetails(
-				ContainerConnectionSource<KafkaConnectionDetails, KafkaContainer> source) {
+		private KafkaContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
 			super(source);
 			this.container = source.getContainer();
 		}

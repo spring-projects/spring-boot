@@ -41,8 +41,7 @@ class MySqlR2dbcContainerConnectionDetailsFactory
 	}
 
 	@Override
-	public R2dbcConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<R2dbcConnectionDetails, MySQLContainer<?>> source) {
+	public R2dbcConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<MySQLContainer<?>> source) {
 		return new R2dbcDatabaseContainerConnectionDetails(source.getContainer());
 	}
 

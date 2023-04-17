@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
 import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleApplicationContextInitializer;
+import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -36,6 +37,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
+@DisabledIfDockerUnavailable
 class ServiceConnectionAutoConfigurationTests {
 
 	private static final String REDIS_CONTAINER_CONNECTION_DETAILS = "org.springframework.boot.testcontainers.service.connection.redis."

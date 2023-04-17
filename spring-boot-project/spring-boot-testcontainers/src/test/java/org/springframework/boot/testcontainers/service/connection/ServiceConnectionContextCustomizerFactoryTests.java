@@ -79,7 +79,7 @@ class ServiceConnectionContextCustomizerFactoryTests {
 	void createContextCustomizerCreatesCustomizerSourceWithSensibleBeanNameSuffix() {
 		ServiceConnectionContextCustomizer customizer = (ServiceConnectionContextCustomizer) this.factory
 			.createContextCustomizer(SingleServiceConnection.class, null);
-		ContainerConnectionSource<?, ?> source = customizer.getSources().get(0);
+		ContainerConnectionSource<?> source = customizer.getSources().get(0);
 		assertThat(source.getBeanNameSuffix()).isEqualTo("SingleServiceConnectionService1");
 	}
 
@@ -87,7 +87,7 @@ class ServiceConnectionContextCustomizerFactoryTests {
 	void createContextCustomizerCreatesCustomizerSourceWithSensibleOrigin() {
 		ServiceConnectionContextCustomizer customizer = (ServiceConnectionContextCustomizer) this.factory
 			.createContextCustomizer(SingleServiceConnection.class, null);
-		ContainerConnectionSource<?, ?> source = customizer.getSources().get(0);
+		ContainerConnectionSource<?> source = customizer.getSources().get(0);
 		assertThat(source.getOrigin())
 			.hasToString("ServiceConnectionContextCustomizerFactoryTests.SingleServiceConnection.service1");
 	}
@@ -96,7 +96,7 @@ class ServiceConnectionContextCustomizerFactoryTests {
 	void createContextCustomizerCreatesCustomizerSourceWithSensibleToString() {
 		ServiceConnectionContextCustomizer customizer = (ServiceConnectionContextCustomizer) this.factory
 			.createContextCustomizer(SingleServiceConnection.class, null);
-		ContainerConnectionSource<?, ?> source = customizer.getSources().get(0);
+		ContainerConnectionSource<?> source = customizer.getSources().get(0);
 		assertThat(source).hasToString(
 				"@ServiceConnection source for ServiceConnectionContextCustomizerFactoryTests.SingleServiceConnection.service1");
 	}

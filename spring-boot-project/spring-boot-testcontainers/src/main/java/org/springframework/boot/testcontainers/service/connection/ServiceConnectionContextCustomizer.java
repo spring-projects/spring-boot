@@ -35,15 +35,15 @@ import org.springframework.test.context.MergedContextConfiguration;
  */
 class ServiceConnectionContextCustomizer implements ContextCustomizer {
 
-	private final List<ContainerConnectionSource<?, ?>> sources;
+	private final List<ContainerConnectionSource<?>> sources;
 
 	private final ConnectionDetailsFactories connectionDetailsFactories;
 
-	ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?, ?>> sources) {
+	ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?>> sources) {
 		this(sources, new ConnectionDetailsFactories());
 	}
 
-	ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?, ?>> sources,
+	ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?>> sources,
 			ConnectionDetailsFactories connectionDetailsFactories) {
 		this.sources = sources;
 		this.connectionDetailsFactories = connectionDetailsFactories;
@@ -58,7 +58,7 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 		}
 	}
 
-	List<ContainerConnectionSource<?, ?>> getSources() {
+	List<ContainerConnectionSource<?>> getSources() {
 		return this.sources;
 	}
 

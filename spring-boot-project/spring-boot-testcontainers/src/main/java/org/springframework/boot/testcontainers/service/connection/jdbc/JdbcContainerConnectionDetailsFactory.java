@@ -36,7 +36,7 @@ class JdbcContainerConnectionDetailsFactory
 
 	@Override
 	protected JdbcConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<JdbcConnectionDetails, JdbcDatabaseContainer<?>> source) {
+			ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
 		return new JdbcContainerConnectionDetails(source);
 	}
 
@@ -48,8 +48,7 @@ class JdbcContainerConnectionDetailsFactory
 
 		private final JdbcDatabaseContainer<?> container;
 
-		private JdbcContainerConnectionDetails(
-				ContainerConnectionSource<JdbcConnectionDetails, JdbcDatabaseContainer<?>> source) {
+		private JdbcContainerConnectionDetails(ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
 			super(source);
 			this.container = source.getContainer();
 		}

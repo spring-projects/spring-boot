@@ -37,7 +37,7 @@ class CouchbaseContainerConnectionDetailsFactory
 
 	@Override
 	protected CouchbaseConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<CouchbaseConnectionDetails, CouchbaseContainer> source) {
+			ContainerConnectionSource<CouchbaseContainer> source) {
 		return new CouchbaseContainerConnectionDetails(source);
 	}
 
@@ -49,8 +49,7 @@ class CouchbaseContainerConnectionDetailsFactory
 
 		private final CouchbaseContainer container;
 
-		private CouchbaseContainerConnectionDetails(
-				ContainerConnectionSource<CouchbaseConnectionDetails, CouchbaseContainer> source) {
+		private CouchbaseContainerConnectionDetails(ContainerConnectionSource<CouchbaseContainer> source) {
 			super(source);
 			this.container = source.getContainer();
 		}

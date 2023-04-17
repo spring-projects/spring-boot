@@ -39,7 +39,7 @@ class CassandraContainerConnectionDetailsFactory
 
 	@Override
 	protected CassandraConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<CassandraConnectionDetails, CassandraContainer<?>> source) {
+			ContainerConnectionSource<CassandraContainer<?>> source) {
 		return new CassandraContainerConnectionDetails(source);
 	}
 
@@ -51,8 +51,7 @@ class CassandraContainerConnectionDetailsFactory
 
 		private final CassandraContainer<?> container;
 
-		private CassandraContainerConnectionDetails(
-				ContainerConnectionSource<CassandraConnectionDetails, CassandraContainer<?>> source) {
+		private CassandraContainerConnectionDetails(ContainerConnectionSource<CassandraContainer<?>> source) {
 			super(source);
 			this.container = source.getContainer();
 		}

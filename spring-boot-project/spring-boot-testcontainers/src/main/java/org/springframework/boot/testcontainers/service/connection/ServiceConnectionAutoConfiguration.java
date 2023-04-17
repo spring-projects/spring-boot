@@ -64,14 +64,14 @@ public class ServiceConnectionAutoConfiguration {
 				BeanDefinitionRegistry registry) {
 			if (this.beanFactory instanceof ConfigurableListableBeanFactory listableBeanFactory) {
 				ConnectionDetailsFactories connectionDetailsFactories = new ConnectionDetailsFactories();
-				List<ContainerConnectionSource<?, ?>> sources = getSources(listableBeanFactory);
+				List<ContainerConnectionSource<?>> sources = getSources(listableBeanFactory);
 				new ContainerConnectionSourcesRegistrar(listableBeanFactory, connectionDetailsFactories, sources)
 					.registerBeanDefinitions(registry);
 			}
 		}
 
-		private List<ContainerConnectionSource<?, ?>> getSources(ConfigurableListableBeanFactory beanFactory) {
-			List<ContainerConnectionSource<?, ?>> sources = new ArrayList<>();
+		private List<ContainerConnectionSource<?>> getSources(ConfigurableListableBeanFactory beanFactory) {
+			List<ContainerConnectionSource<?>> sources = new ArrayList<>();
 			for (String candidate : beanFactory.getBeanNamesForType(Container.class)) {
 				Set<ServiceConnection> annotations = beanFactory.findAllAnnotationsOnBean(candidate,
 						ServiceConnection.class, false);
@@ -82,8 +82,8 @@ public class ServiceConnectionAutoConfiguration {
 			return sources;
 		}
 
-		private void addSources(List<ContainerConnectionSource<?, ?>> sources,
-				ConfigurableListableBeanFactory beanFactory, String beanName, Set<ServiceConnection> annotations) {
+		private void addSources(List<ContainerConnectionSource<?>> sources, ConfigurableListableBeanFactory beanFactory,
+				String beanName, Set<ServiceConnection> annotations) {
 			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
 			Origin origin = new BeanOrigin(beanName, beanDefinition);
 			Container<?> container = beanFactory.getBean(beanName, Container.class);

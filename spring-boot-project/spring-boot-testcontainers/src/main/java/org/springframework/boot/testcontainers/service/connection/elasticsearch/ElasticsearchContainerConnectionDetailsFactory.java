@@ -42,7 +42,7 @@ class ElasticsearchContainerConnectionDetailsFactory
 
 	@Override
 	protected ElasticsearchConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<ElasticsearchConnectionDetails, ElasticsearchContainer> source) {
+			ContainerConnectionSource<ElasticsearchContainer> source) {
 		return new ElasticsearchContainerConnectionDetails(source);
 	}
 
@@ -55,8 +55,7 @@ class ElasticsearchContainerConnectionDetailsFactory
 
 		private final List<Node> nodes;
 
-		private ElasticsearchContainerConnectionDetails(
-				ContainerConnectionSource<ElasticsearchConnectionDetails, ElasticsearchContainer> source) {
+		private ElasticsearchContainerConnectionDetails(ContainerConnectionSource<ElasticsearchContainer> source) {
 			super(source);
 			this.nodes = List.of(new Node(source.getContainer().getHost(),
 					source.getContainer().getMappedPort(DEFAULT_PORT), Protocol.HTTP, null, null));

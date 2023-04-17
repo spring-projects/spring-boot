@@ -53,10 +53,10 @@ class ContainerConnectionSourcesRegistrar {
 
 	private final ConnectionDetailsFactories connectionDetailsFactories;
 
-	private final List<ContainerConnectionSource<?, ?>> sources;
+	private final List<ContainerConnectionSource<?>> sources;
 
 	ContainerConnectionSourcesRegistrar(ListableBeanFactory beanFactory,
-			ConnectionDetailsFactories connectionDetailsFactories, List<ContainerConnectionSource<?, ?>> sources) {
+			ConnectionDetailsFactories connectionDetailsFactories, List<ContainerConnectionSource<?>> sources) {
 		this.beanFactory = beanFactory;
 		this.connectionDetailsFactories = connectionDetailsFactories;
 		this.sources = sources;
@@ -66,7 +66,7 @@ class ContainerConnectionSourcesRegistrar {
 		this.sources.forEach((source) -> registerBeanDefinition(registry, source));
 	}
 
-	private void registerBeanDefinition(BeanDefinitionRegistry registry, ContainerConnectionSource<?, ?> source) {
+	private void registerBeanDefinition(BeanDefinitionRegistry registry, ContainerConnectionSource<?> source) {
 		getConnectionDetails(source)
 			.forEach((connectionDetailsType, connectionDetails) -> registerBeanDefinition(registry, source,
 					connectionDetailsType, connectionDetails));
@@ -80,7 +80,7 @@ class ContainerConnectionSourcesRegistrar {
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> void registerBeanDefinition(BeanDefinitionRegistry registry, ContainerConnectionSource<?, ?> source,
+	private <T> void registerBeanDefinition(BeanDefinitionRegistry registry, ContainerConnectionSource<?> source,
 			Class<?> connectionDetailsType, ConnectionDetails connectionDetails) {
 		String[] existingBeans = this.beanFactory.getBeanNamesForType(connectionDetailsType);
 		if (!ObjectUtils.isEmpty(existingBeans)) {
@@ -95,7 +95,7 @@ class ContainerConnectionSourcesRegistrar {
 		registry.registerBeanDefinition(beanName, new RootBeanDefinition(beanType, beanSupplier));
 	}
 
-	private String getBeanName(ContainerConnectionSource<?, ?> source, ConnectionDetails connectionDetails) {
+	private String getBeanName(ContainerConnectionSource<?> source, ConnectionDetails connectionDetails) {
 		List<String> parts = new ArrayList<>();
 		parts.add(ClassUtils.getShortNameAsProperty(connectionDetails.getClass()));
 		parts.add("for");
