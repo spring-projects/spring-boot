@@ -72,38 +72,43 @@ As Micrometer Tracer supports multiple tracer implementations, there are multipl
 
 All tracer implementations need the `org.springframework.boot:spring-boot-starter-actuator` dependency.
 
+[[actuator.micrometer-tracing.tracer-implementations.zipkin]]
+==== Zipkin
 
+* Point the property `management.zipkin.tracing.endpoint` to the Zipkin server
 
-[[actuator.micrometer-tracing.tracer-implementations.otel-zipkin]]
-==== OpenTelemetry With Zipkin
+Needed dependencies:
+
+[[actuator.micrometer-tracing.tracer-implementations.zipkin.otel]]
+===== Zipkin & OpenTelemetry
 
 * `io.micrometer:micrometer-tracing-bridge-otel` - which is needed to bridge the Micrometer Observation API to OpenTelemetry.
 * `io.opentelemetry:opentelemetry-exporter-zipkin` - which is needed to report traces to Zipkin.
 
-
-
-[[actuator.micrometer-tracing.tracer-implementations.otel-wavefront]]
-==== OpenTelemetry With Wavefront
-
-* `io.micrometer:micrometer-tracing-bridge-otel` - which is needed to bridge the Micrometer Observation API to OpenTelemetry.
-* `io.micrometer:micrometer-tracing-reporter-wavefront` - which is needed to report traces to Wavefront.
-
-
-
-[[actuator.micrometer-tracing.tracer-implementations.brave-zipkin]]
-==== OpenZipkin Brave With Zipkin
+[[actuator.micrometer-tracing.tracer-implementations.zipkin.brave]]
+===== Zipkin & Brave
 
 * `io.micrometer:micrometer-tracing-bridge-brave` - which is needed to bridge the Micrometer Observation API to Brave.
 * `io.zipkin.reporter2:zipkin-reporter-brave` - which is needed to report traces to Zipkin.
-* Point the property `management.zipkin.tracing.endpoint` to the Zipkin server
 
 NOTE: If your project doesn't use Spring MVC or Spring WebFlux, the `io.zipkin.reporter2:zipkin-sender-urlconnection` dependency is needed, too.
 
-[[actuator.micrometer-tracing.tracer-implementations.brave-wavefront]]
-==== OpenZipkin Brave With Wavefront
 
-* `io.micrometer:micrometer-tracing-bridge-brave` - which is needed to bridge the Micrometer Observation API to Brave.
+[[actuator.micrometer-tracing.tracer-implementations.wavefront]]
+==== Wavefront 
+
+* Point the property `management.wavefront.uri` to the Wavefront server
+
+Needed dependencies:
 * `io.micrometer:micrometer-tracing-reporter-wavefront` - which is needed to report traces to Wavefront.
+
+When using OpenTelemetry:
+* `io.micrometer:micrometer-tracing-bridge-otel` - which is needed to bridge the Micrometer Observation API to OpenTelemetry.
+
+When using Brave:
+* `io.micrometer:micrometer-tracing-bridge-brave` - which is needed to bridge the Micrometer Observation API to Brave.
+
+
 
 [[actuator.micrometer-tracing.micrometer-observation]]
 === Integration with Micrometer Observation
