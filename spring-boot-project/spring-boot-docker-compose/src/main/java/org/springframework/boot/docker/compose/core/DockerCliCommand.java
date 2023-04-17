@@ -87,8 +87,7 @@ abstract sealed class DockerCliCommand<R> {
 			return false;
 		}
 		DockerCliCommand<?> other = (DockerCliCommand<?>) obj;
-		boolean result = true;
-		result = result && this.type == other.type;
+		boolean result = this.type == other.type;
 		result = result && this.responseType == other.responseType;
 		result = result && this.listResponse == other.listResponse;
 		result = result && this.command.equals(other.command);

@@ -19,7 +19,6 @@ package org.springframework.boot.docker.compose.core;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,9 +39,9 @@ import org.springframework.util.StringUtils;
  */
 class DefaultConnectionPorts implements ConnectionPorts {
 
-	private Map<ContainerPort, Integer> mappings = new LinkedHashMap<>();
+	private final Map<ContainerPort, Integer> mappings;
 
-	private Map<Integer, Integer> portMappings = new LinkedHashMap<>();
+	private final Map<Integer, Integer> portMappings;
 
 	DefaultConnectionPorts(DockerCliInspectResponse inspectResponse) {
 		this.mappings = !isHostNetworkMode(inspectResponse)
@@ -128,7 +127,7 @@ class DefaultConnectionPorts implements ConnectionPorts {
 	 * @param number the port number
 	 * @param protocol the protocol (e.g. tcp)
 	 */
-	static record ContainerPort(int number, String protocol) {
+	record ContainerPort(int number, String protocol) {
 
 		@Override
 		public String toString() {

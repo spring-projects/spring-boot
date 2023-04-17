@@ -43,7 +43,7 @@ class DefaultRunningService implements RunningService, OriginProvider {
 
 	private final Map<String, String> labels;
 
-	private DockerEnv env;
+	private final DockerEnv env;
 
 	DefaultRunningService(DockerHost host, DockerComposeFile composeFile, DockerCliComposePsResponse composePsResponse,
 			DockerCliInspectResponse inspectResponse) {

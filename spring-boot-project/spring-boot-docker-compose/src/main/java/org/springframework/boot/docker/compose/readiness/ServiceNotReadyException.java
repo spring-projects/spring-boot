@@ -41,7 +41,7 @@ public class ServiceNotReadyException extends RuntimeException {
 	}
 
 	/**
-	 * Return the service that was not reeady.
+	 * Return the service that was not ready.
 	 * @return the non-ready service
 	 */
 	public RunningService getService() {

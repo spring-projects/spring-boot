@@ -34,7 +34,7 @@ final class DockerHost {
 
 	private static final String LOCALHOST = "127.0.0.1";
 
-	private String host;
+	private final String host;
 
 	private DockerHost(String host) {
 		this.host = host;

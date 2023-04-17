@@ -29,7 +29,7 @@ import org.springframework.util.Assert;
  */
 class ElasticsearchEnvironment {
 
-	private String password;
+	private final String password;
 
 	ElasticsearchEnvironment(Map<String, String> env) {
 		Assert.state(!env.containsKey("ELASTIC_PASSWORD_FILE"), "ELASTIC_PASSWORD_FILE is not supported");

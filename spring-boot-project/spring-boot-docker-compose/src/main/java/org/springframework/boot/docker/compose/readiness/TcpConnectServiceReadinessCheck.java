@@ -33,7 +33,7 @@ import org.springframework.boot.docker.compose.core.RunningService;
  */
 class TcpConnectServiceReadinessCheck implements ServiceReadinessCheck {
 
-	private final String DISABLE_LABEL = "org.springframework.boot.readiness-check.tcp.disable";
+	private static final String DISABLE_LABEL = "org.springframework.boot.readiness-check.tcp.disable";
 
 	private final ReadinessProperties.Tcp properties;
 
@@ -43,7 +43,7 @@ class TcpConnectServiceReadinessCheck implements ServiceReadinessCheck {
 
 	@Override
 	public void check(RunningService service) {
-		if (service.labels().containsKey(this.DISABLE_LABEL)) {
+		if (service.labels().containsKey(DISABLE_LABEL)) {
 			return;
 		}
 		for (int port : service.ports().getAll("tcp")) {

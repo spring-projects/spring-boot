@@ -41,9 +41,9 @@ public class ConnectionFactoryOptionsBuilder {
 
 	private static final String PARAMETERS_LABEL = "org.springframework.boot.r2dbc.parameters";
 
-	private String driver;
+	private final String driver;
 
-	private int sourcePort;
+	private final int sourcePort;
 
 	/**
 	 * Create a new {@link JdbcUrlBuilder} instance.

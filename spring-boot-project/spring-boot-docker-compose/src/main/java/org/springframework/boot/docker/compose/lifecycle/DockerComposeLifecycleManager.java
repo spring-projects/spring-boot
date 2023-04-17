@@ -49,7 +49,7 @@ class DockerComposeLifecycleManager {
 
 	private static final Log logger = LogFactory.getLog(DockerComposeLifecycleManager.class);
 
-	private static final Object IGNORE_LABEL = "org.springframework.boot.ignore";
+	private static final String IGNORE_LABEL = "org.springframework.boot.ignore";
 
 	private final File workingDirectory;
 
