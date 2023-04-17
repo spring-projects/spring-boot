@@ -249,13 +249,21 @@ class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	void dbcp2UsesJdbcConnectionDetailsIfAvailable() {
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PropertiesJdbcConnectionDetails.class));
+	}
+
+	@Test
+	void dbcp2UsesCustomConnectionDetailsWhenDefined() {
 		ApplicationContextRunner runner = new ApplicationContextRunner()
 			.withPropertyValues("spring.datasource.type=org.apache.commons.dbcp2.BasicDataSource",
 					"spring.datasource.dbcp2.url=jdbc:broken", "spring.datasource.dbcp2.username=alice",
 					"spring.datasource.dbcp2.password=secret")
-			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class));
-		runner.withUserConfiguration(JdbcConnectionDetailsConfiguration.class).run((context) -> {
+			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+			.withBean(JdbcConnectionDetails.class, TestJdbcConnectionDetails::new);
+		runner.run((context) -> {
+			assertThat(context).hasSingleBean(JdbcConnectionDetails.class)
+				.doesNotHaveBean(PropertiesJdbcConnectionDetails.class);
 			DataSource dataSource = context.getBean(DataSource.class);
 			assertThat(dataSource).asInstanceOf(InstanceOfAssertFactories.type(BasicDataSource.class))
 				.satisfies((dbcp2) -> {
@@ -268,11 +276,14 @@ class DataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	void genericUsesJdbcConnectionDetailsIfAvailable() {
+	void genericUsesCustomJdbcConnectionDetailsWhenAvailable() {
 		ApplicationContextRunner runner = new ApplicationContextRunner()
 			.withPropertyValues("spring.datasource.type=" + TestDataSource.class.getName())
-			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class));
-		runner.withUserConfiguration(JdbcConnectionDetailsConfiguration.class).run((context) -> {
+			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+			.withBean(JdbcConnectionDetails.class, TestJdbcConnectionDetails::new);
+		runner.run((context) -> {
+			assertThat(context).hasSingleBean(JdbcConnectionDetails.class)
+				.doesNotHaveBean(PropertiesJdbcConnectionDetails.class);
 			DataSource dataSource = context.getBean(DataSource.class);
 			assertThat(dataSource).isInstanceOf(TestDataSource.class);
 			TestDataSource source = (TestDataSource) dataSource;

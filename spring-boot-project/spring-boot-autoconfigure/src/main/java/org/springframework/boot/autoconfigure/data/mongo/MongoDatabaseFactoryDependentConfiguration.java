@@ -20,14 +20,12 @@ import com.mongodb.ClientSessionOptions;
 import com.mongodb.client.ClientSession;
 import com.mongodb.client.MongoDatabase;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails.GridFs;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties.Gridfs;
-import org.springframework.boot.autoconfigure.mongo.PropertiesMongoConnectionDetails;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessException;
@@ -76,9 +74,7 @@ class MongoDatabaseFactoryDependentConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(GridFsOperations.class)
 	GridFsTemplate gridFsTemplate(MongoProperties properties, MongoDatabaseFactory factory, MongoTemplate mongoTemplate,
-			ObjectProvider<MongoConnectionDetails> connectionDetailsProvider) {
-		MongoConnectionDetails connectionDetails = connectionDetailsProvider
-			.getIfAvailable(() -> new PropertiesMongoConnectionDetails(properties));
+			MongoConnectionDetails connectionDetails) {
 		return new GridFsTemplate(new GridFsMongoDatabaseFactory(factory, connectionDetails),
 				mongoTemplate.getConverter(),
 				(connectionDetails.getGridFs() != null) ? connectionDetails.getGridFs().getBucket() : null);

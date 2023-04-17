@@ -165,6 +165,11 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PropertiesKafkaConnectionDetails.class));
+	}
+
+	@Test
 	void connectionDetailsAreAppliedToConsumer() {
 		this.contextRunner
 			.withPropertyValues("spring.kafka.bootstrap-servers=foo:1234",
@@ -172,6 +177,8 @@ class KafkaAutoConfigurationTests {
 					"spring.kafka.consumer.security.protocol=SSL")
 			.withBean(KafkaConnectionDetails.class, this::kafkaConnectionDetails)
 			.run((context) -> {
+				assertThat(context).hasSingleBean(KafkaConnectionDetails.class)
+					.doesNotHaveBean(PropertiesKafkaConnectionDetails.class);
 				DefaultKafkaConsumerFactory<?, ?> consumerFactory = context.getBean(DefaultKafkaConsumerFactory.class);
 				Map<String, Object> configs = consumerFactory.getConfigurationProperties();
 				assertThat(configs).containsEntry(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
@@ -240,6 +247,8 @@ class KafkaAutoConfigurationTests {
 					"spring.kafka.producer.security.protocol=SSL")
 			.withBean(KafkaConnectionDetails.class, this::kafkaConnectionDetails)
 			.run((context) -> {
+				assertThat(context).hasSingleBean(KafkaConnectionDetails.class)
+					.doesNotHaveBean(PropertiesKafkaConnectionDetails.class);
 				DefaultKafkaProducerFactory<?, ?> producerFactory = context.getBean(DefaultKafkaProducerFactory.class);
 				Map<String, Object> configs = producerFactory.getConfigurationProperties();
 				assertThat(configs).containsEntry(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
@@ -298,6 +307,8 @@ class KafkaAutoConfigurationTests {
 					"spring.kafka.admin.security.protocol=SSL")
 			.withBean(KafkaConnectionDetails.class, this::kafkaConnectionDetails)
 			.run((context) -> {
+				assertThat(context).hasSingleBean(KafkaConnectionDetails.class)
+					.doesNotHaveBean(PropertiesKafkaConnectionDetails.class);
 				KafkaAdmin admin = context.getBean(KafkaAdmin.class);
 				Map<String, Object> configs = admin.getConfigurationProperties();
 				assertThat(configs).containsEntry(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG,
@@ -363,6 +374,8 @@ class KafkaAutoConfigurationTests {
 					"spring.kafka.security.protocol=SSL", "spring.kafka.streams.security.protocol=SSL")
 			.withBean(KafkaConnectionDetails.class, this::kafkaConnectionDetails)
 			.run((context) -> {
+				assertThat(context).hasSingleBean(KafkaConnectionDetails.class)
+					.doesNotHaveBean(PropertiesKafkaConnectionDetails.class);
 				Properties configs = context
 					.getBean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME,
 							KafkaStreamsConfiguration.class)

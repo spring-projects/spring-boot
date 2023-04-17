@@ -44,7 +44,6 @@ import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
@@ -52,6 +51,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 /**
  * Tests for {@link ManagementWebSecurityAutoConfiguration}.
@@ -181,8 +181,8 @@ class ManagementWebSecurityAutoConfigurationTests {
 				requests.requestMatchers(new AntPathRequestMatcher("/foo")).permitAll();
 				requests.anyRequest().authenticated();
 			});
-			http.formLogin(Customizer.withDefaults());
-			http.httpBasic();
+			http.formLogin(withDefaults());
+			http.httpBasic(withDefaults());
 			return http.build();
 		}
 
@@ -207,8 +207,8 @@ class ManagementWebSecurityAutoConfigurationTests {
 		@Order(SecurityProperties.BASIC_AUTH_ORDER - 1)
 		SecurityFilterChain testRemoteDevToolsSecurityFilterChain(HttpSecurity http) throws Exception {
 			http.securityMatcher(new AntPathRequestMatcher("/**"));
-			http.authorizeHttpRequests().anyRequest().anonymous();
-			http.csrf().disable();
+			http.authorizeHttpRequests((requests) -> requests.anyRequest().anonymous());
+			http.csrf((csrf) -> csrf.disable());
 			return http.build();
 		}
 

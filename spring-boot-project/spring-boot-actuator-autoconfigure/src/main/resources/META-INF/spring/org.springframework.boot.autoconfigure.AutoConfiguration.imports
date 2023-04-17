@@ -68,6 +68,7 @@ org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetri
 org.springframework.boot.actuate.autoconfigure.metrics.export.stackdriver.StackdriverMetricsExportAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.export.statsd.StatsdMetricsExportAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront.WavefrontMetricsExportAutoConfiguration
+org.springframework.boot.actuate.autoconfigure.observation.batch.BatchObservationAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.observation.graphql.GraphQlObservationAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.integration.IntegrationMetricsAutoConfiguration
 org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration

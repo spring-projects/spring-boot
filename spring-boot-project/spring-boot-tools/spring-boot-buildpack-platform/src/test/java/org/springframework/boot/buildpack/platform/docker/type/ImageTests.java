@@ -67,6 +67,12 @@ class ImageTests extends AbstractJsonTests {
 		assertThat(image.getOs()).isEqualTo("linux");
 	}
 
+	@Test
+	void getCreatedReturnsDate() throws Exception {
+		Image image = getImage();
+		assertThat(image.getCreated()).isEqualTo("2019-10-30T19:34:56.296666503Z");
+	}
+
 	private Image getImage() throws IOException {
 		return Image.of(getContent("image.json"));
 	}

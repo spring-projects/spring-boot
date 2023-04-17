@@ -55,10 +55,9 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 	JedisConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
-			ObjectProvider<RedisClusterConfiguration> clusterConfiguration,
-			ObjectProvider<RedisConnectionDetails> connectionDetailsProvider) {
-		super(properties, standaloneConfigurationProvider, sentinelConfiguration, clusterConfiguration,
-				connectionDetailsProvider);
+			ObjectProvider<RedisClusterConfiguration> clusterConfiguration, RedisConnectionDetails connectionDetails) {
+		super(properties, connectionDetails, standaloneConfigurationProvider, sentinelConfiguration,
+				clusterConfiguration);
 	}
 
 	@Bean

@@ -74,7 +74,7 @@ class ShutdownSampleActuatorApplicationTests {
 
 		@Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
-			http.csrf().disable();
+			http.csrf((csrf) -> csrf.disable());
 			return http.build();
 		}
 

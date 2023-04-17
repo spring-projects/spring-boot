@@ -69,34 +69,37 @@ public class CouchbaseAutoConfiguration {
 
 	private final CouchbaseProperties properties;
 
-	private final CouchbaseConnectionDetails connectionDetails;
-
 	CouchbaseAutoConfiguration(CouchbaseProperties properties,
 			ObjectProvider<CouchbaseConnectionDetails> connectionDetails) {
 		this.properties = properties;
-		this.connectionDetails = connectionDetails
-			.getIfAvailable(() -> new PropertiesCouchbaseConnectionDetails(properties));
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(CouchbaseConnectionDetails.class)
+	PropertiesCouchbaseConnectionDetails couchbaseConnectionDetails() {
+		return new PropertiesCouchbaseConnectionDetails(this.properties);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ClusterEnvironment couchbaseClusterEnvironment(
+	public ClusterEnvironment couchbaseClusterEnvironment(CouchbaseConnectionDetails connectionDetails,
 			ObjectProvider<ClusterEnvironmentBuilderCustomizer> customizers) {
-		Builder builder = initializeEnvironmentBuilder();
+		Builder builder = initializeEnvironmentBuilder(connectionDetails);
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
 
 	@Bean(destroyMethod = "disconnect")
 	@ConditionalOnMissingBean
-	public Cluster couchbaseCluster(ClusterEnvironment couchbaseClusterEnvironment) {
+	public Cluster couchbaseCluster(ClusterEnvironment couchbaseClusterEnvironment,
+			CouchbaseConnectionDetails connectionDetails) {
 		ClusterOptions options = ClusterOptions
-			.clusterOptions(this.connectionDetails.getUsername(), this.connectionDetails.getPassword())
+			.clusterOptions(connectionDetails.getUsername(), connectionDetails.getPassword())
 			.environment(couchbaseClusterEnvironment);
-		return Cluster.connect(this.connectionDetails.getConnectionString(), options);
+		return Cluster.connect(connectionDetails.getConnectionString(), options);
 	}
 
-	private ClusterEnvironment.Builder initializeEnvironmentBuilder() {
+	private ClusterEnvironment.Builder initializeEnvironmentBuilder(CouchbaseConnectionDetails connectionDetails) {
 		ClusterEnvironment.Builder builder = ClusterEnvironment.builder();
 		Timeouts timeouts = this.properties.getEnv().getTimeouts();
 		builder.timeoutConfig((config) -> config.kvTimeout(timeouts.getKeyValue())
@@ -112,7 +115,7 @@ public class CouchbaseAutoConfiguration {
 		builder.ioConfig((config) -> config.maxHttpConnections(io.getMaxEndpoints())
 			.numKvConnections(io.getMinEndpoints())
 			.idleHttpConnectionTimeout(io.getIdleHttpConnectionTimeout()));
-		if ((this.connectionDetails instanceof PropertiesCouchbaseConnectionDetails)
+		if ((connectionDetails instanceof PropertiesCouchbaseConnectionDetails)
 				&& this.properties.getEnv().getSsl().getEnabled()) {
 			builder.securityConfig((config) -> config.enableTls(true)
 				.trustManagerFactory(getTrustManagerFactory(this.properties.getEnv().getSsl())));

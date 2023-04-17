@@ -1360,6 +1360,14 @@ class SpringApplicationTests {
 		}
 	}
 
+	@Test
+	void fromRunsWithAdditionalSources() {
+		assertThat(ExampleAdditionalConfig.local.get()).isNull();
+		SpringApplication.from(ExampleFromMainMethod::main).with(ExampleAdditionalConfig.class).run();
+		assertThat(ExampleAdditionalConfig.local.get()).isNotNull();
+		ExampleAdditionalConfig.local.set(null);
+	}
+
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
 			S state) {
 		return (argument) -> (argument instanceof AvailabilityChangeEvent<?>)
@@ -1918,6 +1926,27 @@ class SpringApplicationTests {
 		@Override
 		public void initialize(ConfigurableApplicationContext applicationContext) {
 			applicationContext.getBeanFactory().registerSingleton("test", "test");
+		}
+
+	}
+
+	static class ExampleFromMainMethod {
+
+		static void main(String[] args) {
+			SpringApplication application = new SpringApplication(ExampleConfig.class);
+			application.setWebApplicationType(WebApplicationType.NONE);
+			application.run(args);
+		}
+
+	}
+
+	@Configuration
+	static class ExampleAdditionalConfig {
+
+		static ThreadLocal<ExampleAdditionalConfig> local = new ThreadLocal<>();
+
+		ExampleAdditionalConfig() {
+			local.set(this);
 		}
 
 	}

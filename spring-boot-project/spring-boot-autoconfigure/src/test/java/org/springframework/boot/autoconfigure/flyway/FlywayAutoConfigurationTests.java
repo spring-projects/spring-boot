@@ -40,6 +40,7 @@ import org.jooq.impl.DefaultDSLContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
+import org.postgresql.Driver;
 
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
@@ -149,9 +150,30 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void createDataSourceWithJdbcConnectionDetails() {
+	void flywayPropertiesAreUsedOverJdbcConnectionDetails() {
 		this.contextRunner
 			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JdbcConnectionDetailsConfiguration.class,
+					MockFlywayMigrationStrategy.class)
+			.withPropertyValues("spring.flyway.url=jdbc:hsqldb:mem:flywaytest", "spring.flyway.user=some-user",
+					"spring.flyway.password=some-password",
+					"spring.flyway.driver-class-name=org.hsqldb.jdbc.JDBCDriver")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Flyway.class);
+				Flyway flyway = context.getBean(Flyway.class);
+				DataSource dataSource = flyway.getConfiguration().getDataSource();
+				assertThat(dataSource).isInstanceOf(SimpleDriverDataSource.class);
+				SimpleDriverDataSource simpleDriverDataSource = (SimpleDriverDataSource) dataSource;
+				assertThat(simpleDriverDataSource.getUrl()).isEqualTo("jdbc:hsqldb:mem:flywaytest");
+				assertThat(simpleDriverDataSource.getUsername()).isEqualTo("some-user");
+				assertThat(simpleDriverDataSource.getPassword()).isEqualTo("some-password");
+				assertThat(simpleDriverDataSource.getDriver()).isInstanceOf(org.hsqldb.jdbc.JDBCDriver.class);
+			});
+	}
+
+	@Test
+	void flywayConnectionDetailsAreUsedOverFlywayProperties() {
+		this.contextRunner
+			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, FlywayConnectionDetailsConfiguration.class,
 					MockFlywayMigrationStrategy.class)
 			.withPropertyValues("spring.flyway.url=jdbc:hsqldb:mem:flywaytest", "spring.flyway.user=some-user",
 					"spring.flyway.password=some-password",
@@ -166,7 +188,7 @@ class FlywayAutoConfigurationTests {
 					.isEqualTo("jdbc:postgresql://database.example.com:12345/database-1");
 				assertThat(simpleDriverDataSource.getUsername()).isEqualTo("user-1");
 				assertThat(simpleDriverDataSource.getPassword()).isEqualTo("secret-1");
-				assertThat(simpleDriverDataSource.getDriver()).isInstanceOf(org.postgresql.Driver.class);
+				assertThat(simpleDriverDataSource.getDriver()).isInstanceOf(Driver.class);
 			});
 	}
 
@@ -240,6 +262,19 @@ class FlywayAutoConfigurationTests {
 					JdbcConnectionDetailsConfiguration.class)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(JdbcConnectionDetails.class);
+				assertThat(context).hasSingleBean(Flyway.class);
+				assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource())
+					.isEqualTo(context.getBean("flywayDataSource"));
+			});
+	}
+
+	@Test
+	void flywayDataSourceIsUsedWhenFlywayConnectionDetailsIsAvailable() {
+		this.contextRunner
+			.withUserConfiguration(FlywayDataSourceConfiguration.class, EmbeddedDataSourceConfiguration.class,
+					FlywayConnectionDetailsConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(FlywayConnectionDetails.class);
 				assertThat(context).hasSingleBean(Flyway.class);
 				assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource())
 					.isEqualTo(context.getBean("flywayDataSource"));
@@ -1088,6 +1123,33 @@ class FlywayAutoConfigurationTests {
 		@Bean
 		JdbcConnectionDetails jdbcConnectionDetails() {
 			return new JdbcConnectionDetails() {
+
+				@Override
+				public String getJdbcUrl() {
+					return "jdbc:postgresql://database.example.com:12345/database-1";
+				}
+
+				@Override
+				public String getUsername() {
+					return "user-1";
+				}
+
+				@Override
+				public String getPassword() {
+					return "secret-1";
+				}
+
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class FlywayConnectionDetailsConfiguration {
+
+		@Bean
+		FlywayConnectionDetails flywayConnectionDetails() {
+			return new FlywayConnectionDetails() {
 
 				@Override
 				public String getJdbcUrl() {

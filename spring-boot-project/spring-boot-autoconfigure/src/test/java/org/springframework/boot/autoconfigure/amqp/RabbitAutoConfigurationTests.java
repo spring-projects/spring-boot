@@ -173,13 +173,20 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PropertiesRabbitConnectionDetails.class));
+	}
+
+	@Test
 	@SuppressWarnings("unchecked")
-	void testConnectionFactoryWithOverridesWhenUsingConnectionDetails() {
+	void testConnectionFactoryWithOverridesWhenUsingCustomConnectionDetails() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class, ConnectionDetailsConfiguration.class)
 			.withPropertyValues("spring.rabbitmq.host:remote-server", "spring.rabbitmq.port:9000",
 					"spring.rabbitmq.username:alice", "spring.rabbitmq.password:secret",
 					"spring.rabbitmq.virtual_host:/vhost")
 			.run((context) -> {
+				assertThat(context).hasSingleBean(RabbitConnectionDetails.class)
+					.doesNotHaveBean(PropertiesRabbitConnectionDetails.class);
 				CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
 				assertThat(connectionFactory.getHost()).isEqualTo("rabbit.example.com");
 				assertThat(connectionFactory.getPort()).isEqualTo(12345);

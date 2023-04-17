@@ -45,4 +45,6 @@ include::application-properties/actuator.adoc[]
 
 include::application-properties/devtools.adoc[]
 
+include::application-properties/docker-compose.adoc[]
+
 include::application-properties/testing.adoc[]

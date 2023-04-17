@@ -21,6 +21,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -256,6 +259,44 @@ class BuildRequestTests {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withLaunchCache(null))
 			.withMessage("LaunchCache must not be null");
+	}
+
+	@Test
+	void withCreatedDateSetsCreatedDate() throws Exception {
+		Instant createDate = Instant.now();
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest withCreatedDate = request.withCreatedDate(createDate.toString());
+		assertThat(withCreatedDate.getCreatedDate()).isEqualTo(createDate);
+	}
+
+	@Test
+	void withCreatedDateNowSetsCreatedDate() throws Exception {
+		OffsetDateTime now = OffsetDateTime.now();
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest withCreatedDate = request.withCreatedDate("now");
+		OffsetDateTime createdDate = OffsetDateTime.ofInstant(withCreatedDate.getCreatedDate(), ZoneId.of("UTC"));
+		assertThat(createdDate.getYear()).isEqualTo(now.getYear());
+		assertThat(createdDate.getMonth()).isEqualTo(now.getMonth());
+		assertThat(createdDate.getDayOfMonth()).isEqualTo(now.getDayOfMonth());
+		withCreatedDate = request.withCreatedDate("NOW");
+		createdDate = OffsetDateTime.ofInstant(withCreatedDate.getCreatedDate(), ZoneId.of("UTC"));
+		assertThat(createdDate.getYear()).isEqualTo(now.getYear());
+		assertThat(createdDate.getMonth()).isEqualTo(now.getMonth());
+		assertThat(createdDate.getDayOfMonth()).isEqualTo(now.getDayOfMonth());
+	}
+
+	@Test
+	void withCreatedDateAndInvalidDateThrowsException() throws Exception {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		assertThatIllegalArgumentException().isThrownBy(() -> request.withCreatedDate("not a date"))
+			.withMessageContaining("'not a date'");
+	}
+
+	@Test
+	void withApplicationDirectorySetsApplicationDirectory() throws Exception {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest withAppDir = request.withApplicationDirectory("/application");
+		assertThat(withAppDir.getApplicationDirectory()).isEqualTo("/application");
 	}
 
 	private void hasExpectedJarContent(TarArchive archive) {

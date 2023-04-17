@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.OffsetDateTime;
 import java.util.Random;
 import java.util.stream.IntStream;
 
@@ -29,6 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.VolumeApi;
+import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
@@ -240,14 +242,19 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 			.systemProperty("spring-boot.build-image.imageName", "example.com/test/cmd-property-name:v1")
 			.systemProperty("spring-boot.build-image.builder",
-					"projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.1")
+					"projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.2")
 			.systemProperty("spring-boot.build-image.runImage", "projects.registry.vmware.com/springboot/run:tiny-cnb")
+			.systemProperty("spring-boot.build-image.createdDate", "2020-07-01T12:34:56Z")
+			.systemProperty("spring-boot.build-image.applicationDirectory", "/application")
 			.execute((project) -> {
 				assertThat(buildLog(project)).contains("Building image")
 					.contains("example.com/test/cmd-property-name:v1")
 					.contains("---> Test Info buildpack building")
 					.contains("---> Test Info buildpack done")
 					.contains("Successfully built image");
+				Image image = new DockerApi().image()
+					.inspect(ImageReference.of("example.com/test/cmd-property-name:v1"));
+				assertThat(image.getCreated()).isEqualTo("2020-07-01T12:34:56Z");
 				removeImage("example.com/test/cmd-property-name", "v1");
 			});
 	}
@@ -384,6 +391,62 @@ class BuildImageTests extends AbstractArchiveIntegrationTests {
 					.contains("Successfully built image");
 				removeImage("build-image-caches", "0.0.1.BUILD-SNAPSHOT");
 				deleteVolumes("cache-" + testBuildId + ".build", "cache-" + testBuildId + ".launch");
+			});
+	}
+
+	@TestTemplate
+	void whenBuildImageIsInvokedWithCreatedDate(MavenBuild mavenBuild) {
+		String testBuildId = randomString();
+		mavenBuild.project("build-image-created-date")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.systemProperty("test-build-id", testBuildId)
+			.execute((project) -> {
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-created-date:0.0.1.BUILD-SNAPSHOT")
+					.contains("Successfully built image");
+				Image image = new DockerApi().image()
+					.inspect(ImageReference.of("docker.io/library/build-image-created-date:0.0.1.BUILD-SNAPSHOT"));
+				assertThat(image.getCreated()).isEqualTo("2020-07-01T12:34:56Z");
+				removeImage("build-image-created-date", "0.0.1.BUILD-SNAPSHOT");
+			});
+	}
+
+	@TestTemplate
+	void whenBuildImageIsInvokedWithCurrentCreatedDate(MavenBuild mavenBuild) {
+		String testBuildId = randomString();
+		mavenBuild.project("build-image-current-created-date")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.systemProperty("test-build-id", testBuildId)
+			.execute((project) -> {
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-current-created-date:0.0.1.BUILD-SNAPSHOT")
+					.contains("Successfully built image");
+				Image image = new DockerApi().image()
+					.inspect(ImageReference
+						.of("docker.io/library/build-image-current-created-date:0.0.1.BUILD-SNAPSHOT"));
+				OffsetDateTime createdDateTime = OffsetDateTime.parse(image.getCreated());
+				OffsetDateTime current = OffsetDateTime.now().withOffsetSameInstant(createdDateTime.getOffset());
+				assertThat(createdDateTime.getYear()).isEqualTo(current.getYear());
+				assertThat(createdDateTime.getMonth()).isEqualTo(current.getMonth());
+				assertThat(createdDateTime.getDayOfMonth()).isEqualTo(current.getDayOfMonth());
+				removeImage("build-image-current-created-date", "0.0.1.BUILD-SNAPSHOT");
+			});
+	}
+
+	@TestTemplate
+	void whenBuildImageIsInvokedWithApplicationDirectory(MavenBuild mavenBuild) {
+		String testBuildId = randomString();
+		mavenBuild.project("build-image-app-dir")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+			.systemProperty("test-build-id", testBuildId)
+			.execute((project) -> {
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("docker.io/library/build-image-app-dir:0.0.1.BUILD-SNAPSHOT")
+					.contains("Successfully built image");
+				removeImage("build-image-app-dir", "0.0.1.BUILD-SNAPSHOT");
 			});
 	}
 

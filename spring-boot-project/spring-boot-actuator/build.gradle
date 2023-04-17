@@ -87,6 +87,7 @@ dependencies {
 	testImplementation("io.micrometer:micrometer-observation-test")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("io.r2dbc:r2dbc-h2")
+	testImplementation("net.minidev:json-smart")
 	testImplementation("org.apache.logging.log4j:log4j-to-slf4j")
 	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.glassfish.jersey.media:jersey-media-json-jackson")

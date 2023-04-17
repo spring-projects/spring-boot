@@ -83,7 +83,7 @@ class KotlinPluginActionIntegrationTests {
 			assertThat(configured).containsExactly("help");
 		}
 		else {
-			assertThat(configured).containsExactlyInAnyOrder("help", "clean", "compileKotlin", "compileTestKotlin");
+			assertThat(configured).containsExactlyInAnyOrder("help", "clean");
 		}
 	}
 

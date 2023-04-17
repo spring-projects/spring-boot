@@ -18,12 +18,10 @@ package org.springframework.boot.autoconfigure.data.mongo;
 
 import com.mongodb.client.MongoClient;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
-import org.springframework.boot.autoconfigure.mongo.PropertiesMongoConnectionDetails;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
@@ -45,11 +43,8 @@ class MongoDatabaseFactoryConfiguration {
 
 	@Bean
 	MongoDatabaseFactorySupport<?> mongoDatabaseFactory(MongoClient mongoClient, MongoProperties properties,
-			ObjectProvider<MongoConnectionDetails> connectionDetails) {
-		return new SimpleMongoClientDatabaseFactory(mongoClient,
-				connectionDetails.getIfAvailable(() -> new PropertiesMongoConnectionDetails(properties))
-					.getConnectionString()
-					.getDatabase());
+			MongoConnectionDetails connectionDetails) {
+		return new SimpleMongoClientDatabaseFactory(mongoClient, connectionDetails.getConnectionString().getDatabase());
 	}
 
 }

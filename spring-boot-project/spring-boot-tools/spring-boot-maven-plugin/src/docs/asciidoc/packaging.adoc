@@ -18,8 +18,8 @@ The original (that is non-executable) artifact is renamed to `.original` by defa
 
 NOTE: The `outputFileNameMapping` feature of the `maven-war-plugin` is currently not supported.
 
-Devtools is automatically excluded by default (you can control that using the `excludeDevtools` property).
-In order to make that work with `war` packaging, the `spring-boot-devtools` dependency must be set as `optional` or with the `provided` scope.
+The `spring-boot-devtools` and `spring-boot-docker-compose` modules are automatically excluded by default (you can control this using the `excludeDevtools` and `excludeDockerCompose` properties).
+In order to make that work with `war` packaging, the `spring-boot-devtools` and `spring-boot-docker-compose` dependencies must be set as `optional` or with the `provided` scope.
 
 The plugin rewrites your manifest, and in particular it manages the `Main-Class` and `Start-Class` entries.
 If the defaults don't work you have to configure the values in the Spring Boot plugin, not in the jar plugin.

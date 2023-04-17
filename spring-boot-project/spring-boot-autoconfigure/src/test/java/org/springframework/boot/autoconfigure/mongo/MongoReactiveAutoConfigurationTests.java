@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.mongo;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.ReadPreference;
 import com.mongodb.connection.AsynchronousSocketChannelStreamFactoryFactory;
@@ -109,6 +110,25 @@ class MongoReactiveAutoConfigurationTests {
 				assertThat(settings.getApplicationName()).isEqualTo("overridden-name");
 				assertThat(settings.getStreamFactoryFactory()).isEqualTo(SimpleCustomizerConfig.streamFactoryFactory);
 			});
+	}
+
+	@Test
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PropertiesMongoConnectionDetails.class));
+	}
+
+	@Test
+	void shouldUseCustomConnectionDetailsWhenDefined() {
+		this.contextRunner.withBean(MongoConnectionDetails.class, () -> new MongoConnectionDetails() {
+
+			@Override
+			public ConnectionString getConnectionString() {
+				return new ConnectionString("mongodb://localhost");
+			}
+
+		})
+			.run((context) -> assertThat(context).hasSingleBean(MongoConnectionDetails.class)
+				.doesNotHaveBean(PropertiesMongoConnectionDetails.class));
 	}
 
 	private MongoClientSettings getSettings(ApplicationContext context) {

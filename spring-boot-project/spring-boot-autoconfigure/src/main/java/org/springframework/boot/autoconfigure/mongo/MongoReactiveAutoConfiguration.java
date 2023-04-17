@@ -51,6 +51,12 @@ import org.springframework.core.annotation.Order;
 public class MongoReactiveAutoConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean(MongoConnectionDetails.class)
+	PropertiesMongoConnectionDetails mongoConnectionDetails(MongoProperties properties) {
+		return new PropertiesMongoConnectionDetails(properties);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean
 	public MongoClient reactiveStreamsMongoClient(
 			ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers, MongoClientSettings settings) {
@@ -70,9 +76,7 @@ public class MongoReactiveAutoConfiguration {
 
 		@Bean
 		StandardMongoClientSettingsBuilderCustomizer standardMongoSettingsCustomizer(MongoProperties properties,
-				ObjectProvider<MongoConnectionDetails> connectionDetailsProvider) {
-			MongoConnectionDetails connectionDetails = connectionDetailsProvider
-				.getIfAvailable(() -> new PropertiesMongoConnectionDetails(properties));
+				MongoConnectionDetails connectionDetails) {
 			return new StandardMongoClientSettingsBuilderCustomizer(connectionDetails.getConnectionString(),
 					properties.getUuidRepresentation());
 		}

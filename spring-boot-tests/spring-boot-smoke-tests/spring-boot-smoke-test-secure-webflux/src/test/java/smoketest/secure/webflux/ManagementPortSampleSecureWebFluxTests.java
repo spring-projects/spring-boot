@@ -35,6 +35,7 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 /**
  * Integration tests for separate management and main service ports.
@@ -119,7 +120,7 @@ class ManagementPortSampleSecureWebFluxTests {
 				exchanges.pathMatchers("/login").permitAll();
 				exchanges.anyExchange().authenticated();
 			});
-			http.httpBasic();
+			http.httpBasic(withDefaults());
 			return http.build();
 		}
 

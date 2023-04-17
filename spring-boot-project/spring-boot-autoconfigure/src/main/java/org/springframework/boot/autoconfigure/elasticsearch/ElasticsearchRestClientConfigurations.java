@@ -62,24 +62,27 @@ class ElasticsearchRestClientConfigurations {
 
 		private final ElasticsearchProperties properties;
 
-		private final ElasticsearchConnectionDetails connectionDetails;
-
 		RestClientBuilderConfiguration(ElasticsearchProperties properties,
 				ObjectProvider<ElasticsearchConnectionDetails> connectionDetails) {
 			this.properties = properties;
-			this.connectionDetails = connectionDetails
-				.getIfAvailable(() -> new PropertiesElasticsearchConnectionDetails(properties));
 		}
 
 		@Bean
-		RestClientBuilderCustomizer defaultRestClientBuilderCustomizer() {
-			return new DefaultRestClientBuilderCustomizer(this.properties, this.connectionDetails);
+		@ConditionalOnMissingBean(ElasticsearchConnectionDetails.class)
+		PropertiesElasticsearchConnectionDetails elasticsearchConnectionDetails() {
+			return new PropertiesElasticsearchConnectionDetails(this.properties);
 		}
 
 		@Bean
-		RestClientBuilder elasticsearchRestClientBuilder(
+		RestClientBuilderCustomizer defaultRestClientBuilderCustomizer(
+				ElasticsearchConnectionDetails connectionDetails) {
+			return new DefaultRestClientBuilderCustomizer(this.properties, connectionDetails);
+		}
+
+		@Bean
+		RestClientBuilder elasticsearchRestClientBuilder(ElasticsearchConnectionDetails connectionDetails,
 				ObjectProvider<RestClientBuilderCustomizer> builderCustomizers) {
-			RestClientBuilder builder = RestClient.builder(this.connectionDetails.getNodes()
+			RestClientBuilder builder = RestClient.builder(connectionDetails.getNodes()
 				.stream()
 				.map((node) -> new HttpHost(node.hostname(), node.port(), node.protocol().getScheme()))
 				.toArray(HttpHost[]::new));
@@ -91,7 +94,7 @@ class ElasticsearchRestClientConfigurations {
 				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(requestConfigBuilder));
 				return requestConfigBuilder;
 			});
-			String pathPrefix = this.connectionDetails.getPathPrefix();
+			String pathPrefix = connectionDetails.getPathPrefix();
 			if (pathPrefix != null) {
 				builder.setPathPrefix(pathPrefix);
 			}
@@ -212,7 +215,7 @@ class ElasticsearchRestClientConfigurations {
 	/**
 	 * Adapts {@link ElasticsearchProperties} to {@link ElasticsearchConnectionDetails}.
 	 */
-	private static class PropertiesElasticsearchConnectionDetails implements ElasticsearchConnectionDetails {
+	static class PropertiesElasticsearchConnectionDetails implements ElasticsearchConnectionDetails {
 
 		private final ElasticsearchProperties properties;
 

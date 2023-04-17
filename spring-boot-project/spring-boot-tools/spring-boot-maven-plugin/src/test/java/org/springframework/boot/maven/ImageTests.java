@@ -185,6 +185,22 @@ class ImageTests {
 		assertThat(request.getLaunchCache()).isEqualTo(Cache.volume("launch-cache-vol"));
 	}
 
+	@Test
+	void getBuildRequestWhenHasCreatedDateUsesCreatedDate() {
+		Image image = new Image();
+		image.createdDate = "2020-07-01T12:34:56Z";
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getCreatedDate()).isEqualTo("2020-07-01T12:34:56Z");
+	}
+
+	@Test
+	void getBuildRequestWhenHasApplicationDirectoryUsesApplicationDirectory() {
+		Image image = new Image();
+		image.applicationDirectory = "/application";
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getApplicationDirectory()).isEqualTo("/application");
+	}
+
 	private Artifact createArtifact() {
 		return new DefaultArtifact("com.example", "my-app", VersionRange.createFromVersion("0.0.1-SNAPSHOT"), "compile",
 				"jar", null, new DefaultArtifactHandler());

@@ -193,6 +193,18 @@ The values provided to the `tags` option should be full image references in the 
 | A cache containing layers created by buildpacks and used by the image launching process.
 | A named volume in the Docker daemon, with a name derived from the image name.
 
+| `createdDate`
+| `--createdDate`
+| A date that will be used to set the `Created` field in the generated image's metadata.
+The value must be a string in the ISO 8601 instant format, or `now` to use the current date and time.
+| A fixed date that enables https://buildpacks.io/docs/features/reproducibility/[build reproducibility].
+
+| `applicationDirectory`
+| `--applicationDirectory`
+| The path to a directory that application contents will be uploaded to in the builder image.
+Application contents will also be in this location in the generated image.
+| `/workspace`
+
 |===
 
 NOTE: The plugin detects the target Java compatibility of the project using the JavaPlugin's `targetCompatibility` property.

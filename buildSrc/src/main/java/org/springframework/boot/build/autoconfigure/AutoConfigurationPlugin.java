@@ -28,7 +28,6 @@ import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
 
 import org.springframework.boot.build.DeployedPlugin;
-import org.springframework.boot.build.context.properties.ConfigurationPropertiesPlugin;
 
 /**
  * {@link Plugin} for projects that define auto-configuration. When applied, the plugin
@@ -36,7 +35,6 @@ import org.springframework.boot.build.context.properties.ConfigurationProperties
  * {@link JavaPlugin} by:
  *
  * <ul>
- * <li>Applying the {@link ConfigurationPropertiesPlugin}.
  * <li>Adding a dependency on the auto-configuration annotation processor.
  * <li>Defining a task that produces metadata describing the auto-configuration. The
  * metadata is made available as an artifact in the
@@ -56,7 +54,6 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 	public void apply(Project project) {
 		project.getPlugins().apply(DeployedPlugin.class);
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
-			project.getPlugins().apply(ConfigurationPropertiesPlugin.class);
 			Configuration annotationProcessors = project.getConfigurations()
 				.getByName(JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME);
 			annotationProcessors.getDependencies()

@@ -53,6 +53,7 @@ import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimValidator;
 import org.springframework.security.oauth2.jwt.JwtIssuerValidator;
@@ -72,6 +73,7 @@ import org.springframework.web.server.WebFilter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 /**
  * Tests for {@link ReactiveOAuth2ResourceServerAutoConfiguration}.
@@ -122,9 +124,9 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 					"spring.security.oauth2.resourceserver.jwt.jws-algorithms=RS512")
 			.run((context) -> {
 				NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = context.getBean(NimbusReactiveJwtDecoder.class);
-				assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$2.arg$1.jwsAlgs")
-					.asInstanceOf(InstanceOfAssertFactories.collection(JWSAlgorithm.class))
-					.containsExactlyInAnyOrder(JWSAlgorithm.RS512);
+				assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$1.signatureAlgorithms")
+					.asInstanceOf(InstanceOfAssertFactories.collection(SignatureAlgorithm.class))
+					.containsExactlyInAnyOrder(SignatureAlgorithm.RS512);
 			});
 	}
 
@@ -135,9 +137,10 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 					"spring.security.oauth2.resourceserver.jwt.jws-algorithms=RS256, RS384, RS512")
 			.run((context) -> {
 				NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = context.getBean(NimbusReactiveJwtDecoder.class);
-				assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$2.arg$1.jwsAlgs")
-					.asInstanceOf(InstanceOfAssertFactories.collection(JWSAlgorithm.class))
-					.containsExactlyInAnyOrder(JWSAlgorithm.RS256, JWSAlgorithm.RS384, JWSAlgorithm.RS512);
+				assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$1.signatureAlgorithms")
+					.asInstanceOf(InstanceOfAssertFactories.collection(SignatureAlgorithm.class))
+					.containsExactlyInAnyOrder(SignatureAlgorithm.RS256, SignatureAlgorithm.RS384,
+							SignatureAlgorithm.RS512);
 			});
 	}
 
@@ -645,16 +648,14 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	static Jwt.Builder jwt() {
-		// @formatter:off
 		return Jwt.withTokenValue("token")
-				.header("alg", "none")
-				.expiresAt(Instant.MAX)
-				.issuedAt(Instant.MIN)
-				.issuer("https://issuer.example.org")
-				.jti("jti")
-				.notBefore(Instant.MIN)
-				.subject("mock-test-subject");
-		// @formatter:on
+			.header("alg", "none")
+			.expiresAt(Instant.MAX)
+			.issuedAt(Instant.MIN)
+			.issuer("https://issuer.example.org")
+			.jti("jti")
+			.notBefore(Instant.MIN)
+			.subject("mock-test-subject");
 	}
 
 	@EnableWebFluxSecurity
@@ -696,7 +697,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				exchanges.pathMatchers("/message/**").hasRole("ADMIN");
 				exchanges.anyExchange().authenticated();
 			});
-			http.httpBasic();
+			http.httpBasic(withDefaults());
 			return http.build();
 		}
 

@@ -117,10 +117,12 @@ class TomcatDataSourceConfigurationTests {
 	}
 
 	@Test
-	void usesJdbcConnectionDetailsIfAvailable() {
-		this.contextRunner.withUserConfiguration(ConnectionDetailsConfiguration.class)
+	void usesCustomJdbcConnectionDetailsWhenDefined() {
+		this.contextRunner.withBean(JdbcConnectionDetails.class, TestJdbcConnectionDetails::new)
 			.withPropertyValues(PREFIX + "url=jdbc:broken", PREFIX + "username=alice", PREFIX + "password=secret")
 			.run((context) -> {
+				assertThat(context).hasSingleBean(JdbcConnectionDetails.class)
+					.doesNotHaveBean(PropertiesJdbcConnectionDetails.class);
 				DataSource dataSource = context.getBean(DataSource.class);
 				assertThat(dataSource).isInstanceOf(org.apache.tomcat.jdbc.pool.DataSource.class);
 				org.apache.tomcat.jdbc.pool.DataSource tomcat = (org.apache.tomcat.jdbc.pool.DataSource) dataSource;
@@ -131,16 +133,6 @@ class TomcatDataSourceConfigurationTests {
 				assertThat(tomcat.getPoolProperties().getUrl())
 					.isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
 			});
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ConnectionDetailsConfiguration {
-
-		@Bean
-		JdbcConnectionDetails jdbcConnectionDetails() {
-			return new TestJdbcConnectionDetails();
-		}
-
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -62,12 +62,16 @@ import org.springframework.util.StringUtils;
 public class Neo4jAutoConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean(Neo4jConnectionDetails.class)
+	PropertiesNeo4jConnectionDetails neo4jConnectionDetails(Neo4jProperties properties) {
+		return new PropertiesNeo4jConnectionDetails(properties);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean
 	public Driver neo4jDriver(Neo4jProperties properties, Environment environment,
-			ObjectProvider<ConfigBuilderCustomizer> configBuilderCustomizers,
-			ObjectProvider<Neo4jConnectionDetails> connectionDetailsProvider) {
-		Neo4jConnectionDetails connectionDetails = connectionDetailsProvider
-			.getIfAvailable(() -> new PropertiesNeo4jConnectionDetails(properties));
+			Neo4jConnectionDetails connectionDetails,
+			ObjectProvider<ConfigBuilderCustomizer> configBuilderCustomizers) {
 		AuthToken authToken = connectionDetails.getAuthToken();
 		Config config = mapDriverConfig(properties, connectionDetails,
 				configBuilderCustomizers.orderedStream().toList());

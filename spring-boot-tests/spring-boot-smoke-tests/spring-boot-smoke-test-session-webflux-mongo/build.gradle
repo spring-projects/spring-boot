@@ -13,8 +13,8 @@ dependencies {
 	runtimeOnly("org.springframework.session:spring-session-data-mongodb")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("org.testcontainers:mongodb")
-	testImplementation("org.testcontainers:testcontainers")
 	testImplementation("org.testcontainers:junit-jupiter")
 }

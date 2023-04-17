@@ -84,13 +84,14 @@ public class CassandraAutoConfiguration {
 
 	private final CassandraProperties properties;
 
-	private final CassandraConnectionDetails connectionDetails;
-
-	CassandraAutoConfiguration(CassandraProperties properties,
-			ObjectProvider<CassandraConnectionDetails> connectionDetails) {
+	CassandraAutoConfiguration(CassandraProperties properties) {
 		this.properties = properties;
-		this.connectionDetails = connectionDetails
-			.getIfAvailable(() -> new PropertiesCassandraConnectionDetails(properties));
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(CassandraConnectionDetails.class)
+	PropertiesCassandraConnectionDetails cassandraConnectionDetails() {
+		return new PropertiesCassandraConnectionDetails(this.properties);
 	}
 
 	@Bean
@@ -104,24 +105,25 @@ public class CassandraAutoConfiguration {
 	@ConditionalOnMissingBean
 	@Scope("prototype")
 	public CqlSessionBuilder cassandraSessionBuilder(DriverConfigLoader driverConfigLoader,
+			CassandraConnectionDetails connectionDetails,
 			ObjectProvider<CqlSessionBuilderCustomizer> builderCustomizers) {
 		CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(driverConfigLoader);
-		configureAuthentication(builder);
-		configureSsl(builder);
+		configureAuthentication(builder, connectionDetails);
+		configureSsl(builder, connectionDetails);
 		builder.withKeyspace(this.properties.getKeyspaceName());
 		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
 	}
 
-	private void configureAuthentication(CqlSessionBuilder builder) {
-		String username = this.connectionDetails.getUsername();
+	private void configureAuthentication(CqlSessionBuilder builder, CassandraConnectionDetails connectionDetails) {
+		String username = connectionDetails.getUsername();
 		if (username != null) {
-			builder.withAuthCredentials(username, this.connectionDetails.getPassword());
+			builder.withAuthCredentials(username, connectionDetails.getPassword());
 		}
 	}
 
-	private void configureSsl(CqlSessionBuilder builder) {
-		if (this.connectionDetails instanceof PropertiesCassandraConnectionDetails && this.properties.isSsl()) {
+	private void configureSsl(CqlSessionBuilder builder, CassandraConnectionDetails connectionDetails) {
+		if (connectionDetails instanceof PropertiesCassandraConnectionDetails && this.properties.isSsl()) {
 			try {
 				builder.withSslContext(SSLContext.getDefault());
 			}
@@ -133,18 +135,18 @@ public class CassandraAutoConfiguration {
 
 	@Bean(destroyMethod = "")
 	@ConditionalOnMissingBean
-	public DriverConfigLoader cassandraDriverConfigLoader(
+	public DriverConfigLoader cassandraDriverConfigLoader(CassandraConnectionDetails connectionDetails,
 			ObjectProvider<DriverConfigLoaderBuilderCustomizer> builderCustomizers) {
 		ProgrammaticDriverConfigLoaderBuilder builder = new DefaultProgrammaticDriverConfigLoaderBuilder(
-				() -> cassandraConfiguration(), DefaultDriverConfigLoader.DEFAULT_ROOT_PATH);
+				() -> cassandraConfiguration(connectionDetails), DefaultDriverConfigLoader.DEFAULT_ROOT_PATH);
 		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
 
-	private Config cassandraConfiguration() {
+	private Config cassandraConfiguration(CassandraConnectionDetails connectionDetails) {
 		ConfigFactory.invalidateCaches();
 		Config config = ConfigFactory.defaultOverrides();
-		config = config.withFallback(mapConfig());
+		config = config.withFallback(mapConfig(connectionDetails));
 		if (this.properties.getConfig() != null) {
 			config = config.withFallback(loadConfig(this.properties.getConfig()));
 		}
@@ -162,24 +164,24 @@ public class CassandraAutoConfiguration {
 		}
 	}
 
-	private Config mapConfig() {
+	private Config mapConfig(CassandraConnectionDetails connectionDetails) {
 		CassandraDriverOptions options = new CassandraDriverOptions();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(this.properties.getSessionName())
 			.whenHasText()
 			.to((sessionName) -> options.add(DefaultDriverOption.SESSION_NAME, sessionName));
-		map.from(this.connectionDetails.getUsername())
+		map.from(connectionDetails.getUsername())
 			.to((value) -> options.add(DefaultDriverOption.AUTH_PROVIDER_USER_NAME, value)
-				.add(DefaultDriverOption.AUTH_PROVIDER_PASSWORD, this.connectionDetails.getPassword()));
+				.add(DefaultDriverOption.AUTH_PROVIDER_PASSWORD, connectionDetails.getPassword()));
 		map.from(this.properties::getCompression)
 			.to((compression) -> options.add(DefaultDriverOption.PROTOCOL_COMPRESSION, compression));
 		mapConnectionOptions(options);
 		mapPoolingOptions(options);
 		mapRequestOptions(options);
 		mapControlConnectionOptions(options);
-		map.from(mapContactPoints())
+		map.from(mapContactPoints(connectionDetails))
 			.to((contactPoints) -> options.add(DefaultDriverOption.CONTACT_POINTS, contactPoints));
-		map.from(this.connectionDetails.getLocalDatacenter())
+		map.from(connectionDetails.getLocalDatacenter())
 			.whenHasText()
 			.to((localDatacenter) -> options.add(DefaultDriverOption.LOAD_BALANCING_LOCAL_DATACENTER, localDatacenter));
 		return options.build();
@@ -244,11 +246,8 @@ public class CassandraAutoConfiguration {
 			.to((timeout) -> options.add(DefaultDriverOption.CONTROL_CONNECTION_TIMEOUT, timeout));
 	}
 
-	private List<String> mapContactPoints() {
-		return this.connectionDetails.getContactPoints()
-			.stream()
-			.map((node) -> node.host() + ":" + node.port())
-			.toList();
+	private List<String> mapContactPoints(CassandraConnectionDetails connectionDetails) {
+		return connectionDetails.getContactPoints().stream().map((node) -> node.host() + ":" + node.port()).toList();
 	}
 
 	private static class CassandraDriverOptions {
@@ -289,7 +288,7 @@ public class CassandraAutoConfiguration {
 	/**
 	 * Adapts {@link CassandraProperties} to {@link CassandraConnectionDetails}.
 	 */
-	private static final class PropertiesCassandraConnectionDetails implements CassandraConnectionDetails {
+	static final class PropertiesCassandraConnectionDetails implements CassandraConnectionDetails {
 
 		private final CassandraProperties properties;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.security.ConditionalOnDefaultWebSecurity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
@@ -29,6 +28,8 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.client.web.AuthenticatedPrincipalOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 import org.springframework.security.web.SecurityFilterChain;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 /**
  * {@link SecurityFilterChain} to add OAuth client support.
@@ -59,8 +60,8 @@ class OAuth2WebSecurityConfiguration {
 		@Bean
 		SecurityFilterChain oauth2SecurityFilterChain(HttpSecurity http) throws Exception {
 			http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
-			http.oauth2Login(Customizer.withDefaults());
-			http.oauth2Client();
+			http.oauth2Login(withDefaults());
+			http.oauth2Client(withDefaults());
 			return http.build();
 		}
 
