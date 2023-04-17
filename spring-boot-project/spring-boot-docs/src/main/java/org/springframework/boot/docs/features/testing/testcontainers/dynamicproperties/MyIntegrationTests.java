@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.howto.testing.testcontainers.vanilla;
+package org.springframework.boot.docs.features.testing.testcontainers.dynamicproperties;
 
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.Neo4jContainer;
@@ -22,6 +22,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 @SpringBootTest
 @Testcontainers
@@ -33,6 +35,11 @@ class MyIntegrationTests {
 	@Test
 	void myTest() {
 		// ...
+	}
+
+	@DynamicPropertySource
+	static void neo4jProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.neo4j.uri", neo4j::getBoltUrl);
 	}
 
 }

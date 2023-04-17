@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.howto.testing.testcontainers.serviceconnection
+package org.springframework.boot.docs.features.testing.testcontainers.vanilla
 
 import org.junit.jupiter.api.Test
+import org.springframework.boot.test.context.SpringBootTest
 import org.testcontainers.containers.Neo4jContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
-
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
 @SpringBootTest
 @Testcontainers
@@ -34,11 +32,8 @@ internal class MyIntegrationTests {
 	}
 
 	companion object {
-
 		@Container
-		@ServiceConnection
 		var neo4j: Neo4jContainer<*> = Neo4jContainer<Nothing>("neo4j:5")
-
 	}
 
 }

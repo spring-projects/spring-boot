@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.howto.testing.testcontainers.dynamicproperties
+package org.springframework.boot.docs.features.testing.testcontainers.dynamicproperties
 
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
