@@ -37,7 +37,7 @@ class RedpandaContainerConnectionDetailsFactory
 
 	@Override
 	protected KafkaConnectionDetails getContainerConnectionDetails(
-			ContainerConnectionSource<KafkaConnectionDetails, RedpandaContainer> source) {
+			ContainerConnectionSource<RedpandaContainer> source) {
 		return new RedpandaContainerConnectionDetails(source);
 	}
 
@@ -50,7 +50,7 @@ class RedpandaContainerConnectionDetailsFactory
 		private final RedpandaContainer container;
 
 		private RedpandaContainerConnectionDetails(
-				ContainerConnectionSource<KafkaConnectionDetails, RedpandaContainer> source) {
+				ContainerConnectionSource<RedpandaContainer> source) {
 			super(source);
 			this.container = source.getContainer();
 		}
