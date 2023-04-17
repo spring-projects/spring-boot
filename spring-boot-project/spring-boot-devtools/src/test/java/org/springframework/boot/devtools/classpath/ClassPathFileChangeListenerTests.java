@@ -23,19 +23,17 @@ import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
@@ -56,9 +54,6 @@ class ClassPathFileChangeListenerTests {
 
 	@Mock
 	private FileSystemWatcher fileSystemWatcher;
-
-	@Captor
-	private ArgumentCaptor<ApplicationEvent> eventCaptor;
 
 	@Test
 	void eventPublisherMustNotBeNull() {
@@ -102,10 +97,12 @@ class ClassPathFileChangeListenerTests {
 			given(this.restartStrategy.isRestartRequired(file2)).willReturn(true);
 		}
 		listener.onChange(changeSet);
-		then(this.eventPublisher).should().publishEvent(this.eventCaptor.capture());
-		ClassPathChangedEvent actualEvent = (ClassPathChangedEvent) this.eventCaptor.getValue();
-		assertThat(actualEvent.getChangeSet()).isEqualTo(changeSet);
-		assertThat(actualEvent.isRestartRequired()).isEqualTo(restart);
+		then(this.eventPublisher).should()
+			.publishEvent(assertArg((applicationEvent) -> assertThat(applicationEvent)
+				.isInstanceOfSatisfying(ClassPathChangedEvent.class, (classPathChangedEvent) -> {
+					assertThat(classPathChangedEvent.getChangeSet()).isEqualTo(changeSet);
+					assertThat(classPathChangedEvent.isRestartRequired()).isEqualTo(restart);
+				})));
 	}
 
 }

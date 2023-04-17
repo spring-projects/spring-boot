@@ -71,7 +71,6 @@ import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
 import org.springframework.boot.testsupport.system.CapturedOutput;
@@ -97,6 +96,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -184,9 +184,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		TomcatContextCustomizer customizer = mock(TomcatContextCustomizer.class);
 		factory.addContextCustomizers(customizer);
 		this.webServer = factory.getWebServer();
-		ArgumentCaptor<Context> contextCaptor = ArgumentCaptor.forClass(Context.class);
-		then(customizer).should().customize(contextCaptor.capture());
-		assertThat(contextCaptor.getValue().getParent()).isNotNull();
+		then(customizer).should().customize(assertArg((context) -> assertThat(context.getParent()).isNotNull()));
 	}
 
 	@Test

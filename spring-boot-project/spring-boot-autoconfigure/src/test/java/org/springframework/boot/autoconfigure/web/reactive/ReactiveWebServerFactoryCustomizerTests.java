@@ -20,7 +20,6 @@ import java.net.InetAddress;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
@@ -28,6 +27,7 @@ import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
@@ -79,9 +79,7 @@ class ReactiveWebServerFactoryCustomizerTests {
 		this.properties.setShutdown(Shutdown.GRACEFUL);
 		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
 		this.customizer.customize(factory);
-		ArgumentCaptor<Shutdown> shutdownCaptor = ArgumentCaptor.forClass(Shutdown.class);
-		then(factory).should().setShutdown(shutdownCaptor.capture());
-		assertThat(shutdownCaptor.getValue()).isEqualTo(Shutdown.GRACEFUL);
+		then(factory).should().setShutdown(assertArg((shutdown) -> assertThat(shutdown).isEqualTo(Shutdown.GRACEFUL)));
 	}
 
 }

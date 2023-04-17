@@ -24,8 +24,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -39,6 +37,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
@@ -56,12 +55,6 @@ class DispatcherFilterTests {
 
 	@Mock
 	private FilterChain chain;
-
-	@Captor
-	private ArgumentCaptor<ServerHttpResponse> serverResponseCaptor;
-
-	@Captor
-	private ArgumentCaptor<ServerHttpRequest> serverRequestCaptor;
 
 	private DispatcherFilter filter;
 
@@ -100,13 +93,15 @@ class DispatcherFilterTests {
 		willReturn(true).given(this.dispatcher).handle(any(ServerHttpRequest.class), any(ServerHttpResponse.class));
 		this.filter.doFilter(request, response, this.chain);
 		then(this.chain).shouldHaveNoInteractions();
-		then(this.dispatcher).should().handle(this.serverRequestCaptor.capture(), this.serverResponseCaptor.capture());
-		ServerHttpRequest dispatcherRequest = this.serverRequestCaptor.getValue();
-		ServletServerHttpRequest actualRequest = (ServletServerHttpRequest) dispatcherRequest;
-		ServerHttpResponse dispatcherResponse = this.serverResponseCaptor.getValue();
-		ServletServerHttpResponse actualResponse = (ServletServerHttpResponse) dispatcherResponse;
-		assertThat(actualRequest.getServletRequest()).isEqualTo(request);
-		assertThat(actualResponse.getServletResponse()).isEqualTo(response);
+		then(this.dispatcher).should()
+			.handle(assertArg((serverHttpRequest) -> assertThat(serverHttpRequest).isInstanceOfSatisfying(
+					ServletServerHttpRequest.class,
+					(servletServerHttpRequest) -> assertThat(servletServerHttpRequest.getServletRequest())
+						.isEqualTo(request))),
+					assertArg((serverHttpResponse) -> assertThat(serverHttpResponse).isInstanceOfSatisfying(
+							ServletServerHttpResponse.class,
+							(servletServerHttpResponse) -> assertThat(servletServerHttpResponse.getServletResponse())
+								.isEqualTo(response))));
 	}
 
 }
