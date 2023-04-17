@@ -48,28 +48,31 @@ class KotlinPluginActionIntegrationTests {
 
 	@TestTemplate
 	void kotlinVersionPropertyIsSet() {
-		String output = this.gradleBuild.build("kotlinVersion", "dependencies", "--configuration", "compileClasspath")
+		String output = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.1-rc-1")
+			.build("kotlinVersion", "dependencies", "--configuration", "compileClasspath")
 			.getOutput();
 		assertThat(output).containsPattern("Kotlin version: [0-9]\\.[0-9]\\.[0-9]+");
 	}
 
 	@TestTemplate
 	void kotlinCompileTasksUseJavaParametersFlagByDefault() {
-		assertThat(this.gradleBuild.build("kotlinCompileTasksJavaParameters").getOutput())
-			.contains("compileKotlin java parameters: true")
+		assertThat(this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.1-rc-1")
+			.build("kotlinCompileTasksJavaParameters")
+			.getOutput()).contains("compileKotlin java parameters: true")
 			.contains("compileTestKotlin java parameters: true");
 	}
 
 	@TestTemplate
 	void kotlinCompileTasksCanOverrideDefaultJavaParametersFlag() {
-		assertThat(this.gradleBuild.build("kotlinCompileTasksJavaParameters").getOutput())
-			.contains("compileKotlin java parameters: false")
+		assertThat(this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.1-rc-1")
+			.build("kotlinCompileTasksJavaParameters")
+			.getOutput()).contains("compileKotlin java parameters: false")
 			.contains("compileTestKotlin java parameters: false");
 	}
 
 	@TestTemplate
 	void taskConfigurationIsAvoided() throws IOException {
-		BuildResult result = this.gradleBuild.build("help");
+		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.1-rc-1").build("help");
 		String output = result.getOutput();
 		BufferedReader reader = new BufferedReader(new StringReader(output));
 		String line;
