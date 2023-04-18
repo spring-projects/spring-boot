@@ -18,6 +18,9 @@ package org.springframework.boot.autoconfigure.security.oauth2.server.servlet;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
@@ -67,6 +70,12 @@ class OAuth2AuthorizationServerPropertiesTests {
 		this.properties.getClient().put("foo", client);
 		assertThatIllegalStateException().isThrownBy(this.properties::validate)
 			.withMessage("Authorization grant types must not be empty.");
+	}
+
+	@Test
+	void defaultDeviceCodeTimeToLiveMatchesBuilderDefault() {
+		assertThat(new OAuth2AuthorizationServerProperties.Client().getToken().getDeviceCodeTimeToLive())
+			.isEqualTo(TokenSettings.builder().build().getDeviceCodeTimeToLive());
 	}
 
 }
