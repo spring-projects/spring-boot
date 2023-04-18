@@ -42,8 +42,11 @@ dependencies {
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.springframework:spring-core-test")
+	testImplementation("org.springframework:spring-r2dbc")
 	testImplementation("org.springframework.amqp:spring-rabbit")
 	testImplementation("org.springframework.kafka:spring-kafka")
 	testImplementation("org.testcontainers:junit-jupiter")
+
+	testRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")
 }
 
