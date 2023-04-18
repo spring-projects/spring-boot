@@ -1096,6 +1096,13 @@ bom {
 			]
 		}
 	}
+	library("R2DBC MariaDB", "1.1.4")  {
+		group("org.mariadb") {
+			modules = [
+				"r2dbc-mariadb"
+			]
+		}
+	}
 	library("R2DBC Pool", "1.0.0.RELEASE") {
 		group("io.r2dbc") {
 			modules = [
