@@ -459,7 +459,7 @@ public class OAuth2AuthorizationServerProperties implements InitializingBean {
 		/**
 		 * Time-to-live for a device code.
 		 */
-		private Duration deviceCodeTimeToLive;
+		private Duration deviceCodeTimeToLive = Duration.ofMinutes(5);
 
 		/**
 		 * Whether refresh tokens are reused or a new refresh token is issued when

@@ -66,6 +66,7 @@ class OAuth2AuthorizationServerPropertiesMapperTests {
 		assertThat(registeredClient.getTokenSettings().getAccessTokenFormat()).isEqualTo(OAuth2TokenFormat.REFERENCE);
 		assertThat(registeredClient.getTokenSettings().getAccessTokenTimeToLive()).isEqualTo(Duration.ofSeconds(300));
 		assertThat(registeredClient.getTokenSettings().getRefreshTokenTimeToLive()).isEqualTo(Duration.ofHours(24));
+		assertThat(registeredClient.getTokenSettings().getDeviceCodeTimeToLive()).isEqualTo(Duration.ofMinutes(30));
 		assertThat(registeredClient.getTokenSettings().isReuseRefreshTokens()).isEqualTo(true);
 		assertThat(registeredClient.getTokenSettings().getIdTokenSignatureAlgorithm())
 			.isEqualTo(SignatureAlgorithm.RS512);
