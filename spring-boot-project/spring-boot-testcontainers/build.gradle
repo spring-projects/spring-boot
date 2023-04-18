@@ -25,6 +25,7 @@ dependencies {
 	optional("org.testcontainers:mssqlserver")
 	optional("org.testcontainers:mysql")
 	optional("org.testcontainers:neo4j")
+	optional("org.testcontainers:oracle-xe")
 	optional("org.testcontainers:postgresql")
 	optional("org.testcontainers:rabbitmq")
 	optional("org.testcontainers:redpanda")
