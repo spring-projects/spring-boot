@@ -145,7 +145,7 @@ public final class DockerImageNames {
 	 * @return a docker image name for running redpanda
 	 */
 	public static DockerImageName redpanda() {
-		return DockerImageName.parse("docker.redpanda.com/redpandadata/redpanda").withTag(REDPANDA_VERSION);
+		return DockerImageName.parse("redpandadata/redpanda").withTag(REDPANDA_VERSION);
 	}
 
 	/**
