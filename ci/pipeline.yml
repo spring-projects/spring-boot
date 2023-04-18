@@ -20,6 +20,7 @@ anchors:
     DOCKER_HUB_MIRROR: ((docker-hub-mirror))
     DOCKER_HUB_USERNAME: ((docker-hub-username))
     DOCKER_HUB_PASSWORD: ((docker-hub-password))
+    DOCKER_HUB_AUTH: ((docker-hub-auth))
   github-task-params: &github-task-params
     GITHUB_REPO: spring-boot
     GITHUB_ORGANIZATION: spring-projects
