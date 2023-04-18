@@ -41,6 +41,8 @@ public final class DockerImageNames {
 
 	private static final String NEO4J_VERSION = "4.4.11";
 
+	private static final String ORACLE_XE_VERSION = "18.4.0-slim";
+
 	private static final String POSTGRESQL_VERSION = "14.0";
 
 	private static final String RABBIT_VERSION = "3.11-alpine";
@@ -108,6 +110,10 @@ public final class DockerImageNames {
 	 */
 	public static DockerImageName neo4j() {
 		return DockerImageName.parse("neo4j").withTag(NEO4J_VERSION);
+	}
+
+	public static DockerImageName oracleXe() {
+		return DockerImageName.parse("gvenzl/oracle-xe").withTag(ORACLE_XE_VERSION);
 	}
 
 	/**

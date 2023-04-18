@@ -971,7 +971,7 @@ The following service connection factories are provided in the `spring-boot-test
 | Containers of type `Neo4jContainer`
 
 | `R2dbcConnectionDetails`
-| Containers of type `MariaDBContainer`, `MSSQLServerContainer`, `MySQLContainer` or `PostgreSQLContainer`
+| Containers of type `MariaDBContainer`, `MSSQLServerContainer`, `MySQLContainer`, `OracleContainer`, or `PostgreSQLContainer`
 
 | `RabbitConnectionDetails`
 | Containers of type `RabbitMQContainer`
