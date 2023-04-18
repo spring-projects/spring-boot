@@ -576,7 +576,7 @@ public class FlywayProperties {
 	}
 
 	public String getPassword() {
-		return (this.password != null) ? this.password : "";
+		return this.password;
 	}
 
 	public void setPassword(String password) {

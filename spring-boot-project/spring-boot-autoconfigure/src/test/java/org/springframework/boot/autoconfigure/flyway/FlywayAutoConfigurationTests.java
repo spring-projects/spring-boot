@@ -193,6 +193,28 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	void jdbcConnectionDetailsAreUsedOverDataSourceProperties() {
+		this.contextRunner
+			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JdbcConnectionDetailsConfiguration.class,
+					MockFlywayMigrationStrategy.class)
+			.withPropertyValues("spring.datasource.url=jdbc:hsqldb:mem:flywaytest", "spring.datasource.user=some-user",
+					"spring.datasource.password=some-password",
+					"spring.datasource.driver-class-name=org.hsqldb.jdbc.JDBCDriver")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Flyway.class);
+				Flyway flyway = context.getBean(Flyway.class);
+				DataSource dataSource = flyway.getConfiguration().getDataSource();
+				assertThat(dataSource).isInstanceOf(SimpleDriverDataSource.class);
+				SimpleDriverDataSource simpleDriverDataSource = (SimpleDriverDataSource) dataSource;
+				assertThat(simpleDriverDataSource.getUrl())
+					.isEqualTo("jdbc:postgresql://database.example.com:12345/database-1");
+				assertThat(simpleDriverDataSource.getUsername()).isEqualTo("user-1");
+				assertThat(simpleDriverDataSource.getPassword()).isEqualTo("secret-1");
+				assertThat(simpleDriverDataSource.getDriver()).isInstanceOf(Driver.class);
+			});
+	}
+
+	@Test
 	void createDataSourceWithUser() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.datasource.url:jdbc:hsqldb:mem:" + UUID.randomUUID(), "spring.flyway.user:sa")
