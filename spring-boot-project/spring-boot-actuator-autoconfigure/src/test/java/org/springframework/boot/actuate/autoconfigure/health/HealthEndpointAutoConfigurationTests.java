@@ -25,10 +25,12 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointConfiguration.HealthEndpointGroupMembershipValidator.NoSuchHealthContributorException;
 import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
+import org.springframework.boot.actuate.health.CompositeHealthContributor;
 import org.springframework.boot.actuate.health.DefaultHealthContributorRegistry;
 import org.springframework.boot.actuate.health.DefaultReactiveHealthContributorRegistry;
 import org.springframework.boot.actuate.health.Health;
@@ -139,6 +141,41 @@ class HealthEndpointAutoConfigurationTests {
 			assertThat(groups).isInstanceOf(AutoConfiguredHealthEndpointGroups.class);
 			assertThat(groups.getNames()).containsOnly("ready");
 		});
+	}
+
+	@Test
+	void runFailsWhenHealthEndpointGroupIncludesContributorThatDoesNotExist() {
+		this.contextRunner.withUserConfiguration(CompositeHealthIndicatorConfiguration.class)
+			.withPropertyValues("management.endpoint.health.group.ready.include=composite/b/c,nope")
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context.getStartupFailure()).isInstanceOf(NoSuchHealthContributorException.class)
+					.hasMessage("Included health contributor 'nope' in group 'ready' does not exist");
+			});
+	}
+
+	@Test
+	void runFailsWhenHealthEndpointGroupExcludesContributorThatDoesNotExist() {
+		this.contextRunner
+			.withPropertyValues("management.endpoint.health.group.ready.exclude=composite/b/d",
+					"management.endpoint.health.group.ready.include=*")
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context.getStartupFailure()).isInstanceOf(NoSuchHealthContributorException.class)
+					.hasMessage("Excluded health contributor 'composite/b/d' in group 'ready' does not exist");
+			});
+	}
+
+	@Test
+	void runCreatesHealthEndpointGroupThatIncludesContributorThatDoesNotExistWhenValidationIsDisabled() {
+		this.contextRunner
+			.withPropertyValues("management.endpoint.health.validate-group-membership=false",
+					"management.endpoint.health.group.ready.include=nope")
+			.run((context) -> {
+				HealthEndpointGroups groups = context.getBean(HealthEndpointGroups.class);
+				assertThat(groups).isInstanceOf(AutoConfiguredHealthEndpointGroups.class);
+				assertThat(groups.getNames()).containsOnly("ready");
+			});
 	}
 
 	@Test
@@ -316,6 +353,17 @@ class HealthEndpointAutoConfigurationTests {
 		@Bean
 		ReactiveHealthIndicator reactiveHealthIndicator() {
 			return () -> Mono.just(Health.up().build());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CompositeHealthIndicatorConfiguration {
+
+		@Bean
+		CompositeHealthContributor compositeHealthIndicator() {
+			return CompositeHealthContributor.fromMap(Map.of("a", (HealthIndicator) () -> Health.up().build(), "b",
+					CompositeHealthContributor.fromMap(Map.of("c", (HealthIndicator) () -> Health.up().build()))));
 		}
 
 	}

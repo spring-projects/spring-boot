@@ -56,6 +56,12 @@
       ]
     },
     {
+      "name": "management.endpoint.health.validate-group-membership",
+      "type": "java.lang.Boolean",
+      "description": "Whether to validate health group membership on startup. Validation fails if a group includes or excludes a health contributor that does not exist.",
+      "defaultValue": true
+    },
+    {
       "name": "management.endpoints.enabled-by-default",
       "type": "java.lang.Boolean",
       "description": "Whether to enable or disable all endpoints by default."
