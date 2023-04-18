@@ -22,6 +22,7 @@ import org.testcontainers.utility.DockerImageName;
  * Create {@link DockerImageName} instances for services used in integration tests.
  *
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 2.3.6
  */
 public final class DockerImageNames {
@@ -45,6 +46,8 @@ public final class DockerImageNames {
 	private static final String RABBIT_VERSION = "3.11-alpine";
 
 	private static final String REDIS_VERSION = "4.0.14";
+
+	private static final String REDPANDA_VERSION = "v23.1.2";
 
 	private static final String REGISTRY_VERSION = "2.7.1";
 
@@ -129,6 +132,14 @@ public final class DockerImageNames {
 	 */
 	public static DockerImageName redis() {
 		return DockerImageName.parse("redis").withTag(REDIS_VERSION);
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running Redpanda.
+	 * @return a docker image name for running redpanda
+	 */
+	public static DockerImageName redpanda() {
+		return DockerImageName.parse("docker.redpanda.com/redpandadata/redpanda").withTag(REDPANDA_VERSION);
 	}
 
 	/**
