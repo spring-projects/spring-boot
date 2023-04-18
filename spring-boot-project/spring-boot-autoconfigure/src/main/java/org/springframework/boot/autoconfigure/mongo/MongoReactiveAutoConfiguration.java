@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -76,9 +77,9 @@ public class MongoReactiveAutoConfiguration {
 
 		@Bean
 		StandardMongoClientSettingsBuilderCustomizer standardMongoSettingsCustomizer(MongoProperties properties,
-				MongoConnectionDetails connectionDetails) {
+				MongoConnectionDetails connectionDetails, ObjectProvider<SslBundles> sslBundles) {
 			return new StandardMongoClientSettingsBuilderCustomizer(connectionDetails.getConnectionString(),
-					properties.getUuidRepresentation());
+					properties.getUuidRepresentation(), properties.getSsl(), sslBundles.getIfAvailable());
 		}
 
 	}

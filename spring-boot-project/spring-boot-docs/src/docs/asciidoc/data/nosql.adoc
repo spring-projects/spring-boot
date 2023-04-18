@@ -114,6 +114,31 @@ For example, you might declare the following settings in your `application.prope
 	      password: "secret"
 ----
 
+The auto-configured `MongoClient` can be configured to use SSL for communication with the server by setting the properties as shown in this example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  data:
+	    mongodb:
+	      uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
+	      ssl:
+	        enabled: true
+----
+
+Custom SSL trust material can be configured in an <<features#features.ssl,SSL bundle>> and applied to the `MongoClient` as shown in this example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  data:
+	    mongodb:
+	      uri: "mongodb://user:secret@mongoserver1.example.com:27017,mongoserver2.example.com:23456/test"
+	      ssl:
+	        bundle: "example"
+----
+
+
 [TIP]
 ====
 If `spring.data.mongodb.port` is not specified, the default of `27017` is used.
