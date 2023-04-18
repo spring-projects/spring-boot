@@ -1371,7 +1371,7 @@ bom {
 			]
 		}
 	}
-	library("MySQL", "8.0.32") {
+	library("MySQL", "8.0.33") {
 		group("com.mysql") {
 			modules = [
 				"mysql-connector-j" {
