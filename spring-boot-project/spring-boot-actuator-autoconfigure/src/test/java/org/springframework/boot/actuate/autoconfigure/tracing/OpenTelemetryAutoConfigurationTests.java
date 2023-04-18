@@ -34,6 +34,7 @@ import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.context.propagation.TextMapPropagator;
 import io.opentelemetry.extension.trace.propagation.B3Propagator;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
+import io.opentelemetry.sdk.trace.SpanLimits;
 import io.opentelemetry.sdk.trace.SpanProcessor;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
 import org.junit.jupiter.api.Test;
@@ -45,6 +46,7 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -54,6 +56,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 class OpenTelemetryAutoConfigurationTests {
 
@@ -203,6 +206,15 @@ class OpenTelemetryAutoConfigurationTests {
 			.run((context) -> assertThat(context).hasBean("w3cTextMapPropagatorWithoutBaggage"));
 	}
 
+	@Test
+	void shouldCustomizeSdkTracerProvider() {
+		this.contextRunner.withUserConfiguration(SdkTracerProviderCustomizationConfiguration.class).run((context) -> {
+			SdkTracerProvider tracerProvider = context.getBean(SdkTracerProvider.class);
+			assertThat(tracerProvider.getSpanLimits().getMaxNumberOfEvents()).isEqualTo(42);
+			assertThat(tracerProvider.getSampler()).isEqualTo(Sampler.alwaysOn());
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	private static class CustomConfiguration {
 
@@ -274,6 +286,29 @@ class OpenTelemetryAutoConfigurationTests {
 		@Bean
 		SpanCustomizer customSpanCustomizer() {
 			return mock(SpanCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static class SdkTracerProviderCustomizationConfiguration {
+
+		@Bean
+		@Order(1)
+		SdkTracerProviderBuilderCustomizer sdkTracerProviderBuilderCustomizerOne() {
+			return (builder) -> {
+				SpanLimits spanLimits = SpanLimits.builder().setMaxNumberOfEvents(42).build();
+				builder.setSpanLimits(spanLimits);
+			};
+		}
+
+		@Bean
+		@Order(0)
+		SdkTracerProviderBuilderCustomizer sdkTracerProviderBuilderCustomizerTwo() {
+			return (builder) -> {
+				SpanLimits spanLimits = SpanLimits.builder().setMaxNumberOfEvents(21).build();
+				builder.setSpanLimits(spanLimits).setSampler(Sampler.alwaysOn());
+			};
 		}
 
 	}
