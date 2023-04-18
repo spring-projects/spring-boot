@@ -23,4 +23,5 @@ org.springframework.boot.testcontainers.service.connection.r2dbc.MariaDbR2dbcCon
 org.springframework.boot.testcontainers.service.connection.r2dbc.MsSqlServerR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.MySqlR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.PostgresR2dbcContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.redis.RedisContainerConnectionDetailsFactory
+org.springframework.boot.testcontainers.service.connection.redis.RedisContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.redpanda.RedpandaContainerConnectionDetailsFactory
