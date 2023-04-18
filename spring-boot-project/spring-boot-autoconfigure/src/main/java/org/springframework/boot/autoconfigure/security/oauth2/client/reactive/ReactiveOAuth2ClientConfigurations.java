@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.security.oauth2.client.ClientsConfiguredCondition;
 import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
-import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesRegistrationAdapter;
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientPropertiesMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -55,7 +55,7 @@ class ReactiveOAuth2ClientConfigurations {
 		@Bean
 		InMemoryReactiveClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties properties) {
 			List<ClientRegistration> registrations = new ArrayList<>(
-					OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties).values());
+					new OAuth2ClientPropertiesMapper(properties).asClientRegistrations().values());
 			return new InMemoryReactiveClientRegistrationRepository(registrations);
 		}
 

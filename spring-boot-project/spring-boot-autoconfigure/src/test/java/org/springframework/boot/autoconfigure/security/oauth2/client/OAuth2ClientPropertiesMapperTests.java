@@ -43,14 +43,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
- * Tests for {@link OAuth2ClientPropertiesRegistrationAdapter}.
+ * Tests for {@link OAuth2ClientPropertiesMapper}.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
  * @author Thiago Hirata
  * @author HaiTao Zhang
  */
-class OAuth2ClientPropertiesRegistrationAdapterTests {
+class OAuth2ClientPropertiesMapperTests {
 
 	private MockWebServer server;
 
@@ -70,8 +70,8 @@ class OAuth2ClientPropertiesRegistrationAdapterTests {
 		registration.setClientName("clientName");
 		properties.getRegistration().put("registration", registration);
 		properties.getProvider().put("provider", provider);
-		Map<String, ClientRegistration> registrations = OAuth2ClientPropertiesRegistrationAdapter
-			.getClientRegistrations(properties);
+		Map<String, ClientRegistration> registrations = new OAuth2ClientPropertiesMapper(properties)
+			.asClientRegistrations();
 		ClientRegistration adapted = registrations.get("registration");
 		ProviderDetails adaptedProvider = adapted.getProviderDetails();
 		assertThat(adaptedProvider.getAuthorizationUri()).isEqualTo("https://example.com/auth");
@@ -102,8 +102,8 @@ class OAuth2ClientPropertiesRegistrationAdapterTests {
 		registration.setClientId("clientId");
 		registration.setClientSecret("clientSecret");
 		properties.getRegistration().put("registration", registration);
-		Map<String, ClientRegistration> registrations = OAuth2ClientPropertiesRegistrationAdapter
-			.getClientRegistrations(properties);
+		Map<String, ClientRegistration> registrations = new OAuth2ClientPropertiesMapper(properties)
+			.asClientRegistrations();
 		ClientRegistration adapted = registrations.get("registration");
 		ProviderDetails adaptedProvider = adapted.getProviderDetails();
 		assertThat(adaptedProvider.getAuthorizationUri()).isEqualTo("https://accounts.google.com/o/oauth2/v2/auth");
@@ -130,8 +130,8 @@ class OAuth2ClientPropertiesRegistrationAdapterTests {
 		OAuth2ClientProperties.Registration registration = createRegistration("google");
 		registration.setClientName("clientName");
 		properties.getRegistration().put("registration", registration);
-		Map<String, ClientRegistration> registrations = OAuth2ClientPropertiesRegistrationAdapter
-			.getClientRegistrations(properties);
+		Map<String, ClientRegistration> registrations = new OAuth2ClientPropertiesMapper(properties)
+			.asClientRegistrations();
 		ClientRegistration adapted = registrations.get("registration");
 		ProviderDetails adaptedProvider = adapted.getProviderDetails();
 		assertThat(adaptedProvider.getAuthorizationUri()).isEqualTo("https://accounts.google.com/o/oauth2/v2/auth");
@@ -161,7 +161,7 @@ class OAuth2ClientPropertiesRegistrationAdapterTests {
 		registration.setProvider("missing");
 		properties.getRegistration().put("registration", registration);
 		assertThatIllegalStateException()
-			.isThrownBy(() -> OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties))
+			.isThrownBy(() -> new OAuth2ClientPropertiesMapper(properties).asClientRegistrations())
 			.withMessageContaining("Unknown provider ID 'missing'");
 	}
 
@@ -172,8 +172,8 @@ class OAuth2ClientPropertiesRegistrationAdapterTests {
 		registration.setClientId("clientId");
 		registration.setClientSecret("clientSecret");
 		properties.getRegistration().put("google", registration);
-		Map<String, ClientRegistration> registrations = OAuth2ClientPropertiesRegistrationAdapter
-			.getClientRegistrations(properties);
+		Map<String, ClientRegistration> registrations = new OAuth2ClientPropertiesMapper(properties)
+			.asClientRegistrations();
 		ClientRegistration adapted = registrations.get("google");
 		ProviderDetails adaptedProvider = adapted.getProviderDetails();
 		assertThat(adaptedProvider.getAuthorizationUri()).isEqualTo("https://accounts.google.com/o/oauth2/v2/auth");
@@ -201,7 +201,7 @@ class OAuth2ClientPropertiesRegistrationAdapterTests {
 		OAuth2ClientProperties.Registration registration = new OAuth2ClientProperties.Registration();
 		properties.getRegistration().put("missing", registration);
 		assertThatIllegalStateException()
-			.isThrownBy(() -> OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties))
+			.isThrownBy(() -> new OAuth2ClientPropertiesMapper(properties).asClientRegistrations())
 			.withMessageContaining("Provider ID must be specified for client registration 'missing'");
 	}
 
@@ -250,8 +250,8 @@ class OAuth2ClientPropertiesRegistrationAdapterTests {
 		OAuth2ClientProperties properties = new OAuth2ClientProperties();
 		properties.getProvider().put("okta-oidc", provider);
 		properties.getRegistration().put("okta", registration);
-		Map<String, ClientRegistration> registrations = OAuth2ClientPropertiesRegistrationAdapter
-			.getClientRegistrations(properties);
+		Map<String, ClientRegistration> registrations = new OAuth2ClientPropertiesMapper(properties)
+			.asClientRegistrations();
 		ClientRegistration adapted = registrations.get("okta");
 		ProviderDetails providerDetails = adapted.getProviderDetails();
 		assertThat(adapted.getClientAuthenticationMethod()).isEqualTo(ClientAuthenticationMethod.CLIENT_SECRET_POST);
@@ -301,8 +301,8 @@ class OAuth2ClientPropertiesRegistrationAdapterTests {
 		provider.setIssuerUri(issuer);
 		properties.getProvider().put(providerId, provider);
 		properties.getRegistration().put("okta", registration);
-		Map<String, ClientRegistration> registrations = OAuth2ClientPropertiesRegistrationAdapter
-			.getClientRegistrations(properties);
+		Map<String, ClientRegistration> registrations = new OAuth2ClientPropertiesMapper(properties)
+			.asClientRegistrations();
 		ClientRegistration adapted = registrations.get("okta");
 		ProviderDetails providerDetails = adapted.getProviderDetails();
 		assertThat(adapted.getClientAuthenticationMethod()).isEqualTo(ClientAuthenticationMethod.CLIENT_SECRET_BASIC);
