@@ -46,6 +46,7 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -210,6 +211,7 @@ class OpenTelemetryAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(SdkTracerProviderCustomizationConfiguration.class).run((context) -> {
 			SdkTracerProvider tracerProvider = context.getBean(SdkTracerProvider.class);
 			assertThat(tracerProvider.getSpanLimits().getMaxNumberOfEvents()).isEqualTo(42);
+			assertThat(tracerProvider.getSampler()).isEqualTo(Sampler.alwaysOn());
 		});
 	}
 
@@ -292,10 +294,20 @@ class OpenTelemetryAutoConfigurationTests {
 	private static class SdkTracerProviderCustomizationConfiguration {
 
 		@Bean
-		SdkTracerProviderCustomizer sdkTracerProviderBuilderCustomizer() {
+		@Order(1)
+		SdkTracerProviderBuilderCustomizer sdkTracerProviderBuilderCustomizerOne() {
 			return (builder) -> {
 				SpanLimits spanLimits = SpanLimits.builder().setMaxNumberOfEvents(42).build();
 				builder.setSpanLimits(spanLimits);
+			};
+		}
+
+		@Bean
+		@Order(0)
+		SdkTracerProviderBuilderCustomizer sdkTracerProviderBuilderCustomizerTwo() {
+			return (builder) -> {
+				SpanLimits spanLimits = SpanLimits.builder().setMaxNumberOfEvents(21).build();
+				builder.setSpanLimits(spanLimits).setSampler(Sampler.alwaysOn());
 			};
 		}
 

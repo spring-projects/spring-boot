@@ -16,17 +16,18 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
+import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
 
 /**
- * Callback interface that can be used to customize auto-configured
- * {@link SdkTracerProviderBuilder}.
+ * Callback interface that can be used to customize the {@link SdkTracerProviderBuilder}
+ * that is used to create the auto-configured {@link SdkTracerProvider}.
  *
  * @author Yanming Zhou
  * @since 3.1.0
  */
 @FunctionalInterface
-public interface SdkTracerProviderCustomizer {
+public interface SdkTracerProviderBuilderCustomizer {
 
 	/**
 	 * Customize the given {@code builder}.

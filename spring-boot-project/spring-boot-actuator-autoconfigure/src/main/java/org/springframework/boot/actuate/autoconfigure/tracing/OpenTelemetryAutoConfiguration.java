@@ -102,13 +102,13 @@ public class OpenTelemetryAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	SdkTracerProvider otelSdkTracerProvider(Environment environment, ObjectProvider<SpanProcessor> spanProcessors,
-			Sampler sampler, ObjectProvider<SdkTracerProviderCustomizer> customizers) {
+			Sampler sampler, ObjectProvider<SdkTracerProviderBuilderCustomizer> customizers) {
 		String applicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
 		SdkTracerProviderBuilder builder = SdkTracerProvider.builder()
 			.setSampler(sampler)
 			.setResource(Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, applicationName)));
 		spanProcessors.orderedStream().forEach(builder::addSpanProcessor);
-		customizers.forEach((customizer) -> customizer.customize(builder));
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
 
