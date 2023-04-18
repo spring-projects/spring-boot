@@ -58,6 +58,15 @@ class SpringApplicationShutdownHookTests {
 	}
 
 	@Test
+	void shutdownHookIsNotAddedUntilHandlerIsRegistered() {
+		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
+		assertThat(shutdownHook.isRuntimeShutdownHookAdded()).isFalse();
+		shutdownHook.getHandlers().add(() -> {
+		});
+		assertThat(shutdownHook.isRuntimeShutdownHookAdded()).isTrue();
+	}
+
+	@Test
 	void runClosesContextsBeforeRunningHandlerActions() {
 		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
 		List<Object> finished = new CopyOnWriteArrayList<>();
