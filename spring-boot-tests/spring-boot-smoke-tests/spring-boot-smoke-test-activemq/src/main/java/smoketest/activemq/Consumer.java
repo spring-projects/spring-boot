@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-/**
- * Auto-configuration for ActiveMQ.
- */
-package org.springframework.boot.autoconfigure.jms.activemq;
+package smoketest.activemq;
+
+import org.springframework.jms.annotation.JmsListener;
+import org.springframework.stereotype.Component;
+
+@Component
+public class Consumer {
+
+	@JmsListener(destination = "sample.queue")
+	public void receiveQueue(String text) {
+		System.out.println(text);
+	}
+
+}

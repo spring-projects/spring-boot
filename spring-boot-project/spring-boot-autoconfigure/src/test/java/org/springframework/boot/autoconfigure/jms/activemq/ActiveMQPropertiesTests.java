@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ class ActiveMQPropertiesTests {
 
 	@Test
 	void getBrokerUrlUseExplicitBrokerUrl() {
-		this.properties.setBrokerUrl("vm://foo-bar");
-		assertThat(createFactory(this.properties).determineBrokerUrl()).isEqualTo("vm://foo-bar");
+		this.properties.setBrokerUrl("tcp://activemq.example.com:71717");
+		assertThat(createFactory(this.properties).determineBrokerUrl()).isEqualTo("tcp://activemq.example.com:71717");
 	}
 
 	@Test

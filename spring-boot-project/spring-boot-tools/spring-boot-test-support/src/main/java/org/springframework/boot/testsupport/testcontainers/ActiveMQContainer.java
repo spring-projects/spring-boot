@@ -14,24 +14,31 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jms.activemq;
+package org.springframework.boot.testsupport.testcontainers;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
+import org.testcontainers.containers.GenericContainer;
 
 /**
- * Callback interface that can be implemented by beans wishing to customize the
- * {@link ActiveMQConnectionFactory} whilst retaining default auto-configuration.
+ * A {@link GenericContainer} for ActiveMQ.
  *
  * @author Stephane Nicoll
  * @since 3.1.0
  */
-@FunctionalInterface
-public interface ActiveMQConnectionFactoryCustomizer {
+public class ActiveMQContainer extends GenericContainer<ActiveMQContainer> {
+
+	private static final int DEFAULT_PORT = 61616;
+
+	public ActiveMQContainer() {
+		super(DockerImageNames.activeMq());
+		addExposedPorts(DEFAULT_PORT);
+	}
 
 	/**
-	 * Customize the {@link ActiveMQConnectionFactory}.
-	 * @param factory the factory to customize
+	 * Return the broker URL to use.
+	 * @return the broker url of the ActiveMQ instance
 	 */
-	void customize(ActiveMQConnectionFactory factory);
+	public String getBrokerUrl() {
+		return String.format("tcp://" + getHost() + ":" + getMappedPort(DEFAULT_PORT));
+	}
 
 }

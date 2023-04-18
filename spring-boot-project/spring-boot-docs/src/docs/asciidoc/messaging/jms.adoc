@@ -9,15 +9,12 @@ Spring Boot also auto-configures the necessary infrastructure to send and receiv
 
 [[messaging.jms.activemq]]
 === ActiveMQ Support
-When https://activemq.apache.org/[ActiveMQ] is available on the classpath, Spring Boot can also configure a `ConnectionFactory`.
+When https://activemq.apache.org/[ActiveMQ] is available on the classpath, Spring Boot can configure a `ConnectionFactory`.
 
 NOTE: If you use `spring-boot-starter-activemq`, the necessary dependencies to connect to an ActiveMQ instance are provided, as is the Spring infrastructure to integrate with JMS.
 
 ActiveMQ configuration is controlled by external configuration properties in `+spring.activemq.*+`.
-
-By default, ActiveMQ is auto-configured to use the https://activemq.apache.org/tcp-transport-reference[TCP transport] eith the default broker URL `tcp://localhost:61616`.
-
-The following example shows how to change the default broker URL:
+By default, ActiveMQ is auto-configured to use the https://activemq.apache.org/tcp-transport-reference[TCP transport], connecting by default to `tcp://localhost:61616`. The following example shows how to change the default broker URL:
 
 [source,yaml,indent=0,configprops,configblocks]
 ----

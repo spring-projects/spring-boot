@@ -27,6 +27,8 @@ import org.testcontainers.utility.DockerImageName;
  */
 public final class DockerImageNames {
 
+	private static final String ACTIVE_MQ_VERSION = "5.18.0";
+
 	private static final String CASSANDRA_VERSION = "3.11.10";
 
 	private static final String COUCHBASE_VERSION = "6.5.1";
@@ -55,6 +57,15 @@ public final class DockerImageNames {
 
 	private DockerImageNames() {
 	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running ActiveMQ.
+	 * @return a docker image name for running activeMq
+	 */
+	public static DockerImageName activeMq() {
+		return DockerImageName.parse("symptoma/activemq").withTag(ACTIVE_MQ_VERSION);
+	}
+
 
 	/**
 	 * Return a {@link DockerImageName} suitable for running Cassandra.
