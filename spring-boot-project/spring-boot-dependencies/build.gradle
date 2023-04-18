@@ -1096,10 +1096,17 @@ bom {
 			]
 		}
 	}
-	library("R2DBC MariaDB", "1.1.4")  {
+	library("R2DBC MariaDB", "1.1.4") {
 		group("org.mariadb") {
 			modules = [
 				"r2dbc-mariadb"
+			]
+		}
+	}
+	library("R2DBC MySQL", "1.0.0") {
+		group("io.asyncer") {
+			modules = [
+				"r2dbc-mysql"
 			]
 		}
 	}
