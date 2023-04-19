@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -44,9 +45,9 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimNames;
 import org.springframework.security.oauth2.jwt.JwtClaimValidator;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder.JwkSetUriJwtDecoderBuilder;
 import org.springframework.security.oauth2.jwt.SupplierJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.util.CollectionUtils;
@@ -78,10 +79,11 @@ class OAuth2ResourceServerJwtConfiguration {
 
 		@Bean
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.jwt.jwk-set-uri")
-		JwtDecoder jwtDecoderByJwkKeySetUri() {
-			NimbusJwtDecoder nimbusJwtDecoder = NimbusJwtDecoder.withJwkSetUri(this.properties.getJwkSetUri())
-				.jwsAlgorithms(this::jwsAlgorithms)
-				.build();
+		JwtDecoder jwtDecoderByJwkKeySetUri(ObjectProvider<JwkSetUriJwtDecoderBuilderCustomizer> customizers) {
+			JwkSetUriJwtDecoderBuilder builder = NimbusJwtDecoder.withJwkSetUri(this.properties.getJwkSetUri())
+				.jwsAlgorithms(this::jwsAlgorithms);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
+			NimbusJwtDecoder nimbusJwtDecoder = builder.build();
 			String issuerUri = this.properties.getIssuerUri();
 			Supplier<OAuth2TokenValidator<Jwt>> defaultValidator = (issuerUri != null)
 					? () -> JwtValidators.createDefaultWithIssuer(issuerUri) : JwtValidators::createDefault;
@@ -138,10 +140,12 @@ class OAuth2ResourceServerJwtConfiguration {
 
 		@Bean
 		@Conditional(IssuerUriCondition.class)
-		SupplierJwtDecoder jwtDecoderByIssuerUri() {
+		SupplierJwtDecoder jwtDecoderByIssuerUri(ObjectProvider<JwkSetUriJwtDecoderBuilderCustomizer> customizers) {
 			return new SupplierJwtDecoder(() -> {
 				String issuerUri = this.properties.getIssuerUri();
-				NimbusJwtDecoder jwtDecoder = JwtDecoders.fromIssuerLocation(issuerUri);
+				JwkSetUriJwtDecoderBuilder builder = NimbusJwtDecoder.withIssuerLocation(issuerUri);
+				customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
+				NimbusJwtDecoder jwtDecoder = builder.build();
 				jwtDecoder.setJwtValidator(getValidators(() -> JwtValidators.createDefaultWithIssuer(issuerUri)));
 				return jwtDecoder;
 			});
