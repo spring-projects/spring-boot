@@ -98,9 +98,12 @@ Use the `management.wavefront.*` configuration properties to configure reporting
 
 [[actuator.micrometer-tracing.tracer-implementations.otel-otlp]]
 ==== OpenTelemetry With OTLP
+Tracing with OpenTelemetry and reporting using OTLP requires the following dependencies:
 
-* `io.micrometer:micrometer-tracing-bridge-otel` - which is needed to bridge the Micrometer Observation API to OpenTelemetry.
-* `io.opentelemetry:opentelemetry-exporter-otlp` - which is needed to report traces to a collector that can accept OTLP.
+* `io.micrometer:micrometer-tracing-bridge-otel` - bridges the Micrometer Observation API to OpenTelemetry.
+* `io.opentelemetry:opentelemetry-exporter-otlp` - report traces to a collector that can accept OTLP.
+
+Use the `management.otlp.tracing.*` configuration properties to configure reporting using OTLP.
 
 
 
