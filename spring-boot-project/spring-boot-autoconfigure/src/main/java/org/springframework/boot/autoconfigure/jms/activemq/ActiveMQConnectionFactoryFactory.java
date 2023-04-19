@@ -82,8 +82,8 @@ class ActiveMQConnectionFactoryFactory {
 	private <T extends ActiveMQConnectionFactory> T createConnectionFactoryInstance(Class<T> factoryClass)
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		String brokerUrl = this.connectionDetails.getBrokerUrl();
-		String user = this.properties.getUser();
-		String password = this.properties.getPassword();
+		String user = this.connectionDetails.getUser();
+		String password = this.connectionDetails.getPassword();
 		if (StringUtils.hasLength(user) && StringUtils.hasLength(password)) {
 			return factoryClass.getConstructor(String.class, String.class, String.class)
 				.newInstance(user, password, brokerUrl);

@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.jms.JmsAutoConfiguration;
 import org.springframework.boot.autoconfigure.jms.JmsProperties;
 import org.springframework.boot.autoconfigure.jms.JndiConnectionFactoryAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 /**
@@ -42,8 +43,41 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnClass({ ConnectionFactory.class, ActiveMQConnectionFactory.class })
 @ConditionalOnMissingBean(ConnectionFactory.class)
 @EnableConfigurationProperties({ ActiveMQProperties.class, JmsProperties.class })
-@Import({ ConnectionDetailsConfiguration.class, ActiveMQXAConnectionFactoryConfiguration.class,
-		ActiveMQConnectionFactoryConfiguration.class })
+@Import({ ActiveMQXAConnectionFactoryConfiguration.class, ActiveMQConnectionFactoryConfiguration.class })
 public class ActiveMQAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean(ActiveMQConnectionDetails.class)
+	ActiveMQConnectionDetails activemqConnectionDetails(ActiveMQProperties properties) {
+		return new PropertiesActiveMQConnectionDetails(properties);
+	}
+
+	/**
+	 * Adapts {@link ActiveMQProperties} to {@link ActiveMQConnectionDetails}.
+	 */
+	static class PropertiesActiveMQConnectionDetails implements ActiveMQConnectionDetails {
+
+		private final ActiveMQProperties properties;
+
+		public PropertiesActiveMQConnectionDetails(ActiveMQProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public String getBrokerUrl() {
+			return this.properties.determineBrokerUrl();
+		}
+
+		@Override
+		public String getUser() {
+			return this.properties.getUser();
+		}
+
+		@Override
+		public String getPassword() {
+			return this.properties.getPassword();
+		}
+
+	}
 
 }

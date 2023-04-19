@@ -236,8 +236,8 @@ class ActiveMQAutoConfigurationTests {
 
 	@Test
 	void definesPropertiesBasedConnectionDetailsByDefault() {
-		this.contextRunner
-			.run((context) -> assertThat(context).hasSingleBean(PropertiesActiveMQConnectionDetails.class));
+		this.contextRunner.run((context) -> assertThat(context)
+			.hasSingleBean(ActiveMQAutoConfiguration.PropertiesActiveMQConnectionDetails.class));
 	}
 
 	@Test
@@ -247,9 +247,11 @@ class ActiveMQAutoConfigurationTests {
 			.withUserConfiguration(TestConnectionDetailsConfiguration.class)
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ActiveMQConnectionDetails.class)
-					.doesNotHaveBean(PropertiesActiveMQConnectionDetails.class);
+					.doesNotHaveBean(ActiveMQAutoConfiguration.PropertiesActiveMQConnectionDetails.class);
 				ActiveMQConnectionFactory connectionFactory = context.getBean(ActiveMQConnectionFactory.class);
 				assertThat(connectionFactory.getBrokerURL()).isEqualTo("tcp://localhost:12345");
+				assertThat(connectionFactory.getUserName()).isEqualTo("springuser");
+				assertThat(connectionFactory.getPassword()).isEqualTo("spring");
 			});
 	}
 
@@ -286,7 +288,22 @@ class ActiveMQAutoConfigurationTests {
 
 		@Bean
 		ActiveMQConnectionDetails activemqConnectionDetails() {
-			return () -> "tcp://localhost:12345";
+			return new ActiveMQConnectionDetails() {
+				@Override
+				public String getBrokerUrl() {
+					return "tcp://localhost:12345";
+				}
+
+				@Override
+				public String getUser() {
+					return "springuser";
+				}
+
+				@Override
+				public String getPassword() {
+					return "spring";
+				}
+			};
 		}
 
 	}

@@ -16,9 +16,9 @@
 
 package smoketest.activemq;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -26,7 +26,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.ActiveMQContainer;
+
+import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,17 +45,17 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleActiveMqTests {
 
 	@Container
-	@ServiceConnection
+	@ServiceConnection("activemq")
 	private static final ActiveMQContainer container = new ActiveMQContainer();
 
 	@Autowired
 	private Producer producer;
 
 	@Test
-	void sendSimpleMessage(CapturedOutput output) throws InterruptedException {
+	void sendSimpleMessage(CapturedOutput output) {
 		this.producer.send("Test message");
-		Thread.sleep(1000L);
-		assertThat(output).contains("Test message");
+		Awaitility.waitAtMost(Duration.ofMinutes(1))
+				.untilAsserted(() -> assertThat(output).contains("Test message"));
 	}
 
 }
