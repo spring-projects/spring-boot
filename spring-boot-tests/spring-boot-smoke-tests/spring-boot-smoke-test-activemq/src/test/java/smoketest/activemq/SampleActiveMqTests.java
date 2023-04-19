@@ -16,6 +16,9 @@
 
 package smoketest.activemq;
 
+import java.time.Duration;
+
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testcontainers.junit.jupiter.Container;
@@ -25,9 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.ActiveMQContainer;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,21 +45,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleActiveMqTests {
 
 	@Container
+	@ServiceConnection
 	private static final ActiveMQContainer container = new ActiveMQContainer();
-
-	@DynamicPropertySource
-	static void activeMqProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.activemq.broker-url", container::getBrokerUrl);
-	}
 
 	@Autowired
 	private Producer producer;
 
 	@Test
-	void sendSimpleMessage(CapturedOutput output) throws InterruptedException {
+	void sendSimpleMessage(CapturedOutput output) {
 		this.producer.send("Test message");
-		Thread.sleep(1000L);
-		assertThat(output).contains("Test message");
+		Awaitility.waitAtMost(Duration.ofMinutes(1)).untilAsserted(() -> assertThat(output).contains("Test message"));
 	}
 
 }
