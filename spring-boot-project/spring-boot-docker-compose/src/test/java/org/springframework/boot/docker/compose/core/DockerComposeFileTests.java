@@ -56,7 +56,7 @@ class DockerComposeFileTests {
 	@Test
 	void toStringReturnsFileName() throws Exception {
 		DockerComposeFile composeFile = createComposeFile("compose.yml");
-		assertThat(composeFile.toString()).endsWith("/compose.yml");
+		assertThat(composeFile.toString()).endsWith(File.separator + "compose.yml");
 	}
 
 	@Test
@@ -64,7 +64,7 @@ class DockerComposeFileTests {
 		File file = new File(this.temp, "docker-compose.yml");
 		FileCopyUtils.copy(new byte[0], file);
 		DockerComposeFile composeFile = DockerComposeFile.find(file.getParentFile());
-		assertThat(composeFile.toString()).endsWith("/docker-compose.yml");
+		assertThat(composeFile.toString()).endsWith(File.separator + "docker-compose.yml");
 	}
 
 	@Test
@@ -74,7 +74,7 @@ class DockerComposeFileTests {
 		File f2 = new File(this.temp, "compose.yml");
 		FileCopyUtils.copy(new byte[0], f2);
 		DockerComposeFile composeFile = DockerComposeFile.find(f1.getParentFile());
-		assertThat(composeFile.toString()).endsWith("/compose.yml");
+		assertThat(composeFile.toString()).endsWith(File.separator + "compose.yml");
 	}
 
 	@Test
