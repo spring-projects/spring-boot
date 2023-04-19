@@ -28,12 +28,8 @@ public interface ActiveMQConnectionDetails extends ConnectionDetails {
 
 	String getBrokerUrl();
 
-	default String getUser() {
-		return null;
-	}
+	String getUser();
 
-	default String getPassword() {
-		return null;
-	}
+	String getPassword();
 
 }

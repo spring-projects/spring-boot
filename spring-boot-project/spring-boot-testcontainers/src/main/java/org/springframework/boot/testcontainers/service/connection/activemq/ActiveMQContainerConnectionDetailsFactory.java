@@ -16,6 +16,8 @@
 
 package org.springframework.boot.testcontainers.service.connection.activemq;
 
+import java.util.Map;
+
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
@@ -35,7 +37,7 @@ class ActiveMQContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<ActiveMQConnectionDetails, Container<?>> {
 
 	ActiveMQContainerConnectionDetailsFactory() {
-		super("activemq");
+		super("symptoma/activemq");
 	}
 
 	@Override
@@ -48,15 +50,28 @@ class ActiveMQContainerConnectionDetailsFactory
 
 		private final String brokerUrl;
 
+		private final Map<String, String> envVars;
+
 		private ActiveMQContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 			super(source);
 			this.brokerUrl = "tcp://" + source.getContainer().getHost() + ":"
 					+ source.getContainer().getFirstMappedPort();
+			this.envVars = source.getContainer().getEnvMap();
 		}
 
 		@Override
 		public String getBrokerUrl() {
 			return this.brokerUrl;
+		}
+
+		@Override
+		public String getUser() {
+			return this.envVars.get("ACTIVEMQ_USERNAME");
+		}
+
+		@Override
+		public String getPassword() {
+			return this.envVars.get("ACTIVEMQ_PASSWORD");
 		}
 
 	}

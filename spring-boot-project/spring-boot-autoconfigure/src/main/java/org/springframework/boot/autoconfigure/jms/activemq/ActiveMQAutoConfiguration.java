@@ -59,7 +59,7 @@ public class ActiveMQAutoConfiguration {
 
 		private final ActiveMQProperties properties;
 
-		public PropertiesActiveMQConnectionDetails(ActiveMQProperties properties) {
+		PropertiesActiveMQConnectionDetails(ActiveMQProperties properties) {
 			this.properties = properties;
 		}
 

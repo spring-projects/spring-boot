@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleActiveMqTests {
 
 	@Container
-	@ServiceConnection("activemq")
+	@ServiceConnection
 	private static final ActiveMQContainer container = new ActiveMQContainer();
 
 	@Autowired

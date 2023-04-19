@@ -49,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ActiveMQContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
-	@ServiceConnection("activemq")
+	@ServiceConnection
 	static final ActiveMQContainer activemq = new ActiveMQContainer();
 
 	@Autowired
