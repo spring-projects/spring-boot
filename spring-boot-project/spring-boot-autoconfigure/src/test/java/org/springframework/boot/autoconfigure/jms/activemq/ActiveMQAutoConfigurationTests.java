@@ -40,6 +40,7 @@ import static org.mockito.Mockito.mockingDetails;
  * @author Andy Wilkinson
  * @author Aurélien Leboulanger
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
 class ActiveMQAutoConfigurationTests {
 
@@ -233,6 +234,25 @@ class ActiveMQAutoConfigurationTests {
 				.doesNotHaveBean("jmsConnectionFactory"));
 	}
 
+	@Test
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner
+			.run((context) -> assertThat(context).hasSingleBean(PropertiesActiveMQConnectionDetails.class));
+	}
+
+	@Test
+	void testConnectionFactoryWithOverridesWhenUsingCustomConnectionDetails() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(CachingConnectionFactory.class))
+			.withPropertyValues("spring.activemq.pool.enabled=false", "spring.jms.cache.enabled=false")
+			.withUserConfiguration(TestConnectionDetailsConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ActiveMQConnectionDetails.class)
+					.doesNotHaveBean(PropertiesActiveMQConnectionDetails.class);
+				ActiveMQConnectionFactory connectionFactory = context.getBean(ActiveMQConnectionFactory.class);
+				assertThat(connectionFactory.getBrokerURL()).isEqualTo("tcp://localhost:12345");
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class EmptyConfiguration {
 
@@ -257,6 +277,16 @@ class ActiveMQAutoConfigurationTests {
 				factory.setBrokerURL("vm://localhost?useJmx=false&broker.persistent=false");
 				factory.setUserName("foobar");
 			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestConnectionDetailsConfiguration {
+
+		@Bean
+		ActiveMQConnectionDetails activemqConnectionDetails() {
+			return () -> "tcp://localhost:12345";
 		}
 
 	}

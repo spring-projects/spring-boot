@@ -18,6 +18,7 @@ package smoketest.activemq;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -26,8 +27,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testsupport.testcontainers.ActiveMQContainer;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,12 +42,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleActiveMqTests {
 
 	@Container
+	@ServiceConnection
 	private static final ActiveMQContainer container = new ActiveMQContainer();
-
-	@DynamicPropertySource
-	static void activeMqProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.activemq.broker-url", container::getBrokerUrl);
-	}
 
 	@Autowired
 	private Producer producer;

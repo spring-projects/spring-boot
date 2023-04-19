@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Aurélien Leboulanger
  * @author Venil Noronha
+ * @author Eddú Meléndez
  */
 class ActiveMQPropertiesTests {
 
@@ -38,13 +39,13 @@ class ActiveMQPropertiesTests {
 
 	@Test
 	void getBrokerUrlIsLocalhostByDefault() {
-		assertThat(createFactory(this.properties).determineBrokerUrl()).isEqualTo(DEFAULT_NETWORK_BROKER_URL);
+		assertThat(this.properties.determineBrokerUrl()).isEqualTo(DEFAULT_NETWORK_BROKER_URL);
 	}
 
 	@Test
 	void getBrokerUrlUseExplicitBrokerUrl() {
 		this.properties.setBrokerUrl("tcp://activemq.example.com:71717");
-		assertThat(createFactory(this.properties).determineBrokerUrl()).isEqualTo("tcp://activemq.example.com:71717");
+		assertThat(this.properties.determineBrokerUrl()).isEqualTo("tcp://activemq.example.com:71717");
 	}
 
 	@Test
@@ -66,7 +67,8 @@ class ActiveMQPropertiesTests {
 	}
 
 	private ActiveMQConnectionFactoryFactory createFactory(ActiveMQProperties properties) {
-		return new ActiveMQConnectionFactoryFactory(properties, Collections.emptyList());
+		return new ActiveMQConnectionFactoryFactory(properties, Collections.emptyList(),
+				new PropertiesActiveMQConnectionDetails(properties));
 	}
 
 }

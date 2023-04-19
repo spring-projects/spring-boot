@@ -8,6 +8,7 @@ org.springframework.boot.testcontainers.service.connection.ServiceConnectionCont
 
 # Connection Details Factories
 org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory=\
+org.springframework.boot.testcontainers.service.connection.activemq.ActiveMQContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.amqp.RabbitContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.cassandra.CassandraContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.couchbase.CouchbaseContainerConnectionDetailsFactory,\

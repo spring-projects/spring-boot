@@ -940,6 +940,9 @@ The following service connection factories are provided in the `spring-boot-test
 |===
 | Connection Details | Matched on
 
+| `ActiveMQConnectionDetails`
+| Containers named "activemq"
+
 | `CassandraConnectionDetails`
 | Containers of type `CassandraContainer`
 

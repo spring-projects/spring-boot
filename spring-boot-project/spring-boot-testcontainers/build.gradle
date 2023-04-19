@@ -33,6 +33,7 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("ch.qos.logback:logback-classic")
+	testImplementation("org.apache.activemq:activemq-client-jakarta")
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.influxdb:influxdb-java")
@@ -42,6 +43,7 @@ dependencies {
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.springframework:spring-core-test")
+	testImplementation("org.springframework:spring-jms")
 	testImplementation("org.springframework:spring-r2dbc")
 	testImplementation("org.springframework.amqp:spring-rabbit")
 	testImplementation("org.springframework.kafka:spring-kafka")

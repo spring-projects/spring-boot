@@ -38,6 +38,7 @@ import org.springframework.context.annotation.Primary;
  *
  * @author Phillip Webb
  * @author Aurélien Leboulanger
+ * @author Eddú Meléndez
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(TransactionManager.class)
@@ -48,10 +49,10 @@ class ActiveMQXAConnectionFactoryConfiguration {
 	@Primary
 	@Bean(name = { "jmsConnectionFactory", "xaJmsConnectionFactory" })
 	ConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
-			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers, XAConnectionFactoryWrapper wrapper)
-			throws Exception {
+			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers, XAConnectionFactoryWrapper wrapper,
+			ActiveMQConnectionDetails connectionDetails) throws Exception {
 		ActiveMQXAConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(properties,
-				factoryCustomizers.orderedStream().collect(Collectors.toList()))
+				factoryCustomizers.orderedStream().collect(Collectors.toList()), connectionDetails)
 			.createConnectionFactory(ActiveMQXAConnectionFactory.class);
 		return wrapper.wrapConnectionFactory(connectionFactory);
 	}
@@ -60,9 +61,10 @@ class ActiveMQXAConnectionFactoryConfiguration {
 	@ConditionalOnProperty(prefix = "spring.activemq.pool", name = "enabled", havingValue = "false",
 			matchIfMissing = true)
 	ActiveMQConnectionFactory nonXaJmsConnectionFactory(ActiveMQProperties properties,
-			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
+			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers,
+			ActiveMQConnectionDetails connectionDetails) {
 		return new ActiveMQConnectionFactoryFactory(properties,
-				factoryCustomizers.orderedStream().collect(Collectors.toList()))
+				factoryCustomizers.orderedStream().collect(Collectors.toList()), connectionDetails)
 			.createConnectionFactory(ActiveMQConnectionFactory.class);
 	}
 
