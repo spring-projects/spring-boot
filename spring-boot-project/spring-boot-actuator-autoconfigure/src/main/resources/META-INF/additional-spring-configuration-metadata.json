@@ -2033,6 +2033,10 @@
       }
     },
     {
+      "name": "management.otlp.tracing.compression",
+      "defaultValue": "none"
+    },
+    {
       "name": "management.prometheus.metrics.export.histogram-flavor",
       "defaultValue": "prometheus"
     },
