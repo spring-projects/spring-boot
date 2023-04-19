@@ -54,11 +54,10 @@ class OtlpAutoConfigurationIntegrationTests {
 				AutoConfigurations.of(ObservationAutoConfiguration.class, MicrometerTracingAutoConfiguration.class,
 						OpenTelemetryAutoConfiguration.class, OtlpAutoConfiguration.class));
 
-	private MockWebServer mockWebServer;
+	private final MockWebServer mockWebServer = new MockWebServer();
 
 	@BeforeEach
 	void setUp() throws IOException {
-		this.mockWebServer = new MockWebServer();
 		this.mockWebServer.start();
 	}
 
@@ -68,7 +67,7 @@ class OtlpAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	void httpSpanExporterShouldUseProtoBufAndNoCompression() {
+	void httpSpanExporterShouldUseProtoBufAndNoCompressionByDefault() {
 		this.mockWebServer.enqueue(new MockResponse());
 		this.contextRunner
 			.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:%d/v1/traces"
@@ -77,7 +76,6 @@ class OtlpAutoConfigurationIntegrationTests {
 				context.getBean(Tracer.class).nextSpan().name("test").end();
 				assertThat(context.getBean(OtlpHttpSpanExporter.class).flush())
 					.isSameAs(CompletableResultCode.ofSuccess());
-
 				RecordedRequest request = this.mockWebServer.takeRequest(10, TimeUnit.SECONDS);
 				assertThat(request).isNotNull();
 				assertThat(request.getRequestLine()).contains("/v1/traces");
@@ -91,17 +89,16 @@ class OtlpAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	void httpSpanExporterShouldUseProtoBufAndGzip() {
+	void httpSpanExporterCanBeConfiguredToUseGzipCompression() {
 		this.mockWebServer.enqueue(new MockResponse());
 		this.contextRunner
-			.withPropertyValues("management.otlp.tracing.compression=GZIP",
+			.withPropertyValues("management.otlp.tracing.compression=gzip",
 					"management.otlp.tracing.endpoint=http://localhost:%d/test".formatted(this.mockWebServer.getPort()))
 			.run((context) -> {
 				assertThat(context).hasSingleBean(OtlpHttpSpanExporter.class).hasSingleBean(SpanExporter.class);
 				context.getBean(Tracer.class).nextSpan().name("test").end();
 				assertThat(context.getBean(OtlpHttpSpanExporter.class).flush())
 					.isSameAs(CompletableResultCode.ofSuccess());
-
 				RecordedRequest request = this.mockWebServer.takeRequest(10, TimeUnit.SECONDS);
 				assertThat(request).isNotNull();
 				assertThat(request.getRequestLine()).contains("/test");

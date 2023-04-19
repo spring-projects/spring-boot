@@ -23,7 +23,7 @@ import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Configuration properties for {@link OtlpAutoConfiguration}.
+ * Configuration properties for exporting traces using OTLP.
  *
  * @author Jonatan Ivanov
  * @since 3.1.0

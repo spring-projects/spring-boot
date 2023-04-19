@@ -22,6 +22,7 @@ import io.micrometer.tracing.otel.bridge.OtelTracer;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporter;
 import io.opentelemetry.exporter.otlp.http.trace.OtlpHttpSpanExporterBuilder;
+import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
@@ -41,7 +42,7 @@ import org.springframework.context.annotation.Bean;
  * "https://github.com/open-telemetry/opentelemetry-java/issues/3651">opentelemetry-java#3651</a>.
  * Because this class configures components from the OTel SDK, it can't support HTTP/JSON.
  * To keep things simple, we only auto-configure HTTP/protobuf. If you want to use gRPC,
- * please disable this auto-configuration and create a bean.
+ * define an {@link OtlpGrpcSpanExporter} and this auto-configuration will back off.
  *
  * @author Jonatan Ivanov
  * @since 3.1.0
@@ -53,19 +54,17 @@ import org.springframework.context.annotation.Bean;
 public class OtlpAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
+	@ConditionalOnMissingBean(value = OtlpHttpSpanExporter.class,
+			type = "io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter")
 	OtlpHttpSpanExporter otlpHttpSpanExporter(OtlpProperties properties) {
 		OtlpHttpSpanExporterBuilder builder = OtlpHttpSpanExporter.builder()
 			.setEndpoint(properties.getEndpoint())
 			.setTimeout(properties.getTimeout())
 			.setCompression(properties.getCompression().name().toLowerCase());
-
 		for (Entry<String, String> header : properties.getHeaders().entrySet()) {
 			builder.addHeader(header.getKey(), header.getValue());
 		}
-
 		return builder.build();
-
 	}
 
 }

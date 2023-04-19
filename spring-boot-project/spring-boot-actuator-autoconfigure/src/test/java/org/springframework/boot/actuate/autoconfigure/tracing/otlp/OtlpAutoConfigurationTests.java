@@ -76,16 +76,15 @@ class OtlpAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldSupplyCustomHttpExporter() {
+	void shouldBackOffWhenCustomHttpExporterIsDefined() {
 		this.contextRunner.withUserConfiguration(CustomHttpExporterConfiguration.class)
 			.run((context) -> assertThat(context).hasBean("customOtlpHttpSpanExporter")
 				.hasSingleBean(SpanExporter.class));
 	}
 
 	@Test
-	void shouldSupplyCustomGrpcExporter() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader("io.opentelemetry.exporter"))
-			.withUserConfiguration(CustomGrpcExporterConfiguration.class)
+	void shouldBackOffWhenCustomGrpcExporterIsDefined() {
+		this.contextRunner.withUserConfiguration(CustomGrpcExporterConfiguration.class)
 			.run((context) -> assertThat(context).hasBean("customOtlpGrpcSpanExporter")
 				.hasSingleBean(SpanExporter.class));
 	}
