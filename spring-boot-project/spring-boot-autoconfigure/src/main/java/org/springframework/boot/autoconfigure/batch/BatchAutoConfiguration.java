@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.autoconfigure.batch;
+
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -44,6 +46,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Isolation;
@@ -115,11 +118,15 @@ public class BatchAutoConfiguration {
 
 		private final BatchProperties properties;
 
+		private final List<BatchConversionServiceCustomizer> batchConversionServiceCustomizers;
+
 		SpringBootBatchConfiguration(DataSource dataSource, @BatchDataSource ObjectProvider<DataSource> batchDataSource,
-				PlatformTransactionManager transactionManager, BatchProperties properties) {
+				PlatformTransactionManager transactionManager, BatchProperties properties,
+				ObjectProvider<BatchConversionServiceCustomizer> batchConversionServiceCustomizers) {
 			this.dataSource = batchDataSource.getIfAvailable(() -> dataSource);
 			this.transactionManager = transactionManager;
 			this.properties = properties;
+			this.batchConversionServiceCustomizers = batchConversionServiceCustomizers.orderedStream().toList();
 		}
 
 		@Override
@@ -142,6 +149,15 @@ public class BatchAutoConfiguration {
 		protected Isolation getIsolationLevelForCreate() {
 			Isolation isolation = this.properties.getJdbc().getIsolationLevelForCreate();
 			return (isolation != null) ? isolation : super.getIsolationLevelForCreate();
+		}
+
+		@Override
+		protected ConfigurableConversionService getConversionService() {
+			ConfigurableConversionService conversionService = super.getConversionService();
+			for (BatchConversionServiceCustomizer customizer : this.batchConversionServiceCustomizers) {
+				customizer.customize(conversionService);
+			}
+			return conversionService;
 		}
 
 	}

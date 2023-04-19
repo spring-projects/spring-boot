@@ -24,6 +24,8 @@ import javax.sql.DataSource;
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
@@ -71,6 +73,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
+import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -400,6 +404,24 @@ class BatchAutoConfigurationTests {
 				.hasBean("customInitializer"));
 	}
 
+	@Test
+	void conversionServiceCustomizersAreCalled() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
+			.withUserConfiguration(ConversionServiceCustomizersConfiguration.class)
+			.run((context) -> {
+				BatchConversionServiceCustomizer customizer = context.getBean("batchConversionServiceCustomizer",
+						BatchConversionServiceCustomizer.class);
+				BatchConversionServiceCustomizer anotherCustomizer = context
+					.getBean("anotherBatchConversionServiceCustomizer", BatchConversionServiceCustomizer.class);
+				InOrder inOrder = Mockito.inOrder(customizer, anotherCustomizer);
+				ConfigurableConversionService configurableConversionService = context
+					.getBean(SpringBootBatchConfiguration.class)
+					.getConversionService();
+				inOrder.verify(customizer).customize(configurableConversionService);
+				inOrder.verify(anotherCustomizer).customize(configurableConversionService);
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	protected static class BatchDataSourceConfiguration {
 
@@ -677,6 +699,23 @@ class BatchAutoConfigurationTests {
 	@EnableBatchProcessing
 	@Configuration(proxyBeanMethods = false)
 	static class EnableBatchProcessingConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ConversionServiceCustomizersConfiguration {
+
+		@Bean
+		@Order(1)
+		BatchConversionServiceCustomizer batchConversionServiceCustomizer() {
+			return mock(BatchConversionServiceCustomizer.class);
+		}
+
+		@Bean
+		@Order(2)
+		BatchConversionServiceCustomizer anotherBatchConversionServiceCustomizer() {
+			return mock(BatchConversionServiceCustomizer.class);
+		}
 
 	}
 
