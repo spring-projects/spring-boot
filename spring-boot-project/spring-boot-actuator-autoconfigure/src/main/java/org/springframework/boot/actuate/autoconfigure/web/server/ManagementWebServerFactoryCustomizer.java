@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -64,7 +62,7 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 	@Override
 	public final void customize(T factory) {
 		ManagementServerProperties managementServerProperties = BeanFactoryUtils
-				.beanOfTypeIncludingAncestors(this.beanFactory, ManagementServerProperties.class);
+			.beanOfTypeIncludingAncestors(this.beanFactory, ManagementServerProperties.class);
 		// Customize as per the parent context first (so e.g. the access logs go to
 		// the same place)
 		customizeSameAsParentContext(factory);
@@ -77,25 +75,21 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 	}
 
 	private void customizeSameAsParentContext(T factory) {
-		List<WebServerFactoryCustomizer<?>> customizers = Arrays.stream(this.customizerClasses).map(this::getCustomizer)
-				.filter(Objects::nonNull).collect(Collectors.toList());
+		List<WebServerFactoryCustomizer<?>> customizers = new ArrayList<>();
+		for (Class<? extends WebServerFactoryCustomizer<?>> customizerClass : this.customizerClasses) {
+			try {
+				customizers.add(BeanFactoryUtils.beanOfTypeIncludingAncestors(this.beanFactory, customizerClass));
+			}
+			catch (NoSuchBeanDefinitionException ex) {
+			}
+		}
 		invokeCustomizers(factory, customizers);
-	}
-
-	private WebServerFactoryCustomizer<?> getCustomizer(
-			Class<? extends WebServerFactoryCustomizer<?>> customizerClass) {
-		try {
-			return BeanFactoryUtils.beanOfTypeIncludingAncestors(this.beanFactory, customizerClass);
-		}
-		catch (NoSuchBeanDefinitionException ex) {
-			return null;
-		}
 	}
 
 	@SuppressWarnings("unchecked")
 	private void invokeCustomizers(T factory, List<WebServerFactoryCustomizer<?>> customizers) {
 		LambdaSafe.callbacks(WebServerFactoryCustomizer.class, customizers, factory)
-				.invoke((customizer) -> customizer.customize(factory));
+			.invoke((customizer) -> customizer.customize(factory));
 	}
 
 	protected void customize(T factory, ManagementServerProperties managementServerProperties,

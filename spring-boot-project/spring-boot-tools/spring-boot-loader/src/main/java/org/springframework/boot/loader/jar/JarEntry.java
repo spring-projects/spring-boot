@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ class JarEntry extends java.util.jar.JarEntry implements FileHeader {
 
 	private final JarFile jarFile;
 
-	private long localHeaderOffset;
+	private final long localHeaderOffset;
 
 	private volatile JarEntryCertification certification;
 

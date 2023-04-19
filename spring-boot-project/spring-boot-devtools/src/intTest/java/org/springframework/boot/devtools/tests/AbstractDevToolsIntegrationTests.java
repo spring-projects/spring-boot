@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,9 +66,9 @@ abstract class AbstractDevToolsIntegrationTests {
 
 	protected int awaitServerPort() throws Exception {
 		int port = Awaitility.waitAtMost(Duration.ofMinutes(3))
-				.until(() -> new ApplicationState(this.serverPortFile, this.launchedApplication),
-						ApplicationState::hasServerPort)
-				.getServerPort();
+			.until(() -> new ApplicationState(this.serverPortFile, this.launchedApplication),
+					ApplicationState::hasServerPort)
+			.getServerPort();
 		this.serverPortFile.delete();
 		this.launchedApplication.restartRemote(port);
 		Thread.sleep(1000);
@@ -98,12 +98,15 @@ abstract class AbstractDevToolsIntegrationTests {
 		}
 
 		protected void build() throws Exception {
-			DynamicType.Builder<Object> builder = new ByteBuddy().subclass(Object.class).name(this.name)
-					.annotateType(AnnotationDescription.Builder.ofType(RestController.class).build());
+			DynamicType.Builder<Object> builder = new ByteBuddy().subclass(Object.class)
+				.name(this.name)
+				.annotateType(AnnotationDescription.Builder.ofType(RestController.class).build());
 			for (String mapping : this.mappings) {
 				builder = builder.defineMethod(mapping, String.class, Visibility.PUBLIC)
-						.intercept(FixedValue.value(mapping)).annotateMethod(AnnotationDescription.Builder
-								.ofType(RequestMapping.class).defineArray("value", mapping).build());
+					.intercept(FixedValue.value(mapping))
+					.annotateMethod(AnnotationDescription.Builder.ofType(RequestMapping.class)
+						.defineArray("value", mapping)
+						.build());
 			}
 			builder.make().saveIn(this.classesDirectory);
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,21 +81,21 @@ class JacksonTesterIntegrationTests {
 		JacksonTester.initFields(this, new ObjectMapper());
 		String stringWithSpecialCharacters = "myString";
 		assertThat(this.stringJson.write(stringWithSpecialCharacters)).extractingJsonPathStringValue("@")
-				.isEqualTo(stringWithSpecialCharacters);
+			.isEqualTo(stringWithSpecialCharacters);
 	}
 
 	@Test
 	void parseSpecialCharactersTest() throws Exception {
 		JacksonTester.initFields(this, new ObjectMapper());
 		// Confirms that the handling of special characters is symmetrical between
-		// the serialization (via the JacksonTester) and the parsing (via json-path). By
-		// default json-path uses SimpleJson as its parser, which has a slightly different
-		// behavior to Jackson and breaks the symmetry. JacksonTester
+		// the serialization (through the JacksonTester) and the parsing (through
+		// json-path). By default json-path uses SimpleJson as its parser, which has a
+		// slightly different behavior to Jackson and breaks the symmetry. JacksonTester
 		// configures json-path to use Jackson for evaluating the path expressions and
 		// restores the symmetry. See gh-15727
 		String stringWithSpecialCharacters = "\u0006\u007F";
 		assertThat(this.stringJson.write(stringWithSpecialCharacters)).extractingJsonPathStringValue("@")
-				.isEqualTo(stringWithSpecialCharacters);
+			.isEqualTo(stringWithSpecialCharacters);
 	}
 
 	@Test
@@ -105,7 +105,7 @@ class JacksonTesterIntegrationTests {
 		object.setName("Spring");
 		object.setAge(123);
 		JsonContent<ExampleObjectWithView> content = this.jsonWithView.forView(ExampleObjectWithView.TestView.class)
-				.write(object);
+			.write(object);
 		assertThat(content).extractingJsonPathStringValue("@.name").isEqualTo("Spring");
 		assertThat(content).doesNotHaveJsonPathValue("age");
 	}
@@ -115,9 +115,9 @@ class JacksonTesterIntegrationTests {
 		JacksonTester.initFields(this, JsonMapper.builder().disable(MapperFeature.DEFAULT_VIEW_INCLUSION).build());
 		ByteArrayResource resource = new ByteArrayResource(JSON.getBytes());
 		ObjectContent<ExampleObjectWithView> content = this.jsonWithView.forView(ExampleObjectWithView.TestView.class)
-				.read(resource);
+			.read(resource);
 		assertThat(content.getObject().getName()).isEqualTo("Spring");
-		assertThat(content.getObject().getAge()).isEqualTo(0);
+		assertThat(content.getObject().getAge()).isZero();
 	}
 
 	@Test
@@ -125,9 +125,9 @@ class JacksonTesterIntegrationTests {
 		JacksonTester.initFields(this, JsonMapper.builder().disable(MapperFeature.DEFAULT_VIEW_INCLUSION).build());
 		Reader reader = new StringReader(JSON);
 		ObjectContent<ExampleObjectWithView> content = this.jsonWithView.forView(ExampleObjectWithView.TestView.class)
-				.read(reader);
+			.read(reader);
 		assertThat(content.getObject().getName()).isEqualTo("Spring");
-		assertThat(content.getObject().getAge()).isEqualTo(0);
+		assertThat(content.getObject().getAge()).isZero();
 	}
 
 }

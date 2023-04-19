@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,12 +54,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class HypermediaAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withUserConfiguration(BaseConfig.class);
+		.withUserConfiguration(BaseConfig.class);
 
 	@Test
 	void autoConfigurationWhenSpringMvcNotOnClasspathShouldBackOff() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(RequestMappingHandlerAdapter.class))
-				.run((context) -> assertThat(context.getBeansOfType(HypermediaConfiguration.class)).isEmpty());
+			.run((context) -> assertThat(context.getBeansOfType(HypermediaConfiguration.class)).isEmpty());
 	}
 
 	@Test
@@ -83,34 +83,37 @@ class HypermediaAutoConfigurationTests {
 	@Test
 	void doesBackOffIfEnableHypermediaSupportIsDeclaredManually() {
 		this.contextRunner.withUserConfiguration(EnableHypermediaSupportConfig.class)
-				.withPropertyValues("spring.jackson.serialization.INDENT_OUTPUT:true")
-				.run((context) -> assertThat(context.getBeansOfType(HypermediaConfiguration.class)).isEmpty());
+			.withPropertyValues("spring.jackson.serialization.INDENT_OUTPUT:true")
+			.run((context) -> assertThat(context.getBeansOfType(HypermediaConfiguration.class)).isEmpty());
 	}
 
 	@Test
 	void whenUsingTheDefaultConfigurationThenMappingJacksonConverterCanWriteHateoasTypeAsApplicationJson() {
 		this.contextRunner.run((context) -> {
 			RequestMappingHandlerAdapter handlerAdapter = context.getBean(RequestMappingHandlerAdapter.class);
-			Optional<HttpMessageConverter<?>> mappingJacksonConverter = handlerAdapter.getMessageConverters().stream()
-					.filter(MappingJackson2HttpMessageConverter.class::isInstance).findFirst();
-			assertThat(mappingJacksonConverter).isPresent().hasValueSatisfying(
+			Optional<HttpMessageConverter<?>> mappingJacksonConverter = handlerAdapter.getMessageConverters()
+				.stream()
+				.filter(MappingJackson2HttpMessageConverter.class::isInstance)
+				.findFirst();
+			assertThat(mappingJacksonConverter).hasValueSatisfying(
 					(converter) -> assertThat(converter.canWrite(RepresentationModel.class, MediaType.APPLICATION_JSON))
-							.isTrue());
+						.isTrue());
 		});
 	}
 
 	@Test
 	void whenHalIsNotTheDefaultJsonMediaTypeThenMappingJacksonConverterCannotWriteHateoasTypeAsApplicationJson() {
 		this.contextRunner.withPropertyValues("spring.hateoas.use-hal-as-default-json-media-type:false")
-				.run((context) -> {
-					RequestMappingHandlerAdapter handlerAdapter = context.getBean(RequestMappingHandlerAdapter.class);
-					Optional<HttpMessageConverter<?>> mappingJacksonConverter = handlerAdapter.getMessageConverters()
-							.stream().filter(MappingJackson2HttpMessageConverter.class::isInstance).findFirst();
-					assertThat(mappingJacksonConverter).isPresent()
-							.hasValueSatisfying((converter) -> assertThat(
-									converter.canWrite(RepresentationModel.class, MediaType.APPLICATION_JSON))
-											.isFalse());
-				});
+			.run((context) -> {
+				RequestMappingHandlerAdapter handlerAdapter = context.getBean(RequestMappingHandlerAdapter.class);
+				Optional<HttpMessageConverter<?>> mappingJacksonConverter = handlerAdapter.getMessageConverters()
+					.stream()
+					.filter(MappingJackson2HttpMessageConverter.class::isInstance)
+					.findFirst();
+				assertThat(mappingJacksonConverter).hasValueSatisfying((converter) -> assertThat(
+						converter.canWrite(RepresentationModel.class, MediaType.APPLICATION_JSON))
+					.isFalse());
+			});
 	}
 
 	@ImportAutoConfiguration({ HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,

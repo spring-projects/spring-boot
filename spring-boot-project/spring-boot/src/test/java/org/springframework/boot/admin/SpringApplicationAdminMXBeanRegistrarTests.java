@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,7 +122,7 @@ class SpringApplicationAdminMXBeanRegistrarTests {
 		assertThat(this.context.isRunning()).isFalse();
 		// JMX cleanup
 		assertThatExceptionOfType(InstanceNotFoundException.class)
-				.isThrownBy(() -> this.mBeanServer.getObjectInstance(objectName));
+			.isThrownBy(() -> this.mBeanServer.getObjectInstance(objectName));
 	}
 
 	private Boolean isApplicationReady(ObjectName objectName) {

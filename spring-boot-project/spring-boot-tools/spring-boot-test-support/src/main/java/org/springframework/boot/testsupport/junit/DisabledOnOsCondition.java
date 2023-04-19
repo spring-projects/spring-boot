@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.testsupport.junit;
 
 import java.util.Optional;
 
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ConditionEvaluationResult;
 import org.junit.jupiter.api.extension.ExecutionCondition;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -42,14 +43,18 @@ class DisabledOnOsCondition implements ExecutionCondition {
 	private ConditionEvaluationResult evaluate(DisabledOnOs annotation) {
 		String architecture = System.getProperty("os.arch");
 		String os = System.getProperty("os.name");
-		if (annotation.os().isCurrentOs() && annotation.architecture().equals(architecture)) {
-			String reason = annotation.disabledReason().isEmpty()
-					? String.format("Disabled on OS = %s, architecture = %s", os, architecture)
-					: annotation.disabledReason();
-			return ConditionEvaluationResult.disabled(reason);
+		if (annotation.architecture().equals(architecture)) {
+			for (OS targetOs : annotation.os()) {
+				if (targetOs.isCurrentOs()) {
+					String reason = annotation.disabledReason().isEmpty()
+							? String.format("Disabled on OS = %s, architecture = %s", os, architecture)
+							: annotation.disabledReason();
+					return ConditionEvaluationResult.disabled(reason);
+				}
+			}
 		}
 		return ConditionEvaluationResult
-				.enabled(String.format("Enabled on OS = %s, architecture = %s", os, architecture));
+			.enabled(String.format("Enabled on OS = %s, architecture = %s", os, architecture));
 	}
 
 }

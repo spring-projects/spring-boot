@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,8 +67,9 @@ class MavenPublishingConventions {
 					mavenRepository.setName("deployment");
 				});
 			}
-			publishing.getPublications().withType(MavenPublication.class)
-					.all((mavenPublication) -> customizeMavenPublication(mavenPublication, project));
+			publishing.getPublications()
+				.withType(MavenPublication.class)
+				.all((mavenPublication) -> customizeMavenPublication(mavenPublication, project));
 			project.getPlugins().withType(JavaPlugin.class).all((javaPlugin) -> {
 				JavaPluginExtension extension = project.getExtensions().getByType(JavaPluginExtension.class);
 				extension.withJavadocJar();
@@ -79,8 +80,9 @@ class MavenPublishingConventions {
 
 	private void customizeMavenPublication(MavenPublication publication, Project project) {
 		customizePom(publication.getPom(), project);
-		project.getPlugins().withType(JavaPlugin.class)
-				.all((javaPlugin) -> customizeJavaMavenPublication(publication, project));
+		project.getPlugins()
+			.withType(JavaPlugin.class)
+			.all((javaPlugin) -> customizeJavaMavenPublication(publication, project));
 		suppressMavenOptionalFeatureWarnings(publication);
 	}
 
@@ -102,7 +104,7 @@ class MavenPublishingConventions {
 	private void customizeJavaMavenPublication(MavenPublication publication, Project project) {
 		addMavenOptionalFeature(project);
 		publication.versionMapping((strategy) -> strategy.usage(Usage.JAVA_API, (mappingStrategy) -> mappingStrategy
-				.fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME)));
+			.fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME)));
 		publication.versionMapping(
 				(strategy) -> strategy.usage(Usage.JAVA_RUNTIME, VariantVersionMappingStrategy::fromResolutionResult));
 	}
@@ -117,7 +119,7 @@ class MavenPublishingConventions {
 		extension.registerFeature("mavenOptional",
 				(feature) -> feature.usingSourceSet(extension.getSourceSets().getByName("main")));
 		AdhocComponentWithVariants javaComponent = (AdhocComponentWithVariants) project.getComponents()
-				.findByName("java");
+			.findByName("java");
 		javaComponent.addVariantsFromConfiguration(
 				project.getConfigurations().findByName("mavenOptionalRuntimeElements"),
 				ConfigurationVariantDetails::mapToOptional);
@@ -129,7 +131,7 @@ class MavenPublishingConventions {
 	}
 
 	private void customizeOrganization(MavenPomOrganization organization) {
-		organization.getName().set("Pivotal Software, Inc.");
+		organization.getName().set("VMware, Inc.");
 		organization.getUrl().set("https://spring.io");
 	}
 
@@ -142,9 +144,9 @@ class MavenPublishingConventions {
 
 	private void customizeDevelopers(MavenPomDeveloperSpec developers) {
 		developers.developer((developer) -> {
-			developer.getName().set("Pivotal");
-			developer.getEmail().set("info@pivotal.io");
-			developer.getOrganization().set("Pivotal Software, Inc.");
+			developer.getName().set("Spring");
+			developer.getEmail().set("ask@spring.io");
+			developer.getOrganization().set("VMware, Inc.");
 			developer.getOrganizationUrl().set("https://www.spring.io");
 		});
 	}

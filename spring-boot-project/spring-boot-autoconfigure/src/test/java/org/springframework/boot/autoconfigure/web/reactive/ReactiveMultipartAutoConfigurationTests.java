@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import org.junit.jupiter.api.Test;
 
@@ -28,6 +26,7 @@ import org.springframework.boot.test.context.runner.ReactiveWebApplicationContex
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.http.codec.multipart.DefaultPartHttpMessageReader;
+import org.springframework.http.codec.multipart.PartEventHttpMessageReader;
 import org.springframework.http.codec.support.DefaultServerCodecConfigurer;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
@@ -38,54 +37,83 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ReactiveMultipartAutoConfiguration}.
  *
  * @author Chris Bono
+ * @author Brian Clozel
  */
 class ReactiveMultipartAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ReactiveMultipartAutoConfiguration.class));
-
-	private static final Path DEFAULT_FILE_STORAGE_DIRECTORY = Paths.get(System.getProperty("java.io.tmpdir"),
-			"spring-multipart");
+		.withConfiguration(AutoConfigurations.of(ReactiveMultipartAutoConfiguration.class));
 
 	@Test
 	void shouldNotProvideCustomizerForNonReactiveApp() {
 		new WebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(ReactiveMultipartAutoConfiguration.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(CodecCustomizer.class));
+			.withConfiguration(AutoConfigurations.of(ReactiveMultipartAutoConfiguration.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(CodecCustomizer.class));
 	}
 
 	@Test
 	void shouldNotProvideCustomizerWhenWebFluxNotAvailable() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(WebFluxConfigurer.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(CodecCustomizer.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(CodecCustomizer.class));
 	}
 
 	@Test
-	void shouldConfigureMultipartProperties() {
-		this.contextRunner.withPropertyValues("spring.webflux.multipart.streaming:true",
-				"spring.webflux.multipart.max-in-memory-size=1GB", "spring.webflux.multipart.max-headers-size=16KB",
-				"spring.webflux.multipart.max-disk-usage-per-part=100MB", "spring.webflux.multipart.max-parts=7",
-				"spring.webflux.multipart.headers-charset:UTF_16").run((context) -> {
-					CodecCustomizer customizer = context.getBean(CodecCustomizer.class);
-					DefaultServerCodecConfigurer configurer = new DefaultServerCodecConfigurer();
-					customizer.customize(configurer);
-					DefaultPartHttpMessageReader partReader = getPartReader(configurer);
-					assertThat(partReader).hasFieldOrPropertyWithValue("streaming", true);
-					assertThat(partReader).hasFieldOrPropertyWithValue("maxParts", 7);
-					assertThat(partReader).hasFieldOrPropertyWithValue("maxHeadersSize",
-							Math.toIntExact(DataSize.ofKilobytes(16).toBytes()));
-					assertThat(partReader).hasFieldOrPropertyWithValue("headersCharset", StandardCharsets.UTF_16);
-					assertThat(partReader).hasFieldOrPropertyWithValue("maxInMemorySize",
-							Math.toIntExact(DataSize.ofGigabytes(1).toBytes()));
-					assertThat(partReader).hasFieldOrPropertyWithValue("maxDiskUsagePerPart",
-							DataSize.ofMegabytes(100).toBytes());
-				});
+	void shouldConfigureMultipartPropertiesForDefaultReader() {
+		this.contextRunner
+			.withPropertyValues("spring.webflux.multipart.max-in-memory-size=1GB",
+					"spring.webflux.multipart.max-headers-size=16KB",
+					"spring.webflux.multipart.max-disk-usage-per-part=100MB", "spring.webflux.multipart.max-parts=7",
+					"spring.webflux.multipart.headers-charset:UTF_16")
+			.run((context) -> {
+				CodecCustomizer customizer = context.getBean(CodecCustomizer.class);
+				DefaultServerCodecConfigurer configurer = new DefaultServerCodecConfigurer();
+				customizer.customize(configurer);
+				DefaultPartHttpMessageReader partReader = getDefaultPartReader(configurer);
+				assertThat(partReader).hasFieldOrPropertyWithValue("maxParts", 7);
+				assertThat(partReader).hasFieldOrPropertyWithValue("maxHeadersSize",
+						Math.toIntExact(DataSize.ofKilobytes(16).toBytes()));
+				assertThat(partReader).hasFieldOrPropertyWithValue("headersCharset", StandardCharsets.UTF_16);
+				assertThat(partReader).hasFieldOrPropertyWithValue("maxInMemorySize",
+						Math.toIntExact(DataSize.ofGigabytes(1).toBytes()));
+				assertThat(partReader).hasFieldOrPropertyWithValue("maxDiskUsagePerPart",
+						DataSize.ofMegabytes(100).toBytes());
+			});
 	}
 
-	private DefaultPartHttpMessageReader getPartReader(DefaultServerCodecConfigurer codecConfigurer) {
-		return codecConfigurer.getReaders().stream().filter(DefaultPartHttpMessageReader.class::isInstance)
-				.map(DefaultPartHttpMessageReader.class::cast).findFirst()
-				.orElseThrow(() -> new IllegalStateException("Could not find DefaultPartHttpMessageReader"));
+	@Test
+	void shouldConfigureMultipartPropertiesForPartEventReader() {
+		this.contextRunner
+			.withPropertyValues("spring.webflux.multipart.max-in-memory-size=1GB",
+					"spring.webflux.multipart.max-headers-size=16KB", "spring.webflux.multipart.headers-charset:UTF_16")
+			.run((context) -> {
+				CodecCustomizer customizer = context.getBean(CodecCustomizer.class);
+				DefaultServerCodecConfigurer configurer = new DefaultServerCodecConfigurer();
+				customizer.customize(configurer);
+				PartEventHttpMessageReader partReader = getPartEventReader(configurer);
+				assertThat(partReader).hasFieldOrPropertyWithValue("maxHeadersSize",
+						Math.toIntExact(DataSize.ofKilobytes(16).toBytes()));
+				assertThat(partReader).hasFieldOrPropertyWithValue("headersCharset", StandardCharsets.UTF_16);
+				assertThat(partReader).hasFieldOrPropertyWithValue("maxInMemorySize",
+						Math.toIntExact(DataSize.ofGigabytes(1).toBytes()));
+			});
+	}
+
+	private DefaultPartHttpMessageReader getDefaultPartReader(DefaultServerCodecConfigurer codecConfigurer) {
+		return codecConfigurer.getReaders()
+			.stream()
+			.filter(DefaultPartHttpMessageReader.class::isInstance)
+			.map(DefaultPartHttpMessageReader.class::cast)
+			.findFirst()
+			.orElseThrow(() -> new IllegalStateException("Could not find DefaultPartHttpMessageReader"));
+	}
+
+	private PartEventHttpMessageReader getPartEventReader(DefaultServerCodecConfigurer codecConfigurer) {
+		return codecConfigurer.getReaders()
+			.stream()
+			.filter(PartEventHttpMessageReader.class::isInstance)
+			.map(PartEventHttpMessageReader.class::cast)
+			.findFirst()
+			.orElseThrow(() -> new IllegalStateException("Could not find PartEventHttpMessageReader"));
 	}
 
 }

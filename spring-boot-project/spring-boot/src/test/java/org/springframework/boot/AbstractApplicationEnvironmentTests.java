@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,8 @@ public abstract class AbstractApplicationEnvironmentTests {
 	void getActiveProfilesDoesNotResolveProperty() {
 		StandardEnvironment environment = createEnvironment();
 		new MockPropertySource().withProperty("", "");
-		environment.getPropertySources().addFirst(
-				new MockPropertySource().withProperty(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, "test"));
+		environment.getPropertySources()
+			.addFirst(new MockPropertySource().withProperty(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, "test"));
 		assertThat(environment.getActiveProfiles()).isEmpty();
 	}
 
@@ -48,8 +48,9 @@ public abstract class AbstractApplicationEnvironmentTests {
 	void getDefaultProfilesDoesNotResolveProperty() {
 		StandardEnvironment environment = createEnvironment();
 		new MockPropertySource().withProperty("", "");
-		environment.getPropertySources().addFirst(
-				new MockPropertySource().withProperty(AbstractEnvironment.DEFAULT_PROFILES_PROPERTY_NAME, "test"));
+		environment.getPropertySources()
+			.addFirst(
+					new MockPropertySource().withProperty(AbstractEnvironment.DEFAULT_PROFILES_PROPERTY_NAME, "test"));
 		assertThat(environment.getDefaultProfiles()).containsExactly("default");
 	}
 
@@ -57,7 +58,7 @@ public abstract class AbstractApplicationEnvironmentTests {
 	void propertyResolverIsOptimizedForConfigurationProperties() {
 		StandardEnvironment environment = createEnvironment();
 		ConfigurablePropertyResolver expected = ConfigurationPropertySources
-				.createPropertyResolver(new MutablePropertySources());
+			.createPropertyResolver(new MutablePropertySources());
 		assertThat(environment).extracting("propertyResolver").hasSameClassAs(expected);
 	}
 

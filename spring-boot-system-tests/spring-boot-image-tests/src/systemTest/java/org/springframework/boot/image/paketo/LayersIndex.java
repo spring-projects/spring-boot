@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
@@ -37,17 +38,27 @@ import org.yaml.snakeyaml.constructor.Constructor;
 class LayersIndex extends ArrayList<Map<String, List<String>>> {
 
 	List<String> getLayer(String layerName) {
-		return stream().filter((entry) -> entry.containsKey(layerName)).findFirst().map((entry) -> entry.get(layerName))
-				.orElse(Collections.emptyList());
+		return stream().filter((entry) -> entry.containsKey(layerName))
+			.findFirst()
+			.map((entry) -> entry.get(layerName))
+			.orElse(Collections.emptyList());
 	}
 
 	static LayersIndex fromArchiveFile(File archiveFile) throws IOException {
 		String indexPath = (archiveFile.getName().endsWith(".war") ? "WEB-INF/layers.idx" : "BOOT-INF/layers.idx");
 		try (JarFile jarFile = new JarFile(archiveFile)) {
 			ZipEntry indexEntry = jarFile.getEntry(indexPath);
-			Yaml yaml = new Yaml(new Constructor(LayersIndex.class));
+			Yaml yaml = new Yaml(new Constructor(LayersIndex.class, getLoaderOptions()));
 			return yaml.load(jarFile.getInputStream(indexEntry));
 		}
+	}
+
+	private static LoaderOptions getLoaderOptions() {
+		LoaderOptions loaderOptions = new LoaderOptions();
+		loaderOptions.setAllowDuplicateKeys(false);
+		loaderOptions.setMaxAliasesForCollections(Integer.MAX_VALUE);
+		loaderOptions.setAllowRecursiveKeys(true);
+		return loaderOptions;
 	}
 
 }

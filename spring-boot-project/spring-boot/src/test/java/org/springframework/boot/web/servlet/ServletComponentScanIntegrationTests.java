@@ -36,6 +36,9 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.testsupport.classpath.ForkedClassPath;
+import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
+import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -55,6 +58,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
+@DirtiesUrlFactories
 class ServletComponentScanIntegrationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
@@ -71,6 +75,7 @@ class ServletComponentScanIntegrationTests {
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("testConfiguration")
+	@ForkedClassPath
 	void componentsAreRegistered(String serverName, Class<?> configuration) {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(configuration);
@@ -83,6 +88,7 @@ class ServletComponentScanIntegrationTests {
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("testConfiguration")
+	@ForkedClassPath
 	void indexedComponentsAreRegistered(String serverName, Class<?> configuration) throws IOException {
 		writeIndex(this.temp);
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
@@ -100,6 +106,7 @@ class ServletComponentScanIntegrationTests {
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("testConfiguration")
+	@ForkedClassPath
 	void multipartConfigIsHonoured(String serverName, Class<?> configuration) {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
 		this.context.register(configuration);
@@ -152,6 +159,7 @@ class ServletComponentScanIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@Servlet5ClassPathOverrides
 	static class JettyTestConfiguration extends AbstractTestConfiguration {
 
 		@Override

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,7 @@
 
 package org.springframework.boot.autoconfigure.logging;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.function.Supplier;
 
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
@@ -25,7 +24,6 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.event.ApplicationContextEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.context.support.GenericApplicationContext;
@@ -52,19 +50,13 @@ import org.springframework.util.Assert;
 public class ConditionEvaluationReportLoggingListener
 		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
-	private final Log logger = LogFactory.getLog(getClass());
-
-	private ConfigurableApplicationContext applicationContext;
-
-	private ConditionEvaluationReport report;
-
 	private final LogLevel logLevelForReport;
 
 	public ConditionEvaluationReportLoggingListener() {
 		this(LogLevel.DEBUG);
 	}
 
-	public ConditionEvaluationReportLoggingListener(LogLevel logLevelForReport) {
+	private ConditionEvaluationReportLoggingListener(LogLevel logLevelForReport) {
 		Assert.isTrue(isInfoOrDebug(logLevelForReport), "LogLevel must be INFO or DEBUG");
 		this.logLevelForReport = logLevelForReport;
 	}
@@ -73,71 +65,48 @@ public class ConditionEvaluationReportLoggingListener
 		return LogLevel.INFO.equals(logLevelForReport) || LogLevel.DEBUG.equals(logLevelForReport);
 	}
 
-	public LogLevel getLogLevelForReport() {
-		return this.logLevelForReport;
+	/**
+	 * Static factory method that creates a
+	 * {@link ConditionEvaluationReportLoggingListener} which logs the report at the
+	 * specified log level.
+	 * @param logLevelForReport the log level to log the report at
+	 * @return a {@link ConditionEvaluationReportLoggingListener} instance.
+	 * @since 3.0.0
+	 */
+	public static ConditionEvaluationReportLoggingListener forLogLevel(LogLevel logLevelForReport) {
+		return new ConditionEvaluationReportLoggingListener(logLevelForReport);
 	}
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		this.applicationContext = applicationContext;
-		applicationContext.addApplicationListener(new ConditionEvaluationReportListener());
-		if (applicationContext instanceof GenericApplicationContext) {
-			// Get the report early in case the context fails to load
-			this.report = ConditionEvaluationReport.get(this.applicationContext.getBeanFactory());
-		}
+		applicationContext.addApplicationListener(new ConditionEvaluationReportListener(applicationContext));
 	}
 
-	protected void onApplicationEvent(ApplicationEvent event) {
-		ConfigurableApplicationContext initializerApplicationContext = this.applicationContext;
-		if (event instanceof ContextRefreshedEvent) {
-			if (((ApplicationContextEvent) event).getApplicationContext() == initializerApplicationContext) {
-				logAutoConfigurationReport();
-			}
-		}
-		else if (event instanceof ApplicationFailedEvent
-				&& ((ApplicationFailedEvent) event).getApplicationContext() == initializerApplicationContext) {
-			logAutoConfigurationReport(true);
-		}
-	}
+	private final class ConditionEvaluationReportListener implements GenericApplicationListener {
 
-	private void logAutoConfigurationReport() {
-		logAutoConfigurationReport(!this.applicationContext.isActive());
-	}
+		private final ConfigurableApplicationContext context;
 
-	public void logAutoConfigurationReport(boolean isCrashReport) {
-		if (this.report == null) {
-			if (this.applicationContext == null) {
-				this.logger.info("Unable to provide the conditions report due to missing ApplicationContext");
-				return;
-			}
-			this.report = ConditionEvaluationReport.get(this.applicationContext.getBeanFactory());
-		}
-		if (!this.report.getConditionAndOutcomesBySource().isEmpty()) {
-			if (getLogLevelForReport().equals(LogLevel.INFO)) {
-				if (this.logger.isInfoEnabled()) {
-					this.logger.info(new ConditionEvaluationReportMessage(this.report));
-				}
-				else if (isCrashReport) {
-					logMessage("info");
-				}
+		private final ConditionEvaluationReportLogger logger;
+
+		private ConditionEvaluationReportListener(ConfigurableApplicationContext context) {
+			this.context = context;
+			Supplier<ConditionEvaluationReport> reportSupplier;
+			if (context instanceof GenericApplicationContext) {
+				// Get the report early when the context allows early access to the bean
+				// factory in case the context subsequently fails to load
+				ConditionEvaluationReport report = getReport();
+				reportSupplier = () -> report;
 			}
 			else {
-				if (this.logger.isDebugEnabled()) {
-					this.logger.debug(new ConditionEvaluationReportMessage(this.report));
-				}
-				else if (isCrashReport) {
-					logMessage("debug");
-				}
+				reportSupplier = this::getReport;
 			}
+			this.logger = new ConditionEvaluationReportLogger(
+					ConditionEvaluationReportLoggingListener.this.logLevelForReport, reportSupplier);
 		}
-	}
 
-	private void logMessage(String logLevel) {
-		this.logger.info(String.format("%n%nError starting ApplicationContext. To display the "
-				+ "conditions report re-run your application with '" + logLevel + "' enabled."));
-	}
-
-	private class ConditionEvaluationReportListener implements GenericApplicationListener {
+		private ConditionEvaluationReport getReport() {
+			return ConditionEvaluationReport.get(this.context.getBeanFactory());
+		}
 
 		@Override
 		public int getOrder() {
@@ -161,7 +130,15 @@ public class ConditionEvaluationReportLoggingListener
 
 		@Override
 		public void onApplicationEvent(ApplicationEvent event) {
-			ConditionEvaluationReportLoggingListener.this.onApplicationEvent(event);
+			if (event instanceof ContextRefreshedEvent contextRefreshedEvent) {
+				if (contextRefreshedEvent.getApplicationContext() == this.context) {
+					this.logger.logReport(false);
+				}
+			}
+			else if (event instanceof ApplicationFailedEvent applicationFailedEvent
+					&& applicationFailedEvent.getApplicationContext() == this.context) {
+				this.logger.logReport(true);
+			}
 		}
 
 	}

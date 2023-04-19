@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,6 +83,14 @@ class CloudPlatformTests {
 		Environment environment = new MockEnvironment().withProperty("HC_LANDSCAPE", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.SAP);
+		assertThat(platform.isActive(environment)).isTrue();
+	}
+
+	@Test
+	void getActiveWhenHasNomadAllocIdShouldReturnNomad() {
+		Environment environment = new MockEnvironment().withProperty("NOMAD_ALLOC_ID", "---");
+		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isEqualTo(CloudPlatform.NOMAD);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
 
@@ -242,7 +250,7 @@ class CloudPlatformTests {
 		Environment environment = getEnvironmentWithEnvVariables(envVars);
 		((MockEnvironment) environment).setProperty("spring.main.cloud-platform", "none");
 		assertThat(Stream.of(CloudPlatform.values()).filter((platform) -> platform.isActive(environment)))
-				.containsExactly(CloudPlatform.NONE);
+			.containsExactly(CloudPlatform.NONE);
 	}
 
 	private Environment getEnvironmentWithEnvVariables(Map<String, Object> environmentVariables) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,25 +22,48 @@ import org.testcontainers.utility.DockerImageName;
  * Create {@link DockerImageName} instances for services used in integration tests.
  *
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 2.3.6
  */
 public final class DockerImageNames {
+
+	private static final String ACTIVE_MQ_VERSION = "5.18.0";
 
 	private static final String CASSANDRA_VERSION = "3.11.10";
 
 	private static final String COUCHBASE_VERSION = "6.5.1";
 
+	private static final String ELASTICSEARCH_VERSION = "7.17.5";
+
+	private static final String KAFKA_VERSION = "5.4.3";
+
+	private static final String INFLUX_DB_VERSION = "2.6.1";
+
 	private static final String MONGO_VERSION = "4.0.23";
 
-	private static final String NEO4J_VERSION = "4.0";
+	private static final String NEO4J_VERSION = "4.4.11";
+
+	private static final String ORACLE_XE_VERSION = "18.4.0-slim";
 
 	private static final String POSTGRESQL_VERSION = "14.0";
 
+	private static final String RABBIT_VERSION = "3.11-alpine";
+
 	private static final String REDIS_VERSION = "4.0.14";
+
+	private static final String REDPANDA_VERSION = "v23.1.2";
 
 	private static final String REGISTRY_VERSION = "2.7.1";
 
 	private DockerImageNames() {
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running ActiveMQ.
+	 * @return a docker image name for running activeMq
+	 */
+	public static DockerImageName activeMq() {
+		return DockerImageName.parse("symptoma/activemq").withTag(ACTIVE_MQ_VERSION);
 	}
 
 	/**
@@ -60,13 +83,27 @@ public final class DockerImageNames {
 	}
 
 	/**
-	 * Return a {@link DockerImageName} suitable for running Elasticsearch according to
-	 * the version available on the classpath.
+	 * Return a {@link DockerImageName} suitable for running Elasticsearch.
 	 * @return a docker image name for running elasticsearch
 	 */
 	public static DockerImageName elasticsearch() {
-		String version = org.elasticsearch.Version.CURRENT.toString();
-		return DockerImageName.parse("docker.elastic.co/elasticsearch/elasticsearch").withTag(version);
+		return DockerImageName.parse("docker.elastic.co/elasticsearch/elasticsearch").withTag(ELASTICSEARCH_VERSION);
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running InfluxDB.
+	 * @return a docker image name for running Kafka
+	 */
+	public static DockerImageName influxDb() {
+		return DockerImageName.parse("influxdb").withTag(INFLUX_DB_VERSION);
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running Kafka.
+	 * @return a docker image name for running Kafka
+	 */
+	public static DockerImageName kafka() {
+		return DockerImageName.parse("confluentinc/cp-kafka").withTag(KAFKA_VERSION);
 	}
 
 	/**
@@ -85,6 +122,10 @@ public final class DockerImageNames {
 		return DockerImageName.parse("neo4j").withTag(NEO4J_VERSION);
 	}
 
+	public static DockerImageName oracleXe() {
+		return DockerImageName.parse("gvenzl/oracle-xe").withTag(ORACLE_XE_VERSION);
+	}
+
 	/**
 	 * Return a {@link DockerImageName} suitable for running PostgreSQL.
 	 * @return a docker image name for running postgresql
@@ -94,11 +135,29 @@ public final class DockerImageNames {
 	}
 
 	/**
+	 * Return a {@link DockerImageName} suitable for running RabbitMQ.
+	 * @return a docker image name for running redis
+	 */
+	public static DockerImageName rabbit() {
+		return DockerImageName.parse("rabbitmq").withTag(RABBIT_VERSION);
+	}
+
+	/**
 	 * Return a {@link DockerImageName} suitable for running Redis.
 	 * @return a docker image name for running redis
 	 */
 	public static DockerImageName redis() {
 		return DockerImageName.parse("redis").withTag(REDIS_VERSION);
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running Redpanda.
+	 * @return a docker image name for running redpanda
+	 */
+	public static DockerImageName redpanda() {
+		return DockerImageName.parse("redpandadata/redpanda")
+			.withTag(REDPANDA_VERSION)
+			.asCompatibleSubstituteFor("docker.redpanda.com/redpandadata/redpanda");
 	}
 
 	/**

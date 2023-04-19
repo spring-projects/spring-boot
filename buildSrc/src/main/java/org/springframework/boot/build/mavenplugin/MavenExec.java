@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public class MavenExec extends JavaExec {
 
 	private File projectDir;
 
-	public MavenExec() throws IOException {
+	public MavenExec() {
 		setClasspath(mavenConfiguration(getProject()));
 		args("--batch-mode");
 		getMainClass().set("org.apache.maven.cli.MavenCli");
@@ -51,8 +51,9 @@ public class MavenExec extends JavaExec {
 
 	public void setProjectDir(File projectDir) {
 		this.projectDir = projectDir;
-		getInputs().file(new File(projectDir, "pom.xml")).withPathSensitivity(PathSensitivity.RELATIVE)
-				.withPropertyName("pom");
+		getInputs().file(new File(projectDir, "pom.xml"))
+			.withPathSensitivity(PathSensitivity.RELATIVE)
+			.withPropertyName("pom");
 	}
 
 	@Override
@@ -85,13 +86,14 @@ public class MavenExec extends JavaExec {
 			return existing;
 		}
 		return project.getConfigurations().create("maven", (maven) -> {
-			maven.getDependencies().add(project.getDependencies().create("org.apache.maven:maven-embedder:3.6.2"));
-			maven.getDependencies().add(project.getDependencies().create("org.apache.maven:maven-compat:3.6.2"));
+			maven.getDependencies().add(project.getDependencies().create("org.apache.maven:maven-embedder:3.6.3"));
+			maven.getDependencies().add(project.getDependencies().create("org.apache.maven:maven-compat:3.6.3"));
 			maven.getDependencies().add(project.getDependencies().create("org.slf4j:slf4j-simple:1.7.5"));
-			maven.getDependencies().add(
-					project.getDependencies().create("org.apache.maven.resolver:maven-resolver-connector-basic:1.4.1"));
-			maven.getDependencies().add(
-					project.getDependencies().create("org.apache.maven.resolver:maven-resolver-transport-http:1.4.1"));
+			maven.getDependencies()
+				.add(project.getDependencies()
+					.create("org.apache.maven.resolver:maven-resolver-connector-basic:1.4.1"));
+			maven.getDependencies()
+				.add(project.getDependencies().create("org.apache.maven.resolver:maven-resolver-transport-http:1.4.1"));
 		});
 	}
 

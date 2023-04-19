@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.data.elasticsearch;
 
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchTemplate;
 import org.springframework.stereotype.Service;
 
 /**
@@ -27,14 +27,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class ExampleService {
 
-	private final ElasticsearchRestTemplate elasticsearchRestTemplate;
+	private final ElasticsearchTemplate elasticsearchTemplate;
 
-	public ExampleService(ElasticsearchRestTemplate elasticsearchRestTemplate) {
-		this.elasticsearchRestTemplate = elasticsearchRestTemplate;
+	public ExampleService(ElasticsearchTemplate elasticsearchRestTemplate) {
+		this.elasticsearchTemplate = elasticsearchRestTemplate;
 	}
 
 	public ExampleDocument findById(String id) {
-		return this.elasticsearchRestTemplate.get(id, ExampleDocument.class);
+		return this.elasticsearchTemplate.get(id, ExampleDocument.class);
 	}
 
 }

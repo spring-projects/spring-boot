@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ public class MySecurityConfiguration {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.requestMatcher(EndpointRequest.toAnyEndpoint())
-				.authorizeRequests((requests) -> requests.anyRequest().permitAll());
+		http.securityMatcher(EndpointRequest.toAnyEndpoint());
+		http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());
 		return http.build();
 	}
 

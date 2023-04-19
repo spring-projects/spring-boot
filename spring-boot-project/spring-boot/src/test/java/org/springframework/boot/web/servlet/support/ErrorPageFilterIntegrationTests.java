@@ -187,11 +187,6 @@ class ErrorPageFilterIntegrationTests {
 		}
 
 		@Override
-		public ApplicationContext loadContext(String... locations) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
 		protected String[] getResourceSuffixes() {
 			return EMPTY_RESOURCE_SUFFIXES;
 		}

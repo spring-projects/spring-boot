@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
+@SuppressWarnings("removal")
+@Deprecated(since = "3.0.0", forRemoval = true)
 class DefaultWebFluxTagsProviderTests {
 
 	@Test
@@ -51,14 +53,15 @@ class DefaultWebFluxTagsProviderTests {
 		ServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get("/test"));
 		Map<String, Tag> tags = asMap(
 				new DefaultWebFluxTagsProvider(Arrays.asList(new TestWebFluxTagsContributor("alpha"),
-						new TestWebFluxTagsContributor("bravo", "charlie"))).httpRequestTags(exchange, null));
+						new TestWebFluxTagsContributor("bravo", "charlie")))
+					.httpRequestTags(exchange, null));
 		assertThat(tags).containsOnlyKeys("exception", "method", "outcome", "status", "uri", "alpha", "bravo",
 				"charlie");
 	}
 
 	private Map<String, Tag> asMap(Iterable<Tag> tags) {
 		return StreamSupport.stream(tags.spliterator(), false)
-				.collect(Collectors.toMap(Tag::getKey, Function.identity()));
+			.collect(Collectors.toMap(Tag::getKey, Function.identity()));
 	}
 
 	private static final class TestWebFluxTagsContributor implements WebFluxTagsContributor {
@@ -71,7 +74,7 @@ class DefaultWebFluxTagsProviderTests {
 
 		@Override
 		public Iterable<Tag> httpRequestTags(ServerWebExchange exchange, Throwable ex) {
-			return this.tagNames.stream().map((name) -> Tag.of(name, "value")).collect(Collectors.toList());
+			return this.tagNames.stream().map((name) -> Tag.of(name, "value")).toList();
 		}
 
 	}

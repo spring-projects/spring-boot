@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,13 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.core.Ordered;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.withSettings;
 
 /**
  * Tests for {@link ExitCodeGenerators}.
@@ -44,12 +47,12 @@ class ExitCodeGeneratorsTests {
 	@Test
 	void addWhenGeneratorIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ExitCodeGenerators().add(null))
-				.withMessageContaining("Generator must not be null");
+			.withMessageContaining("Generator must not be null");
 	}
 
 	@Test
 	void getExitCodeWhenNoGeneratorsShouldReturnZero() {
-		assertThat(new ExitCodeGenerators().getExitCode()).isEqualTo(0);
+		assertThat(new ExitCodeGenerators().getExitCode()).isZero();
 	}
 
 	@Test
@@ -58,22 +61,13 @@ class ExitCodeGeneratorsTests {
 		given(generator.getExitCode()).willThrow(new IllegalStateException());
 		ExitCodeGenerators generators = new ExitCodeGenerators();
 		generators.add(generator);
-		assertThat(generators.getExitCode()).isEqualTo(1);
+		assertThat(generators.getExitCode()).isOne();
 	}
 
 	@Test
-	void getExitCodeWhenAllNegativeShouldReturnLowestValue() {
+	void getExitCodeWithUnorderedGeneratorsReturnsFirstNonZeroExitCode() {
 		ExitCodeGenerators generators = new ExitCodeGenerators();
-		generators.add(mockGenerator(-1));
-		generators.add(mockGenerator(-3));
-		generators.add(mockGenerator(-2));
-		assertThat(generators.getExitCode()).isEqualTo(-3);
-	}
-
-	@Test
-	void getExitCodeWhenAllPositiveShouldReturnHighestValue() {
-		ExitCodeGenerators generators = new ExitCodeGenerators();
-		generators.add(mockGenerator(1));
+		generators.add(mockGenerator(0));
 		generators.add(mockGenerator(3));
 		generators.add(mockGenerator(2));
 		assertThat(generators.getExitCode()).isEqualTo(3);
@@ -89,9 +83,26 @@ class ExitCodeGeneratorsTests {
 		assertThat(generators.getExitCode()).isEqualTo(2);
 	}
 
+	@Test
+	void getExitCodeWithOrderedGeneratorsReturnsFirstNonZeroExitCode() {
+		ExitCodeGenerators generators = new ExitCodeGenerators();
+		generators.add(orderedMockGenerator(0, 1));
+		generators.add(orderedMockGenerator(1, 3));
+		generators.add(orderedMockGenerator(2, 2));
+		generators.add(mockGenerator(3));
+		assertThat(generators.getExitCode()).isEqualTo(2);
+	}
+
 	private ExitCodeGenerator mockGenerator(int exitCode) {
 		ExitCodeGenerator generator = mock(ExitCodeGenerator.class);
 		given(generator.getExitCode()).willReturn(exitCode);
+		return generator;
+	}
+
+	private ExitCodeGenerator orderedMockGenerator(int exitCode, int order) {
+		ExitCodeGenerator generator = mock(ExitCodeGenerator.class, withSettings().extraInterfaces(Ordered.class));
+		given(generator.getExitCode()).willReturn(exitCode);
+		given(((Ordered) generator).getOrder()).willReturn(order);
 		return generator;
 	}
 

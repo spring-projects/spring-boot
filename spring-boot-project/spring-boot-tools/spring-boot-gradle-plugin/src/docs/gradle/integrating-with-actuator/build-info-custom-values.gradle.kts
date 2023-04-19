@@ -7,10 +7,10 @@ plugins {
 springBoot {
 	buildInfo {
 		properties {
-			artifact = "example-app"
-			version = "1.2.3"
-			group = "com.example"
-			name = "Example application"
+			artifact.set("example-app")
+			version.set("1.2.3")
+			group.set("com.example")
+			name.set("Example application")
 		}
 	}
 }

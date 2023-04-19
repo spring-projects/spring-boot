@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,9 +79,9 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 
 	private String urlString;
 
-	private JarFileEntries entries;
+	private final JarFileEntries entries;
 
-	private Supplier<Manifest> manifestSupplier;
+	private final Supplier<Manifest> manifestSupplier;
 
 	private SoftReference<Manifest> manifest;
 
@@ -270,8 +270,8 @@ public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.J
 	@Override
 	public synchronized InputStream getInputStream(ZipEntry entry) throws IOException {
 		ensureOpen();
-		if (entry instanceof JarEntry) {
-			return this.entries.getInputStream((JarEntry) entry);
+		if (entry instanceof JarEntry jarEntry) {
+			return this.entries.getInputStream(jarEntry);
 		}
 		return getInputStream((entry != null) ? entry.getName() : null);
 	}

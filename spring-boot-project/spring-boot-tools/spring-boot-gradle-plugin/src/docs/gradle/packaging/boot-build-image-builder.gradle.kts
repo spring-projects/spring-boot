@@ -12,14 +12,14 @@ tasks.named<BootJar>("bootJar") {
 
 // tag::builder[]
 tasks.named<BootBuildImage>("bootBuildImage") {
-	builder = "mine/java-cnb-builder"
-	runImage = "mine/java-cnb-run"
+	builder.set("mine/java-cnb-builder")
+	runImage.set("mine/java-cnb-run")
 }
 // end::builder[]
 
 tasks.register("bootBuildImageBuilder") {
 	doFirst {
-		println("builder=${tasks.getByName<BootBuildImage>("bootBuildImage").builder}")
-		println("runImage=${tasks.getByName<BootBuildImage>("bootBuildImage").runImage}")
+		println("builder=${tasks.getByName<BootBuildImage>("bootBuildImage").builder.get()}")
+		println("runImage=${tasks.getByName<BootBuildImage>("bootBuildImage").runImage.get()}")
 	}
 }

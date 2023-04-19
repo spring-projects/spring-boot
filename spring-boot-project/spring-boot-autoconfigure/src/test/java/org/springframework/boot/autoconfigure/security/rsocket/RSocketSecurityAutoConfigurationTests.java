@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,9 +42,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RSocketSecurityAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ReactiveUserDetailsServiceAutoConfiguration.class,
-					RSocketSecurityAutoConfiguration.class, RSocketMessagingAutoConfiguration.class,
-					RSocketStrategiesAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ReactiveUserDetailsServiceAutoConfiguration.class,
+				RSocketSecurityAutoConfiguration.class, RSocketMessagingAutoConfiguration.class,
+				RSocketStrategiesAutoConfiguration.class));
 
 	@Test
 	void autoConfigurationEnablesRSocketSecurity() {
@@ -54,7 +54,7 @@ class RSocketSecurityAutoConfigurationTests {
 	@Test
 	void autoConfigurationIsConditionalOnSecuritySocketAcceptorInterceptorClass() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(SecuritySocketAcceptorInterceptor.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(RSocketSecurity.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(RSocketSecurity.class));
 	}
 
 	@Test
@@ -66,7 +66,7 @@ class RSocketSecurityAutoConfigurationTests {
 			server.interceptors((registry) -> registry.forSocketAcceptor((interceptors) -> {
 				assertThat(interceptors).isNotEmpty();
 				assertThat(interceptors)
-						.anyMatch((interceptor) -> interceptor instanceof SecuritySocketAcceptorInterceptor);
+					.anyMatch((interceptor) -> interceptor instanceof SecuritySocketAcceptorInterceptor);
 			}));
 		});
 	}
@@ -76,8 +76,8 @@ class RSocketSecurityAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(RSocketMessageHandler.class);
 			RSocketMessageHandler handler = context.getBean(RSocketMessageHandler.class);
-			assertThat(handler.getArgumentResolverConfigurer().getCustomResolvers()).isNotEmpty()
-					.anyMatch((customResolver) -> customResolver instanceof AuthenticationPrincipalArgumentResolver);
+			assertThat(handler.getArgumentResolverConfigurer().getCustomResolvers())
+				.anyMatch((customResolver) -> customResolver instanceof AuthenticationPrincipalArgumentResolver);
 		});
 	}
 

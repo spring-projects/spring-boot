@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,11 +94,11 @@ public class StartupTimeMetricsListener implements SmartApplicationListener {
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ApplicationStartedEvent) {
-			onApplicationStarted((ApplicationStartedEvent) event);
+		if (event instanceof ApplicationStartedEvent startedEvent) {
+			onApplicationStarted(startedEvent);
 		}
-		if (event instanceof ApplicationReadyEvent) {
-			onApplicationReady((ApplicationReadyEvent) event);
+		if (event instanceof ApplicationReadyEvent readyEvent) {
+			onApplicationReady(readyEvent);
 		}
 	}
 
@@ -116,14 +116,16 @@ public class StartupTimeMetricsListener implements SmartApplicationListener {
 			SpringApplication springApplication) {
 		if (timeTaken != null) {
 			Iterable<Tag> tags = createTagsFrom(springApplication);
-			TimeGauge.builder(name, timeTaken::toMillis, TimeUnit.MILLISECONDS).tags(tags).description(description)
-					.register(this.meterRegistry);
+			TimeGauge.builder(name, timeTaken::toMillis, TimeUnit.MILLISECONDS)
+				.tags(tags)
+				.description(description)
+				.register(this.meterRegistry);
 		}
 	}
 
 	private Iterable<Tag> createTagsFrom(SpringApplication springApplication) {
 		Class<?> mainClass = springApplication.getMainApplicationClass();
-		return (mainClass != null) ? this.tags.and("main-application-class", mainClass.getName()) : this.tags;
+		return (mainClass != null) ? this.tags.and("main.application.class", mainClass.getName()) : this.tags;
 	}
 
 }

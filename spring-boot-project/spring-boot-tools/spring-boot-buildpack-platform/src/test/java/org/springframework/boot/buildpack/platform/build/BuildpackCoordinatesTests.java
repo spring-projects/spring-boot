@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,55 +43,63 @@ class BuildpackCoordinatesTests extends AbstractJsonTests {
 	@Test
 	void fromToml() throws IOException {
 		BuildpackCoordinates coordinates = BuildpackCoordinates
-				.fromToml(createTomlStream("example/buildpack1", "0.0.1", true, false), this.archive);
+			.fromToml(createTomlStream("example/buildpack1", "0.0.1", true, false), this.archive);
 		assertThat(coordinates.getId()).isEqualTo("example/buildpack1");
 		assertThat(coordinates.getVersion()).isEqualTo("0.0.1");
 	}
 
 	@Test
-	void fromTomlWhenMissingDescriptorThrowsException() throws Exception {
+	void fromTomlWhenMissingDescriptorThrowsException() {
 		ByteArrayInputStream coordinates = new ByteArrayInputStream("".getBytes());
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackCoordinates.fromToml(coordinates, this.archive))
-				.withMessageContaining("Buildpack descriptor 'buildpack.toml' is required")
-				.withMessageContaining(this.archive.toString());
+			.withMessageContaining("Buildpack descriptor 'buildpack.toml' is required")
+			.withMessageContaining(this.archive.toString());
 	}
 
 	@Test
-	void fromTomlWhenMissingIDThrowsException() throws Exception {
-		InputStream coordinates = createTomlStream(null, null, true, false);
-		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackCoordinates.fromToml(coordinates, this.archive))
+	void fromTomlWhenMissingIDThrowsException() throws IOException {
+		try (InputStream coordinates = createTomlStream(null, null, true, false)) {
+			assertThatIllegalArgumentException()
+				.isThrownBy(() -> BuildpackCoordinates.fromToml(coordinates, this.archive))
 				.withMessageContaining("Buildpack descriptor must contain ID")
 				.withMessageContaining(this.archive.toString());
+		}
 	}
 
 	@Test
-	void fromTomlWhenMissingVersionThrowsException() throws Exception {
-		InputStream coordinates = createTomlStream("example/buildpack1", null, true, false);
-		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackCoordinates.fromToml(coordinates, this.archive))
+	void fromTomlWhenMissingVersionThrowsException() throws IOException {
+		try (InputStream coordinates = createTomlStream("example/buildpack1", null, true, false)) {
+			assertThatIllegalArgumentException()
+				.isThrownBy(() -> BuildpackCoordinates.fromToml(coordinates, this.archive))
 				.withMessageContaining("Buildpack descriptor must contain version")
 				.withMessageContaining(this.archive.toString());
+		}
 	}
 
 	@Test
-	void fromTomlWhenMissingStacksAndOrderThrowsException() throws Exception {
-		InputStream coordinates = createTomlStream("example/buildpack1", "0.0.1", false, false);
-		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackCoordinates.fromToml(coordinates, this.archive))
+	void fromTomlWhenMissingStacksAndOrderThrowsException() throws IOException {
+		try (InputStream coordinates = createTomlStream("example/buildpack1", "0.0.1", false, false)) {
+			assertThatIllegalArgumentException()
+				.isThrownBy(() -> BuildpackCoordinates.fromToml(coordinates, this.archive))
 				.withMessageContaining("Buildpack descriptor must contain either 'stacks' or 'order'")
 				.withMessageContaining(this.archive.toString());
+		}
 	}
 
 	@Test
-	void fromTomlWhenContainsBothStacksAndOrderThrowsException() throws Exception {
-		InputStream coordinates = createTomlStream("example/buildpack1", "0.0.1", true, true);
-		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackCoordinates.fromToml(coordinates, this.archive))
+	void fromTomlWhenContainsBothStacksAndOrderThrowsException() throws IOException {
+		try (InputStream coordinates = createTomlStream("example/buildpack1", "0.0.1", true, true)) {
+			assertThatIllegalArgumentException()
+				.isThrownBy(() -> BuildpackCoordinates.fromToml(coordinates, this.archive))
 				.withMessageContaining("Buildpack descriptor must not contain both 'stacks' and 'order'")
 				.withMessageContaining(this.archive.toString());
+		}
 	}
 
 	@Test
 	void fromBuildpackMetadataWhenMetadataIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackCoordinates.fromBuildpackMetadata(null))
-				.withMessage("BuildpackMetadata must not be null");
+			.withMessage("BuildpackMetadata must not be null");
 	}
 
 	@Test
@@ -105,7 +113,7 @@ class BuildpackCoordinatesTests extends AbstractJsonTests {
 	@Test
 	void ofWhenIdIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackCoordinates.of(null, null))
-				.withMessage("ID must not be empty");
+			.withMessage("ID must not be empty");
 	}
 
 	@Test
@@ -144,7 +152,7 @@ class BuildpackCoordinatesTests extends AbstractJsonTests {
 		BuildpackCoordinates c1b = BuildpackCoordinates.of("id", "1");
 		BuildpackCoordinates c2 = BuildpackCoordinates.of("id", "2");
 		assertThat(c1a).isEqualTo(c1a).isEqualTo(c1b).isNotEqualTo(c2);
-		assertThat(c1a.hashCode()).isEqualTo(c1b.hashCode());
+		assertThat(c1a).hasSameHashCodeAs(c1b);
 	}
 
 	private InputStream createTomlStream(String id, String version, boolean includeStacks, boolean includeOrder) {

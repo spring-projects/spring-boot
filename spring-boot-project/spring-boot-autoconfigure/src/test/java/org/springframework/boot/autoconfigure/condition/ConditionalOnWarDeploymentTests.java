@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,14 +38,14 @@ class ConditionalOnWarDeploymentTests {
 	void nonWebApplicationShouldNotMatch() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 		contextRunner.withUserConfiguration(TestConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean("forWar"));
+			.run((context) -> assertThat(context).doesNotHaveBean("forWar"));
 	}
 
 	@Test
 	void reactiveWebApplicationShouldNotMatch() {
 		ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner();
 		contextRunner.withUserConfiguration(TestConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean("forWar"));
+			.run((context) -> assertThat(context).doesNotHaveBean("forWar"));
 	}
 
 	@Test
@@ -53,7 +53,7 @@ class ConditionalOnWarDeploymentTests {
 		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebApplicationContext::new);
 		contextRunner.withUserConfiguration(TestConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean("forWar"));
+			.run((context) -> assertThat(context).doesNotHaveBean("forWar"));
 	}
 
 	@Test
@@ -62,7 +62,7 @@ class ConditionalOnWarDeploymentTests {
 		// SpringBootServletInitializer does for WAR deployments.
 		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner();
 		contextRunner.withUserConfiguration(TestConfiguration.class)
-				.run((context) -> assertThat(context).hasBean("forWar"));
+			.run((context) -> assertThat(context).hasBean("forWar"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

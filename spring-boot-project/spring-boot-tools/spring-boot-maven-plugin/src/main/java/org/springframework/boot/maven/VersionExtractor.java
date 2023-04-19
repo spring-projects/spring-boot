@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,8 +48,8 @@ final class VersionExtractor {
 		URL codeSourceLocation = cls.getProtectionDomain().getCodeSource().getLocation();
 		try {
 			URLConnection connection = codeSourceLocation.openConnection();
-			if (connection instanceof JarURLConnection) {
-				return getImplementationVersion(((JarURLConnection) connection).getJarFile());
+			if (connection instanceof JarURLConnection jarURLConnection) {
+				return getImplementationVersion(jarURLConnection.getJarFile());
 			}
 			try (JarFile jarFile = new JarFile(new File(codeSourceLocation.toURI()))) {
 				return getImplementationVersion(jarFile);

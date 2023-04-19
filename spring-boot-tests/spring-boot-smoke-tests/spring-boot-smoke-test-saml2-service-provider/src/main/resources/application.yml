@@ -8,10 +8,10 @@ spring:
               credentials:
               - private-key-location: "classpath:saml/privatekey.txt"
                 certificate-location: "classpath:saml/certificate.txt"
-            identityprovider:
+            assertingparty:
               verification:
                 credentials:
-                - certificate-location: "classpath:saml/certificate.txt"
+                  - certificate-location: "classpath:saml/certificate.txt"
               entity-id: simplesaml
               singlesignon:
                 url: https://simplesaml-for-spring-saml/SSOService.php
@@ -21,10 +21,10 @@ spring:
               credentials:
               - private-key-location: "classpath:saml/privatekey.txt"
                 certificate-location: "classpath:saml/certificate.txt"
-            identityprovider:
+            assertingparty:
               verification:
                 credentials:
-                - certificate-location: "classpath:saml/certificate.txt"
+                  - certificate-location: "classpath:saml/certificate.txt"
               entity-id: okta-id-1234
               singlesignon:
                 url:

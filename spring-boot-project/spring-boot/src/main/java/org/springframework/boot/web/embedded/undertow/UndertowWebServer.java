@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xnio.channels.BoundChannel;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.boot.web.server.GracefulShutdownCallback;
 import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.PortInUseException;
@@ -168,12 +170,12 @@ public class UndertowWebServer implements WebServer {
 		HttpHandler handler = null;
 		for (HttpHandlerFactory factory : this.httpHandlerFactories) {
 			handler = factory.getHandler(handler);
-			if (handler instanceof Closeable) {
-				this.closeables.add((Closeable) handler);
+			if (handler instanceof Closeable closeable) {
+				this.closeables.add(closeable);
 			}
-			if (handler instanceof GracefulShutdownHandler) {
+			if (handler instanceof GracefulShutdownHandler shutdownHandler) {
 				Assert.isNull(this.gracefulShutdown, "Only a single GracefulShutdownHandler can be defined");
-				this.gracefulShutdown = (GracefulShutdownHandler) handler;
+				this.gracefulShutdown = shutdownHandler;
 			}
 		}
 		return handler;
@@ -214,10 +216,10 @@ public class UndertowWebServer implements WebServer {
 
 	private UndertowWebServer.Port getPortFromChannel(BoundChannel channel) {
 		SocketAddress socketAddress = channel.getLocalAddress();
-		if (socketAddress instanceof InetSocketAddress) {
+		if (socketAddress instanceof InetSocketAddress inetSocketAddress) {
 			Field sslField = ReflectionUtils.findField(channel.getClass(), "ssl");
 			String protocol = (sslField != null) ? "https" : "http";
-			return new UndertowWebServer.Port(((InetSocketAddress) socketAddress).getPort(), protocol);
+			return new UndertowWebServer.Port(inetSocketAddress.getPort(), protocol);
 		}
 		return null;
 	}
@@ -295,7 +297,7 @@ public class UndertowWebServer implements WebServer {
 		logger.info("Commencing graceful shutdown. Waiting for active requests to complete");
 		this.gracefulShutdownCallback.set(callback);
 		this.gracefulShutdown.shutdown();
-		this.gracefulShutdown.addShutdownListener((success) -> notifyGracefulCallback(success));
+		this.gracefulShutdown.addShutdownListener(this::notifyGracefulCallback);
 	}
 
 	private void notifyGracefulCallback(boolean success) {
@@ -398,6 +400,27 @@ public class UndertowWebServer implements WebServer {
 	 * {@link Closeable} {@link HttpHandler}.
 	 */
 	private interface CloseableHttpHandler extends HttpHandler, Closeable {
+
+	}
+
+	/**
+	 * {@link RuntimeHintsRegistrar} that allows Undertow's configured and actual ports to
+	 * be retrieved at runtime in a native image.
+	 */
+	static class UndertowWebServerRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.reflection()
+				.registerTypeIfPresent(classLoader, "io.undertow.Undertow",
+						(hint) -> hint.withField("listeners").withField("channels"));
+			hints.reflection()
+				.registerTypeIfPresent(classLoader, "io.undertow.Undertow$ListenerConfig",
+						(hint) -> hint.withField("type").withField("port"));
+			hints.reflection()
+				.registerTypeIfPresent(classLoader, "io.undertow.protocols.ssl.UndertowAcceptingSslChannel",
+						(hint) -> hint.withField("ssl"));
+		}
 
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,7 +99,7 @@ class HttpTunnelServerTests {
 	@Test
 	void serverConnectionIsRequired() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelServer(null))
-				.withMessageContaining("ServerConnection must not be null");
+			.withMessageContaining("ServerConnection must not be null");
 	}
 
 	@Test
@@ -121,7 +121,7 @@ class HttpTunnelServerTests {
 	@Test
 	void longPollTimeoutMustBePositiveValue() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.server.setLongPollTimeout(0))
-				.withMessageContaining("LongPollTimeout must be a positive value");
+			.withMessageContaining("LongPollTimeout must be a positive value");
 	}
 
 	@Test
@@ -239,12 +239,14 @@ class HttpTunnelServerTests {
 		this.server.setLongPollTimeout(100);
 		MockHttpConnection h1 = new MockHttpConnection();
 		this.server.handle(h1);
-		Awaitility.await().atMost(Duration.ofSeconds(30)).until(h1.getServletResponse()::getStatus,
-				(status) -> status == 204);
+		Awaitility.await()
+			.atMost(Duration.ofSeconds(30))
+			.until(h1.getServletResponse()::getStatus, (status) -> status == 204);
 		MockHttpConnection h2 = new MockHttpConnection();
 		this.server.handle(h2);
-		Awaitility.await().atMost(Duration.ofSeconds(30)).until(h2.getServletResponse()::getStatus,
-				(status) -> status == 204);
+		Awaitility.await()
+			.atMost(Duration.ofSeconds(30))
+			.until(h2.getServletResponse()::getStatus, (status) -> status == 204);
 		this.serverChannel.disconnect();
 		this.server.getServerThread().join(JOIN_TIMEOUT);
 	}
@@ -264,7 +266,7 @@ class HttpTunnelServerTests {
 	@Test
 	void disconnectTimeoutMustBePositive() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.server.setDisconnectTimeout(0))
-				.withMessageContaining("DisconnectTimeout must be a positive value");
+			.withMessageContaining("DisconnectTimeout must be a positive value");
 	}
 
 	@Test
@@ -283,7 +285,7 @@ class HttpTunnelServerTests {
 		connection.waitForResponse();
 		connection.respond(HttpStatus.I_AM_A_TEAPOT);
 		assertThat(this.servletResponse.getStatus()).isEqualTo(418);
-		assertThat(this.servletResponse.getContentLength()).isEqualTo(0);
+		assertThat(this.servletResponse.getContentLength()).isZero();
 	}
 
 	@Test
@@ -346,11 +348,11 @@ class HttpTunnelServerTests {
 
 		private int timeout;
 
-		private BlockingDeque<ByteBuffer> outgoing = new LinkedBlockingDeque<>();
+		private final BlockingDeque<ByteBuffer> outgoing = new LinkedBlockingDeque<>();
 
-		private ByteArrayOutputStream written = new ByteArrayOutputStream();
+		private final ByteArrayOutputStream written = new ByteArrayOutputStream();
 
-		private AtomicBoolean open = new AtomicBoolean(true);
+		private final AtomicBoolean open = new AtomicBoolean(true);
 
 		void setTimeout(int timeout) {
 			this.timeout = timeout;

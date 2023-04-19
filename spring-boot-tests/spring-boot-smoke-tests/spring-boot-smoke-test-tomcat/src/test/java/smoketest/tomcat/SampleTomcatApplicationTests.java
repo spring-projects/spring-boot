@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,15 @@ import java.util.zip.GZIPInputStream;
 import org.apache.coyote.AbstractProtocol;
 import org.apache.coyote.ProtocolHandler;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import smoketest.tomcat.util.RandomStringUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.system.CapturedOutput;
+import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
@@ -45,8 +50,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  * @author Andy Wilkinson
+ * @author Florian Storz
+ * @author Michael Weidmann
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@ExtendWith(OutputCaptureExtension.class)
 class SampleTomcatApplicationTests {
 
 	@Autowired
@@ -54,6 +62,9 @@ class SampleTomcatApplicationTests {
 
 	@Autowired
 	private ApplicationContext applicationContext;
+
+	@Value("${server.max-http-request-header-size}")
+	private int maxHttpRequestHeaderSize;
 
 	@Test
 	void testHome() {
@@ -81,6 +92,25 @@ class SampleTomcatApplicationTests {
 		ProtocolHandler protocolHandler = embeddedServletContainer.getTomcat().getConnector().getProtocolHandler();
 		int timeout = ((AbstractProtocol<?>) protocolHandler).getConnectionTimeout();
 		assertThat(timeout).isEqualTo(5000);
+	}
+
+	@Test
+	void testMaxHttpResponseHeaderSize(CapturedOutput output) {
+		ResponseEntity<String> entity = this.restTemplate.getForEntity("/max-http-response-header", String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+		assertThat(output).contains(
+				"threw exception [Request processing failed: org.apache.coyote.http11.HeadersTooLargeException: An attempt was made to write more data to the response headers than there was room available in the buffer. Increase maxHttpHeaderSize on the connector or write less data into the response headers.]");
+	}
+
+	@Test
+	void testMaxHttpRequestHeaderSize(CapturedOutput output) {
+		String headerValue = RandomStringUtil.getRandomBase64EncodedString(this.maxHttpRequestHeaderSize + 1);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("x-max-request-header", headerValue);
+		HttpEntity<?> httpEntity = new HttpEntity<>(headers);
+		ResponseEntity<String> entity = this.restTemplate.exchange("/", HttpMethod.GET, httpEntity, String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(output).contains("java.lang.IllegalArgumentException: Request header is too large");
 	}
 
 }

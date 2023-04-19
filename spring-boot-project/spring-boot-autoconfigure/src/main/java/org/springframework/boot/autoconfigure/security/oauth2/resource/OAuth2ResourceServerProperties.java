@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,9 @@ package org.springframework.boot.autoconfigure.security.oauth2.resource;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
@@ -31,6 +34,7 @@ import org.springframework.util.StreamUtils;
  *
  * @author Madhura Bhave
  * @author Artsiom Yudovin
+ * @author Mushtaq Ahmed
  * @since 2.1.0
  */
 @ConfigurationProperties(prefix = "spring.security.oauth2.resourceserver")
@@ -56,9 +60,9 @@ public class OAuth2ResourceServerProperties {
 		private String jwkSetUri;
 
 		/**
-		 * JSON Web Algorithm used for verifying the digital signatures.
+		 * JSON Web Algorithms used for verifying the digital signatures.
 		 */
-		private String jwsAlgorithm = "RS256";
+		private List<String> jwsAlgorithms = Arrays.asList("RS256");
 
 		/**
 		 * URI that can either be an OpenID Connect discovery endpoint or an OAuth 2.0
@@ -71,6 +75,11 @@ public class OAuth2ResourceServerProperties {
 		 */
 		private Resource publicKeyLocation;
 
+		/**
+		 * Identifies the recipients that the JWT is intended for.
+		 */
+		private List<String> audiences = new ArrayList<>();
+
 		public String getJwkSetUri() {
 			return this.jwkSetUri;
 		}
@@ -79,12 +88,12 @@ public class OAuth2ResourceServerProperties {
 			this.jwkSetUri = jwkSetUri;
 		}
 
-		public String getJwsAlgorithm() {
-			return this.jwsAlgorithm;
+		public List<String> getJwsAlgorithms() {
+			return this.jwsAlgorithms;
 		}
 
-		public void setJwsAlgorithm(String jwsAlgorithm) {
-			this.jwsAlgorithm = jwsAlgorithm;
+		public void setJwsAlgorithms(List<String> jwsAlgortithms) {
+			this.jwsAlgorithms = jwsAlgortithms;
 		}
 
 		public String getIssuerUri() {
@@ -101,6 +110,14 @@ public class OAuth2ResourceServerProperties {
 
 		public void setPublicKeyLocation(Resource publicKeyLocation) {
 			this.publicKeyLocation = publicKeyLocation;
+		}
+
+		public List<String> getAudiences() {
+			return this.audiences;
+		}
+
+		public void setAudiences(List<String> audiences) {
+			this.audiences = audiences;
 		}
 
 		public String readPublicKey() throws IOException {

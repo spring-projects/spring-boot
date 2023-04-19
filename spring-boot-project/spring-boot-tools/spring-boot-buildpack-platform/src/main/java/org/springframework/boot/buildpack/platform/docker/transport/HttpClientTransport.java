@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,20 +21,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.net.URISyntaxException;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpHost;
-import org.apache.http.StatusLine;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.entity.AbstractHttpEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.classic.methods.HttpDelete;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.io.entity.AbstractHttpEntity;
+import org.apache.hc.core5.http.message.StatusLine;
 
 import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
@@ -54,11 +54,11 @@ abstract class HttpClientTransport implements HttpTransport {
 
 	static final String REGISTRY_AUTH_HEADER = "X-Registry-Auth";
 
-	private final CloseableHttpClient client;
+	private final HttpClient client;
 
 	private final HttpHost host;
 
-	protected HttpClientTransport(CloseableHttpClient client, HttpHost host) {
+	protected HttpClientTransport(HttpClient client, HttpHost host) {
 		Assert.notNull(client, "Client must not be null");
 		Assert.notNull(host, "Host must not be null");
 		this.client = client;
@@ -130,13 +130,12 @@ abstract class HttpClientTransport implements HttpTransport {
 		return execute(new HttpDelete(uri));
 	}
 
-	private Response execute(HttpEntityEnclosingRequestBase request, String contentType,
-			IOConsumer<OutputStream> writer) {
+	private Response execute(HttpUriRequestBase request, String contentType, IOConsumer<OutputStream> writer) {
 		request.setEntity(new WritableHttpEntity(contentType, writer));
 		return execute(request);
 	}
 
-	private Response execute(HttpEntityEnclosingRequestBase request, String registryAuth) {
+	private Response execute(HttpUriRequestBase request, String registryAuth) {
 		if (StringUtils.hasText(registryAuth)) {
 			request.setHeader(REGISTRY_AUTH_HEADER, registryAuth);
 		}
@@ -145,19 +144,19 @@ abstract class HttpClientTransport implements HttpTransport {
 
 	private Response execute(HttpUriRequest request) {
 		try {
-			CloseableHttpResponse response = this.client.execute(this.host, request);
-			StatusLine statusLine = response.getStatusLine();
-			int statusCode = statusLine.getStatusCode();
-			HttpEntity entity = response.getEntity();
+			ClassicHttpResponse response = this.client.executeOpen(this.host, request, null);
+			int statusCode = response.getCode();
 			if (statusCode >= 400 && statusCode <= 500) {
+				HttpEntity entity = response.getEntity();
 				Errors errors = (statusCode != 500) ? getErrorsFromResponse(entity) : null;
 				Message message = getMessageFromResponse(entity);
-				throw new DockerEngineException(this.host.toHostString(), request.getURI(), statusCode,
+				StatusLine statusLine = new StatusLine(response);
+				throw new DockerEngineException(this.host.toHostString(), request.getUri(), statusCode,
 						statusLine.getReasonPhrase(), errors, message);
 			}
 			return new HttpClientResponse(response);
 		}
-		catch (IOException ex) {
+		catch (IOException | URISyntaxException ex) {
 			throw new DockerConnectionException(this.host.toHostString(), ex);
 		}
 	}
@@ -193,7 +192,7 @@ abstract class HttpClientTransport implements HttpTransport {
 		private final IOConsumer<OutputStream> writer;
 
 		WritableHttpEntity(String contentType, IOConsumer<OutputStream> writer) {
-			setContentType(contentType);
+			super(contentType, "UTF-8");
 			this.writer = writer;
 		}
 
@@ -204,7 +203,7 @@ abstract class HttpClientTransport implements HttpTransport {
 
 		@Override
 		public long getContentLength() {
-			if (this.contentType != null && this.contentType.getValue().equals("application/json")) {
+			if (this.getContentType() != null && this.getContentType().equals("application/json")) {
 				return calculateStringContentLength();
 			}
 			return -1;
@@ -236,6 +235,10 @@ abstract class HttpClientTransport implements HttpTransport {
 			}
 		}
 
+		@Override
+		public void close() throws IOException {
+		}
+
 	}
 
 	/**
@@ -243,9 +246,9 @@ abstract class HttpClientTransport implements HttpTransport {
 	 */
 	private static class HttpClientResponse implements Response {
 
-		private final CloseableHttpResponse response;
+		private final ClassicHttpResponse response;
 
-		HttpClientResponse(CloseableHttpResponse response) {
+		HttpClientResponse(ClassicHttpResponse response) {
 			this.response = response;
 		}
 

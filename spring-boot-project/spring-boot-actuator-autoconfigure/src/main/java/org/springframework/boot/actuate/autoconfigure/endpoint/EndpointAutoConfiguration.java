@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -52,9 +51,8 @@ public class EndpointAutoConfiguration {
 	public ParameterValueMapper endpointOperationParameterMapper(
 			@EndpointConverter ObjectProvider<Converter<?, ?>> converters,
 			@EndpointConverter ObjectProvider<GenericConverter> genericConverters) {
-		ConversionService conversionService = createConversionService(
-				converters.orderedStream().collect(Collectors.toList()),
-				genericConverters.orderedStream().collect(Collectors.toList()));
+		ConversionService conversionService = createConversionService(converters.orderedStream().toList(),
+				genericConverters.orderedStream().toList());
 		return new ConversionServiceParameterValueMapper(conversionService);
 	}
 

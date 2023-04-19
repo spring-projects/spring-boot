@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link MutuallyExclusiveConfigurationPropertiesFailureAnalyzer}.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 class MutuallyExclusiveConfigurationPropertiesFailureAnalyzerTests {
 
@@ -49,8 +50,8 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzerTests {
 		MutuallyExclusiveConfigurationPropertiesException failure = new MutuallyExclusiveConfigurationPropertiesException(
 				new HashSet<>(Arrays.asList("com.example.a", "com.example.b")),
 				new HashSet<>(Arrays.asList("com.example.a", "com.example.b")));
-		FailureAnalysis failureAnalysis = new MutuallyExclusiveConfigurationPropertiesFailureAnalyzer()
-				.analyze(failure);
+		FailureAnalysis failureAnalysis = new MutuallyExclusiveConfigurationPropertiesFailureAnalyzer(null)
+			.analyze(failure);
 		assertThat(failureAnalysis).isNull();
 	}
 
@@ -80,10 +81,10 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzerTests {
 				"Update your configuration so that only one of the mutually exclusive properties is configured.");
 		assertThat(analysis.getDescription()).contains(String.format(
 				"The following configuration properties are mutually exclusive:%n%n\tcom.example.a%n\tcom.example.b%n"))
-				.contains(String
-						.format("However, more than one of those properties has been configured at the same time:%n%n"
-								+ "\tcom.example.a (originating from 'TestOrigin test')%n"
-								+ "\tcom.example.b (originating from 'TestOrigin test')%n"));
+			.contains(
+					String.format("However, more than one of those properties has been configured at the same time:%n%n"
+							+ "\tcom.example.a (originating from 'TestOrigin test')%n"
+							+ "\tcom.example.b (originating from 'TestOrigin test')%n"));
 	}
 
 	@Test
@@ -92,9 +93,9 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzerTests {
 		properties.put("com.example.a", "alpha");
 		properties.put("com.example.b", "bravo");
 		this.environment.getPropertySources()
-				.addFirst(OriginCapablePropertySource.get(new MapPropertySource("test-one", properties)));
+			.addFirst(OriginCapablePropertySource.get(new MapPropertySource("test-one", properties)));
 		this.environment.getPropertySources()
-				.addLast(OriginCapablePropertySource.get(new MapPropertySource("test-two", properties)));
+			.addLast(OriginCapablePropertySource.get(new MapPropertySource("test-two", properties)));
 		MutuallyExclusiveConfigurationPropertiesException failure = new MutuallyExclusiveConfigurationPropertiesException(
 				new HashSet<>(Arrays.asList("com.example.a", "com.example.b")),
 				new HashSet<>(Arrays.asList("com.example.a", "com.example.b")));
@@ -103,17 +104,17 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzerTests {
 				"Update your configuration so that only one of the mutually exclusive properties is configured.");
 		assertThat(analysis.getDescription()).contains(String.format(
 				"The following configuration properties are mutually exclusive:%n%n\tcom.example.a%n\tcom.example.b%n"))
-				.contains(String
-						.format("However, more than one of those properties has been configured at the same time:%n%n"
-								+ "\tcom.example.a (originating from 'TestOrigin test-one')%n"
-								+ "\tcom.example.a (originating from 'TestOrigin test-two')%n"
-								+ "\tcom.example.b (originating from 'TestOrigin test-one')%n"
-								+ "\tcom.example.b (originating from 'TestOrigin test-two')%n"));
+			.contains(
+					String.format("However, more than one of those properties has been configured at the same time:%n%n"
+							+ "\tcom.example.a (originating from 'TestOrigin test-one')%n"
+							+ "\tcom.example.a (originating from 'TestOrigin test-two')%n"
+							+ "\tcom.example.b (originating from 'TestOrigin test-one')%n"
+							+ "\tcom.example.b (originating from 'TestOrigin test-two')%n"));
 	}
 
 	private FailureAnalysis performAnalysis(MutuallyExclusiveConfigurationPropertiesException failure) {
-		MutuallyExclusiveConfigurationPropertiesFailureAnalyzer analyzer = new MutuallyExclusiveConfigurationPropertiesFailureAnalyzer();
-		analyzer.setEnvironment(this.environment);
+		MutuallyExclusiveConfigurationPropertiesFailureAnalyzer analyzer = new MutuallyExclusiveConfigurationPropertiesFailureAnalyzer(
+				this.environment);
 		return analyzer.analyze(failure);
 	}
 

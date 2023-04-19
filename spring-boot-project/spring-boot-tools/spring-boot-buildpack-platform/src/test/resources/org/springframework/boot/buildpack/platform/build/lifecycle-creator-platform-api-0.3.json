@@ -7,6 +7,9 @@
     "author" : "spring-boot"
   },
   "HostConfig" : {
-    "Binds" : [ "/var/run/docker.sock:/var/run/docker.sock", "pack-layers-aaaaaaaaaa:/layers", "pack-app-aaaaaaaaaa:/workspace", "pack-cache-b35197ac41ea.build:/cache", "pack-cache-b35197ac41ea.launch:/launch-cache" ]
+    "Binds" : [ "/var/run/docker.sock:/var/run/docker.sock", "pack-layers-aaaaaaaaaa:/layers", "pack-app-aaaaaaaaaa:/workspace", "pack-cache-b35197ac41ea.build:/cache", "pack-cache-b35197ac41ea.launch:/launch-cache" ],
+    "SecurityOpt" : [
+      "label=disable"
+    ]
   }
 }

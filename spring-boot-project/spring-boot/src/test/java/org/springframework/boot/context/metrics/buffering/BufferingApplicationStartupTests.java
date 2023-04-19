@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,11 +57,11 @@ class BufferingApplicationStartupTests {
 		List<TimelineEvent> events = applicationStartup.getBufferedTimeline().getEvents();
 		assertThat(events).hasSize(2);
 		StartupTimeline.TimelineEvent firstEvent = events.get(0);
-		assertThat(firstEvent.getStartupStep().getId()).isEqualTo(0);
+		assertThat(firstEvent.getStartupStep().getId()).isZero();
 		assertThat(firstEvent.getStartupStep().getParentId()).isNull();
 		StartupTimeline.TimelineEvent secondEvent = events.get(1);
 		assertThat(secondEvent.getStartupStep().getId()).isEqualTo(2);
-		assertThat(secondEvent.getStartupStep().getParentId()).isEqualTo(1);
+		assertThat(secondEvent.getStartupStep().getParentId()).isOne();
 	}
 
 	@Test
@@ -87,7 +87,7 @@ class BufferingApplicationStartupTests {
 		BufferingApplicationStartup applicationStartup = new BufferingApplicationStartup(2);
 		applicationStartup.start("first").end();
 		assertThatThrownBy(applicationStartup::startRecording).isInstanceOf(IllegalStateException.class)
-				.hasMessage("Cannot restart recording once steps have been buffered.");
+			.hasMessage("Cannot restart recording once steps have been buffered.");
 	}
 
 	@Test
@@ -96,7 +96,7 @@ class BufferingApplicationStartupTests {
 		StartupStep step = applicationStartup.start("first");
 		step.end();
 		assertThatThrownBy(() -> step.tag("name", "value")).isInstanceOf(IllegalStateException.class)
-				.hasMessage("StartupStep has already ended.");
+			.hasMessage("StartupStep has already ended.");
 	}
 
 	@Test

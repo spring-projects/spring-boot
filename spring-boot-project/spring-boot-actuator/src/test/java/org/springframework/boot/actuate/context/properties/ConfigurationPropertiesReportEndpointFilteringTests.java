@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,21 @@
 
 package org.springframework.boot.actuate.context.properties;
 
+import java.util.Collections;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ApplicationConfigurationProperties;
-import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationProperties;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesBeanDescriptor;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ConfigurationPropertiesDescriptor;
+import org.springframework.boot.actuate.context.properties.ConfigurationPropertiesReportEndpoint.ContextConfigurationPropertiesDescriptor;
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,30 +44,22 @@ class ConfigurationPropertiesReportEndpointFilteringTests {
 	@Test
 	void filterByPrefixSingleMatch() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withUserConfiguration(Config.class)
-				.withPropertyValues("foo.primary.name:foo1", "foo.secondary.name:foo2", "only.bar.name:solo1");
-		contextRunner.run((context) -> {
-			ConfigurationPropertiesReportEndpoint endpoint = context
-					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			ApplicationConfigurationProperties applicationProperties = endpoint
-					.configurationPropertiesWithPrefix("only.bar");
-			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
-			ContextConfigurationProperties contextProperties = applicationProperties.getContexts().get(context.getId());
-			assertThat(contextProperties.getBeans().values()).singleElement().hasFieldOrPropertyWithValue("prefix",
-					"only.bar");
-		});
+			.withPropertyValues("foo.primary.name:foo1", "foo.secondary.name:foo2", "only.bar.name:solo1");
+		assertProperties(contextRunner, "solo1");
 	}
 
 	@Test
 	void filterByPrefixMultipleMatches() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withUserConfiguration(Config.class)
-				.withPropertyValues("foo.primary.name:foo1", "foo.secondary.name:foo2", "only.bar.name:solo1");
+			.withPropertyValues("foo.primary.name:foo1", "foo.secondary.name:foo2", "only.bar.name:solo1");
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
-					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			ApplicationConfigurationProperties applicationProperties = endpoint
-					.configurationPropertiesWithPrefix("foo.");
+				.getBean(ConfigurationPropertiesReportEndpoint.class);
+			ConfigurationPropertiesDescriptor applicationProperties = endpoint
+				.configurationPropertiesWithPrefix("foo.");
 			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
-			ContextConfigurationProperties contextProperties = applicationProperties.getContexts().get(context.getId());
+			ContextConfigurationPropertiesDescriptor contextProperties = applicationProperties.getContexts()
+				.get(context.getId());
 			assertThat(contextProperties.getBeans()).containsOnlyKeys("primaryFoo", "secondaryFoo");
 		});
 	}
@@ -69,26 +67,100 @@ class ConfigurationPropertiesReportEndpointFilteringTests {
 	@Test
 	void filterByPrefixNoMatches() {
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner().withUserConfiguration(Config.class)
-				.withPropertyValues("foo.primary.name:foo1", "foo.secondary.name:foo2", "only.bar.name:solo1");
+			.withPropertyValues("foo.primary.name:foo1", "foo.secondary.name:foo2", "only.bar.name:solo1");
 		contextRunner.run((context) -> {
 			ConfigurationPropertiesReportEndpoint endpoint = context
-					.getBean(ConfigurationPropertiesReportEndpoint.class);
-			ApplicationConfigurationProperties applicationProperties = endpoint
-					.configurationPropertiesWithPrefix("foo.third");
+				.getBean(ConfigurationPropertiesReportEndpoint.class);
+			ConfigurationPropertiesDescriptor applicationProperties = endpoint
+				.configurationPropertiesWithPrefix("foo.third");
 			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
-			ContextConfigurationProperties contextProperties = applicationProperties.getContexts().get(context.getId());
+			ContextConfigurationPropertiesDescriptor contextProperties = applicationProperties.getContexts()
+				.get(context.getId());
 			assertThat(contextProperties.getBeans()).isEmpty();
 		});
 	}
 
+	@Test
+	void noSanitizationWhenShowAlways() {
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withUserConfiguration(ConfigWithAlways.class)
+			.withPropertyValues("foo.primary.name:foo1", "foo.secondary.name:foo2", "only.bar.name:solo1");
+		assertProperties(contextRunner, "solo1");
+	}
+
+	@Test
+	void sanitizationWhenShowNever() {
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withUserConfiguration(ConfigWithNever.class)
+			.withPropertyValues("foo.primary.name:foo1", "foo.secondary.name:foo2", "only.bar.name:solo1");
+		assertProperties(contextRunner, "******");
+	}
+
+	private void assertProperties(ApplicationContextRunner contextRunner, String value) {
+		contextRunner.run((context) -> {
+			ConfigurationPropertiesReportEndpoint endpoint = context
+				.getBean(ConfigurationPropertiesReportEndpoint.class);
+			ConfigurationPropertiesDescriptor applicationProperties = endpoint
+				.configurationPropertiesWithPrefix("only.bar");
+			assertThat(applicationProperties.getContexts()).containsOnlyKeys(context.getId());
+			ContextConfigurationPropertiesDescriptor contextProperties = applicationProperties.getContexts()
+				.get(context.getId());
+			Optional<String> key = contextProperties.getBeans()
+				.keySet()
+				.stream()
+				.filter((id) -> findIdFromPrefix("only.bar", id))
+				.findAny();
+			ConfigurationPropertiesBeanDescriptor descriptor = contextProperties.getBeans().get(key.get());
+			assertThat(descriptor.getPrefix()).isEqualTo("only.bar");
+			assertThat(descriptor.getProperties()).containsEntry("name", value);
+		});
+	}
+
+	private boolean findIdFromPrefix(String prefix, String id) {
+		int separator = id.indexOf("-");
+		String candidate = (separator != -1) ? id.substring(0, separator) : id;
+		return prefix.equals(candidate);
+	}
+
 	@Configuration(proxyBeanMethods = false)
+	@Import(BaseConfiguration.class)
 	@EnableConfigurationProperties(Bar.class)
 	static class Config {
 
 		@Bean
 		ConfigurationPropertiesReportEndpoint endpoint() {
-			return new ConfigurationPropertiesReportEndpoint();
+			return new ConfigurationPropertiesReportEndpoint(Collections.emptyList(), Show.WHEN_AUTHORIZED);
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(BaseConfiguration.class)
+	@EnableConfigurationProperties(Bar.class)
+	static class ConfigWithNever {
+
+		@Bean
+		ConfigurationPropertiesReportEndpoint endpoint() {
+			return new ConfigurationPropertiesReportEndpoint(Collections.emptyList(), Show.NEVER);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(BaseConfiguration.class)
+	@EnableConfigurationProperties(Bar.class)
+	static class ConfigWithAlways {
+
+		@Bean
+		ConfigurationPropertiesReportEndpoint endpoint() {
+			return new ConfigurationPropertiesReportEndpoint(Collections.emptyList(), Show.ALWAYS);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(Bar.class)
+	static class BaseConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = "foo.primary")

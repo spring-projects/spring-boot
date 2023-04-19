@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,20 +52,20 @@ class ConfigTreePropertySourceTests {
 	@Test
 	void createWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreePropertySource(null, this.directory))
-				.withMessageContaining("name must contain");
+			.withMessageContaining("name must contain");
 	}
 
 	@Test
 	void createWhenSourceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreePropertySource("test", null))
-				.withMessage("Property source must not be null");
+			.withMessage("Property source must not be null");
 	}
 
 	@Test
 	void createWhenSourceDoesNotExistThrowsException() {
 		Path missing = this.directory.resolve("missing");
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreePropertySource("test", missing))
-				.withMessage("Directory '" + missing + "' does not exist");
+			.withMessage("Directory '" + missing + "' does not exist");
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class ConfigTreePropertySourceTests {
 		Path file = this.directory.resolve("file");
 		FileCopyUtils.copy("test".getBytes(StandardCharsets.UTF_8), file.toFile());
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreePropertySource("test", file))
-				.withMessage("File '" + file + "' is not a directory");
+			.withMessage("File '" + file + "' is not a directory");
 	}
 
 	@Test
@@ -135,7 +135,7 @@ class ConfigTreePropertySourceTests {
 		Path b = this.directory.resolve("b");
 		Files.delete(b);
 		assertThatIllegalStateException().isThrownBy(() -> propertySource.getProperty("b").toString())
-				.withMessage("The property file '" + b + "' no longer exists");
+			.withMessage("The property file '" + b + "' no longer exists");
 	}
 
 	@Test
@@ -143,8 +143,8 @@ class ConfigTreePropertySourceTests {
 		ConfigTreePropertySource propertySource = getFlatPropertySource();
 		TextResourceOrigin origin = (TextResourceOrigin) propertySource.getOrigin("b");
 		assertThat(origin.getResource().getFile()).isEqualTo(this.directory.resolve("b").toFile());
-		assertThat(origin.getLocation().getLine()).isEqualTo(0);
-		assertThat(origin.getLocation().getColumn()).isEqualTo(0);
+		assertThat(origin.getLocation().getLine()).isZero();
+		assertThat(origin.getLocation().getColumn()).isZero();
 	}
 
 	@Test
@@ -163,7 +163,7 @@ class ConfigTreePropertySourceTests {
 		assertThat(environment.getProperty("b")).isEqualTo("B");
 		assertThat(environment.getProperty("c", InputStreamSource.class).getInputStream()).hasContent("C");
 		assertThat(environment.getProperty("c", byte[].class)).contains('C');
-		assertThat(environment.getProperty("one", Integer.class)).isEqualTo(1);
+		assertThat(environment.getProperty("one", Integer.class)).isOne();
 	}
 
 	@Test
@@ -214,7 +214,7 @@ class ConfigTreePropertySourceTests {
 		addProperty("a", "a\nb\n");
 		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", this.directory,
 				Option.AUTO_TRIM_TRAILING_NEW_LINE);
-		assertThat(propertySource.getProperty("a").toString()).isEqualTo("a\nb\n");
+		assertThat(propertySource.getProperty("a")).hasToString("a\nb\n");
 	}
 
 	@Test
@@ -222,7 +222,7 @@ class ConfigTreePropertySourceTests {
 		addProperty("a", "a\n");
 		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", this.directory,
 				Option.AUTO_TRIM_TRAILING_NEW_LINE);
-		assertThat(propertySource.getProperty("a").toString()).isEqualTo("a");
+		assertThat(propertySource.getProperty("a")).hasToString("a");
 	}
 
 	@Test
@@ -230,7 +230,7 @@ class ConfigTreePropertySourceTests {
 		addProperty("a", "a\r\n");
 		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", this.directory,
 				Option.AUTO_TRIM_TRAILING_NEW_LINE);
-		assertThat(propertySource.getProperty("a").toString()).isEqualTo("a");
+		assertThat(propertySource.getProperty("a")).hasToString("a");
 	}
 
 	private ConfigTreePropertySource getFlatPropertySource() throws IOException {

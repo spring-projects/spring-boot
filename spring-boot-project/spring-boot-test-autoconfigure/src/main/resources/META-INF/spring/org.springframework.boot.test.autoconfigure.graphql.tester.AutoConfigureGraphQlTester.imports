@@ -1,0 +1,2 @@
+# AutoConfigureGraphQlTester auto-configuration imports
+org.springframework.boot.test.autoconfigure.graphql.tester.GraphQlTesterAutoConfiguration

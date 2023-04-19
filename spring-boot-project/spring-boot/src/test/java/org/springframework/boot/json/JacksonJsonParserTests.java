@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -46,6 +47,13 @@ class JacksonJsonParserTests extends AbstractJsonParserTests {
 		ObjectMapper objectMapper = spy(new ObjectMapper());
 		new JacksonJsonParser(objectMapper).parseMap("{}");
 		then(objectMapper).should().readValue(eq("{}"), any(TypeReference.class));
+	}
+
+	@Override
+	@Disabled("Jackson's array handling is no longer stack bound so protection has been removed.")
+	// https://github.com/FasterXML/jackson-databind/commit/8238ab41d0350fb915797c89d46777b4496b74fd
+	void listWithRepeatedOpenArray() throws IOException {
+
 	}
 
 }

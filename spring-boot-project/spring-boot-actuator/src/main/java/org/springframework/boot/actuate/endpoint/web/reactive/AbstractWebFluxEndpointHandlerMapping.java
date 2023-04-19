@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,15 +20,19 @@ import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
 import org.reactivestreams.Publisher;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.aot.hint.annotation.Reflective;
+import org.springframework.aot.hint.annotation.ReflectiveRuntimeHintsRegistrar;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.OperationArgumentResolver;
@@ -43,14 +47,14 @@ import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicate;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
+import org.springframework.boot.actuate.endpoint.web.reactive.AbstractWebFluxEndpointHandlerMapping.AbstractWebFluxEndpointHandlerMappingRuntimeHints;
 import org.springframework.boot.web.context.WebServerApplicationContext;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.AccessDecisionVoter;
-import org.springframework.security.access.SecurityConfig;
-import org.springframework.security.access.vote.RoleVoter;
+import org.springframework.security.authorization.AuthorityAuthorizationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.util.AntPathMatcher;
@@ -79,6 +83,7 @@ import org.springframework.web.util.pattern.PathPattern;
  * @author Brian Clozel
  * @since 2.0.0
  */
+@ImportRuntimeHints(AbstractWebFluxEndpointHandlerMappingRuntimeHints.class)
 public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapping {
 
 	private final EndpointMapping endpointMapping;
@@ -179,9 +184,12 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 	private void registerLinksMapping() {
 		String path = this.endpointMapping.getPath();
+		String linksPath = StringUtils.hasLength(path) ? path : "/";
 		String[] produces = StringUtils.toStringArray(this.endpointMediaTypes.getProduced());
-		RequestMappingInfo mapping = RequestMappingInfo.paths(path).methods(RequestMethod.GET).produces(produces)
-				.build();
+		RequestMappingInfo mapping = RequestMappingInfo.paths(linksPath)
+			.methods(RequestMethod.GET)
+			.produces(produces)
+			.build();
 		LinksHandler linksHandler = getLinksHandler();
 		registerMapping(mapping, linksHandler,
 				ReflectionUtils.findMethod(linksHandler.getClass(), "links", ServerWebExchange.class));
@@ -299,8 +307,8 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 		Mono<? extends SecurityContext> springSecurityContext() {
 			return ReactiveSecurityContextHolder.getContext()
-					.map((securityContext) -> new ReactiveSecurityContext(securityContext.getAuthentication()))
-					.switchIfEmpty(Mono.just(new ReactiveSecurityContext(null)));
+				.map((securityContext) -> new ReactiveSecurityContext(securityContext.getAuthentication()))
+				.switchIfEmpty(Mono.just(new ReactiveSecurityContext(null)));
 		}
 
 		Mono<SecurityContext> emptySecurityContext() {
@@ -311,29 +319,30 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		public Mono<ResponseEntity<Object>> handle(ServerWebExchange exchange, Map<String, String> body) {
 			Map<String, Object> arguments = getArguments(exchange, body);
 			OperationArgumentResolver serverNamespaceArgumentResolver = OperationArgumentResolver
-					.of(WebServerNamespace.class, () -> WebServerNamespace
-							.from(WebServerApplicationContext.getServerNamespace(exchange.getApplicationContext())));
+				.of(WebServerNamespace.class, () -> WebServerNamespace
+					.from(WebServerApplicationContext.getServerNamespace(exchange.getApplicationContext())));
 			return this.securityContextSupplier.get()
-					.map((securityContext) -> new InvocationContext(securityContext, arguments,
-							serverNamespaceArgumentResolver,
-							new ProducibleOperationArgumentResolver(
-									() -> exchange.getRequest().getHeaders().get("Accept"))))
-					.flatMap((invocationContext) -> handleResult((Publisher<?>) this.invoker.invoke(invocationContext),
-							exchange.getRequest().getMethod()));
+				.map((securityContext) -> new InvocationContext(securityContext, arguments,
+						serverNamespaceArgumentResolver,
+						new ProducibleOperationArgumentResolver(
+								() -> exchange.getRequest().getHeaders().get("Accept"))))
+				.flatMap((invocationContext) -> handleResult((Publisher<?>) this.invoker.invoke(invocationContext),
+						exchange.getRequest().getMethod()));
 		}
 
 		private Map<String, Object> getArguments(ServerWebExchange exchange, Map<String, String> body) {
 			Map<String, Object> arguments = new LinkedHashMap<>(getTemplateVariables(exchange));
 			String matchAllRemainingPathSegmentsVariable = this.operation.getRequestPredicate()
-					.getMatchAllRemainingPathSegmentsVariable();
+				.getMatchAllRemainingPathSegmentsVariable();
 			if (matchAllRemainingPathSegmentsVariable != null) {
 				arguments.put(matchAllRemainingPathSegmentsVariable, getRemainingPathSegments(exchange));
 			}
 			if (body != null) {
 				arguments.putAll(body);
 			}
-			exchange.getRequest().getQueryParams()
-					.forEach((name, values) -> arguments.put(name, (values.size() != 1) ? values : values.get(0)));
+			exchange.getRequest()
+				.getQueryParams()
+				.forEach((name, values) -> arguments.put(name, (values.size() != 1) ? values : values.get(0)));
 			return arguments;
 		}
 
@@ -341,7 +350,8 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 			PathPattern pathPattern = exchange.getAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE);
 			if (pathPattern.hasPatternSyntax()) {
 				String remainingSegments = pathPattern
-						.extractPathWithinPattern(exchange.getRequest().getPath().pathWithinApplication()).value();
+					.extractPathWithinPattern(exchange.getRequest().getPath().pathWithinApplication())
+					.value();
 				return tokenizePathSegments(remainingSegments);
 			}
 			return tokenizePathSegments(pathPattern.toString());
@@ -362,22 +372,26 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		private Mono<ResponseEntity<Object>> handleResult(Publisher<?> result, HttpMethod httpMethod) {
-			return Mono.from(result).map(this::toResponseEntity)
-					.onErrorMap(InvalidEndpointRequestException.class,
-							(ex) -> new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getReason()))
-					.defaultIfEmpty(new ResponseEntity<>(
-							(httpMethod != HttpMethod.GET) ? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND));
+			if (result instanceof Flux) {
+				result = ((Flux<?>) result).collectList();
+			}
+			return Mono.from(result)
+				.map(this::toResponseEntity)
+				.onErrorMap(InvalidEndpointRequestException.class,
+						(ex) -> new ResponseStatusException(HttpStatus.BAD_REQUEST, ex.getReason()))
+				.defaultIfEmpty(new ResponseEntity<>(
+						(httpMethod != HttpMethod.GET) ? HttpStatus.NO_CONTENT : HttpStatus.NOT_FOUND));
 		}
 
 		private ResponseEntity<Object> toResponseEntity(Object response) {
-			if (!(response instanceof WebEndpointResponse)) {
+			if (!(response instanceof WebEndpointResponse<?> webEndpointResponse)) {
 				return new ResponseEntity<>(response, HttpStatus.OK);
 			}
-			WebEndpointResponse<?> webEndpointResponse = (WebEndpointResponse<?>) response;
 			MediaType contentType = (webEndpointResponse.getContentType() != null)
 					? new MediaType(webEndpointResponse.getContentType()) : null;
-			return ResponseEntity.status(webEndpointResponse.getStatus()).contentType(contentType)
-					.body(webEndpointResponse.getBody());
+			return ResponseEntity.status(webEndpointResponse.getStatus())
+				.contentType(contentType)
+				.body(webEndpointResponse.getBody());
 		}
 
 		@Override
@@ -399,9 +413,15 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		@ResponseBody
+		@Reflective
 		Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange,
 				@RequestBody(required = false) Map<String, String> body) {
 			return this.operation.handle(exchange, body);
+		}
+
+		@Override
+		public String toString() {
+			return this.operation.toString();
 		}
 
 	}
@@ -418,8 +438,14 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		}
 
 		@ResponseBody
+		@Reflective
 		Publisher<ResponseEntity<Object>> handle(ServerWebExchange exchange) {
 			return this.operation.handle(exchange, null);
+		}
+
+		@Override
+		public String toString() {
+			return this.operation.toString();
 		}
 
 	}
@@ -445,12 +471,16 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 	private static final class ReactiveSecurityContext implements SecurityContext {
 
-		private final RoleVoter roleVoter = new RoleVoter();
+		private static final String ROLE_PREFIX = "ROLE_";
 
 		private final Authentication authentication;
 
 		ReactiveSecurityContext(Authentication authentication) {
 			this.authentication = authentication;
+		}
+
+		private Authentication getAuthentication() {
+			return this.authentication;
 		}
 
 		@Override
@@ -460,11 +490,22 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 
 		@Override
 		public boolean isUserInRole(String role) {
-			if (!role.startsWith(this.roleVoter.getRolePrefix())) {
-				role = this.roleVoter.getRolePrefix() + role;
-			}
-			return this.roleVoter.vote(this.authentication, null,
-					Collections.singletonList(new SecurityConfig(role))) == AccessDecisionVoter.ACCESS_GRANTED;
+			String authority = (!role.startsWith(ROLE_PREFIX)) ? ROLE_PREFIX + role : role;
+			return AuthorityAuthorizationManager.hasAuthority(authority)
+				.check(this::getAuthentication, null)
+				.isGranted();
+		}
+
+	}
+
+	static class AbstractWebFluxEndpointHandlerMappingRuntimeHints implements RuntimeHintsRegistrar {
+
+		private final ReflectiveRuntimeHintsRegistrar reflectiveRegistrar = new ReflectiveRuntimeHintsRegistrar();
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			this.reflectiveRegistrar.registerRuntimeHints(hints, WriteOperationHandler.class,
+					ReadOperationHandler.class);
 		}
 
 	}

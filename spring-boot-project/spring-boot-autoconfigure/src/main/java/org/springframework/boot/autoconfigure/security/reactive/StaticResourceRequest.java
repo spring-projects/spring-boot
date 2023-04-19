@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,7 @@ package org.springframework.boot.autoconfigure.security.reactive;
 
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import reactor.core.publisher.Mono;
@@ -123,18 +121,17 @@ public final class StaticResourceRequest {
 			return new StaticResourceServerWebExchange(subset);
 		}
 
-		private List<ServerWebExchangeMatcher> getDelegateMatchers() {
-			return getPatterns().map(PathPatternParserServerWebExchangeMatcher::new).collect(Collectors.toList());
-		}
-
 		private Stream<String> getPatterns() {
 			return this.locations.stream().flatMap(StaticResourceLocation::getPatterns);
 		}
 
 		@Override
 		public Mono<MatchResult> matches(ServerWebExchange exchange) {
-			OrServerWebExchangeMatcher matcher = new OrServerWebExchangeMatcher(getDelegateMatchers());
-			return matcher.matches(exchange);
+			return new OrServerWebExchangeMatcher(getDelegateMatchers().toList()).matches(exchange);
+		}
+
+		private Stream<ServerWebExchangeMatcher> getDelegateMatchers() {
+			return getPatterns().map(PathPatternParserServerWebExchangeMatcher::new);
 		}
 
 	}

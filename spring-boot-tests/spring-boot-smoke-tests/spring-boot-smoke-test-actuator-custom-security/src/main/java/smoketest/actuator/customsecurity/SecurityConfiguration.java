@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,14 @@ import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.User.UserBuilder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration(proxyBeanMethods = false)
 public class SecurityConfiguration {
@@ -55,17 +56,18 @@ public class SecurityConfiguration {
 
 	@Bean
 	SecurityFilterChain configure(HttpSecurity http) throws Exception {
-		http.authorizeRequests((requests) -> {
-			requests.mvcMatchers("/actuator/beans").hasRole("BEANS");
+		http.authorizeHttpRequests((requests) -> {
+			requests.requestMatchers("/actuator/beans").hasRole("BEANS");
 			requests.requestMatchers(EndpointRequest.to("health")).permitAll();
 			requests.requestMatchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class))
-					.hasRole("ACTUATOR");
+				.hasRole("ACTUATOR");
 			requests.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
-			requests.antMatchers("/foo").permitAll();
-			requests.antMatchers("/**").hasRole("USER");
+			requests.requestMatchers("/foo").permitAll();
+			requests.requestMatchers("/error").permitAll();
+			requests.requestMatchers("/**").hasRole("USER");
 		});
-		http.cors(Customizer.withDefaults());
-		http.httpBasic();
+		http.cors(withDefaults());
+		http.httpBasic(withDefaults());
 		return http.build();
 	}
 

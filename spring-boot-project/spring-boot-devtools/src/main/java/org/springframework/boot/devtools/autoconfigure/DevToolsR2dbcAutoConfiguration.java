@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,8 @@ public class DevToolsR2dbcAutoConfiguration {
 		public void destroy() throws Exception {
 			if (shouldShutdown()) {
 				Mono.usingWhen(this.connectionFactory.create(), this::executeShutdown, this::closeConnection,
-						this::closeConnection, this::closeConnection).block();
+						this::closeConnection, this::closeConnection)
+					.block();
 				this.eventPublisher.publishEvent(new R2dbcDatabaseShutdownEvent(this.connectionFactory));
 			}
 		}
@@ -118,8 +119,8 @@ public class DevToolsR2dbcAutoConfiguration {
 				return ConditionOutcome.noMatch(message.didNotFind("a single ConnectionFactory bean").atAll());
 			}
 			BeanDefinition beanDefinition = context.getRegistry().getBeanDefinition(beanNames[0]);
-			if (beanDefinition instanceof AnnotatedBeanDefinition
-					&& isAutoConfigured((AnnotatedBeanDefinition) beanDefinition)) {
+			if (beanDefinition instanceof AnnotatedBeanDefinition annotatedBeanDefinition
+					&& isAutoConfigured(annotatedBeanDefinition)) {
 				return ConditionOutcome.match(message.foundExactly("auto-configured ConnectionFactory"));
 			}
 			return ConditionOutcome.noMatch(message.didNotFind("an auto-configured ConnectionFactory").atAll());
@@ -128,7 +129,7 @@ public class DevToolsR2dbcAutoConfiguration {
 		private boolean isAutoConfigured(AnnotatedBeanDefinition beanDefinition) {
 			MethodMetadata methodMetadata = beanDefinition.getFactoryMethodMetadata();
 			return methodMetadata != null && methodMetadata.getDeclaringClassName()
-					.startsWith(R2dbcAutoConfiguration.class.getPackage().getName());
+				.startsWith(R2dbcAutoConfiguration.class.getPackage().getName());
 		}
 
 	}

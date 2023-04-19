@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -105,7 +105,7 @@ class DataSourceHealthIndicatorTests {
 		given(dataSource.getConnection()).willReturn(connection);
 		this.indicator.setDataSource(dataSource);
 		Health health = this.indicator.health();
-		assertThat(health.getDetails().get("database")).isNotNull();
+		assertThat(health.getDetails()).containsKey("database");
 		then(connection).should(times(2)).close();
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,50 +50,52 @@ import static org.assertj.core.api.Assertions.assertThat;
 class KafkaMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(KafkaMetricsAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(KafkaMetricsAutoConfiguration.class));
 
 	@Test
 	void whenThereIsAMeterRegistryThenMetricsListenersAreAdded() {
 		this.contextRunner.with(MetricsRun.simple())
-				.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class)).run((context) -> {
-					assertThat(((DefaultKafkaProducerFactory<?, ?>) context.getBean(DefaultKafkaProducerFactory.class))
-							.getListeners()).hasSize(1).hasOnlyElementsOfTypes(MicrometerProducerListener.class);
-					assertThat(((DefaultKafkaConsumerFactory<?, ?>) context.getBean(DefaultKafkaConsumerFactory.class))
-							.getListeners()).hasSize(1).hasOnlyElementsOfTypes(MicrometerConsumerListener.class);
-				});
+			.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(((DefaultKafkaProducerFactory<?, ?>) context.getBean(DefaultKafkaProducerFactory.class))
+					.getListeners()).hasSize(1).hasOnlyElementsOfTypes(MicrometerProducerListener.class);
+				assertThat(((DefaultKafkaConsumerFactory<?, ?>) context.getBean(DefaultKafkaConsumerFactory.class))
+					.getListeners()).hasSize(1).hasOnlyElementsOfTypes(MicrometerConsumerListener.class);
+			});
 	}
 
 	@Test
 	void whenThereIsNoMeterRegistryThenListenerCustomizationBacksOff() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class)).run((context) -> {
 			assertThat(((DefaultKafkaProducerFactory<?, ?>) context.getBean(DefaultKafkaProducerFactory.class))
-					.getListeners()).isEmpty();
+				.getListeners()).isEmpty();
 			assertThat(((DefaultKafkaConsumerFactory<?, ?>) context.getBean(DefaultKafkaConsumerFactory.class))
-					.getListeners()).isEmpty();
+				.getListeners()).isEmpty();
 		});
 	}
 
 	@Test
 	void whenKafkaStreamsIsEnabledAndThereIsAMeterRegistryThenMetricsListenersAreAdded() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class))
-				.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
-				.withPropertyValues("spring.application.name=my-test-app").with(MetricsRun.simple()).run((context) -> {
-					StreamsBuilderFactoryBean streamsBuilderFactoryBean = context
-							.getBean(StreamsBuilderFactoryBean.class);
-					assertThat(streamsBuilderFactoryBean.getListeners()).hasSize(1)
-							.hasOnlyElementsOfTypes(KafkaStreamsMicrometerListener.class);
-				});
+			.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
+			.withPropertyValues("spring.application.name=my-test-app")
+			.with(MetricsRun.simple())
+			.run((context) -> {
+				StreamsBuilderFactoryBean streamsBuilderFactoryBean = context.getBean(StreamsBuilderFactoryBean.class);
+				assertThat(streamsBuilderFactoryBean.getListeners()).hasSize(1)
+					.hasOnlyElementsOfTypes(KafkaStreamsMicrometerListener.class);
+			});
 	}
 
 	@Test
 	void whenKafkaStreamsIsEnabledAndThereIsNoMeterRegistryThenListenerCustomizationBacksOff() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class))
-				.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
-				.withPropertyValues("spring.application.name=my-test-app").run((context) -> {
-					StreamsBuilderFactoryBean streamsBuilderFactoryBean = context
-							.getBean(StreamsBuilderFactoryBean.class);
-					assertThat(streamsBuilderFactoryBean.getListeners()).isEmpty();
-				});
+			.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
+			.withPropertyValues("spring.application.name=my-test-app")
+			.run((context) -> {
+				StreamsBuilderFactoryBean streamsBuilderFactoryBean = context.getBean(StreamsBuilderFactoryBean.class);
+				assertThat(streamsBuilderFactoryBean.getListeners()).isEmpty();
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -15,7 +15,5 @@ dependencies {
 	runtimeOnly("com.h2database:h2")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-	testRuntimeOnly("org.apache.httpcomponents:httpclient") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	testRuntimeOnly("org.apache.httpcomponents.client5:httpclient5")
 }

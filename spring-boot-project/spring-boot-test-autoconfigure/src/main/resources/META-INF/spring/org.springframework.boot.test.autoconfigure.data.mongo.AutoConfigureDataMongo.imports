@@ -5,5 +5,4 @@ org.springframework.boot.autoconfigure.data.mongo.MongoReactiveRepositoriesAutoC
 org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
 org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration
-org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
 org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,6 @@ import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.context.request.async.StandardServletAsyncWebRequest;
 import org.springframework.web.context.request.async.WebAsyncManager;
 import org.springframework.web.context.request.async.WebAsyncUtils;
-import org.springframework.web.util.NestedServletException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -64,11 +63,11 @@ import static org.mockito.Mockito.never;
 @ExtendWith(OutputCaptureExtension.class)
 class ErrorPageFilterTests {
 
-	private ErrorPageFilter filter = new ErrorPageFilter();
+	private final ErrorPageFilter filter = new ErrorPageFilter();
 
-	private DispatchRecordingMockHttpServletRequest request = new DispatchRecordingMockHttpServletRequest();
+	private final DispatchRecordingMockHttpServletRequest request = new DispatchRecordingMockHttpServletRequest();
 
-	private MockHttpServletResponse response = new MockHttpServletResponse();
+	private final MockHttpServletResponse response = new MockHttpServletResponse();
 
 	private MockFilterChain chain = new TestFilterChain((request, response, chain) -> {
 	});
@@ -92,7 +91,7 @@ class ErrorPageFilterTests {
 		this.filter.doFilter(this.request, this.response, this.chain);
 		assertThat(((HttpServletResponse) this.chain.getResponse()).getStatus()).isEqualTo(201);
 		assertThat(((HttpServletResponse) ((HttpServletResponseWrapper) this.chain.getResponse()).getResponse())
-				.getStatus()).isEqualTo(201);
+			.getStatus()).isEqualTo(201);
 		assertThat(this.response.isCommitted()).isTrue();
 	}
 
@@ -209,7 +208,7 @@ class ErrorPageFilterTests {
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)).isEqualTo(500);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE)).isEqualTo("BAD");
 		Map<String, Object> requestAttributes = getAttributesForDispatch("/500");
-		assertThat(requestAttributes.get(RequestDispatcher.ERROR_EXCEPTION_TYPE)).isEqualTo(RuntimeException.class);
+		assertThat(requestAttributes).containsEntry(RequestDispatcher.ERROR_EXCEPTION_TYPE, RuntimeException.class);
 		assertThat(requestAttributes.get(RequestDispatcher.ERROR_EXCEPTION)).isInstanceOf(RuntimeException.class);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE)).isNull();
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION)).isNull();
@@ -249,8 +248,8 @@ class ErrorPageFilterTests {
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)).isEqualTo(500);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE)).isEqualTo("BAD");
 		Map<String, Object> requestAttributes = getAttributesForDispatch("/500");
-		assertThat(requestAttributes.get(RequestDispatcher.ERROR_EXCEPTION_TYPE))
-				.isEqualTo(IllegalStateException.class);
+		assertThat(requestAttributes).containsEntry(RequestDispatcher.ERROR_EXCEPTION_TYPE,
+				IllegalStateException.class);
 		assertThat(requestAttributes.get(RequestDispatcher.ERROR_EXCEPTION)).isInstanceOf(IllegalStateException.class);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE)).isNull();
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION)).isNull();
@@ -367,18 +366,18 @@ class ErrorPageFilterTests {
 	}
 
 	@Test
-	void nestedServletExceptionIsUnwrapped() throws Exception {
+	void servletExceptionIsUnwrapped() throws Exception {
 		this.filter.addErrorPages(new ErrorPage(RuntimeException.class, "/500"));
 		this.chain = new TestFilterChain((request, response, chain) -> {
 			chain.call();
-			throw new NestedServletException("Wrapper", new RuntimeException("BAD"));
+			throw new ServletException("Wrapper", new RuntimeException("BAD"));
 		});
 		this.filter.doFilter(this.request, this.response, this.chain);
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus()).isEqualTo(500);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)).isEqualTo(500);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE)).isEqualTo("BAD");
 		Map<String, Object> requestAttributes = getAttributesForDispatch("/500");
-		assertThat(requestAttributes.get(RequestDispatcher.ERROR_EXCEPTION_TYPE)).isEqualTo(RuntimeException.class);
+		assertThat(requestAttributes).containsEntry(RequestDispatcher.ERROR_EXCEPTION_TYPE, RuntimeException.class);
 		assertThat(requestAttributes.get(RequestDispatcher.ERROR_EXCEPTION)).isInstanceOf(RuntimeException.class);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE)).isNull();
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION)).isNull();
@@ -388,7 +387,7 @@ class ErrorPageFilterTests {
 	}
 
 	@Test
-	void nestedServletExceptionWithNoCause() throws Exception {
+	void servletExceptionWithNoCause() throws Exception {
 		this.filter.addErrorPages(new ErrorPage(MissingServletRequestParameterException.class, "/500"));
 		this.chain = new TestFilterChain((request, response, chain) -> {
 			chain.call();
@@ -398,12 +397,12 @@ class ErrorPageFilterTests {
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus()).isEqualTo(500);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)).isEqualTo(500);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE))
-				.isEqualTo("Required request parameter 'test' for method parameter type string is not present");
+			.isEqualTo("Required request parameter 'test' for method parameter type string is not present");
 		Map<String, Object> requestAttributes = getAttributesForDispatch("/500");
-		assertThat(requestAttributes.get(RequestDispatcher.ERROR_EXCEPTION_TYPE))
-				.isEqualTo(MissingServletRequestParameterException.class);
+		assertThat(requestAttributes).containsEntry(RequestDispatcher.ERROR_EXCEPTION_TYPE,
+				MissingServletRequestParameterException.class);
 		assertThat(requestAttributes.get(RequestDispatcher.ERROR_EXCEPTION))
-				.isInstanceOf(MissingServletRequestParameterException.class);
+			.isInstanceOf(MissingServletRequestParameterException.class);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION_TYPE)).isNull();
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_EXCEPTION)).isNull();
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI)).isEqualTo("/test/path");

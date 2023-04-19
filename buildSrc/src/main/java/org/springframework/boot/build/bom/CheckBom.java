@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,14 +59,18 @@ public class CheckBom extends DefaultTask {
 
 	private void checkExclusions(String groupId, Module module, DependencyVersion version) {
 		Set<String> resolved = getProject().getConfigurations()
-				.detachedConfiguration(
-						getProject().getDependencies().create(groupId + ":" + module.getName() + ":" + version))
-				.getResolvedConfiguration().getResolvedArtifacts().stream()
-				.map((artifact) -> artifact.getModuleVersion().getId())
-				.map((id) -> id.getGroup() + ":" + id.getModule().getName()).collect(Collectors.toSet());
-		Set<String> exclusions = module.getExclusions().stream()
-				.map((exclusion) -> exclusion.getGroupId() + ":" + exclusion.getArtifactId())
-				.collect(Collectors.toSet());
+			.detachedConfiguration(
+					getProject().getDependencies().create(groupId + ":" + module.getName() + ":" + version))
+			.getResolvedConfiguration()
+			.getResolvedArtifacts()
+			.stream()
+			.map((artifact) -> artifact.getModuleVersion().getId())
+			.map((id) -> id.getGroup() + ":" + id.getModule().getName())
+			.collect(Collectors.toSet());
+		Set<String> exclusions = module.getExclusions()
+			.stream()
+			.map((exclusion) -> exclusion.getGroupId() + ":" + exclusion.getArtifactId())
+			.collect(Collectors.toSet());
 		Set<String> unused = new TreeSet<>();
 		for (String exclusion : exclusions) {
 			if (!resolved.contains(exclusion)) {

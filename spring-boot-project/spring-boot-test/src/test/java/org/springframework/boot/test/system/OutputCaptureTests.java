@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.test.system;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.NoSuchElementException;
+import java.util.function.Predicate;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +43,7 @@ class OutputCaptureTests {
 
 	private TestPrintStream systemErr;
 
-	private OutputCapture output = new OutputCapture();
+	private final TestOutputCapture output = new TestOutputCapture();
 
 	@BeforeEach
 	void replaceSystemStreams() {
@@ -89,28 +90,28 @@ class OutputCaptureTests {
 		System.out.print("A");
 		this.output.pop();
 		System.out.print("B");
-		assertThat(this.systemOut.toString()).isEqualTo("AB");
+		assertThat(this.systemOut).hasToString("AB");
 	}
 
 	@Test
 	void captureAlsoWritesToSystemOut() {
 		this.output.push();
 		System.out.print("A");
-		assertThat(this.systemOut.toString()).isEqualTo("A");
+		assertThat(this.systemOut).hasToString("A");
 	}
 
 	@Test
 	void captureAlsoWritesToSystemErr() {
 		this.output.push();
 		System.err.print("A");
-		assertThat(this.systemErr.toString()).isEqualTo("A");
+		assertThat(this.systemErr).hasToString("A");
 	}
 
 	@Test
 	void lengthReturnsCapturedLength() {
 		this.output.push();
 		System.out.print("ABC");
-		assertThat(this.output.length()).isEqualTo(3);
+		assertThat(this.output).hasSize(3);
 	}
 
 	@Test
@@ -129,38 +130,69 @@ class OutputCaptureTests {
 
 	@Test
 	void getAllReturnsAllCapturedOutput() {
-		this.output.push();
-		System.out.print("A");
-		System.err.print("B");
-		System.out.print("C");
+		pushAndPrint();
 		assertThat(this.output.getAll()).isEqualTo("ABC");
 	}
 
 	@Test
 	void toStringReturnsAllCapturedOutput() {
-		this.output.push();
-		System.out.print("A");
-		System.err.print("B");
-		System.out.print("C");
-		assertThat(this.output.toString()).isEqualTo("ABC");
+		pushAndPrint();
+		assertThat(this.output).hasToString("ABC");
 	}
 
 	@Test
 	void getErrReturnsOnlyCapturedErrOutput() {
-		this.output.push();
-		System.out.print("A");
-		System.err.print("B");
-		System.out.print("C");
+		pushAndPrint();
 		assertThat(this.output.getErr()).isEqualTo("B");
 	}
 
 	@Test
 	void getOutReturnsOnlyCapturedOutOutput() {
+		pushAndPrint();
+		assertThat(this.output.getOut()).isEqualTo("AC");
+	}
+
+	@Test
+	void getAllUsesCache() {
+		pushAndPrint();
+		for (int i = 0; i < 10; i++) {
+			assertThat(this.output.getAll()).isEqualTo("ABC");
+		}
+		assertThat(this.output.buildCount).isOne();
+		System.out.print("X");
+		assertThat(this.output.getAll()).isEqualTo("ABCX");
+		assertThat(this.output.buildCount).isEqualTo(2);
+	}
+
+	@Test
+	void getOutUsesCache() {
+		pushAndPrint();
+		for (int i = 0; i < 10; i++) {
+			assertThat(this.output.getOut()).isEqualTo("AC");
+		}
+		assertThat(this.output.buildCount).isOne();
+		System.out.print("X");
+		assertThat(this.output.getOut()).isEqualTo("ACX");
+		assertThat(this.output.buildCount).isEqualTo(2);
+	}
+
+	@Test
+	void getErrUsesCache() {
+		pushAndPrint();
+		for (int i = 0; i < 10; i++) {
+			assertThat(this.output.getErr()).isEqualTo("B");
+		}
+		assertThat(this.output.buildCount).isOne();
+		System.err.print("X");
+		assertThat(this.output.getErr()).isEqualTo("BX");
+		assertThat(this.output.buildCount).isEqualTo(2);
+	}
+
+	private void pushAndPrint() {
 		this.output.push();
 		System.out.print("A");
 		System.err.print("B");
 		System.out.print("C");
-		assertThat(this.output.getOut()).isEqualTo("AC");
 	}
 
 	static class TestPrintStream extends PrintStream {
@@ -172,6 +204,18 @@ class OutputCaptureTests {
 		@Override
 		public String toString() {
 			return this.out.toString();
+		}
+
+	}
+
+	static class TestOutputCapture extends OutputCapture {
+
+		int buildCount;
+
+		@Override
+		String build(Predicate<Type> filter) {
+			this.buildCount++;
+			return super.build(filter);
 		}
 
 	}

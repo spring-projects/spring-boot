@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public class KeyValueCondition extends SpringBootCondition {
 		ConditionMessage.Builder message = ConditionMessage.forCondition("Public Key Value Condition");
 		Environment environment = context.getEnvironment();
 		String publicKeyLocation = environment
-				.getProperty("spring.security.oauth2.resourceserver.jwt.public-key-location");
+			.getProperty("spring.security.oauth2.resourceserver.jwt.public-key-location");
 		if (!StringUtils.hasText(publicKeyLocation)) {
 			return ConditionOutcome.noMatch(message.didNotFind("public-key-location property").atAll());
 		}

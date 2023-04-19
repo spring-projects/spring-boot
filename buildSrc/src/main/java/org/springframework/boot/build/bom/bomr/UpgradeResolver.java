@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,10 @@ interface UpgradeResolver {
 
 	/**
 	 * Resolves the upgrades to be applied to the given {@code libraries}.
-	 * @param libraries the libraries
+	 * @param librariesToUpgrade the libraries to upgrade
+	 * @param libraries all libraries
 	 * @return the upgrades
 	 */
-	List<Upgrade> resolveUpgrades(Collection<Library> libraries);
+	List<Upgrade> resolveUpgrades(Collection<Library> librariesToUpgrade, Collection<Library> libraries);
 
 }

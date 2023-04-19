@@ -9,15 +9,13 @@ tasks.named("bootJar") {
 
 // tag::env-runtime[]
 tasks.named("bootBuildImage") {
-	environment = [
-			"BPE_DELIM_JAVA_TOOL_OPTIONS" : " ",
-			"BPE_APPEND_JAVA_TOOL_OPTIONS" : "-XX:+HeapDumpOnOutOfMemoryError"
-	]
+	environment["BPE_DELIM_JAVA_TOOL_OPTIONS"] = " "
+	environment["BPE_APPEND_JAVA_TOOL_OPTIONS"] = "-XX:+HeapDumpOnOutOfMemoryError"
 }
 // end::env-runtime[]
 
 tasks.register("bootBuildImageEnvironment") {
 	doFirst {
-		bootBuildImage.environment.each { name, value -> println "$name=$value" }
+		bootBuildImage.environment.get().each { name, value -> println "$name=$value" }
 	}
 }

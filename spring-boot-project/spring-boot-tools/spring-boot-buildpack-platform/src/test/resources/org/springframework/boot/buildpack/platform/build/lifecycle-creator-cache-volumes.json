@@ -31,6 +31,9 @@
       "pack-app-aaaaaaaaaa:/workspace",
       "build-volume:/cache",
       "launch-volume:/launch-cache"
+    ],
+    "SecurityOpt" : [
+      "label=disable"
     ]
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,8 +56,8 @@ class ConfigDataEnvironmentContributorPlaceholdersResolver implements Placeholde
 
 	@Override
 	public Object resolvePlaceholders(Object value) {
-		if (value instanceof String) {
-			return this.helper.replacePlaceholders((String) value, this::resolvePlaceholder);
+		if (value instanceof String string) {
+			return this.helper.replacePlaceholders(string, this::resolvePlaceholder);
 		}
 		return value;
 	}
@@ -88,7 +88,7 @@ class ConfigDataEnvironmentContributorPlaceholdersResolver implements Placeholde
 			return contributor.isActive(this.activationContext);
 		}
 		return contributor.withBoundProperties(this.contributors, this.activationContext)
-				.isActive(this.activationContext);
+			.isActive(this.activationContext);
 	}
 
 }

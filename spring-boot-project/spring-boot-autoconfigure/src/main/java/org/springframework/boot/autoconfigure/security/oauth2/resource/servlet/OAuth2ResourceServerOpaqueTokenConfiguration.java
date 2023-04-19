@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,14 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2Res
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.introspection.SpringOpaqueTokenIntrospector;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 /**
- * Configures a {@link OpaqueTokenIntrospector} when a token introspection endpoint is
+ * Configures an {@link OpaqueTokenIntrospector} when a token introspection endpoint is
  * available. Also configures a {@link SecurityFilterChain} if a
  * {@link OpaqueTokenIntrospector} bean is found.
  *
@@ -60,8 +61,8 @@ class OAuth2ResourceServerOpaqueTokenConfiguration {
 		@Bean
 		@ConditionalOnBean(OpaqueTokenIntrospector.class)
 		SecurityFilterChain opaqueTokenSecurityFilterChain(HttpSecurity http) throws Exception {
-			http.authorizeRequests((requests) -> requests.anyRequest().authenticated());
-			http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
+			http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
+			http.oauth2ResourceServer((resourceServer) -> resourceServer.opaqueToken(withDefaults()));
 			return http.build();
 		}
 

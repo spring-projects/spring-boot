@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.amqp;
 
+import java.util.stream.Collectors;
+
 import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionNameStrategy;
 import org.springframework.boot.context.properties.PropertyMapper;
@@ -27,6 +29,9 @@ import org.springframework.util.Assert;
  *
  * @param <T> the connection factory type.
  * @author Chris Bono
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  * @since 2.6.0
  */
 public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConnectionFactory> {
@@ -35,9 +40,31 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 
 	private ConnectionNameStrategy connectionNameStrategy;
 
+	private final RabbitConnectionDetails connectionDetails;
+
+	/**
+	 * Creates a new configurer that will configure the connection factory using the given
+	 * {@code properties}.
+	 * @param properties the properties to use to configure the connection factory
+	 */
 	protected AbstractConnectionFactoryConfigurer(RabbitProperties properties) {
-		Assert.notNull(properties, "RabbitProperties must not be null");
+		this(properties, new PropertiesRabbitConnectionDetails(properties));
+	}
+
+	/**
+	 * Creates a new configurer that will configure the connection factory using the given
+	 * {@code properties} and {@code connectionDetails}, with the latter taking priority.
+	 * @param properties the properties to use to configure the connection factory
+	 * @param connectionDetails the connection details to use to configure the connection
+	 * factory
+	 * @since 3.1.0
+	 */
+	protected AbstractConnectionFactoryConfigurer(RabbitProperties properties,
+			RabbitConnectionDetails connectionDetails) {
+		Assert.notNull(properties, "Properties must not be null");
+		Assert.notNull(connectionDetails, "ConnectionDetails must not be null");
 		this.rabbitProperties = properties;
+		this.connectionDetails = connectionDetails;
 	}
 
 	protected final ConnectionNameStrategy getConnectionNameStrategy() {
@@ -55,9 +82,14 @@ public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConn
 	public final void configure(T connectionFactory) {
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
 		PropertyMapper map = PropertyMapper.get();
-		map.from(this.rabbitProperties::determineAddresses).to(connectionFactory::setAddresses);
-		map.from(this.rabbitProperties::getAddressShuffleMode).whenNonNull()
-				.to(connectionFactory::setAddressShuffleMode);
+		String addresses = this.connectionDetails.getAddresses()
+			.stream()
+			.map((address) -> address.host() + ":" + address.port())
+			.collect(Collectors.joining(","));
+		map.from(addresses).to(connectionFactory::setAddresses);
+		map.from(this.rabbitProperties::getAddressShuffleMode)
+			.whenNonNull()
+			.to(connectionFactory::setAddressShuffleMode);
 		map.from(this.connectionNameStrategy).whenNonNull().to(connectionFactory::setConnectionNameStrategy);
 		configure(connectionFactory, this.rabbitProperties);
 	}

@@ -45,6 +45,10 @@ import org.springframework.ldap.core.LdapOperations;
 public class LdapHealthContributorAutoConfiguration
 		extends CompositeHealthContributorConfiguration<LdapHealthIndicator, LdapOperations> {
 
+	public LdapHealthContributorAutoConfiguration() {
+		super(LdapHealthIndicator::new);
+	}
+
 	@Bean
 	@ConditionalOnMissingBean(name = { "ldapHealthIndicator", "ldapHealthContributor" })
 	public HealthContributor ldapHealthContributor(Map<String, LdapOperations> ldapOperations) {

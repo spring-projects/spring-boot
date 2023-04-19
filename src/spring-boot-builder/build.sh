@@ -10,6 +10,6 @@ docker tag paketobuildpacks/run:tiny-cnb projects.registry.vmware.com/springboot
 docker push projects.registry.vmware.com/springboot/run:tiny-cnb
 
 cd builder
-pack builder create projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.1 --config builder.toml
-docker push projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.1
+pack builder create projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.2 --config builder.toml
+docker push projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.2
 cd -

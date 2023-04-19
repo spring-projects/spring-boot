@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -220,7 +220,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	}
 
 	private void customizeSsl(Server server, InetSocketAddress address) {
-		new SslServerCustomizer(address, getSsl(), getSslStoreProvider(), getHttp2()).customize(server);
+		new SslServerCustomizer(address, getSsl(), getOrCreateSslStoreProvider(), getHttp2()).customize(server);
 	}
 
 	/**
@@ -278,7 +278,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 	private void addLocaleMappings(WebAppContext context) {
 		getLocaleCharsetMappings()
-				.forEach((locale, charset) -> context.addLocaleEncoding(locale.toString(), charset.toString()));
+			.forEach((locale, charset) -> context.addLocaleEncoding(locale.toString(), charset.toString()));
 	}
 
 	private File getTempDirectory() {
@@ -469,7 +469,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 
 	/**
 	 * Returns a mutable collection of Jetty {@link JettyServerCustomizer}s that will be
-	 * applied to the {@link Server} before the it is created.
+	 * applied to the {@link Server} before it is created.
 	 * @return the {@link JettyServerCustomizer}s
 	 */
 	public Collection<JettyServerCustomizer> getServerCustomizers() {
@@ -526,8 +526,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	}
 
 	private void addJettyErrorPages(ErrorHandler errorHandler, Collection<ErrorPage> errorPages) {
-		if (errorHandler instanceof ErrorPageErrorHandler) {
-			ErrorPageErrorHandler handler = (ErrorPageErrorHandler) errorHandler;
+		if (errorHandler instanceof ErrorPageErrorHandler handler) {
 			for (ErrorPage errorPage : errorPages) {
 				if (errorPage.isGlobal()) {
 					handler.addErrorPage(ErrorPageErrorHandler.GLOBAL_ERROR_PAGE, errorPage.getPath());
@@ -683,17 +682,18 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		@Override
 		public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response)
 				throws IOException, ServletException {
-			HttpServletResponse wrappedResponse = new ResposeWrapper(response);
+			HttpServletResponse wrappedResponse = new ResponseWrapper(response);
 			super.handle(target, baseRequest, request, wrappedResponse);
 		}
 
-		class ResposeWrapper extends HttpServletResponseWrapper {
+		class ResponseWrapper extends HttpServletResponseWrapper {
 
-			ResposeWrapper(HttpServletResponse response) {
+			ResponseWrapper(HttpServletResponse response) {
 				super(response);
 			}
 
 			@Override
+			@SuppressWarnings("removal")
 			public void addCookie(Cookie cookie) {
 				SameSite sameSite = getSameSite(cookie);
 				if (sameSite != null) {
@@ -705,15 +705,11 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			}
 
 			private String getSameSiteComment(SameSite sameSite) {
-				switch (sameSite) {
-				case NONE:
-					return HttpCookie.SAME_SITE_NONE_COMMENT;
-				case LAX:
-					return HttpCookie.SAME_SITE_LAX_COMMENT;
-				case STRICT:
-					return HttpCookie.SAME_SITE_STRICT_COMMENT;
-				}
-				throw new IllegalStateException("Unsupported SameSite value " + sameSite);
+				return switch (sameSite) {
+					case NONE -> HttpCookie.SAME_SITE_NONE_COMMENT;
+					case LAX -> HttpCookie.SAME_SITE_LAX_COMMENT;
+					case STRICT -> HttpCookie.SAME_SITE_STRICT_COMMENT;
+				};
 			}
 
 			private SameSite getSameSite(Cookie cookie) {

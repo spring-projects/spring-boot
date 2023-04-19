@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,8 +81,10 @@ public class NewRelicMetricsExportAutoConfiguration {
 	@ConditionalOnMissingBean
 	public NewRelicMeterRegistry newRelicMeterRegistry(NewRelicConfig newRelicConfig, Clock clock,
 			NewRelicClientProvider newRelicClientProvider) {
-		return NewRelicMeterRegistry.builder(newRelicConfig).clock(clock).clientProvider(newRelicClientProvider)
-				.build();
+		return NewRelicMeterRegistry.builder(newRelicConfig)
+			.clock(clock)
+			.clientProvider(newRelicClientProvider)
+			.build();
 	}
 
 }

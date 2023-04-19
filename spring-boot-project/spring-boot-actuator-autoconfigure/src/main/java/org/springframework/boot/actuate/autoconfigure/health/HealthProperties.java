@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.boot.actuate.health.HealthEndpoint;
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
@@ -44,8 +44,8 @@ public abstract class HealthProperties {
 	private Show showComponents;
 
 	/**
-	 * Roles used to determine whether or not a user is authorized to be shown details.
-	 * When empty, all authenticated users are authorized.
+	 * Roles used to determine whether a user is authorized to be shown details. When
+	 * empty, all authenticated users are authorized.
 	 */
 	private Set<String> roles = new HashSet<>();
 
@@ -100,29 +100,6 @@ public abstract class HealthProperties {
 		public Map<String, Integer> getHttpMapping() {
 			return this.httpMapping;
 		}
-
-	}
-
-	/**
-	 * Options for showing items in responses from the {@link HealthEndpoint} web
-	 * extensions.
-	 */
-	public enum Show {
-
-		/**
-		 * Never show the item in the response.
-		 */
-		NEVER,
-
-		/**
-		 * Show the item in the response when accessed by an authorized user.
-		 */
-		WHEN_AUTHORIZED,
-
-		/**
-		 * Always show the item in the response.
-		 */
-		ALWAYS
 
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,16 +97,18 @@ class LombokMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	void lombokInnerClassProperties() {
 		ConfigurationMetadata metadata = compile(LombokInnerClassProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("config").fromSource(LombokInnerClassProperties.class));
-		assertThat(metadata).has(Metadata.withGroup("config.first").ofType(LombokInnerClassProperties.Foo.class)
-				.fromSource(LombokInnerClassProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("config.first")
+			.ofType(LombokInnerClassProperties.Foo.class)
+			.fromSource(LombokInnerClassProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("config.first.name"));
 		assertThat(metadata).has(Metadata.withProperty("config.first.bar.name"));
 		assertThat(metadata).has(Metadata.withGroup("config.second", LombokInnerClassProperties.Foo.class)
-				.fromSource(LombokInnerClassProperties.class));
+			.fromSource(LombokInnerClassProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("config.second.name"));
 		assertThat(metadata).has(Metadata.withProperty("config.second.bar.name"));
-		assertThat(metadata).has(Metadata.withGroup("config.third").ofType(SimpleLombokPojo.class)
-				.fromSource(LombokInnerClassProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("config.third")
+			.ofType(SimpleLombokPojo.class)
+			.fromSource(LombokInnerClassProperties.class));
 		// For some reason the annotation processor resolves a type for SimpleLombokPojo
 		// that is resolved (compiled) and the source annotations are gone. Because we
 		// don't see the @Data annotation anymore, no field is harvested. What is crazy is
@@ -121,9 +123,10 @@ class LombokMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	void lombokInnerClassWithGetterProperties() {
 		ConfigurationMetadata metadata = compile(LombokInnerClassWithGetterProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("config").fromSource(LombokInnerClassWithGetterProperties.class));
-		assertThat(metadata)
-				.has(Metadata.withGroup("config.first").ofType(LombokInnerClassWithGetterProperties.Foo.class)
-						.fromSourceMethod("getFirst()").fromSource(LombokInnerClassWithGetterProperties.class));
+		assertThat(metadata).has(Metadata.withGroup("config.first")
+			.ofType(LombokInnerClassWithGetterProperties.Foo.class)
+			.fromSourceMethod("getFirst()")
+			.fromSource(LombokInnerClassWithGetterProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("config.first.name"));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
@@ -131,12 +134,15 @@ class LombokMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	private void assertSimpleLombokProperties(ConfigurationMetadata metadata, Class<?> source, String prefix) {
 		assertThat(metadata).has(Metadata.withGroup(prefix).fromSource(source));
 		assertThat(metadata).doesNotHave(Metadata.withProperty(prefix + ".id"));
-		assertThat(metadata).has(Metadata.withProperty(prefix + ".name", String.class).fromSource(source)
-				.withDescription("Name description."));
+		assertThat(metadata).has(Metadata.withProperty(prefix + ".name", String.class)
+			.fromSource(source)
+			.withDescription("Name description."));
 		assertThat(metadata).has(Metadata.withProperty(prefix + ".description"));
 		assertThat(metadata).has(Metadata.withProperty(prefix + ".counter"));
-		assertThat(metadata).has(Metadata.withProperty(prefix + ".number").fromSource(source).withDefaultValue(0)
-				.withDeprecation(null, null));
+		assertThat(metadata).has(Metadata.withProperty(prefix + ".number")
+			.fromSource(source)
+			.withDefaultValue(0)
+			.withDeprecation(null, null));
 		assertThat(metadata).has(Metadata.withProperty(prefix + ".items"));
 		assertThat(metadata).doesNotHave(Metadata.withProperty(prefix + ".ignored"));
 	}

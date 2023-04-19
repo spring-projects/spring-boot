@@ -101,7 +101,7 @@ public class Repackager extends Packager {
 	public void repackage(File destination, Libraries libraries, LaunchScript launchScript, FileTime lastModifiedTime)
 			throws IOException {
 		Assert.isTrue(destination != null && !destination.isDirectory(), "Invalid destination");
-		Layout layout = getLayout(); // get layout early
+		getLayout(); // get layout early
 		destination = destination.getAbsoluteFile();
 		File source = getSource();
 		if (isAlreadyPackaged() && source.equals(destination)) {

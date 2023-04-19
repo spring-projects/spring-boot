@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,13 +109,13 @@ public class Handler extends URLStreamHandler {
 			return (connection != null) ? connection : openFallbackHandlerConnection(url);
 		}
 		catch (Exception ex) {
-			if (reason instanceof IOException) {
+			if (reason instanceof IOException ioException) {
 				log(false, "Unable to open fallback handler", ex);
-				throw (IOException) reason;
+				throw ioException;
 			}
 			log(true, "Unable to open fallback handler", ex);
-			if (reason instanceof RuntimeException) {
-				throw (RuntimeException) reason;
+			if (reason instanceof RuntimeException runtimeException) {
+				throw runtimeException;
 			}
 			throw new IllegalStateException(reason);
 		}
@@ -413,7 +413,7 @@ public class Handler extends URLStreamHandler {
 	 */
 	static void captureJarContextUrl() {
 		if (canResetCachedUrlHandlers()) {
-			String handlers = System.getProperty(PROTOCOL_HANDLER, "");
+			String handlers = System.getProperty(PROTOCOL_HANDLER);
 			try {
 				System.clearProperty(PROTOCOL_HANDLER);
 				try {

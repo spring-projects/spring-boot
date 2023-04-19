@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.metrics.web.servlet.DefaultWebMvcTagsProvider;
 import org.springframework.boot.actuate.metrics.web.servlet.WebMvcTagsContributor;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.servlet.HandlerMapping;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,6 +40,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
+@SuppressWarnings("removal")
+@Deprecated(since = "3.0.0", forRemoval = true)
 class DefaultWebMvcTagsProviderTests {
 
 	@Test
@@ -50,7 +54,8 @@ class DefaultWebMvcTagsProviderTests {
 	void givenSomeContributorsWhenTagsAreProvidedThenDefaultTagsAndContributedTagsArePresent() {
 		Map<String, Tag> tags = asMap(
 				new DefaultWebMvcTagsProvider(Arrays.asList(new TestWebMvcTagsContributor("alpha"),
-						new TestWebMvcTagsContributor("bravo", "charlie"))).getTags(null, null, null, null));
+						new TestWebMvcTagsContributor("bravo", "charlie")))
+					.getTags(null, null, null, null));
 		assertThat(tags).containsOnlyKeys("exception", "method", "outcome", "status", "uri", "alpha", "bravo",
 				"charlie");
 	}
@@ -65,13 +70,30 @@ class DefaultWebMvcTagsProviderTests {
 	void givenSomeContributorsWhenLongRequestTagsAreProvidedThenDefaultTagsAndContributedTagsArePresent() {
 		Map<String, Tag> tags = asMap(
 				new DefaultWebMvcTagsProvider(Arrays.asList(new TestWebMvcTagsContributor("alpha"),
-						new TestWebMvcTagsContributor("bravo", "charlie"))).getLongRequestTags(null, null));
+						new TestWebMvcTagsContributor("bravo", "charlie")))
+					.getLongRequestTags(null, null));
 		assertThat(tags).containsOnlyKeys("method", "uri", "alpha", "bravo", "charlie");
+	}
+
+	@Test
+	void trailingSlashIsIncludedByDefault() {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/the/uri/");
+		request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "{one}/{two}/");
+		Map<String, Tag> tags = asMap(new DefaultWebMvcTagsProvider().getTags(request, null, null, null));
+		assertThat(tags.get("uri").getValue()).isEqualTo("{one}/{two}/");
+	}
+
+	@Test
+	void trailingSlashCanBeIgnored() {
+		MockHttpServletRequest request = new MockHttpServletRequest("GET", "/the/uri/");
+		request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "{one}/{two}/");
+		Map<String, Tag> tags = asMap(new DefaultWebMvcTagsProvider(true).getTags(request, null, null, null));
+		assertThat(tags.get("uri").getValue()).isEqualTo("{one}/{two}");
 	}
 
 	private Map<String, Tag> asMap(Iterable<Tag> tags) {
 		return StreamSupport.stream(tags.spliterator(), false)
-				.collect(Collectors.toMap(Tag::getKey, Function.identity()));
+			.collect(Collectors.toMap(Tag::getKey, Function.identity()));
 	}
 
 	private static final class TestWebMvcTagsContributor implements WebMvcTagsContributor {
@@ -85,12 +107,12 @@ class DefaultWebMvcTagsProviderTests {
 		@Override
 		public Iterable<Tag> getTags(HttpServletRequest request, HttpServletResponse response, Object handler,
 				Throwable exception) {
-			return this.tagNames.stream().map((name) -> Tag.of(name, "value")).collect(Collectors.toList());
+			return this.tagNames.stream().map((name) -> Tag.of(name, "value")).toList();
 		}
 
 		@Override
 		public Iterable<Tag> getLongRequestTags(HttpServletRequest request, Object handler) {
-			return this.tagNames.stream().map((name) -> Tag.of(name, "value")).collect(Collectors.toList());
+			return this.tagNames.stream().map((name) -> Tag.of(name, "value")).toList();
 		}
 
 	}

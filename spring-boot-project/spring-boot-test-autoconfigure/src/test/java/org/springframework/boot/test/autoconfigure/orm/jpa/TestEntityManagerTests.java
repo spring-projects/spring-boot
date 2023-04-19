@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,7 @@ class TestEntityManagerTests {
 	@Test
 	void createWhenEntityManagerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestEntityManager(null))
-				.withMessageContaining("EntityManagerFactory must not be null");
+			.withMessageContaining("EntityManagerFactory must not be null");
 	}
 
 	@Test
@@ -191,8 +191,8 @@ class TestEntityManagerTests {
 		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		assertThatIllegalArgumentException().isThrownBy(() -> this.testEntityManager.getId(entity, Long.class))
-				.withMessageContaining("ID mismatch: Object of class [java.lang.Integer] "
-						+ "must be an instance of class java.lang.Long");
+			.withMessageContaining("ID mismatch: Object of class [java.lang.Integer] "
+					+ "must be an instance of class java.lang.Long");
 	}
 
 	@Test
@@ -213,7 +213,7 @@ class TestEntityManagerTests {
 	@Test
 	void getEntityManagerWhenNotSetShouldThrowException() {
 		assertThatIllegalStateException().isThrownBy(this.testEntityManager::getEntityManager)
-				.withMessageContaining("No transactional EntityManager found");
+			.withMessageContaining("No transactional EntityManager found");
 	}
 
 	private void bindEntityManager() {

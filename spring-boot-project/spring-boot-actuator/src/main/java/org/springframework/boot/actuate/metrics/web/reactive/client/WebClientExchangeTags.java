@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,10 @@ import org.springframework.web.reactive.function.client.WebClient;
  * @author Brian Clozel
  * @author Nishant Raut
  * @since 2.1.0
+ * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
+ * {@link org.springframework.web.reactive.function.client.DefaultClientRequestObservationConvention}
  */
+@Deprecated(since = "3.0.0", forRemoval = true)
 public final class WebClientExchangeTags {
 
 	private static final String URI_TEMPLATE_ATTRIBUTE = WebClient.class.getName() + ".uriTemplate";
@@ -45,7 +48,7 @@ public final class WebClientExchangeTags {
 
 	private static final Pattern PATTERN_BEFORE_PATH = Pattern.compile("^https?://[^/]+/");
 
-	private static final Tag CLIENT_NAME_NONE = Tag.of("clientName", "none");
+	private static final Tag CLIENT_NAME_NONE = Tag.of("client.name", "none");
 
 	private WebClientExchangeTags() {
 	}
@@ -86,7 +89,7 @@ public final class WebClientExchangeTags {
 	 */
 	public static Tag status(ClientResponse response, Throwable throwable) {
 		if (response != null) {
-			return Tag.of("status", String.valueOf(response.rawStatusCode()));
+			return Tag.of("status", String.valueOf(response.statusCode().value()));
 		}
 		if (throwable != null) {
 			return (throwable instanceof IOException) ? IO_ERROR : CLIENT_ERROR;
@@ -95,29 +98,29 @@ public final class WebClientExchangeTags {
 	}
 
 	/**
-	 * Create a {@code clientName} {@code Tag} derived from the
+	 * Create a {@code client.name} {@code Tag} derived from the
 	 * {@link java.net.URI#getHost host} of the {@link ClientRequest#url() URL} of the
 	 * given {@code request}.
 	 * @param request the request
-	 * @return the clientName tag
+	 * @return the client.name tag
 	 */
 	public static Tag clientName(ClientRequest request) {
 		String host = request.url().getHost();
 		if (host == null) {
 			return CLIENT_NAME_NONE;
 		}
-		return Tag.of("clientName", host);
+		return Tag.of("client.name", host);
 	}
 
 	/**
 	 * Creates an {@code outcome} {@code Tag} derived from the
-	 * {@link ClientResponse#rawStatusCode() status} of the given {@code response}.
+	 * {@link ClientResponse#statusCode() status} of the given {@code response}.
 	 * @param response the response
 	 * @return the outcome tag
 	 * @since 2.2.0
 	 */
 	public static Tag outcome(ClientResponse response) {
-		Outcome outcome = (response != null) ? Outcome.forStatus(response.rawStatusCode()) : Outcome.UNKNOWN;
+		Outcome outcome = (response != null) ? Outcome.forStatus(response.statusCode().value()) : Outcome.UNKNOWN;
 		return outcome.asTag();
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.web.servlet.error;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import jakarta.servlet.Servlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -73,8 +72,8 @@ import org.springframework.web.servlet.view.BeanNameViewResolver;
 import org.springframework.web.util.HtmlUtils;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} to render errors via an MVC error
- * controller.
+ * {@link EnableAutoConfiguration Auto-configuration} to render errors through an MVC
+ * error controller.
  *
  * @author Dave Syer
  * @author Andy Wilkinson
@@ -107,7 +106,7 @@ public class ErrorMvcAutoConfiguration {
 	public BasicErrorController basicErrorController(ErrorAttributes errorAttributes,
 			ObjectProvider<ErrorViewResolver> errorViewResolvers) {
 		return new BasicErrorController(errorAttributes, this.serverProperties.getError(),
-				errorViewResolvers.orderedStream().collect(Collectors.toList()));
+				errorViewResolvers.orderedStream().toList());
 	}
 
 	@Bean
@@ -211,11 +210,16 @@ public class ErrorMvcAutoConfiguration {
 			if (response.getContentType() == null) {
 				response.setContentType(getContentType());
 			}
-			builder.append("<html><body><h1>Whitelabel Error Page</h1>").append(
-					"<p>This application has no explicit mapping for /error, so you are seeing this as a fallback.</p>")
-					.append("<div id='created'>").append(timestamp).append("</div>")
-					.append("<div>There was an unexpected error (type=").append(htmlEscape(model.get("error")))
-					.append(", status=").append(htmlEscape(model.get("status"))).append(").</div>");
+			builder.append("<html><body><h1>Whitelabel Error Page</h1>")
+				.append("<p>This application has no explicit mapping for /error, so you are seeing this as a fallback.</p>")
+				.append("<div id='created'>")
+				.append(timestamp)
+				.append("</div>")
+				.append("<div>There was an unexpected error (type=")
+				.append(htmlEscape(model.get("error")))
+				.append(", status=")
+				.append(htmlEscape(model.get("status")))
+				.append(").</div>");
 			if (message != null) {
 				builder.append("<div>").append(htmlEscape(message)).append("</div>");
 			}
@@ -288,7 +292,7 @@ public class ErrorMvcAutoConfiguration {
 			for (String errorControllerBean : errorControllerBeans) {
 				try {
 					beanFactory.getBeanDefinition(errorControllerBean)
-							.setAttribute(AutoProxyUtils.PRESERVE_TARGET_CLASS_ATTRIBUTE, Boolean.TRUE);
+						.setAttribute(AutoProxyUtils.PRESERVE_TARGET_CLASS_ATTRIBUTE, Boolean.TRUE);
 				}
 				catch (Throwable ex) {
 					// Ignore

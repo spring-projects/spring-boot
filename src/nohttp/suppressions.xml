@@ -9,4 +9,5 @@
 	<suppress files="jquery.validate.js" checks="NoHttp" />
 	<suppress files="jquery-[0-9]\.[0-9]\.[0-9].js" checks="NoHttp" />
 	<suppress files="[\\/]spring-boot-project.setup" checks="NoHttp" />
+	<suppress files="DockerHostTests\.java" checks="NoHttp" />
 </suppressions>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,32 +37,54 @@ class AuditEventsEndpointWebIntegrationTests {
 
 	@WebEndpointTest
 	void allEvents(WebTestClient client) {
-		client.get().uri((builder) -> builder.path("/actuator/auditevents").build()).exchange().expectStatus().isOk()
-				.expectBody().jsonPath("events.[*].principal")
-				.isEqualTo(new JSONArray().appendElement("admin").appendElement("admin").appendElement("user"));
+		client.get()
+			.uri((builder) -> builder.path("/actuator/auditevents").build())
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("events.[*].principal")
+			.isEqualTo(new JSONArray().appendElement("admin").appendElement("admin").appendElement("user"));
 	}
 
 	@WebEndpointTest
 	void eventsAfter(WebTestClient client) {
 		client.get()
-				.uri((builder) -> builder.path("/actuator/auditevents")
-						.queryParam("after", "2016-11-01T13:00:00%2B00:00").build())
-				.exchange().expectStatus().isOk().expectBody().jsonPath("events").isEmpty();
+			.uri((builder) -> builder.path("/actuator/auditevents")
+				.queryParam("after", "2016-11-01T13:00:00%2B00:00")
+				.build())
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("events")
+			.isEmpty();
 	}
 
 	@WebEndpointTest
 	void eventsWithPrincipal(WebTestClient client) {
-		client.get().uri((builder) -> builder.path("/actuator/auditevents").queryParam("principal", "user").build())
-				.exchange().expectStatus().isOk().expectBody().jsonPath("events.[*].principal")
-				.isEqualTo(new JSONArray().appendElement("user"));
+		client.get()
+			.uri((builder) -> builder.path("/actuator/auditevents").queryParam("principal", "user").build())
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("events.[*].principal")
+			.isEqualTo(new JSONArray().appendElement("user"));
 	}
 
 	@WebEndpointTest
 	void eventsWithType(WebTestClient client) {
-		client.get().uri((builder) -> builder.path("/actuator/auditevents").queryParam("type", "logout").build())
-				.exchange().expectStatus().isOk().expectBody().jsonPath("events.[*].principal")
-				.isEqualTo(new JSONArray().appendElement("admin")).jsonPath("events.[*].type")
-				.isEqualTo(new JSONArray().appendElement("logout"));
+		client.get()
+			.uri((builder) -> builder.path("/actuator/auditevents").queryParam("type", "logout").build())
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("events.[*].principal")
+			.isEqualTo(new JSONArray().appendElement("admin"))
+			.jsonPath("events.[*].type")
+			.isEqualTo(new JSONArray().appendElement("logout"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

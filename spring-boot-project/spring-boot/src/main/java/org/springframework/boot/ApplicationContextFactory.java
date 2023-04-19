@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,9 @@ package org.springframework.boot;
 import java.util.function.Supplier;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
-import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 
 /**
  * Strategy interface for creating the {@link ConfigurableApplicationContext} used by a
@@ -41,22 +40,32 @@ public interface ApplicationContextFactory {
 	 * A default {@link ApplicationContextFactory} implementation that will create an
 	 * appropriate context for the {@link WebApplicationType}.
 	 */
-	ApplicationContextFactory DEFAULT = (webApplicationType) -> {
-		try {
-			switch (webApplicationType) {
-			case SERVLET:
-				return new AnnotationConfigServletWebServerApplicationContext();
-			case REACTIVE:
-				return new AnnotationConfigReactiveWebServerApplicationContext();
-			default:
-				return new AnnotationConfigApplicationContext();
-			}
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException("Unable create a default ApplicationContext instance, "
-					+ "you may need a custom ApplicationContextFactory", ex);
-		}
-	};
+	ApplicationContextFactory DEFAULT = new DefaultApplicationContextFactory();
+
+	/**
+	 * Return the {@link Environment} type expected to be set on the
+	 * {@link #create(WebApplicationType) created} application context. The result of this
+	 * method can be used to convert an existing environment instance to the correct type.
+	 * @param webApplicationType the web application type
+	 * @return the expected application context type or {@code null} to use the default
+	 * @since 2.6.14
+	 */
+	default Class<? extends ConfigurableEnvironment> getEnvironmentType(WebApplicationType webApplicationType) {
+		return null;
+	}
+
+	/**
+	 * Create a new {@link Environment} to be set on the
+	 * {@link #create(WebApplicationType) created} application context. The result of this
+	 * method must match the type returned by
+	 * {@link #getEnvironmentType(WebApplicationType)}.
+	 * @param webApplicationType the web application type
+	 * @return an environment instance or {@code null} to use the default
+	 * @since 2.6.14
+	 */
+	default ConfigurableEnvironment createEnvironment(WebApplicationType webApplicationType) {
+		return null;
+	}
 
 	/**
 	 * Creates the {@link ConfigurableApplicationContext application context} for a
@@ -68,7 +77,7 @@ public interface ApplicationContextFactory {
 
 	/**
 	 * Creates an {@code ApplicationContextFactory} that will create contexts by
-	 * instantiating the given {@code contextClass} via its primary constructor.
+	 * instantiating the given {@code contextClass} through its primary constructor.
 	 * @param contextClass the context class
 	 * @return the factory that will instantiate the context class
 	 * @see BeanUtils#instantiateClass(Class)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,11 +33,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.ServletRegistration.Dynamic;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.hc.client5.http.HttpHostConnectException;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpResponse;
 import org.apache.jasper.servlet.JspServlet;
 import org.awaitility.Awaitility;
 import org.eclipse.jetty.server.Connector;
@@ -61,6 +61,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.PortInUseException;
@@ -86,6 +87,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Henri Kerola
  */
+@Servlet5ClassPathOverrides
 class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryTests {
 
 	@Override
@@ -142,7 +144,6 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	@Override
 	@Disabled("Jetty 11 does not support User-Agent-based compression")
 	protected void noCompressionForUserAgent() {
-
 	}
 
 	@Test
@@ -319,7 +320,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		blockingServlet.admitOne();
 		Object response = request.get();
 		assertThat(response).isInstanceOf(HttpResponse.class);
-		assertThat(((HttpResponse) response).getStatusLine().getStatusCode()).isEqualTo(200);
+		assertThat(((HttpResponse) response).getCode()).isEqualTo(200);
 		assertThat(((HttpResponse) response).getFirstHeader("Connection")).isNull();
 		this.webServer.shutDownGracefully((result) -> {
 		});
@@ -328,9 +329,10 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 		blockingServlet.admitOne();
 		response = request.get();
 		assertThat(response).isInstanceOf(HttpResponse.class);
-		assertThat(((HttpResponse) response).getStatusLine().getStatusCode()).isEqualTo(200);
-		assertThat(((HttpResponse) response).getFirstHeader("Connection")).isNotNull().extracting(Header::getValue)
-				.isEqualTo("close");
+		assertThat(((HttpResponse) response).getCode()).isEqualTo(200);
+		assertThat(((HttpResponse) response).getFirstHeader("Connection")).isNotNull()
+			.extracting(Header::getValue)
+			.isEqualTo("close");
 		this.webServer.stop();
 	}
 
@@ -431,7 +433,7 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 			threadPool.setMinThreads(2);
 		});
 		assertThatExceptionOfType(WebServerException.class).isThrownBy(factory.getWebServer()::start)
-				.withCauseInstanceOf(IllegalStateException.class);
+			.withCauseInstanceOf(IllegalStateException.class);
 	}
 
 	@Test
@@ -521,11 +523,11 @@ class JettyServletWebServerFactoryTests extends AbstractServletWebServerFactoryT
 	}
 
 	private WebAppContext findWebAppContext(Handler handler) {
-		if (handler instanceof WebAppContext) {
-			return (WebAppContext) handler;
+		if (handler instanceof WebAppContext webAppContext) {
+			return webAppContext;
 		}
-		if (handler instanceof HandlerWrapper) {
-			return findWebAppContext(((HandlerWrapper) handler).getHandler());
+		if (handler instanceof HandlerWrapper wrapper) {
+			return findWebAppContext(wrapper.getHandler());
 		}
 		throw new IllegalStateException("No WebAppContext found");
 	}

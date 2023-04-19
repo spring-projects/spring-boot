@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -137,8 +137,8 @@ public class TaskExecutorBuilder {
 	}
 
 	/**
-	 * Set whether core threads are allow to time out. When enabled, this enables dynamic
-	 * growing and shrinking of the pool.
+	 * Set whether core threads are allowed to time out. When enabled, this enables
+	 * dynamic growing and shrinking of the pool.
 	 * @param allowCoreThreadTimeOut if core threads are allowed to time out
 	 * @return a new builder instance
 	 */

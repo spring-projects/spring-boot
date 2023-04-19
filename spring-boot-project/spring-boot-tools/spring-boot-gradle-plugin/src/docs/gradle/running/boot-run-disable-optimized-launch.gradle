@@ -11,6 +11,6 @@ tasks.named("bootRun") {
 
 tasks.register("optimizedLaunch") {
 	doLast {
-		println bootRun.optimizedLaunch
+		println bootRun.optimizedLaunch.get()
 	}
 }

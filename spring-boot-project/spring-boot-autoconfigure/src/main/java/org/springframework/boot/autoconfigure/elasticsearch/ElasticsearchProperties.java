@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,9 +58,16 @@ public class ElasticsearchProperties {
 	private Duration socketTimeout = Duration.ofSeconds(30);
 
 	/**
+	 * Whether to enable socket keep alive between client and Elasticsearch.
+	 */
+	private boolean socketKeepAlive = false;
+
+	/**
 	 * Prefix added to the path of every request sent to Elasticsearch.
 	 */
 	private String pathPrefix;
+
+	private final Restclient restclient = new Restclient();
 
 	public List<String> getUris() {
 		return this.uris;
@@ -102,12 +109,64 @@ public class ElasticsearchProperties {
 		this.socketTimeout = socketTimeout;
 	}
 
+	public boolean isSocketKeepAlive() {
+		return this.socketKeepAlive;
+	}
+
+	public void setSocketKeepAlive(boolean socketKeepAlive) {
+		this.socketKeepAlive = socketKeepAlive;
+	}
+
 	public String getPathPrefix() {
 		return this.pathPrefix;
 	}
 
 	public void setPathPrefix(String pathPrefix) {
 		this.pathPrefix = pathPrefix;
+	}
+
+	public Restclient getRestclient() {
+		return this.restclient;
+	}
+
+	public static class Restclient {
+
+		private final Sniffer sniffer = new Sniffer();
+
+		public Sniffer getSniffer() {
+			return this.sniffer;
+		}
+
+		public static class Sniffer {
+
+			/**
+			 * Interval between consecutive ordinary sniff executions.
+			 */
+			private Duration interval = Duration.ofMinutes(5);
+
+			/**
+			 * Delay of a sniff execution scheduled after a failure.
+			 */
+			private Duration delayAfterFailure = Duration.ofMinutes(1);
+
+			public Duration getInterval() {
+				return this.interval;
+			}
+
+			public void setInterval(Duration interval) {
+				this.interval = interval;
+			}
+
+			public Duration getDelayAfterFailure() {
+				return this.delayAfterFailure;
+			}
+
+			public void setDelayAfterFailure(Duration delayAfterFailure) {
+				this.delayAfterFailure = delayAfterFailure;
+			}
+
+		}
+
 	}
 
 }

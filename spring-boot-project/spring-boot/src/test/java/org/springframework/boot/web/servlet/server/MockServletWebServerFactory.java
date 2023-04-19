@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,9 @@ public class MockServletWebServerFactory extends AbstractServletWebServerFactory
 			extends org.springframework.boot.testsupport.web.servlet.MockServletWebServer implements WebServer {
 
 		MockServletWebServer(ServletContextInitializer[] initializers, int port) {
-			super(Arrays.stream(initializers).map((initializer) -> (Initializer) initializer::onStartup)
-					.toArray(Initializer[]::new), port);
+			super(Arrays.stream(initializers)
+				.map((initializer) -> (Initializer) initializer::onStartup)
+				.toArray(Initializer[]::new), port);
 		}
 
 		@Override

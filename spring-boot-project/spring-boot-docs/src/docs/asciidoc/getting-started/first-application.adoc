@@ -18,17 +18,17 @@ Before we begin, open a terminal and run the following commands to ensure that y
 [source,shell,indent=0,subs="verbatim"]
 ----
 	$ java -version
-	java version "1.8.0_102"
-	Java(TM) SE Runtime Environment (build 1.8.0_102-b14)
-	Java HotSpot(TM) 64-Bit Server VM (build 25.102-b14, mixed mode)
+	openjdk version "17.0.4.1" 2022-08-12 LTS
+	OpenJDK Runtime Environment (build 17.0.4.1+1-LTS)
+	OpenJDK 64-Bit Server VM (build 17.0.4.1+1-LTS, mixed mode, sharing)
 ----
 
 [source,shell,indent=0,subs="verbatim"]
 ----
 	$ mvn -v
-	Apache Maven 3.5.4 (1edded0938998edf8bf061f1ceb3cfdeccf443fe; 2018-06-17T14:33:14-04:00)
-	Maven home: /usr/local/Cellar/maven/3.3.9/libexec
-	Java version: 1.8.0_102, vendor: Oracle Corporation
+	Apache Maven 3.8.5 (3599d3414f046de2324203b78ddcf9b5e4388aa0)
+	Maven home: usr/Users/developer/tools/maven/3.8.5
+	Java version: 17.0.4.1, vendor: BellSoft, runtime: /Users/developer/sdkman/candidates/java/17.0.4.1-librca
 ----
 
 NOTE: This sample needs to be created in its own directory.
@@ -61,8 +61,8 @@ Open your favorite text editor and add the following:
 
 		<!-- Additional lines to be added here... -->
 
-ifeval::["{spring-boot-artifactory-repo}" != "release"]
-		<!-- (you do not need this if you are using a .RELEASE version) -->
+ifeval::["{artifact-release-type}" != "release"]
+		<!-- (you only need this if you are using a milestone or snapshot version) -->
 		<repositories>
 			<repository>
 				<id>spring-snapshots</id>
@@ -160,10 +160,13 @@ See the {spring-framework-docs}/web.html#mvc[MVC section] in the Spring Referenc
 
 
 
-[[getting-started.first-application.code.enable-auto-configuration]]
-==== The @EnableAutoConfiguration Annotation
-The second class-level annotation is `@EnableAutoConfiguration`.
-This annotation tells Spring Boot to "`guess`" how you want to configure Spring, based on the jar dependencies that you have added.
+[[getting-started.first-application.code.spring-boot-application]]
+==== The @SpringBootApplication Annotation
+The second class-level annotation is `@SpringBootApplication`.
+This annotation is known as a _meta-annotation_, it combines `@SpringBootConfiguration`, `@EnableAutoConfiguration` and `@ComponentScan`.
+
+Of those, the annotation we're most interested in here is `@EnableAutoConfiguration`.
+`@EnableAutoConfiguration` tells Spring Boot to "`guess`" how you want to configure Spring, based on the jar dependencies that you have added.
 Since `spring-boot-starter-web` added Tomcat and Spring MVC, the auto-configuration assumes that you are developing a web application and sets up Spring accordingly.
 
 .Starters and Auto-configuration
@@ -207,7 +210,7 @@ You should see output similar to the following:
 	....... . . .
 	....... . . . (log output here)
 	....... . . .
-	........ Started MyApplication in 2.222 seconds (JVM running for 6.514)
+	........ Started MyApplication in 0.906 seconds (process running for 6.514)
 ----
 
 If you open a web browser to `http://localhost:8080`, you should see the following output:
@@ -307,7 +310,7 @@ To run that application, use the `java -jar` command, as follows:
 	....... . . .
 	....... . . . (log output here)
 	....... . . .
-	........ Started MyApplication in 2.536 seconds (JVM running for 2.864)
+	........ Started MyApplication in 2.536 seconds (process running for 2.864)
 ----
 
 As before, to exit the application, press `ctrl-c`.

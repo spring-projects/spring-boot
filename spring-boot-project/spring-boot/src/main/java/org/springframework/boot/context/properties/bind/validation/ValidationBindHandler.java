@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -149,12 +149,9 @@ public class ValidationBindHandler extends AbstractBindHandler {
 
 		private final ConfigurationPropertyName name;
 
-		private final Object target;
-
 		protected ValidationResult(ConfigurationPropertyName name, Object target) {
 			super(target, null);
 			this.name = name;
-			this.target = target;
 		}
 
 		@Override
@@ -239,8 +236,8 @@ public class ValidationBindHandler extends AbstractBindHandler {
 
 		ValidationErrors getValidationErrors() {
 			Set<ConfigurationProperty> boundProperties = ValidationBindHandler.this.boundProperties.stream()
-					.filter((property) -> this.name.isAncestorOf(property.getName()))
-					.collect(Collectors.toCollection(LinkedHashSet::new));
+				.filter((property) -> this.name.isAncestorOf(property.getName()))
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 			return new ValidationErrors(this.name, boundProperties, getAllErrors());
 		}
 

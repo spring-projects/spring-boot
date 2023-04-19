@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
+import org.springframework.boot.web.server.SslStoreProviderFactory;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.unit.DataSize;
@@ -51,6 +52,7 @@ import org.springframework.util.unit.DataSize;
  *
  * @author Brian Clozel
  * @author Chris Bono
+ * @author Scott Frederick
  * @since 2.2.0
  */
 public class NettyRSocketServerFactory implements RSocketServerFactory, ConfigurableRSocketServerFactory {
@@ -179,7 +181,7 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	@SuppressWarnings("deprecation")
 	private HttpServer customizeSslConfiguration(HttpServer httpServer) {
 		org.springframework.boot.web.embedded.netty.SslServerCustomizer sslServerCustomizer = new org.springframework.boot.web.embedded.netty.SslServerCustomizer(
-				this.ssl, null, this.sslStoreProvider);
+				this.ssl, null, getOrCreateSslStoreProvider());
 		return sslServerCustomizer.apply(httpServer);
 	}
 
@@ -189,10 +191,18 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 			tcpServer = tcpServer.runOn(this.resourceFactory.getLoopResources());
 		}
 		if (this.ssl != null && this.ssl.isEnabled()) {
-			TcpSslServerCustomizer sslServerCustomizer = new TcpSslServerCustomizer(this.ssl, this.sslStoreProvider);
+			TcpSslServerCustomizer sslServerCustomizer = new TcpSslServerCustomizer(this.ssl,
+					getOrCreateSslStoreProvider());
 			tcpServer = sslServerCustomizer.apply(tcpServer);
 		}
 		return TcpServerTransport.create(tcpServer.bindAddress(this::getListenAddress));
+	}
+
+	private SslStoreProvider getOrCreateSslStoreProvider() {
+		if (this.sslStoreProvider != null) {
+			return this.sslStoreProvider;
+		}
+		return SslStoreProviderFactory.from(this.ssl);
 	}
 
 	private InetSocketAddress getListenAddress() {

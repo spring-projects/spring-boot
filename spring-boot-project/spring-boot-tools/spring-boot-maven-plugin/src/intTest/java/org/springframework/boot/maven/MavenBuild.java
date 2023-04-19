@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,6 +43,8 @@ import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
+
+import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.contentOf;
@@ -87,7 +88,7 @@ class MavenBuild {
 
 	private Map<String, String> getPomReplacements() {
 		Map<String, String> replacements = new HashMap<>();
-		replacements.put("java.version", "1.8");
+		replacements.put("java.version", "17");
 		replacements.put("project.groupId", "org.springframework.boot");
 		replacements.put("project.artifactId", "spring-boot-maven-plugin");
 		replacements.putAll(new Versions().asMap());
@@ -129,7 +130,7 @@ class MavenBuild {
 		try {
 			Path destination = this.temp.toPath();
 			Path source = this.projectDir.toPath();
-			Files.walkFileTree(source, new SimpleFileVisitor<Path>() {
+			Files.walkFileTree(source, new SimpleFileVisitor<>() {
 
 				@Override
 				public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
@@ -140,12 +141,12 @@ class MavenBuild {
 				@Override
 				public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
 					if (file.toFile().getName().equals("pom.xml")) {
-						String pomXml = new String(Files.readAllBytes(file), StandardCharsets.UTF_8);
+						String pomXml = Files.readString(file);
 						for (Entry<String, String> replacement : MavenBuild.this.pomReplacements.entrySet()) {
 							pomXml = pomXml.replace("@" + replacement.getKey() + "@", replacement.getValue());
 						}
-						Files.write(destination.resolve(source.relativize(file)),
-								pomXml.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE_NEW);
+						Files.writeString(destination.resolve(source.relativize(file)), pomXml,
+								StandardOpenOption.CREATE_NEW);
 					}
 					else {
 						Files.copy(file, destination.resolve(source.relativize(file)),
@@ -155,14 +156,10 @@ class MavenBuild {
 				}
 
 			});
-			String settingsXml = new String(Files.readAllBytes(Paths.get("src", "intTest", "projects", "settings.xml")),
-					StandardCharsets.UTF_8)
-							.replace("@localCentralUrl@",
-									new File("build/int-test-maven-repository").toURI().toURL().toString())
-							.replace("@localRepositoryPath@",
-									new File("build/local-maven-repository").getAbsolutePath());
-			Files.write(destination.resolve("settings.xml"), settingsXml.getBytes(StandardCharsets.UTF_8),
-					StandardOpenOption.CREATE_NEW);
+			String settingsXml = Files.readString(Paths.get("src", "intTest", "projects", "settings.xml"))
+				.replace("@localCentralUrl@", new File("build/int-test-maven-repository").toURI().toURL().toString())
+				.replace("@localRepositoryPath@", new File("build/local-maven-repository").getAbsolutePath());
+			Files.writeString(destination.resolve("settings.xml"), settingsXml, StandardOpenOption.CREATE_NEW);
 			request.setBaseDirectory(this.temp);
 			request.setJavaHome(new File(System.getProperty("java.home")));
 			request.setProperties(this.properties);
@@ -194,6 +191,9 @@ class MavenBuild {
 		}
 		catch (Exception ex) {
 			throw new RuntimeException(ex);
+		}
+		finally {
+			FileSystemUtils.deleteRecursively(this.temp);
 		}
 	}
 

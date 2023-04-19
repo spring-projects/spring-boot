@@ -28,7 +28,7 @@ class MyConditionEvaluationReportingTests {
 	@Test
 	fun autoConfigTest() {
 		ApplicationContextRunner()
-			.withInitializer(ConditionEvaluationReportLoggingListener(LogLevel.INFO))
+			.withInitializer(ConditionEvaluationReportLoggingListener.forLogLevel(LogLevel.INFO))
 			.run { context: AssertableApplicationContext? -> }
 	}
 

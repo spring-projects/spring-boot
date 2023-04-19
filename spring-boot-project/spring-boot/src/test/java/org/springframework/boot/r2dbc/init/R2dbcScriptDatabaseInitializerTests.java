@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,15 +35,17 @@ class R2dbcScriptDatabaseInitializerTests
 		extends AbstractScriptDatabaseInitializerTests<R2dbcScriptDatabaseInitializer> {
 
 	private final ConnectionFactory embeddedConnectionFactory = ConnectionFactoryBuilder
-			.withUrl("r2dbc:h2:mem:///" + UUID.randomUUID() + "?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE")
-			.build();
+		.withUrl("r2dbc:h2:mem:///" + UUID.randomUUID() + "?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE")
+		.build();
 
 	private final ConnectionFactory standaloneConnectionFactory = ConnectionFactoryBuilder
-			.withUrl("r2dbc:h2:file:///"
-					+ new BuildOutput(R2dbcScriptDatabaseInitializerTests.class).getRootLocation().getAbsolutePath()
+		.withUrl(
+				"r2dbc:h2:file:///"
+						+ new BuildOutput(R2dbcScriptDatabaseInitializerTests.class).getRootLocation()
+							.getAbsolutePath()
 							.replace('\\', '/')
-					+ "/" + UUID.randomUUID() + "?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE")
-			.build();
+						+ "/" + UUID.randomUUID() + "?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE")
+		.build();
 
 	@Override
 	protected R2dbcScriptDatabaseInitializer createEmbeddedDatabaseInitializer(
@@ -68,8 +70,12 @@ class R2dbcScriptDatabaseInitializerTests
 	}
 
 	private int numberOfRows(ConnectionFactory connectionFactory, String sql) {
-		return DatabaseClient.create(connectionFactory).sql(sql).map((row, metadata) -> row.get(0)).first()
-				.map((number) -> ((Number) number).intValue()).block();
+		return DatabaseClient.create(connectionFactory)
+			.sql(sql)
+			.map((row, metadata) -> row.get(0))
+			.first()
+			.map((number) -> ((Number) number).intValue())
+			.block();
 	}
 
 	@Override

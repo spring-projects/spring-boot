@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,12 +75,19 @@ public class ConfigurationPropertiesBindingPostProcessor
 
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		bind(ConfigurationPropertiesBean.get(this.applicationContext, bean, beanName));
+		if (!hasBoundValueObject(beanName)) {
+			bind(ConfigurationPropertiesBean.get(this.applicationContext, bean, beanName));
+		}
 		return bean;
 	}
 
+	private boolean hasBoundValueObject(String beanName) {
+		return this.registry.containsBeanDefinition(beanName) && BindMethod.VALUE_OBJECT
+			.equals(this.registry.getBeanDefinition(beanName).getAttribute(BindMethod.class.getName()));
+	}
+
 	private void bind(ConfigurationPropertiesBean bean) {
-		if (bean == null || hasBoundValueObject(bean.getName())) {
+		if (bean == null) {
 			return;
 		}
 		Assert.state(bean.getBindMethod() == BindMethod.JAVA_BEAN, "Cannot bind @ConfigurationProperties for bean '"
@@ -93,11 +100,6 @@ public class ConfigurationPropertiesBindingPostProcessor
 		}
 	}
 
-	private boolean hasBoundValueObject(String beanName) {
-		return this.registry.containsBeanDefinition(beanName) && BindMethod.VALUE_OBJECT
-				.equals(this.registry.getBeanDefinition(beanName).getAttribute(BindMethod.class.getName()));
-	}
-
 	/**
 	 * Register a {@link ConfigurationPropertiesBindingPostProcessor} bean if one is not
 	 * already registered.
@@ -108,7 +110,8 @@ public class ConfigurationPropertiesBindingPostProcessor
 		Assert.notNull(registry, "Registry must not be null");
 		if (!registry.containsBeanDefinition(BEAN_NAME)) {
 			BeanDefinition definition = BeanDefinitionBuilder
-					.rootBeanDefinition(ConfigurationPropertiesBindingPostProcessor.class).getBeanDefinition();
+				.rootBeanDefinition(ConfigurationPropertiesBindingPostProcessor.class)
+				.getBeanDefinition();
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(BEAN_NAME, definition);
 		}

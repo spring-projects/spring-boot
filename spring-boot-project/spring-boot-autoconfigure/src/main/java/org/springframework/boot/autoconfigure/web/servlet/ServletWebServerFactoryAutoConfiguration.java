@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  */
 
 package org.springframework.boot.autoconfigure.web.servlet;
-
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.ServletRequest;
@@ -77,9 +74,8 @@ public class ServletWebServerFactoryAutoConfiguration {
 	public ServletWebServerFactoryCustomizer servletWebServerFactoryCustomizer(ServerProperties serverProperties,
 			ObjectProvider<WebListenerRegistrar> webListenerRegistrars,
 			ObjectProvider<CookieSameSiteSupplier> cookieSameSiteSuppliers) {
-		return new ServletWebServerFactoryCustomizer(serverProperties,
-				webListenerRegistrars.orderedStream().collect(Collectors.toList()),
-				cookieSameSiteSuppliers.orderedStream().collect(Collectors.toList()));
+		return new ServletWebServerFactoryCustomizer(serverProperties, webListenerRegistrars.orderedStream().toList(),
+				cookieSameSiteSuppliers.orderedStream().toList());
 	}
 
 	@Bean
@@ -129,8 +125,8 @@ public class ServletWebServerFactoryAutoConfiguration {
 
 		@Override
 		public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-			if (beanFactory instanceof ConfigurableListableBeanFactory) {
-				this.beanFactory = (ConfigurableListableBeanFactory) beanFactory;
+			if (beanFactory instanceof ConfigurableListableBeanFactory listableBeanFactory) {
+				this.beanFactory = listableBeanFactory;
 			}
 		}
 
@@ -141,16 +137,15 @@ public class ServletWebServerFactoryAutoConfiguration {
 				return;
 			}
 			registerSyntheticBeanIfMissing(registry, "webServerFactoryCustomizerBeanPostProcessor",
-					WebServerFactoryCustomizerBeanPostProcessor.class,
-					WebServerFactoryCustomizerBeanPostProcessor::new);
+					WebServerFactoryCustomizerBeanPostProcessor.class);
 			registerSyntheticBeanIfMissing(registry, "errorPageRegistrarBeanPostProcessor",
-					ErrorPageRegistrarBeanPostProcessor.class, ErrorPageRegistrarBeanPostProcessor::new);
+					ErrorPageRegistrarBeanPostProcessor.class);
 		}
 
 		private <T> void registerSyntheticBeanIfMissing(BeanDefinitionRegistry registry, String name,
-				Class<T> beanClass, Supplier<T> instanceSupplier) {
+				Class<T> beanClass) {
 			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(beanClass, true, false))) {
-				RootBeanDefinition beanDefinition = new RootBeanDefinition(beanClass, instanceSupplier);
+				RootBeanDefinition beanDefinition = new RootBeanDefinition(beanClass);
 				beanDefinition.setSynthetic(true);
 				registry.registerBeanDefinition(name, beanDefinition);
 			}

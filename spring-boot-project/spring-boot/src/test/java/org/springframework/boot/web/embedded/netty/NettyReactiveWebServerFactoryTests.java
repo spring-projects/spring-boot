@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,7 +67,8 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		this.webServer.start();
 		factory.setPort(this.webServer.getPort());
 		assertThatExceptionOfType(PortInUseException.class).isThrownBy(factory.getWebServer(new EchoHandler())::start)
-				.satisfies(this::portMatchesRequirement).withCauseInstanceOf(Throwable.class);
+			.satisfies(this::portMatchesRequirement)
+			.withCauseInstanceOf(Throwable.class);
 	}
 
 	@Test
@@ -147,10 +148,16 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
 		ReactorClientHttpConnector connector = buildTrustAllSslConnector();
-		WebClient client = WebClient.builder().baseUrl("https://localhost:" + this.webServer.getPort())
-				.clientConnector(connector).build();
-		return client.post().uri("/test").contentType(MediaType.TEXT_PLAIN).body(BodyInserters.fromValue("Hello World"))
-				.retrieve().bodyToMono(String.class);
+		WebClient client = WebClient.builder()
+			.baseUrl("https://localhost:" + this.webServer.getPort())
+			.clientConnector(connector)
+			.build();
+		return client.post()
+			.uri("/test")
+			.contentType(MediaType.TEXT_PLAIN)
+			.body(BodyInserters.fromValue("Hello World"))
+			.retrieve()
+			.bodyToMono(String.class);
 	}
 
 	@Override

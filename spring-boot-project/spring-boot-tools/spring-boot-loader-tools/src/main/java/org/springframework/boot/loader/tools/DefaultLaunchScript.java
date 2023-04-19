@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,7 @@ public class DefaultLaunchScript implements LaunchScript {
 
 	private static final Pattern PLACEHOLDER_PATTERN = Pattern.compile("\\{\\{(\\w+)(:.*?)?\\}\\}(?!\\})");
 
-	private static final Set<String> FILE_PATH_KEYS = Collections
-			.unmodifiableSet(Collections.singleton("inlinedConfScript"));
+	private static final Set<String> FILE_PATH_KEYS = Collections.singleton("inlinedConfScript");
 
 	private final String content;
 
@@ -68,13 +67,10 @@ public class DefaultLaunchScript implements LaunchScript {
 	}
 
 	private String loadContent(InputStream inputStream) throws IOException {
-		try {
+		try (inputStream) {
 			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 			copy(inputStream, outputStream);
-			return new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
-		}
-		finally {
-			inputStream.close();
+			return outputStream.toString(StandardCharsets.UTF_8);
 		}
 	}
 
@@ -88,7 +84,7 @@ public class DefaultLaunchScript implements LaunchScript {
 	}
 
 	private String expandPlaceholders(String content, Map<?, ?> properties) throws IOException {
-		StringBuffer expanded = new StringBuffer();
+		StringBuilder expanded = new StringBuilder();
 		Matcher matcher = PLACEHOLDER_PATTERN.matcher(content);
 		while (matcher.find()) {
 			String name = matcher.group(1);
@@ -113,8 +109,8 @@ public class DefaultLaunchScript implements LaunchScript {
 	}
 
 	private String parseFilePropertyValue(Object propertyValue) throws IOException {
-		if (propertyValue instanceof File) {
-			return loadContent((File) propertyValue);
+		if (propertyValue instanceof File file) {
+			return loadContent(file);
 		}
 		return loadContent(new File(propertyValue.toString()));
 	}

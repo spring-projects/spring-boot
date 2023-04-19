@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -234,7 +234,8 @@ class TypeUtils {
 		if (type.getKind() == TypeKind.DECLARED) {
 			DeclaredType declaredType = (DeclaredType) type;
 			DeclaredType freshType = (DeclaredType) this.env.getElementUtils()
-					.getTypeElement(this.types.asElement(type).toString()).asType();
+				.getTypeElement(this.types.asElement(type).toString())
+				.asType();
 			List<? extends TypeMirror> arguments = declaredType.getTypeArguments();
 			for (int i = 0; i < arguments.size(); i++) {
 				TypeMirror specificType = arguments.get(i);
@@ -267,9 +268,12 @@ class TypeUtils {
 			}
 			StringBuilder name = new StringBuilder();
 			name.append(qualifiedName);
-			name.append("<").append(
-					type.getTypeArguments().stream().map((t) -> visit(t, descriptor)).collect(Collectors.joining(",")))
-					.append(">");
+			name.append("<")
+				.append(type.getTypeArguments()
+					.stream()
+					.map((t) -> visit(t, descriptor))
+					.collect(Collectors.joining(",")))
+				.append(">");
 			return name.toString();
 		}
 
@@ -284,8 +288,7 @@ class TypeUtils {
 		public String visitTypeVariable(TypeVariable t, TypeDescriptor descriptor) {
 			TypeMirror typeMirror = descriptor.resolveGeneric(t);
 			if (typeMirror != null) {
-				if (typeMirror instanceof TypeVariable) {
-					TypeVariable typeVariable = (TypeVariable) typeMirror;
+				if (typeMirror instanceof TypeVariable typeVariable) {
 					// Still unresolved, let's use the upper bound, checking first if
 					// a cycle may exist
 					if (!hasCycle(typeVariable)) {
@@ -302,9 +305,8 @@ class TypeUtils {
 
 		private boolean hasCycle(TypeVariable variable) {
 			TypeMirror upperBound = variable.getUpperBound();
-			if (upperBound instanceof DeclaredType) {
-				return ((DeclaredType) upperBound).getTypeArguments().stream()
-						.anyMatch((candidate) -> candidate.equals(variable));
+			if (upperBound instanceof DeclaredType declaredType) {
+				return declaredType.getTypeArguments().stream().anyMatch((candidate) -> candidate.equals(variable));
 			}
 			return false;
 		}
@@ -333,18 +335,17 @@ class TypeUtils {
 				return getQualifiedName(enclosingElement) + "$"
 						+ ((DeclaredType) element.asType()).asElement().getSimpleName();
 			}
-			if (element instanceof TypeElement) {
-				return ((TypeElement) element).getQualifiedName().toString();
+			if (element instanceof TypeElement typeElement) {
+				return typeElement.getQualifiedName().toString();
 			}
 			throw new IllegalStateException("Could not extract qualified name from " + element);
 		}
 
 		private TypeElement getEnclosingTypeElement(TypeMirror type) {
-			if (type instanceof DeclaredType) {
-				DeclaredType declaredType = (DeclaredType) type;
+			if (type instanceof DeclaredType declaredType) {
 				Element enclosingElement = declaredType.asElement().getEnclosingElement();
-				if (enclosingElement instanceof TypeElement) {
-					return (TypeElement) enclosingElement;
+				if (enclosingElement instanceof TypeElement typeElement) {
+					return typeElement;
 				}
 			}
 			return null;
@@ -368,15 +369,19 @@ class TypeUtils {
 		}
 
 		TypeMirror resolveGeneric(String parameterName) {
-			return this.generics.entrySet().stream().filter((e) -> getParameterName(e.getKey()).equals(parameterName))
-					.findFirst().map(Entry::getValue).orElse(null);
+			return this.generics.entrySet()
+				.stream()
+				.filter((e) -> getParameterName(e.getKey()).equals(parameterName))
+				.findFirst()
+				.map(Entry::getValue)
+				.orElse(null);
 		}
 
 		private void registerIfNecessary(TypeMirror variable, TypeMirror resolution) {
-			if (variable instanceof TypeVariable) {
-				TypeVariable typeVariable = (TypeVariable) variable;
-				if (this.generics.keySet().stream()
-						.noneMatch((candidate) -> getParameterName(candidate).equals(getParameterName(typeVariable)))) {
+			if (variable instanceof TypeVariable typeVariable) {
+				if (this.generics.keySet()
+					.stream()
+					.noneMatch((candidate) -> getParameterName(candidate).equals(getParameterName(typeVariable)))) {
 					this.generics.put(typeVariable, resolution);
 				}
 			}

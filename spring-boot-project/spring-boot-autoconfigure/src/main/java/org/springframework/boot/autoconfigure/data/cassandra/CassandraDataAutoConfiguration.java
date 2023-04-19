@@ -33,6 +33,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScanPackages;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
+import org.springframework.data.cassandra.CassandraManagedTypes;
 import org.springframework.data.cassandra.SessionFactory;
 import org.springframework.data.cassandra.config.CassandraEntityClassScanner;
 import org.springframework.data.cassandra.config.SchemaAction;
@@ -68,16 +69,23 @@ public class CassandraDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CassandraMappingContext cassandraMapping(BeanFactory beanFactory, CassandraCustomConversions conversions)
-			throws ClassNotFoundException {
-		CassandraMappingContext context = new CassandraMappingContext();
+	public static CassandraManagedTypes cassandraManagedTypes(BeanFactory beanFactory) throws ClassNotFoundException {
 		List<String> packages = EntityScanPackages.get(beanFactory).getPackageNames();
 		if (packages.isEmpty() && AutoConfigurationPackages.has(beanFactory)) {
 			packages = AutoConfigurationPackages.get(beanFactory);
 		}
 		if (!packages.isEmpty()) {
-			context.setInitialEntitySet(CassandraEntityClassScanner.scan(packages));
+			return CassandraManagedTypes.fromIterable(CassandraEntityClassScanner.scan(packages));
 		}
+		return CassandraManagedTypes.empty();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public CassandraMappingContext cassandraMappingContext(CassandraManagedTypes cassandraManagedTypes,
+			CassandraCustomConversions conversions) {
+		CassandraMappingContext context = new CassandraMappingContext();
+		context.setManagedTypes(cassandraManagedTypes);
 		context.setSimpleTypeHolder(conversions.getSimpleTypeHolder());
 		return context;
 	}
@@ -100,7 +108,7 @@ public class CassandraDataAutoConfiguration {
 		session.setSession(this.session);
 		session.setConverter(converter);
 		Binder binder = Binder.get(environment);
-		binder.bind("spring.data.cassandra.schema-action", SchemaAction.class).ifBound(session::setSchemaAction);
+		binder.bind("spring.cassandra.schema-action", SchemaAction.class).ifBound(session::setSchemaAction);
 		return session;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,19 +39,19 @@ class InspectedContentTests {
 	@Test
 	void ofWhenInputStreamThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> InspectedContent.of((InputStream) null))
-				.withMessage("InputStream must not be null");
+			.withMessage("InputStream must not be null");
 	}
 
 	@Test
 	void ofWhenContentIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> InspectedContent.of((Content) null))
-				.withMessage("Content must not be null");
+			.withMessage("Content must not be null");
 	}
 
 	@Test
 	void ofWhenConsumerIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> InspectedContent.of((IOConsumer<OutputStream>) null))
-				.withMessage("Writer must not be null");
+			.withMessage("Writer must not be null");
 	}
 
 	@Test
@@ -85,9 +85,9 @@ class InspectedContentTests {
 		InputStream inputStream = new ByteArrayInputStream("test".getBytes(StandardCharsets.UTF_8));
 		MessageDigest digest = MessageDigest.getInstance("SHA-256");
 		InspectedContent.of(inputStream, digest::update);
-		assertThat(digest.digest()).inHexadecimal().contains(0x9f, 0x86, 0xd0, 0x81, 0x88, 0x4c, 0x7d, 0x65, 0x9a, 0x2f,
-				0xea, 0xa0, 0xc5, 0x5a, 0xd0, 0x15, 0xa3, 0xbf, 0x4f, 0x1b, 0x2b, 0x0b, 0x82, 0x2c, 0xd1, 0x5d, 0x6c,
-				0x15, 0xb0, 0xf0, 0x0a, 0x08);
+		assertThat(digest.digest()).inHexadecimal()
+			.contains(0x9f, 0x86, 0xd0, 0x81, 0x88, 0x4c, 0x7d, 0x65, 0x9a, 0x2f, 0xea, 0xa0, 0xc5, 0x5a, 0xd0, 0x15,
+					0xa3, 0xbf, 0x4f, 0x1b, 0x2b, 0x0b, 0x82, 0x2c, 0xd1, 0x5d, 0x6c, 0x15, 0xb0, 0xf0, 0x0a, 0x08);
 	}
 
 	private byte[] readBytes(InspectedContent content) throws IOException {

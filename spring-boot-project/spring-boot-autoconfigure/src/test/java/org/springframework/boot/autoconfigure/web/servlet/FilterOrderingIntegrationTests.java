@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.boot.testsupport.web.servlet.MockServletWebServer.RegisteredFilter;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
-import org.springframework.boot.web.servlet.filter.ErrorPageSecurityFilter;
 import org.springframework.boot.web.servlet.filter.OrderedCharacterEncodingFilter;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
 import org.springframework.context.annotation.Bean;
@@ -70,7 +69,8 @@ class FilterOrderingIntegrationTests {
 	void testFilterOrdering() {
 		load();
 		List<RegisteredFilter> registeredFilters = this.context.getBean(MockServletWebServerFactory.class)
-				.getWebServer().getRegisteredFilters();
+			.getWebServer()
+			.getRegisteredFilters();
 		List<Filter> filters = new ArrayList<>(registeredFilters.size());
 		for (RegisteredFilter registeredFilter : registeredFilters) {
 			filters.add(registeredFilter.getFilter());
@@ -81,7 +81,6 @@ class FilterOrderingIntegrationTests {
 		assertThat(iterator.next()).isInstanceOf(Filter.class);
 		assertThat(iterator.next()).isInstanceOf(Filter.class);
 		assertThat(iterator.next()).isInstanceOf(OrderedRequestContextFilter.class);
-		assertThat(iterator.next()).isInstanceOf(ErrorPageSecurityFilter.class);
 		assertThat(iterator.next()).isInstanceOf(FilterChainProxy.class);
 	}
 

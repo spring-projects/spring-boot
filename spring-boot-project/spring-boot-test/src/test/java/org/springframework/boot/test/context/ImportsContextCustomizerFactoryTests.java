@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.mock;
  */
 class ImportsContextCustomizerFactoryTests {
 
-	private ImportsContextCustomizerFactory factory = new ImportsContextCustomizerFactory();
+	private final ImportsContextCustomizerFactory factory = new ImportsContextCustomizerFactory();
 
 	@Test
 	void getContextCustomizerWhenHasNoImportAnnotationShouldReturnNull() {
@@ -68,8 +68,8 @@ class ImportsContextCustomizerFactoryTests {
 		ContextCustomizer customizer3 = this.factory.createContextCustomizer(TestWithImportAndMetaImport.class, null);
 		ContextCustomizer customizer4 = this.factory.createContextCustomizer(TestWithSameImportAndMetaImport.class,
 				null);
-		assertThat(customizer1.hashCode()).isEqualTo(customizer1.hashCode());
-		assertThat(customizer1.hashCode()).isEqualTo(customizer2.hashCode());
+		assertThat(customizer1).hasSameHashCodeAs(customizer1);
+		assertThat(customizer1).hasSameHashCodeAs(customizer2);
 		assertThat(customizer1).isEqualTo(customizer1).isEqualTo(customizer2).isNotEqualTo(customizer3);
 		assertThat(customizer3).isEqualTo(customizer4);
 	}
@@ -77,8 +77,8 @@ class ImportsContextCustomizerFactoryTests {
 	@Test
 	void getContextCustomizerWhenClassHasBeanMethodsShouldThrowException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.factory.createContextCustomizer(TestWithImportAndBeanMethod.class, null))
-				.withMessageContaining("Test classes cannot include @Bean methods");
+			.isThrownBy(() -> this.factory.createContextCustomizer(TestWithImportAndBeanMethod.class, null))
+			.withMessageContaining("Test classes cannot include @Bean methods");
 	}
 
 	@Test
@@ -93,7 +93,7 @@ class ImportsContextCustomizerFactoryTests {
 	@Test
 	void selfAnnotatingAnnotationDoesNotCauseStackOverflow() {
 		assertThat(this.factory.createContextCustomizer(TestWithImportAndSelfAnnotatingAnnotation.class, null))
-				.isNotNull();
+			.isNotNull();
 	}
 
 	static class TestWithNoImport {

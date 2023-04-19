@@ -3,11 +3,11 @@ plugins {
 }
 
 task buildInfo(type: org.springframework.boot.gradle.tasks.buildinfo.BuildInfo) {
+	excludes = ["time"]
 	properties {
 		artifact = 'example'
 		group = 'com.example'
 		name = 'example'
 		additional = ['additional': 'alpha']
-		time = null
 	}
 }

@@ -20,7 +20,7 @@ import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NoSuchSessionException;
+import org.openqa.selenium.NoSuchWindowException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -59,7 +59,7 @@ class WebMvcTestWebDriverIntegrationTests {
 		this.webDriver.get("/html");
 		WebElement element = this.webDriver.findElement(By.tagName("body"));
 		assertThat(element.getText()).isEqualTo("Hello");
-		assertThatExceptionOfType(NoSuchSessionException.class).isThrownBy(previousWebDriver::getWindowHandle);
+		assertThatExceptionOfType(NoSuchWindowException.class).isThrownBy(previousWebDriver::getWindowHandle);
 		assertThat(previousWebDriver).isNotNull().isNotSameAs(this.webDriver);
 	}
 

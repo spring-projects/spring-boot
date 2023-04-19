@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,7 +94,7 @@ class DataJpaTestIntegrationTests {
 	@Test
 	void didNotInjectExampleComponent() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(ExampleComponent.class));
+			.isThrownBy(() -> this.applicationContext.getBean(ExampleComponent.class));
 	}
 
 	@Test
@@ -110,7 +110,7 @@ class DataJpaTestIntegrationTests {
 	@Test
 	void bootstrapModeIsDefaultByDefault() {
 		assertThat(this.applicationContext.getEnvironment().getProperty("spring.data.jpa.repositories.bootstrap-mode"))
-				.isEqualTo(BootstrapMode.DEFAULT.name());
+			.isEqualTo(BootstrapMode.DEFAULT.name());
 	}
 
 }

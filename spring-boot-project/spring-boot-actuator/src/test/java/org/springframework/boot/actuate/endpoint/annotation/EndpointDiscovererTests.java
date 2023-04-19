@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,33 +71,33 @@ class EndpointDiscovererTests {
 	@Test
 	void createWhenApplicationContextIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new TestEndpointDiscoverer(null, mock(ParameterValueMapper.class),
-						Collections.emptyList(), Collections.emptyList()))
-				.withMessageContaining("ApplicationContext must not be null");
+			.isThrownBy(() -> new TestEndpointDiscoverer(null, mock(ParameterValueMapper.class),
+					Collections.emptyList(), Collections.emptyList()))
+			.withMessageContaining("ApplicationContext must not be null");
 	}
 
 	@Test
 	void createWhenParameterValueMapperIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class), null,
-						Collections.emptyList(), Collections.emptyList()))
-				.withMessageContaining("ParameterValueMapper must not be null");
+			.isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class), null, Collections.emptyList(),
+					Collections.emptyList()))
+			.withMessageContaining("ParameterValueMapper must not be null");
 	}
 
 	@Test
 	void createWhenInvokerAdvisorsIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
-						mock(ParameterValueMapper.class), null, Collections.emptyList()))
-				.withMessageContaining("InvokerAdvisors must not be null");
+			.isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
+					mock(ParameterValueMapper.class), null, Collections.emptyList()))
+			.withMessageContaining("InvokerAdvisors must not be null");
 	}
 
 	@Test
 	void createWhenFiltersIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
-						mock(ParameterValueMapper.class), Collections.emptyList(), null))
-				.withMessageContaining("Filters must not be null");
+			.isThrownBy(() -> new TestEndpointDiscoverer(mock(ApplicationContext.class),
+					mock(ParameterValueMapper.class), Collections.emptyList(), null))
+			.withMessageContaining("Filters must not be null");
 	}
 
 	@Test
@@ -139,8 +139,8 @@ class EndpointDiscovererTests {
 	void getEndpointsWhenTwoEndpointsHaveTheSameIdShouldThrowException() {
 		load(ClashingEndpointConfiguration.class,
 				(context) -> assertThatIllegalStateException()
-						.isThrownBy(new TestEndpointDiscoverer(context)::getEndpoints)
-						.withMessageContaining("Found two endpoints with the id 'test': "));
+					.isThrownBy(new TestEndpointDiscoverer(context)::getEndpoints)
+					.withMessageContaining("Found two endpoints with the id 'test': "));
 	}
 
 	@Test
@@ -159,8 +159,9 @@ class EndpointDiscovererTests {
 			Map<EndpointId, TestExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
 			Map<Method, TestOperation> operations = mapOperations(endpoints.get(EndpointId.of("test")));
-			operations.values().forEach(
-					(operation) -> assertThat(operation.getInvoker()).isNotInstanceOf(CachingOperationInvoker.class));
+			operations.values()
+				.forEach((operation) -> assertThat(operation.getInvoker())
+					.isNotInstanceOf(CachingOperationInvoker.class));
 		});
 	}
 
@@ -172,8 +173,9 @@ class EndpointDiscovererTests {
 			Map<EndpointId, TestExposableEndpoint> endpoints = mapEndpoints(discoverer.getEndpoints());
 			assertThat(endpoints).containsOnlyKeys(EndpointId.of("test"));
 			Map<Method, TestOperation> operations = mapOperations(endpoints.get(EndpointId.of("test")));
-			operations.values().forEach(
-					(operation) -> assertThat(operation.getInvoker()).isNotInstanceOf(CachingOperationInvoker.class));
+			operations.values()
+				.forEach((operation) -> assertThat(operation.getInvoker())
+					.isNotInstanceOf(CachingOperationInvoker.class));
 		});
 	}
 
@@ -188,7 +190,7 @@ class EndpointDiscovererTests {
 			TestOperation getAll = operations.get(findTestEndpointMethod("getAll"));
 			TestOperation getOne = operations.get(findTestEndpointMethod("getOne", String.class));
 			TestOperation update = operations
-					.get(ReflectionUtils.findMethod(TestEndpoint.class, "update", String.class, String.class));
+				.get(ReflectionUtils.findMethod(TestEndpoint.class, "update", String.class, String.class));
 			assertThat(((CachingOperationInvoker) getAll.getInvoker()).getTimeToLive()).isEqualTo(500);
 			assertThat(getOne.getInvoker()).isNotInstanceOf(CachingOperationInvoker.class);
 			assertThat(update.getInvoker()).isNotInstanceOf(CachingOperationInvoker.class);
@@ -320,16 +322,13 @@ class EndpointDiscovererTests {
 	private void load(ApplicationContext parent, Class<?> configuration,
 			Consumer<AnnotationConfigApplicationContext> consumer) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		if (parent != null) {
-			context.setParent(parent);
-		}
-		context.register(configuration);
-		context.refresh();
-		try {
+		try (context) {
+			if (parent != null) {
+				context.setParent(parent);
+			}
+			context.register(configuration);
+			context.refresh();
 			consumer.accept(context);
-		}
-		finally {
-			context.close();
 		}
 	}
 

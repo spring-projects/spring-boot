@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,9 +50,9 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(MockitoExtension.class)
 class ConfigDataEnvironmentPostProcessorTests {
 
-	private StandardEnvironment environment = new StandardEnvironment();
+	private final StandardEnvironment environment = new StandardEnvironment();
 
-	private SpringApplication application = new SpringApplication();
+	private final SpringApplication application = new SpringApplication();
 
 	@Mock
 	private ConfigDataEnvironment configDataEnvironment;
@@ -92,8 +92,8 @@ class ConfigDataEnvironmentPostProcessorTests {
 		this.application.setAdditionalProfiles("dev");
 		willReturn(this.configDataEnvironment).given(this.postProcessor).getConfigDataEnvironment(any(), any(), any());
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
-		then(this.postProcessor).should().getConfigDataEnvironment(any(), any(),
-				this.additionalProfilesCaptor.capture());
+		then(this.postProcessor).should()
+			.getConfigDataEnvironment(any(), any(), this.additionalProfilesCaptor.capture());
 		then(this.configDataEnvironment).should().processAndApply();
 		assertThat(this.additionalProfilesCaptor.getValue()).containsExactly("dev");
 	}
@@ -115,15 +115,15 @@ class ConfigDataEnvironmentPostProcessorTests {
 				listener);
 		assertThat(this.environment.getPropertySources().size()).isGreaterThan(before);
 		assertThat(this.environment.getActiveProfiles()).containsExactly("dev");
-		assertThat(listener.getAddedPropertySources()).hasSizeGreaterThan(0);
+		assertThat(listener.getAddedPropertySources()).isNotEmpty();
 		assertThat(listener.getProfiles().getActive()).containsExactly("dev");
 		assertThat(listener.getAddedPropertySources().stream().anyMatch((added) -> hasDevProfile(added.getResource())))
-				.isTrue();
+			.isTrue();
 	}
 
 	private boolean hasDevProfile(ConfigDataResource resource) {
-		return (resource instanceof StandardConfigDataResource)
-				&& "dev".equals(((StandardConfigDataResource) resource).getProfile());
+		return (resource instanceof StandardConfigDataResource standardResource)
+				&& "dev".equals(standardResource.getProfile());
 	}
 
 }

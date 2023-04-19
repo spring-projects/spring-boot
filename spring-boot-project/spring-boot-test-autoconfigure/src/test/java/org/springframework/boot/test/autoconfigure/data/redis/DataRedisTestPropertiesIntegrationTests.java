@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,15 @@
 
 package org.springframework.boot.test.autoconfigure.data.redis;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,26 +33,39 @@ import static org.assertj.core.api.Assertions.assertThat;
  * {@link DataRedisTest @DataRedisTest}.
  *
  * @author Artsiom Yudovin
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 @Testcontainers(disabledWithoutDocker = true)
 @DataRedisTest(properties = "spring.profiles.active=test")
 class DataRedisTestPropertiesIntegrationTests {
 
 	@Container
+	@ServiceConnection
 	static final RedisContainer redis = new RedisContainer();
 
 	@Autowired
 	private Environment environment;
 
-	@DynamicPropertySource
-	static void redisProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.redis.host", redis::getHost);
-		registry.add("spring.redis.port", redis::getFirstMappedPort);
-	}
-
 	@Test
 	void environmentWithNewProfile() {
 		assertThat(this.environment.getActiveProfiles()).containsExactly("test");
+	}
+
+	@Nested
+	class NestedTests {
+
+		@Autowired
+		private Environment innerEnvironment;
+
+		@Test
+		void propertiesFromEnclosingClassAffectNestedTests() {
+			assertThat(DataRedisTestPropertiesIntegrationTests.this.environment.getActiveProfiles())
+				.containsExactly("test");
+			assertThat(this.innerEnvironment.getActiveProfiles()).containsExactly("test");
+		}
+
 	}
 
 }

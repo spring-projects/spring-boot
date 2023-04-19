@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ import org.springframework.util.Assert;
  * getConfigurationProperty} call attempts to
  * {@link PropertyMapper#map(ConfigurationPropertyName) map} the
  * {@link ConfigurationPropertyName} to one or more {@code String} based names. This
- * allows fast property resolution for well formed property sources.
+ * allows fast property resolution for well-formed property sources.
  * <p>
  * When possible the {@link SpringIterableConfigurationPropertySource} will be used in
  * preference to this implementation since it supports full "relaxed" style resolution.
@@ -97,11 +97,12 @@ class SpringConfigurationPropertySource implements ConfigurationPropertySource {
 	@Override
 	public ConfigurationPropertyState containsDescendantOf(ConfigurationPropertyName name) {
 		PropertySource<?> source = getPropertySource();
-		if (source.getSource() instanceof Random) {
+		Object underlyingSource = source.getSource();
+		if (underlyingSource instanceof Random) {
 			return containsDescendantOfForRandom("random", name);
 		}
-		if (source.getSource() instanceof PropertySource<?>
-				&& ((PropertySource<?>) source.getSource()).getSource() instanceof Random) {
+		if (underlyingSource instanceof PropertySource<?> underlyingPropertySource
+				&& underlyingPropertySource.getSource() instanceof Random) {
 			// Assume wrapped random sources use the source name as the prefix
 			return containsDescendantOfForRandom(source.getName(), name);
 		}

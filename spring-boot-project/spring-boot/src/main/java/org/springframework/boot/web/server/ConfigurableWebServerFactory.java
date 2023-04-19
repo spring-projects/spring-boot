@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ public interface ConfigurableWebServerFactory extends WebServerFactory, ErrorPag
 
 	/**
 	 * Sets the port that the web server should listen on. If not specified port '8080'
-	 * will be used. Use port -1 to disable auto-start (i.e start the web application
+	 * will be used. Use port -1 to disable auto-start (i.e. start the web application
 	 * context but not have it listen to any port).
 	 * @param port the port to set
 	 */

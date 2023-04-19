@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,8 @@
 package org.springframework.boot.context.properties.source;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Answers;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link PrefixedConfigurationPropertySource}.
@@ -36,44 +33,39 @@ class PrefixedConfigurationPropertySourceTests {
 		source.put("my.foo.bar", "bing");
 		source.put("my.foo.baz", "biff");
 		ConfigurationPropertySource prefixed = source.nonIterable().withPrefix("my");
-		assertThat(getName(prefixed, "foo.bar").toString()).isEqualTo("foo.bar");
+		assertThat(getName(prefixed, "foo.bar")).hasToString("foo.bar");
 		assertThat(getValue(prefixed, "foo.bar")).isEqualTo("bing");
-		assertThat(getName(prefixed, "foo.baz").toString()).isEqualTo("foo.baz");
+		assertThat(getName(prefixed, "foo.baz")).hasToString("foo.baz");
 		assertThat(getValue(prefixed, "foo.baz")).isEqualTo("biff");
 	}
 
 	@Test
 	void containsDescendantOfWhenSourceReturnsUnknownShouldReturnUnknown() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.foo");
-		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class, Answers.CALLS_REAL_METHODS);
-		given(source.containsDescendantOf(name)).willReturn(ConfigurationPropertyState.UNKNOWN);
+		ConfigurationPropertySource source = new KnownAncestorsConfigurationPropertySource().unknown(name);
 		ConfigurationPropertySource prefixed = source.withPrefix("my");
 		assertThat(prefixed.containsDescendantOf(ConfigurationPropertyName.of("foo")))
-				.isEqualTo(ConfigurationPropertyState.UNKNOWN);
+			.isEqualTo(ConfigurationPropertyState.UNKNOWN);
 	}
 
 	@Test
 	void containsDescendantOfWhenSourceReturnsPresentShouldReturnPresent() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.foo");
-		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class, Answers.CALLS_REAL_METHODS);
-		given(source.containsDescendantOf(name)).willReturn(ConfigurationPropertyState.PRESENT);
-		given(source.containsDescendantOf(ConfigurationPropertyName.of("bar")))
-				.willReturn(ConfigurationPropertyState.UNKNOWN);
+		ConfigurationPropertySource source = new KnownAncestorsConfigurationPropertySource().present(name)
+			.unknown(ConfigurationPropertyName.of("bar"));
 		ConfigurationPropertySource prefixed = source.withPrefix("my");
 		assertThat(prefixed.containsDescendantOf(ConfigurationPropertyName.of("foo")))
-				.isEqualTo(ConfigurationPropertyState.PRESENT);
+			.isEqualTo(ConfigurationPropertyState.PRESENT);
 	}
 
 	@Test
 	void containsDescendantOfWhenSourceReturnsAbsentShouldReturnAbsent() {
 		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.foo");
-		ConfigurationPropertySource source = mock(ConfigurationPropertySource.class, Answers.CALLS_REAL_METHODS);
-		given(source.containsDescendantOf(name)).willReturn(ConfigurationPropertyState.ABSENT);
-		given(source.containsDescendantOf(ConfigurationPropertyName.of("bar")))
-				.willReturn(ConfigurationPropertyState.ABSENT);
+		ConfigurationPropertySource source = new KnownAncestorsConfigurationPropertySource().absent(name)
+			.absent(ConfigurationPropertyName.of("bar"));
 		ConfigurationPropertySource prefixed = source.withPrefix("my");
 		assertThat(prefixed.containsDescendantOf(ConfigurationPropertyName.of("foo")))
-				.isEqualTo(ConfigurationPropertyState.ABSENT);
+			.isEqualTo(ConfigurationPropertyState.ABSENT);
 	}
 
 	@Test

@@ -1,9 +1,55 @@
 [[messaging.jms]]
 == JMS
-The `javax.jms.ConnectionFactory` interface provides a standard method of creating a `javax.jms.Connection` for interacting with a JMS broker.
+The `jakarta.jms.ConnectionFactory` interface provides a standard method of creating a `jakarta.jms.Connection` for interacting with a JMS broker.
 Although Spring needs a `ConnectionFactory` to work with JMS, you generally need not use it directly yourself and can instead rely on higher level messaging abstractions.
 (See the {spring-framework-docs}/integration.html#jms[relevant section] of the Spring Framework reference documentation for details.)
 Spring Boot also auto-configures the necessary infrastructure to send and receive messages.
+
+
+
+[[messaging.jms.activemq]]
+=== ActiveMQ Support
+When https://activemq.apache.org/[ActiveMQ] is available on the classpath, Spring Boot can configure a `ConnectionFactory`.
+
+NOTE: If you use `spring-boot-starter-activemq`, the necessary dependencies to connect to an ActiveMQ instance are provided, as is the Spring infrastructure to integrate with JMS.
+
+ActiveMQ configuration is controlled by external configuration properties in `+spring.activemq.*+`.
+By default, ActiveMQ is auto-configured to use the https://activemq.apache.org/tcp-transport-reference[TCP transport], connecting by default to `tcp://localhost:61616`. The following example shows how to change the default broker URL:
+
+[source,yaml,indent=0,configprops,configblocks]
+----
+	spring:
+	  activemq:
+	    broker-url: "tcp://192.168.1.210:9876"
+	    user: "admin"
+	    password: "secret"
+----
+
+By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` with sensible settings that you can control by external configuration properties in `+spring.jms.*+`:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  jms:
+	    cache:
+	      session-cache-size: 5
+----
+
+If you'd rather use native pooling, you can do so by adding a dependency to `org.messaginghub:pooled-jms` and configuring the `JmsPoolConnectionFactory` accordingly, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  activemq:
+	    pool:
+	      enabled: true
+	      max-connections: 50
+----
+
+TIP: See {spring-boot-autoconfigure-module-code}/jms/activemq/ActiveMQProperties.java[`ActiveMQProperties`] for more of the supported options.
+You can also register an arbitrary number of beans that implement `ActiveMQConnectionFactoryCustomizer` for more advanced customizations.
+
+By default, ActiveMQ creates a destination if it does not yet exist so that destinations are resolved against their provided names.
 
 
 
@@ -15,7 +61,7 @@ The supported modes are `embedded` (to make explicit that an embedded broker is 
 When the latter is configured, Spring Boot configures a `ConnectionFactory` that connects to a broker running on the local machine with the default settings.
 
 NOTE: If you use `spring-boot-starter-artemis`, the necessary dependencies to connect to an existing ActiveMQ Artemis instance are provided, as well as the Spring infrastructure to integrate with JMS.
-Adding `org.apache.activemq:artemis-jms-server` to your application lets you use embedded mode.
+Adding `org.apache.activemq:artemis-jakarta-server` to your application lets you use embedded mode.
 
 ActiveMQ Artemis configuration is controlled by external configuration properties in `+spring.artemis.*+`.
 For example, you might declare the following section in `application.properties`:
@@ -42,6 +88,19 @@ By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` wi
 	    cache:
 	      session-cache-size: 5
 ----
+
+If you'd rather use native pooling, you can do so by adding a dependency on `org.messaginghub:pooled-jms` and configuring the `JmsPoolConnectionFactory` accordingly, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  artemis:
+	    pool:
+	      enabled: true
+	      max-connections: 50
+----
+
+See {spring-boot-autoconfigure-module-code}/jms/artemis/ArtemisProperties.java[`ArtemisProperties`] for more supported options.
 
 No JNDI lookup is involved, and destinations are resolved against their names, using either the `name` attribute in the Artemis configuration or the names provided through configuration.
 
@@ -75,9 +134,10 @@ If a `DestinationResolver` or a `MessageConverter` bean is defined, it is associ
 
 [[messaging.jms.receiving]]
 === Receiving a Message
+
 When the JMS infrastructure is present, any bean can be annotated with `@JmsListener` to create a listener endpoint.
 If no `JmsListenerContainerFactory` has been defined, a default one is configured automatically.
-If a `DestinationResolver`, a `MessageConverter`, or a `javax.jms.ExceptionListener` beans are defined, they are associated automatically with the default factory.
+If a `DestinationResolver`, a `MessageConverter`, or a `jakarta.jms.ExceptionListener` beans are defined, they are associated automatically with the default factory.
 
 By default, the default factory is transactional.
 If you run in an infrastructure where a `JtaTransactionManager` is present, it is associated to the listener container by default.

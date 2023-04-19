@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -214,7 +214,7 @@ public class HttpTunnelServer {
 
 		private boolean closed;
 
-		private AtomicLong responseSeq = new AtomicLong();
+		private final AtomicLong responseSeq = new AtomicLong();
 
 		private long lastHttpRequestTime;
 
@@ -364,7 +364,7 @@ public class HttpTunnelServer {
 
 		private final ServerHttpResponse response;
 
-		private ServerHttpAsyncRequestControl async;
+		private final ServerHttpAsyncRequestControl async;
 
 		private volatile boolean complete = false;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,20 +39,20 @@ class PropertySourceOriginTests {
 	@Test
 	void createWhenPropertySourceIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new PropertySourceOrigin(null, "name"))
-				.withMessageContaining("PropertySource must not be null");
+			.withMessageContaining("PropertySource must not be null");
 	}
 
 	@Test
 	void createWhenPropertyNameIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new PropertySourceOrigin(mock(PropertySource.class), null))
-				.withMessageContaining("PropertyName must not be empty");
+			.isThrownBy(() -> new PropertySourceOrigin(mock(PropertySource.class), null))
+			.withMessageContaining("PropertyName must not be empty");
 	}
 
 	@Test
 	void createWhenPropertyNameIsEmptyShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new PropertySourceOrigin(mock(PropertySource.class), ""))
-				.withMessageContaining("PropertyName must not be empty");
+			.withMessageContaining("PropertyName must not be empty");
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class PropertySourceOriginTests {
 	void toStringShouldShowDetails() {
 		MapPropertySource propertySource = new MapPropertySource("test", new HashMap<>());
 		PropertySourceOrigin origin = new PropertySourceOrigin(propertySource, "foo");
-		assertThat(origin.toString()).isEqualTo("\"foo\" from property source \"test\"");
+		assertThat(origin).hasToString("\"foo\" from property source \"test\"");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,12 +22,12 @@ import org.junit.jupiter.api.Test;
 import smoketest.actuator.ManagementPortSampleActuatorApplicationTests.CustomErrorAttributes;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.web.server.LocalManagementPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.test.web.server.LocalManagementPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
@@ -62,21 +62,21 @@ class ManagementPortSampleActuatorApplicationTests {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(
 				new TestRestTemplate("user", "password").getForEntity("http://localhost:" + this.port, Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody().get("message")).isEqualTo("Hello Phil");
+		assertThat(entity.getBody()).containsEntry("message", "Hello Phil");
 	}
 
 	@Test
 	void testMetrics() {
 		testHome(); // makes sure some requests have been made
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(new TestRestTemplate()
-				.getForEntity("http://localhost:" + this.managementPort + "/actuator/metrics", Map.class));
+			.getForEntity("http://localhost:" + this.managementPort + "/actuator/metrics", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void testHealth() {
 		ResponseEntity<String> entity = new TestRestTemplate().withBasicAuth("user", "password")
-				.getForEntity("http://localhost:" + this.managementPort + "/actuator/health", String.class);
+			.getForEntity("http://localhost:" + this.managementPort + "/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 		assertThat(entity.getBody()).contains("\"example\"");
@@ -86,19 +86,19 @@ class ManagementPortSampleActuatorApplicationTests {
 	@Test
 	void testErrorPage() {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(new TestRestTemplate("user", "password")
-				.getForEntity("http://localhost:" + this.managementPort + "/error", Map.class));
+			.getForEntity("http://localhost:" + this.managementPort + "/error", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody().get("status")).isEqualTo(999);
+		assertThat(entity.getBody()).containsEntry("status", 999);
 	}
 
 	@Test
 	void securityContextIsAvailableToErrorHandling() {
 		this.errorAttributes.securityContext = null;
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(new TestRestTemplate("user", "password")
-				.getForEntity("http://localhost:" + this.managementPort + "/404", Map.class));
+			.getForEntity("http://localhost:" + this.managementPort + "/404", Map.class));
 		assertThat(this.errorAttributes.securityContext.getAuthentication()).isNotNull();
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-		assertThat(entity.getBody().get("status")).isEqualTo(404);
+		assertThat(entity.getBody()).containsEntry("status", 404);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

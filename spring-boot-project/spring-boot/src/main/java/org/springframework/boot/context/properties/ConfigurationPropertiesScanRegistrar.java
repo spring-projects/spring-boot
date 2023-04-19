@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,8 @@ import org.springframework.util.StringUtils;
 
 /**
  * {@link ImportBeanDefinitionRegistrar} for registering
- * {@link ConfigurationProperties @ConfigurationProperties} bean definitions via scanning.
+ * {@link ConfigurationProperties @ConfigurationProperties} bean definitions through
+ * scanning.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
@@ -63,7 +64,7 @@ class ConfigurationPropertiesScanRegistrar implements ImportBeanDefinitionRegist
 
 	private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
 		AnnotationAttributes attributes = AnnotationAttributes
-				.fromMap(metadata.getAnnotationAttributes(ConfigurationPropertiesScan.class.getName()));
+			.fromMap(metadata.getAnnotationAttributes(ConfigurationPropertiesScan.class.getName()));
 		String[] basePackages = attributes.getStringArray("basePackages");
 		Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
 		Set<String> packagesToScan = new LinkedHashSet<>(Arrays.asList(basePackages));

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class CertificateParserTests {
 		Path certPath = this.fileWriter.writeFile("cert.pem", PemFileWriter.CERTIFICATE);
 		X509Certificate[] certificates = CertificateParser.parse(caPath, certPath);
 		assertThat(certificates).isNotNull();
-		assertThat(certificates.length).isEqualTo(2);
+		assertThat(certificates).hasSize(2);
 		assertThat(certificates[0].getType()).isEqualTo("X.509");
 		assertThat(certificates[1].getType()).isEqualTo("X.509");
 	}
@@ -65,7 +65,7 @@ class CertificateParserTests {
 		Path path = this.fileWriter.writeFile("ca.pem", PemFileWriter.CA_CERTIFICATE, PemFileWriter.CERTIFICATE);
 		X509Certificate[] certificates = CertificateParser.parse(path);
 		assertThat(certificates).isNotNull();
-		assertThat(certificates.length).isEqualTo(2);
+		assertThat(certificates).hasSize(2);
 		assertThat(certificates[0].getType()).isEqualTo("X.509");
 		assertThat(certificates[1].getType()).isEqualTo("X.509");
 	}
@@ -74,7 +74,7 @@ class CertificateParserTests {
 	void parseWithInvalidPathWillThrowException() throws URISyntaxException {
 		Path path = Paths.get(new URI("file:///bad/path/cert.pem"));
 		assertThatIllegalStateException().isThrownBy(() -> CertificateParser.parse(path))
-				.withMessageContaining(path.toString());
+			.withMessageContaining(path.toString());
 	}
 
 }

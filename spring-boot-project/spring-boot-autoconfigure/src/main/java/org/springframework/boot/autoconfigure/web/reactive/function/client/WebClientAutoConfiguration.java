@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -65,7 +63,7 @@ public class WebClientAutoConfiguration {
 		@ConditionalOnMissingBean
 		@Order(0)
 		public WebClientCodecCustomizer exchangeStrategiesCustomizer(ObjectProvider<CodecCustomizer> codecCustomizers) {
-			return new WebClientCodecCustomizer(codecCustomizers.orderedStream().collect(Collectors.toList()));
+			return new WebClientCodecCustomizer(codecCustomizers.orderedStream().toList());
 		}
 
 	}

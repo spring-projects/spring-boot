@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,8 +73,7 @@ public class TextResourceOrigin implements Origin {
 		if (obj == null) {
 			return false;
 		}
-		if (obj instanceof TextResourceOrigin) {
-			TextResourceOrigin other = (TextResourceOrigin) obj;
+		if (obj instanceof TextResourceOrigin other) {
 			boolean result = true;
 			result = result && ObjectUtils.nullSafeEquals(this.resource, other.resource);
 			result = result && ObjectUtils.nullSafeEquals(this.location, other.location);
@@ -102,14 +101,14 @@ public class TextResourceOrigin implements Origin {
 	}
 
 	private String getResourceDescription(Resource resource) {
-		if (resource instanceof OriginTrackedResource) {
-			return getResourceDescription(((OriginTrackedResource) resource).getResource());
+		if (resource instanceof OriginTrackedResource originTrackedResource) {
+			return getResourceDescription(originTrackedResource.getResource());
 		}
 		if (resource == null) {
 			return "unknown resource [?]";
 		}
-		if (resource instanceof ClassPathResource) {
-			return getResourceDescription((ClassPathResource) resource);
+		if (resource instanceof ClassPathResource classPathResource) {
+			return getResourceDescription(classPathResource);
 		}
 		return resource.getDescription();
 	}

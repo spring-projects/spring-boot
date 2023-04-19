@@ -5,6 +5,10 @@ plugins {
 
 description = "Spring Boot Jetty SSL smoke test"
 
+configurations.all {
+	resolutionStrategy.force("jakarta.servlet:jakarta.servlet-api:5.0.0")
+}
+
 dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jetty"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web")) {
@@ -13,7 +17,5 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 
-	testRuntimeOnly("org.apache.httpcomponents:httpclient") {
-		exclude group: "commons-logging", module: "commons-logging"
-	}
+	testRuntimeOnly("org.apache.httpcomponents.client5:httpclient5")
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,16 +30,13 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.AliasFor;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
  * Indicates that a class provides configuration that can be automatically applied by
  * Spring Boot. Auto-configuration classes are regular
  * {@link Configuration @Configuration} with the exception that
  * {@literal Configuration#proxyBeanMethods() proxyBeanMethods} is always {@code false}.
- * <p>
- * They are located using {@link ImportCandidates} and the {@link SpringFactoriesLoader}
- * mechanism (keyed against {@link EnableAutoConfiguration}).
+ * They are located using {@link ImportCandidates}.
  * <p>
  * Generally auto-configuration classes are marked as {@link Conditional @Conditional}
  * (most often using {@link ConditionalOnClass @ConditionalOnClass} and
@@ -68,7 +65,7 @@ public @interface AutoConfiguration {
 	 * name will be automatically generated.
 	 * <p>
 	 * The custom name applies only if the {@code @AutoConfiguration} class is picked up
-	 * via component scanning or supplied directly to an
+	 * through component scanning or supplied directly to an
 	 * {@link AnnotationConfigApplicationContext}. If the {@code @AutoConfiguration} class
 	 * is registered as a traditional XML bean definition, the name/id of the bean element
 	 * will take precedence.

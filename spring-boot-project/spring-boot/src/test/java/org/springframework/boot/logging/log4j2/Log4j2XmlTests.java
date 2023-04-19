@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@code log4j2.xml}.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 class Log4j2XmlTests {
 
@@ -69,7 +70,7 @@ class Log4j2XmlTests {
 
 	@Test
 	void whenLogLDateformatPatternIsNotConfiguredThenConsoleUsesDefault() {
-		assertThat(consolePattern()).contains("yyyy-MM-dd HH:mm:ss.SSS");
+		assertThat(consolePattern()).contains("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 	}
 
 	@Test
@@ -101,8 +102,8 @@ class Log4j2XmlTests {
 
 	protected Configuration initializeConfiguration() {
 		LoggerContext context = new LoggerContext("test");
-		Configuration configuration = ConfigurationFactory.getInstance().getConfiguration(context,
-				configurationSource());
+		Configuration configuration = ConfigurationFactory.getInstance()
+			.getConfiguration(context, configurationSource());
 		configuration.initialize();
 		return configuration;
 	}

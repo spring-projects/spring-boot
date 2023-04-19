@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	private BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> getAncestorOfCheck(
 			PropertyMapper[] mappers) {
 		BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> ancestorOfCheck = mappers[0]
-				.getAncestorOfCheck();
+			.getAncestorOfCheck();
 		for (int i = 1; i < mappers.length; i++) {
 			ancestorOfCheck = ancestorOfCheck.or(mappers[i].getAncestorOfCheck());
 		}
@@ -77,9 +77,9 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 	}
 
 	private void assertEnumerablePropertySource() {
-		if (getPropertySource() instanceof MapPropertySource) {
+		if (getPropertySource() instanceof MapPropertySource mapSource) {
 			try {
-				((MapPropertySource) getPropertySource()).getSource().size();
+				mapSource.getSource().size();
 			}
 			catch (UnsupportedOperationException ex) {
 				throw new IllegalArgumentException("PropertySource must be fully enumerable");
@@ -147,7 +147,7 @@ class SpringIterableConfigurationPropertySource extends SpringConfigurationPrope
 		ConfigurationPropertyName[] configurationPropertyNames = this.configurationPropertyNames;
 		if (configurationPropertyNames == null) {
 			configurationPropertyNames = getMappings()
-					.getConfigurationPropertyNames(getPropertySource().getPropertyNames());
+				.getConfigurationPropertyNames(getPropertySource().getPropertyNames());
 			this.configurationPropertyNames = configurationPropertyNames;
 		}
 		return configurationPropertyNames;

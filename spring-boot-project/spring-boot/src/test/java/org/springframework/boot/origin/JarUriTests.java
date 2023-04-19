@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class JarUriTests {
 	@Test
 	void describeRegularJar() {
 		JarUri uri = JarUri
-				.from("jar:file:/home/user/project/target/project-0.0.1-SNAPSHOT.jar!/application.properties");
+			.from("jar:file:/home/user/project/target/project-0.0.1-SNAPSHOT.jar!/application.properties");
 		assertThat(uri.getDescription()).isEqualTo("project-0.0.1-SNAPSHOT.jar");
 	}
 
@@ -50,7 +50,7 @@ class JarUriTests {
 	void getDescriptionMergedWithExisting() {
 		JarUri uri = JarUri.from("jar:file:/project-0.0.1-SNAPSHOT.jar!/application.properties");
 		assertThat(uri.getDescription("classpath: [application.properties]"))
-				.isEqualTo("classpath: [application.properties] from project-0.0.1-SNAPSHOT.jar");
+			.isEqualTo("classpath: [application.properties] from project-0.0.1-SNAPSHOT.jar");
 	}
 
 }

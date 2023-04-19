@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,9 +40,9 @@ import static org.mockito.Mockito.mock;
  */
 public class MockRestarter implements BeforeEachCallback, AfterEachCallback, ParameterResolver {
 
-	private Map<String, Object> attributes = new HashMap<>();
+	private final Map<String, Object> attributes = new HashMap<>();
 
-	private Restarter mock = mock(Restarter.class);
+	private final Restarter mock = mock(Restarter.class);
 
 	public Restarter getMock() {
 		return this.mock;

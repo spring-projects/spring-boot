@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,7 +125,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<>();
 
-	private List<LifecycleListener> serverLifecycleListeners = getDefaultServerLifecycleListeners();
+	private final List<LifecycleListener> serverLifecycleListeners = getDefaultServerLifecycleListeners();
 
 	private Set<TomcatContextCustomizer> tomcatContextCustomizers = new LinkedHashSet<>();
 
@@ -141,7 +141,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	private Set<String> tldSkipPatterns = new LinkedHashSet<>(TldPatterns.DEFAULT_SKIP);
 
-	private Set<String> tldScanPatterns = new LinkedHashSet<>(TldPatterns.DEFAULT_SCAN);
+	private final Set<String> tldScanPatterns = new LinkedHashSet<>(TldPatterns.DEFAULT_SCAN);
 
 	private Charset uriEncoding = DEFAULT_CHARSET;
 
@@ -229,8 +229,9 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		File docBase = (documentRoot != null) ? documentRoot : createTempDir("tomcat-docbase");
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new FixContextListener());
-		context.setParentClassLoader((this.resourceLoader != null) ? this.resourceLoader.getClassLoader()
-				: ClassUtils.getDefaultClassLoader());
+		ClassLoader parentClassLoader = (this.resourceLoader != null) ? this.resourceLoader.getClassLoader()
+				: ClassUtils.getDefaultClassLoader();
+		context.setParentClassLoader(parentClassLoader);
 		resetDefaultLocaleMapping(context);
 		addLocaleMappings(context);
 		try {
@@ -241,7 +242,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		}
 		configureTldPatterns(context);
 		WebappLoader loader = new WebappLoader();
-		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
+		loader.setLoaderInstance(new TomcatEmbeddedWebappClassLoader(parentClassLoader));
 		loader.setDelegate(true);
 		context.setLoader(loader);
 		if (isRegisterDefaultServlet()) {
@@ -266,6 +267,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	private void resetDefaultLocaleMapping(TomcatEmbeddedContext context) {
 		context.addLocaleEncodingMappingParameter(Locale.ENGLISH.toString(), DEFAULT_CHARSET.displayName());
 		context.addLocaleEncodingMappingParameter(Locale.FRENCH.toString(), DEFAULT_CHARSET.displayName());
+		context.addLocaleEncodingMappingParameter(Locale.JAPANESE.toString(), DEFAULT_CHARSET.displayName());
 	}
 
 	private void addLocaleMappings(TomcatEmbeddedContext context) {
@@ -308,8 +310,9 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	private void addJasperInitializer(TomcatEmbeddedContext context) {
 		try {
 			ServletContainerInitializer initializer = (ServletContainerInitializer) ClassUtils
-					.forName("org.apache.jasper.servlet.JasperInitializer", null).getDeclaredConstructor()
-					.newInstance();
+				.forName("org.apache.jasper.servlet.JasperInitializer", null)
+				.getDeclaredConstructor()
+				.newInstance();
 			context.addServletContainerInitializer(initializer, null);
 		}
 		catch (Exception ex) {
@@ -354,12 +357,13 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	@SuppressWarnings("unchecked")
 	private void invokeProtocolHandlerCustomizers(ProtocolHandler protocolHandler) {
-		LambdaSafe.callbacks(TomcatProtocolHandlerCustomizer.class, this.tomcatProtocolHandlerCustomizers,
-				protocolHandler).invoke((customizer) -> customizer.customize(protocolHandler));
+		LambdaSafe
+			.callbacks(TomcatProtocolHandlerCustomizer.class, this.tomcatProtocolHandlerCustomizers, protocolHandler)
+			.invoke((customizer) -> customizer.customize(protocolHandler));
 	}
 
 	private void customizeSsl(Connector connector) {
-		new SslConnectorCustomizer(getSsl(), getSslStoreProvider()).customize(connector);
+		new SslConnectorCustomizer(getSsl(), getOrCreateSslStoreProvider()).customize(connector);
 	}
 
 	/**
@@ -369,8 +373,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 */
 	protected void configureContext(Context context, ServletContextInitializer[] initializers) {
 		TomcatStarter starter = new TomcatStarter(initializers);
-		if (context instanceof TomcatEmbeddedContext) {
-			TomcatEmbeddedContext embeddedContext = (TomcatEmbeddedContext) context;
+		if (context instanceof TomcatEmbeddedContext embeddedContext) {
 			embeddedContext.setStarter(starter);
 			embeddedContext.setFailCtxIfServletStartFails(true);
 		}
@@ -388,9 +391,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			tomcatErrorPage.setExceptionType(errorPage.getExceptionName());
 			context.addErrorPage(tomcatErrorPage);
 		}
-		for (MimeMappings.Mapping mapping : getMimeMappings()) {
-			context.addMimeMapping(mapping.getExtension(), mapping.getMimeType());
-		}
+		setMimeMappings(context);
 		configureSession(context);
 		configureCookieProcessor(context);
 		new DisableReferenceClearingContextCustomizer().customize(context);
@@ -422,12 +423,22 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		}
 	}
 
+	private void setMimeMappings(Context context) {
+		if (context instanceof TomcatEmbeddedContext embeddedContext) {
+			embeddedContext.setMimeMappings(getMimeMappings());
+			return;
+		}
+		for (MimeMappings.Mapping mapping : getMimeMappings()) {
+			context.addMimeMapping(mapping.getExtension(), mapping.getMimeType());
+		}
+	}
+
 	private void configureCookieProcessor(Context context) {
 		SameSite sessionSameSite = getSession().getCookie().getSameSite();
 		List<CookieSameSiteSupplier> suppliers = new ArrayList<>();
 		if (sessionSameSite != null) {
 			suppliers.add(CookieSameSiteSupplier.of(sessionSameSite)
-					.whenHasName(() -> SessionConfig.getSessionCookieName(context)));
+				.whenHasName(() -> SessionConfig.getSessionCookieName(context)));
 		}
 		if (!CollectionUtils.isEmpty(getCookieSameSiteSuppliers())) {
 			suppliers.addAll(getCookieSameSiteSuppliers());
@@ -750,8 +761,8 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 			if (event.getType().equals(Lifecycle.START_EVENT)) {
 				Context context = (Context) event.getLifecycle();
 				Manager manager = context.getManager();
-				if (manager instanceof StandardManager) {
-					((StandardManager) manager).setPathname(null);
+				if (manager instanceof StandardManager standardManager) {
+					standardManager.setPathname(null);
 				}
 			}
 		}
@@ -858,9 +869,10 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 		@Override
 		public Set<String> listWebAppPaths(String path) {
-			return this.delegate.listWebAppPaths(path).stream()
-					.filter((webAppPath) -> !webAppPath.startsWith("/org/springframework/boot"))
-					.collect(Collectors.toSet());
+			return this.delegate.listWebAppPaths(path)
+				.stream()
+				.filter((webAppPath) -> !webAppPath.startsWith("/org/springframework/boot"))
+				.collect(Collectors.toSet());
 		}
 
 		@Override

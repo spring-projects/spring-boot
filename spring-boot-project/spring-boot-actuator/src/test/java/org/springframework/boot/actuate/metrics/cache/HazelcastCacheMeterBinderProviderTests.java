@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,13 @@ import java.util.Collections;
 
 import com.hazelcast.map.IMap;
 import com.hazelcast.spring.cache.HazelcastCache;
-import io.micrometer.binder.cache.HazelcastCacheMetrics;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.binder.cache.HazelcastCacheMetrics;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.boot.actuate.metrics.cache.HazelcastCacheMeterBinderProvider.HazelcastCacheMeterBinderProviderRuntimeHints;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -32,6 +36,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link HazelcastCacheMeterBinderProvider}.
  *
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  */
 class HazelcastCacheMeterBinderProviderTests {
 
@@ -44,6 +49,15 @@ class HazelcastCacheMeterBinderProviderTests {
 		MeterBinder meterBinder = new HazelcastCacheMeterBinderProvider().getMeterBinder(cache,
 				Collections.emptyList());
 		assertThat(meterBinder).isInstanceOf(HazelcastCacheMetrics.class);
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new HazelcastCacheMeterBinderProviderRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection().onMethod(HazelcastCache.class, "getNativeCache"))
+			.accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection().onType(HazelcastCacheMetrics.class)).accepts(runtimeHints);
 	}
 
 }

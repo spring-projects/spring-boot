@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
- * Base endpoint element condition. An element can be disabled globally via the
- * {@code defaults} name or individually via the name of the element.
+ * Base endpoint element condition. An element can be disabled globally through the
+ * {@code defaults} name or individually through the name of the element.
  *
  * @author Stephane Nicoll
  * @author Madhura Bhave
@@ -48,7 +48,7 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		AnnotationAttributes annotationAttributes = AnnotationAttributes
-				.fromMap(metadata.getAnnotationAttributes(this.annotationType.getName()));
+			.fromMap(metadata.getAnnotationAttributes(this.annotationType.getName()));
 		String endpointName = annotationAttributes.getString("value");
 		ConditionOutcome outcome = getEndpointOutcome(context, endpointName);
 		if (outcome != null) {
@@ -63,7 +63,7 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 		if (environment.containsProperty(enabledProperty)) {
 			boolean match = environment.getProperty(enabledProperty, Boolean.class, true);
 			return new ConditionOutcome(match, ConditionMessage.forCondition(this.annotationType)
-					.because(this.prefix + endpointName + ".enabled is " + match));
+				.because(this.prefix + endpointName + ".enabled is " + match));
 		}
 		return null;
 	}
@@ -79,9 +79,9 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 	 */
 	protected ConditionOutcome getDefaultOutcome(ConditionContext context, AnnotationAttributes annotationAttributes) {
 		boolean match = Boolean
-				.parseBoolean(context.getEnvironment().getProperty(this.prefix + "defaults.enabled", "true"));
+			.parseBoolean(context.getEnvironment().getProperty(this.prefix + "defaults.enabled", "true"));
 		return new ConditionOutcome(match, ConditionMessage.forCondition(this.annotationType)
-				.because(this.prefix + "defaults.enabled is considered " + match));
+			.because(this.prefix + "defaults.enabled is considered " + match));
 	}
 
 }

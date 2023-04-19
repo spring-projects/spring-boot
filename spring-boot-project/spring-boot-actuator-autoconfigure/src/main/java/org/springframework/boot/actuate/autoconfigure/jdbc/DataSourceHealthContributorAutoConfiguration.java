@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,7 +73,7 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 
 	public DataSourceHealthContributorAutoConfiguration(
 			ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
-		this.metadataProviders = metadataProviders.orderedStream().collect(Collectors.toList());
+		this.metadataProviders = metadataProviders.orderedStream().toList();
 	}
 
 	@Override
@@ -86,9 +86,10 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 	public HealthContributor dbHealthContributor(Map<String, DataSource> dataSources,
 			DataSourceHealthIndicatorProperties dataSourceHealthIndicatorProperties) {
 		if (dataSourceHealthIndicatorProperties.isIgnoreRoutingDataSources()) {
-			Map<String, DataSource> filteredDatasources = dataSources.entrySet().stream()
-					.filter((e) -> !(e.getValue() instanceof AbstractRoutingDataSource))
-					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+			Map<String, DataSource> filteredDatasources = dataSources.entrySet()
+				.stream()
+				.filter((e) -> !(e.getValue() instanceof AbstractRoutingDataSource))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 			return createContributor(filteredDatasources);
 		}
 		return createContributor(dataSources);
@@ -103,8 +104,7 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 	}
 
 	private HealthContributor createContributor(DataSource source) {
-		if (source instanceof AbstractRoutingDataSource) {
-			AbstractRoutingDataSource routingDataSource = (AbstractRoutingDataSource) source;
+		if (source instanceof AbstractRoutingDataSource routingDataSource) {
 			return new RoutingDataSourceHealthContributor(routingDataSource, this::createContributor);
 		}
 		return new DataSourceHealthIndicator(source, getValidationQuery(source));
@@ -128,9 +128,11 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 
 		RoutingDataSourceHealthContributor(AbstractRoutingDataSource routingDataSource,
 				Function<DataSource, HealthContributor> contributorFunction) {
-			Map<String, DataSource> routedDataSources = routingDataSource.getResolvedDataSources().entrySet().stream()
-					.collect(Collectors.toMap((e) -> Objects.toString(e.getKey(), UNNAMED_DATASOURCE_KEY),
-							Map.Entry::getValue));
+			Map<String, DataSource> routedDataSources = routingDataSource.getResolvedDataSources()
+				.entrySet()
+				.stream()
+				.collect(Collectors.toMap((e) -> Objects.toString(e.getKey(), UNNAMED_DATASOURCE_KEY),
+						Map.Entry::getValue));
 			this.delegate = CompositeHealthContributor.fromMap(routedDataSources, contributorFunction);
 		}
 

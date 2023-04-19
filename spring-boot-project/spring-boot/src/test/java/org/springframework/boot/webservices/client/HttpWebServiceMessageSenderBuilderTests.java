@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,11 @@ package org.springframework.boot.webservices.client;
 
 import java.time.Duration;
 
-import org.apache.http.client.config.RequestConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
-import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.ws.transport.WebServiceMessageSender;
 import org.springframework.ws.transport.http.ClientHttpRequestMessageSender;
 
@@ -50,23 +48,21 @@ class HttpWebServiceMessageSenderBuilderTests {
 	void buildWithReadAndConnectTimeout() {
 		ClientHttpRequestMessageSender messageSender = build(
 				new HttpWebServiceMessageSenderBuilder().requestFactory(SimpleClientHttpRequestFactory::new)
-						.setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(2)));
+					.setConnectTimeout(Duration.ofSeconds(5))
+					.setReadTimeout(Duration.ofSeconds(2)));
 		SimpleClientHttpRequestFactory requestFactory = (SimpleClientHttpRequestFactory) messageSender
-				.getRequestFactory();
+			.getRequestFactory();
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("connectTimeout", 5000);
 		assertThat(requestFactory).hasFieldOrPropertyWithValue("readTimeout", 2000);
 	}
 
 	@Test
 	void buildUsesHttpComponentsByDefault() {
-		ClientHttpRequestMessageSender messageSender = build(new HttpWebServiceMessageSenderBuilder()
-				.setConnectTimeout(Duration.ofSeconds(5)).setReadTimeout(Duration.ofSeconds(2)));
+		ClientHttpRequestMessageSender messageSender = build(
+				new HttpWebServiceMessageSenderBuilder().setConnectTimeout(Duration.ofSeconds(5))
+					.setReadTimeout(Duration.ofSeconds(5)));
 		ClientHttpRequestFactory requestFactory = messageSender.getRequestFactory();
 		assertThat(requestFactory).isInstanceOf(HttpComponentsClientHttpRequestFactory.class);
-		RequestConfig requestConfig = (RequestConfig) ReflectionTestUtils.getField(requestFactory, "requestConfig");
-		assertThat(requestConfig).isNotNull();
-		assertThat(requestConfig.getConnectTimeout()).isEqualTo(5000);
-		assertThat(requestConfig.getSocketTimeout()).isEqualTo(2000);
 	}
 
 	private ClientHttpRequestMessageSender build(HttpWebServiceMessageSenderBuilder builder) {

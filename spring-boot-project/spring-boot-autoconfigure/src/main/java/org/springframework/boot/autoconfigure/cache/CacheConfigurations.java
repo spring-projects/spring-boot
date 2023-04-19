@@ -37,10 +37,12 @@ final class CacheConfigurations {
 		Map<CacheType, String> mappings = new EnumMap<>(CacheType.class);
 		mappings.put(CacheType.GENERIC, GenericCacheConfiguration.class.getName());
 		mappings.put(CacheType.HAZELCAST, HazelcastCacheConfiguration.class.getName());
+		mappings.put(CacheType.INFINISPAN, InfinispanCacheConfiguration.class.getName());
 		mappings.put(CacheType.JCACHE, JCacheCacheConfiguration.class.getName());
 		mappings.put(CacheType.COUCHBASE, CouchbaseCacheConfiguration.class.getName());
 		mappings.put(CacheType.REDIS, RedisCacheConfiguration.class.getName());
 		mappings.put(CacheType.CAFFEINE, CaffeineCacheConfiguration.class.getName());
+		mappings.put(CacheType.CACHE2K, Cache2kCacheConfiguration.class.getName());
 		mappings.put(CacheType.SIMPLE, SimpleCacheConfiguration.class.getName());
 		mappings.put(CacheType.NONE, NoOpCacheConfiguration.class.getName());
 		MAPPINGS = Collections.unmodifiableMap(mappings);

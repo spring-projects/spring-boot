@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,26 +16,93 @@
 
 package org.springframework.boot.actuate.autoconfigure.web;
 
-import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
+import java.lang.reflect.Modifier;
+
+import org.springframework.beans.FatalBeanException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.boot.ApplicationContextFactory;
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.web.server.WebServerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigRegistry;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 
 /**
  * Factory for creating a separate management context when the management web server is
  * running on a different port to the main application.
+ * <p>
+ * <strong>For internal use only.</strong>
  *
  * @author Andy Wilkinson
- * @since 2.0.0
+ * @author Phillip Webb
+ * @since 3.0.0
  */
-@FunctionalInterface
-public interface ManagementContextFactory {
+public final class ManagementContextFactory {
 
-	/**
-	 * Create the management application context.
-	 * @param parent the parent context
-	 * @param configurationClasses the configuration classes
-	 * @return a configured application context
-	 */
-	ConfigurableWebServerApplicationContext createManagementContext(ApplicationContext parent,
-			Class<?>... configurationClasses);
+	private final WebApplicationType webApplicationType;
+
+	private final Class<? extends WebServerFactory> webServerFactoryClass;
+
+	private final Class<?>[] autoConfigurationClasses;
+
+	public ManagementContextFactory(WebApplicationType webApplicationType,
+			Class<? extends WebServerFactory> webServerFactoryClass, Class<?>... autoConfigurationClasses) {
+		this.webApplicationType = webApplicationType;
+		this.webServerFactoryClass = webServerFactoryClass;
+		this.autoConfigurationClasses = autoConfigurationClasses;
+	}
+
+	public ConfigurableApplicationContext createManagementContext(ApplicationContext parentContext) {
+		Environment parentEnvironment = parentContext.getEnvironment();
+		ConfigurableEnvironment childEnvironment = ApplicationContextFactory.DEFAULT
+			.createEnvironment(this.webApplicationType);
+		if (parentEnvironment instanceof ConfigurableEnvironment) {
+			childEnvironment.setConversionService(((ConfigurableEnvironment) parentEnvironment).getConversionService());
+		}
+		ConfigurableApplicationContext managementContext = ApplicationContextFactory.DEFAULT
+			.create(this.webApplicationType);
+		managementContext.setEnvironment(childEnvironment);
+		managementContext.setParent(parentContext);
+		return managementContext;
+	}
+
+	public void registerWebServerFactoryBeans(ApplicationContext parentContext,
+			ConfigurableApplicationContext managementContext, AnnotationConfigRegistry registry) {
+		registry.register(this.autoConfigurationClasses);
+		registerWebServerFactoryFromParent(parentContext, managementContext);
+	}
+
+	private void registerWebServerFactoryFromParent(ApplicationContext parentContext,
+			ConfigurableApplicationContext managementContext) {
+		try {
+			if (managementContext.getBeanFactory() instanceof BeanDefinitionRegistry registry) {
+				registry.registerBeanDefinition("ManagementContextWebServerFactory",
+						new RootBeanDefinition(determineWebServerFactoryClass(parentContext)));
+			}
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			// Ignore and assume auto-configuration
+		}
+	}
+
+	private Class<?> determineWebServerFactoryClass(ApplicationContext parent) throws NoSuchBeanDefinitionException {
+		Class<?> factoryClass = parent.getBean(this.webServerFactoryClass).getClass();
+		if (cannotBeInstantiated(factoryClass)) {
+			throw new FatalBeanException("ManagementContextWebServerFactory implementation " + factoryClass.getName()
+					+ " cannot be instantiated. To allow a separate management port to be used, a top-level class "
+					+ "or static inner class should be used instead");
+		}
+		return factoryClass;
+	}
+
+	private boolean cannotBeInstantiated(Class<?> factoryClass) {
+		return factoryClass.isLocalClass()
+				|| (factoryClass.isMemberClass() && !Modifier.isStatic(factoryClass.getModifiers()))
+				|| factoryClass.isAnonymousClass();
+	}
 
 }

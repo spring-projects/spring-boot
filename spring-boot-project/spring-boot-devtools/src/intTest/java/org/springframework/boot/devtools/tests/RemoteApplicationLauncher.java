@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,15 +102,15 @@ abstract class RemoteApplicationLauncher extends AbstractApplicationLauncher {
 
 	private int awaitServerPort(LaunchedJvm jvm, File serverPortFile) {
 		return Awaitility.waitAtMost(Duration.ofMinutes(3))
-				.until(() -> new ApplicationState(serverPortFile, jvm), ApplicationState::hasServerPort)
-				.getServerPort();
+			.until(() -> new ApplicationState(serverPortFile, jvm), ApplicationState::hasServerPort)
+			.getServerPort();
 	}
 
 	private void awaitRemoteSpringApplication(LaunchedJvm launchedJvm) {
 		FileContents contents = new FileContents(launchedJvm.getStandardOut());
 		try {
-			Awaitility.waitAtMost(Duration.ofMinutes(3)).until(contents::get,
-					containsString("Started RemoteSpringApplication"));
+			Awaitility.waitAtMost(Duration.ofMinutes(3))
+				.until(contents::get, containsString("Started RemoteSpringApplication"));
 		}
 		catch (ConditionTimeoutException ex) {
 			if (!launchedJvm.getProcess().isAlive()) {

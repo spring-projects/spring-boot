@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.springframework.core.type.filter.TypeFilter;
 import org.springframework.util.Assert;
 
 /**
- * Abstract base class for handlers of Servlet components discovered via classpath
+ * Abstract base class for handlers of Servlet components discovered through classpath
  * scanning.
  *
  * @author Andy Wilkinson
@@ -70,7 +70,7 @@ abstract class ServletComponentHandler {
 
 	void handle(AnnotatedBeanDefinition beanDefinition, BeanDefinitionRegistry registry) {
 		Map<String, Object> attributes = beanDefinition.getMetadata()
-				.getAnnotationAttributes(this.annotationType.getName());
+			.getAnnotationAttributes(this.annotationType.getName());
 		if (attributes != null) {
 			doHandle(attributes, beanDefinition, registry);
 		}

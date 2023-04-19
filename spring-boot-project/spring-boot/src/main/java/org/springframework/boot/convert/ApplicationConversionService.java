@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -153,7 +153,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 	 * type.
 	 * @param sourceType the source type to test
 	 * @param targetType the target type to test
-	 * @return if conversion happens via an {@code ObjectTo...} converter
+	 * @return if conversion happens through an {@code ObjectTo...} converter
 	 * @since 2.4.3
 	 */
 	public boolean isConvertViaObjectSourceType(TypeDescriptor sourceType, TypeDescriptor targetType) {
@@ -230,8 +230,8 @@ public class ApplicationConversionService extends FormattingConversionService {
 		registry.addConverter(new InputStreamSourceToByteArrayConverter());
 		registry.addConverterFactory(new LenientStringToEnumConverterFactory());
 		registry.addConverterFactory(new LenientBooleanToEnumConverterFactory());
-		if (registry instanceof ConversionService) {
-			addApplicationConverters(registry, (ConversionService) registry);
+		if (registry instanceof ConversionService conversionService) {
+			addApplicationConverters(registry, conversionService);
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ class OnExpressionCondition extends SpringBootCondition {
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		String expression = (String) metadata.getAnnotationAttributes(ConditionalOnExpression.class.getName())
-				.get("value");
+			.get("value");
 		expression = wrapIfNecessary(expression);
 		ConditionMessage.Builder messageBuilder = ConditionMessage.forCondition(ConditionalOnExpression.class,
 				"(" + expression + ")");
@@ -51,7 +51,7 @@ class OnExpressionCondition extends SpringBootCondition {
 		return ConditionOutcome.noMatch(messageBuilder.because("no BeanFactory available."));
 	}
 
-	private Boolean evaluateExpression(ConfigurableListableBeanFactory beanFactory, String expression) {
+	private boolean evaluateExpression(ConfigurableListableBeanFactory beanFactory, String expression) {
 		BeanExpressionResolver resolver = beanFactory.getBeanExpressionResolver();
 		if (resolver == null) {
 			resolver = new StandardBeanExpressionResolver();

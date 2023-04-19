@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,18 +41,18 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  */
 class TunnelClientTests {
 
-	private MockTunnelConnection tunnelConnection = new MockTunnelConnection();
+	private final MockTunnelConnection tunnelConnection = new MockTunnelConnection();
 
 	@Test
 	void listenPortMustNotBeNegative() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TunnelClient(-5, this.tunnelConnection))
-				.withMessageContaining("ListenPort must be greater than or equal to 0");
+			.withMessageContaining("ListenPort must be greater than or equal to 0");
 	}
 
 	@Test
 	void tunnelConnectionMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TunnelClient(1, null))
-				.withMessageContaining("TunnelConnection must not be null");
+			.withMessageContaining("TunnelConnection must not be null");
 	}
 
 	@Test
@@ -73,12 +73,13 @@ class TunnelClientTests {
 		TunnelClient client = new TunnelClient(0, this.tunnelConnection);
 		int port = client.start();
 		SocketChannel channel = SocketChannel.open(new InetSocketAddress(port));
-		Awaitility.await().atMost(Duration.ofSeconds(30)).until(this.tunnelConnection::getOpenedTimes,
-				(open) -> open == 1);
+		Awaitility.await()
+			.atMost(Duration.ofSeconds(30))
+			.until(this.tunnelConnection::getOpenedTimes, (open) -> open == 1);
 		channel.close();
 		client.getServerThread().stopAcceptingConnections();
 		client.getServerThread().join(2000);
-		assertThat(this.tunnelConnection.getOpenedTimes()).isEqualTo(1);
+		assertThat(this.tunnelConnection.getOpenedTimes()).isOne();
 		assertThat(this.tunnelConnection.isOpen()).isFalse();
 	}
 
@@ -87,8 +88,9 @@ class TunnelClientTests {
 		TunnelClient client = new TunnelClient(0, this.tunnelConnection);
 		int port = client.start();
 		SocketChannel channel = SocketChannel.open(new InetSocketAddress(port));
-		Awaitility.await().atMost(Duration.ofSeconds(30)).until(this.tunnelConnection::getOpenedTimes,
-				(times) -> times == 1);
+		Awaitility.await()
+			.atMost(Duration.ofSeconds(30))
+			.until(this.tunnelConnection::getOpenedTimes, (times) -> times == 1);
 		assertThat(this.tunnelConnection.isOpen()).isTrue();
 		client.stop();
 		assertThat(this.tunnelConnection.isOpen()).isFalse();

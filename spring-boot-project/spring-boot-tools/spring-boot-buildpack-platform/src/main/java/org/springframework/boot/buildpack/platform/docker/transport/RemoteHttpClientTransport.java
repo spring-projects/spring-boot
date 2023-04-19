@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,21 +16,22 @@
 
 package org.springframework.boot.buildpack.platform.docker.transport;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.net.URISyntaxException;
 
 import javax.net.ssl.SSLContext;
 
-import org.apache.http.HttpHost;
-import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.socket.LayeredConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.core5.http.HttpHost;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
+import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
 import org.springframework.boot.buildpack.platform.docker.ssl.SslContextFactory;
-import org.springframework.boot.buildpack.platform.system.Environment;
 import org.springframework.util.Assert;
 
 /**
@@ -41,38 +42,24 @@ import org.springframework.util.Assert;
  */
 final class RemoteHttpClientTransport extends HttpClientTransport {
 
-	private static final String UNIX_SOCKET_PREFIX = "unix://";
-
-	private static final String DOCKER_HOST = "DOCKER_HOST";
-
-	private static final String DOCKER_TLS_VERIFY = "DOCKER_TLS_VERIFY";
-
-	private static final String DOCKER_CERT_PATH = "DOCKER_CERT_PATH";
-
-	private RemoteHttpClientTransport(CloseableHttpClient client, HttpHost host) {
+	private RemoteHttpClientTransport(HttpClient client, HttpHost host) {
 		super(client, host);
 	}
 
-	static RemoteHttpClientTransport createIfPossible(Environment environment, DockerHost dockerHost) {
-		return createIfPossible(environment, dockerHost, new SslContextFactory());
+	static RemoteHttpClientTransport createIfPossible(ResolvedDockerHost dockerHost) {
+		return createIfPossible(dockerHost, new SslContextFactory());
 	}
 
-	static RemoteHttpClientTransport createIfPossible(Environment environment, DockerHost dockerHost,
+	static RemoteHttpClientTransport createIfPossible(ResolvedDockerHost dockerHost,
 			SslContextFactory sslContextFactory) {
-		DockerHost host = getHost(environment, dockerHost);
-		if (host == null || host.getAddress() == null || isLocalFileReference(host.getAddress())) {
+		if (!dockerHost.isRemote()) {
 			return null;
 		}
-		return create(host, sslContextFactory, HttpHost.create(host.getAddress()));
-	}
-
-	private static boolean isLocalFileReference(String host) {
-		String filePath = host.startsWith(UNIX_SOCKET_PREFIX) ? host.substring(UNIX_SOCKET_PREFIX.length()) : host;
 		try {
-			return Files.exists(Paths.get(filePath));
+			return create(dockerHost, sslContextFactory, HttpHost.create(dockerHost.getAddress()));
 		}
-		catch (Exception ex) {
-			return false;
+		catch (URISyntaxException ex) {
+			return null;
 		}
 	}
 
@@ -80,10 +67,13 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 			HttpHost tcpHost) {
 		HttpClientBuilder builder = HttpClients.custom();
 		if (host.isSecure()) {
-			builder.setSSLSocketFactory(getSecureConnectionSocketFactory(host, sslContextFactory));
+			PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+				.setSSLSocketFactory(getSecureConnectionSocketFactory(host, sslContextFactory))
+				.build();
+			builder.setConnectionManager(connectionManager);
 		}
 		String scheme = host.isSecure() ? "https" : "http";
-		HttpHost httpHost = new HttpHost(tcpHost.getHostName(), tcpHost.getPort(), scheme);
+		HttpHost httpHost = new HttpHost(scheme, tcpHost.getHostName(), tcpHost.getPort());
 		return new RemoteHttpClientTransport(builder.build(), httpHost);
 	}
 
@@ -94,31 +84,6 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 				() -> "Docker host TLS verification requires trust material location to be specified with certificate path");
 		SSLContext sslContext = sslContextFactory.forDirectory(directory);
 		return new SSLConnectionSocketFactory(sslContext);
-	}
-
-	private static DockerHost getHost(Environment environment, DockerHost dockerHost) {
-		if (environment.get(DOCKER_HOST) != null) {
-			return new EnvironmentDockerHost(environment);
-		}
-		return dockerHost;
-	}
-
-	private static class EnvironmentDockerHost extends DockerHost {
-
-		EnvironmentDockerHost(Environment environment) {
-			super(environment.get(DOCKER_HOST), isTrue(environment.get(DOCKER_TLS_VERIFY)),
-					environment.get(DOCKER_CERT_PATH));
-		}
-
-		private static boolean isTrue(String value) {
-			try {
-				return (value != null) && (Integer.parseInt(value) == 1);
-			}
-			catch (NumberFormatException ex) {
-				return false;
-			}
-		}
-
 	}
 
 }

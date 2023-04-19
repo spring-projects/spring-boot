@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package smoketest.session.redis;
 
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -27,14 +28,18 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,37 +47,42 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link SampleSessionRedisApplication}.
  *
  * @author Angel L. Villalain
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Testcontainers(disabledWithoutDocker = true)
-public class SampleSessionRedisApplicationTests {
+class SampleSessionRedisApplicationTests {
 
 	@Container
+	@ServiceConnection
 	static RedisContainer redis = new RedisContainer();
 
 	@Autowired
 	private TestRestTemplate restTemplate;
 
-	@DynamicPropertySource
-	static void applicationProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.redis.host", redis::getHost);
-		registry.add("spring.redis.port", redis::getFirstMappedPort);
-	}
-
 	@Test
 	@SuppressWarnings("unchecked")
 	void sessionsEndpointShouldReturnUserSessions() {
-		createSession(URI.create("/"));
-		ResponseEntity<Map<String, Object>> response = this.getSessions();
+		performLogin();
+		ResponseEntity<Map<String, Object>> response = getSessions();
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		List<Map<String, Object>> sessions = (List<Map<String, Object>>) response.getBody().get("sessions");
-		assertThat(sessions.size()).isEqualTo(1);
+		assertThat(sessions).hasSize(1);
 	}
 
-	private void createSession(URI uri) {
-		RequestEntity<Object> request = getRequestEntity(uri);
-		this.restTemplate.exchange(request, String.class);
+	private String performLogin() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(Collections.singletonList(MediaType.TEXT_HTML));
+		headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+		MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
+		form.set("username", "user");
+		form.set("password", "password");
+		ResponseEntity<String> entity = this.restTemplate.exchange("/login", HttpMethod.POST,
+				new HttpEntity<>(form, headers), String.class);
+		return entity.getHeaders().getFirst("Set-Cookie");
 	}
 
 	private RequestEntity<Object> getRequestEntity(URI uri) {
@@ -81,10 +91,11 @@ public class SampleSessionRedisApplicationTests {
 		return new RequestEntity<>(headers, HttpMethod.GET, uri);
 	}
 
-	@SuppressWarnings("unchecked")
 	private ResponseEntity<Map<String, Object>> getSessions() {
 		RequestEntity<Object> request = getRequestEntity(URI.create("/actuator/sessions?username=user"));
-		return (ResponseEntity<Map<String, Object>>) (ResponseEntity) this.restTemplate.exchange(request, Map.class);
+		ParameterizedTypeReference<Map<String, Object>> stringObjectMap = new ParameterizedTypeReference<>() {
+		};
+		return this.restTemplate.exchange(request, stringObjectMap);
 	}
 
 }

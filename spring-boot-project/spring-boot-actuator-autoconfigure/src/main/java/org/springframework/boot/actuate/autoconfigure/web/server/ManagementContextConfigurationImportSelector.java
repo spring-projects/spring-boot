@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,6 @@ import org.springframework.context.annotation.DeferredImportSelector;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
@@ -44,6 +43,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Moritz Halbritter
+ * @author Scott Frederick
  * @see ManagementContextConfiguration
  * @see ImportCandidates
  */
@@ -55,7 +55,8 @@ class ManagementContextConfigurationImportSelector implements DeferredImportSele
 	@Override
 	public String[] selectImports(AnnotationMetadata metadata) {
 		ManagementContextType contextType = (ManagementContextType) metadata
-				.getAnnotationAttributes(EnableManagementContext.class.getName()).get("value");
+			.getAnnotationAttributes(EnableManagementContext.class.getName())
+			.get("value");
 		// Find all management context configuration classes, filtering duplicates
 		List<ManagementConfiguration> configurations = getConfigurations();
 		OrderComparator.sort(configurations);
@@ -90,10 +91,7 @@ class ManagementContextConfigurationImportSelector implements DeferredImportSele
 	}
 
 	protected List<String> loadFactoryNames() {
-		List<String> factoryNames = new ArrayList<>(
-				SpringFactoriesLoader.loadFactoryNames(ManagementContextConfiguration.class, this.classLoader));
-		ImportCandidates.load(ManagementContextConfiguration.class, this.classLoader).forEach(factoryNames::add);
-		return factoryNames;
+		return ImportCandidates.load(ManagementContextConfiguration.class, this.classLoader).getCandidates();
 	}
 
 	@Override
@@ -121,7 +119,7 @@ class ManagementContextConfigurationImportSelector implements DeferredImportSele
 
 		private ManagementContextType readContextType(AnnotationMetadata annotationMetadata) {
 			Map<String, Object> annotationAttributes = annotationMetadata
-					.getAnnotationAttributes(ManagementContextConfiguration.class.getName());
+				.getAnnotationAttributes(ManagementContextConfiguration.class.getName());
 			return (annotationAttributes != null) ? (ManagementContextType) annotationAttributes.get("value")
 					: ManagementContextType.ANY;
 		}

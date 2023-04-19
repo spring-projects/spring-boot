@@ -7,9 +7,9 @@ Spring Boot offers several conveniences for working with AMQP through RabbitMQ, 
 
 
 [[messaging.amqp.rabbitmq]]
-=== RabbitMQ support
+=== RabbitMQ Support
 https://www.rabbitmq.com/[RabbitMQ] is a lightweight, reliable, scalable, and portable message broker based on the AMQP protocol.
-Spring uses `RabbitMQ` to communicate through the AMQP protocol.
+Spring uses RabbitMQ to communicate through the AMQP protocol.
 
 RabbitMQ configuration is controlled by external configuration properties in `+spring.rabbitmq.*+`.
 For example, you might declare the following section in `application.properties`:
@@ -40,6 +40,8 @@ See {spring-boot-autoconfigure-module-code}/amqp/RabbitProperties.java[`RabbitPr
 To configure lower-level details of the RabbitMQ `ConnectionFactory` that is used by Spring AMQP, define a `ConnectionFactoryCustomizer` bean.
 
 If a `ConnectionNameStrategy` bean exists in the context, it will be automatically used to name connections created by the auto-configured `CachingConnectionFactory`.
+
+To make an application-wide, additive customization to the `RabbitTemplate`, use a `RabbitTemplateCustomizer` bean.
 
 TIP: See https://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/[Understanding AMQP, the protocol used by RabbitMQ] for more details.
 

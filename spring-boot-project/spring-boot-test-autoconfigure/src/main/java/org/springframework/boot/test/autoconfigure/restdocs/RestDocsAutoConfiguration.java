@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,9 +62,9 @@ public class RestDocsAutoConfiguration {
 				ObjectProvider<RestDocsMockMvcConfigurationCustomizer> configurationCustomizers,
 				RestDocumentationContextProvider contextProvider) {
 			MockMvcRestDocumentationConfigurer configurer = MockMvcRestDocumentation
-					.documentationConfiguration(contextProvider);
+				.documentationConfiguration(contextProvider);
 			configurationCustomizers.orderedStream()
-					.forEach((configurationCustomizer) -> configurationCustomizer.customize(configurer));
+				.forEach((configurationCustomizer) -> configurationCustomizer.customize(configurer));
 			return configurer;
 		}
 
@@ -88,9 +88,9 @@ public class RestDocsAutoConfiguration {
 				ObjectProvider<RestDocsRestAssuredConfigurationCustomizer> configurationCustomizers,
 				RestDocumentationContextProvider contextProvider) {
 			RestAssuredRestDocumentationConfigurer configurer = RestAssuredRestDocumentation
-					.documentationConfiguration(contextProvider);
+				.documentationConfiguration(contextProvider);
 			configurationCustomizers.orderedStream()
-					.forEach((configurationCustomizer) -> configurationCustomizer.customize(configurer));
+				.forEach((configurationCustomizer) -> configurationCustomizer.customize(configurer));
 			return new RequestSpecBuilder().addFilter(configurer).build();
 		}
 
@@ -114,9 +114,9 @@ public class RestDocsAutoConfiguration {
 				ObjectProvider<RestDocsWebTestClientConfigurationCustomizer> configurationCustomizers,
 				RestDocumentationContextProvider contextProvider) {
 			WebTestClientRestDocumentationConfigurer configurer = WebTestClientRestDocumentation
-					.documentationConfiguration(contextProvider);
+				.documentationConfiguration(contextProvider);
 			configurationCustomizers.orderedStream()
-					.forEach((configurationCustomizer) -> configurationCustomizer.customize(configurer));
+				.forEach((configurationCustomizer) -> configurationCustomizer.customize(configurer));
 			return configurer;
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.autoconfigure.amqp;
-
-import java.util.stream.Collectors;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.impl.CredentialsProvider;
@@ -61,21 +59,6 @@ import org.springframework.core.io.ResourceLoader;
  * <li>{@link org.springframework.amqp.core.AmqpAdmin } instance as long as
  * {@literal spring.rabbitmq.dynamic=true}.</li>
  * </ul>
- * <p>
- * The {@link org.springframework.amqp.rabbit.connection.CachingConnectionFactory} honors
- * the following properties:
- * <ul>
- * <li>{@literal spring.rabbitmq.port} is used to specify the port to which the client
- * should connect, and defaults to 5672.</li>
- * <li>{@literal spring.rabbitmq.username} is used to specify the (optional) username.
- * </li>
- * <li>{@literal spring.rabbitmq.password} is used to specify the (optional) password.
- * </li>
- * <li>{@literal spring.rabbitmq.host} is used to specify the host, and defaults to
- * {@literal localhost}.</li>
- * <li>{@literal spring.rabbitmq.virtualHost} is used to specify the (optional) virtual
- * host to which the client should connect.</li>
- * </ul>
  *
  * @author Greg Turnquist
  * @author Josh Long
@@ -84,6 +67,8 @@ import org.springframework.core.io.ResourceLoader;
  * @author Phillip Webb
  * @author Artsiom Yudovin
  * @author Chris Bono
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
  * @since 1.0.0
  */
 @AutoConfiguration
@@ -95,13 +80,26 @@ public class RabbitAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	protected static class RabbitConnectionFactoryCreator {
 
+		private final RabbitProperties properties;
+
+		protected RabbitConnectionFactoryCreator(RabbitProperties properties,
+				ObjectProvider<RabbitConnectionDetails> connectionDetails) {
+			this.properties = properties;
+		}
+
+		@Bean
+		@ConditionalOnMissingBean(RabbitConnectionDetails.class)
+		RabbitConnectionDetails rabbitConnectionDetails() {
+			return new PropertiesRabbitConnectionDetails(this.properties);
+		}
+
 		@Bean
 		@ConditionalOnMissingBean
-		RabbitConnectionFactoryBeanConfigurer rabbitConnectionFactoryBeanConfigurer(RabbitProperties properties,
-				ResourceLoader resourceLoader, ObjectProvider<CredentialsProvider> credentialsProvider,
+		RabbitConnectionFactoryBeanConfigurer rabbitConnectionFactoryBeanConfigurer(ResourceLoader resourceLoader,
+				RabbitConnectionDetails connectionDetails, ObjectProvider<CredentialsProvider> credentialsProvider,
 				ObjectProvider<CredentialsRefreshService> credentialsRefreshService) {
 			RabbitConnectionFactoryBeanConfigurer configurer = new RabbitConnectionFactoryBeanConfigurer(resourceLoader,
-					properties);
+					this.properties, connectionDetails);
 			configurer.setCredentialsProvider(credentialsProvider.getIfUnique());
 			configurer.setCredentialsRefreshService(credentialsRefreshService.getIfUnique());
 			return configurer;
@@ -109,9 +107,10 @@ public class RabbitAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		CachingConnectionFactoryConfigurer rabbitConnectionFactoryConfigurer(RabbitProperties rabbitProperties,
+		CachingConnectionFactoryConfigurer rabbitConnectionFactoryConfigurer(RabbitConnectionDetails connectionDetails,
 				ObjectProvider<ConnectionNameStrategy> connectionNameStrategy) {
-			CachingConnectionFactoryConfigurer configurer = new CachingConnectionFactoryConfigurer(rabbitProperties);
+			CachingConnectionFactoryConfigurer configurer = new CachingConnectionFactoryConfigurer(this.properties,
+					connectionDetails);
 			configurer.setConnectionNameStrategy(connectionNameStrategy.getIfUnique());
 			return configurer;
 		}
@@ -128,7 +127,7 @@ public class RabbitAutoConfiguration {
 			connectionFactoryBean.afterPropertiesSet();
 			com.rabbitmq.client.ConnectionFactory connectionFactory = connectionFactoryBean.getObject();
 			connectionFactoryCustomizers.orderedStream()
-					.forEach((customizer) -> customizer.customize(connectionFactory));
+				.forEach((customizer) -> customizer.customize(connectionFactory));
 
 			CachingConnectionFactory factory = new CachingConnectionFactory(connectionFactory);
 			rabbitCachingConnectionFactoryConfigurer.configure(factory);
@@ -149,17 +148,18 @@ public class RabbitAutoConfiguration {
 				ObjectProvider<RabbitRetryTemplateCustomizer> retryTemplateCustomizers) {
 			RabbitTemplateConfigurer configurer = new RabbitTemplateConfigurer(properties);
 			configurer.setMessageConverter(messageConverter.getIfUnique());
-			configurer
-					.setRetryTemplateCustomizers(retryTemplateCustomizers.orderedStream().collect(Collectors.toList()));
+			configurer.setRetryTemplateCustomizers(retryTemplateCustomizers.orderedStream().toList());
 			return configurer;
 		}
 
 		@Bean
 		@ConditionalOnSingleCandidate(ConnectionFactory.class)
 		@ConditionalOnMissingBean(RabbitOperations.class)
-		public RabbitTemplate rabbitTemplate(RabbitTemplateConfigurer configurer, ConnectionFactory connectionFactory) {
+		public RabbitTemplate rabbitTemplate(RabbitTemplateConfigurer configurer, ConnectionFactory connectionFactory,
+				ObjectProvider<RabbitTemplateCustomizer> customizers) {
 			RabbitTemplate template = new RabbitTemplate();
 			configurer.configure(template, connectionFactory);
+			customizers.orderedStream().forEach((customizer) -> customizer.customize(template));
 			return template;
 		}
 

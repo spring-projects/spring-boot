@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,8 @@ final class ConfigurationPropertiesBeanRegistrar {
 
 	void register(Class<?> type) {
 		MergedAnnotation<ConfigurationProperties> annotation = MergedAnnotations
-				.from(type, SearchStrategy.TYPE_HIERARCHY).get(ConfigurationProperties.class);
+			.from(type, SearchStrategy.TYPE_HIERARCHY)
+			.get(ConfigurationProperties.class);
 		register(type, annotation);
 	}
 
@@ -71,12 +72,12 @@ final class ConfigurationPropertiesBeanRegistrar {
 	}
 
 	private boolean containsBeanDefinition(BeanFactory beanFactory, String name) {
-		if (beanFactory instanceof ListableBeanFactory
-				&& ((ListableBeanFactory) beanFactory).containsBeanDefinition(name)) {
+		if (beanFactory instanceof ListableBeanFactory listableBeanFactory
+				&& listableBeanFactory.containsBeanDefinition(name)) {
 			return true;
 		}
-		if (beanFactory instanceof HierarchicalBeanFactory) {
-			return containsBeanDefinition(((HierarchicalBeanFactory) beanFactory).getParentBeanFactory(), name);
+		if (beanFactory instanceof HierarchicalBeanFactory hierarchicalBeanFactory) {
+			return containsBeanDefinition(hierarchicalBeanFactory.getParentBeanFactory(), name);
 		}
 		return false;
 	}
@@ -89,24 +90,13 @@ final class ConfigurationPropertiesBeanRegistrar {
 	}
 
 	private BeanDefinition createBeanDefinition(String beanName, Class<?> type) {
-		BindMethod bindMethod = BindMethod.forType(type);
+		BindMethod bindMethod = BindMethod.get(type);
 		RootBeanDefinition definition = new RootBeanDefinition(type);
 		definition.setAttribute(BindMethod.class.getName(), bindMethod);
 		if (bindMethod == BindMethod.VALUE_OBJECT) {
-			definition.setInstanceSupplier(() -> createValueObject(beanName, type));
+			definition.setInstanceSupplier(() -> ConstructorBound.from(this.beanFactory, beanName, type));
 		}
 		return definition;
-	}
-
-	private Object createValueObject(String beanName, Class<?> beanType) {
-		ConfigurationPropertiesBean bean = ConfigurationPropertiesBean.forValueObject(beanType, beanName);
-		ConfigurationPropertiesBinder binder = ConfigurationPropertiesBinder.get(this.beanFactory);
-		try {
-			return binder.bindOrCreate(bean);
-		}
-		catch (Exception ex) {
-			throw new ConfigurationPropertiesBindException(bean, ex);
-		}
 	}
 
 }

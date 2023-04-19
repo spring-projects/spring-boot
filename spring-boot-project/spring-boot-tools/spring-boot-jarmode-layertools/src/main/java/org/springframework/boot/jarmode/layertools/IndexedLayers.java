@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,10 @@ class IndexedLayers implements Layers {
 	private final Map<String, List<String>> layers = new LinkedHashMap<>();
 
 	IndexedLayers(String indexFile) {
-		String[] lines = Arrays.stream(indexFile.split("\n")).map((line) -> line.replace("\r", ""))
-				.filter(StringUtils::hasText).toArray(String[]::new);
+		String[] lines = Arrays.stream(indexFile.split("\n"))
+			.map((line) -> line.replace("\r", ""))
+			.filter(StringUtils::hasText)
+			.toArray(String[]::new);
 		List<String> contents = null;
 		for (String line : lines) {
 			if (line.startsWith("- ")) {

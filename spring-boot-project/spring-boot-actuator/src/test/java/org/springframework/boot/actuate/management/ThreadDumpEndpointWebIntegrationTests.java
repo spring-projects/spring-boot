@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,15 +34,29 @@ class ThreadDumpEndpointWebIntegrationTests {
 
 	@WebEndpointTest
 	void getRequestWithJsonAcceptHeaderShouldProduceJsonThreadDumpResponse(WebTestClient client) {
-		client.get().uri("/actuator/threaddump").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
-				.expectHeader().contentType(MediaType.APPLICATION_JSON);
+		client.get()
+			.uri("/actuator/threaddump")
+			.accept(MediaType.APPLICATION_JSON)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType(MediaType.APPLICATION_JSON);
 	}
 
 	@WebEndpointTest
 	void getRequestWithTextPlainAcceptHeaderShouldProduceTextPlainResponse(WebTestClient client) {
-		String response = client.get().uri("/actuator/threaddump").accept(MediaType.TEXT_PLAIN).exchange()
-				.expectStatus().isOk().expectHeader().contentType("text/plain;charset=UTF-8").expectBody(String.class)
-				.returnResult().getResponseBody();
+		String response = client.get()
+			.uri("/actuator/threaddump")
+			.accept(MediaType.TEXT_PLAIN)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectHeader()
+			.contentType("text/plain;charset=UTF-8")
+			.expectBody(String.class)
+			.returnResult()
+			.getResponseBody();
 		assertThat(response).contains("Full thread dump");
 	}
 

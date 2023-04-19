@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,16 +68,16 @@ class DefaultErrorAttributesTests {
 		this.request.setAttribute("jakarta.servlet.error.status_code", 404);
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults());
-		assertThat(attributes.get("error")).isEqualTo(HttpStatus.NOT_FOUND.getReasonPhrase());
-		assertThat(attributes.get("status")).isEqualTo(404);
+		assertThat(attributes).containsEntry("error", HttpStatus.NOT_FOUND.getReasonPhrase());
+		assertThat(attributes).containsEntry("status", 404);
 	}
 
 	@Test
 	void missingStatusCode() {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults());
-		assertThat(attributes.get("error")).isEqualTo("None");
-		assertThat(attributes.get("status")).isEqualTo(999);
+		assertThat(attributes).containsEntry("error", "None");
+		assertThat(attributes).containsEntry("status", 999);
 	}
 
 	@Test
@@ -89,10 +89,10 @@ class DefaultErrorAttributesTests {
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(ex);
 		assertThat(this.webRequest.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE, WebRequest.SCOPE_REQUEST))
-				.isSameAs(ex);
+			.isSameAs(ex);
 		assertThat(modelAndView).isNull();
 		assertThat(attributes).doesNotContainKey("exception");
-		assertThat(attributes.get("message")).isEqualTo("Test");
+		assertThat(attributes).containsEntry("message", "Test");
 	}
 
 	@Test
@@ -103,9 +103,9 @@ class DefaultErrorAttributesTests {
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(ex);
 		assertThat(this.webRequest.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE, WebRequest.SCOPE_REQUEST))
-				.isSameAs(ex);
+			.isSameAs(ex);
 		assertThat(attributes).doesNotContainKey("exception");
-		assertThat(attributes.get("message")).isEqualTo("Test");
+		assertThat(attributes).containsEntry("message", "Test");
 	}
 
 	@Test
@@ -116,7 +116,7 @@ class DefaultErrorAttributesTests {
 				ErrorAttributeOptions.defaults());
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(ex);
 		assertThat(this.webRequest.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE, WebRequest.SCOPE_REQUEST))
-				.isSameAs(ex);
+			.isSameAs(ex);
 		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes).doesNotContainKey("message");
 	}
@@ -127,7 +127,7 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(attributes).doesNotContainKey("exception");
-		assertThat(attributes.get("message")).isEqualTo("Test");
+		assertThat(attributes).containsEntry("message", "Test");
 	}
 
 	@Test
@@ -146,7 +146,7 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(attributes).doesNotContainKey("exception");
-		assertThat(attributes.get("message")).isEqualTo("Test");
+		assertThat(attributes).containsEntry("message", "Test");
 	}
 
 	@Test
@@ -155,7 +155,7 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(attributes).doesNotContainKey("exception");
-		assertThat(attributes.get("message")).isEqualTo("No message available");
+		assertThat(attributes).containsEntry("message", "No message available");
 	}
 
 	@Test
@@ -167,9 +167,9 @@ class DefaultErrorAttributesTests {
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(wrapped);
 		assertThat(this.webRequest.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE, WebRequest.SCOPE_REQUEST))
-				.isSameAs(wrapped);
+			.isSameAs(wrapped);
 		assertThat(attributes).doesNotContainKey("exception");
-		assertThat(attributes.get("message")).isEqualTo("Test");
+		assertThat(attributes).containsEntry("message", "Test");
 	}
 
 	@Test
@@ -180,9 +180,9 @@ class DefaultErrorAttributesTests {
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(error);
 		assertThat(this.webRequest.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE, WebRequest.SCOPE_REQUEST))
-				.isSameAs(error);
+			.isSameAs(error);
 		assertThat(attributes).doesNotContainKey("exception");
-		assertThat(attributes.get("message")).isEqualTo("Test error");
+		assertThat(attributes).containsEntry("message", "Test error");
 	}
 
 	@Test
@@ -215,14 +215,14 @@ class DefaultErrorAttributesTests {
 		this.request.setAttribute("jakarta.servlet.error.exception", ex);
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest, options);
 		if (options.isIncluded(Include.MESSAGE)) {
-			assertThat(attributes.get("message"))
-					.isEqualTo("Validation failed for object='objectName'. Error count: 1");
+			assertThat(attributes).containsEntry("message",
+					"Validation failed for object='objectName'. Error count: 1");
 		}
 		else {
 			assertThat(attributes).doesNotContainKey("message");
 		}
 		if (options.isIncluded(Include.BINDING_ERRORS)) {
-			assertThat(attributes.get("errors")).isEqualTo(bindingResult.getAllErrors());
+			assertThat(attributes).containsEntry("errors", bindingResult.getAllErrors());
 		}
 		else {
 			assertThat(attributes).doesNotContainKey("errors");
@@ -236,8 +236,8 @@ class DefaultErrorAttributesTests {
 		this.request.setAttribute("jakarta.servlet.error.exception", ex);
 		Map<String, Object> attributes = errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.EXCEPTION, Include.MESSAGE));
-		assertThat(attributes.get("exception")).isEqualTo(RuntimeException.class.getName());
-		assertThat(attributes.get("message")).isEqualTo("Test");
+		assertThat(attributes).containsEntry("exception", RuntimeException.class.getName());
+		assertThat(attributes).containsEntry("message", "Test");
 	}
 
 	@Test
@@ -263,7 +263,7 @@ class DefaultErrorAttributesTests {
 		this.request.setAttribute("jakarta.servlet.error.request_uri", "path");
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults());
-		assertThat(attributes.get("path")).isEqualTo("path");
+		assertThat(attributes).containsEntry("path", "path");
 	}
 
 	@Test

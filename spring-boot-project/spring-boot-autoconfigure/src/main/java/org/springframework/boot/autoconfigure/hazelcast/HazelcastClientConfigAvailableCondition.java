@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,8 @@ class HazelcastClientConfigAvailableCondition extends HazelcastConfigResourceCon
 
 	HazelcastClientConfigAvailableCondition() {
 		super(HazelcastClientConfiguration.CONFIG_SYSTEM_PROPERTY, "file:./hazelcast-client.xml",
-				"classpath:/hazelcast-client.xml", "file:./hazelcast-client.yaml", "classpath:/hazelcast-client.yaml");
+				"classpath:/hazelcast-client.xml", "file:./hazelcast-client.yaml", "classpath:/hazelcast-client.yaml",
+				"file:./hazelcast-client.yml", "classpath:/hazelcast-client.yml");
 	}
 
 	@Override
@@ -48,7 +49,7 @@ class HazelcastClientConfigAvailableCondition extends HazelcastConfigResourceCon
 			ConditionOutcome configValidationOutcome = HazelcastClientValidation.clientConfigOutcome(context,
 					HAZELCAST_CONFIG_PROPERTY, startConditionMessage());
 			return (configValidationOutcome != null) ? configValidationOutcome : ConditionOutcome
-					.match(startConditionMessage().foundExactly("property " + HAZELCAST_CONFIG_PROPERTY));
+				.match(startConditionMessage().foundExactly("property " + HAZELCAST_CONFIG_PROPERTY));
 		}
 		return getResourceOutcome(context, metadata);
 	}

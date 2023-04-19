@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,9 @@ import org.springframework.util.MultiValueMap;
  */
 class TestPropertyMapper implements PropertyMapper {
 
-	private MultiValueMap<ConfigurationPropertyName, String> fromConfig = new LinkedMultiValueMap<>();
+	private final MultiValueMap<ConfigurationPropertyName, String> fromConfig = new LinkedMultiValueMap<>();
 
-	private Map<String, ConfigurationPropertyName> fromSource = new LinkedHashMap<>();
+	private final Map<String, ConfigurationPropertyName> fromSource = new LinkedHashMap<>();
 
 	void addFromPropertySource(String from, String to) {
 		this.fromSource.put(from, ConfigurationPropertyName.of(to));

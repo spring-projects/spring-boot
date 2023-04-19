@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationManagerResolver;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -72,14 +71,14 @@ public class UserDetailsServiceAutoConfiguration {
 	private static final Log logger = LogFactory.getLog(UserDetailsServiceAutoConfiguration.class);
 
 	@Bean
-	@Lazy
 	public InMemoryUserDetailsManager inMemoryUserDetailsManager(SecurityProperties properties,
 			ObjectProvider<PasswordEncoder> passwordEncoder) {
 		SecurityProperties.User user = properties.getUser();
 		List<String> roles = user.getRoles();
-		return new InMemoryUserDetailsManager(
-				User.withUsername(user.getName()).password(getOrDeducePassword(user, passwordEncoder.getIfAvailable()))
-						.roles(StringUtils.toStringArray(roles)).build());
+		return new InMemoryUserDetailsManager(User.withUsername(user.getName())
+			.password(getOrDeducePassword(user, passwordEncoder.getIfAvailable()))
+			.roles(StringUtils.toStringArray(roles))
+			.build());
 	}
 
 	private String getOrDeducePassword(SecurityProperties.User user, PasswordEncoder encoder) {

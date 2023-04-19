@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,28 +51,28 @@ class BuilderMetadataTests extends AbstractJsonTests {
 		assertThat(metadata.getLifecycle().getApi().getPlatform()).isEqualTo("0.3");
 		assertThat(metadata.getCreatedBy().getName()).isEqualTo("Pack CLI");
 		assertThat(metadata.getCreatedBy().getVersion())
-				.isEqualTo("v0.9.0 (git sha: d42c384a39f367588f2653f2a99702db910e5ad7)");
+			.isEqualTo("v0.9.0 (git sha: d42c384a39f367588f2653f2a99702db910e5ad7)");
 		assertThat(metadata.getBuildpacks()).extracting(BuildpackMetadata::getId, BuildpackMetadata::getVersion)
-				.contains(tuple("paketo-buildpacks/java", "4.10.0"))
-				.contains(tuple("paketo-buildpacks/spring-boot", "3.5.0"))
-				.contains(tuple("paketo-buildpacks/executable-jar", "3.1.3"))
-				.contains(tuple("paketo-buildpacks/graalvm", "4.1.0"))
-				.contains(tuple("paketo-buildpacks/java-native-image", "4.7.0"))
-				.contains(tuple("paketo-buildpacks/spring-boot-native-image", "2.0.1"))
-				.contains(tuple("paketo-buildpacks/bellsoft-liberica", "6.2.0"));
+			.contains(tuple("paketo-buildpacks/java", "4.10.0"))
+			.contains(tuple("paketo-buildpacks/spring-boot", "3.5.0"))
+			.contains(tuple("paketo-buildpacks/executable-jar", "3.1.3"))
+			.contains(tuple("paketo-buildpacks/graalvm", "4.1.0"))
+			.contains(tuple("paketo-buildpacks/java-native-image", "4.7.0"))
+			.contains(tuple("paketo-buildpacks/spring-boot-native-image", "2.0.1"))
+			.contains(tuple("paketo-buildpacks/bellsoft-liberica", "6.2.0"));
 	}
 
 	@Test
 	void fromImageWhenImageIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuilderMetadata.fromImage(null))
-				.withMessage("Image must not be null");
+			.withMessage("Image must not be null");
 	}
 
 	@Test
 	void fromImageWhenImageConfigIsNullThrowsException() {
 		Image image = mock(Image.class);
 		assertThatIllegalArgumentException().isThrownBy(() -> BuilderMetadata.fromImage(image))
-				.withMessage("ImageConfig must not be null");
+			.withMessage("ImageConfig must not be null");
 	}
 
 	@Test
@@ -82,7 +82,7 @@ class BuilderMetadataTests extends AbstractJsonTests {
 		given(image.getConfig()).willReturn(imageConfig);
 		given(imageConfig.getLabels()).willReturn(Collections.singletonMap("alpha", "a"));
 		assertThatIllegalArgumentException().isThrownBy(() -> BuilderMetadata.fromImage(image))
-				.withMessage("No 'io.buildpacks.builder.metadata' label found in image config labels 'alpha'");
+			.withMessage("No 'io.buildpacks.builder.metadata' label found in image config labels 'alpha'");
 	}
 
 	@Test
@@ -127,7 +127,7 @@ class BuilderMetadataTests extends AbstractJsonTests {
 		String label = imageConfigCopy.getLabels().get("io.buildpacks.builder.metadata");
 		BuilderMetadata metadataCopy = BuilderMetadata.fromJson(label);
 		assertThat(metadataCopy.getStack().getRunImage().getImage())
-				.isEqualTo(metadata.getStack().getRunImage().getImage());
+			.isEqualTo(metadata.getStack().getRunImage().getImage());
 	}
 
 }

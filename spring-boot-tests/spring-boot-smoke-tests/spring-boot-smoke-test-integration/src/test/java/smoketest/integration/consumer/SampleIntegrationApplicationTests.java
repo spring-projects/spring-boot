@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,8 +77,8 @@ class SampleIntegrationApplicationTests {
 	}
 
 	private void awaitOutputContaining(File outputDir, String requiredContents) {
-		Awaitility.waitAtMost(Duration.ofSeconds(30)).until(() -> outputIn(outputDir),
-				containsString(requiredContents));
+		Awaitility.waitAtMost(Duration.ofSeconds(30))
+			.until(() -> outputIn(outputDir), containsString(requiredContents));
 	}
 
 	private String outputIn(File outputDir) throws IOException {
@@ -91,7 +91,7 @@ class SampleIntegrationApplicationTests {
 
 	private Resource[] findResources(File outputDir) throws IOException {
 		return ResourcePatternUtils.getResourcePatternResolver(new DefaultResourceLoader())
-				.getResources("file:" + outputDir.getAbsolutePath() + "/*.txt");
+			.getResources("file:" + outputDir.getAbsolutePath() + "/*.txt");
 	}
 
 	private String readResources(Resource[] resources) throws IOException {

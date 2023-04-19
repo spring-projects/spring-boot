@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
  */
 class PropertyMappingContextCustomizerFactoryTests {
 
-	private PropertyMappingContextCustomizerFactory factory = new PropertyMappingContextCustomizerFactory();
+	private final PropertyMappingContextCustomizerFactory factory = new PropertyMappingContextCustomizerFactory();
 
 	@Test
 	void getContextCustomizerWhenHasNoMappingShouldNotAddPropertySource() {
@@ -73,7 +73,7 @@ class PropertyMappingContextCustomizerFactoryTests {
 		ContextCustomizer customizer1 = this.factory.createContextCustomizer(TypeMapping.class, null);
 		ContextCustomizer customizer2 = this.factory.createContextCustomizer(AttributeMapping.class, null);
 		ContextCustomizer customizer3 = this.factory.createContextCustomizer(OtherMapping.class, null);
-		assertThat(customizer1.hashCode()).isEqualTo(customizer2.hashCode());
+		assertThat(customizer1).hasSameHashCodeAs(customizer2);
 		assertThat(customizer1).isEqualTo(customizer1).isEqualTo(customizer2).isNotEqualTo(customizer3);
 	}
 
@@ -92,9 +92,9 @@ class PropertyMappingContextCustomizerFactoryTests {
 		context.register(ConfigMapping.class);
 		customizer.customizeContext(context, null);
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(context::refresh)
-				.withMessageContaining("The @PropertyMapping annotation "
-						+ "@PropertyMappingContextCustomizerFactoryTests.TypeMappingAnnotation "
-						+ "cannot be used in combination with the @Component annotation @Configuration");
+			.withMessageContaining("The @PropertyMapping annotation "
+					+ "@PropertyMappingContextCustomizerFactoryTests.TypeMappingAnnotation "
+					+ "cannot be used in combination with the @Component annotation @Configuration");
 	}
 
 	@NoMappingAnnotation

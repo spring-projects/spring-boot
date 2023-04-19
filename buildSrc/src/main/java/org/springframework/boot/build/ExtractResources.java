@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,8 +87,7 @@ public class ExtractResources extends DefaultTask {
 				throw new GradleException("Resource '" + resourceName + "' does not exist");
 			}
 			String resource = FileCopyUtils.copyToString(new InputStreamReader(resourceStream, StandardCharsets.UTF_8));
-			resource = this.propertyPlaceholderHelper.replacePlaceholders(resource,
-					(placeholder) -> this.properties.get(placeholder));
+			resource = this.propertyPlaceholderHelper.replacePlaceholders(resource, this.properties::get);
 			FileCopyUtils.copy(resource,
 					new FileWriter(this.destinationDirectory.file(resourceName).get().getAsFile()));
 		}

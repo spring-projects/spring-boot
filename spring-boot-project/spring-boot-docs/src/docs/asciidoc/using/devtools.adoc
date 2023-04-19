@@ -67,13 +67,15 @@ Cache options are usually configured by settings in your `application.properties
 For example, Thymeleaf offers the configprop:spring.thymeleaf.cache[] property.
 Rather than needing to set these properties manually, the `spring-boot-devtools` module automatically applies sensible development-time configuration.
 
-Because you need more information about web requests while developing Spring MVC and Spring WebFlux applications, developer tools suggests you to enable `DEBUG` logging for the `web` logging group.
-This will give you information about the incoming request, which handler is processing it, the response outcome, and other details.
-If you wish to log all request details (including potentially sensitive information), you can turn on the configprop:spring.mvc.log-request-details[] or configprop:spring.codec.log-request-details[] configuration properties.
+The following table lists all the properties that are applied:
+
+include::devtools-property-defaults.adoc[]
 
 NOTE: If you do not want property defaults to be applied you can set configprop:spring.devtools.add-properties[] to `false` in your `application.properties`.
 
-TIP: For a complete list of the properties that are applied by the devtools, see {spring-boot-devtools-module-code}/env/DevToolsPropertyDefaultsPostProcessor.java[DevToolsPropertyDefaultsPostProcessor].
+Because you need more information about web requests while developing Spring MVC and Spring WebFlux applications, developer tools suggests you to enable `DEBUG` logging for the `web` logging group.
+This will give you information about the incoming request, which handler is processing it, the response outcome, and other details.
+If you wish to log all request details (including potentially sensitive information), you can turn on the configprop:spring.mvc.log-request-details[] or configprop:spring.codec.log-request-details[] configuration properties.
 
 
 
@@ -87,7 +89,8 @@ Note that certain resources, such as static assets and view templates, <<using#u
 .Triggering a restart
 ****
 As DevTools monitors classpath resources, the only way to trigger a restart is to update the classpath.
-The way in which you cause the classpath to be updated depends on the IDE that you are using:
+Whether you're using an IDE or one of the build plugins, the modified files have to be recompiled to trigger a restart.
+The way in which you cause the classpath to be updated depends on the tool that you are using:
 
 * In Eclipse, saving a modified file causes the classpath to be updated and triggers a restart.
 * In IntelliJ IDEA, building the project (`Build +->+ Build Project`) has the same effect.
@@ -127,7 +130,7 @@ These work by rewriting classes as they are loaded to make them more amenable to
 
 
 [[using.devtools.restart.logging-condition-delta]]
-==== Logging changes in condition evaluation
+==== Logging Changes in Condition Evaluation
 By default, each time your application restarts, a report showing the condition evaluation delta is logged.
 The report shows the changes to your application's auto-configuration as you make changes such as adding or removing beans and setting configuration properties.
 
@@ -387,19 +390,7 @@ A running remote client might resemble the following listing:
 
 [indent=0,subs="verbatim,attributes"]
 ----
-	  .   ____          _                                              __ _ _
-	 /\\ / ___'_ __ _ _(_)_ __  __ _          ___               _      \ \ \ \
-	( ( )\___ | '_ | '_| | '_ \/ _` |        | _ \___ _ __  ___| |_ ___ \ \ \ \
-	 \\/  ___)| |_)| | | | | || (_| []::::::[]   / -_) '  \/ _ \  _/ -_) ) ) ) )
-	  '  |____| .__|_| |_|_| |_\__, |        |_|_\___|_|_|_\___/\__\___|/ / / /
-	 =========|_|==============|___/===================================/_/_/_/
-	 :: Spring Boot Remote :: {spring-boot-version}
-
-	2015-06-10 18:25:06.632  INFO 14938 --- [           main] o.s.b.devtools.RemoteSpringApplication   : Starting RemoteSpringApplication on pwmbp with PID 14938 (/Users/pwebb/projects/spring-boot/code/spring-boot-project/spring-boot-devtools/target/classes started by pwebb in /Users/pwebb/projects/spring-boot/code)
-	2015-06-10 18:25:06.671  INFO 14938 --- [           main] s.c.a.AnnotationConfigApplicationContext : Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@2a17b7b6: startup date [Wed Jun 10 18:25:06 PDT 2015]; root of context hierarchy
-	2015-06-10 18:25:07.043  WARN 14938 --- [           main] o.s.b.d.r.c.RemoteClientConfiguration    : The connection to http://localhost:8080 is insecure. You should use a URL starting with 'https://'.
-	2015-06-10 18:25:07.074  INFO 14938 --- [           main] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
-	2015-06-10 18:25:07.130  INFO 14938 --- [           main] o.s.b.devtools.RemoteSpringApplication   : Started RemoteSpringApplication in 0.74 seconds (JVM running for 1.105)
+include::{remote-spring-application-output}[]
 ----
 
 NOTE: Because the remote client is using the same classpath as the real application it can directly read application properties.

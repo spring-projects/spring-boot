@@ -42,7 +42,7 @@ import static org.mockito.Mockito.never;
 @ExtendWith(MockitoExtension.class)
 class BoundPropertiesTrackingBindHandlerTests {
 
-	private List<ConfigurationPropertySource> sources = new ArrayList<>();
+	private final List<ConfigurationPropertySource> sources = new ArrayList<>();
 
 	private BoundPropertiesTrackingBindHandler handler;
 

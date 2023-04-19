@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,36 +56,40 @@ class StartupEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 
 	@Test
 	void startupSnapshot() throws Exception {
-		this.mockMvc.perform(get("/actuator/startup")).andExpect(status().isOk())
-				.andDo(document("startup-snapshot", PayloadDocumentation.responseFields(responseFields())));
+		this.mockMvc.perform(get("/actuator/startup"))
+			.andExpect(status().isOk())
+			.andDo(document("startup-snapshot", PayloadDocumentation.responseFields(responseFields())));
 	}
 
 	@Test
 	void startup() throws Exception {
-		this.mockMvc.perform(post("/actuator/startup")).andExpect(status().isOk())
-				.andDo(document("startup", PayloadDocumentation.responseFields(responseFields())));
+		this.mockMvc.perform(post("/actuator/startup"))
+			.andExpect(status().isOk())
+			.andDo(document("startup", PayloadDocumentation.responseFields(responseFields())));
 	}
 
 	private FieldDescriptor[] responseFields() {
 		return new FieldDescriptor[] {
 				fieldWithPath("springBootVersion").type(JsonFieldType.STRING)
-						.description("Spring Boot version for this application.").optional(),
+					.description("Spring Boot version for this application.")
+					.optional(),
 				fieldWithPath("timeline.startTime").description("Start time of the application."),
 				fieldWithPath("timeline.events")
-						.description("An array of steps collected during application startup so far."),
+					.description("An array of steps collected during application startup so far."),
 				fieldWithPath("timeline.events.[].startTime").description("The timestamp of the start of this event."),
 				fieldWithPath("timeline.events.[].endTime").description("The timestamp of the end of this event."),
 				fieldWithPath("timeline.events.[].duration").description("The precise duration of this event."),
 				fieldWithPath("timeline.events.[].startupStep.name").description("The name of the StartupStep."),
 				fieldWithPath("timeline.events.[].startupStep.id").description("The id of this StartupStep."),
 				fieldWithPath("timeline.events.[].startupStep.parentId")
-						.description("The parent id for this StartupStep.").optional(),
+					.description("The parent id for this StartupStep.")
+					.optional(),
 				fieldWithPath("timeline.events.[].startupStep.tags")
-						.description("An array of key/value pairs with additional step info."),
+					.description("An array of key/value pairs with additional step info."),
 				fieldWithPath("timeline.events.[].startupStep.tags[].key")
-						.description("The key of the StartupStep Tag."),
+					.description("The key of the StartupStep Tag."),
 				fieldWithPath("timeline.events.[].startupStep.tags[].value")
-						.description("The value of the StartupStep Tag.") };
+					.description("The value of the StartupStep Tag.") };
 	}
 
 	@Configuration(proxyBeanMethods = false)

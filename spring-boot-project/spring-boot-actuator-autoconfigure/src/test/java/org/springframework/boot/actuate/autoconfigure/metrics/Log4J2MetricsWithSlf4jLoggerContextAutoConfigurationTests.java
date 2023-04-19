@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import io.micrometer.binder.logging.Log4j2Metrics;
+import io.micrometer.core.instrument.binder.logging.Log4j2Metrics;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.slf4j.SLF4JLoggerContext;
 import org.junit.jupiter.api.Test;
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Log4J2MetricsWithSlf4jLoggerContextAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
-			.withConfiguration(AutoConfigurations.of(Log4J2MetricsAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(Log4J2MetricsAutoConfiguration.class));
 
 	@Test
 	void backsOffWhenLoggerContextIsBackedBySlf4j() {

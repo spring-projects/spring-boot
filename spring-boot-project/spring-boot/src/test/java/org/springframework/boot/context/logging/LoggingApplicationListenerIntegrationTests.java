@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,8 @@ class LoggingApplicationListenerIntegrationTests {
 	@Test
 	void loggingSystemRegisteredInTheContext() {
 		try (ConfigurableApplicationContext context = new SpringApplicationBuilder(SampleService.class)
-				.web(WebApplicationType.NONE).run()) {
+			.web(WebApplicationType.NONE)
+			.run()) {
 			SampleService service = context.getBean(SampleService.class);
 			assertThat(service.loggingSystem).isNotNull();
 		}
@@ -60,10 +61,12 @@ class LoggingApplicationListenerIntegrationTests {
 	void logFileRegisteredInTheContextWhenApplicable(@TempDir File tempDir) {
 		String logFile = new File(tempDir, "test.log").getAbsolutePath();
 		try (ConfigurableApplicationContext context = new SpringApplicationBuilder(SampleService.class)
-				.web(WebApplicationType.NONE).properties("logging.file.name=" + logFile).run()) {
+			.web(WebApplicationType.NONE)
+			.properties("logging.file.name=" + logFile)
+			.run()) {
 			SampleService service = context.getBean(SampleService.class);
 			assertThat(service.logFile).isNotNull();
-			assertThat(service.logFile.toString()).isEqualTo(logFile);
+			assertThat(service.logFile).hasToString(logFile);
 		}
 		finally {
 			System.clearProperty(LoggingSystemProperties.LOG_FILE);
@@ -72,17 +75,20 @@ class LoggingApplicationListenerIntegrationTests {
 
 	@Test
 	void loggingPerformedDuringChildApplicationStartIsNotLost(CapturedOutput output) {
-		new SpringApplicationBuilder(Config.class).web(WebApplicationType.NONE).child(Config.class)
-				.web(WebApplicationType.NONE).listeners(new ApplicationListener<ApplicationStartingEvent>() {
+		new SpringApplicationBuilder(Config.class).web(WebApplicationType.NONE)
+			.child(Config.class)
+			.web(WebApplicationType.NONE)
+			.listeners(new ApplicationListener<ApplicationStartingEvent>() {
 
-					private final Logger logger = LoggerFactory.getLogger(getClass());
+				private final Logger logger = LoggerFactory.getLogger(getClass());
 
-					@Override
-					public void onApplicationEvent(ApplicationStartingEvent event) {
-						this.logger.info("Child application starting");
-					}
+				@Override
+				public void onApplicationEvent(ApplicationStartingEvent event) {
+					this.logger.info("Child application starting");
+				}
 
-				}).run();
+			})
+			.run();
 		assertThat(output).contains("Child application starting");
 	}
 

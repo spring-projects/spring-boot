@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.security.MessageDigest;
 import java.util.EnumSet;
+import java.util.HexFormat;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -40,8 +41,6 @@ import org.springframework.util.StringUtils;
  * @since 2.0.0
  */
 public class ApplicationTemp {
-
-	private static final char[] HEX_CHARS = "0123456789ABCDEF".toCharArray();
 
 	private static final FileAttribute<?>[] NO_FILE_ATTRIBUTES = {};
 
@@ -81,9 +80,9 @@ public class ApplicationTemp {
 	}
 
 	/**
-	 * Return a sub-directory of the application temp.
-	 * @param subDir the sub-directory name
-	 * @return a sub-directory
+	 * Return a subdirectory of the application temp.
+	 * @param subDir the subdirectory name
+	 * @return a subdirectory
 	 */
 	public File getDir(String subDir) {
 		return createDirectory(getPath().resolve(subDir)).toFile();
@@ -92,7 +91,7 @@ public class ApplicationTemp {
 	private Path getPath() {
 		if (this.path == null) {
 			synchronized (this) {
-				String hash = toHexString(generateHash(this.sourceClass));
+				String hash = HexFormat.of().withUpperCase().formatHex(generateHash(this.sourceClass));
 				this.path = createDirectory(getTempDirectory().resolve(hash));
 			}
 		}
@@ -154,20 +153,10 @@ public class ApplicationTemp {
 	}
 
 	private byte[] getUpdateSourceBytes(Object source) {
-		if (source instanceof File) {
-			return getUpdateSourceBytes(((File) source).getAbsolutePath());
+		if (source instanceof File file) {
+			return getUpdateSourceBytes(file.getAbsolutePath());
 		}
 		return source.toString().getBytes();
-	}
-
-	private String toHexString(byte[] bytes) {
-		char[] hex = new char[bytes.length * 2];
-		for (int i = 0; i < bytes.length; i++) {
-			int b = bytes[i] & 0xFF;
-			hex[i * 2] = HEX_CHARS[b >>> 4];
-			hex[i * 2 + 1] = HEX_CHARS[b & 0x0F];
-		}
-		return new String(hex);
 	}
 
 }

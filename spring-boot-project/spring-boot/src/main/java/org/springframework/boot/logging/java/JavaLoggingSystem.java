@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,7 +89,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 			loadConfiguration(getPackagedConfigFile("logging-file.properties"), logFile);
 		}
 		else {
-			loadConfiguration(getPackagedConfigFile("logging.properties"), logFile);
+			loadConfiguration(getPackagedConfigFile("logging.properties"), null);
 		}
 	}
 
@@ -103,7 +103,7 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 		Assert.notNull(location, "Location must not be null");
 		try {
 			String configuration = FileCopyUtils
-					.copyToString(new InputStreamReader(ResourceUtils.getURL(location).openStream()));
+				.copyToString(new InputStreamReader(ResourceUtils.getURL(location).openStream()));
 			if (logFile != null) {
 				configuration = configuration.replace("${LOG_FILE}", StringUtils.cleanPath(logFile.toString()));
 			}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,6 +71,11 @@ public class LoggingSystemProperties {
 	public static final String CONSOLE_LOG_CHARSET = "CONSOLE_LOG_CHARSET";
 
 	/**
+	 * The log level threshold for console log.
+	 */
+	public static final String CONSOLE_LOG_THRESHOLD = "CONSOLE_LOG_THRESHOLD";
+
+	/**
 	 * The name of the System property that contains the file log pattern.
 	 */
 	public static final String FILE_LOG_PATTERN = "FILE_LOG_PATTERN";
@@ -79,6 +84,11 @@ public class LoggingSystemProperties {
 	 * The name of the System property that contains the file log charset.
 	 */
 	public static final String FILE_LOG_CHARSET = "FILE_LOG_CHARSET";
+
+	/**
+	 * The log level threshold for file log.
+	 */
+	public static final String FILE_LOG_THRESHOLD = "FILE_LOG_THRESHOLD";
 
 	/**
 	 * The name of the System property that contains the log level pattern.
@@ -139,9 +149,11 @@ public class LoggingSystemProperties {
 		setSystemProperty(PID_KEY, new ApplicationPid().toString());
 		setSystemProperty(resolver, CONSOLE_LOG_PATTERN, "logging.pattern.console");
 		setSystemProperty(resolver, CONSOLE_LOG_CHARSET, "logging.charset.console", getDefaultCharset().name());
+		setSystemProperty(resolver, CONSOLE_LOG_THRESHOLD, "logging.threshold.console");
 		setSystemProperty(resolver, LOG_DATEFORMAT_PATTERN, "logging.pattern.dateformat");
 		setSystemProperty(resolver, FILE_LOG_PATTERN, "logging.pattern.file");
 		setSystemProperty(resolver, FILE_LOG_CHARSET, "logging.charset.file", getDefaultCharset().name());
+		setSystemProperty(resolver, FILE_LOG_THRESHOLD, "logging.threshold.file");
 		setSystemProperty(resolver, LOG_LEVEL_PATTERN, "logging.pattern.level");
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
@@ -149,9 +161,9 @@ public class LoggingSystemProperties {
 	}
 
 	private PropertyResolver getPropertyResolver() {
-		if (this.environment instanceof ConfigurableEnvironment) {
+		if (this.environment instanceof ConfigurableEnvironment configurableEnvironment) {
 			PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(
-					((ConfigurableEnvironment) this.environment).getPropertySources());
+					configurableEnvironment.getPropertySources());
 			resolver.setConversionService(((ConfigurableEnvironment) this.environment).getConversionService());
 			resolver.setIgnoreUnresolvableNestedPlaceholders(true);
 			return resolver;

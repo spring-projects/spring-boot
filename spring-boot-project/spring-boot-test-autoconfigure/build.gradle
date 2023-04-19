@@ -20,18 +20,14 @@ dependencies {
 	optional("com.google.code.gson:gson")
 	optional("com.jayway.jsonpath:json-path")
 	optional("com.sun.xml.messaging.saaj:saaj-impl")
-	optional("io.rest-assured:rest-assured") {
-		exclude group: "commons-logging", module: "commons-logging"
-		exclude group: "javax.activation", module: "activation"
-		exclude group: "javax.xml.bind", module: "jaxb-api"
-	}
 	optional("net.sourceforge.htmlunit:htmlunit") {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
-	optional("org.hibernate:hibernate-core-jakarta")
+	optional("org.hibernate.orm:hibernate-core")
 	optional("org.junit.jupiter:junit-jupiter-api")
 	optional("org.seleniumhq.selenium:htmlunit-driver") {
-		exclude group: "commons-logging", module: "commons-logging"
+		exclude(group: "commons-logging", module: "commons-logging")
+		exclude(group: "com.sun.activation", module: "jakarta.activation")
 	}
 	optional("org.seleniumhq.selenium:selenium-api")
 	optional("org.springframework:spring-orm")
@@ -51,14 +47,11 @@ dependencies {
 	optional("org.springframework.data:spring-data-neo4j")
 	optional("org.springframework.data:spring-data-r2dbc")
 	optional("org.springframework.data:spring-data-redis")
+	optional("org.springframework.graphql:spring-graphql-test")
 	optional("org.springframework.restdocs:spring-restdocs-mockmvc") {
 		exclude group: "javax.servlet", module: "javax.servlet-api"
 	}
-	optional("org.springframework.restdocs:spring-restdocs-restassured") {
-		exclude group: "commons-logging", module: "commons-logging"
-		exclude group: "javax.activation", module: "activation"
-		exclude group: "javax.xml.bind", module: "jaxb-api"
-	}
+	optional("org.springframework.restdocs:spring-restdocs-restassured")
 	optional("org.springframework.restdocs:spring-restdocs-webtestclient")
 	optional("org.springframework.security:spring-security-config")
 	optional("org.springframework.security:spring-security-test")
@@ -67,17 +60,18 @@ dependencies {
 	optional("org.apache.tomcat.embed:tomcat-embed-core")
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
+	optional("io.micrometer:micrometer-tracing")
 
 	testImplementation(project(":spring-boot-project:spring-boot-actuator"))
 	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
 	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
 	testImplementation("com.h2database:h2")
 	testImplementation("com.unboundid:unboundid-ldapsdk")
 	testImplementation("io.lettuce:lettuce-core")
 	testImplementation("io.micrometer:micrometer-registry-prometheus")
-	testImplementation("io.micrometer:micrometer-binders")
 	testImplementation("io.projectreactor.netty:reactor-netty-http")
 	testImplementation("io.projectreactor:reactor-core")
 	testImplementation("io.projectreactor:reactor-test")
@@ -101,6 +95,7 @@ dependencies {
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.skyscreamer:jsonassert")
+	testImplementation("org.springframework:spring-core-test")
 	testImplementation("org.springframework.hateoas:spring-hateoas")
 	testImplementation("org.springframework.plugin:spring-plugin-core")
 	testImplementation("org.testcontainers:cassandra")

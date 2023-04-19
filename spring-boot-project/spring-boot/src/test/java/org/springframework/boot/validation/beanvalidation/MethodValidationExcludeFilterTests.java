@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@
 
 package org.springframework.boot.validation.beanvalidation;
 
+import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import org.junit.jupiter.api.Test;
+
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,6 +45,19 @@ class MethodValidationExcludeFilterTests {
 		assertThat(filter.isExcluded(Plain.class)).isFalse();
 	}
 
+	@Test
+	void byAnnotationWhenSuperclassIsAnnotatedWithInheritedAnnotationExcludes() {
+		MethodValidationExcludeFilter filter = MethodValidationExcludeFilter.byAnnotation(Indicator.class);
+		assertThat(filter.isExcluded(AnnotatedSuperClass.class)).isTrue();
+	}
+
+	@Test
+	void byAnnotationWithDirectSearchStrategyWhenSuperclassIsAnnotatedWithInheritedAnnotationIncludes() {
+		MethodValidationExcludeFilter filter = MethodValidationExcludeFilter.byAnnotation(Indicator.class,
+				SearchStrategy.DIRECT);
+		assertThat(filter.isExcluded(AnnotatedSuperClass.class)).isFalse();
+	}
+
 	static class Plain {
 
 	}
@@ -51,8 +67,13 @@ class MethodValidationExcludeFilterTests {
 
 	}
 
+	@Inherited
 	@Retention(RetentionPolicy.RUNTIME)
 	@interface Indicator {
+
+	}
+
+	static class AnnotatedSuperClass extends Annotated {
 
 	}
 

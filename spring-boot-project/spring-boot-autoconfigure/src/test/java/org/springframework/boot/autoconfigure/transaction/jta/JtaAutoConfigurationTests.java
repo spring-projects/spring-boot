@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,7 +103,7 @@ class JtaAutoConfigurationTests {
 		this.context = new AnnotationConfigApplicationContext(CustomTransactionManagerConfig.class,
 				JtaAutoConfiguration.class);
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.context.getBean(JtaTransactionManager.class));
+			.isThrownBy(() -> this.context.getBean(JtaTransactionManager.class));
 	}
 
 	@Test
@@ -165,8 +165,8 @@ class JtaAutoConfigurationTests {
 		@Override
 		public void beforeEach(ExtensionContext context) throws Exception {
 			Namespace namespace = Namespace.create(getClass(), context.getUniqueId());
-			context.getStore(namespace).getOrComputeIfAbsent(InitialContext.class, (k) -> createInitialContext(),
-					InitialContext.class);
+			context.getStore(namespace)
+				.getOrComputeIfAbsent(InitialContext.class, (k) -> createInitialContext(), InitialContext.class);
 		}
 
 		private InitialContext createInitialContext() {
@@ -181,8 +181,8 @@ class JtaAutoConfigurationTests {
 		@Override
 		public void afterEach(ExtensionContext context) throws Exception {
 			Namespace namespace = Namespace.create(getClass(), context.getUniqueId());
-			InitialContext initialContext = context.getStore(namespace).remove(InitialContext.class,
-					InitialContext.class);
+			InitialContext initialContext = context.getStore(namespace)
+				.remove(InitialContext.class, InitialContext.class);
 			initialContext.removeFromEnvironment("org.osjava.sj.jndi.ignoreClose");
 			initialContext.close();
 		}

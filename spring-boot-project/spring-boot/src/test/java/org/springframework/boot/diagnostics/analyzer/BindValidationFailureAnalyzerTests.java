@@ -91,7 +91,7 @@ class BindValidationFailureAnalyzerTests {
 	}
 
 	private static String failure(String property, String value, String reason) {
-		return String.format("Property: %s%n    Value: %s%n    Reason: %s", property, value, reason);
+		return String.format("Property: %s%n    Value: \"%s\"%n    Reason: %s", property, value, reason);
 	}
 
 	private FailureAnalysis performAnalysis(Class<?> configuration, String... environment) {

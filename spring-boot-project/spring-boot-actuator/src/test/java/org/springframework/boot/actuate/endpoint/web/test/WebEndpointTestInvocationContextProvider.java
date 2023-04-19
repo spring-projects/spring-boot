@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,17 @@
 package org.springframework.boot.actuate.endpoint.web.test;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.server.model.Resource;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
 import org.junit.jupiter.api.extension.Extension;
@@ -37,11 +42,14 @@ import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
+import org.springframework.boot.actuate.endpoint.web.jersey.JerseyEndpointResourceFactory;
 import org.springframework.boot.actuate.endpoint.web.reactive.WebFluxEndpointHandlerMapping;
 import org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration;
+import org.springframework.boot.autoconfigure.jersey.ResourceConfigCustomizer;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
@@ -84,10 +92,20 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(
 			ExtensionContext extensionContext) {
 		return Stream.of(
+				new WebEndpointsInvocationContext("Jersey",
+						WebEndpointTestInvocationContextProvider::createJerseyContext),
 				new WebEndpointsInvocationContext("WebMvc",
 						WebEndpointTestInvocationContextProvider::createWebMvcContext),
 				new WebEndpointsInvocationContext("WebFlux",
 						WebEndpointTestInvocationContextProvider::createWebFluxContext));
+	}
+
+	private static ConfigurableApplicationContext createJerseyContext(List<Class<?>> classes) {
+		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
+		classes.add(JerseyEndpointConfiguration.class);
+		context.register(ClassUtils.toClassArray(classes));
+		context.refresh();
+		return context;
 	}
 
 	private static ConfigurableApplicationContext createWebMvcContext(List<Class<?>> classes) {
@@ -126,8 +144,9 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 		@Override
 		public void beforeEach(ExtensionContext extensionContext) throws Exception {
 			List<Class<?>> configurationClasses = Stream
-					.of(extensionContext.getRequiredTestClass().getDeclaredClasses()).filter(this::isConfiguration)
-					.collect(Collectors.toList());
+				.of(extensionContext.getRequiredTestClass().getDeclaredClasses())
+				.filter(this::isConfiguration)
+				.collect(Collectors.toCollection(ArrayList::new));
 			this.context = this.contextFactory.apply(configurationClasses);
 		}
 
@@ -173,20 +192,62 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 			DefaultUriBuilderFactory uriBuilderFactory = new DefaultUriBuilderFactory(
 					"http://localhost:" + determinePort());
 			uriBuilderFactory.setEncodingMode(EncodingMode.NONE);
-			return WebTestClient.bindToServer().uriBuilderFactory(uriBuilderFactory).responseTimeout(TIMEOUT)
-					.codecs((codecs) -> codecs.defaultCodecs().maxInMemorySize(-1)).filter((request, next) -> {
-						if (HttpMethod.GET == request.method()) {
-							return next.exchange(request).retry(10);
-						}
-						return next.exchange(request);
-					}).build();
+			return WebTestClient.bindToServer()
+				.uriBuilderFactory(uriBuilderFactory)
+				.responseTimeout(TIMEOUT)
+				.codecs((codecs) -> codecs.defaultCodecs().maxInMemorySize(-1))
+				.filter((request, next) -> {
+					if (HttpMethod.GET == request.method()) {
+						return next.exchange(request).retry(10);
+					}
+					return next.exchange(request);
+				})
+				.build();
 		}
 
 		private int determinePort() {
-			if (this.context instanceof AnnotationConfigServletWebServerApplicationContext) {
-				return ((AnnotationConfigServletWebServerApplicationContext) this.context).getWebServer().getPort();
+			if (this.context instanceof AnnotationConfigServletWebServerApplicationContext webServerContext) {
+				return webServerContext.getWebServer().getPort();
 			}
 			return this.context.getBean(PortHolder.class).getPort();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, JerseyAutoConfiguration.class })
+	static class JerseyEndpointConfiguration {
+
+		private final ApplicationContext applicationContext;
+
+		JerseyEndpointConfiguration(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
+		}
+
+		@Bean
+		TomcatServletWebServerFactory tomcat() {
+			return new TomcatServletWebServerFactory(0);
+		}
+
+		@Bean
+		ResourceConfig resourceConfig() {
+			return new ResourceConfig();
+		}
+
+		@Bean
+		ResourceConfigCustomizer webEndpointRegistrar() {
+			return this::customize;
+		}
+
+		private void customize(ResourceConfig config) {
+			EndpointMediaTypes endpointMediaTypes = EndpointMediaTypes.DEFAULT;
+			WebEndpointDiscoverer discoverer = new WebEndpointDiscoverer(this.applicationContext,
+					new ConversionServiceParameterValueMapper(), endpointMediaTypes, null, Collections.emptyList(),
+					Collections.emptyList());
+			Collection<Resource> resources = new JerseyEndpointResourceFactory().createEndpointResources(
+					new EndpointMapping("/actuator"), discoverer.getEndpoints(), endpointMediaTypes,
+					new EndpointLinksResolver(discoverer.getEndpoints()), true);
+			config.registerResources(new HashSet<>(resources));
 		}
 
 	}

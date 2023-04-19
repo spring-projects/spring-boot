@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,6 +27,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
@@ -68,33 +70,35 @@ final class EnvironmentConverter {
 	 * @param type the type to convert the Environment to
 	 * @return the converted Environment
 	 */
-	StandardEnvironment convertEnvironmentIfNecessary(ConfigurableEnvironment environment,
-			Class<? extends StandardEnvironment> type) {
+	ConfigurableEnvironment convertEnvironmentIfNecessary(ConfigurableEnvironment environment,
+			Class<? extends ConfigurableEnvironment> type) {
 		if (type.equals(environment.getClass())) {
-			return (StandardEnvironment) environment;
+			return environment;
 		}
 		return convertEnvironment(environment, type);
 	}
 
-	private StandardEnvironment convertEnvironment(ConfigurableEnvironment environment,
-			Class<? extends StandardEnvironment> type) {
-		StandardEnvironment result = createEnvironment(type);
+	private ConfigurableEnvironment convertEnvironment(ConfigurableEnvironment environment,
+			Class<? extends ConfigurableEnvironment> type) {
+		ConfigurableEnvironment result = createEnvironment(type);
 		result.setActiveProfiles(environment.getActiveProfiles());
 		result.setConversionService(environment.getConversionService());
 		copyPropertySources(environment, result);
 		return result;
 	}
 
-	private StandardEnvironment createEnvironment(Class<? extends StandardEnvironment> type) {
+	private ConfigurableEnvironment createEnvironment(Class<? extends ConfigurableEnvironment> type) {
 		try {
-			return type.getDeclaredConstructor().newInstance();
+			Constructor<? extends ConfigurableEnvironment> constructor = type.getDeclaredConstructor();
+			ReflectionUtils.makeAccessible(constructor);
+			return constructor.newInstance();
 		}
 		catch (Exception ex) {
-			return new StandardEnvironment();
+			return new ApplicationEnvironment();
 		}
 	}
 
-	private void copyPropertySources(ConfigurableEnvironment source, StandardEnvironment target) {
+	private void copyPropertySources(ConfigurableEnvironment source, ConfigurableEnvironment target) {
 		removePropertySources(target.getPropertySources(), isServletEnvironment(target.getClass(), this.classLoader));
 		for (PropertySource<?> propertySource : source.getPropertySources()) {
 			if (!SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(propertySource.getName())) {

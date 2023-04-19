@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.LongSerializationPolicy;
 import org.junit.jupiter.api.Test;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -47,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class GsonAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(GsonAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(GsonAutoConfiguration.class));
 
 	@Test
 	void gsonRegistration() {
@@ -69,10 +70,10 @@ class GsonAutoConfigurationTests {
 	@Test
 	void excludeFieldsWithoutExposeAnnotation() {
 		this.contextRunner.withPropertyValues("spring.gson.exclude-fields-without-expose-annotation:true")
-				.run((context) -> {
-					Gson gson = context.getBean(Gson.class);
-					assertThat(gson.toJson(new DataObject())).isEqualTo("{}");
-				});
+			.run((context) -> {
+				Gson gson = context.getBean(Gson.class);
+				assertThat(gson.toJson(new DataObject())).isEqualTo("{}");
+			});
 	}
 
 	@Test
@@ -94,12 +95,12 @@ class GsonAutoConfigurationTests {
 	@Test
 	void enableComplexMapKeySerialization() {
 		this.contextRunner.withPropertyValues("spring.gson.enable-complex-map-key-serialization:true")
-				.run((context) -> {
-					Gson gson = context.getBean(Gson.class);
-					Map<DataObject, String> original = new LinkedHashMap<>();
-					original.put(new DataObject(), "a");
-					assertThat(gson.toJson(original)).isEqualTo("[[{\"data\":1},\"a\"]]");
-				});
+			.run((context) -> {
+				Gson gson = context.getBean(Gson.class);
+				Map<DataObject, String> original = new LinkedHashMap<>();
+				original.put(new DataObject(), "a");
+				assertThat(gson.toJson(original)).isEqualTo("[[{\"data\":1},\"a\"]]");
+			});
 	}
 
 	@Test
@@ -123,10 +124,10 @@ class GsonAutoConfigurationTests {
 	@Test
 	void withLongSerializationPolicy() {
 		this.contextRunner.withPropertyValues("spring.gson.long-serialization-policy:" + LongSerializationPolicy.STRING)
-				.run((context) -> {
-					Gson gson = context.getBean(Gson.class);
-					assertThat(gson.toJson(new DataObject())).isEqualTo("{\"data\":\"1\"}");
-				});
+			.run((context) -> {
+				Gson gson = context.getBean(Gson.class);
+				assertThat(gson.toJson(new DataObject())).isEqualTo("{\"data\":\"1\"}");
+			});
 	}
 
 	@Test
@@ -150,7 +151,7 @@ class GsonAutoConfigurationTests {
 	void customGsonBuilder() {
 		this.contextRunner.withUserConfiguration(GsonBuilderConfig.class).run((context) -> {
 			Gson gson = context.getBean(Gson.class);
-			assertThat(gson.toJson(new DataObject())).isEqualTo("{\"data\":1,\"owner\":null}");
+			JSONAssert.assertEquals("{\"data\":1,\"owner\":null}", gson.toJson(new DataObject()), true);
 		});
 	}
 
@@ -240,7 +241,7 @@ class GsonAutoConfigurationTests {
 		private Long data = 1L;
 
 		@SuppressWarnings("unused")
-		private String owner = null;
+		private final String owner = null;
 
 		public void setData(Long data) {
 			this.data = data;
@@ -253,7 +254,7 @@ class GsonAutoConfigurationTests {
 		@SuppressWarnings("unused")
 		class NestedObject {
 
-			private String data = "nested";
+			private final String data = "nested";
 
 		}
 

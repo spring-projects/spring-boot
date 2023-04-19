@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
@@ -91,17 +90,15 @@ public class WebEndpointAutoConfiguration {
 			ObjectProvider<OperationInvokerAdvisor> invokerAdvisors,
 			ObjectProvider<EndpointFilter<ExposableWebEndpoint>> filters) {
 		return new WebEndpointDiscoverer(this.applicationContext, parameterValueMapper, endpointMediaTypes,
-				endpointPathMappers.orderedStream().collect(Collectors.toList()),
-				invokerAdvisors.orderedStream().collect(Collectors.toList()),
-				filters.orderedStream().collect(Collectors.toList()));
+				endpointPathMappers.orderedStream().toList(), invokerAdvisors.orderedStream().toList(),
+				filters.orderedStream().toList());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(ControllerEndpointsSupplier.class)
 	public ControllerEndpointDiscoverer controllerEndpointDiscoverer(ObjectProvider<PathMapper> endpointPathMappers,
 			ObjectProvider<Collection<EndpointFilter<ExposableControllerEndpoint>>> filters) {
-		return new ControllerEndpointDiscoverer(this.applicationContext,
-				endpointPathMappers.orderedStream().collect(Collectors.toList()),
+		return new ControllerEndpointDiscoverer(this.applicationContext, endpointPathMappers.orderedStream().toList(),
 				filters.getIfAvailable(Collections::emptyList));
 	}
 
@@ -134,9 +131,8 @@ public class WebEndpointAutoConfiguration {
 		ServletEndpointDiscoverer servletEndpointDiscoverer(ApplicationContext applicationContext,
 				ObjectProvider<PathMapper> endpointPathMappers,
 				ObjectProvider<EndpointFilter<ExposableServletEndpoint>> filters) {
-			return new ServletEndpointDiscoverer(applicationContext,
-					endpointPathMappers.orderedStream().collect(Collectors.toList()),
-					filters.orderedStream().collect(Collectors.toList()));
+			return new ServletEndpointDiscoverer(applicationContext, endpointPathMappers.orderedStream().toList(),
+					filters.orderedStream().toList());
 		}
 
 	}

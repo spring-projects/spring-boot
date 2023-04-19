@@ -30,22 +30,6 @@ This behavior has been chosen because many Spring developers add `spring-boot-st
 You can still enforce your choice by setting the chosen application type to `SpringApplication.setWebApplicationType(WebApplicationType.REACTIVE)`.
 
 
-"`WebFlux.fn`", the functional variant, separates the routing configuration from the actual handling of the requests, as shown in the following example:
-
-include::code:MyRoutingConfiguration[]
-
-include::code:MyUserHandler[]
-
-WebFlux is part of the Spring Framework and detailed information is available in its {spring-framework-docs}/web-reactive.html#webflux-fn[reference documentation].
-
-TIP: You can define as many `RouterFunction` beans as you like to modularize the definition of the router.
-Beans can be ordered if you need to apply a precedence.
-
-To get started, add the `spring-boot-starter-webflux` module to your application.
-
-NOTE: Adding both `spring-boot-starter-web` and `spring-boot-starter-webflux` modules in your application results in Spring Boot auto-configuring Spring MVC, not WebFlux.
-This behavior has been chosen because many Spring developers add `spring-boot-starter-webflux` to their Spring MVC application to use the reactive `WebClient`.
-You can still enforce your choice by setting the chosen application type to `SpringApplication.setWebApplicationType(WebApplicationType.REACTIVE)`.
 
 [[web.reactive.webflux.auto-configuration]]
 ==== Spring WebFlux Auto-configuration
@@ -75,7 +59,7 @@ If you need to add or customize codecs, you can create a custom `CodecCustomizer
 
 include::code:MyCodecsConfiguration[]
 
-You can also leverage <<web#web.servlet.spring-mvc.json,Boot's custom JSON serializers and deserializers>>.
+You can also leverage <<features#features.json.jackson.custom-serializers-and-deserializers,Boot's custom JSON serializers and deserializers>>.
 
 
 
@@ -100,7 +84,8 @@ If you do so, the default welcome page detection switches to your custom locatio
 So, if there is an `index.html` in any of your locations on startup, it is the home page of the application.
 
 In addition to the "`standard`" static resource locations listed earlier, a special case is made for https://www.webjars.org/[Webjars content].
-Any resources with a path in `+/webjars/**+` are served from jar files if they are packaged in the Webjars format.
+By default, any resources with a path in `+/webjars/**+` are served from jar files if they are packaged in the Webjars format.
+The path can be customized with the configprop:spring.webflux.webjars-path-pattern[] property.
 
 TIP: Spring WebFlux applications do not strictly depend on the servlet API, so they cannot be deployed as war files and do not use the `src/main/webapp` directory.
 
@@ -138,11 +123,28 @@ For machine clients, it produces a JSON response with details of the error, the 
 For browser clients, there is a "`whitelabel`" error handler that renders the same data in HTML format.
 You can also provide your own HTML templates to display errors (see the <<web#web.reactive.webflux.error-handling.error-pages,next section>>).
 
+Before customizing error handling in Spring Boot directly, you can leverage the {spring-framework-docs}/web-reactive.html#webflux-ann-rest-exceptions[RFC 7807 Problem Details] support in Spring WebFlux.
+Spring WebFlux can produce custom error messages with the `application/problem+json` media type, like:
+
+[source,json,indent=0,subs="verbatim"]
+----
+{
+  "type": "https://example.org/problems/unknown-project",
+  "title": "Unknown project",
+  "status": 404,
+  "detail": "No project found for id 'spring-unknown'",
+  "instance": "/projects/spring-unknown"
+}
+----
+
+This support can be enabled by setting configprop:spring.webflux.problemdetails.enabled[] to `true`.
+
+
 The first step to customizing this feature often involves using the existing mechanism but replacing or augmenting the error contents.
 For that, you can add a bean of type `ErrorAttributes`.
 
 To change the error handling behavior, you can implement `ErrorWebExceptionHandler` and register a bean definition of that type.
-Because a `ErrorWebExceptionHandler` is quite low-level, Spring Boot also provides a convenient `AbstractErrorWebExceptionHandler` to let you handle errors in a WebFlux functional way, as shown in the following example:
+Because an `ErrorWebExceptionHandler` is quite low-level, Spring Boot also provides a convenient `AbstractErrorWebExceptionHandler` to let you handle errors in a WebFlux functional way, as shown in the following example:
 
 include::code:MyErrorWebExceptionHandler[]
 
@@ -157,9 +159,10 @@ include::code:MyExceptionHandlingController[]
 
 [[web.reactive.webflux.error-handling.error-pages]]
 ===== Custom Error Pages
-If you want to display a custom HTML error page for a given status code, you can add a file to an `/error` directory.
+If you want to display a custom HTML error page for a given status code, you can add views that resolve from `error/*`, for example by adding files to a `/error` directory.
 Error pages can either be static HTML (that is, added under any of the static resource directories) or built with templates.
-The name of the file should be the exact status code or a series mask.
+The name of the file should be the exact status code, a status code series mask, or `error` for a default if nothing else matches.
+Note that the path to the default error view is `error/error`, whereas with Spring MVC the default error view is `error`.
 
 For example, to map `404` to a static HTML file, your directory structure would be as follows:
 
@@ -205,13 +208,13 @@ When it does so, the orders shown in the following table will be used:
 |===
 | Web Filter | Order
 
-| `MetricsWebFilter`
+| `ServerHttpObservationFilter` (Micrometer Observability)
 | `Ordered.HIGHEST_PRECEDENCE + 1`
 
 | `WebFilterChainProxy` (Spring Security)
 | `-100`
 
-| `HttpTraceWebFilter`
+| `HttpExchangesWebFilter`
 | `Ordered.LOWEST_PRECEDENCE - 10`
 |===
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,7 +106,7 @@ public class SpringApplicationBuilder {
 	 * Creates a new {@link SpringApplication} instance from the given sources using the
 	 * given {@link ResourceLoader}. Subclasses may override in order to provide a custom
 	 * subclass of {@link SpringApplication}.
-	 * @param resourceLoader the resource loader (can be null)
+	 * @param resourceLoader the resource loader or {@code null}
 	 * @param sources the sources
 	 * @return the {@link SpringApplication} instance
 	 * @since 2.6.0
@@ -133,8 +133,8 @@ public class SpringApplicationBuilder {
 
 	/**
 	 * Create an application context (and its parent if specified) with the command line
-	 * args provided. The parent is run first with the same arguments if has not yet been
-	 * started.
+	 * args provided. The parent is run first with the same arguments if it has not yet
+	 * been started.
 	 * @param args the command line arguments
 	 * @return an application context created from the current state
 	 */
@@ -194,8 +194,9 @@ public class SpringApplicationBuilder {
 		child.sources(sources);
 
 		// Copy environment stuff from parent to child
-		child.properties(this.defaultProperties).environment(this.environment)
-				.additionalProfiles(this.additionalProfiles);
+		child.properties(this.defaultProperties)
+			.environment(this.environment)
+			.additionalProfiles(this.additionalProfiles);
 		child.parent = this;
 
 		// It's not possible if embedded web server are enabled to support web contexts as
@@ -221,7 +222,8 @@ public class SpringApplicationBuilder {
 	public SpringApplicationBuilder parent(Class<?>... sources) {
 		if (this.parent == null) {
 			this.parent = new SpringApplicationBuilder(sources).web(WebApplicationType.NONE)
-					.properties(this.defaultProperties).environment(this.environment);
+				.properties(this.defaultProperties)
+				.environment(this.environment);
 		}
 		else {
 			this.parent.sources(sources);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -35,6 +34,7 @@ import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
+import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
@@ -57,15 +57,15 @@ public class MetricsEndpoint {
 	}
 
 	@ReadOperation
-	public ListNamesResponse listNames() {
+	public MetricNamesDescriptor listNames() {
 		Set<String> names = new TreeSet<>();
 		collectNames(names, this.registry);
-		return new ListNamesResponse(names);
+		return new MetricNamesDescriptor(names);
 	}
 
 	private void collectNames(Set<String> names, MeterRegistry registry) {
-		if (registry instanceof CompositeMeterRegistry) {
-			((CompositeMeterRegistry) registry).getRegistries().forEach((member) -> collectNames(names, member));
+		if (registry instanceof CompositeMeterRegistry compositeMeterRegistry) {
+			compositeMeterRegistry.getRegistries().forEach((member) -> collectNames(names, member));
 		}
 		else {
 			registry.getMeters().stream().map(this::getName).forEach(names::add);
@@ -77,7 +77,7 @@ public class MetricsEndpoint {
 	}
 
 	@ReadOperation
-	public MetricResponse metric(@Selector String requiredMetricName, @Nullable List<String> tag) {
+	public MetricDescriptor metric(@Selector String requiredMetricName, @Nullable List<String> tag) {
 		List<Tag> tags = parseTags(tag);
 		Collection<Meter> meters = findFirstMatchingMeters(this.registry, requiredMetricName, tags);
 		if (meters.isEmpty()) {
@@ -87,15 +87,12 @@ public class MetricsEndpoint {
 		Map<String, Set<String>> availableTags = getAvailableTags(meters);
 		tags.forEach((t) -> availableTags.remove(t.getKey()));
 		Meter.Id meterId = meters.iterator().next().getId();
-		return new MetricResponse(requiredMetricName, meterId.getDescription(), meterId.getBaseUnit(),
+		return new MetricDescriptor(requiredMetricName, meterId.getDescription(), meterId.getBaseUnit(),
 				asList(samples, Sample::new), asList(availableTags, AvailableTag::new));
 	}
 
 	private List<Tag> parseTags(List<String> tags) {
-		if (tags == null) {
-			return Collections.emptyList();
-		}
-		return tags.stream().map(this::parseTag).collect(Collectors.toList());
+		return (tags != null) ? tags.stream().map(this::parseTag).toList() : Collections.emptyList();
 	}
 
 	private Tag parseTag(String tag) {
@@ -109,16 +106,20 @@ public class MetricsEndpoint {
 	}
 
 	private Collection<Meter> findFirstMatchingMeters(MeterRegistry registry, String name, Iterable<Tag> tags) {
-		if (registry instanceof CompositeMeterRegistry) {
-			return findFirstMatchingMeters((CompositeMeterRegistry) registry, name, tags);
+		if (registry instanceof CompositeMeterRegistry compositeMeterRegistry) {
+			return findFirstMatchingMeters(compositeMeterRegistry, name, tags);
 		}
 		return registry.find(name).tags(tags).meters();
 	}
 
 	private Collection<Meter> findFirstMatchingMeters(CompositeMeterRegistry composite, String name,
 			Iterable<Tag> tags) {
-		return composite.getRegistries().stream().map((registry) -> findFirstMatchingMeters(registry, name, tags))
-				.filter((matching) -> !matching.isEmpty()).findFirst().orElse(Collections.emptyList());
+		return composite.getRegistries()
+			.stream()
+			.map((registry) -> findFirstMatchingMeters(registry, name, tags))
+			.filter((matching) -> !matching.isEmpty())
+			.findFirst()
+			.orElse(Collections.emptyList());
 	}
 
 	private Map<Statistic, Double> getSamples(Collection<Meter> meters) {
@@ -128,8 +129,9 @@ public class MetricsEndpoint {
 	}
 
 	private void mergeMeasurements(Map<Statistic, Double> samples, Meter meter) {
-		meter.measure().forEach((measurement) -> samples.merge(measurement.getStatistic(), measurement.getValue(),
-				mergeFunction(measurement.getStatistic())));
+		meter.measure()
+			.forEach((measurement) -> samples.merge(measurement.getStatistic(), measurement.getValue(),
+					mergeFunction(measurement.getStatistic())));
 	}
 
 	private BiFunction<Double, Double, Double> mergeFunction(Statistic statistic) {
@@ -157,18 +159,17 @@ public class MetricsEndpoint {
 	}
 
 	private <K, V, T> List<T> asList(Map<K, V> map, BiFunction<K, V, T> mapper) {
-		return map.entrySet().stream().map((entry) -> mapper.apply(entry.getKey(), entry.getValue()))
-				.collect(Collectors.toList());
+		return map.entrySet().stream().map((entry) -> mapper.apply(entry.getKey(), entry.getValue())).toList();
 	}
 
 	/**
-	 * Response payload for a metric name listing.
+	 * Description of metric names.
 	 */
-	public static final class ListNamesResponse {
+	public static final class MetricNamesDescriptor implements OperationResponseBody {
 
 		private final Set<String> names;
 
-		ListNamesResponse(Set<String> names) {
+		MetricNamesDescriptor(Set<String> names) {
 			this.names = names;
 		}
 
@@ -179,9 +180,9 @@ public class MetricsEndpoint {
 	}
 
 	/**
-	 * Response payload for a metric name selector.
+	 * Description of a metric.
 	 */
-	public static final class MetricResponse {
+	public static final class MetricDescriptor implements OperationResponseBody {
 
 		private final String name;
 
@@ -193,7 +194,7 @@ public class MetricsEndpoint {
 
 		private final List<AvailableTag> availableTags;
 
-		MetricResponse(String name, String description, String baseUnit, List<Sample> measurements,
+		MetricDescriptor(String name, String description, String baseUnit, List<Sample> measurements,
 				List<AvailableTag> availableTags) {
 			this.name = name;
 			this.description = description;
@@ -225,7 +226,7 @@ public class MetricsEndpoint {
 	}
 
 	/**
-	 * A set of tags for further dimensional drilldown and their potential values.
+	 * A set of tags for further dimensional drill-down and their potential values.
 	 */
 	public static final class AvailableTag {
 

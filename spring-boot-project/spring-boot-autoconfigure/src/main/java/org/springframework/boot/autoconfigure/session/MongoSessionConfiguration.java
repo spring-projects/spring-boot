@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,18 @@
 
 package org.springframework.boot.autoconfigure.session;
 
-import java.time.Duration;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Conditional;
+import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.session.SessionRepository;
+import org.springframework.session.config.SessionRepositoryCustomizer;
 import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.session.data.mongo.config.annotation.web.http.MongoHttpSessionConfiguration;
 
@@ -36,29 +36,26 @@ import org.springframework.session.data.mongo.config.annotation.web.http.MongoHt
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Vedran Pavic
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ MongoOperations.class, MongoIndexedSessionRepository.class })
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(MongoOperations.class)
-@Conditional(ServletSessionCondition.class)
 @EnableConfigurationProperties(MongoSessionProperties.class)
+@Import(MongoHttpSessionConfiguration.class)
 class MongoSessionConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
-	public static class SpringBootMongoHttpSessionConfiguration extends MongoHttpSessionConfiguration {
-
-		@Autowired
-		public void customize(SessionProperties sessionProperties, MongoSessionProperties mongoSessionProperties,
-				ServerProperties serverProperties) {
-			Duration timeout = sessionProperties
-					.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout());
-			if (timeout != null) {
-				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
-			}
-			setCollectionName(mongoSessionProperties.getCollectionName());
-		}
-
+	@Bean
+	SessionRepositoryCustomizer<MongoIndexedSessionRepository> springBootSessionRepositoryCustomizer(
+			SessionProperties sessionProperties, MongoSessionProperties mongoSessionProperties,
+			ServerProperties serverProperties) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		return (sessionRepository) -> {
+			map.from(sessionProperties.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout()))
+				.to(sessionRepository::setDefaultMaxInactiveInterval);
+			map.from(mongoSessionProperties::getCollectionName).to(sessionRepository::setCollectionName);
+		};
 	}
 
 }

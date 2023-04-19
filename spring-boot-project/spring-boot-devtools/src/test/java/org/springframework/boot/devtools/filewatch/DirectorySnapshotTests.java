@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ class DirectorySnapshotTests {
 	@Test
 	void directoryMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new DirectorySnapshot(null))
-				.withMessageContaining("Directory must not be null");
+			.withMessageContaining("Directory must not be null");
 	}
 
 	@Test
@@ -61,7 +61,7 @@ class DirectorySnapshotTests {
 		File file = new File(this.tempDir, "file");
 		file.createNewFile();
 		assertThatIllegalArgumentException().isThrownBy(() -> new DirectorySnapshot(file))
-				.withMessageContaining("Directory '" + file + "' must not be a file");
+			.withMessageContaining("Directory '" + file + "' must not be a file");
 	}
 
 	@Test
@@ -75,7 +75,7 @@ class DirectorySnapshotTests {
 	void equalsWhenNothingHasChanged() {
 		DirectorySnapshot updatedSnapshot = new DirectorySnapshot(this.directory);
 		assertThat(this.initialSnapshot).isEqualTo(updatedSnapshot);
-		assertThat(this.initialSnapshot.hashCode()).isEqualTo(updatedSnapshot.hashCode());
+		assertThat(this.initialSnapshot).hasSameHashCodeAs(updatedSnapshot);
 	}
 
 	@Test
@@ -103,14 +103,14 @@ class DirectorySnapshotTests {
 	@Test
 	void getChangedFilesSnapshotMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.initialSnapshot.getChangedFiles(null, null))
-				.withMessageContaining("Snapshot must not be null");
+			.withMessageContaining("Snapshot must not be null");
 	}
 
 	@Test
 	void getChangedFilesSnapshotMustBeTheSameSourceDirectory() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> this.initialSnapshot.getChangedFiles(new DirectorySnapshot(createTestDirectoryStructure()), null))
-				.withMessageContaining("Snapshot source directory must be '" + this.directory + "'");
+			.withMessageContaining("Snapshot source directory must be '" + this.directory + "'");
 	}
 
 	@Test

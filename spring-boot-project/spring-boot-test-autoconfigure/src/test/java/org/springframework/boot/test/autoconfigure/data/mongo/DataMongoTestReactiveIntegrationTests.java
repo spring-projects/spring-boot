@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,25 +34,24 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Sample tests for {@link DataMongoTest @DataMongoTest} using reactive repositories.
  *
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 @DataMongoTest
 @Testcontainers(disabledWithoutDocker = true)
 class DataMongoTestReactiveIntegrationTests {
 
 	@Container
+	@ServiceConnection
 	static final MongoDBContainer mongoDB = new MongoDBContainer(DockerImageNames.mongo()).withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(5));
+		.withStartupTimeout(Duration.ofMinutes(5));
 
 	@Autowired
 	private ReactiveMongoTemplate mongoTemplate;
 
 	@Autowired
 	private ExampleReactiveRepository exampleRepository;
-
-	@DynamicPropertySource
-	static void mongoProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.data.mongodb.uri", mongoDB::getReplicaSetUrl);
-	}
 
 	@Test
 	void testRepository() {

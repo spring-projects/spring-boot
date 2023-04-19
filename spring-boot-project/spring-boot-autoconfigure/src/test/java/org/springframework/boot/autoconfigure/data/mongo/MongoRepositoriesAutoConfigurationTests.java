@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
-import java.util.Set;
-
 import com.mongodb.client.MongoClient;
 import org.junit.jupiter.api.Test;
 
@@ -31,6 +29,7 @@ import org.springframework.boot.autoconfigure.data.mongo.city.CityRepository;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.ManagedTypes;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -46,8 +45,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MongoRepositoriesAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
-					MongoRepositoriesAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
+				MongoRepositoriesAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class));
 
 	@Test
 	void testDefaultRepositoryConfiguration() {
@@ -55,43 +54,41 @@ class MongoRepositoriesAutoConfigurationTests {
 			assertThat(context).hasSingleBean(CityRepository.class);
 			assertThat(context).hasSingleBean(MongoClient.class);
 			MongoMappingContext mappingContext = context.getBean(MongoMappingContext.class);
-			@SuppressWarnings("unchecked")
-			Set<? extends Class<?>> entities = (Set<? extends Class<?>>) ReflectionTestUtils.getField(mappingContext,
-					"initialEntitySet");
-			assertThat(entities).hasSize(1);
+			ManagedTypes managedTypes = (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
+			assertThat(managedTypes.toList()).hasSize(1);
 		});
 	}
 
 	@Test
 	void testNoRepositoryConfiguration() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(MongoClient.class));
+			.run((context) -> assertThat(context).hasSingleBean(MongoClient.class));
 	}
 
 	@Test
 	void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		this.contextRunner.withUserConfiguration(CustomizedConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(CityMongoDbRepository.class));
+			.run((context) -> assertThat(context).hasSingleBean(CityMongoDbRepository.class));
 	}
 
 	@Test
 	void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
 		this.contextRunner.withUserConfiguration(SortOfInvalidCustomConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
 	}
 
 	@Test
 	void enablingReactiveRepositoriesDisablesImperativeRepositories() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.data.mongodb.repositories.type=reactive")
-				.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
+			.withPropertyValues("spring.data.mongodb.repositories.type=reactive")
+			.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
 	}
 
 	@Test
 	void enablingNoRepositoriesDisablesImperativeRepositories() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.data.mongodb.repositories.type=none")
-				.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
+			.withPropertyValues("spring.data.mongodb.repositories.type=none")
+			.run((context) -> assertThat(context).doesNotHaveBean(CityRepository.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

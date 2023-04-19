@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,13 +41,13 @@ class BuildOwnerTests {
 		BuildOwner owner = BuildOwner.fromEnv(env);
 		assertThat(owner.getUid()).isEqualTo(123);
 		assertThat(owner.getGid()).isEqualTo(456);
-		assertThat(owner.toString()).isEqualTo("123/456");
+		assertThat(owner).hasToString("123/456");
 	}
 
 	@Test
 	void fromEnvWhenEnvIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildOwner.fromEnv(null))
-				.withMessage("Env must not be null");
+			.withMessage("Env must not be null");
 	}
 
 	@Test
@@ -55,7 +55,7 @@ class BuildOwnerTests {
 		Map<String, String> env = new LinkedHashMap<>();
 		env.put("CNB_GROUP_ID", "456");
 		assertThatIllegalStateException().isThrownBy(() -> BuildOwner.fromEnv(env))
-				.withMessage("Missing 'CNB_USER_ID' value from the builder environment '" + env + "'");
+			.withMessage("Missing 'CNB_USER_ID' value from the builder environment '" + env + "'");
 	}
 
 	@Test
@@ -63,7 +63,7 @@ class BuildOwnerTests {
 		Map<String, String> env = new LinkedHashMap<>();
 		env.put("CNB_USER_ID", "123");
 		assertThatIllegalStateException().isThrownBy(() -> BuildOwner.fromEnv(env))
-				.withMessage("Missing 'CNB_GROUP_ID' value from the builder environment '" + env + "'");
+			.withMessage("Missing 'CNB_GROUP_ID' value from the builder environment '" + env + "'");
 	}
 
 	@Test
@@ -72,7 +72,7 @@ class BuildOwnerTests {
 		env.put("CNB_USER_ID", "nope");
 		env.put("CNB_GROUP_ID", "456");
 		assertThatIllegalStateException().isThrownBy(() -> BuildOwner.fromEnv(env))
-				.withMessage("Malformed 'CNB_USER_ID' value 'nope' in the builder environment '" + env + "'");
+			.withMessage("Malformed 'CNB_USER_ID' value 'nope' in the builder environment '" + env + "'");
 	}
 
 	@Test
@@ -81,7 +81,7 @@ class BuildOwnerTests {
 		env.put("CNB_USER_ID", "123");
 		env.put("CNB_GROUP_ID", "nope");
 		assertThatIllegalStateException().isThrownBy(() -> BuildOwner.fromEnv(env))
-				.withMessage("Malformed 'CNB_GROUP_ID' value 'nope' in the builder environment '" + env + "'");
+			.withMessage("Malformed 'CNB_GROUP_ID' value 'nope' in the builder environment '" + env + "'");
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,32 +96,36 @@ class HandlerTests {
 	@Test
 	void sameFileReturnsFalseForDifferentFileInSameJar() throws MalformedURLException {
 		assertThat(this.handler.sameFile(new URL("jar:file:foo.jar!/the/path/to/the/first/content.txt"),
-				new URL("jar:file:/foo.jar!/content.txt"))).isFalse();
+				new URL("jar:file:/foo.jar!/content.txt")))
+			.isFalse();
 	}
 
 	@Test
 	void sameFileReturnsFalseForSameFileInDifferentJars() throws MalformedURLException {
 		assertThat(this.handler.sameFile(new URL("jar:file:/the/path/to/the/first.jar!/content.txt"),
-				new URL("jar:file:/second.jar!/content.txt"))).isFalse();
+				new URL("jar:file:/second.jar!/content.txt")))
+			.isFalse();
 	}
 
 	@Test
 	void sameFileReturnsTrueForSameFileInSameJar() throws MalformedURLException {
 		assertThat(this.handler.sameFile(new URL("jar:file:/the/path/to/the/first.jar!/content.txt"),
-				new URL("jar:file:/the/path/to/the/first.jar!/content.txt"))).isTrue();
+				new URL("jar:file:/the/path/to/the/first.jar!/content.txt")))
+			.isTrue();
 	}
 
 	@Test
 	void sameFileReturnsTrueForUrlsThatReferenceSameFileViaNestedArchiveAndFromRootOfJar()
 			throws MalformedURLException {
 		assertThat(this.handler.sameFile(new URL("jar:file:/test.jar!/BOOT-INF/classes!/foo.txt"),
-				new URL("jar:file:/test.jar!/BOOT-INF/classes/foo.txt"))).isTrue();
+				new URL("jar:file:/test.jar!/BOOT-INF/classes/foo.txt")))
+			.isTrue();
 	}
 
 	@Test
 	void hashCodesAreEqualForUrlsThatReferenceSameFileViaNestedArchiveAndFromRootOfJar() throws MalformedURLException {
 		assertThat(this.handler.hashCode(new URL("jar:file:/test.jar!/BOOT-INF/classes!/foo.txt")))
-				.isEqualTo(this.handler.hashCode(new URL("jar:file:/test.jar!/BOOT-INF/classes/foo.txt")));
+			.isEqualTo(this.handler.hashCode(new URL("jar:file:/test.jar!/BOOT-INF/classes/foo.txt")));
 	}
 
 	@Test
@@ -157,11 +161,12 @@ class HandlerTests {
 		File testJar = new File(tempDir, "test.jar");
 		TestJarCreator.createTestJar(testJar);
 		URLConnection connection = new URL(null, "jar:" + testJar.toURI().toURL() + "!/nested.jar!/", this.handler)
-				.openConnection();
+			.openConnection();
 		assertThat(connection).isInstanceOf(JarURLConnection.class);
 		((JarURLConnection) connection).getJarFile().close();
 		URLConnection jdkConnection = new URL(null, "jar:file:" + testJar.toURI().toURL() + "!/nested.jar!/",
-				this.handler).openConnection();
+				this.handler)
+			.openConnection();
 		assertThat(jdkConnection).isNotInstanceOf(JarURLConnection.class);
 		assertThat(jdkConnection.getClass().getName()).endsWith(".JarURLConnection");
 	}
@@ -191,7 +196,7 @@ class HandlerTests {
 	private void assertStandardAndCustomHandlerUrlsAreEqual(String context, String spec) throws MalformedURLException {
 		URL standardUrl = new URL(new URL("jar:" + context), spec);
 		URL customHandlerUrl = new URL(new URL("jar", null, -1, context, this.handler), spec);
-		assertThat(customHandlerUrl.toString()).isEqualTo(standardUrl.toString());
+		assertThat(customHandlerUrl).hasToString(standardUrl.toString());
 		assertThat(customHandlerUrl.getFile()).isEqualTo(standardUrl.getFile());
 		assertThat(customHandlerUrl.getPath()).isEqualTo(standardUrl.getPath());
 		assertThat(customHandlerUrl.getQuery()).isEqualTo(standardUrl.getQuery());

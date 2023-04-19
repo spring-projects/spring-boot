@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,6 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.annotation.AnnotatedBeanDefinitionReader;
 import org.springframework.context.annotation.ClassPathBeanDefinitionScanner;
-import org.springframework.core.SpringProperties;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -61,9 +60,6 @@ import org.springframework.util.StringUtils;
  */
 class BeanDefinitionLoader {
 
-	// Static final field to facilitate code removal by Graal
-	private static final boolean XML_ENABLED = !SpringProperties.getFlag("spring.xml.ignore");
-
 	private static final Pattern GROOVY_CLOSURE_PATTERN = Pattern.compile(".*\\$_.*closure.*");
 
 	private final Object[] sources;
@@ -89,7 +85,7 @@ class BeanDefinitionLoader {
 		Assert.notEmpty(sources, "Sources must not be empty");
 		this.sources = sources;
 		this.annotatedReader = new AnnotatedBeanDefinitionReader(registry);
-		this.xmlReader = (XML_ENABLED ? new XmlBeanDefinitionReader(registry) : null);
+		this.xmlReader = new XmlBeanDefinitionReader(registry);
 		this.groovyReader = (isGroovyPresent() ? new GroovyBeanDefinitionReader(registry) : null);
 		this.scanner = new ClassPathBeanDefinitionScanner(registry);
 		this.scanner.addExcludeFilter(new ClassExcludeFilter(sources));
@@ -102,9 +98,7 @@ class BeanDefinitionLoader {
 	void setBeanNameGenerator(BeanNameGenerator beanNameGenerator) {
 		this.annotatedReader.setBeanNameGenerator(beanNameGenerator);
 		this.scanner.setBeanNameGenerator(beanNameGenerator);
-		if (this.xmlReader != null) {
-			this.xmlReader.setBeanNameGenerator(beanNameGenerator);
-		}
+		this.xmlReader.setBeanNameGenerator(beanNameGenerator);
 	}
 
 	/**
@@ -114,9 +108,7 @@ class BeanDefinitionLoader {
 	void setResourceLoader(ResourceLoader resourceLoader) {
 		this.resourceLoader = resourceLoader;
 		this.scanner.setResourceLoader(resourceLoader);
-		if (this.xmlReader != null) {
-			this.xmlReader.setResourceLoader(resourceLoader);
-		}
+		this.xmlReader.setResourceLoader(resourceLoader);
 	}
 
 	/**
@@ -126,9 +118,7 @@ class BeanDefinitionLoader {
 	void setEnvironment(ConfigurableEnvironment environment) {
 		this.annotatedReader.setEnvironment(environment);
 		this.scanner.setEnvironment(environment);
-		if (this.xmlReader != null) {
-			this.xmlReader.setEnvironment(environment);
-		}
+		this.xmlReader.setEnvironment(environment);
 	}
 
 	/**
@@ -142,20 +132,20 @@ class BeanDefinitionLoader {
 
 	private void load(Object source) {
 		Assert.notNull(source, "Source must not be null");
-		if (source instanceof Class<?>) {
-			load((Class<?>) source);
+		if (source instanceof Class<?> clazz) {
+			load(clazz);
 			return;
 		}
-		if (source instanceof Resource) {
-			load((Resource) source);
+		if (source instanceof Resource resource) {
+			load(resource);
 			return;
 		}
-		if (source instanceof Package) {
-			load((Package) source);
+		if (source instanceof Package pack) {
+			load(pack);
 			return;
 		}
-		if (source instanceof CharSequence) {
-			load((CharSequence) source);
+		if (source instanceof CharSequence sequence) {
+			load(sequence);
 			return;
 		}
 		throw new IllegalArgumentException("Invalid source type " + source.getClass());
@@ -180,9 +170,6 @@ class BeanDefinitionLoader {
 			this.groovyReader.loadBeanDefinitions(source);
 		}
 		else {
-			if (this.xmlReader == null) {
-				throw new BeanDefinitionStoreException("Cannot load XML bean definitions when XML support is disabled");
-			}
 			this.xmlReader.loadBeanDefinitions(source);
 		}
 	}
@@ -234,8 +221,8 @@ class BeanDefinitionLoader {
 		ResourceLoader loader = (this.resourceLoader != null) ? this.resourceLoader
 				: new PathMatchingResourcePatternResolver();
 		try {
-			if (loader instanceof ResourcePatternResolver) {
-				return ((ResourcePatternResolver) loader).getResources(source);
+			if (loader instanceof ResourcePatternResolver resolver) {
+				return resolver.getResources(source);
 			}
 			return new Resource[] { loader.getResource(source) };
 		}
@@ -248,12 +235,12 @@ class BeanDefinitionLoader {
 		if (resource == null || !resource.exists()) {
 			return false;
 		}
-		if (resource instanceof ClassPathResource) {
+		if (resource instanceof ClassPathResource classPathResource) {
 			// A simple package without a '.' may accidentally get loaded as an XML
 			// document if we're not careful. The result of getInputStream() will be
-			// a file list of the package content. We double check here that it's not
+			// a file list of the package content. We double-check here that it's not
 			// actually a package.
-			String path = ((ClassPathResource) resource).getPath();
+			String path = classPathResource.getPath();
 			if (path.indexOf('.') == -1) {
 				try {
 					return getClass().getClassLoader().getDefinedPackage(path) == null;
@@ -275,7 +262,7 @@ class BeanDefinitionLoader {
 			// Attempt to find a class in this package
 			ResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(getClass().getClassLoader());
 			Resource[] resources = resolver
-					.getResources(ClassUtils.convertClassNameToResourcePath(source.toString()) + "/*.class");
+				.getResources(ClassUtils.convertClassNameToResourcePath(source.toString()) + "/*.class");
 			for (Resource resource : resources) {
 				String className = StringUtils.stripFilenameExtension(resource.getFilename());
 				load(Class.forName(source.toString() + "." + className));

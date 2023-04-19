@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.loader.tools.layer;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.util.Assert;
@@ -56,7 +55,7 @@ public class IncludeExcludeContentSelector<T> implements ContentSelector<T> {
 	}
 
 	private <S> List<ContentFilter<T>> adapt(List<S> list, Function<S, ContentFilter<T>> mapper) {
-		return list.stream().map(mapper).collect(Collectors.toList());
+		return list.stream().map(mapper).toList();
 	}
 
 	@Override

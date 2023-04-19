@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,19 +57,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	private static final int BASE_VERSION = 8;
 
-	private static final int RUNTIME_VERSION;
-
-	static {
-		int version;
-		try {
-			Object runtimeVersion = Runtime.class.getMethod("version").invoke(null);
-			version = (int) runtimeVersion.getClass().getMethod("major").invoke(runtimeVersion);
-		}
-		catch (Throwable ex) {
-			version = BASE_VERSION;
-		}
-		RUNTIME_VERSION = version;
-	}
+	private static final int RUNTIME_VERSION = Runtime.version().feature();
 
 	private static final long LOCAL_FILE_HEADER_SIZE = 30;
 
@@ -98,21 +86,18 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 	private JarEntryCertification[] certifications;
 
 	private final Map<Integer, FileHeader> entriesCache = Collections
-			.synchronizedMap(new LinkedHashMap<Integer, FileHeader>(16, 0.75f, true) {
+		.synchronizedMap(new LinkedHashMap<>(16, 0.75f, true) {
 
-				@Override
-				protected boolean removeEldestEntry(Map.Entry<Integer, FileHeader> eldest) {
-					return size() >= ENTRY_CACHE_SIZE;
-				}
+			@Override
+			protected boolean removeEldestEntry(Map.Entry<Integer, FileHeader> eldest) {
+				return size() >= ENTRY_CACHE_SIZE;
+			}
 
-			});
+		});
 
 	JarFileEntries(JarFile jarFile, JarEntryFilter filter) {
 		this.jarFile = jarFile;
 		this.filter = filter;
-		if (RUNTIME_VERSION == BASE_VERSION) {
-			this.multiReleaseJar = false;
-		}
 	}
 
 	@Override
@@ -244,7 +229,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		T entry = doGetEntry(name, type, cacheEntry, null);
 		if (!isMetaInfEntry(name) && isMultiReleaseJar()) {
 			int version = RUNTIME_VERSION;
-			AsciiBytes nameAlias = (entry instanceof JarEntry) ? ((JarEntry) entry).getAsciiBytesName()
+			AsciiBytes nameAlias = (entry instanceof JarEntry jarEntry) ? jarEntry.getAsciiBytesName()
 					: new AsciiBytes(name.toString());
 			while (version > BASE_VERSION) {
 				T versionedEntry = doGetEntry("META-INF/versions/" + version + "/" + name, type, cacheEntry, nameAlias);
@@ -350,10 +335,10 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		JarEntryCertification[] certifications = this.certifications;
 		if (certifications == null) {
 			certifications = new JarEntryCertification[this.size];
-			// We fallback to use JarInputStream to obtain the certs. This isn't that
+			// We fall back to use JarInputStream to obtain the certs. This isn't that
 			// fast, but hopefully doesn't happen too often.
 			try (JarInputStream certifiedJarStream = new JarInputStream(this.jarFile.getData().getInputStream())) {
-				java.util.jar.JarEntry certifiedEntry = null;
+				java.util.jar.JarEntry certifiedEntry;
 				while ((certifiedEntry = certifiedJarStream.getNextJarEntry()) != null) {
 					// Entry must be closed to trigger a read and set entry certificates
 					certifiedJarStream.closeEntry();

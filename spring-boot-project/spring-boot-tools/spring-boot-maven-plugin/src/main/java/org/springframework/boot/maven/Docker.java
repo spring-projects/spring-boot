@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ public class Docker {
 	private boolean tlsVerify;
 
 	private String certPath;
+
+	private boolean bindHostToBuilder;
 
 	private DockerRegistry builderRegistry;
 
@@ -72,6 +74,18 @@ public class Docker {
 
 	void setCertPath(String certPath) {
 		this.certPath = certPath;
+	}
+
+	/**
+	 * Whether to use the configured Docker host in the builder container.
+	 * @return {@code true} to use the configured Docker host in the builder container
+	 */
+	public boolean isBindHostToBuilder() {
+		return this.bindHostToBuilder;
+	}
+
+	void setBindHostToBuilder(boolean bindHostToBuilder) {
+		this.bindHostToBuilder = bindHostToBuilder;
 	}
 
 	/**
@@ -117,6 +131,7 @@ public class Docker {
 	DockerConfiguration asDockerConfiguration() {
 		DockerConfiguration dockerConfiguration = new DockerConfiguration();
 		dockerConfiguration = customizeHost(dockerConfiguration);
+		dockerConfiguration = dockerConfiguration.withBindHostToBuilder(this.bindHostToBuilder);
 		dockerConfiguration = customizeBuilderAuthentication(dockerConfiguration);
 		dockerConfiguration = customizePublishAuthentication(dockerConfiguration);
 		return dockerConfiguration;
@@ -146,7 +161,7 @@ public class Docker {
 
 	private DockerConfiguration customizePublishAuthentication(DockerConfiguration dockerConfiguration) {
 		if (this.publishRegistry == null || this.publishRegistry.isEmpty()) {
-			return dockerConfiguration;
+			return dockerConfiguration.withEmptyPublishRegistryAuthentication();
 		}
 		if (this.publishRegistry.hasTokenAuth() && !this.publishRegistry.hasUserAuth()) {
 			return dockerConfiguration.withPublishRegistryTokenAuthentication(this.publishRegistry.getToken());

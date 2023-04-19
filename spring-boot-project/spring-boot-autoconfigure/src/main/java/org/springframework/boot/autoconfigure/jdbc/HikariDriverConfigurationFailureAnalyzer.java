@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,12 @@ import org.springframework.jdbc.CannotGetJdbcConnectionException;
  */
 class HikariDriverConfigurationFailureAnalyzer extends AbstractFailureAnalyzer<CannotGetJdbcConnectionException> {
 
-	private static final String EXPECTED_MESSAGE = "Failed to obtain JDBC Connection:"
-			+ " cannot use driverClassName and dataSourceClassName together.";
+	private static final String EXPECTED_MESSAGE = "cannot use driverClassName and dataSourceClassName together.";
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, CannotGetJdbcConnectionException cause) {
-		if (!EXPECTED_MESSAGE.equals(cause.getMessage())) {
+		Throwable subCause = cause.getCause();
+		if (subCause == null || !EXPECTED_MESSAGE.equals(subCause.getMessage())) {
 			return null;
 		}
 		return new FailureAnalysis(

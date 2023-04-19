@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,13 +44,14 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.jupiter.api.Test;
 import reactor.netty.http.HttpDecoderSpec;
-import reactor.netty.http.server.HttpRequestDecoderSpec;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Accesslog;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
+import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.jetty.JettyWebServer;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -84,6 +85,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Chris Bono
  * @author Parviz Rozikov
  */
+@DirtiesUrlFactories
 class ServerPropertiesTests {
 
 	private final ServerProperties properties = new ServerProperties();
@@ -129,6 +131,7 @@ class ServerPropertiesTests {
 		map.put("server.tomcat.remoteip.protocol-header", "X-Forwarded-Protocol");
 		map.put("server.tomcat.remoteip.remote-ip-header", "Remote-Ip");
 		map.put("server.tomcat.remoteip.internal-proxies", "10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+		map.put("server.tomcat.remoteip.trusted-proxies", "proxy1|proxy2|proxy3");
 		map.put("server.tomcat.reject-illegal-header", "false");
 		map.put("server.tomcat.background-processor-delay", "10");
 		map.put("server.tomcat.relaxed-path-chars", "|,<");
@@ -144,7 +147,7 @@ class ServerPropertiesTests {
 		assertThat(accesslog.getSuffix()).isEqualTo("-bar.log");
 		assertThat(accesslog.getEncoding()).isEqualTo("UTF-8");
 		assertThat(accesslog.getLocale()).isEqualTo("en-AU");
-		assertThat(accesslog.isCheckExists()).isEqualTo(true);
+		assertThat(accesslog.isCheckExists()).isTrue();
 		assertThat(accesslog.isRotate()).isFalse();
 		assertThat(accesslog.isRenameOnRotate()).isTrue();
 		assertThat(accesslog.isIpv6Canonical()).isTrue();
@@ -152,6 +155,7 @@ class ServerPropertiesTests {
 		assertThat(tomcat.getRemoteip().getRemoteIpHeader()).isEqualTo("Remote-Ip");
 		assertThat(tomcat.getRemoteip().getProtocolHeader()).isEqualTo("X-Forwarded-Protocol");
 		assertThat(tomcat.getRemoteip().getInternalProxies()).isEqualTo("10\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}");
+		assertThat(tomcat.getRemoteip().getTrustedProxies()).isEqualTo("proxy1|proxy2|proxy3");
 		assertThat(tomcat.isRejectIllegalHeader()).isFalse();
 		assertThat(tomcat.getBackgroundProcessorDelay()).hasSeconds(10);
 		assertThat(tomcat.getRelaxedPathChars()).containsExactly('|', '<');
@@ -168,7 +172,7 @@ class ServerPropertiesTests {
 	@Test
 	void testSlashOfContextPathIsDefaultValue() {
 		bind("server.servlet.context-path", "/");
-		assertThat(this.properties.getServlet().getContextPath()).isEqualTo("");
+		assertThat(this.properties.getServlet().getContextPath()).isEmpty();
 	}
 
 	@Test
@@ -202,15 +206,33 @@ class ServerPropertiesTests {
 	}
 
 	@Test
+	@SuppressWarnings("removal")
+	@Deprecated(since = "3.0.0", forRemoval = true)
 	void testCustomizeHeaderSize() {
 		bind("server.max-http-header-size", "1MB");
 		assertThat(this.properties.getMaxHttpHeaderSize()).isEqualTo(DataSize.ofMegabytes(1));
+		assertThat(this.properties.getMaxHttpRequestHeaderSize()).isEqualTo(DataSize.ofMegabytes(1));
 	}
 
 	@Test
+	@SuppressWarnings("removal")
+	@Deprecated(since = "3.0.0", forRemoval = true)
 	void testCustomizeHeaderSizeUseBytesByDefault() {
 		bind("server.max-http-header-size", "1024");
 		assertThat(this.properties.getMaxHttpHeaderSize()).isEqualTo(DataSize.ofKilobytes(1));
+		assertThat(this.properties.getMaxHttpRequestHeaderSize()).isEqualTo(DataSize.ofKilobytes(1));
+	}
+
+	@Test
+	void testCustomizeMaxHttpRequestHeaderSize() {
+		bind("server.max-http-request-header-size", "1MB");
+		assertThat(this.properties.getMaxHttpRequestHeaderSize()).isEqualTo(DataSize.ofMegabytes(1));
+	}
+
+	@Test
+	void testCustomizeMaxHttpRequestHeaderSizeUseBytesByDefault() {
+		bind("server.max-http-request-header-size", "1024");
+		assertThat(this.properties.getMaxHttpRequestHeaderSize()).isEqualTo(DataSize.ofKilobytes(1));
 	}
 
 	@Test
@@ -367,55 +389,55 @@ class ServerPropertiesTests {
 	@Test
 	void tomcatMinSpareThreadsMatchesProtocolDefault() throws Exception {
 		assertThat(this.properties.getTomcat().getThreads().getMinSpare())
-				.isEqualTo(getDefaultProtocol().getMinSpareThreads());
+			.isEqualTo(getDefaultProtocol().getMinSpareThreads());
 	}
 
 	@Test
-	void tomcatMaxHttpPostSizeMatchesConnectorDefault() throws Exception {
+	void tomcatMaxHttpPostSizeMatchesConnectorDefault() {
 		assertThat(this.properties.getTomcat().getMaxHttpFormPostSize().toBytes())
-				.isEqualTo(getDefaultConnector().getMaxPostSize());
+			.isEqualTo(getDefaultConnector().getMaxPostSize());
 	}
 
 	@Test
 	void tomcatBackgroundProcessorDelayMatchesEngineDefault() {
 		assertThat(this.properties.getTomcat().getBackgroundProcessorDelay())
-				.hasSeconds((new StandardEngine().getBackgroundProcessorDelay()));
+			.hasSeconds((new StandardEngine().getBackgroundProcessorDelay()));
 	}
 
 	@Test
-	void tomcatMaxHttpFormPostSizeMatchesConnectorDefault() throws Exception {
+	void tomcatMaxHttpFormPostSizeMatchesConnectorDefault() {
 		assertThat(this.properties.getTomcat().getMaxHttpFormPostSize().toBytes())
-				.isEqualTo(getDefaultConnector().getMaxPostSize());
+			.isEqualTo(getDefaultConnector().getMaxPostSize());
 	}
 
 	@Test
-	void tomcatUriEncodingMatchesConnectorDefault() throws Exception {
+	void tomcatUriEncodingMatchesConnectorDefault() {
 		assertThat(this.properties.getTomcat().getUriEncoding().name())
-				.isEqualTo(getDefaultConnector().getURIEncoding());
+			.isEqualTo(getDefaultConnector().getURIEncoding());
 	}
 
 	@Test
 	void tomcatRedirectContextRootMatchesDefault() {
 		assertThat(this.properties.getTomcat().getRedirectContextRoot())
-				.isEqualTo(new StandardContext().getMapperContextRootRedirectEnabled());
+			.isEqualTo(new StandardContext().getMapperContextRootRedirectEnabled());
 	}
 
 	@Test
 	void tomcatAccessLogRenameOnRotateMatchesDefault() {
 		assertThat(this.properties.getTomcat().getAccesslog().isRenameOnRotate())
-				.isEqualTo(new AccessLogValve().isRenameOnRotate());
+			.isEqualTo(new AccessLogValve().isRenameOnRotate());
 	}
 
 	@Test
 	void tomcatAccessLogRequestAttributesEnabledMatchesDefault() {
 		assertThat(this.properties.getTomcat().getAccesslog().isRequestAttributesEnabled())
-				.isEqualTo(new AccessLogValve().getRequestAttributesEnabled());
+			.isEqualTo(new AccessLogValve().getRequestAttributesEnabled());
 	}
 
 	@Test
 	void tomcatInternalProxiesMatchesDefault() {
 		assertThat(this.properties.getTomcat().getRemoteip().getInternalProxies())
-				.isEqualTo(new RemoteIpValve().getInternalProxies());
+			.isEqualTo(new RemoteIpValve().getInternalProxies());
 	}
 
 	@Test
@@ -438,6 +460,7 @@ class ServerPropertiesTests {
 	}
 
 	@Test
+	@Servlet5ClassPathOverrides
 	void jettyThreadPoolPropertyDefaultsShouldMatchServerDefault() {
 		JettyServletWebServerFactory jettyFactory = new JettyServletWebServerFactory(0);
 		JettyWebServer jetty = (JettyWebServer) jettyFactory.getWebServer();
@@ -452,19 +475,21 @@ class ServerPropertiesTests {
 	}
 
 	@Test
+	@Servlet5ClassPathOverrides
 	void jettyMaxHttpFormPostSizeMatchesDefault() {
 		JettyServletWebServerFactory jettyFactory = new JettyServletWebServerFactory(0);
 		JettyWebServer jetty = (JettyWebServer) jettyFactory
-				.getWebServer((ServletContextInitializer) (servletContext) -> servletContext
-						.addServlet("formPost", new HttpServlet() {
+			.getWebServer((ServletContextInitializer) (servletContext) -> servletContext
+				.addServlet("formPost", new HttpServlet() {
 
-							@Override
-							protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-									throws ServletException, IOException {
-								req.getParameterMap();
-							}
+					@Override
+					protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+							throws ServletException, IOException {
+						req.getParameterMap();
+					}
 
-						}).addMapping("/form"));
+				})
+				.addMapping("/form"));
 		jetty.start();
 		org.eclipse.jetty.server.Connector connector = jetty.getServer().getConnectors()[0];
 		final AtomicReference<Throwable> failure = new AtomicReference<>();
@@ -494,11 +519,7 @@ class ServerPropertiesTests {
 			HttpHeaders headers = new HttpHeaders();
 			headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 			MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-			StringBuilder data = new StringBuilder();
-			for (int i = 0; i < 250000; i++) {
-				data.append("a");
-			}
-			body.add("data", data.toString());
+			body.add("data", "a".repeat(250000));
 			HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(body, headers);
 			template.postForEntity(URI.create("http://localhost:" + jetty.getPort() + "/form"), entity, Void.class);
 			assertThat(failure.get()).isNotNull();
@@ -514,36 +535,37 @@ class ServerPropertiesTests {
 	@Test
 	void undertowMaxHttpPostSizeMatchesDefault() {
 		assertThat(this.properties.getUndertow().getMaxHttpPostSize().toBytes())
-				.isEqualTo(UndertowOptions.DEFAULT_MAX_ENTITY_SIZE);
+			.isEqualTo(UndertowOptions.DEFAULT_MAX_ENTITY_SIZE);
 	}
 
 	@Test
+	@Deprecated(since = "3.0.0", forRemoval = true)
+	@SuppressWarnings("removal")
 	void nettyMaxChunkSizeMatchesHttpDecoderSpecDefault() {
 		assertThat(this.properties.getNetty().getMaxChunkSize().toBytes())
-				.isEqualTo(HttpDecoderSpec.DEFAULT_MAX_CHUNK_SIZE);
+			.isEqualTo(HttpDecoderSpec.DEFAULT_MAX_CHUNK_SIZE);
 	}
 
 	@Test
 	void nettyMaxInitialLineLengthMatchesHttpDecoderSpecDefault() {
 		assertThat(this.properties.getNetty().getMaxInitialLineLength().toBytes())
-				.isEqualTo(HttpDecoderSpec.DEFAULT_MAX_INITIAL_LINE_LENGTH);
+			.isEqualTo(HttpDecoderSpec.DEFAULT_MAX_INITIAL_LINE_LENGTH);
 	}
 
 	@Test
 	void nettyValidateHeadersMatchesHttpDecoderSpecDefault() {
-		assertThat(this.properties.getNetty().isValidateHeaders()).isEqualTo(HttpDecoderSpec.DEFAULT_VALIDATE_HEADERS);
+		assertThat(this.properties.getNetty().isValidateHeaders()).isTrue();
 	}
 
 	@Test
 	void nettyH2cMaxContentLengthMatchesHttpDecoderSpecDefault() {
-		assertThat(this.properties.getNetty().getH2cMaxContentLength().toBytes())
-				.isEqualTo(HttpRequestDecoderSpec.DEFAULT_H2C_MAX_CONTENT_LENGTH);
+		assertThat(this.properties.getNetty().getH2cMaxContentLength().toBytes()).isZero();
 	}
 
 	@Test
 	void nettyInitialBufferSizeMatchesHttpDecoderSpecDefault() {
 		assertThat(this.properties.getNetty().getInitialBufferSize().toBytes())
-				.isEqualTo(HttpDecoderSpec.DEFAULT_INITIAL_BUFFER_SIZE);
+			.isEqualTo(HttpDecoderSpec.DEFAULT_INITIAL_BUFFER_SIZE);
 	}
 
 	private Connector getDefaultConnector() {
@@ -552,7 +574,8 @@ class ServerPropertiesTests {
 
 	private AbstractProtocol<?> getDefaultProtocol() throws Exception {
 		return (AbstractProtocol<?>) Class.forName(TomcatServletWebServerFactory.DEFAULT_PROTOCOL)
-				.getDeclaredConstructor().newInstance();
+			.getDeclaredConstructor()
+			.newInstance();
 	}
 
 	private void bind(String name, String value) {

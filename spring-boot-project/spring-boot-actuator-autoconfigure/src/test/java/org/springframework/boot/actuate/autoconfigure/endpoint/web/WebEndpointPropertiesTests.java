@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ class WebEndpointPropertiesTests {
 	void basePathShouldBeCleaned() {
 		WebEndpointProperties properties = new WebEndpointProperties();
 		properties.setBasePath("/");
-		assertThat(properties.getBasePath()).isEqualTo("");
+		assertThat(properties.getBasePath()).isEmpty();
 		properties.setBasePath("/actuator/");
 		assertThat(properties.getBasePath()).isEqualTo("/actuator");
 	}
@@ -47,14 +47,14 @@ class WebEndpointPropertiesTests {
 	void basePathMustStartWithSlash() {
 		WebEndpointProperties properties = new WebEndpointProperties();
 		assertThatIllegalArgumentException().isThrownBy(() -> properties.setBasePath("admin"))
-				.withMessageContaining("Base path must start with '/' or be empty");
+			.withMessageContaining("Base path must start with '/' or be empty");
 	}
 
 	@Test
 	void basePathCanBeEmpty() {
 		WebEndpointProperties properties = new WebEndpointProperties();
 		properties.setBasePath("");
-		assertThat(properties.getBasePath()).isEqualTo("");
+		assertThat(properties.getBasePath()).isEmpty();
 	}
 
 }

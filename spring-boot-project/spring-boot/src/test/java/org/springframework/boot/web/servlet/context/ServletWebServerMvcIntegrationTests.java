@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.net.URI;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
+import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
@@ -51,6 +53,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Ivan Sopov
  */
+@DirtiesUrlFactories
 class ServletWebServerMvcIntegrationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
@@ -72,6 +75,7 @@ class ServletWebServerMvcIntegrationTests {
 	}
 
 	@Test
+	@Servlet5ClassPathOverrides
 	void jetty() throws Exception {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(JettyConfig.class);
 		doTest(this.context, "/hello");
@@ -84,6 +88,7 @@ class ServletWebServerMvcIntegrationTests {
 	}
 
 	@Test
+	@Servlet5ClassPathOverrides
 	void advancedConfig() throws Exception {
 		this.context = new AnnotationConfigServletWebServerApplicationContext(AdvancedConfig.class);
 		doTest(this.context, "/example/spring/hello");
@@ -184,7 +189,8 @@ class ServletWebServerMvcIntegrationTests {
 
 		@Bean
 		DispatcherServlet dispatcherServlet() {
-			// Can configure dispatcher servlet here as would usually do via init-params
+			// Can configure dispatcher servlet here as would usually do through
+			// init-params
 			return new DispatcherServlet();
 		}
 

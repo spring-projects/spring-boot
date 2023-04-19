@@ -39,6 +39,8 @@ include::actuator.adoc[leveloffset=+1]
 
 include::deployment.adoc[leveloffset=+1]
 
+include::native-image.adoc[leveloffset=+1]
+
 include::cli.adoc[leveloffset=+1]
 
 include::build-tool-plugins.adoc[leveloffset=+1]

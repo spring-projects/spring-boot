@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,8 +63,8 @@ class ConfigurationPropertyCachingTests {
 	@Test
 	void getFromSourcesWhenSourcesIsNullThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> ConfigurationPropertyCaching.get((Iterable<ConfigurationPropertySource>) null))
-				.withMessage("Sources must not be null");
+			.isThrownBy(() -> ConfigurationPropertyCaching.get((Iterable<ConfigurationPropertySource>) null))
+			.withMessage("Sources must not be null");
 	}
 
 	@Test
@@ -89,8 +89,8 @@ class ConfigurationPropertyCachingTests {
 		sources.add(SpringConfigurationPropertySource.from(this.propertySource));
 		MapPropertySource anotherPropertySource = new MapPropertySource("test2", Collections.emptyMap());
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ConfigurationPropertyCaching.get(sources, anotherPropertySource))
-				.withMessage("Unable to find cache from configuration property sources");
+			.isThrownBy(() -> ConfigurationPropertyCaching.get(sources, anotherPropertySource))
+			.withMessage("Unable to find cache from configuration property sources");
 	}
 
 }

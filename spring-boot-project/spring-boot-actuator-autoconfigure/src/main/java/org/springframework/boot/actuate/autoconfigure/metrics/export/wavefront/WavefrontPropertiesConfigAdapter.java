@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,52 +19,54 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 import io.micrometer.wavefront.WavefrontConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PushRegistryPropertiesConfigAdapter;
+import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties;
+import org.springframework.boot.actuate.autoconfigure.wavefront.WavefrontProperties.Metrics.Export;
 
 /**
  * Adapter to convert {@link WavefrontProperties} to a {@link WavefrontConfig}.
  *
  * @author Jon Schneider
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
-public class WavefrontPropertiesConfigAdapter extends PushRegistryPropertiesConfigAdapter<WavefrontProperties>
-		implements WavefrontConfig {
+public class WavefrontPropertiesConfigAdapter
+		extends PushRegistryPropertiesConfigAdapter<WavefrontProperties.Metrics.Export> implements WavefrontConfig {
+
+	private final WavefrontProperties properties;
 
 	public WavefrontPropertiesConfigAdapter(WavefrontProperties properties) {
-		super(properties);
+		super(properties.getMetrics().getExport());
+		this.properties = properties;
 	}
 
 	@Override
 	public String prefix() {
-		return "management.metrics.export.wavefront";
-	}
-
-	@Override
-	public String get(String k) {
-		return null;
+		return "management.wavefront.metrics.export";
 	}
 
 	@Override
 	public String uri() {
-		return get(this::getUriAsString, WavefrontConfig.DEFAULT_DIRECT::uri);
+		return this.properties.getEffectiveUri().toString();
 	}
 
 	@Override
 	public String source() {
-		return get(WavefrontProperties::getSource, WavefrontConfig.super::source);
+		return this.properties.getSourceOrDefault();
+	}
+
+	@Override
+	public int batchSize() {
+		return this.properties.getSender().getBatchSize();
 	}
 
 	@Override
 	public String apiToken() {
-		return get(WavefrontProperties::getApiToken, WavefrontConfig.super::apiToken);
+		return this.properties.getApiTokenOrThrow();
 	}
 
 	@Override
 	public String globalPrefix() {
-		return get(WavefrontProperties::getGlobalPrefix, WavefrontConfig.super::globalPrefix);
-	}
-
-	private String getUriAsString(WavefrontProperties properties) {
-		return (properties.getUri() != null) ? properties.getUri().toString() : null;
+		return get(Export::getGlobalPrefix, WavefrontConfig.super::globalPrefix);
 	}
 
 }

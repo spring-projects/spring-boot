@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,12 +46,12 @@ class BeanNotOfRequiredTypeFailureAnalyzerTests {
 		FailureAnalysis analysis = performAnalysis(JdkProxyConfiguration.class);
 		assertThat(analysis.getDescription()).startsWith("The bean 'asyncBean'");
 		assertThat(analysis.getDescription())
-				.containsPattern("The bean is of type '" + AsyncBean.class.getPackage().getName() + ".\\$Proxy.*'");
+			.containsPattern("The bean is of type '" + AsyncBean.class.getPackage().getName() + ".\\$Proxy.*'");
 		assertThat(analysis.getDescription())
-				.contains(String.format("and implements:%n\t") + SomeInterface.class.getName());
+			.contains(String.format("and implements:%n\t") + SomeInterface.class.getName());
 		assertThat(analysis.getDescription()).contains("Expected a bean of type '" + AsyncBean.class.getName() + "'");
 		assertThat(analysis.getDescription())
-				.contains(String.format("which implements:%n\t") + SomeInterface.class.getName());
+			.contains(String.format("which implements:%n\t") + SomeInterface.class.getName());
 	}
 
 	private FailureAnalysis performAnalysis(Class<?> configuration) {

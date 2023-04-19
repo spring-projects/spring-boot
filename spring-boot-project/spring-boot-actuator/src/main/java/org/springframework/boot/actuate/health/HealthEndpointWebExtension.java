@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
@@ -28,6 +29,7 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.WebServerNamespace;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
+import org.springframework.context.annotation.ImportRuntimeHints;
 
 /**
  * {@link EndpointWebExtension @EndpointWebExtension} for the {@link HealthEndpoint}.
@@ -43,6 +45,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
  * @since 2.0.0
  */
 @EndpointWebExtension(endpoint = HealthEndpoint.class)
+@ImportRuntimeHints(HealthEndpointWebExtensionRuntimeHints.class)
 public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthContributor, HealthComponent> {
 
 	private static final String[] NO_PATH = {};
@@ -51,9 +54,13 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthCont
 	 * Create a new {@link HealthEndpointWebExtension} instance.
 	 * @param registry the health contributor registry
 	 * @param groups the health endpoint groups
+	 * @param slowIndicatorLoggingThreshold duration after which slow health indicator
+	 * logging should occur
+	 * @since 2.6.9
 	 */
-	public HealthEndpointWebExtension(HealthContributorRegistry registry, HealthEndpointGroups groups) {
-		super(registry, groups);
+	public HealthEndpointWebExtension(HealthContributorRegistry registry, HealthEndpointGroups groups,
+			Duration slowIndicatorLoggingThreshold) {
+		super(registry, groups, slowIndicatorLoggingThreshold);
 	}
 
 	@ReadOperation

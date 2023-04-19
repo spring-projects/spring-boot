@@ -10,7 +10,7 @@ If you choose to package your application as a war file, see your server and IDE
 
 
 [[using.running-your-application.from-an-ide]]
-=== Running from an IDE
+=== Running From an IDE
 You can run a Spring Boot application from your IDE as a Java application.
 However, you first need to import your project.
 Import steps vary depending on your IDE and build system.

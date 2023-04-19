@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class ServletContextInitializerBeansTests {
 		load(ServletConfiguration.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
 				this.context.getBeanFactory());
-		assertThat(initializerBeans.size()).isEqualTo(1);
+		assertThat(initializerBeans).hasSize(1);
 		assertThat(initializerBeans.iterator()).toIterable().hasOnlyElementsOfType(TestServlet.class);
 	}
 
@@ -57,7 +57,7 @@ class ServletContextInitializerBeansTests {
 		load(FilterConfiguration.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
 				this.context.getBeanFactory());
-		assertThat(initializerBeans.size()).isEqualTo(1);
+		assertThat(initializerBeans).hasSize(1);
 		assertThat(initializerBeans.iterator()).toIterable().hasOnlyElementsOfType(TestFilter.class);
 	}
 
@@ -66,7 +66,7 @@ class ServletContextInitializerBeansTests {
 		load(TestConfiguration.class);
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
 				this.context.getBeanFactory(), TestServletContextInitializer.class);
-		assertThat(initializerBeans.size()).isEqualTo(1);
+		assertThat(initializerBeans).hasSize(1);
 		assertThat(initializerBeans.iterator()).toIterable().hasOnlyElementsOfType(TestServletContextInitializer.class);
 	}
 
@@ -76,9 +76,10 @@ class ServletContextInitializerBeansTests {
 		ServletContextInitializerBeans initializerBeans = new ServletContextInitializerBeans(
 				this.context.getBeanFactory());
 		assertThat(initializerBeans).hasSize(1);
-		assertThat(initializerBeans).first().isInstanceOf(ServletListenerRegistrationBean.class)
-				.extracting((initializer) -> ((ServletListenerRegistrationBean<?>) initializer).getListener())
-				.isInstanceOf(HttpSessionIdListener.class);
+		assertThat(initializerBeans).first()
+			.isInstanceOf(ServletListenerRegistrationBean.class)
+			.extracting((initializer) -> ((ServletListenerRegistrationBean<?>) initializer).getListener())
+			.isInstanceOf(HttpSessionIdListener.class);
 	}
 
 	private void load(Class<?>... configuration) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,26 +46,10 @@ class DynatracePropertiesConfigAdapterTests {
 	}
 
 	@Test
-	@Deprecated
-	void whenPropertiesDeviceIdIsSetAdapterDeviceIdReturnsIt() {
-		DynatraceProperties properties = new DynatraceProperties();
-		properties.setDeviceId("dev-1");
-		assertThat(new DynatracePropertiesConfigAdapter(properties).deviceId()).isEqualTo("dev-1");
-	}
-
-	@Test
 	void whenPropertiesV1DeviceIdIsSetAdapterDeviceIdReturnsIt() {
 		DynatraceProperties properties = new DynatraceProperties();
 		properties.getV1().setDeviceId("dev-1");
 		assertThat(new DynatracePropertiesConfigAdapter(properties).deviceId()).isEqualTo("dev-1");
-	}
-
-	@Test
-	@Deprecated
-	void whenPropertiesTechnologyTypeIsSetAdapterTechnologyTypeReturnsIt() {
-		DynatraceProperties properties = new DynatraceProperties();
-		properties.setTechnologyType("tech-1");
-		assertThat(new DynatracePropertiesConfigAdapter(properties).technologyType()).isEqualTo("tech-1");
 	}
 
 	@Test
@@ -76,26 +60,10 @@ class DynatracePropertiesConfigAdapterTests {
 	}
 
 	@Test
-	@Deprecated
-	void whenPropertiesGroupIsSetAdapterGroupReturnsIt() {
-		DynatraceProperties properties = new DynatraceProperties();
-		properties.setGroup("group-1");
-		assertThat(new DynatracePropertiesConfigAdapter(properties).group()).isEqualTo("group-1");
-	}
-
-	@Test
 	void whenPropertiesV1GroupIsSetAdapterGroupReturnsIt() {
 		DynatraceProperties properties = new DynatraceProperties();
 		properties.getV1().setGroup("group-1");
 		assertThat(new DynatracePropertiesConfigAdapter(properties).group()).isEqualTo("group-1");
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	void whenDeviceIdIsSetThenAdapterApiVersionIsV1() {
-		DynatraceProperties properties = new DynatraceProperties();
-		properties.setDeviceId("dev-1");
-		assertThat(new DynatracePropertiesConfigAdapter(properties).apiVersion()).isSameAs(DynatraceApiVersion.V1);
 	}
 
 	@Test
@@ -126,6 +94,13 @@ class DynatracePropertiesConfigAdapterTests {
 	}
 
 	@Test
+	void whenPropertiesUseDynatraceInstrumentsIsSetAdapterUseDynatraceInstrumentsReturnsIt() {
+		DynatraceProperties properties = new DynatraceProperties();
+		properties.getV2().setUseDynatraceSummaryInstruments(false);
+		assertThat(new DynatracePropertiesConfigAdapter(properties).useDynatraceSummaryInstruments()).isFalse();
+	}
+
+	@Test
 	void whenPropertiesDefaultDimensionsIsSetAdapterDefaultDimensionsReturnsIt() {
 		DynatraceProperties properties = new DynatraceProperties();
 		HashMap<String, String> defaultDimensions = new HashMap<>();
@@ -133,11 +108,10 @@ class DynatracePropertiesConfigAdapterTests {
 		defaultDimensions.put("dim2", "value2");
 		properties.getV2().setDefaultDimensions(defaultDimensions);
 		assertThat(new DynatracePropertiesConfigAdapter(properties).defaultDimensions())
-				.containsExactlyEntriesOf(defaultDimensions);
+			.containsExactlyEntriesOf(defaultDimensions);
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
 	void defaultValues() {
 		DynatraceProperties properties = new DynatraceProperties();
 		assertThat(properties.getApiToken()).isNull();
@@ -148,9 +122,7 @@ class DynatracePropertiesConfigAdapterTests {
 		assertThat(properties.getV2().getMetricKeyPrefix()).isNull();
 		assertThat(properties.getV2().isEnrichWithDynatraceMetadata()).isTrue();
 		assertThat(properties.getV2().getDefaultDimensions()).isNull();
-		assertThat(properties.getDeviceId()).isNull();
-		assertThat(properties.getTechnologyType()).isEqualTo("java");
-		assertThat(properties.getGroup()).isNull();
+		assertThat(properties.getV2().isUseDynatraceSummaryInstruments()).isTrue();
 	}
 
 }

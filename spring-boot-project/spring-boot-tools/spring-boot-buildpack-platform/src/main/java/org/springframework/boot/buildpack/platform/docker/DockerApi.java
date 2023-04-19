@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,30 @@
 
 package org.springframework.boot.buildpack.platform.docker;
 
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
-import org.apache.http.client.utils.URIBuilder;
+import org.apache.hc.core5.net.URIBuilder;
 
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
 import org.springframework.boot.buildpack.platform.docker.transport.HttpTransport;
 import org.springframework.boot.buildpack.platform.docker.transport.HttpTransport.Response;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
@@ -37,6 +48,7 @@ import org.springframework.boot.buildpack.platform.docker.type.ContainerReferenc
 import org.springframework.boot.buildpack.platform.docker.type.ContainerStatus;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageArchive;
+import org.springframework.boot.buildpack.platform.docker.type.ImageArchiveManifest;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
 import org.springframework.boot.buildpack.platform.io.IOBiConsumer;
@@ -75,16 +87,16 @@ public class DockerApi {
 	 * Create a new {@link DockerApi} instance.
 	 */
 	public DockerApi() {
-		this(new DockerConfiguration());
+		this(HttpTransport.create(null));
 	}
 
 	/**
 	 * Create a new {@link DockerApi} instance.
-	 * @param dockerConfiguration the docker configuration
+	 * @param dockerHost the Docker daemon host information
 	 * @since 2.4.0
 	 */
-	public DockerApi(DockerConfiguration dockerConfiguration) {
-		this(HttpTransport.create((dockerConfiguration != null) ? dockerConfiguration.getHost() : null));
+	public DockerApi(DockerHost dockerHost) {
+		this(HttpTransport.create(dockerHost));
 	}
 
 	/**
@@ -187,7 +199,7 @@ public class DockerApi {
 						listener.onUpdate(event);
 					});
 				}
-				return inspect(reference.withDigest(digestCapture.getCapturedDigest()));
+				return inspect(reference);
 			}
 			finally {
 				listener.onFinish();
@@ -250,7 +262,7 @@ public class DockerApi {
 		}
 
 		/**
-		 * Export the layers of an image.
+		 * Export the layers of an image as {@link TarArchive}s.
 		 * @param reference the reference to export
 		 * @param exports a consumer to receive the layers (contents can only be accessed
 		 * during the callback)
@@ -258,19 +270,49 @@ public class DockerApi {
 		 */
 		public void exportLayers(ImageReference reference, IOBiConsumer<String, TarArchive> exports)
 				throws IOException {
+			exportLayerFiles(reference, (name, path) -> {
+				try (InputStream in = Files.newInputStream(path)) {
+					TarArchive archive = (out) -> StreamUtils.copy(in, out);
+					exports.accept(name, archive);
+				}
+			});
+		}
+
+		/**
+		 * Export the layers of an image as paths to layer tar files.
+		 * @param reference the reference to export
+		 * @param exports a consumer to receive the layer tar file paths (file can only be
+		 * accessed during the callback)
+		 * @throws IOException on IO error
+		 * @since 2.7.10
+		 */
+		public void exportLayerFiles(ImageReference reference, IOBiConsumer<String, Path> exports) throws IOException {
 			Assert.notNull(reference, "Reference must not be null");
 			Assert.notNull(exports, "Exports must not be null");
 			URI saveUri = buildUrl("/images/" + reference + "/get");
 			Response response = http().get(saveUri);
+			ImageArchiveManifest manifest = null;
+			Map<String, Path> layerFiles = new HashMap<>();
 			try (TarArchiveInputStream tar = new TarArchiveInputStream(response.getContent())) {
 				TarArchiveEntry entry = tar.getNextTarEntry();
 				while (entry != null) {
-					if (entry.getName().endsWith("/layer.tar")) {
-						TarArchive archive = (out) -> StreamUtils.copy(tar, out);
-						exports.accept(entry.getName(), archive);
+					if (entry.getName().equals("manifest.json")) {
+						manifest = readManifest(tar);
+					}
+					if (entry.getName().endsWith(".tar")) {
+						layerFiles.put(entry.getName(), copyToTemp(tar));
 					}
 					entry = tar.getNextTarEntry();
 				}
+			}
+			Assert.notNull(manifest, "Manifest not found in image " + reference);
+			for (Map.Entry<String, Path> entry : layerFiles.entrySet()) {
+				String name = entry.getKey();
+				Path path = entry.getValue();
+				if (manifestContainsLayerEntry(manifest, name)) {
+					exports.accept(name, path);
+				}
+				Files.delete(path);
 			}
 		}
 
@@ -308,6 +350,24 @@ public class DockerApi {
 			http().post(uri).close();
 		}
 
+		private ImageArchiveManifest readManifest(TarArchiveInputStream tar) throws IOException {
+			String manifestContent = new BufferedReader(new InputStreamReader(tar, StandardCharsets.UTF_8)).lines()
+				.collect(Collectors.joining());
+			return ImageArchiveManifest.of(new ByteArrayInputStream(manifestContent.getBytes(StandardCharsets.UTF_8)));
+		}
+
+		private Path copyToTemp(TarArchiveInputStream in) throws IOException {
+			Path path = Files.createTempFile("create-builder-scratch-", null);
+			try (OutputStream out = Files.newOutputStream(path)) {
+				StreamUtils.copy(in, out);
+			}
+			return path;
+		}
+
+		private boolean manifestContainsLayerEntry(ImageArchiveManifest manifest, String layerId) {
+			return manifest.getEntries().stream().anyMatch((content) -> content.getLayers().contains(layerId));
+		}
+
 	}
 
 	/**
@@ -339,7 +399,7 @@ public class DockerApi {
 			URI createUri = buildUrl("/containers/create");
 			try (Response response = http().post(createUri, "application/json", config::writeTo)) {
 				return ContainerReference
-						.of(SharedObjectMapper.get().readTree(response.getContent()).at("/Id").asText());
+					.of(SharedObjectMapper.get().readTree(response.getContent()).at("/Id").asText());
 			}
 		}
 
@@ -449,11 +509,6 @@ public class DockerApi {
 				Assert.state(this.digest == null || this.digest.equals(digest), "Different digests IDs provided");
 				this.digest = digest;
 			}
-		}
-
-		String getCapturedDigest() {
-			Assert.hasText(this.digest, "No digest found");
-			return this.digest;
 		}
 
 	}

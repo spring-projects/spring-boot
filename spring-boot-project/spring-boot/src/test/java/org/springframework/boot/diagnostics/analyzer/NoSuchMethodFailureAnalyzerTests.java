@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,10 +45,28 @@ class NoSuchMethodFailureAnalyzerTests {
 		NoSuchMethodDescriptor descriptor = new NoSuchMethodFailureAnalyzer().getNoSuchMethodDescriptor(
 				"'boolean org.springframework.util.MimeType.isMoreSpecific(org.springframework.util.MimeType)'");
 		assertThat(descriptor).isNotNull();
-		assertThat(descriptor.getErrorMessage()).isEqualTo(
-				"'boolean org.springframework.util.MimeType.isMoreSpecific(org.springframework.util.MimeType)'");
+		assertThat(descriptor.getErrorMessage())
+			.isEqualTo("'boolean org.springframework.util.MimeType.isMoreSpecific(org.springframework.util.MimeType)'");
 		assertThat(descriptor.getClassName()).isEqualTo("org.springframework.util.MimeType");
-		assertThat(descriptor.getCandidateLocations().size()).isGreaterThan(1);
+		assertThat(descriptor.getCandidateLocations()).hasSizeGreaterThan(1);
+		List<ClassDescriptor> typeHierarchy = descriptor.getTypeHierarchy();
+		assertThat(typeHierarchy).hasSize(1);
+		assertThat(typeHierarchy.get(0).getLocation()).asString().contains("spring-core-5.3.12.jar");
+	}
+
+	@Test
+	void parseOpenJ9ErrorMessage() {
+		NoSuchMethodDescriptor descriptor = new NoSuchMethodFailureAnalyzer().getNoSuchMethodDescriptor(
+				"org/springframework/util/MimeType.isMoreSpecific(Lorg/springframework/util/MimeType;)Z "
+						+ "(loaded from ...) "
+						+ "called from class org.springframework.boot.diagnostics.analyzer.NoSuchMethodFailureAnalyzerTests "
+						+ "(loaded from ... "
+						+ "by org.springframework.boot.testsupport.classpath.ModifiedClassPathClassLoader@e0ce6310).");
+		assertThat(descriptor).isNotNull();
+		assertThat(descriptor.getErrorMessage())
+			.isEqualTo("org/springframework/util/MimeType.isMoreSpecific(Lorg/springframework/util/MimeType;)Z");
+		assertThat(descriptor.getClassName()).isEqualTo("org.springframework.util.MimeType");
+		assertThat(descriptor.getCandidateLocations()).hasSizeGreaterThan(1);
 		List<ClassDescriptor> typeHierarchy = descriptor.getTypeHierarchy();
 		assertThat(typeHierarchy).hasSize(1);
 		assertThat(typeHierarchy.get(0).getLocation()).asString().contains("spring-core-5.3.12.jar");
@@ -62,12 +80,12 @@ class NoSuchMethodFailureAnalyzerTests {
 		FailureAnalysis analysis = new NoSuchMethodFailureAnalyzer().analyze(failure);
 		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription())
-				.contains(NoSuchMethodFailureAnalyzerTests.class.getName() + ".createFailureForMissingMethod(")
-				.contains("isMoreSpecific(")
-				.contains("calling method's class, " + NoSuchMethodFailureAnalyzerTests.class.getName() + ",")
-				.contains("called method's class, org.springframework.util.MimeType,");
+			.contains(NoSuchMethodFailureAnalyzerTests.class.getName() + ".createFailureForMissingMethod(")
+			.contains("isMoreSpecific(")
+			.contains("calling method's class, " + NoSuchMethodFailureAnalyzerTests.class.getName() + ",")
+			.contains("called method's class, org.springframework.util.MimeType,");
 		assertThat(analysis.getAction()).contains(NoSuchMethodFailureAnalyzerTests.class.getName())
-				.contains("org.springframework.util.MimeType");
+			.contains("org.springframework.util.MimeType");
 	}
 
 	@Test
@@ -77,12 +95,12 @@ class NoSuchMethodFailureAnalyzerTests {
 		FailureAnalysis analysis = new NoSuchMethodFailureAnalyzer().analyze(failure);
 		assertThat(analysis).isNotNull();
 		assertThat(analysis.getDescription()).contains(R2dbcMappingContext.class.getName() + ".<init>(")
-				.contains(R2dbcMappingContext.class.getName() + ".setForceQuote(")
-				.contains("calling method's class, org.springframework.data.r2dbc.mapping.R2dbcMappingContext,")
-				.contains("called method's class, org.springframework.data.r2dbc.mapping.R2dbcMappingContext,")
-				.contains("    org.springframework.data.r2dbc.mapping.R2dbcMappingContext")
-				.contains("    org.springframework.data.relational.core.mapping.RelationalMappingContext")
-				.contains("    org.springframework.data.mapping.context.AbstractMappingContext");
+			.contains(R2dbcMappingContext.class.getName() + ".setForceQuote(")
+			.contains("calling method's class, org.springframework.data.r2dbc.mapping.R2dbcMappingContext,")
+			.contains("called method's class, org.springframework.data.r2dbc.mapping.R2dbcMappingContext,")
+			.contains("    org.springframework.data.r2dbc.mapping.R2dbcMappingContext")
+			.contains("    org.springframework.data.relational.core.mapping.RelationalMappingContext")
+			.contains("    org.springframework.data.mapping.context.AbstractMappingContext");
 		assertThat(analysis.getAction()).contains("org.springframework.data.r2dbc.mapping.R2dbcMappingContext");
 	}
 

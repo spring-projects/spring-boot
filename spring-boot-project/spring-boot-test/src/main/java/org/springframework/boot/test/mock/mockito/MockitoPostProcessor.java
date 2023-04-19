@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,7 +83,7 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 	private static final String BEAN_NAME = MockitoPostProcessor.class.getName();
 
 	private static final String CONFIGURATION_CLASS_ATTRIBUTE = Conventions
-			.getQualifiedAttributeName(ConfigurationClassPostProcessor.class, "configurationClass");
+		.getQualifiedAttributeName(ConfigurationClassPostProcessor.class, "configurationClass");
 
 	private static final BeanNameGenerator beanNameGenerator = new DefaultBeanNameGenerator();
 
@@ -95,11 +95,11 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 
 	private final MockitoBeans mockitoBeans = new MockitoBeans();
 
-	private Map<Definition, String> beanNameRegistry = new HashMap<>();
+	private final Map<Definition, String> beanNameRegistry = new HashMap<>();
 
-	private Map<Field, String> fieldRegistry = new HashMap<>();
+	private final Map<Field, String> fieldRegistry = new HashMap<>();
 
-	private Map<String, SpyDefinition> spies = new HashMap<>();
+	private final Map<String, SpyDefinition> spies = new HashMap<>();
 
 	/**
 	 * Create a new {@link MockitoPostProcessor} instance with the given initial
@@ -163,11 +163,11 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 
 	private void register(ConfigurableListableBeanFactory beanFactory, BeanDefinitionRegistry registry,
 			Definition definition, Field field) {
-		if (definition instanceof MockDefinition) {
-			registerMock(beanFactory, registry, (MockDefinition) definition, field);
+		if (definition instanceof MockDefinition mockDefinition) {
+			registerMock(beanFactory, registry, mockDefinition, field);
 		}
-		else if (definition instanceof SpyDefinition) {
-			registerSpy(beanFactory, registry, (SpyDefinition) definition, field);
+		else if (definition instanceof SpyDefinition spyDefinition) {
+			registerSpy(beanFactory, registry, spyDefinition, field);
 		}
 	}
 

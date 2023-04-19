@@ -18,7 +18,7 @@ The curated list contains all the Spring modules that you can use with Spring Bo
 The list is available as a standard Bills of Materials (`spring-boot-dependencies`) that can be used with both <<using#using.build-systems.maven,Maven>> and <<using#using.build-systems.gradle,Gradle>>.
 
 WARNING: Each release of Spring Boot is associated with a base version of the Spring Framework.
-We **highly** recommend that you not specify its version.
+We **highly** recommend that you do not specify its version.
 
 
 

@@ -16,13 +16,13 @@
 
 package org.springframework.boot.docs.gettingstarted.firstapplication.code
 
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration
+import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-@EnableAutoConfiguration
+@SpringBootApplication
 class MyApplication {
 
 	@RequestMapping("/")

@@ -44,7 +44,6 @@ import org.springframework.boot.web.server.ErrorPageRegistry;
 import org.springframework.core.Ordered;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.util.NestedServletException;
 
 /**
  * A Servlet {@link Filter} that provides an {@link ErrorPageRegistry} for non-embedded
@@ -133,8 +132,8 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry, Ordered {
 		}
 		catch (Throwable ex) {
 			Throwable exceptionToHandle = ex;
-			if (ex instanceof NestedServletException) {
-				Throwable rootCause = ((NestedServletException) ex).getRootCause();
+			if (ex instanceof ServletException servletException) {
+				Throwable rootCause = servletException.getRootCause();
 				if (rootCause != null) {
 					exceptionToHandle = rootCause;
 				}
@@ -261,17 +260,17 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry, Ordered {
 	}
 
 	private void rethrow(Throwable ex) throws IOException, ServletException {
-		if (ex instanceof RuntimeException) {
-			throw (RuntimeException) ex;
+		if (ex instanceof RuntimeException runtimeException) {
+			throw runtimeException;
 		}
-		if (ex instanceof Error) {
-			throw (Error) ex;
+		if (ex instanceof Error error) {
+			throw error;
 		}
-		if (ex instanceof IOException) {
-			throw (IOException) ex;
+		if (ex instanceof IOException ioException) {
+			throw ioException;
 		}
-		if (ex instanceof ServletException) {
-			throw (ServletException) ex;
+		if (ex instanceof ServletException servletException) {
+			throw servletException;
 		}
 		throw new IllegalStateException(ex);
 	}

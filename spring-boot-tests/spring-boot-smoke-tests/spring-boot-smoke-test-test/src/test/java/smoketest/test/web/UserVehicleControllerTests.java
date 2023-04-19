@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,22 +59,25 @@ class UserVehicleControllerTests {
 	@Test
 	void getVehicleWhenRequestingTextShouldReturnMakeAndModel() throws Exception {
 		given(this.userVehicleService.getVehicleDetails("sboot")).willReturn(new VehicleDetails("Honda", "Civic"));
-		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN)).andExpect(status().isOk())
-				.andExpect(content().string("Honda Civic"));
+		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN))
+			.andExpect(status().isOk())
+			.andExpect(content().string("Honda Civic"));
 	}
 
 	@Test
 	void getVehicleWhenRequestingJsonShouldReturnMakeAndModel() throws Exception {
 		given(this.userVehicleService.getVehicleDetails("sboot")).willReturn(new VehicleDetails("Honda", "Civic"));
-		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
-				.andExpect(content().json("{'make':'Honda','model':'Civic'}"));
+		this.mvc.perform(get("/sboot/vehicle").accept(MediaType.APPLICATION_JSON))
+			.andExpect(status().isOk())
+			.andExpect(content().json("{'make':'Honda','model':'Civic'}"));
 	}
 
 	@Test
 	void getVehicleWhenRequestingHtmlShouldReturnMakeAndModel() throws Exception {
 		given(this.userVehicleService.getVehicleDetails("sboot")).willReturn(new VehicleDetails("Honda", "Civic"));
-		this.mvc.perform(get("/sboot/vehicle.html").accept(MediaType.TEXT_HTML)).andExpect(status().isOk())
-				.andExpect(content().string(containsString("<h1>Honda Civic</h1>")));
+		this.mvc.perform(get("/sboot/vehicle.html").accept(MediaType.TEXT_HTML))
+			.andExpect(status().isOk())
+			.andExpect(content().string(containsString("<h1>Honda Civic</h1>")));
 	}
 
 	@Test
@@ -86,7 +89,7 @@ class UserVehicleControllerTests {
 	@Test
 	void getVehicleWhenVinNotFoundShouldReturnNotFound() throws Exception {
 		given(this.userVehicleService.getVehicleDetails("sboot"))
-				.willThrow(new VehicleIdentificationNumberNotFoundException(VIN));
+			.willThrow(new VehicleIdentificationNumberNotFoundException(VIN));
 		this.mvc.perform(get("/sboot/vehicle")).andExpect(status().isNotFound());
 	}
 
@@ -94,7 +97,7 @@ class UserVehicleControllerTests {
 	void welcomeCommandLineRunnerShouldNotBeAvailable() {
 		// Since we're a @WebMvcTest WelcomeCommandLineRunner should not be available.
 		Assertions.assertThatThrownBy(() -> this.applicationContext.getBean(WelcomeCommandLineRunner.class))
-				.isInstanceOf(NoSuchBeanDefinitionException.class);
+			.isInstanceOf(NoSuchBeanDefinitionException.class);
 	}
 
 }

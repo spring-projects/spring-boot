@@ -1,5 +1,5 @@
 [[features.kotlin]]
-== Kotlin support
+== Kotlin Support
 https://kotlinlang.org[Kotlin] is a statically-typed language targeting the JVM (and other platforms) which allows writing concise and elegant code while providing {kotlin-docs}java-interop.html[interoperability] with existing libraries written in Java.
 
 Spring Boot provides Kotlin support by leveraging the support in other Spring projects such as Spring Framework, Spring Data, and Reactor.
@@ -13,7 +13,7 @@ Feel free to join the #spring channel of https://slack.kotlinlang.org/[Kotlin Sl
 
 [[features.kotlin.requirements]]
 === Requirements
-Spring Boot requires at least Kotlin 1.3.x and manages a suitable Kotlin version through dependency management.
+Spring Boot requires at least Kotlin 1.7.x and manages a suitable Kotlin version through dependency management.
 To use Kotlin, `org.jetbrains.kotlin:kotlin-stdlib` and `org.jetbrains.kotlin:kotlin-reflect` must be present on the classpath.
 The `kotlin-stdlib` variants `kotlin-stdlib-jdk7` and `kotlin-stdlib-jdk8` can also be used.
 
@@ -137,7 +137,7 @@ JUnit 5 enables a test class to be instantiated once and reused for all of the c
 This makes it possible to use `@BeforeAll` and `@AfterAll` annotations on non-static methods, which is a good fit for Kotlin.
 
 To mock Kotlin classes, https://mockk.io/[MockK] is recommended.
-If you need the `Mockk` equivalent of the Mockito specific <<features#features.testing.spring-boot-applications.mocking-beans,`@MockBean` and `@SpyBean` annotations>>, you can use https://github.com/Ninja-Squad/springmockk[SpringMockK] which provides similar `@MockkBean` and `@SpykBean` annotations.
+If you need the `MockK` equivalent of the Mockito specific <<features#features.testing.spring-boot-applications.mocking-beans,`@MockBean` and `@SpyBean` annotations>>, you can use https://github.com/Ninja-Squad/springmockk[SpringMockK] which provides similar `@MockkBean` and `@SpykBean` annotations.
 
 
 
@@ -150,7 +150,7 @@ If you need the `Mockk` equivalent of the Mockito specific <<features#features.t
 ==== Further reading
 * {kotlin-docs}[Kotlin language reference]
 * https://kotlinlang.slack.com/[Kotlin Slack] (with a dedicated #spring channel)
-* https://stackoverflow.com/questions/tagged/spring+kotlin[Stackoverflow with `spring` and `kotlin` tags]
+* https://stackoverflow.com/questions/tagged/spring+kotlin[Stack Overflow with `spring` and `kotlin` tags]
 * https://try.kotlinlang.org/[Try Kotlin in your browser]
 * https://blog.jetbrains.com/kotlin/[Kotlin blog]
 * https://kotlin.link/[Awesome Kotlin]

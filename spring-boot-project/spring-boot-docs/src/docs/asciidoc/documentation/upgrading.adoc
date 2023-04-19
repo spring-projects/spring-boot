@@ -5,7 +5,7 @@ You should always ensure that you are running a {github-wiki}/Supported-Versions
 
 Depending on the version that you are upgrading to, you can find some additional tips here:
 
-* *From 1.x:* <<actuator#upgrading.from-1x, Upgrading from 1.x>>
+* *From 1.x:* <<upgrading#upgrading.from-1x, Upgrading from 1.x>>
 * *To a new feature release:* <<upgrading#upgrading.to-feature, Upgrading to New Feature Release>>
 * *Spring Boot CLI:* <<upgrading#upgrading.cli, Upgrading the Spring Boot CLI>>
 

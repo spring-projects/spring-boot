@@ -1,6 +1,6 @@
 [[web.servlet]]
 == Servlet Web Applications
-If you want to build servlet-based web applications, you can take advantage of Spring Boot's auto-configuration for Spring MVC.
+If you want to build servlet-based web applications, you can take advantage of Spring Boot's auto-configuration for Spring MVC or Jersey.
 
 
 
@@ -75,28 +75,6 @@ You can also override default converters in the same way.
 
 
 
-[[web.servlet.spring-mvc.json]]
-==== Custom JSON Serializers and Deserializers
-If you use Jackson to serialize and deserialize JSON data, you might want to write your own `JsonSerializer` and `JsonDeserializer` classes.
-Custom serializers are usually https://github.com/FasterXML/jackson-docs/wiki/JacksonHowToCustomSerializers[registered with Jackson through a module], but Spring Boot provides an alternative `@JsonComponent` annotation that makes it easier to directly register Spring Beans.
-
-You can use the `@JsonComponent` annotation directly on `JsonSerializer`, `JsonDeserializer` or `KeyDeserializer` implementations.
-You can also use it on classes that contain serializers/deserializers as inner classes, as shown in the following example:
-
-include::code:MyJsonComponent[]
-
-All `@JsonComponent` beans in the `ApplicationContext` are automatically registered with Jackson.
-Because `@JsonComponent` is meta-annotated with `@Component`, the usual component-scanning rules apply.
-
-Spring Boot also provides {spring-boot-module-code}/jackson/JsonObjectSerializer.java[`JsonObjectSerializer`] and {spring-boot-module-code}/jackson/JsonObjectDeserializer.java[`JsonObjectDeserializer`] base classes that provide useful alternatives to the standard Jackson versions when serializing objects.
-See {spring-boot-module-api}/jackson/JsonObjectSerializer.html[`JsonObjectSerializer`] and {spring-boot-module-api}/jackson/JsonObjectDeserializer.html[`JsonObjectDeserializer`] in the Javadoc for details.
-
-The example above can be rewritten to use `JsonObjectSerializer`/`JsonObjectDeserializer` as follows:
-
-include::code:object/MyJsonComponent[]
-
-
-
 [[web.servlet.spring-mvc.message-codes]]
 ==== MessageCodesResolver
 Spring MVC has a strategy for generating error codes for rendering error messages from binding errors: `MessageCodesResolver`.
@@ -109,7 +87,10 @@ If you set the configprop:spring.mvc.message-codes-resolver-format[] property `P
 By default, Spring Boot serves static content from a directory called `/static` (or `/public` or `/resources` or `/META-INF/resources`) in the classpath or from the root of the `ServletContext`.
 It uses the `ResourceHttpRequestHandler` from Spring MVC so that you can modify that behavior by adding your own `WebMvcConfigurer` and overriding the `addResourceHandlers` method.
 
-In a stand-alone web application, the default servlet from the container is also enabled and acts as a fallback, serving content from the root of the `ServletContext` if Spring decides not to handle it.
+In a stand-alone web application, the default servlet from the container is not enabled.
+It can be enabled using the configprop:server.servlet.register-default-servlet[] property.
+
+The default servlet acts as a fallback, serving content from the root of the `ServletContext` if Spring decides not to handle it.
 Most of the time, this does not happen (unless you modify the default MVC configuration), because Spring can always handle requests through the `DispatcherServlet`.
 
 By default, resources are mapped on `+/**+`, but you can tune that with the configprop:spring.mvc.static-path-pattern[] property.
@@ -126,7 +107,8 @@ You can also customize the static resource locations by using the configprop:spr
 The root servlet context path, `"/"`, is automatically added as a location as well.
 
 In addition to the "`standard`" static resource locations mentioned earlier, a special case is made for https://www.webjars.org/[Webjars content].
-Any resources with a path in `+/webjars/**+` are served from jar files if they are packaged in the Webjars format.
+By default, any resources with a path in `+/webjars/**+` are served from jar files if they are packaged in the Webjars format.
+The path can be customized with the configprop:spring.mvc.webjars-path-pattern[] property.
 
 TIP: Do not use the `src/main/webapp` directory if your application is packaged as a jar.
 Although this directory is a common standard, it works *only* with war packaging, and it is silently ignored by most build tools if you generate a jar.
@@ -198,6 +180,13 @@ If either is found, it is automatically used as the welcome page of the applicat
 
 
 
+[[web.servlet.spring-mvc.favicon]]
+==== Custom Favicon
+As with other static resources, Spring Boot checks for a `favicon.ico` in the configured static content locations.
+If such a file is present, it is automatically used as the favicon of the application.
+
+
+
 [[web.servlet.spring-mvc.content-negotiation]]
 ==== Path Matching and Content Negotiation
 Spring MVC can map incoming HTTP requests to handlers by looking at the request path and matching it to the mappings defined in your application (for example, `@GetMapping` annotations on Controller methods).
@@ -242,31 +231,6 @@ Most standard media types are supported out-of-the-box, but you can also define 
 
 
 
-Suffix pattern matching is deprecated and will be removed in a future release.
-If you understand the caveats and would still like your application to use suffix pattern matching, the following configuration is required:
-
-[source,yaml,indent=0,subs="verbatim",configblocks]
-----
-	spring:
-	  mvc:
-	    contentnegotiation:
-	      favor-path-extension: true
-	    pathmatch:
-	      use-suffix-pattern: true
-----
-
-Alternatively, rather than open all suffix patterns, it is more secure to only support registered suffix patterns:
-
-[source,yaml,indent=0,subs="verbatim",configblocks]
-----
-	spring:
-	  mvc:
-	    contentnegotiation:
-	      favor-path-extension: true
-	    pathmatch:
-	      use-registered-suffix-pattern: true
-----
-
 As of Spring Framework 5.3, Spring MVC supports several implementation strategies for matching request paths to Controller handlers.
 It was previously only supporting the `AntPathMatcher` strategy, but it now also offers `PathPatternParser`.
 Spring Boot now provides a configuration property to choose and opt in the new strategy:
@@ -282,11 +246,13 @@ Spring Boot now provides a configuration property to choose and opt in the new s
 For more details on why you should consider this new implementation, see the
 https://spring.io/blog/2020/06/30/url-matching-with-pathpattern-in-spring-mvc[dedicated blog post].
 
-NOTE: `PathPatternParser` is an optimized implementation but restricts usage of
-{spring-framework-docs}/web.html#mvc-ann-requestmapping-uri-templates[some path patterns variants]
-and is incompatible with suffix pattern matching (configprop:spring.mvc.pathmatch.use-suffix-pattern[deprecated],
-configprop:spring.mvc.pathmatch.use-registered-suffix-pattern[deprecated]) or mapping the `DispatcherServlet`
-with a servlet prefix (configprop:spring.mvc.servlet.path[]).
+NOTE: `PathPatternParser` is an optimized implementation but restricts usage of {spring-framework-docs}/web.html#mvc-ann-requestmapping-uri-templates[some path patterns variants].
+It is incompatible with suffix pattern matching or mapping the `DispatcherServlet` with a servlet prefix (configprop:spring.mvc.servlet.path[]).
+
+By default, Spring MVC will send a 404 Not Found error response if a handler is not found for a request.
+To have a `NoHandlerFoundException` thrown instead, set configprop:spring.mvc.throw-exception-if-no-handler-found to `true`.
+Note that, by default, the <<web#web.servlet.spring-mvc.static-content, serving of static content>> is mapped to `+/**+` and will, therefore, provide a handler for all requests.
+For a `NoHandlerFoundException` to be thrown, you must also set configprop:spring.mvc.static-path-pattern[] to a more specific value such as `/resources/**` or set configprop:spring.web.resources.add-mappings[] to `false` to disable serving of static content entirely.
 
 
 
@@ -337,11 +303,27 @@ TIP: The `BasicErrorController` can be used as a base class for a custom `ErrorC
 This is particularly useful if you want to add a handler for a new content type (the default is to handle `text/html` specifically and provide a fallback for everything else).
 To do so, extend `BasicErrorController`, add a public method with a `@RequestMapping` that has a `produces` attribute, and create a bean of your new type.
 
+As of Spring Framework 6.0, {spring-framework-docs}/web.html#mvc-ann-rest-exceptions[RFC 7807 Problem Details] is supported.
+Spring MVC can produce custom error messages with the `application/problem+json` media type, like:
+
+[source,json,indent=0,subs="verbatim"]
+----
+{
+  "type": "https://example.org/problems/unknown-project",
+  "title": "Unknown project",
+  "status": 404,
+  "detail": "No project found for id 'spring-unknown'",
+  "instance": "/projects/spring-unknown"
+}
+----
+
+This support can be enabled by setting configprop:spring.mvc.problemdetails.enabled[] to `true`.
+
 You can also define a class annotated with `@ControllerAdvice` to customize the JSON document to return for a particular controller and/or exception type, as shown in the following example:
 
 include::code:MyControllerAdvice[]
 
-In the preceding example, if `YourException` is thrown by a controller defined in the same package as `SomeController`, a JSON representation of the `CustomErrorType` POJO is used instead of the `ErrorAttributes` representation.
+In the preceding example, if `MyException` is thrown by a controller defined in the same package as `SomeController`, a JSON representation of the `MyErrorBody` POJO is used instead of the `ErrorAttributes` representation.
 
 In some cases, errors handled at the controller level are not recorded by the <<actuator#actuator.metrics.supported.spring-mvc, metrics infrastructure>>.
 Applications can ensure that such exceptions are recorded with the request metrics by setting the handled exception as a request attribute:
@@ -396,7 +378,7 @@ The `ErrorController` then picks up any unhandled exceptions.
 
 
 [[web.servlet.spring-mvc.error-handling.error-pages-without-spring-mvc]]
-===== Mapping Error Pages outside of Spring MVC
+===== Mapping Error Pages Outside of Spring MVC
 For applications that do not use Spring MVC, you can use the `ErrorPageRegistrar` interface to directly register `ErrorPages`.
 This abstraction works directly with the underlying embedded servlet container and works even if you do not have a Spring MVC `DispatcherServlet`.
 
@@ -411,7 +393,7 @@ Note that the default `FilterRegistrationBean` does not include the `ERROR` disp
 
 
 [[web.servlet.spring-mvc.error-handling.in-a-war-deployment]]
-===== Error handling in a war deployment
+===== Error Handling in a WAR Deployment
 When deployed to a servlet container, Spring Boot uses its error page filter to forward a request with an error status to the appropriate error page.
 This is necessary as the servlet specification does not provide an API for registering error pages.
 Depending on the container that you are deploying your war file to and the technologies that your application uses, some additional configuration may be required.
@@ -419,9 +401,6 @@ Depending on the container that you are deploying your war file to and the techn
 The error page filter can only forward the request to the correct error page if the response has not already been committed.
 By default, WebSphere Application Server 8.0 and later commits the response upon successful completion of a servlet's service method.
 You should disable this behavior by setting `com.ibm.ws.webcontainer.invokeFlushAfterService` to `false`.
-
-If you are using Spring Security and want to access the principal in an error page, you must configure Spring Security's filter to be invoked on error dispatches.
-To do so, set the `spring.security.filter.dispatcher-types` property to `async, error, forward, request`.
 
 
 
@@ -437,6 +416,48 @@ include::code:MyCorsConfiguration[]
 
 
 
+[[web.servlet.jersey]]
+=== JAX-RS and Jersey
+If you prefer the JAX-RS programming model for REST endpoints, you can use one of the available implementations instead of Spring MVC.
+https://jersey.github.io/[Jersey] and https://cxf.apache.org/[Apache CXF] work quite well out of the box.
+CXF requires you to register its `Servlet` or `Filter` as a `@Bean` in your application context.
+Jersey has some native Spring support, so we also provide auto-configuration support for it in Spring Boot, together with a starter.
+
+To get started with Jersey, include the `spring-boot-starter-jersey` as a dependency and then you need one `@Bean` of type `ResourceConfig` in which you register all the endpoints, as shown in the following example:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/web/servlet/jersey/MyJerseyConfig.java[]
+----
+
+WARNING: Jersey's support for scanning executable archives is rather limited.
+For example, it cannot scan for endpoints in a package found in a <<deployment#deployment.installing, fully executable jar file>> or in `WEB-INF/classes` when running an executable war file.
+To avoid this limitation, the `packages` method should not be used, and endpoints should be registered individually by using the `register` method, as shown in the preceding example.
+
+For more advanced customizations, you can also register an arbitrary number of beans that implement `ResourceConfigCustomizer`.
+
+All the registered endpoints should be `@Components` with HTTP resource annotations (`@GET` and others), as shown in the following example:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/web/servlet/jersey/MyEndpoint.java[]
+----
+
+Since the `Endpoint` is a Spring `@Component`, its lifecycle is managed by Spring and you can use the `@Autowired` annotation to inject dependencies and use the `@Value` annotation to inject external configuration.
+By default, the Jersey servlet is registered and mapped to `/*`.
+You can change the mapping by adding `@ApplicationPath` to your `ResourceConfig`.
+
+By default, Jersey is set up as a servlet in a `@Bean` of type `ServletRegistrationBean` named `jerseyServletRegistration`.
+By default, the servlet is initialized lazily, but you can customize that behavior by setting `spring.jersey.servlet.load-on-startup`.
+You can disable or override that bean by creating one of your own with the same name.
+You can also use a filter instead of a servlet by setting `spring.jersey.type=filter` (in which case, the `@Bean` to replace or override is `jerseyFilterRegistration`).
+The filter has an `@Order`, which you can set with `spring.jersey.filter.order`.
+When using Jersey as a filter, a servlet that will handle any requests that are not intercepted by Jersey must be present.
+If your application does not contain such a servlet, you may want to enable the default servlet by setting configprop:server.servlet.register-default-servlet[] to `true`.
+Both the servlet and the filter registrations can be given init parameters by using `spring.jersey.init.*` to specify a map of properties.
+
+
+
 [[web.servlet.embedded-container]]
 === Embedded Servlet Container Support
 For servlet application, Spring Boot includes support for embedded https://tomcat.apache.org/[Tomcat], https://www.eclipse.org/jetty/[Jetty], and https://github.com/undertow-io/undertow[Undertow] servers.
@@ -446,7 +467,7 @@ By default, the embedded server listens for HTTP requests on port `8080`.
 
 
 [[web.servlet.embedded-container.servlets-filters-listeners]]
-==== Servlets, Filters, and listeners
+==== Servlets, Filters, and Listeners
 When using an embedded servlet container, you can register servlets, filters, and all the listeners (such as `HttpSessionListener`) from the servlet spec, either by using Spring beans or by scanning for servlet components.
 
 
@@ -503,6 +524,17 @@ Usually a `TomcatServletWebServerFactory`, `JettyServletWebServerFactory`, or `U
 
 NOTE: You usually do not need to be aware of these implementation classes.
 Most applications are auto-configured, and the appropriate `ApplicationContext` and `ServletWebServerFactory` are created on your behalf.
+
+In an embedded container setup, the `ServletContext` is set as part of server startup which happens during application context initialization.
+Because of this beans in the `ApplicationContext` cannot be reliably initialized with a `ServletContext`.
+One way to get around this is to inject `ApplicationContext` as a dependency of the bean and access the `ServletContext` only when it is needed.
+Another way is to use a callback once the server has started.
+This can be done using an `ApplicationListener` which listens for the `ApplicationStartedEvent` as follows:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/web/servlet/embeddedcontainer/applicationcontext/MyDemoBean.java[]
+----
 
 
 

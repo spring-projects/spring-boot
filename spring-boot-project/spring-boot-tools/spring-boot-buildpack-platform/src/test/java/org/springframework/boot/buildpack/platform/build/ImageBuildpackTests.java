@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@ package org.springframework.boot.buildpack.platform.build;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -33,7 +36,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.IOBiConsumer;
-import org.springframework.boot.buildpack.platform.io.TarArchive;
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -64,29 +66,31 @@ class ImageBuildpackTests extends AbstractJsonTests {
 	}
 
 	@Test
-	void resolveWhenFullyQualifiedReferenceReturnsBuilder() throws Exception {
+	void resolveWhenFullyQualifiedReferenceReturnsBuildpack() throws Exception {
 		Image image = Image.of(getContent("buildpack-image.json"));
 		ImageReference imageReference = ImageReference.of("example/buildpack1:1.0.0");
 		BuildpackResolverContext resolverContext = mock(BuildpackResolverContext.class);
+		given(resolverContext.getBuildpackLayersMetadata()).willReturn(BuildpackLayersMetadata.fromJson("{}"));
 		given(resolverContext.fetchImage(eq(imageReference), eq(ImageType.BUILDPACK))).willReturn(image);
 		willAnswer(this::withMockLayers).given(resolverContext).exportImageLayers(eq(imageReference), any());
 		BuildpackReference reference = BuildpackReference.of("docker://example/buildpack1:1.0.0");
 		Buildpack buildpack = ImageBuildpack.resolve(resolverContext, reference);
 		assertThat(buildpack.getCoordinates()).hasToString("example/hello-universe@0.0.1");
-		assertHasExpectedLayers(buildpack);
+		assertAppliesExpectedLayers(buildpack);
 	}
 
 	@Test
-	void resolveWhenUnqualifiedReferenceReturnsBuilder() throws Exception {
+	void resolveWhenUnqualifiedReferenceReturnsBuildpack() throws Exception {
 		Image image = Image.of(getContent("buildpack-image.json"));
 		ImageReference imageReference = ImageReference.of("example/buildpack1:1.0.0");
 		BuildpackResolverContext resolverContext = mock(BuildpackResolverContext.class);
+		given(resolverContext.getBuildpackLayersMetadata()).willReturn(BuildpackLayersMetadata.fromJson("{}"));
 		given(resolverContext.fetchImage(eq(imageReference), eq(ImageType.BUILDPACK))).willReturn(image);
 		willAnswer(this::withMockLayers).given(resolverContext).exportImageLayers(eq(imageReference), any());
 		BuildpackReference reference = BuildpackReference.of("example/buildpack1:1.0.0");
 		Buildpack buildpack = ImageBuildpack.resolve(resolverContext, reference);
 		assertThat(buildpack.getCoordinates()).hasToString("example/hello-universe@0.0.1");
-		assertHasExpectedLayers(buildpack);
+		assertAppliesExpectedLayers(buildpack);
 	}
 
 	@Test
@@ -94,12 +98,13 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		Image image = Image.of(getContent("buildpack-image.json"));
 		ImageReference imageReference = ImageReference.of("example/buildpack1:latest");
 		BuildpackResolverContext resolverContext = mock(BuildpackResolverContext.class);
+		given(resolverContext.getBuildpackLayersMetadata()).willReturn(BuildpackLayersMetadata.fromJson("{}"));
 		given(resolverContext.fetchImage(eq(imageReference), eq(ImageType.BUILDPACK))).willReturn(image);
 		willAnswer(this::withMockLayers).given(resolverContext).exportImageLayers(eq(imageReference), any());
 		BuildpackReference reference = BuildpackReference.of("example/buildpack1");
 		Buildpack buildpack = ImageBuildpack.resolve(resolverContext, reference);
 		assertThat(buildpack.getCoordinates()).hasToString("example/hello-universe@0.0.1");
-		assertHasExpectedLayers(buildpack);
+		assertAppliesExpectedLayers(buildpack);
 	}
 
 	@Test
@@ -108,12 +113,28 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		String digest = "sha256:4acb6bfd6c4f0cabaf7f3690e444afe51f1c7de54d51da7e63fac709c56f1c30";
 		ImageReference imageReference = ImageReference.of("example/buildpack1@" + digest);
 		BuildpackResolverContext resolverContext = mock(BuildpackResolverContext.class);
+		given(resolverContext.getBuildpackLayersMetadata()).willReturn(BuildpackLayersMetadata.fromJson("{}"));
 		given(resolverContext.fetchImage(eq(imageReference), eq(ImageType.BUILDPACK))).willReturn(image);
 		willAnswer(this::withMockLayers).given(resolverContext).exportImageLayers(eq(imageReference), any());
 		BuildpackReference reference = BuildpackReference.of("example/buildpack1@" + digest);
 		Buildpack buildpack = ImageBuildpack.resolve(resolverContext, reference);
 		assertThat(buildpack.getCoordinates()).hasToString("example/hello-universe@0.0.1");
-		assertHasExpectedLayers(buildpack);
+		assertAppliesExpectedLayers(buildpack);
+	}
+
+	@Test
+	void resolveWhenBuildpackExistsInBuilderSkipsLayers() throws Exception {
+		Image image = Image.of(getContent("buildpack-image.json"));
+		ImageReference imageReference = ImageReference.of("example/buildpack1:1.0.0");
+		BuildpackResolverContext resolverContext = mock(BuildpackResolverContext.class);
+		given(resolverContext.getBuildpackLayersMetadata())
+			.willReturn(BuildpackLayersMetadata.fromJson(getContentAsString("buildpack-layers-metadata.json")));
+		given(resolverContext.fetchImage(eq(imageReference), eq(ImageType.BUILDPACK))).willReturn(image);
+		willAnswer(this::withMockLayers).given(resolverContext).exportImageLayers(eq(imageReference), any());
+		BuildpackReference reference = BuildpackReference.of("docker://example/buildpack1:1.0.0");
+		Buildpack buildpack = ImageBuildpack.resolve(resolverContext, reference);
+		assertThat(buildpack.getCoordinates()).hasToString("example/hello-universe@0.0.1");
+		assertAppliesNoLayers(buildpack);
 	}
 
 	@Test
@@ -122,8 +143,8 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		given(resolverContext.fetchImage(any(), any())).willThrow(IOException.class);
 		BuildpackReference reference = BuildpackReference.of("docker://example/buildpack1");
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageBuildpack.resolve(resolverContext, reference))
-				.withMessageContaining("Error pulling buildpack image")
-				.withMessageContaining("example/buildpack1:latest");
+			.withMessageContaining("Error pulling buildpack image")
+			.withMessageContaining("example/buildpack1:latest");
 	}
 
 	@Test
@@ -133,7 +154,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		given(resolverContext.fetchImage(any(), any())).willReturn(image);
 		BuildpackReference reference = BuildpackReference.of("docker://example/buildpack1:latest");
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageBuildpack.resolve(resolverContext, reference))
-				.withMessageContaining("No 'io.buildpacks.buildpackage.metadata' label found");
+			.withMessageContaining("No 'io.buildpacks.buildpackage.metadata' label found");
 	}
 
 	@Test
@@ -141,7 +162,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		BuildpackReference reference = BuildpackReference.of("docker://buildpack@0.0.1");
 		BuildpackResolverContext resolverContext = mock(BuildpackResolverContext.class);
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageBuildpack.resolve(resolverContext, reference))
-				.withMessageContaining("Unable to parse image reference \"buildpack@0.0.1\"");
+			.withMessageContaining("Unable to parse image reference \"buildpack@0.0.1\"");
 	}
 
 	@Test
@@ -154,20 +175,20 @@ class ImageBuildpackTests extends AbstractJsonTests {
 
 	private Object withMockLayers(InvocationOnMock invocation) {
 		try {
-			IOBiConsumer<String, TarArchive> consumer = invocation.getArgument(1);
-			TarArchive archive = (out) -> {
-				try (TarArchiveOutputStream tarOut = new TarArchiveOutputStream(out)) {
-					tarOut.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
-					writeTarEntry(tarOut, "/cnb/");
-					writeTarEntry(tarOut, "/cnb/buildpacks/");
-					writeTarEntry(tarOut, "/cnb/buildpacks/example_buildpack/");
-					writeTarEntry(tarOut, "/cnb/buildpacks/example_buildpack/0.0.1/");
-					writeTarEntry(tarOut, "/cnb/buildpacks/example_buildpack/0.0.1/buildpack.toml");
-					writeTarEntry(tarOut, "/cnb/buildpacks/example_buildpack/0.0.1/" + this.longFilePath);
-					tarOut.finish();
-				}
-			};
-			consumer.accept("test", archive);
+			IOBiConsumer<String, Path> consumer = invocation.getArgument(1);
+			File tarFile = File.createTempFile("create-builder-test-", null);
+			FileOutputStream out = new FileOutputStream(tarFile);
+			try (TarArchiveOutputStream tarOut = new TarArchiveOutputStream(out)) {
+				tarOut.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
+				writeTarEntry(tarOut, "/cnb/");
+				writeTarEntry(tarOut, "/cnb/buildpacks/");
+				writeTarEntry(tarOut, "/cnb/buildpacks/example_buildpack/");
+				writeTarEntry(tarOut, "/cnb/buildpacks/example_buildpack/0.0.1/");
+				writeTarEntry(tarOut, "/cnb/buildpacks/example_buildpack/0.0.1/buildpack.toml");
+				writeTarEntry(tarOut, "/cnb/buildpacks/example_buildpack/0.0.1/" + this.longFilePath);
+				tarOut.finish();
+			}
+			consumer.accept("test", tarFile.toPath());
 		}
 		catch (IOException ex) {
 			fail("Error writing mock layers", ex);
@@ -181,7 +202,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 		tarOut.closeArchiveEntry();
 	}
 
-	private void assertHasExpectedLayers(Buildpack buildpack) throws IOException {
+	private void assertAppliesExpectedLayers(Buildpack buildpack) throws IOException {
 		List<ByteArrayOutputStream> layers = new ArrayList<>();
 		buildpack.apply((layer) -> {
 			ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -198,14 +219,24 @@ class ImageBuildpackTests extends AbstractJsonTests {
 				entry = tar.getNextTarEntry();
 			}
 		}
-		assertThat(entries).extracting("name", "mode").containsExactlyInAnyOrder(
-				tuple("cnb/", TarArchiveEntry.DEFAULT_DIR_MODE),
-				tuple("cnb/buildpacks/", TarArchiveEntry.DEFAULT_DIR_MODE),
-				tuple("cnb/buildpacks/example_buildpack/", TarArchiveEntry.DEFAULT_DIR_MODE),
-				tuple("cnb/buildpacks/example_buildpack/0.0.1/", TarArchiveEntry.DEFAULT_DIR_MODE),
-				tuple("cnb/buildpacks/example_buildpack/0.0.1/buildpack.toml", TarArchiveEntry.DEFAULT_FILE_MODE),
-				tuple("cnb/buildpacks/example_buildpack/0.0.1/" + this.longFilePath,
-						TarArchiveEntry.DEFAULT_FILE_MODE));
+		assertThat(entries).extracting("name", "mode")
+			.containsExactlyInAnyOrder(tuple("cnb/", TarArchiveEntry.DEFAULT_DIR_MODE),
+					tuple("cnb/buildpacks/", TarArchiveEntry.DEFAULT_DIR_MODE),
+					tuple("cnb/buildpacks/example_buildpack/", TarArchiveEntry.DEFAULT_DIR_MODE),
+					tuple("cnb/buildpacks/example_buildpack/0.0.1/", TarArchiveEntry.DEFAULT_DIR_MODE),
+					tuple("cnb/buildpacks/example_buildpack/0.0.1/buildpack.toml", TarArchiveEntry.DEFAULT_FILE_MODE),
+					tuple("cnb/buildpacks/example_buildpack/0.0.1/" + this.longFilePath,
+							TarArchiveEntry.DEFAULT_FILE_MODE));
+	}
+
+	private void assertAppliesNoLayers(Buildpack buildpack) throws IOException {
+		List<ByteArrayOutputStream> layers = new ArrayList<>();
+		buildpack.apply((layer) -> {
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
+			layer.writeTo(out);
+			layers.add(out);
+		});
+		assertThat(layers).isEmpty();
 	}
 
 }

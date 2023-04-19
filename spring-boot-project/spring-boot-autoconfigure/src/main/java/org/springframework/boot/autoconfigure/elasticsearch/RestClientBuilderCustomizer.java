@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,13 @@
 package org.springframework.boot.autoconfigure.elasticsearch;
 
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.config.RequestConfig.Builder;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.RestClientBuilder;
 
 /**
  * Callback interface that can be implemented by beans wishing to further customize the
- * {@link org.elasticsearch.client.RestClient} via a {@link RestClientBuilder} whilst
+ * {@link org.elasticsearch.client.RestClient} through a {@link RestClientBuilder} whilst
  * retaining default auto-configuration.
  *
  * @author Brian Clozel
@@ -52,11 +53,11 @@ public interface RestClientBuilderCustomizer {
 	}
 
 	/**
-	 * Customize the {@link RequestConfig.Builder}.
+	 * Customize the {@link Builder}.
 	 * @param builder the builder
 	 * @since 2.3.0
 	 */
-	default void customize(RequestConfig.Builder builder) {
+	default void customize(Builder builder) {
 	}
 
 }

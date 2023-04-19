@@ -39,7 +39,7 @@ import static org.mockito.Mockito.mock;
  */
 class ReactiveWebServerFactoryCustomizerTests {
 
-	private ServerProperties properties = new ServerProperties();
+	private final ServerProperties properties = new ServerProperties();
 
 	private ReactiveWebServerFactoryCustomizer customizer;
 
@@ -59,7 +59,7 @@ class ReactiveWebServerFactoryCustomizerTests {
 	@Test
 	void testCustomizeServerAddress() {
 		ConfigurableReactiveWebServerFactory factory = mock(ConfigurableReactiveWebServerFactory.class);
-		InetAddress address = mock(InetAddress.class);
+		InetAddress address = InetAddress.getLoopbackAddress();
 		this.properties.setAddress(address);
 		this.customizer.customize(factory);
 		then(factory).should().setAddress(address);

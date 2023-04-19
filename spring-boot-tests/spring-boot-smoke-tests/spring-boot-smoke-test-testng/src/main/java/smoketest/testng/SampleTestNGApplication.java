@@ -28,7 +28,7 @@ import jakarta.servlet.ServletContextListener;
 @SpringBootApplication
 public class SampleTestNGApplication {
 
-	private static Log logger = LogFactory.getLog(SampleTestNGApplication.class);
+	private static final Log logger = LogFactory.getLog(SampleTestNGApplication.class);
 
 	@Bean
 	protected ServletContextListener listener() {

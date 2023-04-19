@@ -21,8 +21,8 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import io.micrometer.binder.jvm.ExecutorServiceMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.jvm.ExecutorServiceMetrics;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
@@ -54,11 +54,11 @@ public class TaskExecutorMetricsAutoConfiguration {
 	@Autowired
 	public void bindTaskExecutorsToRegistry(Map<String, Executor> executors, MeterRegistry registry) {
 		executors.forEach((beanName, executor) -> {
-			if (executor instanceof ThreadPoolTaskExecutor) {
-				monitor(registry, safeGetThreadPoolExecutor((ThreadPoolTaskExecutor) executor), beanName);
+			if (executor instanceof ThreadPoolTaskExecutor threadPoolTaskExecutor) {
+				monitor(registry, safeGetThreadPoolExecutor(threadPoolTaskExecutor), beanName);
 			}
-			else if (executor instanceof ThreadPoolTaskScheduler) {
-				monitor(registry, safeGetThreadPoolExecutor((ThreadPoolTaskScheduler) executor), beanName);
+			else if (executor instanceof ThreadPoolTaskScheduler threadPoolTaskScheduler) {
+				monitor(registry, safeGetThreadPoolExecutor(threadPoolTaskScheduler), beanName);
 			}
 		});
 	}

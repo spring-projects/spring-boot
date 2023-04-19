@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,23 @@
 
 package org.springframework.boot.actuate.scheduling;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collection;
-import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import java.util.Set;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.CronTaskDescription;
-import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.CustomTriggerTaskDescription;
-import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.FixedDelayTaskDescription;
-import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.FixedRateTaskDescription;
-import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.ScheduledTasksReport;
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.CronTaskDescriptor;
+import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.CustomTriggerTaskDescriptor;
+import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.FixedDelayTaskDescriptor;
+import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.FixedRateTaskDescriptor;
+import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.ScheduledTasksDescriptor;
+import org.springframework.boot.actuate.scheduling.ScheduledTasksEndpoint.ScheduledTasksEndpointRuntimeHints;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,11 +51,12 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ScheduledTasksEndpoint}.
  *
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
  */
 class ScheduledTasksEndpointTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(BaseConfiguration.class);
+		.withUserConfiguration(BaseConfiguration.class);
 
 	@Test
 	void cronScheduledMethodIsReported() {
@@ -59,7 +65,7 @@ class ScheduledTasksEndpointTests {
 			assertThat(tasks.getFixedRate()).isEmpty();
 			assertThat(tasks.getCustom()).isEmpty();
 			assertThat(tasks.getCron()).hasSize(1);
-			CronTaskDescription description = (CronTaskDescription) tasks.getCron().get(0);
+			CronTaskDescriptor description = (CronTaskDescriptor) tasks.getCron().get(0);
 			assertThat(description.getExpression()).isEqualTo("0 0 0/3 1/1 * ?");
 			assertThat(description.getRunnable().getTarget()).isEqualTo(CronScheduledMethod.class.getName() + ".cron");
 		});
@@ -72,7 +78,7 @@ class ScheduledTasksEndpointTests {
 			assertThat(tasks.getFixedDelay()).isEmpty();
 			assertThat(tasks.getCustom()).isEmpty();
 			assertThat(tasks.getCron()).hasSize(1);
-			CronTaskDescription description = (CronTaskDescription) tasks.getCron().get(0);
+			CronTaskDescriptor description = (CronTaskDescriptor) tasks.getCron().get(0);
 			assertThat(description.getExpression()).isEqualTo("0 0 0/6 1/1 * ?");
 			assertThat(description.getRunnable().getTarget()).isEqualTo(CronTriggerRunnable.class.getName());
 		});
@@ -85,11 +91,11 @@ class ScheduledTasksEndpointTests {
 			assertThat(tasks.getFixedRate()).isEmpty();
 			assertThat(tasks.getCustom()).isEmpty();
 			assertThat(tasks.getFixedDelay()).hasSize(1);
-			FixedDelayTaskDescription description = (FixedDelayTaskDescription) tasks.getFixedDelay().get(0);
+			FixedDelayTaskDescriptor description = (FixedDelayTaskDescriptor) tasks.getFixedDelay().get(0);
 			assertThat(description.getInitialDelay()).isEqualTo(2);
-			assertThat(description.getInterval()).isEqualTo(1);
+			assertThat(description.getInterval()).isOne();
 			assertThat(description.getRunnable().getTarget())
-					.isEqualTo(FixedDelayScheduledMethod.class.getName() + ".fixedDelay");
+				.isEqualTo(FixedDelayScheduledMethod.class.getName() + ".fixedDelay");
 		});
 	}
 
@@ -100,7 +106,7 @@ class ScheduledTasksEndpointTests {
 			assertThat(tasks.getFixedRate()).isEmpty();
 			assertThat(tasks.getCustom()).isEmpty();
 			assertThat(tasks.getFixedDelay()).hasSize(1);
-			FixedDelayTaskDescription description = (FixedDelayTaskDescription) tasks.getFixedDelay().get(0);
+			FixedDelayTaskDescriptor description = (FixedDelayTaskDescriptor) tasks.getFixedDelay().get(0);
 			assertThat(description.getInitialDelay()).isEqualTo(2000);
 			assertThat(description.getInterval()).isEqualTo(1000);
 			assertThat(description.getRunnable().getTarget()).isEqualTo(FixedDelayTriggerRunnable.class.getName());
@@ -114,11 +120,11 @@ class ScheduledTasksEndpointTests {
 			assertThat(tasks.getFixedDelay()).isEmpty();
 			assertThat(tasks.getCustom()).isEmpty();
 			assertThat(tasks.getFixedRate()).hasSize(1);
-			FixedRateTaskDescription description = (FixedRateTaskDescription) tasks.getFixedRate().get(0);
+			FixedRateTaskDescriptor description = (FixedRateTaskDescriptor) tasks.getFixedRate().get(0);
 			assertThat(description.getInitialDelay()).isEqualTo(4);
 			assertThat(description.getInterval()).isEqualTo(3);
 			assertThat(description.getRunnable().getTarget())
-					.isEqualTo(FixedRateScheduledMethod.class.getName() + ".fixedRate");
+				.isEqualTo(FixedRateScheduledMethod.class.getName() + ".fixedRate");
 		});
 	}
 
@@ -129,7 +135,7 @@ class ScheduledTasksEndpointTests {
 			assertThat(tasks.getFixedDelay()).isEmpty();
 			assertThat(tasks.getCustom()).isEmpty();
 			assertThat(tasks.getFixedRate()).hasSize(1);
-			FixedRateTaskDescription description = (FixedRateTaskDescription) tasks.getFixedRate().get(0);
+			FixedRateTaskDescriptor description = (FixedRateTaskDescriptor) tasks.getFixedRate().get(0);
 			assertThat(description.getInitialDelay()).isEqualTo(3000);
 			assertThat(description.getInterval()).isEqualTo(2000);
 			assertThat(description.getRunnable().getTarget()).isEqualTo(FixedRateTriggerRunnable.class.getName());
@@ -143,15 +149,29 @@ class ScheduledTasksEndpointTests {
 			assertThat(tasks.getFixedDelay()).isEmpty();
 			assertThat(tasks.getFixedRate()).isEmpty();
 			assertThat(tasks.getCustom()).hasSize(1);
-			CustomTriggerTaskDescription description = (CustomTriggerTaskDescription) tasks.getCustom().get(0);
+			CustomTriggerTaskDescriptor description = (CustomTriggerTaskDescriptor) tasks.getCustom().get(0);
 			assertThat(description.getRunnable().getTarget()).isEqualTo(CustomTriggerRunnable.class.getName());
 			assertThat(description.getTrigger()).isEqualTo(CustomTriggerTask.trigger.toString());
 		});
 	}
 
-	private void run(Class<?> configuration, Consumer<ScheduledTasksReport> consumer) {
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new ScheduledTasksEndpointRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		Set<Class<?>> bindingTypes = Set.of(FixedRateTaskDescriptor.class, FixedDelayTaskDescriptor.class,
+				CronTaskDescriptor.class, CustomTriggerTaskDescriptor.class);
+		for (Class<?> bindingType : bindingTypes) {
+			assertThat(RuntimeHintsPredicates.reflection()
+				.onType(bindingType)
+				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
+				.accepts(runtimeHints);
+		}
+	}
+
+	private void run(Class<?> configuration, Consumer<ScheduledTasksDescriptor> consumer) {
 		this.contextRunner.withUserConfiguration(configuration)
-				.run((context) -> consumer.accept(context.getBean(ScheduledTasksEndpoint.class).scheduledTasks()));
+			.run((context) -> consumer.accept(context.getBean(ScheduledTasksEndpoint.class).scheduledTasks()));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -196,8 +216,8 @@ class ScheduledTasksEndpointTests {
 
 		@Override
 		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-			PeriodicTrigger trigger = new PeriodicTrigger(1, TimeUnit.SECONDS);
-			trigger.setInitialDelay(2);
+			PeriodicTrigger trigger = new PeriodicTrigger(Duration.ofSeconds(1));
+			trigger.setInitialDelay(Duration.ofSeconds(2));
 			taskRegistrar.addTriggerTask(new FixedDelayTriggerRunnable(), trigger);
 		}
 
@@ -207,8 +227,8 @@ class ScheduledTasksEndpointTests {
 
 		@Override
 		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-			PeriodicTrigger trigger = new PeriodicTrigger(2, TimeUnit.SECONDS);
-			trigger.setInitialDelay(3);
+			PeriodicTrigger trigger = new PeriodicTrigger(Duration.ofSeconds(2));
+			trigger.setInitialDelay(Duration.ofSeconds(3));
 			trigger.setFixedRate(true);
 			taskRegistrar.addTriggerTask(new FixedRateTriggerRunnable(), trigger);
 		}
@@ -226,7 +246,7 @@ class ScheduledTasksEndpointTests {
 
 	static class CustomTriggerTask implements SchedulingConfigurer {
 
-		private static final Trigger trigger = (context) -> new Date();
+		private static final Trigger trigger = (context) -> Instant.now();
 
 		@Override
 		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {

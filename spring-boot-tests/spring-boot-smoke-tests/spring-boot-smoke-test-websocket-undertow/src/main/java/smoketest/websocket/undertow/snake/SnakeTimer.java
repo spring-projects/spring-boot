@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Sets up the timer for the multi-player snake game WebSocket example.
+ * Sets up the timer for the multiplayer snake game WebSocket example.
  */
 public final class SnakeTimer {
 
@@ -80,7 +80,7 @@ public final class SnakeTimer {
 		broadcast(String.format("{'type': 'update', 'data' : [%s]}", sb.toString()));
 	}
 
-	public static void broadcast(String message) throws Exception {
+	public static void broadcast(String message) {
 		Collection<Snake> snakes = new CopyOnWriteArrayList<>(SnakeTimer.getSnakes());
 		for (Snake snake : snakes) {
 			try {

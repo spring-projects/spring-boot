@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 
 import org.springframework.boot.logging.DeferredLogFactory;
+import org.springframework.core.log.LogMessage;
 
 /**
  * Imports {@link ConfigData} by {@link ConfigDataLocationResolver resolving} and
@@ -117,16 +118,20 @@ class ConfigDataImporter {
 			ConfigDataResolutionResult candidate = candidates.get(i);
 			ConfigDataLocation location = candidate.getLocation();
 			ConfigDataResource resource = candidate.getResource();
+			this.logger.trace(LogMessage.format("Considering resource %s from location %s", resource, location));
 			if (resource.isOptional()) {
 				this.optionalLocations.add(location);
 			}
 			if (this.loaded.contains(resource)) {
+				this.logger
+					.trace(LogMessage.format("Already loaded resource %s ignoring location %s", resource, location));
 				this.loadedLocations.add(location);
 			}
 			else {
 				try {
 					ConfigData loaded = this.loaders.load(loaderContext, resource);
 					if (loaded != null) {
+						this.logger.trace(LogMessage.format("Loaded resource %s from location %s", resource, location));
 						this.loaded.add(resource);
 						this.loadedLocations.add(location);
 						result.put(candidate, loaded);
@@ -141,8 +146,8 @@ class ConfigDataImporter {
 	}
 
 	private void handle(ConfigDataNotFoundException ex, ConfigDataLocation location, ConfigDataResource resource) {
-		if (ex instanceof ConfigDataResourceNotFoundException) {
-			ex = ((ConfigDataResourceNotFoundException) ex).withLocation(location);
+		if (ex instanceof ConfigDataResourceNotFoundException notFoundException) {
+			ex = notFoundException.withLocation(location);
 		}
 		getNotFoundAction(location, resource).handle(this.logger, ex);
 	}

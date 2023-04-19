@@ -3,14 +3,24 @@
 Spring Boot provides {spring-session}[Spring Session] auto-configuration for a wide range of data stores.
 When building a servlet web application, the following stores can be auto-configured:
 
-* JDBC
 * Redis
+* JDBC
 * Hazelcast
 * MongoDB
 
 Additionally, {spring-boot-for-apache-geode}[Spring Boot for Apache Geode] provides {spring-boot-for-apache-geode-docs}#geode-session[auto-configuration for using Apache Geode as a session store].
 
 The servlet auto-configuration replaces the need to use `@Enable*HttpSession`.
+
+If a single Spring Session module is present on the classpath, Spring Boot uses that store implementation automatically.
+If you have more than one implementation, Spring Boot uses the following order for choosing a specific implementation:
+
+. Redis
+. JDBC
+. Hazelcast
+. MongoDB
+. If none of Redis, JDBC, Hazelcast and MongoDB are available, we do not configure a `SessionRepository`.
+
 
 When building a reactive web application, the following stores can be auto-configured:
 
@@ -19,18 +29,12 @@ When building a reactive web application, the following stores can be auto-confi
 
 The reactive auto-configuration replaces the need to use `@Enable*WebSession`.
 
-If a single Spring Session module is present on the classpath, Spring Boot uses that store implementation automatically.
-If you have more than one implementation, you must choose the {spring-boot-autoconfigure-module-code}/session/StoreType.java[`StoreType`] that you wish to use to store the sessions.
-For instance, to use JDBC as the back-end store, you can configure your application as follows:
+Similar to the servlet configuration, if you have more than one implementation, Spring Boot uses the following order for choosing a specific implementation:
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
-----
-	spring:
-	  session:
-	    store-type: "jdbc"
-----
+. Redis
+. MongoDB
+. If neither Redis nor MongoDB are available, we do not configure a `ReactiveSessionRepository`.
 
-TIP: You can disable Spring Session by setting the `store-type` to `none`.
 
 Each store has specific additional settings.
 For instance, it is possible to customize the name of the table for the JDBC store, as shown in the following example:

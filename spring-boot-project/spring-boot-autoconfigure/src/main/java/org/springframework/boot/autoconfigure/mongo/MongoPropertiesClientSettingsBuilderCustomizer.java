@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,8 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoClientSettings;
@@ -24,43 +25,35 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 
 import org.springframework.core.Ordered;
-import org.springframework.core.env.Environment;
-import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 /**
  * A {@link MongoClientSettingsBuilderCustomizer} that applies properties from a
  * {@link MongoProperties} to a {@link MongoClientSettings}.
  *
  * @author Scott Frederick
+ * @author Safeer Ansari
  * @since 2.4.0
+ * @deprecated since 3.1.0 in favor of
+ * {@link StandardMongoClientSettingsBuilderCustomizer}
  */
+@Deprecated(since = "3.1.0", forRemoval = true)
 public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClientSettingsBuilderCustomizer, Ordered {
 
 	private final MongoProperties properties;
 
-	private final Environment environment;
-
 	private int order = 0;
 
-	public MongoPropertiesClientSettingsBuilderCustomizer(MongoProperties properties, Environment environment) {
+	public MongoPropertiesClientSettingsBuilderCustomizer(MongoProperties properties) {
 		this.properties = properties;
-		this.environment = environment;
 	}
 
 	@Override
 	public void customize(MongoClientSettings.Builder settingsBuilder) {
-		validateConfiguration();
 		applyUuidRepresentation(settingsBuilder);
 		applyHostAndPort(settingsBuilder);
 		applyCredentials(settingsBuilder);
 		applyReplicaSet(settingsBuilder);
-	}
-
-	private void validateConfiguration() {
-		if (hasCustomAddress() || hasCustomCredentials() || hasReplicaSet()) {
-			Assert.state(this.properties.getUri() == null,
-					"Invalid mongo configuration, either uri or host/port/credentials/replicaSet must be specified");
-		}
 	}
 
 	private void applyUuidRepresentation(MongoClientSettings.Builder settingsBuilder) {
@@ -68,24 +61,27 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 	}
 
 	private void applyHostAndPort(MongoClientSettings.Builder settings) {
-		if (getEmbeddedPort() != null) {
-			settings.applyConnectionString(new ConnectionString("mongodb://localhost:" + getEmbeddedPort()));
+		if (this.properties.getUri() != null) {
+			settings.applyConnectionString(new ConnectionString(this.properties.getUri()));
 			return;
 		}
-
-		if (hasCustomAddress()) {
+		if (this.properties.getHost() != null || this.properties.getPort() != null) {
 			String host = getOrDefault(this.properties.getHost(), "localhost");
 			int port = getOrDefault(this.properties.getPort(), MongoProperties.DEFAULT_PORT);
-			ServerAddress serverAddress = new ServerAddress(host, port);
-			settings.applyToClusterSettings((cluster) -> cluster.hosts(Collections.singletonList(serverAddress)));
+			List<ServerAddress> serverAddresses = new ArrayList<>();
+			serverAddresses.add(new ServerAddress(host, port));
+			if (!CollectionUtils.isEmpty(this.properties.getAdditionalHosts())) {
+				this.properties.getAdditionalHosts().stream().map(ServerAddress::new).forEach(serverAddresses::add);
+			}
+			settings.applyToClusterSettings((cluster) -> cluster.hosts(serverAddresses));
 			return;
 		}
-
-		settings.applyConnectionString(new ConnectionString(this.properties.determineUri()));
+		settings.applyConnectionString(new ConnectionString(MongoProperties.DEFAULT_URI));
 	}
 
 	private void applyCredentials(MongoClientSettings.Builder builder) {
-		if (hasCustomCredentials()) {
+		if (this.properties.getUri() == null && this.properties.getUsername() != null
+				&& this.properties.getPassword() != null) {
 			String database = (this.properties.getAuthenticationDatabase() != null)
 					? this.properties.getAuthenticationDatabase() : this.properties.getMongoClientDatabase();
 			builder.credential((MongoCredential.createCredential(this.properties.getUsername(), database,
@@ -94,7 +90,7 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 	}
 
 	private void applyReplicaSet(MongoClientSettings.Builder builder) {
-		if (hasReplicaSet()) {
+		if (this.properties.getReplicaSetName() != null) {
 			builder.applyToClusterSettings(
 					(cluster) -> cluster.requiredReplicaSetName(this.properties.getReplicaSetName()));
 		}
@@ -102,28 +98,6 @@ public class MongoPropertiesClientSettingsBuilderCustomizer implements MongoClie
 
 	private <V> V getOrDefault(V value, V defaultValue) {
 		return (value != null) ? value : defaultValue;
-	}
-
-	private Integer getEmbeddedPort() {
-		if (this.environment != null) {
-			String localPort = this.environment.getProperty("local.mongo.port");
-			if (localPort != null) {
-				return Integer.valueOf(localPort);
-			}
-		}
-		return null;
-	}
-
-	private boolean hasCustomCredentials() {
-		return this.properties.getUsername() != null && this.properties.getPassword() != null;
-	}
-
-	private boolean hasCustomAddress() {
-		return this.properties.getHost() != null || this.properties.getPort() != null;
-	}
-
-	private boolean hasReplicaSet() {
-		return this.properties.getReplicaSetName() != null;
 	}
 
 	@Override

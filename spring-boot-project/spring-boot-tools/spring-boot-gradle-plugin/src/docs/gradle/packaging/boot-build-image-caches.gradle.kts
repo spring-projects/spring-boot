@@ -9,12 +9,12 @@ plugins {
 tasks.named<BootBuildImage>("bootBuildImage") {
 	buildCache {
 		volume {
-			name = "cache-${rootProject.name}.build"
+			name.set("cache-${rootProject.name}.build")
 		}
 	}
 	launchCache {
 		volume {
-			name = "cache-${rootProject.name}.launch"
+			name.set("cache-${rootProject.name}.launch")
 		}
 	}
 }

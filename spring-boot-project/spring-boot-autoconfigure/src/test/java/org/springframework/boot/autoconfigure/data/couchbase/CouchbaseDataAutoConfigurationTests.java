@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.data.couchbase;
 
 import java.util.Collections;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
 
@@ -39,6 +38,7 @@ import org.springframework.data.couchbase.core.convert.DefaultCouchbaseTypeMappe
 import org.springframework.data.couchbase.core.convert.MappingCouchbaseConverter;
 import org.springframework.data.couchbase.core.mapping.CouchbaseMappingContext;
 import org.springframework.data.couchbase.core.mapping.event.ValidatingCouchbaseEventListener;
+import org.springframework.data.domain.ManagedTypes;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,8 +51,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CouchbaseDataAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class,
-					CouchbaseAutoConfiguration.class, CouchbaseDataAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class, CouchbaseAutoConfiguration.class,
+				CouchbaseDataAutoConfiguration.class));
 
 	@Test
 	void disabledIfCouchbaseIsNotConfigured() {
@@ -65,29 +65,27 @@ class CouchbaseDataAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
 	void entityScanShouldSetInitialEntitySet() {
 		this.contextRunner.withUserConfiguration(EntityScanConfig.class).run((context) -> {
 			CouchbaseMappingContext mappingContext = context.getBean(CouchbaseMappingContext.class);
-			Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
-					"initialEntitySet");
-			assertThat(initialEntitySet).containsOnly(City.class);
+			ManagedTypes managedTypes = (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
+			assertThat(managedTypes.toList()).containsOnly(City.class);
 		});
 	}
 
 	@Test
 	void typeKeyDefault() {
 		this.contextRunner.withUserConfiguration(CouchbaseMockConfiguration.class)
-				.run((context) -> assertThat(context.getBean(MappingCouchbaseConverter.class).getTypeKey())
-						.isEqualTo(DefaultCouchbaseTypeMapper.DEFAULT_TYPE_KEY));
+			.run((context) -> assertThat(context.getBean(MappingCouchbaseConverter.class).getTypeKey())
+				.isEqualTo(DefaultCouchbaseTypeMapper.DEFAULT_TYPE_KEY));
 	}
 
 	@Test
 	void typeKeyCanBeCustomized() {
 		this.contextRunner.withUserConfiguration(CouchbaseMockConfiguration.class)
-				.withPropertyValues("spring.data.couchbase.type-key=_custom")
-				.run((context) -> assertThat(context.getBean(MappingCouchbaseConverter.class).getTypeKey())
-						.isEqualTo("_custom"));
+			.withPropertyValues("spring.data.couchbase.type-key=_custom")
+			.run((context) -> assertThat(context.getBean(MappingCouchbaseConverter.class).getTypeKey())
+				.isEqualTo("_custom"));
 	}
 
 	@Test
@@ -96,7 +94,7 @@ class CouchbaseDataAutoConfigurationTests {
 			CouchbaseTemplate template = context.getBean(CouchbaseTemplate.class);
 			assertThat(
 					template.getConverter().getConversionService().canConvert(CouchbaseProperties.class, Boolean.class))
-							.isTrue();
+				.isTrue();
 		});
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ class RestartServerTests {
 	@Test
 	void sourceDirectoryUrlFilterMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RestartServer((SourceDirectoryUrlFilter) null))
-				.withMessageContaining("SourceDirectoryUrlFilter must not be null");
+			.withMessageContaining("SourceDirectoryUrlFilter must not be null");
 	}
 
 	@Test
@@ -89,7 +89,7 @@ class RestartServerTests {
 	@Test
 	void updateReplacesLocalFilesWhenPossible(@TempDir File directory) throws Exception {
 		// This is critical for Cloud Foundry support where the application is
-		// run exploded and resources can be found from the servlet root (outside of the
+		// run exploded and resources can be found from the servlet root (outside the
 		// classloader)
 		File classFile = new File(directory, "ClassA.class");
 		FileCopyUtils.copy("abc".getBytes(), classFile);

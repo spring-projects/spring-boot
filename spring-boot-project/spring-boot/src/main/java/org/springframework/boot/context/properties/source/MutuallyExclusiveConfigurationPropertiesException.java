@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,8 +98,11 @@ public class MutuallyExclusiveConfigurationPropertiesException extends RuntimeEx
 	public static void throwIfMultipleNonNullValuesIn(Consumer<Map<String, Object>> entries) {
 		Map<String, Object> map = new LinkedHashMap<>();
 		entries.accept(map);
-		Set<String> configuredNames = map.entrySet().stream().filter((entry) -> entry.getValue() != null)
-				.map(Map.Entry::getKey).collect(Collectors.toCollection(LinkedHashSet::new));
+		Set<String> configuredNames = map.entrySet()
+			.stream()
+			.filter((entry) -> entry.getValue() != null)
+			.map(Map.Entry::getKey)
+			.collect(Collectors.toCollection(LinkedHashSet::new));
 		if (configuredNames.size() > 1) {
 			throw new MutuallyExclusiveConfigurationPropertiesException(configuredNames, map.keySet());
 		}

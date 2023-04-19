@@ -65,7 +65,7 @@ class SampleProfileApplicationTests {
 		 * This is a profile that requires a new environment property, and one which is
 		 * only overridden in the current working directory. That file also only contains
 		 * partial overrides, and the default application.yml should still supply the
-		 * "name" property.
+		 * "test.name" property.
 		 */
 		System.setProperty("spring.profiles.active", "generic");
 		SampleProfileApplication.main();

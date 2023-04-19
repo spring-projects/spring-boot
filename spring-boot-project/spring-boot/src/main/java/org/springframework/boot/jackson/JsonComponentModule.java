@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,9 @@
 package org.springframework.boot.jackson;
 
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
@@ -26,6 +29,9 @@ import com.fasterxml.jackson.databind.KeyDeserializer;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
+import org.springframework.aot.generate.GenerationContext;
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -33,6 +39,10 @@ import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.jackson.JsonComponent.Scope;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.MergedAnnotation;
@@ -67,11 +77,11 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	public void registerJsonComponents() {
 		BeanFactory beanFactory = this.beanFactory;
 		while (beanFactory != null) {
-			if (beanFactory instanceof ListableBeanFactory) {
-				addJsonBeans((ListableBeanFactory) beanFactory);
+			if (beanFactory instanceof ListableBeanFactory listableBeanFactory) {
+				addJsonBeans(listableBeanFactory);
 			}
-			beanFactory = (beanFactory instanceof HierarchicalBeanFactory)
-					? ((HierarchicalBeanFactory) beanFactory).getParentBeanFactory() : null;
+			beanFactory = (beanFactory instanceof HierarchicalBeanFactory hierarchicalBeanFactory)
+					? hierarchicalBeanFactory.getParentBeanFactory() : null;
 		}
 	}
 
@@ -84,7 +94,8 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 
 	private void addJsonBean(Object bean) {
 		MergedAnnotation<JsonComponent> annotation = MergedAnnotations
-				.from(bean.getClass(), SearchStrategy.TYPE_HIERARCHY).get(JsonComponent.class);
+			.from(bean.getClass(), SearchStrategy.TYPE_HIERARCHY)
+			.get(JsonComponent.class);
 		Class<?>[] types = annotation.getClassArray("type");
 		Scope scope = annotation.getEnum("scope", JsonComponent.Scope.class);
 		addJsonBean(bean, types, scope);
@@ -108,7 +119,7 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 		}
 	}
 
-	private boolean isSuitableInnerClass(Class<?> innerClass) {
+	private static boolean isSuitableInnerClass(Class<?> innerClass) {
 		return !Modifier.isAbstract(innerClass.getModifiers()) && (JsonSerializer.class.isAssignableFrom(innerClass)
 				|| JsonDeserializer.class.isAssignableFrom(innerClass)
 				|| KeyDeserializer.class.isAssignableFrom(innerClass));
@@ -117,7 +128,7 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	@SuppressWarnings("unchecked")
 	private <T> void addJsonSerializerBean(JsonSerializer<T> serializer, JsonComponent.Scope scope, Class<?>[] types) {
 		Class<T> baseType = (Class<T>) ResolvableType.forClass(JsonSerializer.class, serializer.getClass())
-				.resolveGeneric();
+			.resolveGeneric();
 		addBeanToModule(serializer, baseType, types,
 				(scope == Scope.VALUES) ? this::addSerializer : this::addKeySerializer);
 
@@ -126,7 +137,7 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 	@SuppressWarnings("unchecked")
 	private <T> void addJsonDeserializerBean(JsonDeserializer<T> deserializer, Class<?>[] types) {
 		Class<T> baseType = (Class<T>) ResolvableType.forClass(JsonDeserializer.class, deserializer.getClass())
-				.resolveGeneric();
+			.resolveGeneric();
 		addBeanToModule(deserializer, baseType, types, this::addDeserializer);
 	}
 
@@ -146,6 +157,46 @@ public class JsonComponentModule extends SimpleModule implements BeanFactoryAwar
 			Assert.isAssignable(baseType, type);
 			consumer.accept((Class<T>) type, element);
 		}
+	}
+
+	static class JsonComponentBeanFactoryInitializationAotProcessor implements BeanFactoryInitializationAotProcessor {
+
+		@Override
+		public BeanFactoryInitializationAotContribution processAheadOfTime(
+				ConfigurableListableBeanFactory beanFactory) {
+			String[] jsonComponents = beanFactory.getBeanNamesForAnnotation(JsonComponent.class);
+			Map<Class<?>, List<Class<?>>> innerComponents = new HashMap<>();
+			for (String jsonComponent : jsonComponents) {
+				Class<?> type = beanFactory.getType(jsonComponent, true);
+				for (Class<?> declaredClass : type.getDeclaredClasses()) {
+					if (isSuitableInnerClass(declaredClass)) {
+						innerComponents.computeIfAbsent(type, (t) -> new ArrayList<>()).add(declaredClass);
+					}
+				}
+			}
+			return innerComponents.isEmpty() ? null : new JsonComponentAotContribution(innerComponents);
+		}
+
+	}
+
+	private static final class JsonComponentAotContribution implements BeanFactoryInitializationAotContribution {
+
+		private final Map<Class<?>, List<Class<?>>> innerComponents;
+
+		private JsonComponentAotContribution(Map<Class<?>, List<Class<?>>> innerComponents) {
+			this.innerComponents = innerComponents;
+		}
+
+		@Override
+		public void applyTo(GenerationContext generationContext,
+				BeanFactoryInitializationCode beanFactoryInitializationCode) {
+			ReflectionHints reflection = generationContext.getRuntimeHints().reflection();
+			this.innerComponents.forEach((outer, inners) -> {
+				reflection.registerType(outer, MemberCategory.DECLARED_CLASSES);
+				inners.forEach((inner) -> reflection.registerType(inner, MemberCategory.INVOKE_DECLARED_CONSTRUCTORS));
+			});
+		}
+
 	}
 
 }

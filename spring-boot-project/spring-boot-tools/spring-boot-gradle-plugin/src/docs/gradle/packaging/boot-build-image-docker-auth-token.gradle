@@ -19,6 +19,6 @@ tasks.named("bootBuildImage") {
 
 tasks.register("bootBuildImageDocker") {
 	doFirst {
-		println("token=${tasks.bootBuildImage.docker.builderRegistry.token}")
+		println("token=${tasks.bootBuildImage.docker.builderRegistry.token.get()}")
 	}
 }

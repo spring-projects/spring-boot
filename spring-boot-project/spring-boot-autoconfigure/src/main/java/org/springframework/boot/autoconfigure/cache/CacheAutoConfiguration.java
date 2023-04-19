@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.autoconfigure.cache;
-
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
@@ -49,7 +47,7 @@ import org.springframework.util.Assert;
  * {@link CacheManager} if necessary when caching is enabled via
  * {@link EnableCaching @EnableCaching}.
  * <p>
- * Cache store can be auto-detected or specified explicitly via configuration.
+ * Cache store can be auto-detected or specified explicitly through configuration.
  *
  * @author Stephane Nicoll
  * @since 1.3.0
@@ -67,7 +65,7 @@ public class CacheAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public CacheManagerCustomizers cacheManagerCustomizers(ObjectProvider<CacheManagerCustomizer<?>> customizers) {
-		return new CacheManagerCustomizers(customizers.orderedStream().collect(Collectors.toList()));
+		return new CacheManagerCustomizers(customizers.orderedStream().toList());
 	}
 
 	@Bean

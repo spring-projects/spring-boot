@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ class ImageReferenceTests {
 		assertThat(reference.getName()).isEqualTo("library/ubuntu");
 		assertThat(reference.getTag()).isNull();
 		assertThat(reference.getDigest()).isNull();
-		assertThat(reference.toString()).isEqualTo("docker.io/library/ubuntu");
+		assertThat(reference).hasToString("docker.io/library/ubuntu");
 	}
 
 	@Test
@@ -49,7 +49,7 @@ class ImageReferenceTests {
 		assertThat(reference.getName()).isEqualTo("library/ubuntu");
 		assertThat(reference.getTag()).isNull();
 		assertThat(reference.getDigest()).isNull();
-		assertThat(reference.toString()).isEqualTo("docker.io/library/ubuntu");
+		assertThat(reference).hasToString("docker.io/library/ubuntu");
 	}
 
 	@Test
@@ -59,7 +59,7 @@ class ImageReferenceTests {
 		assertThat(reference.getName()).isEqualTo("adoptopenjdk/openjdk11");
 		assertThat(reference.getTag()).isNull();
 		assertThat(reference.getDigest()).isNull();
-		assertThat(reference.toString()).isEqualTo("docker.io/adoptopenjdk/openjdk11");
+		assertThat(reference).hasToString("docker.io/adoptopenjdk/openjdk11");
 	}
 
 	@Test
@@ -69,7 +69,7 @@ class ImageReferenceTests {
 		assertThat(reference.getName()).isEqualTo("java/jdk");
 		assertThat(reference.getTag()).isNull();
 		assertThat(reference.getDigest()).isNull();
-		assertThat(reference.toString()).isEqualTo("repo.example.com/java/jdk");
+		assertThat(reference).hasToString("repo.example.com/java/jdk");
 	}
 
 	@Test
@@ -79,7 +79,7 @@ class ImageReferenceTests {
 		assertThat(reference.getName()).isEqualTo("java/jdk");
 		assertThat(reference.getTag()).isNull();
 		assertThat(reference.getDigest()).isNull();
-		assertThat(reference.toString()).isEqualTo("repo.example.com:8080/java/jdk");
+		assertThat(reference).hasToString("repo.example.com:8080/java/jdk");
 	}
 
 	@Test
@@ -89,7 +89,7 @@ class ImageReferenceTests {
 		assertThat(reference.getName()).isEqualTo("library/ubuntu");
 		assertThat(reference.getTag()).isNull();
 		assertThat(reference.getDigest()).isNull();
-		assertThat(reference.toString()).isEqualTo("docker.io/library/ubuntu");
+		assertThat(reference).hasToString("docker.io/library/ubuntu");
 	}
 
 	@Test
@@ -99,7 +99,7 @@ class ImageReferenceTests {
 		assertThat(reference.getName()).isEqualTo("library/ubuntu");
 		assertThat(reference.getTag()).isEqualTo("bionic");
 		assertThat(reference.getDigest()).isNull();
-		assertThat(reference.toString()).isEqualTo("docker.io/library/ubuntu:bionic");
+		assertThat(reference).hasToString("docker.io/library/ubuntu:bionic");
 	}
 
 	@Test
@@ -109,74 +109,74 @@ class ImageReferenceTests {
 		assertThat(reference.getName()).isEqualTo("library/ubuntu");
 		assertThat(reference.getTag()).isEqualTo("v1");
 		assertThat(reference.getDigest()).isNull();
-		assertThat(reference.toString()).isEqualTo("repo.example.com:8080/library/ubuntu:v1");
+		assertThat(reference).hasToString("repo.example.com:8080/library/ubuntu:v1");
 	}
 
 	@Test
 	void ofNameAndDigest() {
 		ImageReference reference = ImageReference
-				.of("ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+			.of("ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 		assertThat(reference.getDomain()).isEqualTo("docker.io");
 		assertThat(reference.getName()).isEqualTo("library/ubuntu");
 		assertThat(reference.getTag()).isNull();
 		assertThat(reference.getDigest())
-				.isEqualTo("sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
-		assertThat(reference.toString()).isEqualTo(
+			.isEqualTo("sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+		assertThat(reference).hasToString(
 				"docker.io/library/ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 	}
 
 	@Test
 	void ofNameAndTagAndDigest() {
 		ImageReference reference = ImageReference
-				.of("ubuntu:bionic@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+			.of("ubuntu:bionic@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 		assertThat(reference.getDomain()).isEqualTo("docker.io");
 		assertThat(reference.getName()).isEqualTo("library/ubuntu");
 		assertThat(reference.getTag()).isEqualTo("bionic");
 		assertThat(reference.getDigest())
-				.isEqualTo("sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
-		assertThat(reference.toString()).isEqualTo(
+			.isEqualTo("sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+		assertThat(reference).hasToString(
 				"docker.io/library/ubuntu:bionic@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 	}
 
 	@Test
 	void ofCustomDomainAndPortWithTag() {
-		ImageReference reference = ImageReference.of(
-				"example.com:8080/canonical/ubuntu:bionic@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+		ImageReference reference = ImageReference
+			.of("example.com:8080/canonical/ubuntu:bionic@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 		assertThat(reference.getDomain()).isEqualTo("example.com:8080");
 		assertThat(reference.getName()).isEqualTo("canonical/ubuntu");
 		assertThat(reference.getTag()).isEqualTo("bionic");
 		assertThat(reference.getDigest())
-				.isEqualTo("sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
-		assertThat(reference.toString()).isEqualTo(
+			.isEqualTo("sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+		assertThat(reference).hasToString(
 				"example.com:8080/canonical/ubuntu:bionic@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 	}
 
 	@Test
 	void ofImageName() {
 		ImageReference reference = ImageReference.of(ImageName.of("ubuntu"));
-		assertThat(reference.toString()).isEqualTo("docker.io/library/ubuntu");
+		assertThat(reference).hasToString("docker.io/library/ubuntu");
 	}
 
 	@Test
 	void ofImageNameAndTag() {
 		ImageReference reference = ImageReference.of(ImageName.of("ubuntu"), "bionic");
-		assertThat(reference.toString()).isEqualTo("docker.io/library/ubuntu:bionic");
+		assertThat(reference).hasToString("docker.io/library/ubuntu:bionic");
 	}
 
 	@Test
 	void ofImageNameTagAndDigest() {
 		ImageReference reference = ImageReference.of(ImageName.of("ubuntu"), "bionic",
 				"sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
-		assertThat(reference.toString()).isEqualTo(
+		assertThat(reference).hasToString(
 				"docker.io/library/ubuntu:bionic@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 	}
 
 	@Test
 	void ofWhenHasIllegalCharacter() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> ImageReference
-						.of("registry.example.com/example/example-app:1.6.0-dev.2.uncommitted+wip.foo.c75795d"))
-				.withMessageContaining("Unable to parse image reference");
+			.isThrownBy(() -> ImageReference
+				.of("registry.example.com/example/example-app:1.6.0-dev.2.uncommitted+wip.foo.c75795d"))
+			.withMessageContaining("Unable to parse image reference");
 	}
 
 	@Test
@@ -219,47 +219,48 @@ class ImageReferenceTests {
 	@Test
 	void randomWherePrefixIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageReference.random(null))
-				.withMessage("Prefix must not be null");
+			.withMessage("Prefix must not be null");
 	}
 
 	@Test
 	void inTaggedFormWhenHasDigestThrowsException() {
 		ImageReference reference = ImageReference
-				.of("ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
-		assertThatIllegalStateException().isThrownBy(() -> reference.inTaggedForm()).withMessage(
-				"Image reference 'docker.io/library/ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d' cannot contain a digest");
+			.of("ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+		assertThatIllegalStateException().isThrownBy(() -> reference.inTaggedForm())
+			.withMessage(
+					"Image reference 'docker.io/library/ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d' cannot contain a digest");
 	}
 
 	@Test
 	void inTaggedFormWhenHasNoTagUsesLatest() {
 		ImageReference reference = ImageReference.of("ubuntu");
-		assertThat(reference.inTaggedForm().toString()).isEqualTo("docker.io/library/ubuntu:latest");
+		assertThat(reference.inTaggedForm()).hasToString("docker.io/library/ubuntu:latest");
 	}
 
 	@Test
 	void inTaggedFormWhenHasTagUsesTag() {
 		ImageReference reference = ImageReference.of("ubuntu:bionic");
-		assertThat(reference.inTaggedForm().toString()).isEqualTo("docker.io/library/ubuntu:bionic");
+		assertThat(reference.inTaggedForm()).hasToString("docker.io/library/ubuntu:bionic");
 	}
 
 	@Test
 	void inTaggedOrDigestFormWhenHasDigestUsesDigest() {
 		ImageReference reference = ImageReference
-				.of("ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
-		assertThat(reference.inTaggedOrDigestForm().toString()).isEqualTo(
+			.of("ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+		assertThat(reference.inTaggedOrDigestForm()).hasToString(
 				"docker.io/library/ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 	}
 
 	@Test
 	void inTaggedOrDigestFormWhenHasTagUsesTag() {
 		ImageReference reference = ImageReference.of("ubuntu:bionic");
-		assertThat(reference.inTaggedOrDigestForm().toString()).isEqualTo("docker.io/library/ubuntu:bionic");
+		assertThat(reference.inTaggedOrDigestForm()).hasToString("docker.io/library/ubuntu:bionic");
 	}
 
 	@Test
 	void inTaggedOrDigestFormWhenHasNoTagOrDigestUsesLatest() {
 		ImageReference reference = ImageReference.of("ubuntu");
-		assertThat(reference.inTaggedOrDigestForm().toString()).isEqualTo("docker.io/library/ubuntu:latest");
+		assertThat(reference.inTaggedOrDigestForm()).hasToString("docker.io/library/ubuntu:latest");
 	}
 
 	@Test
@@ -267,7 +268,7 @@ class ImageReferenceTests {
 		ImageReference r1 = ImageReference.of("ubuntu:bionic");
 		ImageReference r2 = ImageReference.of("docker.io/library/ubuntu:bionic");
 		ImageReference r3 = ImageReference.of("docker.io/library/ubuntu:latest");
-		assertThat(r1.hashCode()).isEqualTo(r2.hashCode());
+		assertThat(r1).hasSameHashCodeAs(r2);
 		assertThat(r1).isEqualTo(r1).isEqualTo(r2).isNotEqualTo(r3);
 	}
 

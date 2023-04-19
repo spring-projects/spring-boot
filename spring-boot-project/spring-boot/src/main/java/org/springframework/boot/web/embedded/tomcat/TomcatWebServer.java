@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,8 +146,8 @@ public class TomcatWebServer implements WebServer {
 
 	private Context findContext() {
 		for (Container child : this.tomcat.getHost().findChildren()) {
-			if (child instanceof Context) {
-				return (Context) child;
+			if (child instanceof Context context) {
+				return context;
 			}
 		}
 		throw new IllegalStateException("The host does not contain a Context");
@@ -174,8 +174,8 @@ public class TomcatWebServer implements WebServer {
 	private void rethrowDeferredStartupExceptions() throws Exception {
 		Container[] children = this.tomcat.getHost().findChildren();
 		for (Container container : children) {
-			if (container instanceof TomcatEmbeddedContext) {
-				TomcatStarter tomcatStarter = ((TomcatEmbeddedContext) container).getStarter();
+			if (container instanceof TomcatEmbeddedContext embeddedContext) {
+				TomcatStarter tomcatStarter = embeddedContext.getStarter();
 				if (tomcatStarter != null) {
 					Exception exception = tomcatStarter.getStartUpException();
 					if (exception != null) {
@@ -301,14 +301,14 @@ public class TomcatWebServer implements WebServer {
 	private void performDeferredLoadOnStartup() {
 		try {
 			for (Container child : this.tomcat.getHost().findChildren()) {
-				if (child instanceof TomcatEmbeddedContext) {
-					((TomcatEmbeddedContext) child).deferredLoadOnStartup();
+				if (child instanceof TomcatEmbeddedContext embeddedContext) {
+					embeddedContext.deferredLoadOnStartup();
 				}
 			}
 		}
 		catch (Exception ex) {
-			if (ex instanceof WebServerException) {
-				throw (WebServerException) ex;
+			if (ex instanceof WebServerException webServerException) {
+				throw webServerException;
 			}
 			throw new WebServerException("Unable to start embedded Tomcat connectors", ex);
 		}
@@ -368,9 +368,11 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	private String getContextPath() {
-		return Arrays.stream(this.tomcat.getHost().findChildren()).filter(TomcatEmbeddedContext.class::isInstance)
-				.map(TomcatEmbeddedContext.class::cast).map(TomcatEmbeddedContext::getPath)
-				.collect(Collectors.joining(" "));
+		return Arrays.stream(this.tomcat.getHost().findChildren())
+			.filter(TomcatEmbeddedContext.class::isInstance)
+			.map(TomcatEmbeddedContext.class::cast)
+			.map(TomcatEmbeddedContext::getPath)
+			.collect(Collectors.joining(" "));
 	}
 
 	/**

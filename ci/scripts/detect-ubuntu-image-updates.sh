@@ -2,7 +2,7 @@
 
 ISSUE_TITLE="Upgrade Ubuntu version in CI images"
 
-ubuntu="focal"
+ubuntu="jammy"
 latest=$( curl -s "https://hub.docker.com/v2/repositories/library/ubuntu/tags/?page_size=1&page=1&name=$ubuntu" | jq -c -r '.results[0].name' | awk '{split($0, parts, "-"); print parts[2]}' )
 current=$( grep "ubuntu:$ubuntu" git-repo/ci/images/ci-image/Dockerfile | awk '{split($0, parts, "-"); print parts[2]}' )
 
@@ -11,8 +11,8 @@ if [[ $current = $latest ]]; then
 	exit 0;
 fi
 
-milestone_number=$( curl -s https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/milestones\?state\=open | jq -c --arg MILESTONE "$MILESTONE" '.[] | select(.title==$MILESTONE)' | jq -r '.number')
-existing_tasks=$( curl -s https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/issues\?labels\=type:%20task\&state\=open\&creator\=spring-builds\&milestone\=${milestone_number} )
+milestone_number=$( curl -u ${GITHUB_USERNAME}:${GITHUB_PASSWORD} -s https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/milestones\?state\=open | jq -c --arg MILESTONE "$MILESTONE" '.[] | select(.title==$MILESTONE)' | jq -r '.number')
+existing_tasks=$( curl -u ${GITHUB_USERNAME}:${GITHUB_PASSWORD} -s https://api.github.com/repos/${GITHUB_ORGANIZATION}/${GITHUB_REPO}/issues\?labels\=type:%20task\&state\=open\&creator\=spring-builds\&milestone\=${milestone_number} )
 existing_upgrade_issues=$( echo "$existing_tasks" | jq -c --arg TITLE "$ISSUE_TITLE" '.[] | select(.title==$TITLE)' )
 
 if [[ ${existing_upgrade_issues} = "" ]]; then

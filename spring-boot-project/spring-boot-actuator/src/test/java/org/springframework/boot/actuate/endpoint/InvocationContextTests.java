@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,13 +45,13 @@ class InvocationContextTests {
 	@Test
 	void createWhenSecurityContextIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new InvocationContext(null, this.arguments))
-				.withMessage("SecurityContext must not be null");
+			.withMessage("SecurityContext must not be null");
 	}
 
 	@Test
 	void createWhenArgumentsIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new InvocationContext(this.securityContext, null))
-				.withMessage("Arguments must not be null");
+			.withMessage("Arguments must not be null");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.util.StringUtils;
  * {@link ConfigurationProperties properties} for Spring WebFlux.
  *
  * @author Brian Clozel
+ * @author Vedran Pavic
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.webflux")
@@ -35,10 +36,17 @@ public class WebFluxProperties {
 
 	private final Format format = new Format();
 
+	private final Problemdetails problemdetails = new Problemdetails();
+
 	/**
 	 * Path pattern used for static resources.
 	 */
 	private String staticPathPattern = "/**";
+
+	/**
+	 * Path pattern used for WebJar assets.
+	 */
+	private String webjarsPathPattern = "/webjars/**";
 
 	public String getBasePath() {
 		return this.basePath;
@@ -68,12 +76,24 @@ public class WebFluxProperties {
 		return this.format;
 	}
 
+	public Problemdetails getProblemdetails() {
+		return this.problemdetails;
+	}
+
 	public String getStaticPathPattern() {
 		return this.staticPathPattern;
 	}
 
 	public void setStaticPathPattern(String staticPathPattern) {
 		this.staticPathPattern = staticPathPattern;
+	}
+
+	public String getWebjarsPathPattern() {
+		return this.webjarsPathPattern;
+	}
+
+	public void setWebjarsPathPattern(String webjarsPathPattern) {
+		this.webjarsPathPattern = webjarsPathPattern;
 	}
 
 	public static class Format {
@@ -115,6 +135,23 @@ public class WebFluxProperties {
 
 		public void setDateTime(String dateTime) {
 			this.dateTime = dateTime;
+		}
+
+	}
+
+	public static class Problemdetails {
+
+		/**
+		 * Whether RFC 7807 Problem Details support should be enabled.
+		 */
+		private boolean enabled = false;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
 		}
 
 	}

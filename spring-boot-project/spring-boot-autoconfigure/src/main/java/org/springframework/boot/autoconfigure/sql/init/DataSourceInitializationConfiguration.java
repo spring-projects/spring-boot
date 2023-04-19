@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,11 @@ class DataSourceInitializationConfiguration {
 
 	private static DataSource determineDataSource(DataSource dataSource, String username, String password) {
 		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
-			return DataSourceBuilder.derivedFrom(dataSource).username(username).password(password)
-					.type(SimpleDriverDataSource.class).build();
+			return DataSourceBuilder.derivedFrom(dataSource)
+				.username(username)
+				.password(password)
+				.type(SimpleDriverDataSource.class)
+				.build();
 		}
 		return dataSource;
 	}

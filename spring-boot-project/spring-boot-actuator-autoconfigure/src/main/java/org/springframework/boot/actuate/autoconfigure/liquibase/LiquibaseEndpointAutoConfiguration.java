@@ -57,8 +57,8 @@ public class LiquibaseEndpointAutoConfiguration {
 
 			@Override
 			public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-				if (bean instanceof DataSourceClosingSpringLiquibase) {
-					((DataSourceClosingSpringLiquibase) bean).setCloseDataSourceOnceMigrated(false);
+				if (bean instanceof DataSourceClosingSpringLiquibase dataSource) {
+					dataSource.setCloseDataSourceOnceMigrated(false);
 				}
 				return bean;
 			}

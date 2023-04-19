@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,10 +28,10 @@ import org.springframework.boot.BootstrapRegistry;
 import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.logging.DeferredLogFactory;
-import org.springframework.boot.util.Instantiator;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
 
 /**
  * A collection of {@link ConfigDataLocationResolver} instances loaded via
@@ -50,42 +50,29 @@ class ConfigDataLocationResolvers {
 	 * @param bootstrapContext the bootstrap context
 	 * @param binder a binder providing values from the initial {@link Environment}
 	 * @param resourceLoader {@link ResourceLoader} to load resource locations
+	 * @param springFactoriesLoader to load {@link ConfigDataLocationResolver} instances
 	 */
 	ConfigDataLocationResolvers(DeferredLogFactory logFactory, ConfigurableBootstrapContext bootstrapContext,
-			Binder binder, ResourceLoader resourceLoader) {
-		this(logFactory, bootstrapContext, binder, resourceLoader, SpringFactoriesLoader
-				.loadFactoryNames(ConfigDataLocationResolver.class, resourceLoader.getClassLoader()));
+			Binder binder, ResourceLoader resourceLoader, SpringFactoriesLoader springFactoriesLoader) {
+		ArgumentResolver argumentResolver = ArgumentResolver.of(DeferredLogFactory.class, logFactory);
+		argumentResolver = argumentResolver.and(Binder.class, binder);
+		argumentResolver = argumentResolver.and(ResourceLoader.class, resourceLoader);
+		argumentResolver = argumentResolver.and(ConfigurableBootstrapContext.class, bootstrapContext);
+		argumentResolver = argumentResolver.and(BootstrapContext.class, bootstrapContext);
+		argumentResolver = argumentResolver.and(BootstrapRegistry.class, bootstrapContext);
+		argumentResolver = argumentResolver.andSupplied(Log.class, () -> {
+			throw new IllegalArgumentException("Log types cannot be injected, please use DeferredLogFactory");
+		});
+		this.resolvers = reorder(springFactoriesLoader.load(ConfigDataLocationResolver.class, argumentResolver));
 	}
 
-	/**
-	 * Create a new {@link ConfigDataLocationResolvers} instance.
-	 * @param logFactory a {@link DeferredLogFactory} used to inject {@link Log} instances
-	 * @param bootstrapContext the bootstrap context
-	 * @param binder {@link Binder} providing values from the initial {@link Environment}
-	 * @param resourceLoader {@link ResourceLoader} to load resource locations
-	 * @param names the {@link ConfigDataLocationResolver} class names
-	 */
-	ConfigDataLocationResolvers(DeferredLogFactory logFactory, ConfigurableBootstrapContext bootstrapContext,
-			Binder binder, ResourceLoader resourceLoader, List<String> names) {
-		Instantiator<ConfigDataLocationResolver<?>> instantiator = new Instantiator<>(ConfigDataLocationResolver.class,
-				(availableParameters) -> {
-					availableParameters.add(Log.class, logFactory::getLog);
-					availableParameters.add(DeferredLogFactory.class, logFactory);
-					availableParameters.add(Binder.class, binder);
-					availableParameters.add(ResourceLoader.class, resourceLoader);
-					availableParameters.add(ConfigurableBootstrapContext.class, bootstrapContext);
-					availableParameters.add(BootstrapContext.class, bootstrapContext);
-					availableParameters.add(BootstrapRegistry.class, bootstrapContext);
-				});
-		this.resolvers = reorder(instantiator.instantiate(resourceLoader.getClassLoader(), names));
-	}
-
-	private List<ConfigDataLocationResolver<?>> reorder(List<ConfigDataLocationResolver<?>> resolvers) {
+	@SuppressWarnings("rawtypes")
+	private List<ConfigDataLocationResolver<?>> reorder(List<ConfigDataLocationResolver> resolvers) {
 		List<ConfigDataLocationResolver<?>> reordered = new ArrayList<>(resolvers.size());
 		StandardConfigDataLocationResolver resourceResolver = null;
 		for (ConfigDataLocationResolver<?> resolver : resolvers) {
-			if (resolver instanceof StandardConfigDataLocationResolver) {
-				resourceResolver = (StandardConfigDataLocationResolver) resolver;
+			if (resolver instanceof StandardConfigDataLocationResolver configDataLocationResolver) {
+				resourceResolver = configDataLocationResolver;
 			}
 			else {
 				reordered.add(resolver);

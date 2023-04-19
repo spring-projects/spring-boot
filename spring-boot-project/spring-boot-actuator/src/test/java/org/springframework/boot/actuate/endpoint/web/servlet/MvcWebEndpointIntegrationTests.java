@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,7 +45,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -54,12 +53,8 @@ import org.springframework.security.web.servletapi.SecurityContextHolderAwareReq
 import org.springframework.util.StringUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.servlet.handler.RequestMatchResult;
-import org.springframework.web.util.ServletRequestPathUtils;
-import org.springframework.web.util.pattern.PathPatternParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Integration tests for web endpoints exposed using Spring MVC.
@@ -88,62 +83,46 @@ class MvcWebEndpointIntegrationTests
 	@Test
 	void responseToOptionsRequestIncludesCorsHeaders() {
 		load(TestEndpointConfiguration.class,
-				(client) -> client.options().uri("/test").accept(MediaType.APPLICATION_JSON)
-						.header("Access-Control-Request-Method", "POST").header("Origin", "https://example.com")
-						.exchange().expectStatus().isOk().expectHeader()
-						.valueEquals("Access-Control-Allow-Origin", "https://example.com").expectHeader()
-						.valueEquals("Access-Control-Allow-Methods", "GET,POST"));
+				(client) -> client.options()
+					.uri("/test")
+					.accept(MediaType.APPLICATION_JSON)
+					.header("Access-Control-Request-Method", "POST")
+					.header("Origin", "https://example.com")
+					.exchange()
+					.expectStatus()
+					.isOk()
+					.expectHeader()
+					.valueEquals("Access-Control-Allow-Origin", "https://example.com")
+					.expectHeader()
+					.valueEquals("Access-Control-Allow-Methods", "GET,POST"));
 	}
 
 	@Test
 	void readOperationsThatReturnAResourceSupportRangeRequests() {
 		load(ResourceEndpointConfiguration.class, (client) -> {
-			byte[] responseBody = client.get().uri("/resource").header("Range", "bytes=0-3").exchange().expectStatus()
-					.isEqualTo(HttpStatus.PARTIAL_CONTENT).expectHeader()
-					.contentType(MediaType.APPLICATION_OCTET_STREAM).returnResult(byte[].class)
-					.getResponseBodyContent();
+			byte[] responseBody = client.get()
+				.uri("/resource")
+				.header("Range", "bytes=0-3")
+				.exchange()
+				.expectStatus()
+				.isEqualTo(HttpStatus.PARTIAL_CONTENT)
+				.expectHeader()
+				.contentType(MediaType.APPLICATION_OCTET_STREAM)
+				.returnResult(byte[].class)
+				.getResponseBodyContent();
 			assertThat(responseBody).containsExactly(0, 1, 2, 3);
 		});
 	}
 
 	@Test
-	void matchWhenPathPatternParserShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> getMatchResult("/spring/", true));
-	}
-
-	@Test
-	void matchWhenRequestHasTrailingSlashShouldNotBeNull() {
-		assertThat(getMatchResult("/spring/", false)).isNotNull();
-	}
-
-	@Test
-	void matchWhenRequestHasSuffixShouldBeNull() {
-		assertThat(getMatchResult("/spring.do", false)).isNull();
-	}
-
-	private RequestMatchResult getMatchResult(String servletPath, boolean isPatternParser) {
-		MockHttpServletRequest request = new MockHttpServletRequest();
-		request.setServletPath(servletPath);
-		AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext();
-		if (isPatternParser) {
-			context.register(WebMvcConfiguration.class);
-		}
-		else {
-			context.register(PathMatcherWebMvcConfiguration.class);
-		}
-		context.register(TestEndpointConfiguration.class);
-		context.refresh();
-		WebMvcEndpointHandlerMapping bean = context.getBean(WebMvcEndpointHandlerMapping.class);
-		try {
-			// Setup request attributes
-			ServletRequestPathUtils.parseAndCache(request);
-			// Trigger initLookupPath
-			bean.getHandler(request);
-		}
-		catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
-		return bean.match(request, "/spring");
+	void requestWithSuffixShouldNotMatch() {
+		load(TestEndpointConfiguration.class,
+				(client) -> client.options()
+					.uri("/test.do")
+					.accept(MediaType.APPLICATION_JSON)
+					.exchange()
+					.expectStatus()
+					.isNotFound());
 	}
 
 	@Override
@@ -171,8 +150,7 @@ class MvcWebEndpointIntegrationTests
 			String endpointPath = environment.getProperty("endpointPath");
 			return new WebMvcEndpointHandlerMapping(new EndpointMapping(endpointPath),
 					endpointDiscoverer.getEndpoints(), endpointMediaTypes, corsConfiguration,
-					new EndpointLinksResolver(endpointDiscoverer.getEndpoints()), StringUtils.hasText(endpointPath),
-					new PathPatternParser());
+					new EndpointLinksResolver(endpointDiscoverer.getEndpoints()), StringUtils.hasText(endpointPath));
 		}
 
 	}

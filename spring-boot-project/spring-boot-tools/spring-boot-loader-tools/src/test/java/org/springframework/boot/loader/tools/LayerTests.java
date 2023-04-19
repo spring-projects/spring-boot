@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class LayerTests {
 	@Test
 	void createWhenNameContainsBadCharsThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Layer("bad!name"))
-				.withMessage("Malformed layer name 'bad!name'");
+			.withMessage("Malformed layer name 'bad!name'");
 	}
 
 	@Test
@@ -50,7 +50,7 @@ class LayerTests {
 		Layer layer1 = new Layer("testa");
 		Layer layer2 = new Layer("testa");
 		Layer layer3 = new Layer("testb");
-		assertThat(layer1.hashCode()).isEqualTo(layer2.hashCode());
+		assertThat(layer1).hasSameHashCodeAs(layer2);
 		assertThat(layer1).isEqualTo(layer1).isEqualTo(layer2).isNotEqualTo(layer3);
 	}
 
@@ -62,11 +62,11 @@ class LayerTests {
 	@Test
 	void createWhenUsingReservedNameThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Layer("ext"))
-				.withMessage("Layer name 'ext' is reserved");
+			.withMessage("Layer name 'ext' is reserved");
 		assertThatIllegalArgumentException().isThrownBy(() -> new Layer("ExT"))
-				.withMessage("Layer name 'ExT' is reserved");
+			.withMessage("Layer name 'ExT' is reserved");
 		assertThatIllegalArgumentException().isThrownBy(() -> new Layer("springbootloader"))
-				.withMessage("Layer name 'springbootloader' is reserved");
+			.withMessage("Layer name 'springbootloader' is reserved");
 	}
 
 }

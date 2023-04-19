@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.metrics.export.prometheus")
+@ConfigurationProperties(prefix = "management.prometheus.metrics.export")
 public class PrometheusProperties {
+
+	/**
+	 * Whether exporting of metrics to this backend is enabled.
+	 */
+	private boolean enabled = true;
 
 	/**
 	 * Whether to enable publishing descriptions as part of the scrape payload to
@@ -82,6 +87,14 @@ public class PrometheusProperties {
 		this.step = step;
 	}
 
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	public Pushgateway getPushgateway() {
 		return this.pushgateway;
 	}
@@ -92,7 +105,7 @@ public class PrometheusProperties {
 	public static class Pushgateway {
 
 		/**
-		 * Enable publishing via a Prometheus Pushgateway.
+		 * Enable publishing over a Prometheus Pushgateway.
 		 */
 		private Boolean enabled = false;
 

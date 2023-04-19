@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,8 +96,10 @@ public class JacksonTester<T> extends AbstractJsonMarshalTester<T> {
 
 	@Override
 	protected JsonContent<T> getJsonContent(String json) {
-		Configuration configuration = Configuration.builder().jsonProvider(new JacksonJsonProvider(this.objectMapper))
-				.mappingProvider(new JacksonMappingProvider(this.objectMapper)).build();
+		Configuration configuration = Configuration.builder()
+			.jsonProvider(new JacksonJsonProvider(this.objectMapper))
+			.mappingProvider(new JacksonMappingProvider(this.objectMapper))
+			.build();
 		return new JsonContent<>(getResourceLoadClass(), getType(), json, configuration);
 	}
 

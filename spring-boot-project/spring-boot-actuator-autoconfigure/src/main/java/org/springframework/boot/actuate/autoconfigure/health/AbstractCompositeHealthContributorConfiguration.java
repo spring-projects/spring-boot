@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.health;
 
 import java.lang.reflect.Constructor;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.ResolvableType;
@@ -36,16 +37,28 @@ import org.springframework.util.Assert;
  */
 public abstract class AbstractCompositeHealthContributorConfiguration<C, I extends C, B> {
 
-	private final Class<?> indicatorType;
+	private final Function<B, I> indicatorFactory;
 
-	private final Class<?> beanType;
+	/**
+	 * Creates a {@code AbstractCompositeHealthContributorConfiguration} that will use
+	 * reflection to create health indicator instances.
+	 * @deprecated since 3.0.0 in favor of
+	 * {@link #AbstractCompositeHealthContributorConfiguration(Function)}
+	 */
+	@Deprecated(since = "3.0.0", forRemoval = true)
+	protected AbstractCompositeHealthContributorConfiguration() {
+		this.indicatorFactory = new ReflectionIndicatorFactory(
+				ResolvableType.forClass(AbstractCompositeHealthContributorConfiguration.class, getClass()));
+	}
 
-	AbstractCompositeHealthContributorConfiguration() {
-		ResolvableType type = ResolvableType.forClass(AbstractCompositeHealthContributorConfiguration.class,
-				getClass());
-		this.indicatorType = type.resolveGeneric(1);
-		this.beanType = type.resolveGeneric(2);
-
+	/**
+	 * Creates a {@code AbstractCompositeHealthContributorConfiguration} that will use the
+	 * given {@code indicatorFactory} to create health indicator instances.
+	 * @param indicatorFactory the function to create health indicators
+	 * @since 3.0.0
+	 */
+	protected AbstractCompositeHealthContributorConfiguration(Function<B, I> indicatorFactory) {
+		this.indicatorFactory = indicatorFactory;
 	}
 
 	protected final C createContributor(Map<String, B> beans) {
@@ -58,16 +71,38 @@ public abstract class AbstractCompositeHealthContributorConfiguration<C, I exten
 
 	protected abstract C createComposite(Map<String, B> beans);
 
-	@SuppressWarnings("unchecked")
 	protected I createIndicator(B bean) {
-		try {
-			Constructor<I> constructor = (Constructor<I>) this.indicatorType.getDeclaredConstructor(this.beanType);
-			return BeanUtils.instantiateClass(constructor, bean);
+		return this.indicatorFactory.apply(bean);
+	}
+
+	private class ReflectionIndicatorFactory implements Function<B, I> {
+
+		private final Class<?> indicatorType;
+
+		private final Class<?> beanType;
+
+		ReflectionIndicatorFactory(ResolvableType type) {
+			this.indicatorType = type.resolveGeneric(1);
+			this.beanType = type.resolveGeneric(2);
 		}
-		catch (Exception ex) {
-			throw new IllegalStateException(
-					"Unable to create health indicator " + this.indicatorType + " for bean type " + this.beanType, ex);
+
+		@Override
+		public I apply(B bean) {
+			try {
+				return BeanUtils.instantiateClass(getConstructor(), bean);
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException("Unable to create health indicator %s for bean type %s"
+					.formatted(this.indicatorType, this.beanType), ex);
+			}
+
 		}
+
+		@SuppressWarnings("unchecked")
+		private Constructor<I> getConstructor() throws NoSuchMethodException {
+			return (Constructor<I>) this.indicatorType.getDeclaredConstructor(this.beanType);
+		}
+
 	}
 
 }

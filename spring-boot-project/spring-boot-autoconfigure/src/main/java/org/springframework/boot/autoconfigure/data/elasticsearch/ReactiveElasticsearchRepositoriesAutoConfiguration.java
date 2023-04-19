@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
+import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchClient;
 import org.springframework.data.elasticsearch.repository.ReactiveElasticsearchRepository;
 import org.springframework.data.elasticsearch.repository.config.EnableReactiveElasticsearchRepositories;
 import org.springframework.data.elasticsearch.repository.support.ReactiveElasticsearchRepositoryFactoryBean;

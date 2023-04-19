@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ class StringToDurationConverterTests {
 
 	@ConversionServiceTest
 	void convertWhenIso8601ShouldReturnDuration(ConversionService conversionService) {
+		assertThat(convert(conversionService, "pt20.345s")).isEqualTo(Duration.parse("pt20.345s"));
 		assertThat(convert(conversionService, "PT20.345S")).isEqualTo(Duration.parse("PT20.345S"));
 		assertThat(convert(conversionService, "PT15M")).isEqualTo(Duration.parse("PT15M"));
 		assertThat(convert(conversionService, "+PT15M")).isEqualTo(Duration.parse("PT15M"));
@@ -121,13 +122,14 @@ class StringToDurationConverterTests {
 	@ConversionServiceTest
 	void convertWhenBadFormatShouldThrowException(ConversionService conversionService) {
 		assertThatExceptionOfType(ConversionFailedException.class).isThrownBy(() -> convert(conversionService, "10foo"))
-				.withMessageContaining("'10foo' is not a valid duration");
+			.havingRootCause()
+			.withMessageContaining("'10foo' is not a valid duration");
 	}
 
 	@ConversionServiceTest
 	void convertWhenStyleMismatchShouldThrowException(ConversionService conversionService) {
 		assertThatExceptionOfType(ConversionFailedException.class)
-				.isThrownBy(() -> convert(conversionService, "10s", null, DurationStyle.ISO8601));
+			.isThrownBy(() -> convert(conversionService, "10s", null, DurationStyle.ISO8601));
 	}
 
 	@ConversionServiceTest

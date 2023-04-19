@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import reactor.core.publisher.Mono;
  * Strategy interface used to contribute {@link Health} to the results returned from the
  * reactive variant of the {@link HealthEndpoint}.
  * <p>
- * This is non blocking contract that is meant to be used in a reactive application. See
+ * This is non-blocking contract that is meant to be used in a reactive application. See
  * {@link HealthIndicator} for the traditional contract.
  *
  * @author Stephane Nicoll

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter;
-import org.springframework.boot.system.JavaVersion;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -47,10 +46,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link NoSuchBeanDefinitionFailureAnalyzer}.
  *
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 class NoSuchBeanDefinitionFailureAnalyzerTests {
 
-	private final NoSuchBeanDefinitionFailureAnalyzer analyzer = new NoSuchBeanDefinitionFailureAnalyzer();
+	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+
+	private final NoSuchBeanDefinitionFailureAnalyzer analyzer = new NoSuchBeanDefinitionFailureAnalyzer(
+			this.context.getBeanFactory());
 
 	@Test
 	void failureAnalysisForMultipleBeans() {
@@ -63,7 +66,7 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringHandler.class));
 		assertDescriptionConstructorMissingType(analysis, StringHandler.class, 0, String.class);
 		assertThat(analysis.getDescription())
-				.doesNotContain("No matching auto-configuration has been found for this type.");
+			.doesNotContain("No matching auto-configuration has been found for this type.");
 		assertThat(analysis.getAction()).startsWith(
 				String.format("Consider defining a bean of type '%s' in your configuration.", String.class.getName()));
 	}
@@ -123,18 +126,18 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 	void failureAnalysisForNoMatchName() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringNameHandler.class));
 		assertThat(analysis.getDescription())
-				.startsWith(String.format("Constructor in %s required a bean named '%s' that could not be found",
-						StringNameHandler.class.getName(), "test-string"));
+			.startsWith(String.format("Constructor in %s required a bean named '%s' that could not be found",
+					StringNameHandler.class.getName(), "test-string"));
 		assertThat(analysis.getAction())
-				.startsWith(String.format("Consider defining a bean named '%s' in your configuration.", "test-string"));
+			.startsWith(String.format("Consider defining a bean named '%s' in your configuration.", "test-string"));
 	}
 
 	@Test
 	void failureAnalysisForMissingBeanName() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(StringMissingBeanNameConfiguration.class));
 		assertThat(analysis.getDescription())
-				.startsWith(String.format("Constructor in %s required a bean named '%s' that could not be found",
-						StringNameHandler.class.getName(), "test-string"));
+			.startsWith(String.format("Constructor in %s required a bean named '%s' that could not be found",
+					StringNameHandler.class.getName(), "test-string"));
 		assertBeanMethodDisabled(analysis,
 				"@ConditionalOnBean (types: java.lang.Integer; SearchStrategy: all) did not find any beans",
 				TestMissingBeanAutoConfiguration.class, "string");
@@ -152,14 +155,8 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 	@Test
 	void failureAnalysisForUnmatchedQualifier() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(QualifiedBeanConfiguration.class));
-		assertThat(analysis.getDescription()).containsPattern(determineAnnotationValuePattern());
-	}
-
-	private String determineAnnotationValuePattern() {
-		if (JavaVersion.getJavaVersion().isEqualOrNewerThan(JavaVersion.FOURTEEN)) {
-			return "@org.springframework.beans.factory.annotation.Qualifier\\(\"*alpha\"*\\)";
-		}
-		return "@org.springframework.beans.factory.annotation.Qualifier\\(value=\"*alpha\"*\\)";
+		assertThat(analysis.getDescription())
+			.containsPattern("@org.springframework.beans.factory.annotation.Qualifier\\(\"*alpha\"*\\)");
 	}
 
 	private void assertDescriptionConstructorMissingType(FailureAnalysis analysis, Class<?> component, int index,
@@ -215,11 +212,10 @@ class NoSuchBeanDefinitionFailureAnalyzerTests {
 	}
 
 	private FatalBeanException createFailure(Class<?> config, String... environment) {
-		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
-			this.analyzer.setBeanFactory(context.getBeanFactory());
-			TestPropertyValues.of(environment).applyTo(context);
-			context.register(config);
-			context.refresh();
+		try {
+			TestPropertyValues.of(environment).applyTo(this.context);
+			this.context.register(config);
+			this.context.refresh();
 			return null;
 		}
 		catch (FatalBeanException ex) {

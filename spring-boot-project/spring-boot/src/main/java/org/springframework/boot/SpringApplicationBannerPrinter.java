@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.logging.Log;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -118,6 +120,15 @@ class SpringApplicationBannerPrinter {
 		public void printBanner(Environment environment, Class<?> sourceClass, PrintStream out) {
 			sourceClass = (sourceClass != null) ? sourceClass : this.sourceClass;
 			this.banner.printBanner(environment, sourceClass, out);
+		}
+
+	}
+
+	static class SpringApplicationBannerPrinterRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			hints.resources().registerPattern(DEFAULT_BANNER_LOCATION);
 		}
 
 	}

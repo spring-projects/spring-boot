@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ class BindConverterTests {
 	void canConvertWhenHasDefaultEditorShouldReturnTrue() {
 		BindConverter bindConverter = getPropertyEditorOnlyBindConverter(null);
 		assertThat(bindConverter.canConvert("java.lang.RuntimeException", ResolvableType.forClass(Class.class)))
-				.isTrue();
+			.isTrue();
 	}
 
 	@Test
@@ -89,7 +89,7 @@ class BindConverterTests {
 	void canConvertWhenHasEditorForCollectionElementShouldReturnTrue() {
 		BindConverter bindConverter = getPropertyEditorOnlyBindConverter(this::registerSampleTypeEditor);
 		assertThat(bindConverter.canConvert("test", ResolvableType.forClassWithGenerics(List.class, SampleType.class)))
-				.isTrue();
+			.isTrue();
 	}
 
 	@Test
@@ -159,7 +159,7 @@ class BindConverterTests {
 	void convertWhenNotPropertyEditorAndConversionServiceCannotConvertShouldThrowException() {
 		BindConverter bindConverter = BindConverter.get(null, null);
 		assertThatExceptionOfType(ConverterNotFoundException.class)
-				.isThrownBy(() -> bindConverter.convert("test", ResolvableType.forClass(SampleType.class)));
+			.isThrownBy(() -> bindConverter.convert("test", ResolvableType.forClass(SampleType.class)));
 	}
 
 	@Test
@@ -185,8 +185,8 @@ class BindConverterTests {
 		BindConverter bindConverter = BindConverter.get(Collections.singletonList(new GenericConversionService()),
 				null);
 		assertThatExceptionOfType(ConversionFailedException.class)
-				.isThrownBy(() -> bindConverter.convert("com.example.Missing", ResolvableType.forClass(Class.class)))
-				.withRootCauseInstanceOf(ClassNotFoundException.class);
+			.isThrownBy(() -> bindConverter.convert("com.example.Missing", ResolvableType.forClass(Class.class)))
+			.withRootCauseInstanceOf(ClassNotFoundException.class);
 	}
 
 	@Test

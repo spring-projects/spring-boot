@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.LenientConfiguration;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
 import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.artifacts.ResolvedConfiguration;
@@ -49,8 +50,11 @@ class ResolvedDependencies {
 	}
 
 	void processConfiguration(Project project, Configuration configuration) {
-		Set<String> localProjectIds = project.getRootProject().getAllprojects().stream().map(this::projectId)
-				.collect(Collectors.toSet());
+		Set<String> localProjectIds = project.getRootProject()
+			.getAllprojects()
+			.stream()
+			.map(this::projectId)
+			.collect(Collectors.toSet());
 		this.configurationDependencies.put(configuration,
 				new ResolvedConfigurationDependencies(localProjectIds, configuration.getResolvedConfiguration()));
 	}
@@ -75,10 +79,14 @@ class ResolvedDependencies {
 		ResolvedConfigurationDependencies(Set<String> projectDependencyIds,
 				ResolvedConfiguration resolvedConfiguration) {
 			if (!resolvedConfiguration.hasError()) {
-				for (ResolvedArtifact resolvedArtifact : resolvedConfiguration.getResolvedArtifacts()) {
+				LenientConfiguration lenientConfiguration = resolvedConfiguration.getLenientConfiguration();
+				// Ensure that all files are resolved, allowing Gradle to resolve in
+				// parallel if they are not
+				lenientConfiguration.getFiles();
+				for (ResolvedArtifact resolvedArtifact : lenientConfiguration.getArtifacts()) {
 					ModuleVersionIdentifier id = resolvedArtifact.getModuleVersion().getId();
 					boolean projectDependency = projectDependencyIds
-							.contains(id.getGroup() + ":" + id.getName() + ":" + id.getVersion());
+						.contains(id.getGroup() + ":" + id.getName() + ":" + id.getVersion());
 					this.dependencies.put(resolvedArtifact.getFile(), new DependencyDescriptor(
 							new ModuleVersionIdentifierLibraryCoordinates(id), projectDependency));
 				}

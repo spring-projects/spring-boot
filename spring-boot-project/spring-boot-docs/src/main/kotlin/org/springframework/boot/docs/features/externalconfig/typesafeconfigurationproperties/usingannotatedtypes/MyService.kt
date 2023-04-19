@@ -19,7 +19,7 @@ package org.springframework.boot.docs.features.externalconfig.typesafeconfigurat
 import org.springframework.stereotype.Service
 
 @Service
-class MyService(val properties: SomeProperties) {
+class MyService(val properties: MyProperties) {
 
 	fun openConnection() {
 		val server = Server(properties.remoteAddress)

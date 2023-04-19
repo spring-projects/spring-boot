@@ -27,9 +27,26 @@ repositories {
 }
 
 configurations {
-	jetty
-	tomcat
-	undertow
+	app {
+		extendsFrom(configurations.runtimeClasspath)
+	}
+	jetty {
+		extendsFrom(app)
+	}
+	tomcat {
+		extendsFrom(app)
+	}
+	undertow {
+		extendsFrom(app)
+	}
+}
+
+dependencyManagement {
+	jetty {
+		dependencies {
+			dependency "jakarta.servlet:jakarta.servlet-api:5.0.0"
+		}
+	}
 }
 
 tasks.register("resourcesJar", Jar) { jar -> 
@@ -50,29 +67,30 @@ tasks.register("resourcesJar", Jar) { jar ->
 
 dependencies {
 	compileOnly("org.eclipse.jetty:jetty-server")
+	compileOnly("org.springframework:spring-web")
 
 	implementation("org.springframework.boot:spring-boot-starter")
-	implementation("org.springframework:spring-web")
 
+	app(files(resourcesJar))
+	app(files(sourceSets.main.output))
+	app("org.springframework:spring-web")
 	jetty("org.springframework.boot:spring-boot-starter-jetty")
-	jetty files(resourcesJar)
 	tomcat("org.springframework.boot:spring-boot-starter-tomcat")
-	tomcat files(resourcesJar)
 	undertow("org.springframework.boot:spring-boot-starter-undertow")
-	undertow files(resourcesJar)
 }
 
 def boolean isWindows() {
 	return File.separatorChar == '\\';
 }
 
-["jetty", "tomcat", "undertow"].each { container ->
+["jetty", "tomcat", "undertow"].each { webServer ->
 	def configurer = { task -> 
 		task.dependsOn resourcesJar
 		task.mainClass = "com.example.ResourceHandlingApplication"
-		task.classpath = sourceSets.main.runtimeClasspath.plus(configurations.getByName(container))
-		task.classifier = container
+		task.classpath = configurations.getByName(webServer)
+		task.classifier = webServer
+		task.targetJavaVersion = project.getTargetCompatibility()
 	}
-	tasks.register("${container}BootJar", BootJar, configurer)
-	tasks.register("${container}BootWar", BootWar, configurer)
+	tasks.register("${webServer}BootJar", BootJar, configurer)
+	tasks.register("${webServer}BootWar", BootWar, configurer)
 }

@@ -32,7 +32,6 @@ import org.springframework.boot.context.annotation.ImportCandidates;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -46,6 +45,7 @@ import org.springframework.util.ObjectUtils;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Moritz Halbritter
+ * @author Scott Frederick
  */
 class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelector implements DeterminableImports {
 
@@ -96,16 +96,13 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	}
 
 	protected Collection<String> loadFactoryNames(Class<?> source) {
-		List<String> factoryNames = new ArrayList<>(
-				SpringFactoriesLoader.loadFactoryNames(source, getBeanClassLoader()));
-		ImportCandidates.load(source, getBeanClassLoader()).forEach(factoryNames::add);
-		return factoryNames;
+		return ImportCandidates.load(source, getBeanClassLoader()).getCandidates();
 	}
 
 	@Override
 	protected Set<String> getExclusions(AnnotationMetadata metadata, AnnotationAttributes attributes) {
 		Set<String> exclusions = new LinkedHashSet<>();
-		Class<?> source = ClassUtils.resolveClassName(metadata.getClassName(), null);
+		Class<?> source = ClassUtils.resolveClassName(metadata.getClassName(), getBeanClassLoader());
 		for (String annotationName : ANNOTATION_NAMES) {
 			AnnotationAttributes merged = AnnotatedElementUtils.getMergedAnnotationAttributes(source, annotationName);
 			Class<?>[] exclude = (merged != null) ? merged.getClassArray("exclude") : null;
@@ -129,7 +126,7 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 
 	protected final Map<Class<?>, List<Annotation>> getAnnotations(AnnotationMetadata metadata) {
 		MultiValueMap<Class<?>, Annotation> annotations = new LinkedMultiValueMap<>();
-		Class<?> source = ClassUtils.resolveClassName(metadata.getClassName(), null);
+		Class<?> source = ClassUtils.resolveClassName(metadata.getClassName(), getBeanClassLoader());
 		collectAnnotations(source, annotations, new HashSet<>());
 		return Collections.unmodifiableMap(annotations);
 	}

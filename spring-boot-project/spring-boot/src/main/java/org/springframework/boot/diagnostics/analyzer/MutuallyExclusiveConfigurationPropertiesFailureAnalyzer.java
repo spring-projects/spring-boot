@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,11 +18,11 @@ package org.springframework.boot.diagnostics.analyzer;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
@@ -32,24 +32,23 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.FailureAnalyzer;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
-import org.springframework.context.EnvironmentAware;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 
 /**
- * A {@link FailureAnalyzer} that performs analysis of failures caused by an
+ * A {@link FailureAnalyzer} that performs analysis of failures caused by a
  * {@link MutuallyExclusiveConfigurationPropertiesException}.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 class MutuallyExclusiveConfigurationPropertiesFailureAnalyzer
-		extends AbstractFailureAnalyzer<MutuallyExclusiveConfigurationPropertiesException> implements EnvironmentAware {
+		extends AbstractFailureAnalyzer<MutuallyExclusiveConfigurationPropertiesException> {
 
-	private ConfigurableEnvironment environment;
+	private final ConfigurableEnvironment environment;
 
-	@Override
-	public void setEnvironment(Environment environment) {
+	MutuallyExclusiveConfigurationPropertiesFailureAnalyzer(Environment environment) {
 		this.environment = (ConfigurableEnvironment) environment;
 	}
 
@@ -72,23 +71,25 @@ class MutuallyExclusiveConfigurationPropertiesFailureAnalyzer
 
 	private List<Descriptor> getDescriptors(String propertyName) {
 		return getPropertySources().filter((source) -> source.containsProperty(propertyName))
-				.map((source) -> Descriptor.get(source, propertyName)).collect(Collectors.toList());
+			.map((source) -> Descriptor.get(source, propertyName))
+			.toList();
 	}
 
 	private Stream<PropertySource<?>> getPropertySources() {
 		if (this.environment == null) {
 			return Stream.empty();
 		}
-		return this.environment.getPropertySources().stream()
-				.filter((source) -> !ConfigurationPropertySources.isAttachedConfigurationPropertySource(source));
+		return this.environment.getPropertySources()
+			.stream()
+			.filter((source) -> !ConfigurationPropertySources.isAttachedConfigurationPropertySource(source));
 	}
 
 	private void appendDetails(StringBuilder message, MutuallyExclusiveConfigurationPropertiesException cause,
 			List<Descriptor> descriptors) {
-		descriptors.sort((d1, d2) -> d1.propertyName.compareTo(d2.propertyName));
+		descriptors.sort(Comparator.comparing((descriptor) -> descriptor.propertyName));
 		message.append(String.format("The following configuration properties are mutually exclusive:%n%n"));
 		sortedStrings(cause.getMutuallyExclusiveNames())
-				.forEach((name) -> message.append(String.format("\t%s%n", name)));
+			.forEach((name) -> message.append(String.format("\t%s%n", name)));
 		message.append(String.format("%n"));
 		message.append(
 				String.format("However, more than one of those properties has been configured at the same time:%n%n"));

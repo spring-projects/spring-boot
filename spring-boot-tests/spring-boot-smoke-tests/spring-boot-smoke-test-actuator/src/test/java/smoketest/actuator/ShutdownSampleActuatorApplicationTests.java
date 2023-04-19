@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,14 +52,14 @@ class ShutdownSampleActuatorApplicationTests {
 				this.restTemplate.withBasicAuth("user", "password").getForEntity("/", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		Map<String, Object> body = entity.getBody();
-		assertThat(body.get("message")).isEqualTo("Hello Phil");
+		assertThat(body).containsEntry("message", "Hello Phil");
 	}
 
 	@Test
 	@DirtiesContext
 	void testShutdown() {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(this.restTemplate.withBasicAuth("user", "password")
-				.postForEntity("/actuator/shutdown", null, Map.class));
+			.postForEntity("/actuator/shutdown", null, Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(((String) entity.getBody().get("message"))).contains("Shutting down");
 	}
@@ -74,7 +74,7 @@ class ShutdownSampleActuatorApplicationTests {
 
 		@Bean
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
-			http.csrf().disable();
+			http.csrf((csrf) -> csrf.disable());
 			return http.build();
 		}
 

@@ -30,7 +30,7 @@ public class SampleProfileApplication implements CommandLineRunner {
 
 	// Simple example shows how a command line spring application can execute an
 	// injected bean service. Also demonstrates how you can use @Value to inject
-	// command line args ('--name=whatever') or application properties
+	// command line args ('--test.name=whatever') or application properties
 
 	@Autowired
 	private MessageService helloWorldService;

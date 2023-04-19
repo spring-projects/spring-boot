@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.h2;
 import java.sql.Connection;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -39,6 +38,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.log.LogMessage;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for H2's web console.
@@ -66,26 +66,36 @@ public class H2ConsoleAutoConfiguration {
 				urlMapping);
 		configureH2ConsoleSettings(registration, properties.getSettings());
 		if (logger.isInfoEnabled()) {
-			logDataSources(dataSource, path);
+			withThreadContextClassLoader(getClass().getClassLoader(), () -> logDataSources(dataSource, path));
 		}
 		return registration;
 	}
 
+	private void withThreadContextClassLoader(ClassLoader classLoader, Runnable action) {
+		ClassLoader previous = Thread.currentThread().getContextClassLoader();
+		try {
+			Thread.currentThread().setContextClassLoader(classLoader);
+			action.run();
+		}
+		finally {
+			Thread.currentThread().setContextClassLoader(previous);
+		}
+	}
+
 	private void logDataSources(ObjectProvider<DataSource> dataSource, String path) {
-		List<String> urls = dataSource.orderedStream().map((available) -> {
-			try (Connection connection = available.getConnection()) {
-				return "'" + connection.getMetaData().getURL() + "'";
-			}
-			catch (Exception ex) {
-				return null;
-			}
-		}).filter(Objects::nonNull).collect(Collectors.toList());
+		List<String> urls = dataSource.orderedStream().map(this::getConnectionUrl).filter(Objects::nonNull).toList();
 		if (!urls.isEmpty()) {
-			StringBuilder sb = new StringBuilder("H2 console available at '").append(path).append("'. ");
-			String tmp = (urls.size() > 1) ? "Databases" : "Database";
-			sb.append(tmp).append(" available at ");
-			sb.append(String.join(", ", urls));
-			logger.info(sb.toString());
+			logger.info(LogMessage.format("H2 console available at '%s'. %s available at %s", path,
+					(urls.size() > 1) ? "Databases" : "Database", String.join(", ", urls)));
+		}
+	}
+
+	private String getConnectionUrl(DataSource dataSource) {
+		try (Connection connection = dataSource.getConnection()) {
+			return "'" + connection.getMetaData().getURL() + "'";
+		}
+		catch (Exception ex) {
+			return null;
 		}
 	}
 

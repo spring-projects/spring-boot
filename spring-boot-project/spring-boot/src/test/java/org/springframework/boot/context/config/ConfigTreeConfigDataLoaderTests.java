@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,9 +39,9 @@ import static org.mockito.Mockito.mock;
  */
 class ConfigTreeConfigDataLoaderTests {
 
-	private ConfigTreeConfigDataLoader loader = new ConfigTreeConfigDataLoader();
+	private final ConfigTreeConfigDataLoader loader = new ConfigTreeConfigDataLoader();
 
-	private ConfigDataLoaderContext loaderContext = mock(ConfigDataLoaderContext.class);
+	private final ConfigDataLoaderContext loaderContext = mock(ConfigDataLoaderContext.class);
 
 	@TempDir
 	Path directory;
@@ -53,10 +53,10 @@ class ConfigTreeConfigDataLoaderTests {
 		FileCopyUtils.copy("world\n".getBytes(StandardCharsets.UTF_8), file);
 		ConfigTreeConfigDataResource location = new ConfigTreeConfigDataResource(this.directory.toString());
 		ConfigData configData = this.loader.load(this.loaderContext, location);
-		assertThat(configData.getPropertySources().size()).isEqualTo(1);
+		assertThat(configData.getPropertySources()).hasSize(1);
 		PropertySource<?> source = configData.getPropertySources().get(0);
 		assertThat(source.getName()).isEqualTo("Config tree '" + this.directory.toString() + "'");
-		assertThat(source.getProperty("hello").toString()).isEqualTo("world");
+		assertThat(source.getProperty("hello")).hasToString("world");
 	}
 
 	@Test
@@ -64,7 +64,7 @@ class ConfigTreeConfigDataLoaderTests {
 		File missing = this.directory.resolve("missing").toFile();
 		ConfigTreeConfigDataResource location = new ConfigTreeConfigDataResource(missing.toString());
 		assertThatExceptionOfType(ConfigDataResourceNotFoundException.class)
-				.isThrownBy(() -> this.loader.load(this.loaderContext, location));
+			.isThrownBy(() -> this.loader.load(this.loaderContext, location));
 	}
 
 }

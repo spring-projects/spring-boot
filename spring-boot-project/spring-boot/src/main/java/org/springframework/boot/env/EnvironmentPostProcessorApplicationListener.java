@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,10 +53,10 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 
 	/**
 	 * Create a new {@link EnvironmentPostProcessorApplicationListener} with
-	 * {@link EnvironmentPostProcessor} classes loaded via {@code spring.factories}.
+	 * {@link EnvironmentPostProcessor} classes loaded through {@code spring.factories}.
 	 */
 	public EnvironmentPostProcessorApplicationListener() {
-		this((classLoader) -> EnvironmentPostProcessorsFactory.fromSpringFactories(classLoader), new DeferredLogs());
+		this(EnvironmentPostProcessorsFactory::fromSpringFactories);
 	}
 
 	/**
@@ -64,14 +64,21 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 	 * processors created by the given factory.
 	 * @param postProcessorsFactory the post processors factory
 	 */
-	public EnvironmentPostProcessorApplicationListener(EnvironmentPostProcessorsFactory postProcessorsFactory) {
-		this((classloader) -> postProcessorsFactory, new DeferredLogs());
+	private EnvironmentPostProcessorApplicationListener(
+			Function<ClassLoader, EnvironmentPostProcessorsFactory> postProcessorsFactory) {
+		this.postProcessorsFactory = postProcessorsFactory;
+		this.deferredLogs = new DeferredLogs();
 	}
 
-	EnvironmentPostProcessorApplicationListener(
-			Function<ClassLoader, EnvironmentPostProcessorsFactory> postProcessorsFactory, DeferredLogs deferredLogs) {
-		this.postProcessorsFactory = postProcessorsFactory;
-		this.deferredLogs = deferredLogs;
+	/**
+	 * Factory method that creates an {@link EnvironmentPostProcessorApplicationListener}
+	 * with a specific {@link EnvironmentPostProcessorsFactory}.
+	 * @param postProcessorsFactory the environment post processor factory
+	 * @return an {@link EnvironmentPostProcessorApplicationListener} instance
+	 */
+	public static EnvironmentPostProcessorApplicationListener with(
+			EnvironmentPostProcessorsFactory postProcessorsFactory) {
+		return new EnvironmentPostProcessorApplicationListener((classloader) -> postProcessorsFactory);
 	}
 
 	@Override
@@ -83,8 +90,8 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
-		if (event instanceof ApplicationEnvironmentPreparedEvent) {
-			onApplicationEnvironmentPreparedEvent((ApplicationEnvironmentPreparedEvent) event);
+		if (event instanceof ApplicationEnvironmentPreparedEvent environmentPreparedEvent) {
+			onApplicationEnvironmentPreparedEvent(environmentPreparedEvent);
 		}
 		if (event instanceof ApplicationPreparedEvent) {
 			onApplicationPreparedEvent();

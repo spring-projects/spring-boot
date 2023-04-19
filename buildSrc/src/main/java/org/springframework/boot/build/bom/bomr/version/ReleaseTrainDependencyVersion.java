@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,10 +47,9 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 
 	@Override
 	public int compareTo(DependencyVersion other) {
-		if (!(other instanceof ReleaseTrainDependencyVersion)) {
+		if (!(other instanceof ReleaseTrainDependencyVersion otherReleaseTrain)) {
 			return -1;
 		}
-		ReleaseTrainDependencyVersion otherReleaseTrain = (ReleaseTrainDependencyVersion) other;
 		int comparison = this.releaseTrain.compareTo(otherReleaseTrain.releaseTrain);
 		if (comparison != 0) {
 			return comparison;
@@ -67,10 +66,9 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 		if (other instanceof CalendarVersionDependencyVersion) {
 			return false;
 		}
-		if (!(other instanceof ReleaseTrainDependencyVersion)) {
+		if (!(other instanceof ReleaseTrainDependencyVersion otherReleaseTrain)) {
 			return true;
 		}
-		ReleaseTrainDependencyVersion otherReleaseTrain = (ReleaseTrainDependencyVersion) other;
 		return otherReleaseTrain.compareTo(this) < 0;
 	}
 
@@ -84,10 +82,9 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 		if (other instanceof CalendarVersionDependencyVersion) {
 			return false;
 		}
-		if (!(other instanceof ReleaseTrainDependencyVersion)) {
+		if (!(other instanceof ReleaseTrainDependencyVersion otherReleaseTrain)) {
 			return true;
 		}
-		ReleaseTrainDependencyVersion otherReleaseTrain = (ReleaseTrainDependencyVersion) other;
 		return otherReleaseTrain.releaseTrain.equals(this.releaseTrain) && isNewerThan(other);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,8 @@ class Context {
 	 * @param workingDir the working directory
 	 */
 	Context(File archiveFile, File workingDir) {
-		Assert.state(isExistingFile(archiveFile) && isJarOrWar(archiveFile), "Unable to find source archive");
+		Assert.state(isExistingFile(archiveFile), "Unable to find source archive");
+		Assert.state(isJarOrWar(archiveFile), "Source archive " + archiveFile + " must end with .jar or .war");
 		this.archiveFile = archiveFile;
 		this.workingDir = workingDir;
 		this.relativeDir = deduceRelativeDir(archiveFile.getParentFile(), this.workingDir);
@@ -88,8 +89,8 @@ class Context {
 
 	private static File findSource(URL location) throws IOException, URISyntaxException {
 		URLConnection connection = location.openConnection();
-		if (connection instanceof JarURLConnection) {
-			return getRootJarFile(((JarURLConnection) connection).getJarFile());
+		if (connection instanceof JarURLConnection jarURLConnection) {
+			return getRootJarFile(jarURLConnection.getJarFile());
 		}
 		return new File(location.toURI());
 	}

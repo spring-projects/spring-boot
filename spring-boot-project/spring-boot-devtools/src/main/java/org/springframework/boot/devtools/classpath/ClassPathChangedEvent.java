@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package org.springframework.boot.devtools.classpath;
 
 import java.util.Set;
 
+import org.springframework.boot.devtools.filewatch.ChangedFile;
+import org.springframework.boot.devtools.filewatch.ChangedFile.Type;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.core.style.ToStringCreator;
@@ -68,7 +70,41 @@ public class ClassPathChangedEvent extends ApplicationEvent {
 	@Override
 	public String toString() {
 		return new ToStringCreator(this).append("changeSet", this.changeSet)
-				.append("restartRequired", this.restartRequired).toString();
+			.append("restartRequired", this.restartRequired)
+			.toString();
+	}
+
+	/**
+	 * Return an overview of the changes that triggered this event.
+	 * @return an overview of the changes
+	 * @since 2.6.11
+	 */
+	public String overview() {
+		int added = 0;
+		int deleted = 0;
+		int modified = 0;
+		for (ChangedFiles changedFiles : this.changeSet) {
+			for (ChangedFile changedFile : changedFiles) {
+				Type type = changedFile.getType();
+				if (type == Type.ADD) {
+					added++;
+				}
+				else if (type == Type.DELETE) {
+					deleted++;
+				}
+				else if (type == Type.MODIFY) {
+					modified++;
+				}
+			}
+		}
+		int size = added + deleted + modified;
+		return String.format("%s (%s, %s, %s)", quantityOfUnit(size, "class path change"),
+				quantityOfUnit(added, "addition"), quantityOfUnit(deleted, "deletion"),
+				quantityOfUnit(modified, "modification"));
+	}
+
+	private String quantityOfUnit(int quantity, String unit) {
+		return quantity + " " + ((quantity != 1) ? unit + "s" : unit);
 	}
 
 }

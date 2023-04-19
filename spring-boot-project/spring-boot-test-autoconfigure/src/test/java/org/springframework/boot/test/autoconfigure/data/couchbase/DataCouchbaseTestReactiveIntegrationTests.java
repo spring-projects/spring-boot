@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,10 +25,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.data.couchbase.core.ReactiveCouchbaseTemplate;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,25 +36,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  * repositories.
  *
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-@DataCouchbaseTest
+@DataCouchbaseTest(properties = "spring.data.couchbase.bucket-name=cbbucket")
 @Testcontainers(disabledWithoutDocker = true)
 class DataCouchbaseTestReactiveIntegrationTests {
 
 	private static final String BUCKET_NAME = "cbbucket";
 
 	@Container
+	@ServiceConnection
 	static final CouchbaseContainer couchbase = new CouchbaseContainer(DockerImageNames.couchbase())
-			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10))
-			.withBucket(new BucketDefinition(BUCKET_NAME));
-
-	@DynamicPropertySource
-	static void couchbaseProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.couchbase.connection-string", couchbase::getConnectionString);
-		registry.add("spring.couchbase.username", couchbase::getUsername);
-		registry.add("spring.couchbase.password", couchbase::getPassword);
-		registry.add("spring.data.couchbase.bucket-name", () -> BUCKET_NAME);
-	}
+		.withStartupAttempts(5)
+		.withStartupTimeout(Duration.ofMinutes(10))
+		.withBucket(new BucketDefinition(BUCKET_NAME));
 
 	@Autowired
 	private ReactiveCouchbaseTemplate couchbaseTemplate;

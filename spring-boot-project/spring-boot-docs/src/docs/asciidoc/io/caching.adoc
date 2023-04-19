@@ -37,11 +37,13 @@ The cache abstraction does not provide an actual store and relies on abstraction
 If you have not defined a bean of type `CacheManager` or a `CacheResolver` named `cacheResolver` (see {spring-framework-api}/cache/annotation/CachingConfigurer.html[`CachingConfigurer`]), Spring Boot tries to detect the following providers (in the indicated order):
 
 . <<io#io.caching.provider.generic,Generic>>
-. <<io#io.caching.provider.jcache,JCache (JSR-107)>> (Hazelcast and others)
+. <<io#io.caching.provider.jcache,JCache (JSR-107)>> (EhCache 3, Hazelcast, Infinispan, and others)
 . <<io#io.caching.provider.hazelcast,Hazelcast>>
+. <<io#io.caching.provider.infinispan,Infinispan>>
 . <<io#io.caching.provider.couchbase,Couchbase>>
 . <<io#io.caching.provider.redis,Redis>>
 . <<io#io.caching.provider.caffeine,Caffeine>>
+. <<io#io.caching.provider.cache2k,Cache2k>>
 . <<io#io.caching.provider.simple,Simple>>
 
 Additionally, {spring-boot-for-apache-geode}[Spring Boot for Apache Geode] provides {spring-boot-for-apache-geode-docs}#geode-caching-provider[auto-configuration for using Apache Geode as a cache provider].
@@ -74,7 +76,7 @@ A `CacheManager` wrapping all beans of that type is created.
 [[io.caching.provider.jcache]]
 ==== JCache (JSR-107)
 https://jcp.org/en/jsr/detail?id=107[JCache] is bootstrapped through the presence of a `javax.cache.spi.CachingProvider` on the classpath (that is, a JSR-107 compliant caching library exists on the classpath), and the `JCacheCacheManager` is provided by the `spring-boot-starter-cache` "`Starter`".
-Various compliant libraries are available, and Spring Boot provides dependency management for Ehcache 3 and Hazelcast.
+Various compliant libraries are available, and Spring Boot provides dependency management for Ehcache 3, Hazelcast, and Infinispan.
 Any other compliant library can be added as well.
 
 It might happen that more than one provider is present, in which case the provider must be explicitly specified.
@@ -108,8 +110,35 @@ No further customization is applied to it.
 
 [[io.caching.provider.hazelcast]]
 ==== Hazelcast
+
 Spring Boot has <<io#io.hazelcast,general support for Hazelcast>>.
-If a `HazelcastInstance` has been auto-configured, it is automatically wrapped in a `CacheManager`.
+If a `HazelcastInstance` has been auto-configured and `com.hazelcast:hazelcast-spring` is on the classpath, it is automatically wrapped in a `CacheManager`.
+
+NOTE: Hazelcast can be used as a JCache compliant cache or as a Spring `CacheManager` compliant cache.
+When setting configprop:spring.cache.type[] to `hazelcast`, Spring Boot will use the `CacheManager` based implementation.
+If you want to use Hazelcast as a JCache compliant cache, set configprop:spring.cache.type[] to `jcache`.
+If you have multiple JCache compliant cache providers and want to force the use of Hazelcast, you have to <<io#io.caching.provider.jcache,explicitly set the JCache provider>>.
+
+[[io.caching.provider.infinispan]]
+==== Infinispan
+
+https://infinispan.org/[Infinispan] has no default configuration file location, so it must be specified explicitly.
+Otherwise, the default bootstrap is used.
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  cache:
+	    infinispan:
+	      config: "infinispan.xml"
+----
+
+Caches can be created on startup by setting the configprop:spring.cache.cache-names[] property.
+If a custom `ConfigurationBuilder` bean is defined, it is used to customize the caches.
+
+To be compatible with Spring Boot's Jakarta EE 9 baseline, Infinispan's `-jakarta` modules must be used.
+For every module with a `-jakarta` variant, the variant must be used in place of the standard module.
+For example, `infinispan-core-jakarta` and `infinispan-commons-jakarta` must be used in place of `infinispan-core` and `infinispan-commons` respectively.
 
 
 
@@ -187,6 +216,19 @@ For instance, the following configuration creates `cache1` and `cache2` caches w
 If a `com.github.benmanes.caffeine.cache.CacheLoader` bean is defined, it is automatically associated to the `CaffeineCacheManager`.
 Since the `CacheLoader` is going to be associated with _all_ caches managed by the cache manager, it must be defined as `CacheLoader<Object, Object>`.
 The auto-configuration ignores any other generic type.
+
+
+
+[[io.caching.provider.cache2k]]
+==== Cache2k
+https://cache2k.org/[Cache2k] is an in-memory cache.
+If the Cache2k spring integration is present, a `SpringCache2kCacheManager` is auto-configured.
+
+Caches can be created on startup by setting the configprop:spring.cache.cache-names[] property.
+Cache defaults can be customized using a `Cache2kBuilderCustomizer` bean.
+The following example shows a customizer that configures the capacity of the cache to 200 entries, with an expiration of 5 minutes:
+
+include::code:MyCache2kDefaultsConfiguration[]
 
 
 

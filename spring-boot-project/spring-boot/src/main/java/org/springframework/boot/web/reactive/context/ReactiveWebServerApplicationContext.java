@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,11 @@ package org.springframework.boot.web.reactive.context;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.boot.availability.ReadinessState;
 import org.springframework.boot.web.context.ConfigurableWebServerApplicationContext;
+import org.springframework.boot.web.context.MissingWebServerFactoryBeanException;
 import org.springframework.boot.web.context.WebServerGracefulShutdownLifecycle;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
@@ -86,7 +88,7 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 	private void createWebServer() {
 		WebServerManager serverManager = this.serverManager;
 		if (serverManager == null) {
-			StartupStep createWebServer = this.getApplicationStartup().start("spring.boot.webserver.create");
+			StartupStep createWebServer = getApplicationStartup().start("spring.boot.webserver.create");
 			String webServerFactoryBeanName = getWebServerFactoryBeanName();
 			ReactiveWebServerFactory webServerFactory = getWebServerFactory(webServerFactoryBeanName);
 			createWebServer.tag("factory", webServerFactory.getClass().toString());
@@ -105,8 +107,8 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 		// Use bean names so that we don't consider the hierarchy
 		String[] beanNames = getBeanFactory().getBeanNamesForType(ReactiveWebServerFactory.class);
 		if (beanNames.length == 0) {
-			throw new ApplicationContextException(
-					"Unable to start ReactiveWebApplicationContext due to missing ReactiveWebServerFactory bean.");
+			throw new MissingWebServerFactoryBeanException(getClass(), ReactiveWebServerFactory.class,
+					WebApplicationType.REACTIVE);
 		}
 		if (beanNames.length > 1) {
 			throw new ApplicationContextException("Unable to start ReactiveWebApplicationContext due to multiple "

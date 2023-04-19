@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,8 @@ class DiscoveredOperationMethodTests {
 	void createWhenAnnotationAttributesIsNullShouldThrowException() {
 		Method method = ReflectionUtils.findMethod(getClass(), "example");
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DiscoveredOperationMethod(method, OperationType.READ, null))
-				.withMessageContaining("AnnotationAttributes must not be null");
+			.isThrownBy(() -> new DiscoveredOperationMethod(method, OperationType.READ, null))
+			.withMessageContaining("AnnotationAttributes must not be null");
 	}
 
 	@Test

@@ -47,11 +47,11 @@ import org.springframework.rabbit.stream.support.converter.StreamMessageConverte
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(StreamRabbitListenerContainerFactory.class)
-@ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type", havingValue = "stream")
 class RabbitStreamConfiguration {
 
 	@Bean(name = "rabbitListenerContainerFactory")
 	@ConditionalOnMissingBean(name = "rabbitListenerContainerFactory")
+	@ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type", havingValue = "stream")
 	StreamRabbitListenerContainerFactory streamRabbitListenerContainerFactory(Environment rabbitStreamEnvironment,
 			RabbitProperties properties, ObjectProvider<ConsumerCustomizer> consumerCustomizer,
 			ObjectProvider<ContainerCustomizer<StreamListenerContainer>> containerCustomizer) {
@@ -65,8 +65,11 @@ class RabbitStreamConfiguration {
 
 	@Bean(name = "rabbitStreamEnvironment")
 	@ConditionalOnMissingBean(name = "rabbitStreamEnvironment")
-	Environment rabbitStreamEnvironment(RabbitProperties properties) {
-		return configure(Environment.builder(), properties).build();
+	Environment rabbitStreamEnvironment(RabbitProperties properties,
+			ObjectProvider<EnvironmentBuilderCustomizer> customizers) {
+		EnvironmentBuilder builder = configure(Environment.builder(), properties);
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
+		return builder.build();
 	}
 
 	@Bean
@@ -96,11 +99,11 @@ class RabbitStreamConfiguration {
 	static EnvironmentBuilder configure(EnvironmentBuilder builder, RabbitProperties properties) {
 		builder.lazyInitialization(true);
 		RabbitProperties.Stream stream = properties.getStream();
-		PropertyMapper mapper = PropertyMapper.get();
-		mapper.from(stream.getHost()).to(builder::host);
-		mapper.from(stream.getPort()).to(builder::port);
-		mapper.from(stream.getUsername()).as(withFallback(properties::getUsername)).whenNonNull().to(builder::username);
-		mapper.from(stream.getPassword()).as(withFallback(properties::getPassword)).whenNonNull().to(builder::password);
+		PropertyMapper map = PropertyMapper.get();
+		map.from(stream.getHost()).to(builder::host);
+		map.from(stream.getPort()).to(builder::port);
+		map.from(stream.getUsername()).as(withFallback(properties::getUsername)).whenNonNull().to(builder::username);
+		map.from(stream.getPassword()).as(withFallback(properties::getPassword)).whenNonNull().to(builder::password);
 		return builder;
 	}
 

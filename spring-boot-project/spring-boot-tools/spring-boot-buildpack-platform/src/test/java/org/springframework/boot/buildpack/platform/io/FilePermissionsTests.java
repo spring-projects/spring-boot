@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,16 +51,16 @@ class FilePermissionsTests {
 	@DisabledOnOs(OS.WINDOWS)
 	void umaskForPath() throws IOException {
 		FileAttribute<Set<PosixFilePermission>> fileAttribute = PosixFilePermissions
-				.asFileAttribute(PosixFilePermissions.fromString("rw-r-----"));
+			.asFileAttribute(PosixFilePermissions.fromString("rw-r-----"));
 		Path tempFile = Files.createTempFile(this.tempDir, "umask", null, fileAttribute);
 		assertThat(FilePermissions.umaskForPath(tempFile)).isEqualTo(0640);
 	}
 
 	@Test
 	@DisabledOnOs(OS.WINDOWS)
-	void umaskForPathWithNonExistentFile() throws IOException {
+	void umaskForPathWithNonExistentFile() {
 		assertThatIOException()
-				.isThrownBy(() -> FilePermissions.umaskForPath(Paths.get(this.tempDir.toString(), "does-not-exist")));
+			.isThrownBy(() -> FilePermissions.umaskForPath(Paths.get(this.tempDir.toString(), "does-not-exist")));
 	}
 
 	@Test
@@ -68,11 +68,11 @@ class FilePermissionsTests {
 	void umaskForPathOnWindowsFails() throws IOException {
 		Path tempFile = Files.createTempFile("umask", null);
 		assertThatIllegalStateException().isThrownBy(() -> FilePermissions.umaskForPath(tempFile))
-				.withMessageContaining("Unsupported file type for retrieving Posix attributes");
+			.withMessageContaining("Unsupported file type for retrieving Posix attributes");
 	}
 
 	@Test
-	void umaskForPathWithNullPath() throws IOException {
+	void umaskForPathWithNullPath() {
 		assertThatIllegalArgumentException().isThrownBy(() -> FilePermissions.umaskForPath(null));
 	}
 
@@ -85,7 +85,7 @@ class FilePermissionsTests {
 	@Test
 	void posixPermissionsToUmaskWithEmptyPermissions() {
 		Set<PosixFilePermission> permissions = Collections.emptySet();
-		assertThat(FilePermissions.posixPermissionsToUmask(permissions)).isEqualTo(0);
+		assertThat(FilePermissions.posixPermissionsToUmask(permissions)).isZero();
 	}
 
 	@Test

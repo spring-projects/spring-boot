@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,20 @@
 
 package org.springframework.boot.autoconfigure.kafka;
 
+import java.util.Collections;
 import java.util.Map;
 
 import org.apache.kafka.common.config.SslConfigs;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Admin;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Cleanup;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.IsolationLevel;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Listener;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.kafka.core.CleanupConfig;
+import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.listener.ContainerProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,18 +47,25 @@ class KafkaPropertiesTests {
 	@Test
 	void isolationLevelEnumConsistentWithKafkaVersion() {
 		org.apache.kafka.common.IsolationLevel[] original = org.apache.kafka.common.IsolationLevel.values();
-		assertThat(original).extracting(Enum::name).containsExactly(IsolationLevel.READ_UNCOMMITTED.name(),
-				IsolationLevel.READ_COMMITTED.name());
-		assertThat(original).extracting("id").containsExactly(IsolationLevel.READ_UNCOMMITTED.id(),
-				IsolationLevel.READ_COMMITTED.id());
-		assertThat(original).hasSize(IsolationLevel.values().length);
+		assertThat(original).extracting(Enum::name)
+			.containsExactly(IsolationLevel.READ_UNCOMMITTED.name(), IsolationLevel.READ_COMMITTED.name());
+		assertThat(original).extracting("id")
+			.containsExactly(IsolationLevel.READ_UNCOMMITTED.id(), IsolationLevel.READ_COMMITTED.id());
+		assertThat(original).hasSameSizeAs(IsolationLevel.values());
+	}
+
+	@Test
+	void adminDefaultValuesAreConsistent() {
+		KafkaAdmin admin = new KafkaAdmin(Collections.emptyMap());
+		Admin adminProperties = new KafkaProperties().getAdmin();
+		assertThat(admin).hasFieldOrPropertyWithValue("fatalIfBrokerNotAvailable", adminProperties.isFailFast());
+		assertThat(admin).hasFieldOrPropertyWithValue("modifyTopicConfigs", adminProperties.isModifyTopicConfigs());
 	}
 
 	@Test
 	void listenerDefaultValuesAreConsistent() {
 		ContainerProperties container = new ContainerProperties("test");
 		Listener listenerProperties = new KafkaProperties().getListener();
-		assertThat(listenerProperties.isOnlyLogRecordMetadata()).isEqualTo(container.isOnlyLogRecordMetadata());
 		assertThat(listenerProperties.isMissingTopicsFatal()).isEqualTo(container.isMissingTopicsFatal());
 	}
 
@@ -66,10 +76,10 @@ class KafkaPropertiesTests {
 		properties.getSsl().setTrustStoreCertificates("-----BEGINtrust");
 		properties.getSsl().setKeyStoreCertificateChain("-----BEGINchain");
 		Map<String, Object> consumerProperties = properties.buildConsumerProperties();
-		assertThat(consumerProperties.get(SslConfigs.SSL_KEYSTORE_KEY_CONFIG)).isEqualTo("-----BEGINkey");
-		assertThat(consumerProperties.get(SslConfigs.SSL_TRUSTSTORE_CERTIFICATES_CONFIG)).isEqualTo("-----BEGINtrust");
-		assertThat(consumerProperties.get(SslConfigs.SSL_KEYSTORE_CERTIFICATE_CHAIN_CONFIG))
-				.isEqualTo("-----BEGINchain");
+		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_KEYSTORE_KEY_CONFIG, "-----BEGINkey");
+		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_TRUSTSTORE_CERTIFICATES_CONFIG, "-----BEGINtrust");
+		assertThat(consumerProperties).containsEntry(SslConfigs.SSL_KEYSTORE_CERTIFICATE_CHAIN_CONFIG,
+				"-----BEGINchain");
 	}
 
 	@Test
@@ -78,7 +88,7 @@ class KafkaPropertiesTests {
 		properties.getSsl().setKeyStoreKey("-----BEGIN");
 		properties.getSsl().setKeyStoreLocation(new ClassPathResource("ksLoc"));
 		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
-				.isThrownBy(properties::buildConsumerProperties);
+			.isThrownBy(properties::buildConsumerProperties);
 	}
 
 	@Test
@@ -87,7 +97,7 @@ class KafkaPropertiesTests {
 		properties.getSsl().setTrustStoreLocation(new ClassPathResource("tsLoc"));
 		properties.getSsl().setTrustStoreCertificates("-----BEGIN");
 		assertThatExceptionOfType(MutuallyExclusiveConfigurationPropertiesException.class)
-				.isThrownBy(properties::buildConsumerProperties);
+			.isThrownBy(properties::buildConsumerProperties);
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
-import org.springframework.boot.autoconfigure.session.RedisSessionConfiguration.SpringBootRedisHttpSessionConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -38,6 +38,7 @@ import org.springframework.session.FlushMode;
 import org.springframework.session.SaveMode;
 import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
+import org.springframework.session.data.redis.RedisSessionRepository;
 import org.springframework.session.data.redis.config.ConfigureNotifyKeyspaceEventsAction;
 import org.springframework.session.data.redis.config.ConfigureRedisAction;
 import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
@@ -57,96 +58,136 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 
 	@Container
 	public static RedisContainer redis = new RedisContainer().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(10));
+		.withStartupTimeout(Duration.ofMinutes(10));
 
 	protected final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
+		.withClassLoader(new FilteredClassLoader(HazelcastIndexedSessionRepository.class,
+				JdbcIndexedSessionRepository.class, MongoIndexedSessionRepository.class))
+		.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
 
 	@Test
 	void defaultConfig() {
 		this.contextRunner
-				.withPropertyValues("spring.session.store-type=redis", "spring.redis.host=" + redis.getHost(),
-						"spring.redis.port=" + redis.getFirstMappedPort())
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.run(validateSpringSessionUsesRedis("spring:session:event:0:created:", FlushMode.ON_SAVE,
-						SaveMode.ON_SET_ATTRIBUTE, "0 * * * * *"));
+			.withPropertyValues("spring.data.redis.host=" + redis.getHost(),
+					"spring.data.redis.port=" + redis.getFirstMappedPort())
+			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+			.run(validateSpringSessionUsesDefaultRedis("spring:session:", FlushMode.ON_SAVE,
+					SaveMode.ON_SET_ATTRIBUTE));
 	}
 
 	@Test
-	void defaultConfigWithUniqueStoreImplementation() {
-		this.contextRunner
-				.withClassLoader(new FilteredClassLoader(HazelcastIndexedSessionRepository.class,
-						JdbcIndexedSessionRepository.class, MongoIndexedSessionRepository.class))
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.withPropertyValues("spring.redis.host=" + redis.getHost(),
-						"spring.redis.port=" + redis.getFirstMappedPort())
-				.run(validateSpringSessionUsesRedis("spring:session:event:0:created:", FlushMode.ON_SAVE,
-						SaveMode.ON_SET_ATTRIBUTE, "0 * * * * *"));
+	void invalidConfigurationPropertyValueWhenDefaultConfigIsUsedWithCustomCronCleanup() {
+		this.contextRunner.withPropertyValues("spring.data.redis.host=" + redis.getHost(),
+				"spring.data.redis.port=" + redis.getFirstMappedPort(), "spring.session.redis.cleanup-cron=0 0 * * * *")
+			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context.getStartupFailure())
+					.hasRootCauseExactlyInstanceOf(InvalidConfigurationPropertyValueException.class);
+			});
+	}
+
+	@Test
+	void redisTakesPrecedenceMultipleImplementations() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+			.withPropertyValues("spring.data.redis.host=" + redis.getHost(),
+					"spring.data.redis.port=" + redis.getFirstMappedPort())
+			.run(validateSpringSessionUsesDefaultRedis("spring:session:", FlushMode.ON_SAVE,
+					SaveMode.ON_SET_ATTRIBUTE));
 	}
 
 	@Test
 	void defaultConfigWithCustomTimeout() {
 		this.contextRunner
-				.withPropertyValues("spring.session.store-type=redis", "spring.redis.host=" + redis.getHost(),
-						"spring.redis.port=" + redis.getFirstMappedPort(), "spring.session.timeout=1m")
-				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class)).run((context) -> {
-					RedisIndexedSessionRepository repository = validateSessionRepository(context,
-							RedisIndexedSessionRepository.class);
-					assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", 60);
-				});
+			.withPropertyValues("spring.data.redis.host=" + redis.getHost(),
+					"spring.data.redis.port=" + redis.getFirstMappedPort(), "spring.session.timeout=1m")
+			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+			.run((context) -> {
+				RedisSessionRepository repository = validateSessionRepository(context, RedisSessionRepository.class);
+				assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", Duration.ofMinutes(1));
+			});
 	}
 
 	@Test
-	void redisSessionStoreWithCustomizations() {
+	void defaultRedisSessionStoreWithCustomizations() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.withPropertyValues("spring.session.store-type=redis", "spring.session.redis.namespace=foo",
-						"spring.session.redis.flush-mode=immediate", "spring.session.redis.save-mode=on-get-attribute",
-						"spring.session.redis.cleanup-cron=0 0 12 * * *", "spring.redis.host=" + redis.getHost(),
-						"spring.redis.port=" + redis.getFirstMappedPort())
-				.run(validateSpringSessionUsesRedis("foo:event:0:created:", FlushMode.IMMEDIATE,
-						SaveMode.ON_GET_ATTRIBUTE, "0 0 12 * * *"));
+			.withPropertyValues("spring.session.redis.namespace=foo", "spring.session.redis.flush-mode=immediate",
+					"spring.session.redis.save-mode=on-get-attribute", "spring.data.redis.host=" + redis.getHost(),
+					"spring.data.redis.port=" + redis.getFirstMappedPort())
+			.run(validateSpringSessionUsesDefaultRedis("foo:", FlushMode.IMMEDIATE, SaveMode.ON_GET_ATTRIBUTE));
 	}
 
 	@Test
-	void redisSessionWithConfigureActionNone() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.withPropertyValues("spring.session.store-type=redis", "spring.session.redis.configure-action=none",
-						"spring.redis.host=" + redis.getHost(), "spring.redis.port=" + redis.getFirstMappedPort())
-				.run(validateStrategy(ConfigureRedisAction.NO_OP.getClass()));
+	void indexedRedisSessionDefaultConfig() {
+		this.contextRunner
+			.withPropertyValues("spring.session.redis.repository-type=indexed",
+					"spring.data.redis.host=" + redis.getHost(), "spring.data.redis.port=" + redis.getFirstMappedPort())
+			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+			.run(validateSpringSessionUsesIndexedRedis("spring:session:", FlushMode.ON_SAVE, SaveMode.ON_SET_ATTRIBUTE,
+					"0 * * * * *"));
 	}
 
 	@Test
-	void redisSessionWithDefaultConfigureActionNone() {
+	void indexedRedisSessionStoreWithCustomizations() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.withPropertyValues("spring.session.store-type=redis", "spring.redis.host=" + redis.getHost(),
-						"spring.redis.port=" + redis.getFirstMappedPort())
-				.run(validateStrategy(ConfigureNotifyKeyspaceEventsAction.class,
-						entry("notify-keyspace-events", "gxE")));
+			.withPropertyValues("spring.session.redis.repository-type=indexed", "spring.session.redis.namespace=foo",
+					"spring.session.redis.flush-mode=immediate", "spring.session.redis.save-mode=on-get-attribute",
+					"spring.session.redis.cleanup-cron=0 0 12 * * *", "spring.data.redis.host=" + redis.getHost(),
+					"spring.data.redis.port=" + redis.getFirstMappedPort())
+			.run(validateSpringSessionUsesIndexedRedis("foo:", FlushMode.IMMEDIATE, SaveMode.ON_GET_ATTRIBUTE,
+					"0 0 12 * * *"));
 	}
 
 	@Test
-	void redisSessionWithCustomConfigureRedisActionBean() {
+	void indexedRedisSessionWithConfigureActionNone() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-				.withUserConfiguration(MaxEntriesRedisAction.class)
-				.withPropertyValues("spring.session.store-type=redis", "spring.redis.host=" + redis.getHost(),
-						"spring.redis.port=" + redis.getFirstMappedPort())
-				.run(validateStrategy(MaxEntriesRedisAction.class, entry("set-max-intset-entries", "1024")));
+			.withPropertyValues("spring.session.redis.repository-type=indexed",
+					"spring.session.redis.configure-action=none", "spring.data.redis.host=" + redis.getHost(),
+					"spring.data.redis.port=" + redis.getFirstMappedPort())
+			.run(validateStrategy(ConfigureRedisAction.NO_OP.getClass()));
+	}
+
+	@Test
+	void indexedRedisSessionWithDefaultConfigureActionNone() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+			.withPropertyValues("spring.session.redis.repository-type=indexed",
+					"spring.data.redis.host=" + redis.getHost(), "spring.data.redis.port=" + redis.getFirstMappedPort())
+			.run(validateStrategy(ConfigureNotifyKeyspaceEventsAction.class, entry("notify-keyspace-events", "gxE")));
+	}
+
+	@Test
+	void indexedRedisSessionWithCustomConfigureRedisActionBean() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
+			.withUserConfiguration(MaxEntriesRedisAction.class)
+			.withPropertyValues("spring.session.redis.repository-type=indexed",
+					"spring.data.redis.host=" + redis.getHost(), "spring.data.redis.port=" + redis.getFirstMappedPort())
+			.run(validateStrategy(MaxEntriesRedisAction.class, entry("set-max-intset-entries", "1024")));
 
 	}
 
-	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesRedis(
-			String sessionCreatedChannelPrefix, FlushMode flushMode, SaveMode saveMode, String cleanupCron) {
+	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesDefaultRedis(String keyNamespace,
+			FlushMode flushMode, SaveMode saveMode) {
+		return (context) -> {
+			RedisSessionRepository repository = validateSessionRepository(context, RedisSessionRepository.class);
+			assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval",
+					new ServerProperties().getServlet().getSession().getTimeout());
+			assertThat(repository).hasFieldOrPropertyWithValue("keyNamespace", keyNamespace);
+			assertThat(repository).hasFieldOrPropertyWithValue("flushMode", flushMode);
+			assertThat(repository).hasFieldOrPropertyWithValue("saveMode", saveMode);
+		};
+	}
+
+	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesIndexedRedis(String keyNamespace,
+			FlushMode flushMode, SaveMode saveMode, String cleanupCron) {
 		return (context) -> {
 			RedisIndexedSessionRepository repository = validateSessionRepository(context,
 					RedisIndexedSessionRepository.class);
 			assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval",
-					(int) new ServerProperties().getServlet().getSession().getTimeout().getSeconds());
-			assertThat(repository.getSessionCreatedChannelPrefix()).isEqualTo(sessionCreatedChannelPrefix);
+					new ServerProperties().getServlet().getSession().getTimeout());
+			assertThat(repository).hasFieldOrPropertyWithValue("namespace", keyNamespace);
 			assertThat(repository).hasFieldOrPropertyWithValue("flushMode", flushMode);
-			SpringBootRedisHttpSessionConfiguration configuration = context
-					.getBean(SpringBootRedisHttpSessionConfiguration.class);
-			assertThat(configuration).hasFieldOrPropertyWithValue("cleanupCron", cleanupCron);
 			assertThat(repository).hasFieldOrPropertyWithValue("saveMode", saveMode);
+			assertThat(repository).hasFieldOrPropertyWithValue("cleanupCron", cleanupCron);
 		};
 	}
 
@@ -158,7 +199,7 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 			assertThat(context.getBean(ConfigureRedisAction.class)).isInstanceOf(expectedConfigureRedisActionType);
 			RedisConnection connection = context.getBean(RedisConnectionFactory.class).getConnection();
 			if (expectedConfig.length > 0) {
-				assertThat(connection.getConfig("*")).contains(expectedConfig);
+				assertThat(connection.serverCommands().getConfig("*")).contains(expectedConfig);
 			}
 		};
 	}
@@ -167,7 +208,7 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 
 		@Override
 		public void configure(RedisConnection connection) {
-			connection.setConfig("set-max-intset-entries", "1024");
+			connection.serverCommands().setConfig("set-max-intset-entries", "1024");
 		}
 
 	}

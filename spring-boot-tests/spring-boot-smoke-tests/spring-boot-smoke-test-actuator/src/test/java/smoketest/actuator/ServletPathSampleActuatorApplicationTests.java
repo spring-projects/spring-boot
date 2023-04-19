@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,14 +45,14 @@ class ServletPathSampleActuatorApplicationTests {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(
 				this.restTemplate.withBasicAuth("user", "password").getForEntity("/spring/error", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-		assertThat(entity.getBody().get("error")).isEqualTo("None");
-		assertThat(entity.getBody().get("status")).isEqualTo(999);
+		assertThat(entity.getBody()).containsEntry("error", "None");
+		assertThat(entity.getBody()).containsEntry("status", 999);
 	}
 
 	@Test
 	void testHealth() {
 		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password")
-				.getForEntity("/spring/actuator/health", String.class);
+			.getForEntity("/spring/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).contains("\"status\":\"UP\"");
 	}

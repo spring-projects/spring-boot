@@ -14,6 +14,9 @@ nohttp {
 	source.exclude "**/build/**"
 	source.exclude "**/out/**"
 	source.exclude "**/target/**"
+	source.exclude "**/.settings/**"
+	source.exclude "**/.classpath"
+	source.exclude "**/.project"
 	source.exclude "spring-boot-project/spring-boot-tools/spring-boot-buildpack-platform/src/test/resources/org/springframework/boot/buildpack/platform/docker/export.tar"
 }
 
@@ -37,4 +40,8 @@ allprojects {
 	configurations.all {
 		resolutionStrategy.cacheChangingModulesFor 0, "minutes"
 	}
+}
+
+tasks.named("checkstyleNohttp").configure {
+	maxHeapSize = "1536m"
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,15 +62,15 @@ class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFac
 	void setNullBuilderCustomizersShouldThrowException() {
 		UndertowReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setBuilderCustomizers(null))
-				.withMessageContaining("Customizers must not be null");
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
 	void addNullBuilderCustomizersShouldThrowException() {
 		UndertowReactiveWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null))
-				.withMessageContaining("Customizers must not be null");
+			.isThrownBy(() -> factory.addBuilderCustomizers((UndertowBuilderCustomizer[]) null))
+			.withMessageContaining("Customizers must not be null");
 	}
 
 	@Test
@@ -135,12 +135,16 @@ class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFac
 		factory.setAccessLogSuffix(suffix);
 		File accessLogDirectory = this.tempDir;
 		factory.setAccessLogDirectory(accessLogDirectory);
-		assertThat(accessLogDirectory.listFiles()).isEmpty();
+		assertThat(accessLogDirectory).isEmptyDirectory();
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
 		WebClient client = getWebClient(this.webServer.getPort()).build();
-		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
-				.body(BodyInserters.fromValue("Hello World")).retrieve().bodyToMono(String.class);
+		Mono<String> result = client.post()
+			.uri("/test")
+			.contentType(MediaType.TEXT_PLAIN)
+			.body(BodyInserters.fromValue("Hello World"))
+			.retrieve()
+			.bodyToMono(String.class);
 		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
 		File accessLog = new File(accessLogDirectory, expectedFile);
 		awaitFile(accessLog);

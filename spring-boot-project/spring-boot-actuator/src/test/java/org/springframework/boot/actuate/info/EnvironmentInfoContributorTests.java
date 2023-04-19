@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ class EnvironmentInfoContributorTests {
 		Info actual = contributeFrom(this.environment);
 		assertThat(actual.get("app", String.class)).isEqualTo("my app");
 		assertThat(actual.get("version", String.class)).isEqualTo("1.0.0");
-		assertThat(actual.getDetails().size()).isEqualTo(2);
+		assertThat(actual.getDetails()).hasSize(2);
 	}
 
 	@Test

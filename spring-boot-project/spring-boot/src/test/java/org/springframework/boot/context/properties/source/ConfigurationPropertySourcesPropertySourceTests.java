@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ConfigurationPropertySourcesPropertySourceTests {
 
-	private List<ConfigurationPropertySource> configurationSources = new ArrayList<>();
+	private final List<ConfigurationPropertySource> configurationSources = new ArrayList<>();
 
-	private ConfigurationPropertySourcesPropertySource propertySource = new ConfigurationPropertySourcesPropertySource(
+	private final ConfigurationPropertySourcesPropertySource propertySource = new ConfigurationPropertySourcesPropertySource(
 			"test", this.configurationSources);
 
 	@Test
@@ -66,7 +66,7 @@ class ConfigurationPropertySourcesPropertySourceTests {
 	@Test
 	void getPropertyOriginShouldReturnOrigin() {
 		this.configurationSources.add(new MockConfigurationPropertySource("foo.bar", "baz", "line1"));
-		assertThat(this.propertySource.getOrigin("foo.bar").toString()).isEqualTo("line1");
+		assertThat(this.propertySource.getOrigin("foo.bar")).hasToString("line1");
 	}
 
 	@Test

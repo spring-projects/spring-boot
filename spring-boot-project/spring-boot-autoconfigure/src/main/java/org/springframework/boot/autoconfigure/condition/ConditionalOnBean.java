@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,14 +80,13 @@ public @interface ConditionalOnBean {
 
 	/**
 	 * The annotation type decorating a bean that should be checked. The condition matches
-	 * when all of the annotations specified are defined on beans in the
-	 * {@link BeanFactory}.
+	 * when all the annotations specified are defined on beans in the {@link BeanFactory}.
 	 * @return the class-level annotation types to check
 	 */
 	Class<? extends Annotation>[] annotation() default {};
 
 	/**
-	 * The names of beans to check. The condition matches when all of the bean names
+	 * The names of beans to check. The condition matches when all the bean names
 	 * specified are contained in the {@link BeanFactory}.
 	 * @return the names of beans to check
 	 */

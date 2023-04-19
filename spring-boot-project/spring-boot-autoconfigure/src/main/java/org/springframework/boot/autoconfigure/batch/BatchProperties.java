@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.batch;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.sql.init.DatabaseInitializationMode;
+import org.springframework.transaction.annotation.Isolation;
 
 /**
  * Configuration properties for Spring Batch.
@@ -46,17 +47,17 @@ public class BatchProperties {
 	public static class Job {
 
 		/**
-		 * Comma-separated list of job names to execute on startup (for instance,
-		 * 'job1,job2'). By default, all Jobs found in the context are executed.
+		 * Job name to execute on startup. Must be specified if multiple Jobs are found in
+		 * the context.
 		 */
-		private String names = "";
+		private String name = "";
 
-		public String getNames() {
-			return this.names;
+		public String getName() {
+			return this.name;
 		}
 
-		public void setNames(String names) {
-			this.names = names;
+		public void setName(String name) {
+			this.name = name;
 		}
 
 	}
@@ -68,7 +69,6 @@ public class BatchProperties {
 
 		/**
 		 * Transaction isolation level to use when creating job meta-data for new jobs.
-		 * Auto-detected based on whether JPA is being used or not.
 		 */
 		private Isolation isolationLevelForCreate;
 
@@ -131,47 +131,6 @@ public class BatchProperties {
 
 		public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
 			this.initializeSchema = initializeSchema;
-		}
-
-	}
-
-	/**
-	 * Available transaction isolation levels.
-	 */
-	public enum Isolation {
-
-		/**
-		 * Use the default isolation level of the underlying datastore.
-		 */
-		DEFAULT,
-
-		/**
-		 * Indicates that dirty reads, non-repeatable reads and phantom reads can occur.
-		 */
-		READ_UNCOMMITTED,
-
-		/**
-		 * Indicates that dirty reads are prevented; non-repeatable reads and phantom
-		 * reads can occur.
-		 */
-		READ_COMMITTED,
-
-		/**
-		 * Indicates that dirty reads and non-repeatable reads are prevented; phantom
-		 * reads can occur.
-		 */
-		REPEATABLE_READ,
-
-		/**
-		 * Indicate that dirty reads, non-repeatable reads and phantom reads are
-		 * prevented.
-		 */
-		SERIALIZABLE;
-
-		private static final String PREFIX = "ISOLATION_";
-
-		String toIsolationName() {
-			return PREFIX + name();
 		}
 
 	}

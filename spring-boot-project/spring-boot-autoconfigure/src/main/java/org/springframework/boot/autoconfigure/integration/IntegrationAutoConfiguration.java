@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+import org.springframework.boot.autoconfigure.jmx.JmxProperties;
 import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
 import org.springframework.boot.autoconfigure.sql.init.OnDatabaseInitializationCondition;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
@@ -46,12 +47,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.env.Environment;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.config.EnableIntegrationManagement;
+import org.springframework.integration.config.IntegrationComponentScanRegistrar;
 import org.springframework.integration.config.IntegrationManagementConfigurer;
 import org.springframework.integration.context.IntegrationContextUtils;
-import org.springframework.integration.gateway.GatewayProxyFactoryBean;
 import org.springframework.integration.jdbc.store.JdbcMessageStore;
 import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
 import org.springframework.integration.monitor.IntegrationMBeanExporter;
@@ -84,7 +84,7 @@ import org.springframework.util.StringUtils;
 @AutoConfiguration(after = { DataSourceAutoConfiguration.class, JmxAutoConfiguration.class,
 		TaskSchedulingAutoConfiguration.class })
 @ConditionalOnClass(EnableIntegration.class)
-@EnableConfigurationProperties(IntegrationProperties.class)
+@EnableConfigurationProperties({ IntegrationProperties.class, JmxProperties.class })
 public class IntegrationAutoConfiguration {
 
 	@Bean(name = IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME)
@@ -95,18 +95,20 @@ public class IntegrationAutoConfiguration {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties.getChannel().isAutoCreate()).to(integrationProperties::setChannelsAutoCreate);
 		map.from(properties.getChannel().getMaxUnicastSubscribers())
-				.to(integrationProperties::setChannelsMaxUnicastSubscribers);
+			.to(integrationProperties::setChannelsMaxUnicastSubscribers);
 		map.from(properties.getChannel().getMaxBroadcastSubscribers())
-				.to(integrationProperties::setChannelsMaxBroadcastSubscribers);
+			.to(integrationProperties::setChannelsMaxBroadcastSubscribers);
 		map.from(properties.getError().isRequireSubscribers())
-				.to(integrationProperties::setErrorChannelRequireSubscribers);
+			.to(integrationProperties::setErrorChannelRequireSubscribers);
 		map.from(properties.getError().isIgnoreFailures()).to(integrationProperties::setErrorChannelIgnoreFailures);
 		map.from(properties.getEndpoint().isThrowExceptionOnLateReply())
-				.to(integrationProperties::setMessagingTemplateThrowExceptionOnLateReply);
-		map.from(properties.getEndpoint().getReadOnlyHeaders()).as(StringUtils::toStringArray)
-				.to(integrationProperties::setReadOnlyHeaders);
-		map.from(properties.getEndpoint().getNoAutoStartup()).as(StringUtils::toStringArray)
-				.to(integrationProperties::setNoAutoStartupEndpoints);
+			.to(integrationProperties::setMessagingTemplateThrowExceptionOnLateReply);
+		map.from(properties.getEndpoint().getReadOnlyHeaders())
+			.as(StringUtils::toStringArray)
+			.to(integrationProperties::setReadOnlyHeaders);
+		map.from(properties.getEndpoint().getNoAutoStartup())
+			.as(StringUtils::toStringArray)
+			.to(integrationProperties::setNoAutoStartupEndpoints);
 		return integrationProperties;
 	}
 
@@ -149,9 +151,9 @@ public class IntegrationAutoConfiguration {
 		}
 
 		private Trigger createPeriodicTrigger(Duration period, Duration initialDelay, boolean fixedRate) {
-			PeriodicTrigger trigger = new PeriodicTrigger(period.toMillis());
+			PeriodicTrigger trigger = new PeriodicTrigger(period);
 			if (initialDelay != null) {
-				trigger.setInitialDelay(initialDelay.toMillis());
+				trigger.setInitialDelay(initialDelay);
 			}
 			trigger.setFixedRate(fixedRate);
 			return trigger;
@@ -186,14 +188,13 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationJmxConfiguration {
 
 		@Bean
-		public IntegrationMBeanExporter integrationMbeanExporter(BeanFactory beanFactory, Environment environment) {
+		public IntegrationMBeanExporter integrationMbeanExporter(BeanFactory beanFactory, JmxProperties properties) {
 			IntegrationMBeanExporter exporter = new IntegrationMBeanExporter();
-			String defaultDomain = environment.getProperty("spring.jmx.default-domain");
+			String defaultDomain = properties.getDefaultDomain();
 			if (StringUtils.hasLength(defaultDomain)) {
 				exporter.setDefaultDomain(defaultDomain);
 			}
-			String serverBean = environment.getProperty("spring.jmx.server", "mbeanServer");
-			exporter.setServer(beanFactory.getBean(serverBean, MBeanServer.class));
+			exporter.setServer(beanFactory.getBean(properties.getServer(), MBeanServer.class));
 			return exporter;
 		}
 
@@ -210,7 +211,8 @@ public class IntegrationAutoConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
 		@EnableIntegrationManagement(
-				defaultLoggingEnabled = "${spring.integration.management.default-logging-enabled:true}")
+				defaultLoggingEnabled = "${spring.integration.management.default-logging-enabled:true}",
+				observationPatterns = "${spring.integration.management.observation-patterns:}")
 		protected static class EnableIntegrationManagementConfiguration {
 
 		}
@@ -221,7 +223,7 @@ public class IntegrationAutoConfiguration {
 	 * Integration component scan configuration.
 	 */
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(GatewayProxyFactoryBean.class)
+	@ConditionalOnMissingBean(IntegrationComponentScanRegistrar.class)
 	@Import(IntegrationAutoConfigurationScanRegistrar.class)
 	protected static class IntegrationComponentScanConfiguration {
 

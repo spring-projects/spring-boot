@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.context.properties;
 
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
@@ -50,17 +48,8 @@ public class ConfigurationPropertiesReportEndpointAutoConfiguration {
 	public ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint(
 			ConfigurationPropertiesReportEndpointProperties properties,
 			ObjectProvider<SanitizingFunction> sanitizingFunctions) {
-		ConfigurationPropertiesReportEndpoint endpoint = new ConfigurationPropertiesReportEndpoint(
-				sanitizingFunctions.orderedStream().collect(Collectors.toList()));
-		String[] keysToSanitize = properties.getKeysToSanitize();
-		if (keysToSanitize != null) {
-			endpoint.setKeysToSanitize(keysToSanitize);
-		}
-		String[] additionalKeysToSanitize = properties.getAdditionalKeysToSanitize();
-		if (additionalKeysToSanitize != null) {
-			endpoint.keysToSanitize(additionalKeysToSanitize);
-		}
-		return endpoint;
+		return new ConfigurationPropertiesReportEndpoint(sanitizingFunctions.orderedStream().toList(),
+				properties.getShowValues());
 	}
 
 	@Bean
@@ -68,8 +57,10 @@ public class ConfigurationPropertiesReportEndpointAutoConfiguration {
 	@ConditionalOnBean(ConfigurationPropertiesReportEndpoint.class)
 	@ConditionalOnAvailableEndpoint(exposure = { EndpointExposure.WEB, EndpointExposure.CLOUD_FOUNDRY })
 	public ConfigurationPropertiesReportEndpointWebExtension configurationPropertiesReportEndpointWebExtension(
-			ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint) {
-		return new ConfigurationPropertiesReportEndpointWebExtension(configurationPropertiesReportEndpoint);
+			ConfigurationPropertiesReportEndpoint configurationPropertiesReportEndpoint,
+			ConfigurationPropertiesReportEndpointProperties properties) {
+		return new ConfigurationPropertiesReportEndpointWebExtension(configurationPropertiesReportEndpoint,
+				properties.getShowValues(), properties.getRoles());
 	}
 
 }

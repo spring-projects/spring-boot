@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.autoconfigure.mongo;
-
-import java.util.stream.Collectors;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoClientSettings.Builder;
@@ -38,7 +36,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.env.Environment;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Reactive Mongo.
@@ -54,11 +51,17 @@ import org.springframework.core.env.Environment;
 public class MongoReactiveAutoConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean(MongoConnectionDetails.class)
+	PropertiesMongoConnectionDetails mongoConnectionDetails(MongoProperties properties) {
+		return new PropertiesMongoConnectionDetails(properties);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean
 	public MongoClient reactiveStreamsMongoClient(
 			ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers, MongoClientSettings settings) {
 		ReactiveMongoClientFactory factory = new ReactiveMongoClientFactory(
-				builderCustomizers.orderedStream().collect(Collectors.toList()));
+				builderCustomizers.orderedStream().toList());
 		return factory.createMongoClient(settings);
 	}
 
@@ -72,9 +75,10 @@ public class MongoReactiveAutoConfiguration {
 		}
 
 		@Bean
-		MongoPropertiesClientSettingsBuilderCustomizer mongoPropertiesCustomizer(MongoProperties properties,
-				Environment environment) {
-			return new MongoPropertiesClientSettingsBuilderCustomizer(properties, environment);
+		StandardMongoClientSettingsBuilderCustomizer standardMongoSettingsCustomizer(MongoProperties properties,
+				MongoConnectionDetails connectionDetails) {
+			return new StandardMongoClientSettingsBuilderCustomizer(connectionDetails.getConnectionString(),
+					properties.getUuidRepresentation());
 		}
 
 	}
@@ -111,8 +115,8 @@ public class MongoReactiveAutoConfiguration {
 			if (!isStreamFactoryFactoryDefined(this.settings.getIfAvailable())) {
 				NioEventLoopGroup eventLoopGroup = new NioEventLoopGroup();
 				this.eventLoopGroup = eventLoopGroup;
-				builder.streamFactoryFactory(
-						NettyStreamFactoryFactory.builder().eventLoopGroup(eventLoopGroup).build());
+				builder
+					.streamFactoryFactory(NettyStreamFactoryFactory.builder().eventLoopGroup(eventLoopGroup).build());
 			}
 		}
 

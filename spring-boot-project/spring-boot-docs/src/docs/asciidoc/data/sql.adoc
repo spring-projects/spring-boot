@@ -8,7 +8,7 @@ The {spring-framework}[Spring Framework] provides extensive support for working 
 [[data.sql.datasource]]
 === Configure a DataSource
 Java's `javax.sql.DataSource` interface provides a standard method of working with database connections.
-Traditionally, a 'DataSource' uses a `URL` along with some credentials to establish a database connection.
+Traditionally, a `DataSource` uses a `URL` along with some credentials to establish a database connection.
 
 TIP: See <<howto#howto.data-access.configure-custom-datasource,the "`How-to`" section>> for more advanced examples, typically to take full control over the configuration of the DataSource.
 
@@ -22,7 +22,7 @@ You need to populate your database when your application starts and be prepared 
 
 TIP: The "`How-to`" section includes a <<howto#howto.data-initialization, section on how to initialize a database>>.
 
-Spring Boot can auto-configure embedded https://www.h2database.com[H2], http://hsqldb.org/[HSQL], and https://db.apache.org/derby/[Derby] databases.
+Spring Boot can auto-configure embedded https://www.h2database.com[H2], https://hsqldb.org/[HSQL], and https://db.apache.org/derby/[Derby] databases.
 You need not provide any connection URLs.
 You need only include a build dependency to the embedded database that you want to use.
 If there are multiple embedded databases on the classpath, set the configprop:spring.datasource.embedded-database-connection[] configuration property to control which one is used.
@@ -135,6 +135,7 @@ The following connection pools are supported by `DataSourceBuilder`:
 * Spring Framework's `SimpleDriverDataSource`
 * H2 `JdbcDataSource`
 * PostgreSQL `PGSimpleDataSource`
+* C3P0
 
 
 
@@ -242,7 +243,7 @@ For complete details, see the {spring-data-jpa-docs}[Spring Data JPA reference d
 ==== Spring Data Envers Repositories
 If {spring-data-envers}[Spring Data Envers] is available, JPA repositories are auto-configured to support typical Envers queries.
 
-To use Spring Data Envers, make sure your repository extends from `RevisionRepository` as show in the following example:
+To use Spring Data Envers, make sure your repository extends from `RevisionRepository` as shown in the following example:
 
 include::code:CountryRepository[]
 
@@ -297,7 +298,7 @@ For more advanced queries, a `@Query` annotation is provided.
 
 Spring Boot will auto-configure Spring Data's JDBC repositories when the necessary dependencies are on the classpath.
 They can be added to your project with a single dependency on `spring-boot-starter-data-jdbc`.
-If necessary, you can take control of Spring Data JDBC's configuration by adding the `@EnableJdbcRepositories` annotation or a `JdbcConfiguration` subclass to your application.
+If necessary, you can take control of Spring Data JDBC's configuration by adding the `@EnableJdbcRepositories` annotation or an `AbstractJdbcConfiguration` subclass to your application.
 
 TIP: For complete details of Spring Data JDBC, see the {spring-data-jdbc-docs}[reference documentation].
 
@@ -322,6 +323,27 @@ NOTE: The H2 console is only intended for use during development, so you should 
 ==== Changing the H2 Console's Path
 By default, the console is available at `/h2-console`.
 You can customize the console's path by using the configprop:spring.h2.console.path[] property.
+
+
+
+[[data.sql.h2-web-console.spring-security]]
+==== Accessing the H2 Console in a Secured Application
+H2 Console uses frames and, as it is intended for development only, does not implement CSRF protection measures.
+If your application uses Spring Security, you need to configure it to
+
+* disable CSRF protection for requests against the console,
+* set the header `X-Frame-Options` to `SAMEORIGIN` on responses from the console.
+
+More information on {spring-security-docs}/features/exploits/csrf.html[CSRF] and the header {spring-security-docs}/features/exploits/headers.html#headers-frame-options[X-Frame-Options] can be found in the Spring Security Reference Guide.
+
+In simple setups, a `SecurityFilterChain` like the following can be used:
+
+include::code:DevProfileSecurityConfiguration[tag=!customizer]
+
+WARNING: The H2 console is only intended for use during development.
+In production, disabling CSRF protection or allowing frames for a website may create severe security risks.
+
+TIP: `PathRequest.toH2Console()` returns the correct request matcher also when the console's path has been customized.
 
 
 

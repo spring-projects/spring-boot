@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.env;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -29,31 +33,26 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class EnvironmentEndpointProperties {
 
 	/**
-	 * Keys that should be sanitized. Keys can be simple strings that the property ends
-	 * with or regular expressions.
+	 * When to show unsanitized values.
 	 */
-	private String[] keysToSanitize;
+	private Show showValues = Show.NEVER;
 
 	/**
-	 * Keys that should be sanitized in addition to those already configured. Keys can be
-	 * simple strings that the property ends with or regular expressions.
+	 * Roles used to determine whether a user is authorized to be shown unsanitized
+	 * values. When empty, all authenticated users are authorized.
 	 */
-	private String[] additionalKeysToSanitize;
+	private final Set<String> roles = new HashSet<>();
 
-	public String[] getKeysToSanitize() {
-		return this.keysToSanitize;
+	public Show getShowValues() {
+		return this.showValues;
 	}
 
-	public void setKeysToSanitize(String[] keysToSanitize) {
-		this.keysToSanitize = keysToSanitize;
+	public void setShowValues(Show showValues) {
+		this.showValues = showValues;
 	}
 
-	public String[] getAdditionalKeysToSanitize() {
-		return this.additionalKeysToSanitize;
-	}
-
-	public void setAdditionalKeysToSanitize(String[] additionalKeysToSanitize) {
-		this.additionalKeysToSanitize = additionalKeysToSanitize;
+	public Set<String> getRoles() {
+		return this.roles;
 	}
 
 }

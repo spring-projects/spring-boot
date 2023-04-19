@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
@@ -46,6 +47,7 @@ import org.springframework.util.ClassUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIOException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Abstract tests for {@link AbstractApplicationContextRunner} implementations.
@@ -69,19 +71,20 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 	@Test
 	void runWithSystemPropertiesShouldSetAndRemoveProperties() {
 		String key = "test." + UUID.randomUUID();
-		assertThat(System.getProperties().containsKey(key)).isFalse();
+		assertThat(System.getProperties()).doesNotContainKey(key);
 		get().withSystemProperties(key + "=value")
-				.run((context) -> assertThat(System.getProperties()).containsEntry(key, "value"));
-		assertThat(System.getProperties().containsKey(key)).isFalse();
+			.run((context) -> assertThat(System.getProperties()).containsEntry(key, "value"));
+		assertThat(System.getProperties()).doesNotContainKey(key);
 	}
 
 	@Test
 	void runWithSystemPropertiesWhenContextFailsShouldRemoveProperties() {
 		String key = "test." + UUID.randomUUID();
-		assertThat(System.getProperties().containsKey(key)).isFalse();
-		get().withSystemProperties(key + "=value").withUserConfiguration(FailingConfig.class)
-				.run((context) -> assertThat(context).hasFailed());
-		assertThat(System.getProperties().containsKey(key)).isFalse();
+		assertThat(System.getProperties()).doesNotContainKey(key);
+		get().withSystemProperties(key + "=value")
+			.withUserConfiguration(FailingConfig.class)
+			.run((context) -> assertThat(context).hasFailed());
+		assertThat(System.getProperties()).doesNotContainKey(key);
 	}
 
 	@Test
@@ -91,7 +94,7 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 		try {
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
 			get().withSystemProperties(key + "=newValue")
-					.run((context) -> assertThat(System.getProperties()).containsEntry(key, "newValue"));
+				.run((context) -> assertThat(System.getProperties()).containsEntry(key, "newValue"));
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
 		}
 		finally {
@@ -106,7 +109,7 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 		try {
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
 			get().withSystemProperties(key + "=")
-					.run((context) -> assertThat(System.getProperties()).doesNotContainKey(key));
+				.run((context) -> assertThat(System.getProperties()).doesNotContainKey(key));
 			assertThat(System.getProperties().getProperty(key)).isEqualTo("value");
 		}
 		finally {
@@ -148,8 +151,9 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 
 	@Test
 	void runWithMultipleConfigurationsShouldRegisterAllConfigurations() {
-		get().withUserConfiguration(FooConfig.class).withConfiguration(UserConfigurations.of(BarConfig.class))
-				.run((context) -> assertThat(context).hasBean("foo").hasBean("bar"));
+		get().withUserConfiguration(FooConfig.class)
+			.withConfiguration(UserConfigurations.of(BarConfig.class))
+			.run((context) -> assertThat(context).hasBean("foo").hasBean("bar"));
 	}
 
 	@Test
@@ -160,30 +164,32 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 	@Test
 	void runWithClassLoaderShouldSetClassLoaderOnContext() {
 		get().withClassLoader(new FilteredClassLoader(Gson.class.getPackage().getName()))
-				.run((context) -> assertThatExceptionOfType(ClassNotFoundException.class)
-						.isThrownBy(() -> ClassUtils.forName(Gson.class.getName(), context.getClassLoader())));
+			.run((context) -> assertThatExceptionOfType(ClassNotFoundException.class)
+				.isThrownBy(() -> ClassUtils.forName(Gson.class.getName(), context.getClassLoader())));
 	}
 
 	@Test
 	void runWithClassLoaderShouldSetClassLoaderOnConditionContext() {
 		get().withClassLoader(new FilteredClassLoader(Gson.class.getPackage().getName()))
-				.withUserConfiguration(ConditionalConfig.class)
-				.run((context) -> assertThat(context).hasSingleBean(ConditionalConfig.class));
+			.withUserConfiguration(ConditionalConfig.class)
+			.run((context) -> assertThat(context).hasSingleBean(ConditionalConfig.class));
 	}
 
 	@Test
 	void consecutiveRunWithFilteredClassLoaderShouldHaveBeanWithLazyProperties() {
-		get().withClassLoader(new FilteredClassLoader(Gson.class)).withUserConfiguration(LazyConfig.class)
-				.run((context) -> assertThat(context).hasSingleBean(ExampleBeanWithLazyProperties.class));
+		get().withClassLoader(new FilteredClassLoader(Gson.class))
+			.withUserConfiguration(LazyConfig.class)
+			.run((context) -> assertThat(context).hasSingleBean(ExampleBeanWithLazyProperties.class));
 
-		get().withClassLoader(new FilteredClassLoader(Gson.class)).withUserConfiguration(LazyConfig.class)
-				.run((context) -> assertThat(context).hasSingleBean(ExampleBeanWithLazyProperties.class));
+		get().withClassLoader(new FilteredClassLoader(Gson.class))
+			.withUserConfiguration(LazyConfig.class)
+			.run((context) -> assertThat(context).hasSingleBean(ExampleBeanWithLazyProperties.class));
 	}
 
 	@Test
 	void thrownRuleWorksWithCheckedException() {
 		get().run((context) -> assertThatIOException().isThrownBy(() -> throwCheckedException("Expected message"))
-				.withMessageContaining("Expected message"));
+			.withMessageContaining("Expected message"));
 	}
 
 	@Test
@@ -191,43 +197,65 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 		get().withUserConfiguration(FooConfig.class).withBean("foo", Integer.class, () -> 42).run((context) -> {
 			assertThat(context).hasFailed();
 			assertThat(context.getStartupFailure()).isInstanceOf(BeanDefinitionStoreException.class)
-					.hasMessageContaining("Invalid bean definition with name 'foo'")
-					.hasMessageContaining("@Bean definition illegally overridden by existing bean definition");
+				.hasMessageContaining("Invalid bean definition with name 'foo'")
+				.hasMessageContaining("@Bean definition illegally overridden by existing bean definition");
 		});
 	}
 
 	@Test
 	void runDisablesCircularReferencesByDefault() {
 		get().withUserConfiguration(ExampleConsumerConfiguration.class, ExampleProducerConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasFailed();
-					assertThat(context).getFailure().hasRootCauseInstanceOf(BeanCurrentlyInCreationException.class);
-				});
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context).getFailure().hasRootCauseInstanceOf(BeanCurrentlyInCreationException.class);
+			});
 	}
 
 	@Test
 	void circularReferencesCanBeAllowed() {
 		get().withAllowCircularReferences(true)
-				.withUserConfiguration(ExampleConsumerConfiguration.class, ExampleProducerConfiguration.class)
-				.run((context) -> assertThat(context).hasNotFailed());
+			.withUserConfiguration(ExampleConsumerConfiguration.class, ExampleProducerConfiguration.class)
+			.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	@Test
 	void runWithUserBeanShouldBeRegisteredInOrder() {
-		get().withAllowBeanDefinitionOverriding(true).withBean(String.class, () -> "one")
-				.withBean(String.class, () -> "two").withBean(String.class, () -> "three").run((context) -> {
-					assertThat(context).hasBean("string");
-					assertThat(context.getBean("string")).isEqualTo("three");
-				});
+		get().withAllowBeanDefinitionOverriding(true)
+			.withBean(String.class, () -> "one")
+			.withBean(String.class, () -> "two")
+			.withBean(String.class, () -> "three")
+			.run((context) -> {
+				assertThat(context).hasBean("string");
+				assertThat(context.getBean("string")).isEqualTo("three");
+			});
 	}
 
 	@Test
 	void runWithConfigurationsAndUserBeanShouldRegisterUserBeanLast() {
-		get().withAllowBeanDefinitionOverriding(true).withUserConfiguration(FooConfig.class)
-				.withBean("foo", String.class, () -> "overridden").run((context) -> {
-					assertThat(context).hasBean("foo");
-					assertThat(context.getBean("foo")).isEqualTo("overridden");
-				});
+		get().withAllowBeanDefinitionOverriding(true)
+			.withUserConfiguration(FooConfig.class)
+			.withBean("foo", String.class, () -> "overridden")
+			.run((context) -> {
+				assertThat(context).hasBean("foo");
+				assertThat(context.getBean("foo")).isEqualTo("overridden");
+			});
+	}
+
+	@Test
+	void changesMadeByInitializersShouldBeVisibleToRegisteredClasses() {
+		get().withInitializer((context) -> context.getEnvironment().setActiveProfiles("test"))
+			.withUserConfiguration(ProfileConfig.class)
+			.run((context) -> assertThat(context).hasSingleBean(ProfileConfig.class));
+	}
+
+	@Test
+	void prepareDoesNotRefreshContext() {
+		get().withUserConfiguration(FooConfig.class).prepare((context) -> {
+			assertThatIllegalStateException().isThrownBy(() -> context.getBean(String.class))
+				.withMessageContaining("not been refreshed");
+			context.getSourceApplicationContext().refresh();
+			assertThat(context.getBean(String.class)).isEqualTo("foo");
+		});
 	}
 
 	protected abstract T get();
@@ -339,6 +367,12 @@ abstract class AbstractApplicationContextRunnerTests<T extends AbstractApplicati
 			return (example) -> {
 			};
 		}
+
+	}
+
+	@Profile("test")
+	@Configuration(proxyBeanMethods = false)
+	static class ProfileConfig {
 
 	}
 

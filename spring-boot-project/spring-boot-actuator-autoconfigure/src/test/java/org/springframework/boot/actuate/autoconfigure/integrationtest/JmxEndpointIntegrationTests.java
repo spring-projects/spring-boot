@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.jmx.JmxEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.trace.http.HttpTraceAutoConfiguration;
-import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
+import org.springframework.boot.actuate.autoconfigure.web.exchanges.HttpExchangesAutoConfiguration;
+import org.springframework.boot.actuate.web.exchanges.InMemoryHttpExchangeRepository;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -51,30 +51,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JmxEndpointIntegrationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, EndpointAutoConfiguration.class,
-					JmxEndpointAutoConfiguration.class, HealthContributorAutoConfiguration.class,
-					HttpTraceAutoConfiguration.class))
-			.withUserConfiguration(HttpTraceRepositoryConfiguration.class, AuditEventRepositoryConfiguration.class)
-			.withPropertyValues("spring.jmx.enabled=true")
-			.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL));
+		.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, EndpointAutoConfiguration.class,
+				JmxEndpointAutoConfiguration.class, HealthContributorAutoConfiguration.class,
+				HttpExchangesAutoConfiguration.class))
+		.withUserConfiguration(HttpExchangeRepositoryConfiguration.class, AuditEventRepositoryConfiguration.class)
+		.withPropertyValues("spring.jmx.enabled=true")
+		.withConfiguration(AutoConfigurations.of(EndpointAutoConfigurationClasses.ALL));
 
 	@Test
-	void jmxEndpointsAreExposed() {
+	void jmxEndpointsExposeHealthByDefault() {
 		this.contextRunner.run((context) -> {
 			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
-			checkEndpointMBeans(mBeanServer, new String[] { "beans", "conditions", "configprops", "env", "health",
-					"info", "mappings", "threaddump", "httptrace" }, new String[] { "shutdown" });
+			checkEndpointMBeans(mBeanServer, new String[] { "health" }, new String[] { "beans", "conditions",
+					"configprops", "env", "info", "mappings", "threaddump", "httpexchanges", "shutdown" });
 		});
 	}
 
 	@Test
 	void jmxEndpointsAreExposedWhenLazyInitializationIsEnabled() {
-		this.contextRunner.withBean(LazyInitializationBeanFactoryPostProcessor.class,
-				LazyInitializationBeanFactoryPostProcessor::new).run((context) -> {
-					MBeanServer mBeanServer = context.getBean(MBeanServer.class);
-					checkEndpointMBeans(mBeanServer, new String[] { "beans", "conditions", "configprops", "env",
-							"health", "info", "mappings", "threaddump", "httptrace" }, new String[] { "shutdown" });
-				});
+		this.contextRunner.withPropertyValues("management.endpoints.jmx.exposure.include:*")
+			.withBean(LazyInitializationBeanFactoryPostProcessor.class, LazyInitializationBeanFactoryPostProcessor::new)
+			.run((context) -> {
+				MBeanServer mBeanServer = context.getBean(MBeanServer.class);
+				checkEndpointMBeans(mBeanServer, new String[] { "beans", "conditions", "configprops", "env", "health",
+						"info", "mappings", "threaddump", "httpexchanges" }, new String[] { "shutdown" });
+			});
 	}
 
 	@Test
@@ -82,7 +83,7 @@ class JmxEndpointIntegrationTests {
 		this.contextRunner.withPropertyValues("management.endpoints.jmx.exposure.exclude:*").run((context) -> {
 			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 			checkEndpointMBeans(mBeanServer, new String[0], new String[] { "beans", "conditions", "configprops", "env",
-					"health", "mappings", "shutdown", "threaddump", "httptrace" });
+					"health", "mappings", "shutdown", "threaddump", "httpexchanges" });
 
 		});
 	}
@@ -92,18 +93,20 @@ class JmxEndpointIntegrationTests {
 		this.contextRunner.withPropertyValues("management.endpoints.jmx.exposure.include=beans").run((context) -> {
 			MBeanServer mBeanServer = context.getBean(MBeanServer.class);
 			checkEndpointMBeans(mBeanServer, new String[] { "beans" }, new String[] { "conditions", "configprops",
-					"env", "health", "mappings", "shutdown", "threaddump", "httptrace" });
+					"env", "health", "mappings", "shutdown", "threaddump", "httpexchanges" });
 		});
 	}
 
 	private void checkEndpointMBeans(MBeanServer mBeanServer, String[] enabledEndpoints, String[] disabledEndpoints) {
 		for (String enabledEndpoint : enabledEndpoints) {
 			assertThat(isRegistered(mBeanServer, getDefaultObjectName(enabledEndpoint)))
-					.as(String.format("Endpoint %s", enabledEndpoint)).isTrue();
+				.as(String.format("Endpoint %s", enabledEndpoint))
+				.isTrue();
 		}
 		for (String disabledEndpoint : disabledEndpoints) {
 			assertThat(isRegistered(mBeanServer, getDefaultObjectName(disabledEndpoint)))
-					.as(String.format("Endpoint %s", disabledEndpoint)).isFalse();
+				.as(String.format("Endpoint %s", disabledEndpoint))
+				.isFalse();
 		}
 	}
 
@@ -142,11 +145,11 @@ class JmxEndpointIntegrationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class HttpTraceRepositoryConfiguration {
+	static class HttpExchangeRepositoryConfiguration {
 
 		@Bean
-		InMemoryHttpTraceRepository httpTraceRepository() {
-			return new InMemoryHttpTraceRepository();
+		InMemoryHttpExchangeRepository httpExchangeRepository() {
+			return new InMemoryHttpExchangeRepository();
 		}
 
 	}

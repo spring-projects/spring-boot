@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ class JdbcTestIntegrationTests {
 		Collection<ExampleEntity> entities = repository.findAll();
 		assertThat(entities).hasSize(1);
 		ExampleEntity entity = entities.iterator().next();
-		assertThat(entity.getId()).isEqualTo(1);
+		assertThat(entity.getId()).isOne();
 		assertThat(entity.getName()).isEqualTo("John");
 	}
 
@@ -73,7 +73,7 @@ class JdbcTestIntegrationTests {
 	@Test
 	void didNotInjectExampleRepository() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(ExampleRepository.class));
+			.isThrownBy(() -> this.applicationContext.getBean(ExampleRepository.class));
 	}
 
 	@Test

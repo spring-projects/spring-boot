@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,25 +35,25 @@ class ApiVersionTests {
 	@Test
 	void parseWhenVersionIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ApiVersion.parse(null))
-				.withMessage("Value must not be empty");
+			.withMessage("Value must not be empty");
 	}
 
 	@Test
 	void parseWhenVersionIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ApiVersion.parse(""))
-				.withMessage("Value must not be empty");
+			.withMessage("Value must not be empty");
 	}
 
 	@Test
 	void parseWhenVersionDoesNotMatchPatternThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ApiVersion.parse("bad"))
-				.withMessage("Malformed version number 'bad'");
+			.withMessage("Malformed version number 'bad'");
 	}
 
 	@Test
 	void parseReturnsVersion() {
 		ApiVersion version = ApiVersion.parse("1.2");
-		assertThat(version.getMajor()).isEqualTo(1);
+		assertThat(version.getMajor()).isOne();
 		assertThat(version.getMinor()).isEqualTo(2);
 	}
 
@@ -65,8 +65,8 @@ class ApiVersionTests {
 	@Test
 	void assertSupportsWhenDoesNotSupportThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ApiVersion.parse("1.2").assertSupports(ApiVersion.parse("1.3")))
-				.withMessage("Detected platform API version '1.3' does not match supported version '1.2'");
+			.isThrownBy(() -> ApiVersion.parse("1.2").assertSupports(ApiVersion.parse("1.3")))
+			.withMessage("Detected platform API version '1.3' does not match supported version '1.2'");
 	}
 
 	@Test
@@ -111,7 +111,7 @@ class ApiVersionTests {
 
 	@Test
 	void toStringReturnsString() {
-		assertThat(ApiVersion.parse("1.2").toString()).isEqualTo("1.2");
+		assertThat(ApiVersion.parse("1.2")).hasToString("1.2");
 	}
 
 	@Test
@@ -119,7 +119,7 @@ class ApiVersionTests {
 		ApiVersion v12a = ApiVersion.parse("1.2");
 		ApiVersion v12b = ApiVersion.parse("1.2");
 		ApiVersion v13 = ApiVersion.parse("1.3");
-		assertThat(v12a.hashCode()).isEqualTo(v12b.hashCode());
+		assertThat(v12a).hasSameHashCodeAs(v12b);
 		assertThat(v12a).isEqualTo(v12a).isEqualTo(v12b).isNotEqualTo(v13);
 	}
 
@@ -129,7 +129,7 @@ class ApiVersionTests {
 
 	private boolean supportsAny(String v1, String... others) {
 		return ApiVersion.parse(v1)
-				.supportsAny(Arrays.stream(others).map(ApiVersion::parse).toArray(ApiVersion[]::new));
+			.supportsAny(Arrays.stream(others).map(ApiVersion::parse).toArray(ApiVersion[]::new));
 	}
 
 }

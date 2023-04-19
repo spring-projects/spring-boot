@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.cache.CachesEndpoint.CacheEntry;
+import org.springframework.boot.actuate.cache.CachesEndpoint.CacheEntryDescriptor;
 import org.springframework.boot.actuate.cache.CachesEndpoint.CacheManagerDescriptor;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -73,7 +73,7 @@ class CachesEndpointTests {
 	void namedCacheWithSingleCacheManager() {
 		CachesEndpoint endpoint = new CachesEndpoint(
 				Collections.singletonMap("test", new ConcurrentMapCacheManager("b", "a")));
-		CacheEntry entry = endpoint.cache("a", null);
+		CacheEntryDescriptor entry = endpoint.cache("a", null);
 		assertThat(entry).isNotNull();
 		assertThat(entry.getCacheManager()).isEqualTo("test");
 		assertThat(entry.getName()).isEqualTo("a");
@@ -87,14 +87,16 @@ class CachesEndpointTests {
 		cacheManagers.put("another", new ConcurrentMapCacheManager("c", "dupe-cache"));
 		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
 		assertThatExceptionOfType(NonUniqueCacheException.class).isThrownBy(() -> endpoint.cache("dupe-cache", null))
-				.withMessageContaining("dupe-cache").withMessageContaining("test").withMessageContaining("another");
+			.withMessageContaining("dupe-cache")
+			.withMessageContaining("test")
+			.withMessageContaining("another");
 	}
 
 	@Test
 	void namedCacheWithUnknownCache() {
 		CachesEndpoint endpoint = new CachesEndpoint(
 				Collections.singletonMap("test", new ConcurrentMapCacheManager("b", "a")));
-		CacheEntry entry = endpoint.cache("unknown", null);
+		CacheEntryDescriptor entry = endpoint.cache("unknown", null);
 		assertThat(entry).isNull();
 	}
 
@@ -104,7 +106,7 @@ class CachesEndpointTests {
 		cacheManagers.put("test", new ConcurrentMapCacheManager("b", "a"));
 		cacheManagers.put("another", new ConcurrentMapCacheManager("c", "a"));
 		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
-		CacheEntry entry = endpoint.cache("c", "test");
+		CacheEntryDescriptor entry = endpoint.cache("c", "test");
 		assertThat(entry).isNull();
 	}
 
@@ -114,7 +116,7 @@ class CachesEndpointTests {
 		cacheManagers.put("test", new ConcurrentMapCacheManager("b", "a"));
 		cacheManagers.put("another", new ConcurrentMapCacheManager("c", "a"));
 		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
-		CacheEntry entry = endpoint.cache("a", "test");
+		CacheEntryDescriptor entry = endpoint.cache("a", "test");
 		assertThat(entry).isNotNull();
 		assertThat(entry.getCacheManager()).isEqualTo("test");
 		assertThat(entry.getName()).isEqualTo("a");
@@ -147,8 +149,10 @@ class CachesEndpointTests {
 		cacheManagers.put("another", cacheManager(mockCache("dupe-cache")));
 		CachesEndpoint endpoint = new CachesEndpoint(cacheManagers);
 		assertThatExceptionOfType(NonUniqueCacheException.class)
-				.isThrownBy(() -> endpoint.clearCache("dupe-cache", null)).withMessageContaining("dupe-cache")
-				.withMessageContaining("test").withMessageContaining("another");
+			.isThrownBy(() -> endpoint.clearCache("dupe-cache", null))
+			.withMessageContaining("dupe-cache")
+			.withMessageContaining("test")
+			.withMessageContaining("another");
 	}
 
 	@Test

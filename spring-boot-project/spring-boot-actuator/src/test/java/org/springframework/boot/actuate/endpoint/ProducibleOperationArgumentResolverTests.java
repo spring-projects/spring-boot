@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,15 +61,15 @@ class ProducibleOperationArgumentResolverTests {
 
 	@Test
 	void whenNothingIsAcceptableThenNullIsReturned() {
-		assertThat(resolve(acceptHeader("image/png"))).isEqualTo(null);
+		assertThat(resolve(acceptHeader("image/png"))).isNull();
 	}
 
 	@Test
 	void whenSingleValueIsAcceptableThenMatchingEnumValueIsReturned() {
 		assertThat(new ProducibleOperationArgumentResolver(acceptHeader(V2_JSON)).resolve(ApiVersion.class))
-				.isEqualTo(ApiVersion.V2);
+			.isEqualTo(ApiVersion.V2);
 		assertThat(new ProducibleOperationArgumentResolver(acceptHeader(V3_JSON)).resolve(ApiVersion.class))
-				.isEqualTo(ApiVersion.V3);
+			.isEqualTo(ApiVersion.V3);
 	}
 
 	@Test
@@ -90,7 +90,7 @@ class ProducibleOperationArgumentResolverTests {
 	@Test
 	void whenMultipleDefaultsThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> resolve(acceptHeader("one/one"), WithMultipleDefaults.class))
-				.withMessageContaining("Multiple default values");
+			.withMessageContaining("Multiple default values");
 	}
 
 	private Supplier<List<String>> acceptHeader(String... types) {

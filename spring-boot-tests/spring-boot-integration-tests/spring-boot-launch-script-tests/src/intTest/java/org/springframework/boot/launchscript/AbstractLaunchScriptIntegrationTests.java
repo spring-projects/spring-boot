@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ abstract class AbstractLaunchScriptIntegrationTests {
 		this.scriptsDir = scriptsDir;
 	}
 
-	static List<Object[]> parameters(Predicate<File> osFilter) {
+	static List<Object[]> filterParameters(Predicate<File> osFilter) {
 		List<Object[]> parameters = new ArrayList<>();
 		for (File os : new File("src/intTest/resources/conf").listFiles()) {
 			if (osFilter.test(os)) {
@@ -68,7 +68,7 @@ abstract class AbstractLaunchScriptIntegrationTests {
 
 	protected Condition<String> coloredString(AnsiColor color, String string) {
 		String colorString = ESC + "[0;" + color + "m" + string + ESC + "[0m";
-		return new Condition<String>() {
+		return new Condition<>() {
 
 			@Override
 			public boolean matches(String value) {
@@ -100,8 +100,8 @@ abstract class AbstractLaunchScriptIntegrationTests {
 
 		private LaunchScriptTestContainer(String os, String version, String scriptsDir, String testScript) {
 			super(new ImageFromDockerfile("spring-boot-launch-script/" + os.toLowerCase() + "-" + version)
-					.withFileFromFile("Dockerfile",
-							new File("src/intTest/resources/conf/" + os + "/" + version + "/Dockerfile")));
+				.withFileFromFile("Dockerfile",
+						new File("src/intTest/resources/conf/" + os + "/" + version + "/Dockerfile")));
 			withCopyFileToContainer(MountableFile.forHostPath(findApplication().getAbsolutePath()), "/app.jar");
 			withCopyFileToContainer(
 					MountableFile.forHostPath("src/intTest/resources/scripts/" + scriptsDir + "test-functions.sh"),

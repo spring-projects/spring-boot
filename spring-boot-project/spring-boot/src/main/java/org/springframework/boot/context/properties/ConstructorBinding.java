@@ -39,10 +39,14 @@ import java.lang.annotation.Target;
  * @author Phillip Webb
  * @since 2.2.0
  * @see ConfigurationProperties
+ * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
+ * {@link org.springframework.boot.context.properties.bind.ConstructorBinding}
  */
-@Target(ElementType.CONSTRUCTOR)
+@Target({ ElementType.CONSTRUCTOR, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Deprecated(since = "3.0.0", forRemoval = true)
+@org.springframework.boot.context.properties.bind.ConstructorBinding
 public @interface ConstructorBinding {
 
 }

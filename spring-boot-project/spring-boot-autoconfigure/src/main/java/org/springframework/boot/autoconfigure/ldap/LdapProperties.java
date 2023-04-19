@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -139,19 +139,19 @@ public class LdapProperties {
 	public static class Template {
 
 		/**
-		 * Whether PartialResultException should be ignored in searches via the
+		 * Whether PartialResultException should be ignored in searches through the
 		 * LdapTemplate.
 		 */
 		private boolean ignorePartialResultException = false;
 
 		/**
-		 * Whether NameNotFoundException should be ignored in searches via the
+		 * Whether NameNotFoundException should be ignored in searches through the
 		 * LdapTemplate.
 		 */
 		private boolean ignoreNameNotFoundException = false;
 
 		/**
-		 * Whether SizeLimitExceededException should be ignored in searches via the
+		 * Whether SizeLimitExceededException should be ignored in searches through the
 		 * LdapTemplate.
 		 */
 		private boolean ignoreSizeLimitExceededException = true;

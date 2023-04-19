@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ public interface ApplicationContextAssertProvider<C extends ApplicationContext>
 	 * @deprecated to prevent accidental use. Prefer standard AssertJ
 	 * {@code assertThat(context)...} calls instead.
 	 */
-	@Deprecated
+	@Deprecated(since = "2.0.0", forRemoval = false)
 	@Override
 	ApplicationContextAssert<C> assertThat();
 

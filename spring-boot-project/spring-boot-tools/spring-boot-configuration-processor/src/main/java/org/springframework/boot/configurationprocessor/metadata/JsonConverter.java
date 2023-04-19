@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -39,8 +38,11 @@ class JsonConverter {
 
 	JSONArray toJsonArray(ConfigurationMetadata metadata, ItemType itemType) throws Exception {
 		JSONArray jsonArray = new JSONArray();
-		List<ItemMetadata> items = metadata.getItems().stream().filter((item) -> item.isOfItemType(itemType))
-				.sorted(ITEM_COMPARATOR).collect(Collectors.toList());
+		List<ItemMetadata> items = metadata.getItems()
+			.stream()
+			.filter((item) -> item.isOfItemType(itemType))
+			.sorted(ITEM_COMPARATOR)
+			.toList();
 		for (ItemMetadata item : items) {
 			if (item.isOfItemType(itemType)) {
 				jsonArray.put(toJsonObject(item));
@@ -161,11 +163,11 @@ class JsonConverter {
 	private static class ItemMetadataComparator implements Comparator<ItemMetadata> {
 
 		private static final Comparator<ItemMetadata> GROUP = Comparator.comparing(ItemMetadata::getName)
-				.thenComparing(ItemMetadata::getSourceType, Comparator.nullsFirst(Comparator.naturalOrder()));
+			.thenComparing(ItemMetadata::getSourceType, Comparator.nullsFirst(Comparator.naturalOrder()));
 
 		private static final Comparator<ItemMetadata> ITEM = Comparator.comparing(ItemMetadataComparator::isDeprecated)
-				.thenComparing(ItemMetadata::getName)
-				.thenComparing(ItemMetadata::getSourceType, Comparator.nullsFirst(Comparator.naturalOrder()));
+			.thenComparing(ItemMetadata::getName)
+			.thenComparing(ItemMetadata::getSourceType, Comparator.nullsFirst(Comparator.naturalOrder()));
 
 		@Override
 		public int compare(ItemMetadata o1, ItemMetadata o2) {

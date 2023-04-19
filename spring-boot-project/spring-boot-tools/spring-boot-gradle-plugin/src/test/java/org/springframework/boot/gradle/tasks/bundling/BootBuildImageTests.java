@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.gradle.api.GradleException;
-import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,7 +34,6 @@ import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.gradle.junit.GradleProjectBuilder;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link BootBuildImage}.
@@ -64,7 +61,7 @@ class BootBuildImageTests {
 
 	@Test
 	void whenProjectVersionIsUnspecifiedThenItIsIgnoredWhenDerivingImageName() {
-		assertThat(this.buildImage.getImageName()).isEqualTo("docker.io/library/build-image-test");
+		assertThat(this.buildImage.getImageName().get()).isEqualTo("docker.io/library/build-image-test");
 		BuildRequest request = this.buildImage.createRequest();
 		assertThat(request.getName().getDomain()).isEqualTo("docker.io");
 		assertThat(request.getName().getName()).isEqualTo("library/build-image-test");
@@ -75,7 +72,7 @@ class BootBuildImageTests {
 	@Test
 	void whenProjectVersionIsSpecifiedThenItIsUsedInTagOfImageName() {
 		this.project.setVersion("1.2.3");
-		assertThat(this.buildImage.getImageName()).isEqualTo("docker.io/library/build-image-test:1.2.3");
+		assertThat(this.buildImage.getImageName().get()).isEqualTo("docker.io/library/build-image-test:1.2.3");
 		BuildRequest request = this.buildImage.createRequest();
 		assertThat(request.getName().getDomain()).isEqualTo("docker.io");
 		assertThat(request.getName().getName()).isEqualTo("library/build-image-test");
@@ -86,8 +83,8 @@ class BootBuildImageTests {
 	@Test
 	void whenImageNameIsSpecifiedThenItIsUsedInRequest() {
 		this.project.setVersion("1.2.3");
-		this.buildImage.setImageName("example.com/test/build-image:1.0");
-		assertThat(this.buildImage.getImageName()).isEqualTo("example.com/test/build-image:1.0");
+		this.buildImage.getImageName().set("example.com/test/build-image:1.0");
+		assertThat(this.buildImage.getImageName().get()).isEqualTo("example.com/test/build-image:1.0");
 		BuildRequest request = this.buildImage.createRequest();
 		assertThat(request.getName().getDomain()).isEqualTo("example.com");
 		assertThat(request.getName().getName()).isEqualTo("test/build-image");
@@ -99,15 +96,16 @@ class BootBuildImageTests {
 	void springBootVersionDefaultValueIsUsed() {
 		BuildRequest request = this.buildImage.createRequest();
 		assertThat(request.getCreator().getName()).isEqualTo("Spring Boot");
-		assertThat(request.getCreator().getVersion()).isEqualTo("");
+		assertThat(request.getCreator().getVersion()).isEmpty();
 	}
 
 	@Test
 	void whenIndividualEntriesAreAddedToTheEnvironmentThenTheyAreIncludedInTheRequest() {
-		this.buildImage.environment("ALPHA", "a");
-		this.buildImage.environment("BRAVO", "b");
-		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a").containsEntry("BRAVO", "b")
-				.hasSize(2);
+		this.buildImage.getEnvironment().put("ALPHA", "a");
+		this.buildImage.getEnvironment().put("BRAVO", "b");
+		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a")
+			.containsEntry("BRAVO", "b")
+			.hasSize(2);
 	}
 
 	@Test
@@ -115,9 +113,10 @@ class BootBuildImageTests {
 		Map<String, String> environment = new HashMap<>();
 		environment.put("ALPHA", "a");
 		environment.put("BRAVO", "b");
-		this.buildImage.environment(environment);
-		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a").containsEntry("BRAVO", "b")
-				.hasSize(2);
+		this.buildImage.getEnvironment().putAll(environment);
+		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a")
+			.containsEntry("BRAVO", "b")
+			.hasSize(2);
 	}
 
 	@Test
@@ -125,9 +124,10 @@ class BootBuildImageTests {
 		Map<String, String> environment = new HashMap<>();
 		environment.put("ALPHA", "a");
 		environment.put("BRAVO", "b");
-		this.buildImage.setEnvironment(environment);
-		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a").containsEntry("BRAVO", "b")
-				.hasSize(2);
+		this.buildImage.getEnvironment().set(environment);
+		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a")
+			.containsEntry("BRAVO", "b")
+			.hasSize(2);
 	}
 
 	@Test
@@ -135,31 +135,11 @@ class BootBuildImageTests {
 		Map<String, String> environment = new HashMap<>();
 		environment.put("ALPHA", "a");
 		environment.put("BRAVO", "b");
-		this.buildImage.environment("C", "Charlie");
-		this.buildImage.setEnvironment(environment);
-		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a").containsEntry("BRAVO", "b")
-				.hasSize(2);
-	}
-
-	@Test
-	void whenJavaVersionIsSetInEnvironmentItIsIncludedInTheRequest() {
-		this.buildImage.environment("BP_JVM_VERSION", "from-env");
-		this.buildImage.getTargetJavaVersion().set(JavaVersion.VERSION_1_8);
-		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("BP_JVM_VERSION", "from-env").hasSize(1);
-	}
-
-	@Test
-	void whenTargetCompatibilityIsSetThenJavaVersionIsIncludedInTheRequest() {
-		this.buildImage.getTargetJavaVersion().set(JavaVersion.VERSION_1_8);
-		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("BP_JVM_VERSION", "8.*").hasSize(1);
-	}
-
-	@Test
-	void whenTargetCompatibilityIsSetThenJavaVersionIsAddedToEnvironment() {
-		this.buildImage.environment("ALPHA", "a");
-		this.buildImage.getTargetJavaVersion().set(JavaVersion.VERSION_11);
+		this.buildImage.getEnvironment().put("C", "Charlie");
+		this.buildImage.getEnvironment().set(environment);
 		assertThat(this.buildImage.createRequest().getEnv()).containsEntry("ALPHA", "a")
-				.containsEntry("BP_JVM_VERSION", "11.*").hasSize(2);
+			.containsEntry("BRAVO", "b")
+			.hasSize(2);
 	}
 
 	@Test
@@ -169,7 +149,7 @@ class BootBuildImageTests {
 
 	@Test
 	void whenVerboseLoggingIsEnabledThenRequestHasVerboseLoggingEnabled() {
-		this.buildImage.setVerboseLogging(true);
+		this.buildImage.getVerboseLogging().set(true);
 		assertThat(this.buildImage.createRequest().isVerboseLogging()).isTrue();
 	}
 
@@ -180,7 +160,7 @@ class BootBuildImageTests {
 
 	@Test
 	void whenCleanCacheIsEnabledThenRequestHasCleanCacheEnabled() {
-		this.buildImage.setCleanCache(true);
+		this.buildImage.getCleanCache().set(true);
 		assertThat(this.buildImage.createRequest().isCleanCache()).isTrue();
 	}
 
@@ -190,20 +170,13 @@ class BootBuildImageTests {
 	}
 
 	@Test
-	void whenPublishIsEnabledWithoutPublishRegistryThenExceptionIsThrown() {
-		this.buildImage.setPublish(true);
-		assertThatExceptionOfType(GradleException.class).isThrownBy(this.buildImage::createRequest)
-				.withMessageContaining("Publishing an image requires docker.publishRegistry to be configured");
-	}
-
-	@Test
 	void whenNoBuilderIsConfiguredThenRequestHasDefaultBuilder() {
 		assertThat(this.buildImage.createRequest().getBuilder().getName()).isEqualTo("paketobuildpacks/builder");
 	}
 
 	@Test
 	void whenBuilderIsConfiguredThenRequestUsesSpecifiedBuilder() {
-		this.buildImage.setBuilder("example.com/test/builder:1.2");
+		this.buildImage.getBuilder().set("example.com/test/builder:1.2");
 		assertThat(this.buildImage.createRequest().getBuilder().getName()).isEqualTo("test/builder");
 	}
 
@@ -214,7 +187,7 @@ class BootBuildImageTests {
 
 	@Test
 	void whenRunImageIsConfiguredThenRequestUsesSpecifiedRunImage() {
-		this.buildImage.setRunImage("example.com/test/run:1.0");
+		this.buildImage.getRunImage().set("example.com/test/run:1.0");
 		assertThat(this.buildImage.createRequest().getRunImage().getName()).isEqualTo("test/run");
 	}
 
@@ -225,7 +198,7 @@ class BootBuildImageTests {
 
 	@Test
 	void whenPullPolicyIsConfiguredThenRequestHasPullPolicy() {
-		this.buildImage.setPullPolicy(PullPolicy.NEVER);
+		this.buildImage.getPullPolicy().set(PullPolicy.NEVER);
 		assertThat(this.buildImage.createRequest().getPullPolicy()).isEqualTo(PullPolicy.NEVER);
 	}
 
@@ -236,24 +209,24 @@ class BootBuildImageTests {
 
 	@Test
 	void whenBuildpacksAreConfiguredThenRequestHasBuildpacks() {
-		this.buildImage.setBuildpacks(Arrays.asList("example/buildpack1", "example/buildpack2"));
-		assertThat(this.buildImage.createRequest().getBuildpacks()).containsExactly(
-				BuildpackReference.of("example/buildpack1"), BuildpackReference.of("example/buildpack2"));
+		this.buildImage.getBuildpacks().set(Arrays.asList("example/buildpack1", "example/buildpack2"));
+		assertThat(this.buildImage.createRequest().getBuildpacks())
+			.containsExactly(BuildpackReference.of("example/buildpack1"), BuildpackReference.of("example/buildpack2"));
 	}
 
 	@Test
 	void whenEntriesAreAddedToBuildpacksThenRequestHasBuildpacks() {
-		this.buildImage.buildpacks(Arrays.asList("example/buildpack1", "example/buildpack2"));
-		assertThat(this.buildImage.createRequest().getBuildpacks()).containsExactly(
-				BuildpackReference.of("example/buildpack1"), BuildpackReference.of("example/buildpack2"));
+		this.buildImage.getBuildpacks().addAll(Arrays.asList("example/buildpack1", "example/buildpack2"));
+		assertThat(this.buildImage.createRequest().getBuildpacks())
+			.containsExactly(BuildpackReference.of("example/buildpack1"), BuildpackReference.of("example/buildpack2"));
 	}
 
 	@Test
 	void whenIndividualEntriesAreAddedToBuildpacksThenRequestHasBuildpacks() {
-		this.buildImage.buildpack("example/buildpack1");
-		this.buildImage.buildpack("example/buildpack2");
-		assertThat(this.buildImage.createRequest().getBuildpacks()).containsExactly(
-				BuildpackReference.of("example/buildpack1"), BuildpackReference.of("example/buildpack2"));
+		this.buildImage.getBuildpacks().add("example/buildpack1");
+		this.buildImage.getBuildpacks().add("example/buildpack2");
+		assertThat(this.buildImage.createRequest().getBuildpacks())
+			.containsExactly(BuildpackReference.of("example/buildpack1"), BuildpackReference.of("example/buildpack2"));
 	}
 
 	@Test
@@ -263,29 +236,30 @@ class BootBuildImageTests {
 
 	@Test
 	void whenBindingsAreConfiguredThenRequestHasBindings() {
-		this.buildImage.setBindings(Arrays.asList("host-src:container-dest:ro", "volume-name:container-dest:rw"));
+		this.buildImage.getBindings().set(Arrays.asList("host-src:container-dest:ro", "volume-name:container-dest:rw"));
 		assertThat(this.buildImage.createRequest().getBindings())
-				.containsExactly(Binding.of("host-src:container-dest:ro"), Binding.of("volume-name:container-dest:rw"));
+			.containsExactly(Binding.of("host-src:container-dest:ro"), Binding.of("volume-name:container-dest:rw"));
 	}
 
 	@Test
 	void whenEntriesAreAddedToBindingsThenRequestHasBindings() {
-		this.buildImage.bindings(Arrays.asList("host-src:container-dest:ro", "volume-name:container-dest:rw"));
+		this.buildImage.getBindings()
+			.addAll(Arrays.asList("host-src:container-dest:ro", "volume-name:container-dest:rw"));
 		assertThat(this.buildImage.createRequest().getBindings())
-				.containsExactly(Binding.of("host-src:container-dest:ro"), Binding.of("volume-name:container-dest:rw"));
+			.containsExactly(Binding.of("host-src:container-dest:ro"), Binding.of("volume-name:container-dest:rw"));
 	}
 
 	@Test
 	void whenIndividualEntriesAreAddedToBindingsThenRequestHasBindings() {
-		this.buildImage.binding("host-src:container-dest:ro");
-		this.buildImage.binding("volume-name:container-dest:rw");
+		this.buildImage.getBindings().add("host-src:container-dest:ro");
+		this.buildImage.getBindings().add("volume-name:container-dest:rw");
 		assertThat(this.buildImage.createRequest().getBindings())
-				.containsExactly(Binding.of("host-src:container-dest:ro"), Binding.of("volume-name:container-dest:rw"));
+			.containsExactly(Binding.of("host-src:container-dest:ro"), Binding.of("volume-name:container-dest:rw"));
 	}
 
 	@Test
 	void whenNetworkIsConfiguredThenRequestHasNetwork() {
-		this.buildImage.setNetwork("test");
+		this.buildImage.getNetwork().set("test");
 		assertThat(this.buildImage.createRequest().getNetwork()).isEqualTo("test");
 	}
 
@@ -296,25 +270,25 @@ class BootBuildImageTests {
 
 	@Test
 	void whenTagsAreConfiguredThenRequestHasTags() {
-		this.buildImage.setTags(
-				Arrays.asList("my-app:latest", "example.com/my-app:0.0.1-SNAPSHOT", "example.com/my-app:latest"));
+		this.buildImage.getTags()
+			.set(Arrays.asList("my-app:latest", "example.com/my-app:0.0.1-SNAPSHOT", "example.com/my-app:latest"));
 		assertThat(this.buildImage.createRequest().getTags()).containsExactly(ImageReference.of("my-app:latest"),
 				ImageReference.of("example.com/my-app:0.0.1-SNAPSHOT"), ImageReference.of("example.com/my-app:latest"));
 	}
 
 	@Test
 	void whenEntriesAreAddedToTagsThenRequestHasTags() {
-		this.buildImage
-				.tags(Arrays.asList("my-app:latest", "example.com/my-app:0.0.1-SNAPSHOT", "example.com/my-app:latest"));
+		this.buildImage.getTags()
+			.addAll(Arrays.asList("my-app:latest", "example.com/my-app:0.0.1-SNAPSHOT", "example.com/my-app:latest"));
 		assertThat(this.buildImage.createRequest().getTags()).containsExactly(ImageReference.of("my-app:latest"),
 				ImageReference.of("example.com/my-app:0.0.1-SNAPSHOT"), ImageReference.of("example.com/my-app:latest"));
 	}
 
 	@Test
 	void whenIndividualEntriesAreAddedToTagsThenRequestHasTags() {
-		this.buildImage.tag("my-app:latest");
-		this.buildImage.tag("example.com/my-app:0.0.1-SNAPSHOT");
-		this.buildImage.tag("example.com/my-app:latest");
+		this.buildImage.getTags().add("my-app:latest");
+		this.buildImage.getTags().add("example.com/my-app:0.0.1-SNAPSHOT");
+		this.buildImage.getTags().add("example.com/my-app:latest");
 		assertThat(this.buildImage.createRequest().getTags()).containsExactly(ImageReference.of("my-app:latest"),
 				ImageReference.of("example.com/my-app:0.0.1-SNAPSHOT"), ImageReference.of("example.com/my-app:latest"));
 	}

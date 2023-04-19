@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.security.PublicKey;
 import java.security.Signature;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -33,7 +34,6 @@ import reactor.core.publisher.Mono;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.Token;
-import org.springframework.util.Base64Utils;
 
 /**
  * Validator used to ensure that a signed {@link Token} has not been tampered with.
@@ -51,8 +51,10 @@ class ReactiveTokenValidator {
 	}
 
 	Mono<Void> validate(Token token) {
-		return validateAlgorithm(token).then(validateKeyIdAndSignature(token)).then(validateExpiry(token))
-				.then(validateIssuer(token)).then(validateAudience(token));
+		return validateAlgorithm(token).then(validateKeyIdAndSignature(token))
+			.then(validateExpiry(token))
+			.then(validateIssuer(token))
+			.then(validateAudience(token));
 	}
 
 	private Mono<Void> validateAlgorithm(Token token) {
@@ -70,9 +72,9 @@ class ReactiveTokenValidator {
 
 	private Mono<Void> validateKeyIdAndSignature(Token token) {
 		return getTokenKey(token).filter((tokenKey) -> hasValidSignature(token, tokenKey))
-				.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(Reason.INVALID_SIGNATURE,
-						"RSA Signature did not match content")))
-				.then();
+			.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(Reason.INVALID_SIGNATURE,
+					"RSA Signature did not match content")))
+			.then();
 	}
 
 	private Mono<String> getTokenKey(Token token) {
@@ -81,10 +83,12 @@ class ReactiveTokenValidator {
 		if (cached != null) {
 			return Mono.just(cached);
 		}
-		return this.securityService.fetchTokenKeys().doOnSuccess(this::cacheTokenKeys)
-				.filter((tokenKeys) -> tokenKeys.containsKey(keyId)).map((tokenKeys) -> tokenKeys.get(keyId))
-				.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(Reason.INVALID_KEY_ID,
-						"Key Id present in token header does not match")));
+		return this.securityService.fetchTokenKeys()
+			.doOnSuccess(this::cacheTokenKeys)
+			.filter((tokenKeys) -> tokenKeys.containsKey(keyId))
+			.map((tokenKeys) -> tokenKeys.get(keyId))
+			.switchIfEmpty(Mono.error(new CloudFoundryAuthorizationException(Reason.INVALID_KEY_ID,
+					"Key Id present in token header does not match")));
 	}
 
 	private void cacheTokenKeys(Map<String, String> tokenKeys) {
@@ -108,7 +112,7 @@ class ReactiveTokenValidator {
 		key = key.replace("-----BEGIN PUBLIC KEY-----\n", "");
 		key = key.replace("-----END PUBLIC KEY-----", "");
 		key = key.trim().replace("\n", "");
-		byte[] bytes = Base64Utils.decodeFromString(key);
+		byte[] bytes = Base64.getDecoder().decode(key);
 		X509EncodedKeySpec keySpec = new X509EncodedKeySpec(bytes);
 		return KeyFactory.getInstance("RSA").generatePublic(keySpec);
 	}
@@ -122,11 +126,12 @@ class ReactiveTokenValidator {
 	}
 
 	private Mono<Void> validateIssuer(Token token) {
-		return this.securityService.getUaaUrl().map((uaaUrl) -> String.format("%s/oauth/token", uaaUrl))
-				.filter((issuerUri) -> issuerUri.equals(token.getIssuer()))
-				.switchIfEmpty(Mono.error(
-						new CloudFoundryAuthorizationException(Reason.INVALID_ISSUER, "Token issuer does not match")))
-				.then();
+		return this.securityService.getUaaUrl()
+			.map((uaaUrl) -> String.format("%s/oauth/token", uaaUrl))
+			.filter((issuerUri) -> issuerUri.equals(token.getIssuer()))
+			.switchIfEmpty(Mono
+				.error(new CloudFoundryAuthorizationException(Reason.INVALID_ISSUER, "Token issuer does not match")))
+			.then();
 	}
 
 	private Mono<Void> validateAudience(Token token) {

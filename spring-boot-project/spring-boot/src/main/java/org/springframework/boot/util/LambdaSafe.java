@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -299,8 +299,10 @@ public final class LambdaSafe {
 		public <R> Stream<R> invokeAnd(Function<C, R> invoker) {
 			Function<C, InvocationResult<R>> mapper = (callbackInstance) -> invoke(callbackInstance,
 					() -> invoker.apply(callbackInstance));
-			return this.callbackInstances.stream().map(mapper).filter(InvocationResult::hasResult)
-					.map(InvocationResult::get);
+			return this.callbackInstances.stream()
+				.map(mapper)
+				.filter(InvocationResult::hasResult)
+				.map(InvocationResult::get);
 		}
 
 	}

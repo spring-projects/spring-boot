@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,10 +109,10 @@ class ReleaseTrainDependencyVersionTests {
 
 	@Test
 	void whenComparedWithADifferentDependencyVersionTypeThenTheResultsAreNonZero() {
-		ReleaseTrainDependencyVersion dysprosium = ReleaseTrainDependencyVersion.parse("Dysprosium-SR16");
-		ArtifactVersionDependencyVersion twentyTwenty = ArtifactVersionDependencyVersion.parse("2020.0.0");
-		assertThat(dysprosium.compareTo(twentyTwenty)).isLessThan(0);
-		assertThat(twentyTwenty.compareTo(dysprosium)).isGreaterThan(0);
+		DependencyVersion dysprosium = ReleaseTrainDependencyVersion.parse("Dysprosium-SR16");
+		DependencyVersion twentyTwenty = ArtifactVersionDependencyVersion.parse("2020.0.0");
+		assertThat(dysprosium).isLessThan(twentyTwenty);
+		assertThat(twentyTwenty).isGreaterThan(dysprosium);
 	}
 
 	private static ReleaseTrainDependencyVersion version(String input) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,8 @@ public class MyApplication extends SpringBootServletInitializer {
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		// Customize the application or call application.sources(...) to add sources
-		// Since our example is itself a @Configuration class (via @SpringBootApplication)
+		// Since our example is itself a @Configuration class (through
+		// @SpringBootApplication)
 		// we actually do not need to override this method.
 		return application;
 	}

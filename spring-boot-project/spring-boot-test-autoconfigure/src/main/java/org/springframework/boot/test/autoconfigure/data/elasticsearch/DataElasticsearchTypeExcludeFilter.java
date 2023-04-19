@@ -27,7 +27,7 @@ import org.springframework.boot.test.autoconfigure.filter.StandardAnnotationCust
 class DataElasticsearchTypeExcludeFilter
 		extends StandardAnnotationCustomizableTypeExcludeFilter<DataElasticsearchTest> {
 
-	protected DataElasticsearchTypeExcludeFilter(Class<?> testClass) {
+	DataElasticsearchTypeExcludeFilter(Class<?> testClass) {
 		super(testClass);
 	}
 

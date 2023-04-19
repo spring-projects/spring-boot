@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,11 @@ import org.springframework.lang.Nullable;
 @WebEndpoint(id = "prometheus")
 public class PrometheusScrapeEndpoint {
 
+	private static final int METRICS_SCRAPE_CHARS_EXTRA = 1024;
+
 	private final CollectorRegistry collectorRegistry;
+
+	private volatile int nextMetricsScrapeSize = 16;
 
 	public PrometheusScrapeEndpoint(CollectorRegistry collectorRegistry) {
 		this.collectorRegistry = collectorRegistry;
@@ -51,12 +55,16 @@ public class PrometheusScrapeEndpoint {
 	@ReadOperation(producesFrom = TextOutputFormat.class)
 	public WebEndpointResponse<String> scrape(TextOutputFormat format, @Nullable Set<String> includedNames) {
 		try {
-			Writer writer = new StringWriter();
+			Writer writer = new StringWriter(this.nextMetricsScrapeSize);
 			Enumeration<MetricFamilySamples> samples = (includedNames != null)
 					? this.collectorRegistry.filteredMetricFamilySamples(includedNames)
 					: this.collectorRegistry.metricFamilySamples();
 			format.write(writer, samples);
-			return new WebEndpointResponse<>(writer.toString(), format);
+
+			String scrapePage = writer.toString();
+			this.nextMetricsScrapeSize = scrapePage.length() + METRICS_SCRAPE_CHARS_EXTRA;
+
+			return new WebEndpointResponse<>(scrapePage, format);
 		}
 		catch (IOException ex) {
 			// This actually never happens since StringWriter doesn't throw an IOException

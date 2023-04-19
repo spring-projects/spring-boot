@@ -42,7 +42,7 @@ The following component creates a listener endpoint on the `someTopic` topic:
 include::code:MyBean[]
 
 If a `KafkaTransactionManager` bean is defined, it is automatically associated to the container factory.
-Similarly, if a `RecordFilterStrategy`, `ErrorHandler`, `CommonErrorHandler`, `AfterRollbackProcessor` or `ConsumerAwareRebalanceListener` bean is defined, it is automatically associated to the default factory.
+Similarly, if a `RecordFilterStrategy`, `CommonErrorHandler`, `AfterRollbackProcessor` or `ConsumerAwareRebalanceListener` bean is defined, it is automatically associated to the default factory.
 
 Depending on the listener type, a `RecordMessageConverter` or `BatchMessageConverter` bean is associated to the default factory.
 If only a `RecordMessageConverter` bean is present for a batch listener, it is wrapped in a `BatchMessageConverter`.
@@ -61,13 +61,13 @@ The former can be configured using `spring.kafka.streams.application-id`, defaul
 The latter can be set globally or specifically overridden only for streams.
 
 Several additional properties are available using dedicated properties; other arbitrary Kafka properties can be set using the `spring.kafka.streams.properties` namespace.
-See also <<features#messaging.kafka.additional-properties>> for more information.
+See also <<messaging#messaging.kafka.additional-properties>> for more information.
 
 To use the factory bean, wire `StreamsBuilder` into your `@Bean` as shown in the following example:
 
 include::code:MyKafkaStreamsConfiguration[]
 
-By default, the streams managed by the `StreamBuilder` object it creates are started automatically.
+By default, the streams managed by the `StreamBuilder` object are started automatically.
 You can customize this behavior using the configprop:spring.kafka.streams.auto-startup[] property.
 
 

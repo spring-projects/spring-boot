@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,14 +37,14 @@ class JsonbTesterTests extends AbstractJsonMarshalTesterTests {
 	@Test
 	void initFieldsWhenTestIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> JsonbTester.initFields(null, JsonbBuilder.create()))
-				.withMessageContaining("TestInstance must not be null");
+			.withMessageContaining("TestInstance must not be null");
 	}
 
 	@Test
 	void initFieldsWhenMarshallerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> JsonbTester.initFields(new InitFieldsTestClass(), (Jsonb) null))
-				.withMessageContaining("Marshaller must not be null");
+			.isThrownBy(() -> JsonbTester.initFields(new InitFieldsTestClass(), (Jsonb) null))
+			.withMessageContaining("Marshaller must not be null");
 	}
 
 	@Test

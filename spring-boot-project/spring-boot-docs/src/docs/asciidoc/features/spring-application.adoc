@@ -9,24 +9,7 @@ When your application starts, you should see something similar to the following 
 
 [indent=0,subs="verbatim,attributes"]
 ----
-  .   ____          _            __ _ _
- /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
- \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-  '  |____| .__|_| |_|_| |_\__, | / / / /
- =========|_|==============|___/=/_/_/_/
- :: Spring Boot ::   v{spring-boot-version}
-
-2021-02-03 10:33:25.224  INFO 17900 --- [           main] o.s.b.d.s.s.SpringApplicationExample     : Starting SpringAppplicationExample using Java 17 on mycomputer with PID 17321 (/apps/myjar.jar started by pwebb)
-2021-02-03 10:33:25.226  INFO 17900 --- [           main] o.s.b.d.s.s.SpringApplicationExample     : No active profile set, falling back to default profiles: default
-2021-02-03 10:33:26.046  INFO 17900 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
-2021-02-03 10:33:26.054  INFO 17900 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2021-02-03 10:33:26.055  INFO 17900 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.41]
-2021-02-03 10:33:26.097  INFO 17900 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2021-02-03 10:33:26.097  INFO 17900 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 821 ms
-2021-02-03 10:33:26.144  INFO 17900 --- [           main] s.tomcat.SampleTomcatApplication         : ServletContext initialized
-2021-02-03 10:33:26.376  INFO 17900 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
-2021-02-03 10:33:26.384  INFO 17900 --- [           main] o.s.b.d.s.s.SpringApplicationExample     : Started SampleTomcatApplication in 1.514 seconds (JVM running for 1.823)
+include::{spring-application-output}[]
 ----
 
 
@@ -304,7 +287,7 @@ The algorithm used to determine a `WebApplicationType` is the following:
 This means that if you are using Spring MVC and the new `WebClient` from Spring WebFlux in the same application, Spring MVC will be used by default.
 You can override that easily by calling `setWebApplicationType(WebApplicationType)`.
 
-It is also possible to take complete control of the `ApplicationContext` type that is used by calling `setApplicationContextClass(...)`.
+It is also possible to take complete control of the `ApplicationContext` type that is used by calling `setApplicationContextFactory(...)`.
 
 TIP: It is often desirable to call `setWebApplicationType(WebApplicationType.NONE)` when using `SpringApplication` within a JUnit test.
 
@@ -351,6 +334,9 @@ include::code:MyApplication[]
 
 Also, the `ExitCodeGenerator` interface may be implemented by exceptions.
 When such an exception is encountered, Spring Boot returns the exit code provided by the implemented `getExitCode()` method.
+
+If there is more than one `ExitCodeGenerator`, the first non-zero exit code that is generated is used.
+To control the order in which the generators are called, additionally implement the `org.springframework.core.Ordered` interface or use the `org.springframework.core.annotation.Order` annotation.
 
 
 

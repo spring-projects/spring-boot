@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointProperties.Group;
-import org.springframework.boot.actuate.autoconfigure.health.HealthProperties.Show;
 import org.springframework.boot.actuate.autoconfigure.health.HealthProperties.Status;
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.health.AdditionalHealthEndpointPath;
 import org.springframework.boot.actuate.health.HealthEndpointGroup;
 import org.springframework.boot.actuate.health.HealthEndpointGroups;
@@ -65,8 +65,8 @@ class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups {
 	 * @param properties the health endpoint properties
 	 */
 	AutoConfiguredHealthEndpointGroups(ApplicationContext applicationContext, HealthEndpointProperties properties) {
-		ListableBeanFactory beanFactory = (applicationContext instanceof ConfigurableApplicationContext)
-				? ((ConfigurableApplicationContext) applicationContext).getBeanFactory() : applicationContext;
+		ListableBeanFactory beanFactory = (applicationContext instanceof ConfigurableApplicationContext configurableContext)
+				? configurableContext.getBeanFactory() : applicationContext;
 		Show showComponents = properties.getShowComponents();
 		Show showDetails = properties.getShowDetails();
 		Set<String> roles = properties.getRoles();

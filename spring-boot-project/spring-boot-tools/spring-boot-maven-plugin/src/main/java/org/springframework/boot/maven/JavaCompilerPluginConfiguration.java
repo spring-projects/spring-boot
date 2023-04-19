@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,12 +55,21 @@ class JavaCompilerPluginConfiguration {
 		return majorVersionFor(version);
 	}
 
+	String getReleaseVersion() {
+		String version = getConfigurationValue("release");
+
+		if (version == null) {
+			version = getPropertyValue("maven.compiler.release");
+		}
+
+		return majorVersionFor(version);
+	}
+
 	private String getConfigurationValue(String propertyName) {
 		Plugin plugin = this.project.getPlugin("org.apache.maven.plugins:maven-compiler-plugin");
 		if (plugin != null) {
 			Object pluginConfiguration = plugin.getConfiguration();
-			if (pluginConfiguration instanceof Xpp3Dom) {
-				Xpp3Dom dom = (Xpp3Dom) pluginConfiguration;
+			if (pluginConfiguration instanceof Xpp3Dom dom) {
 				return getNodeValue(dom, propertyName);
 			}
 		}

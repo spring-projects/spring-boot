@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,20 @@
 
 package org.springframework.boot.actuate.metrics.cache;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 
 import com.hazelcast.spring.cache.HazelcastCache;
-import io.micrometer.binder.cache.HazelcastCacheMetrics;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.MeterBinder;
+import io.micrometer.core.instrument.binder.cache.HazelcastCacheMetrics;
 
+import org.springframework.aot.hint.ExecutableMode;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.boot.actuate.metrics.cache.HazelcastCacheMeterBinderProvider.HazelcastCacheMeterBinderProviderRuntimeHints;
+import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -31,6 +38,7 @@ import org.springframework.util.ReflectionUtils;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
+@ImportRuntimeHints(HazelcastCacheMeterBinderProviderRuntimeHints.class)
 public class HazelcastCacheMeterBinderProvider implements CacheMeterBinderProvider<HazelcastCache> {
 
 	@Override
@@ -48,12 +56,32 @@ public class HazelcastCacheMeterBinderProvider implements CacheMeterBinderProvid
 		try {
 			Method nativeCacheAccessor = ReflectionUtils.findMethod(HazelcastCache.class, "getNativeCache");
 			Object nativeCache = ReflectionUtils.invokeMethod(nativeCacheAccessor, cache);
-			return HazelcastCacheMetrics.class.getConstructor(Object.class, Iterable.class).newInstance(nativeCache,
-					tags);
+			return HazelcastCacheMetrics.class.getConstructor(Object.class, Iterable.class)
+				.newInstance(nativeCache, tags);
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Failed to create MeterBinder for Hazelcast", ex);
 		}
+	}
+
+	static class HazelcastCacheMeterBinderProviderRuntimeHints implements RuntimeHintsRegistrar {
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			try {
+				Method getNativeCacheMethod = ReflectionUtils.findMethod(HazelcastCache.class, "getNativeCache");
+				Assert.state(getNativeCacheMethod != null, "Unable to find 'getNativeCache' method");
+				Constructor<?> constructor = HazelcastCacheMetrics.class.getConstructor(Object.class, Iterable.class);
+				hints.reflection()
+					.registerMethod(getNativeCacheMethod, ExecutableMode.INVOKE)
+					.registerConstructor(constructor, ExecutableMode.INVOKE);
+			}
+			catch (NoSuchMethodException ex) {
+				throw new IllegalStateException(ex);
+			}
+
+		}
+
 	}
 
 }

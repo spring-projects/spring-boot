@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +79,7 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		repackager.repackage(NO_LIBRARIES);
 		Manifest actualManifest = getPackagedManifest();
 		assertThat(actualManifest.getMainAttributes().getValue("Main-Class"))
-				.isEqualTo("org.springframework.boot.loader.JarLauncher");
+			.isEqualTo("org.springframework.boot.loader.JarLauncher");
 		assertThat(actualManifest.getMainAttributes().getValue("Start-Class")).isEqualTo("a.b.C");
 		assertThat(hasPackagedLauncherClasses()).isTrue();
 	}
@@ -121,7 +121,7 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
 		assertThatIllegalArgumentException().isThrownBy(() -> repackager.repackage(null, NO_LIBRARIES))
-				.withMessageContaining("Invalid destination");
+			.withMessageContaining("Invalid destination");
 	}
 
 	@Test
@@ -129,7 +129,7 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
 		assertThatIllegalArgumentException().isThrownBy(() -> repackager.repackage(this.tempDir, NO_LIBRARIES))
-				.withMessageContaining("Invalid destination");
+			.withMessageContaining("Invalid destination");
 	}
 
 	@Test
@@ -166,7 +166,7 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		}
 		try {
 			assertThat(Files.getPosixFilePermissions(this.destination.toPath()))
-					.contains(PosixFilePermission.OWNER_EXECUTE);
+				.contains(PosixFilePermission.OWNER_EXECUTE);
 		}
 		catch (UnsupportedOperationException ex) {
 			// Probably running the test on Windows
@@ -185,8 +185,10 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 					timestamp = entry.getTime();
 				}
 				else {
-					assertThat(entry.getTime()).withFailMessage("Expected time %d to be equal to %d for entry %s",
-							entry.getTime(), timestamp, entry.getName()).isEqualTo(timestamp);
+					assertThat(entry.getTime())
+						.withFailMessage("Expected time %d to be equal to %d for entry %s", entry.getTime(), timestamp,
+								entry.getName())
+						.isEqualTo(timestamp);
 				}
 			}
 		}
@@ -198,8 +200,9 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		Repackager repackager = createRepackager(this.testJarFile.getFile(), true);
 		long timestamp = OffsetDateTime.of(2000, 1, 1, 0, 0, 0, 0, ZoneOffset.UTC).toInstant().toEpochMilli();
 		repackager.repackage(this.destination, NO_LIBRARIES, null, FileTime.fromMillis(timestamp));
+		long offsetTimestamp = DefaultTimeZoneOffset.INSTANCE.removeFrom(timestamp);
 		for (ZipArchiveEntry entry : getAllPackagedEntries()) {
-			assertThat(entry.getTime()).isEqualTo(timestamp);
+			assertThat(entry.getTime()).isEqualTo(offsetTimestamp);
 		}
 	}
 

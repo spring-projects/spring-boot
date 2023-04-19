@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,25 @@
 
 package org.springframework.boot.actuate.quartz;
 
+import java.util.Set;
+
 import org.quartz.SchedulerException;
 
+import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
-import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzGroups;
+import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzGroupsDescriptor;
+import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobDetailsDescriptor;
+import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzJobGroupSummaryDescriptor;
+import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzTriggerGroupSummaryDescriptor;
+import org.springframework.boot.actuate.quartz.QuartzEndpointWebExtension.QuartzEndpointWebExtensionRuntimeHints;
+import org.springframework.context.annotation.ImportRuntimeHints;
 
 /**
  * {@link EndpointWebExtension @EndpointWebExtension} for the {@link QuartzEndpoint}.
@@ -31,16 +43,23 @@ import org.springframework.boot.actuate.quartz.QuartzEndpoint.QuartzGroups;
  * @since 2.5.0
  */
 @EndpointWebExtension(endpoint = QuartzEndpoint.class)
+@ImportRuntimeHints(QuartzEndpointWebExtensionRuntimeHints.class)
 public class QuartzEndpointWebExtension {
 
 	private final QuartzEndpoint delegate;
 
-	public QuartzEndpointWebExtension(QuartzEndpoint delegate) {
+	private final Show showValues;
+
+	private final Set<String> roles;
+
+	public QuartzEndpointWebExtension(QuartzEndpoint delegate, Show showValues, Set<String> roles) {
 		this.delegate = delegate;
+		this.showValues = showValues;
+		this.roles = roles;
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<QuartzGroups> quartzJobOrTriggerGroups(@Selector String jobsOrTriggers)
+	public WebEndpointResponse<QuartzGroupsDescriptor> quartzJobOrTriggerGroups(@Selector String jobsOrTriggers)
 			throws SchedulerException {
 		return handle(jobsOrTriggers, this.delegate::quartzJobGroups, this.delegate::quartzTriggerGroups);
 	}
@@ -53,10 +72,11 @@ public class QuartzEndpointWebExtension {
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<Object> quartzJobOrTrigger(@Selector String jobsOrTriggers, @Selector String group,
-			@Selector String name) throws SchedulerException {
-		return handle(jobsOrTriggers, () -> this.delegate.quartzJob(group, name),
-				() -> this.delegate.quartzTrigger(group, name));
+	public WebEndpointResponse<Object> quartzJobOrTrigger(SecurityContext securityContext,
+			@Selector String jobsOrTriggers, @Selector String group, @Selector String name) throws SchedulerException {
+		boolean showUnsanitized = this.showValues.isShown(securityContext, this.roles);
+		return handle(jobsOrTriggers, () -> this.delegate.quartzJob(group, name, showUnsanitized),
+				() -> this.delegate.quartzTrigger(group, name, showUnsanitized));
 	}
 
 	private <T> WebEndpointResponse<T> handle(String jobsOrTriggers, ResponseSupplier<T> jobAction,
@@ -81,6 +101,19 @@ public class QuartzEndpointWebExtension {
 	private interface ResponseSupplier<T> {
 
 		T get() throws SchedulerException;
+
+	}
+
+	static class QuartzEndpointWebExtensionRuntimeHints implements RuntimeHintsRegistrar {
+
+		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			this.bindingRegistrar.registerReflectionHints(hints.reflection(), QuartzGroupsDescriptor.class,
+					QuartzJobDetailsDescriptor.class, QuartzJobGroupSummaryDescriptor.class,
+					QuartzTriggerGroupSummaryDescriptor.class);
+		}
 
 	}
 

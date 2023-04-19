@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -120,7 +120,7 @@ class CassandraDriverHealthIndicatorTests {
 		CassandraDriverHealthIndicator healthIndicator = new CassandraDriverHealthIndicator(session);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("version")).isEqualTo(Version.V4_0_0);
+		assertThat(health.getDetails()).containsEntry("version", Version.V4_0_0);
 	}
 
 	@Test
@@ -129,18 +129,18 @@ class CassandraDriverHealthIndicatorTests {
 		CassandraDriverHealthIndicator healthIndicator = new CassandraDriverHealthIndicator(session);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("version")).isNull();
+		assertThat(health.getDetails()).doesNotContainKey("version");
 	}
 
 	@Test
-	void healthWithcassandraDownShouldReturnDown() {
+	void healthWithCassandraDownShouldReturnDown() {
 		CqlSession session = mock(CqlSession.class);
 		given(session.getMetadata()).willThrow(new DriverTimeoutException("Test Exception"));
 		CassandraDriverHealthIndicator healthIndicator = new CassandraDriverHealthIndicator(session);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails().get("error"))
-				.isEqualTo(DriverTimeoutException.class.getName() + ": Test Exception");
+		assertThat(health.getDetails()).containsEntry("error",
+				DriverTimeoutException.class.getName() + ": Test Exception");
 	}
 
 	private CqlSession mockCqlSessionWithNodeState(NodeState... nodeStates) {

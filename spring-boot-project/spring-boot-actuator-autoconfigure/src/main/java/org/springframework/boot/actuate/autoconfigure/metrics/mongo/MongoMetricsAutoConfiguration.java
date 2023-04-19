@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,13 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.mongo;
 
 import com.mongodb.MongoClientSettings;
-import io.micrometer.binder.mongodb.DefaultMongoCommandTagsProvider;
-import io.micrometer.binder.mongodb.DefaultMongoConnectionPoolTagsProvider;
-import io.micrometer.binder.mongodb.MongoCommandTagsProvider;
-import io.micrometer.binder.mongodb.MongoConnectionPoolTagsProvider;
-import io.micrometer.binder.mongodb.MongoMetricsCommandListener;
-import io.micrometer.binder.mongodb.MongoMetricsConnectionPoolListener;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.mongodb.DefaultMongoCommandTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.DefaultMongoConnectionPoolTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.MongoCommandTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.MongoConnectionPoolTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandListener;
+import io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolListener;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
@@ -98,8 +98,8 @@ public class MongoMetricsAutoConfiguration {
 		MongoClientSettingsBuilderCustomizer mongoMetricsConnectionPoolListenerClientSettingsBuilderCustomizer(
 				MongoMetricsConnectionPoolListener mongoMetricsConnectionPoolListener) {
 			return (clientSettingsBuilder) -> clientSettingsBuilder
-					.applyToConnectionPoolSettings((connectionPoolSettingsBuilder) -> connectionPoolSettingsBuilder
-							.addConnectionPoolListener(mongoMetricsConnectionPoolListener));
+				.applyToConnectionPoolSettings((connectionPoolSettingsBuilder) -> connectionPoolSettingsBuilder
+					.addConnectionPoolListener(mongoMetricsConnectionPoolListener));
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,21 +40,21 @@ class CassandraPropertiesTests {
 	@Test
 	void defaultValuesInManualMetadataAreConsistent() {
 		OptionsMap driverDefaults = OptionsMap.driverDefaults();
-		// spring.data.cassandra.connection.connect-timeout
+		// spring.cassandra.connection.connect-timeout
 		assertThat(driverDefaults.get(TypedDriverOption.CONNECTION_CONNECT_TIMEOUT)).isEqualTo(Duration.ofSeconds(5));
-		// spring.data.cassandra.connection.init-query-timeout
+		// spring.cassandra.connection.init-query-timeout
 		assertThat(driverDefaults.get(TypedDriverOption.CONNECTION_INIT_QUERY_TIMEOUT))
-				.isEqualTo(Duration.ofSeconds(5));
-		// spring.data.cassandra.request.timeout
+			.isEqualTo(Duration.ofSeconds(5));
+		// spring.cassandra.request.timeout
 		assertThat(driverDefaults.get(TypedDriverOption.REQUEST_TIMEOUT)).isEqualTo(Duration.ofSeconds(2));
-		// spring.data.cassandra.request.page-size
+		// spring.cassandra.request.page-size
 		assertThat(driverDefaults.get(TypedDriverOption.REQUEST_PAGE_SIZE)).isEqualTo(5000);
-		// spring.data.cassandra.request.throttler.type
+		// spring.cassandra.request.throttler.type
 		assertThat(driverDefaults.get(TypedDriverOption.REQUEST_THROTTLER_CLASS))
-				.isEqualTo("PassThroughRequestThrottler"); // "none"
-		// spring.data.cassandra.pool.heartbeat-interval
+			.isEqualTo("PassThroughRequestThrottler"); // "none"
+		// spring.cassandra.pool.heartbeat-interval
 		assertThat(driverDefaults.get(TypedDriverOption.HEARTBEAT_INTERVAL)).isEqualTo(Duration.ofSeconds(30));
-		// spring.data.cassandra.pool.idle-timeout
+		// spring.cassandra.pool.idle-timeout
 		assertThat(driverDefaults.get(TypedDriverOption.HEARTBEAT_TIMEOUT)).isEqualTo(Duration.ofSeconds(5));
 	}
 

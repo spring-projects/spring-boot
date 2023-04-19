@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,8 +83,14 @@ class TestTarGzip {
 		buildpackToml.append("homepage = \"https://github.com/example/example-buildpack\"\n");
 		buildpackToml.append("[[stacks]]\n");
 		buildpackToml.append("id = \"io.buildpacks.stacks.bionic\"\n");
-		String detectScript = "#!/usr/bin/env bash\n" + "echo \"---> detect\"\n";
-		String buildScript = "#!/usr/bin/env bash\n" + "echo \"---> build\"\n";
+		String detectScript = """
+				#!/usr/bin/env bash
+				echo "---> detect"
+				""";
+		String buildScript = """
+				#!/usr/bin/env bash
+				echo "---> build"
+				""";
 		try (TarArchiveOutputStream tar = new TarArchiveOutputStream(Files.newOutputStream(archive))) {
 			writeEntry(tar, "buildpack.toml", buildpackToml.toString());
 			writeEntry(tar, "bin/");
@@ -123,7 +129,7 @@ class TestTarGzip {
 			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/");
 			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/");
 			assertThat(tar.getNextEntry().getName())
-					.isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/buildpack.toml");
+				.isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/buildpack.toml");
 			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/bin/");
 			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/bin/detect");
 			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/bin/build");

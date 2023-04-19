@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,8 @@
 package org.springframework.boot.autoconfigure.session;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
@@ -49,13 +43,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.server.Cookie.SameSite;
 import org.springframework.boot.web.servlet.server.Session.Cookie;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportSelector;
-import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.session.ReactiveSessionRepository;
 import org.springframework.session.Session;
@@ -90,7 +81,7 @@ public class SessionAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.SERVLET)
-	@Import({ ServletSessionRepositoryValidator.class, SessionRepositoryFilterConfiguration.class })
+	@Import(SessionRepositoryFilterConfiguration.class)
 	static class ServletSessionConfiguration {
 
 		@Bean
@@ -118,15 +109,15 @@ public class SessionAutoConfiguration {
 			@Bean
 			DefaultCookieSerializerCustomizer rememberMeServicesCookieSerializerCustomizer() {
 				return (cookieSerializer) -> cookieSerializer
-						.setRememberMeRequestAttribute(SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
+					.setRememberMeRequestAttribute(SpringSessionRememberMeServices.REMEMBER_ME_LOGIN_ATTR);
 			}
 
 		}
 
 		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnMissingBean(SessionRepository.class)
-		@Import({ ServletSessionRepositoryImplementationValidator.class,
-				ServletSessionConfigurationImportSelector.class })
+		@Import({ RedisSessionConfiguration.class, JdbcSessionConfiguration.class, HazelcastSessionConfiguration.class,
+				MongoSessionConfiguration.class })
 		static class ServletSessionRepositoryConfiguration {
 
 		}
@@ -135,16 +126,9 @@ public class SessionAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnWebApplication(type = Type.REACTIVE)
-	@Import(ReactiveSessionRepositoryValidator.class)
+	@ConditionalOnMissingBean(ReactiveSessionRepository.class)
+	@Import({ RedisReactiveSessionConfiguration.class, MongoReactiveSessionConfiguration.class })
 	static class ReactiveSessionConfiguration {
-
-		@Configuration(proxyBeanMethods = false)
-		@ConditionalOnMissingBean(ReactiveSessionRepository.class)
-		@Import({ ReactiveSessionRepositoryImplementationValidator.class,
-				ReactiveSessionConfigurationImportSelector.class })
-		static class ReactiveSessionRepositoryConfiguration {
-
-		}
 
 	}
 
@@ -169,177 +153,6 @@ public class SessionAutoConfiguration {
 		@ConditionalOnMissingBean(CookieSerializer.class)
 		static class CookieHttpSessionIdResolverAvailable {
 
-		}
-
-	}
-
-	/**
-	 * {@link ImportSelector} base class to add {@link StoreType} configuration classes.
-	 */
-	abstract static class SessionConfigurationImportSelector implements ImportSelector {
-
-		protected final String[] selectImports(WebApplicationType webApplicationType) {
-			return Arrays.stream(StoreType.values())
-					.map((type) -> SessionStoreMappings.getConfigurationClass(webApplicationType, type))
-					.toArray(String[]::new);
-		}
-
-	}
-
-	/**
-	 * {@link ImportSelector} to add {@link StoreType} configuration classes for reactive
-	 * web applications.
-	 */
-	static class ReactiveSessionConfigurationImportSelector extends SessionConfigurationImportSelector {
-
-		@Override
-		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-			return super.selectImports(WebApplicationType.REACTIVE);
-		}
-
-	}
-
-	/**
-	 * {@link ImportSelector} to add {@link StoreType} configuration classes for Servlet
-	 * web applications.
-	 */
-	static class ServletSessionConfigurationImportSelector extends SessionConfigurationImportSelector {
-
-		@Override
-		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-			return super.selectImports(WebApplicationType.SERVLET);
-		}
-
-	}
-
-	/**
-	 * Base class for beans used to validate that only one supported implementation is
-	 * available in the classpath when the store-type property is not set.
-	 */
-	abstract static class AbstractSessionRepositoryImplementationValidator {
-
-		private final List<String> candidates;
-
-		private final ClassLoader classLoader;
-
-		private final SessionProperties sessionProperties;
-
-		AbstractSessionRepositoryImplementationValidator(ApplicationContext applicationContext,
-				SessionProperties sessionProperties, List<String> candidates) {
-			this.classLoader = applicationContext.getClassLoader();
-			this.sessionProperties = sessionProperties;
-			this.candidates = candidates;
-			checkAvailableImplementations();
-		}
-
-		private void checkAvailableImplementations() {
-			List<Class<?>> availableCandidates = new ArrayList<>();
-			for (String candidate : this.candidates) {
-				addCandidateIfAvailable(availableCandidates, candidate);
-			}
-			StoreType storeType = this.sessionProperties.getStoreType();
-			if (availableCandidates.size() > 1 && storeType == null) {
-				throw new NonUniqueSessionRepositoryException(availableCandidates);
-			}
-		}
-
-		private void addCandidateIfAvailable(List<Class<?>> candidates, String type) {
-			try {
-				candidates.add(Class.forName(type, false, this.classLoader));
-			}
-			catch (Throwable ex) {
-				// Ignore
-			}
-		}
-
-	}
-
-	/**
-	 * Bean used to validate that only one supported implementation is available in the
-	 * classpath when the store-type property is not set.
-	 */
-	static class ServletSessionRepositoryImplementationValidator
-			extends AbstractSessionRepositoryImplementationValidator {
-
-		ServletSessionRepositoryImplementationValidator(ApplicationContext applicationContext,
-				SessionProperties sessionProperties) {
-			super(applicationContext, sessionProperties,
-					Arrays.asList("org.springframework.session.hazelcast.HazelcastIndexedSessionRepository",
-							"org.springframework.session.jdbc.JdbcIndexedSessionRepository",
-							"org.springframework.session.data.mongo.MongoIndexedSessionRepository",
-							"org.springframework.session.data.redis.RedisIndexedSessionRepository"));
-		}
-
-	}
-
-	/**
-	 * Bean used to validate that only one supported implementation is available in the
-	 * classpath when the store-type property is not set.
-	 */
-	static class ReactiveSessionRepositoryImplementationValidator
-			extends AbstractSessionRepositoryImplementationValidator {
-
-		ReactiveSessionRepositoryImplementationValidator(ApplicationContext applicationContext,
-				SessionProperties sessionProperties) {
-			super(applicationContext, sessionProperties,
-					Arrays.asList("org.springframework.session.data.redis.ReactiveRedisSessionRepository",
-							"org.springframework.session.data.mongo.ReactiveMongoSessionRepository"));
-		}
-
-	}
-
-	/**
-	 * Base class for validating that a (reactive) session repository bean exists.
-	 */
-	abstract static class AbstractSessionRepositoryValidator implements InitializingBean {
-
-		private final SessionProperties sessionProperties;
-
-		private final ObjectProvider<?> sessionRepositoryProvider;
-
-		protected AbstractSessionRepositoryValidator(SessionProperties sessionProperties,
-				ObjectProvider<?> sessionRepositoryProvider) {
-			this.sessionProperties = sessionProperties;
-			this.sessionRepositoryProvider = sessionRepositoryProvider;
-		}
-
-		@Override
-		public void afterPropertiesSet() {
-			StoreType storeType = this.sessionProperties.getStoreType();
-			if (storeType != StoreType.NONE && this.sessionRepositoryProvider.getIfAvailable() == null
-					&& storeType != null) {
-				throw new SessionRepositoryUnavailableException(
-						"No session repository could be auto-configured, check your "
-								+ "configuration (session store type is '"
-								+ storeType.name().toLowerCase(Locale.ENGLISH) + "')",
-						storeType);
-			}
-		}
-
-	}
-
-	/**
-	 * Bean used to validate that a {@link SessionRepository} exists and provide a
-	 * meaningful message if that's not the case.
-	 */
-	static class ServletSessionRepositoryValidator extends AbstractSessionRepositoryValidator {
-
-		ServletSessionRepositoryValidator(SessionProperties sessionProperties,
-				ObjectProvider<SessionRepository<?>> sessionRepositoryProvider) {
-			super(sessionProperties, sessionRepositoryProvider);
-		}
-
-	}
-
-	/**
-	 * Bean used to validate that a {@link ReactiveSessionRepository} exists and provide a
-	 * meaningful message if that's not the case.
-	 */
-	static class ReactiveSessionRepositoryValidator extends AbstractSessionRepositoryValidator {
-
-		ReactiveSessionRepositoryValidator(SessionProperties sessionProperties,
-				ObjectProvider<ReactiveSessionRepository<?>> sessionRepositoryProvider) {
-			super(sessionProperties, sessionRepositoryProvider);
 		}
 
 	}

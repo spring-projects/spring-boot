@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,8 +100,13 @@ public class ContainerConfigAssert extends AbstractAssert<ContainerConfigAssert,
 			return this.actual.extractingJsonPathArrayValue("$.buildpacks[*].id");
 		}
 
-		public AbstractObjectAssert<?, Object> processOfType(String type) {
-			return this.actual.extractingJsonPathArrayValue("$.processes[?(@.type=='%s')]", type).singleElement();
+		@SuppressWarnings("unchecked")
+		public AbstractListAssert<?, List<? extends String>, String, ObjectAssert<String>> processOfType(String type) {
+			return this.actual.extractingJsonPathArrayValue("$.processes[?(@.type=='%s')]", type)
+				.singleElement()
+				.extracting("command", "args")
+				.flatExtracting((list) -> (List<String>) list);
+
 		}
 
 	}

@@ -1,5 +1,5 @@
 [[upgrading.to-feature]]
-== Upgrading to a new feature release
+== Upgrading to a New Feature Release
 
 When upgrading to a new feature release, some properties may have been renamed or removed.
 Spring Boot provides a way to analyze your application's environment and print diagnostics at startup, but also temporarily migrate properties at runtime for you.

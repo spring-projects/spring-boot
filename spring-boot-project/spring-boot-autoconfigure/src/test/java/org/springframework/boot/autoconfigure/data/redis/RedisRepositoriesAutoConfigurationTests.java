@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,14 +48,15 @@ class RedisRepositoriesAutoConfigurationTests {
 
 	@Container
 	public static RedisContainer redis = new RedisContainer().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(10));
+		.withStartupTimeout(Duration.ofMinutes(10));
 
-	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@BeforeEach
 	void setUp() {
-		TestPropertyValues.of("spring.redis.host=" + redis.getHost(), "spring.redis.port=" + redis.getFirstMappedPort())
-				.applyTo(this.context.getEnvironment());
+		TestPropertyValues
+			.of("spring.data.redis.host=" + redis.getHost(), "spring.data.redis.port=" + redis.getFirstMappedPort())
+			.applyTo(this.context.getEnvironment());
 	}
 
 	@AfterEach

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,20 +52,21 @@ class CustomLayersProviderTests {
 	@Test
 	void getLayerResolverWhenDocumentValid() throws Exception {
 		CustomLayers layers = this.customLayersProvider.getLayers(getDocument("layers.xml"));
-		assertThat(layers).extracting("name").containsExactly("my-deps", "my-dependencies-name",
-				"snapshot-dependencies", "my-resources", "configuration", "application");
+		assertThat(layers).extracting("name")
+			.containsExactly("my-deps", "my-dependencies-name", "snapshot-dependencies", "my-resources",
+					"configuration", "application");
 		Library snapshot = mockLibrary("test-SNAPSHOT.jar", "org.foo", "1.0.0-SNAPSHOT");
 		Library groupId = mockLibrary("my-library", "com.acme", null);
 		Library otherDependency = mockLibrary("other-library", "org.foo", null);
 		Library localSnapshotDependency = mockLibrary("local-library", "org.foo", "1.0-SNAPSHOT");
 		given(localSnapshotDependency.isLocal()).willReturn(true);
-		assertThat(layers.getLayer(snapshot).toString()).isEqualTo("snapshot-dependencies");
-		assertThat(layers.getLayer(groupId).toString()).isEqualTo("my-deps");
-		assertThat(layers.getLayer(otherDependency).toString()).isEqualTo("my-dependencies-name");
-		assertThat(layers.getLayer(localSnapshotDependency).toString()).isEqualTo("application");
-		assertThat(layers.getLayer("META-INF/resources/test.css").toString()).isEqualTo("my-resources");
-		assertThat(layers.getLayer("application.yml").toString()).isEqualTo("configuration");
-		assertThat(layers.getLayer("test").toString()).isEqualTo("application");
+		assertThat(layers.getLayer(snapshot)).hasToString("snapshot-dependencies");
+		assertThat(layers.getLayer(groupId)).hasToString("my-deps");
+		assertThat(layers.getLayer(otherDependency)).hasToString("my-dependencies-name");
+		assertThat(layers.getLayer(localSnapshotDependency)).hasToString("application");
+		assertThat(layers.getLayer("META-INF/resources/test.css")).hasToString("my-resources");
+		assertThat(layers.getLayer("application.yml")).hasToString("configuration");
+		assertThat(layers.getLayer("test")).hasToString("application");
 	}
 
 	private Library mockLibrary(String name, String groupId, String version) {
@@ -79,24 +80,25 @@ class CustomLayersProviderTests {
 	void getLayerResolverWhenDocumentContainsLibraryLayerWithNoFilters() throws Exception {
 		CustomLayers layers = this.customLayersProvider.getLayers(getDocument("dependencies-layer-no-filter.xml"));
 		Library library = mockLibrary("my-library", "com.acme", null);
-		assertThat(layers.getLayer(library).toString()).isEqualTo("my-deps");
+		assertThat(layers.getLayer(library)).hasToString("my-deps");
 		assertThatIllegalStateException().isThrownBy(() -> layers.getLayer("application.yml"))
-				.withMessageContaining("match any layer");
+			.withMessageContaining("match any layer");
 	}
 
 	@Test
 	void getLayerResolverWhenDocumentContainsResourceLayerWithNoFilters() throws Exception {
 		CustomLayers layers = this.customLayersProvider.getLayers(getDocument("application-layer-no-filter.xml"));
 		Library library = mockLibrary("my-library", "com.acme", null);
-		assertThat(layers.getLayer("application.yml").toString()).isEqualTo("my-layer");
+		assertThat(layers.getLayer("application.yml")).hasToString("my-layer");
 		assertThatIllegalStateException().isThrownBy(() -> layers.getLayer(library))
-				.withMessageContaining("match any layer");
+			.withMessageContaining("match any layer");
 	}
 
 	private Document getDocument(String resourceName) throws Exception {
 		ClassPathResource resource = new ClassPathResource(resourceName);
 		InputSource inputSource = new InputSource(resource.getInputStream());
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setNamespaceAware(true);
 		DocumentBuilder documentBuilder = factory.newDocumentBuilder();
 		return documentBuilder.parse(inputSource);
 	}

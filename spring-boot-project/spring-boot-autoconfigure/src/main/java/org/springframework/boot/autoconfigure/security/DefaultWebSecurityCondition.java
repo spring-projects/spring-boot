@@ -40,10 +40,7 @@ class DefaultWebSecurityCondition extends AllNestedConditions {
 
 	}
 
-	@ConditionalOnMissingBean({
-			org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter.class,
-			SecurityFilterChain.class })
-	@SuppressWarnings("deprecation")
+	@ConditionalOnMissingBean({ SecurityFilterChain.class })
 	static class Beans {
 
 	}

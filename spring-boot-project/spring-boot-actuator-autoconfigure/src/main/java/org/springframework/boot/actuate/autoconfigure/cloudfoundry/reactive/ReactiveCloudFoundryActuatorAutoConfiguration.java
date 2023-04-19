@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
@@ -97,9 +96,9 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 	public CloudFoundryInfoEndpointWebExtension cloudFoundryInfoEndpointWebExtension(GitProperties properties,
 			ObjectProvider<InfoContributor> infoContributors) {
 		List<InfoContributor> contributors = infoContributors.orderedStream()
-				.map((infoContributor) -> (infoContributor instanceof GitInfoContributor)
-						? new GitInfoContributor(properties, InfoPropertiesInfoContributor.Mode.FULL) : infoContributor)
-				.collect(Collectors.toList());
+			.map((infoContributor) -> (infoContributor instanceof GitInfoContributor)
+					? new GitInfoContributor(properties, InfoPropertiesInfoContributor.Mode.FULL) : infoContributor)
+			.toList();
 		return new CloudFoundryInfoEndpointWebExtension(new InfoEndpoint(contributors));
 	}
 
@@ -144,8 +143,8 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 		corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);
 		corsConfiguration.setAllowedMethods(Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name()));
-		corsConfiguration.setAllowedHeaders(
-				Arrays.asList(HttpHeaders.AUTHORIZATION, "X-Cf-App-Instance", HttpHeaders.CONTENT_TYPE));
+		corsConfiguration
+			.setAllowedHeaders(Arrays.asList(HttpHeaders.AUTHORIZATION, "X-Cf-App-Instance", HttpHeaders.CONTENT_TYPE));
 		return corsConfiguration;
 	}
 
@@ -164,15 +163,15 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-			if (bean instanceof WebFilterChainProxy) {
-				return postProcess((WebFilterChainProxy) bean);
+			if (bean instanceof WebFilterChainProxy webFilterChainProxy) {
+				return postProcess(webFilterChainProxy);
 			}
 			return bean;
 		}
 
 		private WebFilterChainProxy postProcess(WebFilterChainProxy existing) {
 			ServerWebExchangeMatcher cloudFoundryRequestMatcher = ServerWebExchangeMatchers
-					.pathMatchers("/cloudfoundryapplication/**");
+				.pathMatchers("/cloudfoundryapplication/**");
 			WebFilter noOpFilter = (exchange, chain) -> chain.filter(exchange);
 			MatcherSecurityWebFilterChain ignoredRequestFilterChain = new MatcherSecurityWebFilterChain(
 					cloudFoundryRequestMatcher, Collections.singletonList(noOpFilter));

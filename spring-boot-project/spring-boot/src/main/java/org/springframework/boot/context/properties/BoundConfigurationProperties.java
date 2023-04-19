@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import org.springframework.util.Assert;
  */
 public class BoundConfigurationProperties {
 
-	private Map<ConfigurationPropertyName, ConfigurationProperty> properties = new LinkedHashMap<>();
+	private final Map<ConfigurationPropertyName, ConfigurationProperty> properties = new LinkedHashMap<>();
 
 	/**
 	 * The bean name that this class is registered with.
@@ -81,9 +81,8 @@ public class BoundConfigurationProperties {
 	static void register(BeanDefinitionRegistry registry) {
 		Assert.notNull(registry, "Registry must not be null");
 		if (!registry.containsBeanDefinition(BEAN_NAME)) {
-			BeanDefinition definition = BeanDefinitionBuilder
-					.genericBeanDefinition(BoundConfigurationProperties.class, BoundConfigurationProperties::new)
-					.getBeanDefinition();
+			BeanDefinition definition = BeanDefinitionBuilder.genericBeanDefinition(BoundConfigurationProperties.class)
+				.getBeanDefinition();
 			definition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 			registry.registerBeanDefinition(BEAN_NAME, definition);
 		}

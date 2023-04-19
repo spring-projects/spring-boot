@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ class BuildImageRegistryIntegrationTests extends AbstractArchiveIntegrationTests
 
 	@Container
 	static final RegistryContainer registry = new RegistryContainer().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(3));
+		.withStartupTimeout(Duration.ofMinutes(3));
 
 	DockerClient dockerClient;
 
@@ -64,17 +64,20 @@ class BuildImageRegistryIntegrationTests extends AbstractArchiveIntegrationTests
 	void whenBuildImageIsInvokedWithPublish(MavenBuild mavenBuild) {
 		String repoName = "test-image";
 		String imageName = this.registryAddress + "/" + repoName;
-		mavenBuild.project("build-image-publish").goals("package")
-				.systemProperty("spring-boot.build-image.imageName", imageName).execute((project) -> {
-					assertThat(buildLog(project)).contains("Building image").contains("Successfully built image")
-							.contains("Pushing image '" + imageName + ":latest" + "'")
-							.contains("Pushed image '" + imageName + ":latest" + "'");
-					ImageReference imageReference = ImageReference.of(imageName);
-					DockerApi.ImageApi imageApi = new DockerApi().image();
-					Image pulledImage = imageApi.pull(imageReference, UpdateListener.none());
-					assertThat(pulledImage).isNotNull();
-					imageApi.remove(imageReference, false);
-				});
+		mavenBuild.project("build-image-publish")
+			.goals("package")
+			.systemProperty("spring-boot.build-image.imageName", imageName)
+			.execute((project) -> {
+				assertThat(buildLog(project)).contains("Building image")
+					.contains("Successfully built image")
+					.contains("Pushing image '" + imageName + ":latest" + "'")
+					.contains("Pushed image '" + imageName + ":latest" + "'");
+				ImageReference imageReference = ImageReference.of(imageName);
+				DockerApi.ImageApi imageApi = new DockerApi().image();
+				Image pulledImage = imageApi.pull(imageReference, UpdateListener.none());
+				assertThat(pulledImage).isNotNull();
+				imageApi.remove(imageReference, false);
+			});
 	}
 
 	private static class RegistryContainer extends GenericContainer<RegistryContainer> {

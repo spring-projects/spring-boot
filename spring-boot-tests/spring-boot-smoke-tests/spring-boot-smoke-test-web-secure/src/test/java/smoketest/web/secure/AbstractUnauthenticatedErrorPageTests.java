@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ abstract class AbstractUnauthenticatedErrorPageTests {
 	@Test
 	void testBadCredentials() {
 		final ResponseEntity<JsonNode> response = this.testRestTemplate.withBasicAuth("username", "wrongpassword")
-				.exchange(this.pathPrefix + "/test", HttpMethod.GET, null, JsonNode.class);
+			.exchange(this.pathPrefix + "/test", HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		JsonNode jsonResponse = response.getBody();
 		assertThat(jsonResponse.get("error").asText()).isEqualTo("Unauthorized");
@@ -74,7 +74,7 @@ abstract class AbstractUnauthenticatedErrorPageTests {
 	@Test
 	void testPublicNotFoundPageWithCorrectCredentials() {
 		final ResponseEntity<JsonNode> response = this.testRestTemplate.withBasicAuth("username", "password")
-				.exchange(this.pathPrefix + "/public/notfound", HttpMethod.GET, null, JsonNode.class);
+			.exchange(this.pathPrefix + "/public/notfound", HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		JsonNode jsonResponse = response.getBody();
 		assertThat(jsonResponse.get("error").asText()).isEqualTo("Not Found");
@@ -83,7 +83,7 @@ abstract class AbstractUnauthenticatedErrorPageTests {
 	@Test
 	void testPublicNotFoundPageWithBadCredentials() {
 		final ResponseEntity<JsonNode> response = this.testRestTemplate.withBasicAuth("username", "wrong")
-				.exchange(this.pathPrefix + "/public/notfound", HttpMethod.GET, null, JsonNode.class);
+			.exchange(this.pathPrefix + "/public/notfound", HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		JsonNode jsonResponse = response.getBody();
 		assertThat(jsonResponse.get("error").asText()).isEqualTo("Unauthorized");
@@ -92,7 +92,7 @@ abstract class AbstractUnauthenticatedErrorPageTests {
 	@Test
 	void testCorrectCredentialsWithControllerException() {
 		final ResponseEntity<JsonNode> response = this.testRestTemplate.withBasicAuth("username", "password")
-				.exchange(this.pathPrefix + "/fail", HttpMethod.GET, null, JsonNode.class);
+			.exchange(this.pathPrefix + "/fail", HttpMethod.GET, null, JsonNode.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		JsonNode jsonResponse = response.getBody();
 		assertThat(jsonResponse.get("error").asText()).isEqualTo("Internal Server Error");
@@ -101,7 +101,7 @@ abstract class AbstractUnauthenticatedErrorPageTests {
 	@Test
 	void testCorrectCredentials() {
 		final ResponseEntity<String> response = this.testRestTemplate.withBasicAuth("username", "password")
-				.exchange(this.pathPrefix + "/test", HttpMethod.GET, null, String.class);
+			.exchange(this.pathPrefix + "/test", HttpMethod.GET, null, String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(response.getBody()).isEqualTo("test");
 	}

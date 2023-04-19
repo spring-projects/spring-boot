@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ class ErrorsTests extends AbstractJsonTests {
 	@Test
 	void toStringHasErrorDetails() throws Exception {
 		Errors errors = getObjectMapper().readValue(getContent("errors.json"), Errors.class);
-		assertThat(errors.toString()).isEqualTo("[TEST1: Test One, TEST2: Test Two]");
+		assertThat(errors).hasToString("[TEST1: Test One, TEST2: Test Two]");
 	}
 
 }

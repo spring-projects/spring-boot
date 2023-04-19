@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -81,7 +80,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	private final HibernateDefaultDdlAutoProvider defaultDdlAutoProvider;
 
-	private DataSourcePoolMetadataProvider poolMetadataProvider;
+	private final DataSourcePoolMetadataProvider poolMetadataProvider;
 
 	private final List<HibernatePropertiesCustomizer> hibernatePropertiesCustomizers;
 
@@ -99,7 +98,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(metadataProviders.getIfAvailable());
 		this.hibernatePropertiesCustomizers = determineHibernatePropertiesCustomizers(
 				physicalNamingStrategy.getIfAvailable(), implicitNamingStrategy.getIfAvailable(), beanFactory,
-				hibernatePropertiesCustomizers.orderedStream().collect(Collectors.toList()));
+				hibernatePropertiesCustomizers.orderedStream().toList());
 	}
 
 	private List<HibernatePropertiesCustomizer> determineHibernatePropertiesCustomizers(
@@ -113,8 +112,8 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 					new SpringBeanContainer(beanFactory)));
 		}
 		if (physicalNamingStrategy != null || implicitNamingStrategy != null) {
-			customizers.add(
-					new NamingStrategiesHibernatePropertiesCustomizer(physicalNamingStrategy, implicitNamingStrategy));
+			customizers
+				.add(new NamingStrategiesHibernatePropertiesCustomizer(physicalNamingStrategy, implicitNamingStrategy));
 		}
 		customizers.addAll(hibernatePropertiesCustomizers);
 		return customizers;
@@ -128,9 +127,9 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	@Override
 	protected Map<String, Object> getVendorProperties() {
 		Supplier<String> defaultDdlMode = () -> this.defaultDdlAutoProvider.getDefaultDdlAuto(getDataSource());
-		return new LinkedHashMap<>(this.hibernateProperties
-				.determineHibernateProperties(getProperties().getProperties(), new HibernateSettings()
-						.ddlAuto(defaultDdlMode).hibernatePropertiesCustomizers(this.hibernatePropertiesCustomizers)));
+		return new LinkedHashMap<>(this.hibernateProperties.determineHibernateProperties(
+				getProperties().getProperties(), new HibernateSettings().ddlAuto(defaultDdlMode)
+					.hibernatePropertiesCustomizers(this.hibernatePropertiesCustomizers)));
 	}
 
 	@Override

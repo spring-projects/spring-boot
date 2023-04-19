@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -176,7 +176,7 @@ class AutoConfigurationSorterTests {
 	void byAutoConfigureAfterWithCycle() {
 		this.sorter = new AutoConfigurationSorter(new CachingMetadataReaderFactory(), this.autoConfigurationMetadata);
 		assertThatIllegalStateException().isThrownBy(() -> this.sorter.getInPriorityOrder(Arrays.asList(A, B, C, D)))
-				.withMessageContaining("AutoConfigure cycle detected");
+			.withMessageContaining("AutoConfigure cycle detected");
 	}
 
 	@Test
@@ -203,7 +203,7 @@ class AutoConfigurationSorterTests {
 		this.autoConfigurationMetadata = getAutoConfigurationMetadata(A, B, D);
 		this.sorter = new AutoConfigurationSorter(readerFactory, this.autoConfigurationMetadata);
 		assertThatIllegalStateException().isThrownBy(() -> this.sorter.getInPriorityOrder(Arrays.asList(D, B)))
-				.withMessageContaining("AutoConfigure cycle detected");
+			.withMessageContaining("AutoConfigure cycle detected");
 	}
 
 	private AutoConfigurationMetadata getAutoConfigurationMetadata(String... classNames) throws Exception {
@@ -221,7 +221,7 @@ class AutoConfigurationSorterTests {
 
 	private void addAutoConfigureAfter(Properties properties, String className, AnnotationMetadata annotationMetadata) {
 		Map<String, Object> autoConfigureAfter = annotationMetadata
-				.getAnnotationAttributes(AutoConfigureAfter.class.getName(), true);
+			.getAnnotationAttributes(AutoConfigureAfter.class.getName(), true);
 		if (autoConfigureAfter != null) {
 			String value = merge((String[]) autoConfigureAfter.get("value"), (String[]) autoConfigureAfter.get("name"));
 			if (!value.isEmpty()) {
@@ -233,7 +233,7 @@ class AutoConfigurationSorterTests {
 	private void addAutoConfigureBefore(Properties properties, String className,
 			AnnotationMetadata annotationMetadata) {
 		Map<String, Object> autoConfigureBefore = annotationMetadata
-				.getAnnotationAttributes(AutoConfigureBefore.class.getName(), true);
+			.getAnnotationAttributes(AutoConfigureBefore.class.getName(), true);
 		if (autoConfigureBefore != null) {
 			String value = merge((String[]) autoConfigureBefore.get("value"),
 					(String[]) autoConfigureBefore.get("name"));
@@ -245,7 +245,7 @@ class AutoConfigurationSorterTests {
 
 	private void addAutoConfigureOrder(Properties properties, String className, AnnotationMetadata annotationMetadata) {
 		Map<String, Object> autoConfigureOrder = annotationMetadata
-				.getAnnotationAttributes(AutoConfigureOrder.class.getName());
+			.getAnnotationAttributes(AutoConfigureOrder.class.getName());
 		if (autoConfigureOrder != null) {
 			Integer order = (Integer) autoConfigureOrder.get("order");
 			if (order != null) {

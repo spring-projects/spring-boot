@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,9 @@ class WebListenerHandlerTests {
 	void listener() throws IOException {
 		AnnotatedBeanDefinition definition = mock(AnnotatedBeanDefinition.class);
 		given(definition.getBeanClassName()).willReturn(TestListener.class.getName());
-		given(definition.getMetadata()).willReturn(new SimpleMetadataReaderFactory()
-				.getMetadataReader(TestListener.class.getName()).getAnnotationMetadata());
+		given(definition.getMetadata())
+			.willReturn(new SimpleMetadataReaderFactory().getMetadataReader(TestListener.class.getName())
+				.getAnnotationMetadata());
 		this.handler.handle(definition, this.registry);
 		this.registry.getBeanDefinition(TestListener.class.getName() + "Registrar");
 	}

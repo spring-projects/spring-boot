@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,6 +118,9 @@ abstract class AbstractSampleActuatorCustomSecurityTests {
 		ResponseEntity<Object> entity = adminRestTemplate().getForEntity(getManagementPath() + "/actuator/env",
 				Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+		entity = adminRestTemplate().getForEntity(getManagementPath() + "/actuator/env/", Object.class);
+		// EndpointRequest matches the trailing slash but MVC doesn't
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		entity = adminRestTemplate().getForEntity(
 				getManagementPath() + "/actuator/env/management.endpoints.web.exposure.include", Object.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -125,7 +128,8 @@ abstract class AbstractSampleActuatorCustomSecurityTests {
 
 	@Test
 	void secureServletEndpointWithAnonymous() {
-		ResponseEntity<String> entity = restTemplate().getForEntity("/actuator/se1", String.class);
+		ResponseEntity<String> entity = restTemplate().getForEntity(getManagementPath() + "/actuator/se1",
+				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		entity = restTemplate().getForEntity(getManagementPath() + "/actuator/se1/list", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
@@ -152,21 +156,21 @@ abstract class AbstractSampleActuatorCustomSecurityTests {
 	@Test
 	void actuatorCustomMvcSecureEndpointWithAnonymous() {
 		ResponseEntity<String> entity = restTemplate()
-				.getForEntity(getManagementPath() + "/actuator/example/echo?text={t}", String.class, "test");
+			.getForEntity(getManagementPath() + "/actuator/example/echo?text={t}", String.class, "test");
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void actuatorCustomMvcSecureEndpointWithUnauthorizedUser() {
 		ResponseEntity<String> entity = userRestTemplate()
-				.getForEntity(getManagementPath() + "/actuator/example/echo?text={t}", String.class, "test");
+			.getForEntity(getManagementPath() + "/actuator/example/echo?text={t}", String.class, "test");
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
 	@Test
 	void actuatorCustomMvcSecureEndpointWithAuthorizedUser() {
 		ResponseEntity<String> entity = adminRestTemplate()
-				.getForEntity(getManagementPath() + "/actuator/example/echo?text={t}", String.class, "test");
+			.getForEntity(getManagementPath() + "/actuator/example/echo?text={t}", String.class, "test");
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("test");
 		assertThat(entity.getHeaders().getFirst("echo")).isEqualTo("test");

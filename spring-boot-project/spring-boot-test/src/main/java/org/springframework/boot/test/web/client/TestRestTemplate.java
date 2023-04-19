@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,22 +18,35 @@ package org.springframework.boot.test.web.client;
 
 import java.io.IOException;
 import java.net.URI;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.CookieSpecs;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.config.RequestConfig.Builder;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.ssl.SSLContextBuilder;
+import javax.net.ssl.SSLContext;
 
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.cookie.StandardCookieSpec;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactoryBuilder;
+import org.apache.hc.client5.http.ssl.TrustSelfSignedStrategy;
+import org.apache.hc.core5.http.io.SocketConfig;
+import org.apache.hc.core5.http.protocol.HttpContext;
+import org.apache.hc.core5.http.ssl.TLS;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
+
+import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.ParameterizedTypeReference;
@@ -56,9 +69,10 @@ import org.springframework.web.util.UriTemplateHandler;
 
 /**
  * Convenient alternative of {@link RestTemplate} that is suitable for integration tests.
- * {@code TestRestTemplate} is fault tolerant. This means that 4xx and 5xx do not result
- * in an exception being thrown and can instead be detected via the {@link ResponseEntity
- * response entity} and its {@link ResponseEntity#getStatusCode() status code}.
+ * {@code TestRestTemplate} is fault-tolerant. This means that 4xx and 5xx do not result
+ * in an exception being thrown and can instead be detected through the
+ * {@link ResponseEntity response entity} and its {@link ResponseEntity#getStatusCode()
+ * status code}.
  * <p>
  * A {@code TestRestTemplate} can optionally carry Basic authentication headers. If Apache
  * Http Client 4.3.2 or better is available (recommended) it will be used as the client,
@@ -133,8 +147,8 @@ public class TestRestTemplate {
 		if (httpClientOptions != null) {
 			ClientHttpRequestFactory requestFactory = builder.buildRequestFactory();
 			if (requestFactory instanceof HttpComponentsClientHttpRequestFactory) {
-				builder = builder
-						.requestFactory(() -> new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions));
+				builder = builder.requestFactory(
+						(settings) -> new CustomHttpComponentsClientHttpRequestFactory(httpClientOptions, settings));
 			}
 		}
 		if (username != null || password != null) {
@@ -163,8 +177,8 @@ public class TestRestTemplate {
 	 */
 	public String getRootUri() {
 		UriTemplateHandler uriTemplateHandler = this.restTemplate.getUriTemplateHandler();
-		if (uriTemplateHandler instanceof RootUriTemplateHandler) {
-			return ((RootUriTemplateHandler) uriTemplateHandler).getRootUri();
+		if (uriTemplateHandler instanceof RootUriTemplateHandler rootHandler) {
+			return rootHandler.getRootUri();
 		}
 		return "";
 	}
@@ -641,12 +655,12 @@ public class TestRestTemplate {
 	}
 
 	/**
-	 * Return the value of the Allow header for the given URI.
+	 * Return the value of the {@code Allow} header for the given URI.
 	 * <p>
 	 * URI Template variables are expanded using the given URI variables, if any.
 	 * @param url the URL
 	 * @param urlVariables the variables to expand in the template
-	 * @return the value of the allow header
+	 * @return the value of the {@code Allow} header
 	 * @see RestTemplate#optionsForAllow(java.lang.String, java.lang.Object[])
 	 */
 	public Set<HttpMethod> optionsForAllow(String url, Object... urlVariables) {
@@ -654,12 +668,12 @@ public class TestRestTemplate {
 	}
 
 	/**
-	 * Return the value of the Allow header for the given URI.
+	 * Return the value of the {@code Allow} header for the given URI.
 	 * <p>
 	 * URI Template variables are expanded using the given map.
 	 * @param url the URL
 	 * @param urlVariables the variables to expand in the template
-	 * @return the value of the allow header
+	 * @return the value of the {@code Allow} header
 	 * @see RestTemplate#optionsForAllow(java.lang.String, java.util.Map)
 	 */
 	public Set<HttpMethod> optionsForAllow(String url, Map<String, ?> urlVariables) {
@@ -667,9 +681,9 @@ public class TestRestTemplate {
 	}
 
 	/**
-	 * Return the value of the Allow header for the given URL.
+	 * Return the value of the {@code Allow} header for the given URL.
 	 * @param url the URL
-	 * @return the value of the allow header
+	 * @return the value of the {@code Allow} header
 	 * @see RestTemplate#optionsForAllow(java.net.URI)
 	 */
 	public Set<HttpMethod> optionsForAllow(URI url) {
@@ -941,22 +955,21 @@ public class TestRestTemplate {
 
 	private URI applyRootUriIfNecessary(URI uri) {
 		UriTemplateHandler uriTemplateHandler = this.restTemplate.getUriTemplateHandler();
-		if ((uriTemplateHandler instanceof RootUriTemplateHandler) && uri.toString().startsWith("/")) {
-			return URI.create(((RootUriTemplateHandler) uriTemplateHandler).getRootUri() + uri.toString());
+		if ((uriTemplateHandler instanceof RootUriTemplateHandler rootHandler) && uri.toString().startsWith("/")) {
+			return URI.create(rootHandler.getRootUri() + uri.toString());
 		}
 		return uri;
 	}
 
 	private URI resolveUri(RequestEntity<?> entity) {
-		if (entity instanceof UriTemplateRequestEntity) {
-			UriTemplateRequestEntity<?> templatedUriEntity = (UriTemplateRequestEntity<?>) entity;
+		if (entity instanceof UriTemplateRequestEntity<?> templatedUriEntity) {
 			if (templatedUriEntity.getVars() != null) {
-				return this.restTemplate.getUriTemplateHandler().expand(templatedUriEntity.getUriTemplate(),
-						templatedUriEntity.getVars());
+				return this.restTemplate.getUriTemplateHandler()
+					.expand(templatedUriEntity.getUriTemplate(), templatedUriEntity.getVars());
 			}
 			else if (templatedUriEntity.getVarsMap() != null) {
-				return this.restTemplate.getUriTemplateHandler().expand(templatedUriEntity.getUriTemplate(),
-						templatedUriEntity.getVarsMap());
+				return this.restTemplate.getUriTemplateHandler()
+					.expand(templatedUriEntity.getUriTemplate(), templatedUriEntity.getVarsMap());
 			}
 			throw new IllegalStateException(
 					"No variables specified for URI template: " + templatedUriEntity.getUriTemplate());
@@ -995,37 +1008,73 @@ public class TestRestTemplate {
 
 		private final boolean enableRedirects;
 
-		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions) {
+		public CustomHttpComponentsClientHttpRequestFactory(HttpClientOption[] httpClientOptions,
+				ClientHttpRequestFactorySettings settings) {
 			Set<HttpClientOption> options = new HashSet<>(Arrays.asList(httpClientOptions));
-			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES) ? CookieSpecs.STANDARD
-					: CookieSpecs.IGNORE_COOKIES);
+			this.cookieSpec = (options.contains(HttpClientOption.ENABLE_COOKIES) ? StandardCookieSpec.STRICT
+					: StandardCookieSpec.IGNORE);
 			this.enableRedirects = options.contains(HttpClientOption.ENABLE_REDIRECTS);
-			if (options.contains(HttpClientOption.SSL)) {
-				setHttpClient(createSslHttpClient());
+			boolean ssl = options.contains(HttpClientOption.SSL);
+			if (settings.readTimeout() != null || ssl) {
+				setHttpClient(createHttpClient(settings.readTimeout(), ssl));
+			}
+			if (settings.connectTimeout() != null) {
+				setConnectTimeout((int) settings.connectTimeout().toMillis());
+			}
+			if (settings.bufferRequestBody() != null) {
+				setBufferRequestBody(settings.bufferRequestBody());
 			}
 		}
 
-		private HttpClient createSslHttpClient() {
+		private HttpClient createHttpClient(Duration readTimeout, boolean ssl) {
 			try {
-				SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
-						new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy()).build());
-				return HttpClients.custom().setSSLSocketFactory(socketFactory).build();
+				HttpClientBuilder builder = HttpClients.custom();
+				builder.setConnectionManager(createConnectionManager(readTimeout, ssl));
+				builder.setDefaultRequestConfig(createRequestConfig());
+				return builder.build();
 			}
 			catch (Exception ex) {
-				throw new IllegalStateException("Unable to create SSL HttpClient", ex);
+				throw new IllegalStateException("Unable to create customized HttpClient", ex);
 			}
+		}
+
+		private PoolingHttpClientConnectionManager createConnectionManager(Duration readTimeout, boolean ssl)
+				throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+			PoolingHttpClientConnectionManagerBuilder builder = PoolingHttpClientConnectionManagerBuilder.create();
+			if (ssl) {
+				builder.setSSLSocketFactory(createSocketFactory());
+			}
+			if (readTimeout != null) {
+				SocketConfig socketConfig = SocketConfig.custom()
+					.setSoTimeout((int) readTimeout.toMillis(), TimeUnit.MILLISECONDS)
+					.build();
+				builder.setDefaultSocketConfig(socketConfig);
+			}
+			return builder.build();
+		}
+
+		private SSLConnectionSocketFactory createSocketFactory()
+				throws NoSuchAlgorithmException, KeyManagementException, KeyStoreException {
+			SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
+				.build();
+			return SSLConnectionSocketFactoryBuilder.create()
+				.setSslContext(sslContext)
+				.setTlsVersions(TLS.V_1_3, TLS.V_1_2)
+				.build();
 		}
 
 		@Override
 		protected HttpContext createHttpContext(HttpMethod httpMethod, URI uri) {
 			HttpClientContext context = HttpClientContext.create();
-			context.setRequestConfig(getRequestConfig());
+			context.setRequestConfig(createRequestConfig());
 			return context;
 		}
 
-		protected RequestConfig getRequestConfig() {
-			Builder builder = RequestConfig.custom().setCookieSpec(this.cookieSpec).setAuthenticationEnabled(false)
-					.setRedirectsEnabled(this.enableRedirects);
+		protected RequestConfig createRequestConfig() {
+			RequestConfig.Builder builder = RequestConfig.custom();
+			builder.setCookieSpec(this.cookieSpec);
+			builder.setAuthenticationEnabled(false);
+			builder.setRedirectsEnabled(this.enableRedirects);
 			return builder.build();
 		}
 

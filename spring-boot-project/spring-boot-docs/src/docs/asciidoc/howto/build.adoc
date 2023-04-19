@@ -72,7 +72,7 @@ Gradle users can achieve the same result by using the https://plugins.gradle.org
 [source,gradle,indent=0,subs="verbatim"]
 ----
 	plugins {
-		id "com.gorylenko.gradle-git-properties" version "2.3.2"
+		id "com.gorylenko.gradle-git-properties" version "2.4.1"
 	}
 ----
 
@@ -118,7 +118,7 @@ If you use the `spring-boot-starter-parent` POM, you can declare the plugin and 
 If you do not use the parent POM, you can still use the plugin.
 However, you must additionally add an `<executions>` section, as follows:
 
-[source,xml,indent=0,subs="verbatim"]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 	<build>
 		<plugins>
@@ -257,7 +257,7 @@ See {spring-boot-maven-plugin-docs}#run-example-debug[this example] for more det
 
 
 [[howto.build.build-an-executable-archive-with-ant-without-using-spring-boot-antlib]]
-=== Build an Executable Archive from Ant without Using spring-boot-antlib
+=== Build an Executable Archive From Ant without Using spring-boot-antlib
 To build with Ant, you need to grab dependencies, compile, and then create a jar or war archive.
 To make it executable, you can either use the `spring-boot-antlib` module or you can follow these instructions:
 

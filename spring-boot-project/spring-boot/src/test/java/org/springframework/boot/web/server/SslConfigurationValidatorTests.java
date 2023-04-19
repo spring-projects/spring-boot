@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,16 +66,16 @@ class SslConfigurationValidatorTests {
 	@Test
 	void validateKeyAliasWhenAliasNotFoundShouldThrowException() {
 		assertThatThrownBy(() -> SslConfigurationValidator.validateKeyAlias(this.keyStore, INVALID_ALIAS))
-				.isInstanceOf(IllegalStateException.class)
-				.hasMessage("Keystore does not contain specified alias '" + INVALID_ALIAS + "'");
+			.isInstanceOf(IllegalStateException.class)
+			.hasMessage("Keystore does not contain specified alias '" + INVALID_ALIAS + "'");
 	}
 
 	@Test
 	void validateKeyAliasWhenKeyStoreThrowsExceptionOnContains() throws KeyStoreException {
 		KeyStore uninitializedKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
 		assertThatThrownBy(() -> SslConfigurationValidator.validateKeyAlias(uninitializedKeyStore, "alias"))
-				.isInstanceOf(IllegalStateException.class)
-				.hasMessage("Could not determine if keystore contains alias 'alias'");
+			.isInstanceOf(IllegalStateException.class)
+			.hasMessage("Could not determine if keystore contains alias 'alias'");
 	}
 
 }

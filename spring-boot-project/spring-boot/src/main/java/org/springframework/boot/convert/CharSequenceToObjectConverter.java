@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ class CharSequenceToObjectConverter implements ConditionalGenericConverter {
 			return this.conversionService.canConvert(STRING, targetType);
 		}
 		finally {
-			this.disable.set(null);
+			this.disable.remove();
 		}
 	}
 
@@ -80,8 +80,7 @@ class CharSequenceToObjectConverter implements ConditionalGenericConverter {
 	 * @return if string conversion is better
 	 */
 	private boolean isStringConversionBetter(TypeDescriptor sourceType, TypeDescriptor targetType) {
-		if (this.conversionService instanceof ApplicationConversionService) {
-			ApplicationConversionService applicationConversionService = (ApplicationConversionService) this.conversionService;
+		if (this.conversionService instanceof ApplicationConversionService applicationConversionService) {
 			if (applicationConversionService.isConvertViaObjectSourceType(sourceType, targetType)) {
 				// If an ObjectTo... converter is being used then there might be a better
 				// StringTo... version

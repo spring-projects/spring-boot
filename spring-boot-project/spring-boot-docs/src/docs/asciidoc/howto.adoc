@@ -23,6 +23,8 @@ include::howto/webserver.adoc[]
 
 include::howto/spring-mvc.adoc[]
 
+include::howto/jersey.adoc[]
+
 include::howto/http-clients.adoc[]
 
 include::howto/logging.adoc[]
@@ -30,6 +32,8 @@ include::howto/logging.adoc[]
 include::howto/data-access.adoc[]
 
 include::howto/data-initialization.adoc[]
+
+include::howto/nosql.adoc[]
 
 include::howto/messaging.adoc[]
 

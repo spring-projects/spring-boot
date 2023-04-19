@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
-import org.springframework.data.elasticsearch.core.ReactiveElasticsearchTemplate;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.data.elasticsearch.client.elc.ReactiveElasticsearchTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,19 +35,19 @@ import static org.assertj.core.api.Assertions.assertThat;
  * repositories.
  *
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 @DataElasticsearchTest
 @Testcontainers(disabledWithoutDocker = true)
 class DataElasticsearchTestReactiveIntegrationTests {
 
 	@Container
+	@ServiceConnection
 	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())
-			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
-
-	@DynamicPropertySource
-	static void elasticsearchProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.elasticsearch.uris", elasticsearch::getHttpHostAddress);
-	}
+		.withStartupAttempts(5)
+		.withStartupTimeout(Duration.ofMinutes(10));
 
 	@Autowired
 	private ReactiveElasticsearchTemplate elasticsearchTemplate;
@@ -63,7 +62,7 @@ class DataElasticsearchTestReactiveIntegrationTests {
 		exampleDocument = this.exampleReactiveRepository.save(exampleDocument).block(Duration.ofSeconds(30));
 		assertThat(exampleDocument.getId()).isNotNull();
 		assertThat(this.elasticsearchTemplate.exists(exampleDocument.getId(), ExampleDocument.class)
-				.block(Duration.ofSeconds(30))).isTrue();
+			.block(Duration.ofSeconds(30))).isTrue();
 	}
 
 }

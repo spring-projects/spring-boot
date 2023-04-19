@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.configurationprocessor.fieldvalues;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -31,10 +30,10 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.configurationsample.fieldvalues.FieldValues;
-import org.springframework.boot.testsupport.compiler.TestCompiler;
+import org.springframework.core.test.tools.SourceFile;
+import org.springframework.core.test.tools.TestCompiler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,18 +45,17 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public abstract class AbstractFieldValuesProcessorTests {
 
-	@TempDir
-	File tempDir;
-
 	protected abstract FieldValuesParser createProcessor(ProcessingEnvironment env);
 
 	@Test
 	void getFieldValues() throws Exception {
 		TestProcessor processor = new TestProcessor();
-		TestCompiler compiler = new TestCompiler(this.tempDir);
-		compiler.getTask(FieldValues.class).call(processor);
+		TestCompiler compiler = TestCompiler.forSystem()
+			.withProcessors(processor)
+			.withSources(SourceFile.forTestClass(FieldValues.class));
+		compiler.compile((compiled) -> {
+		});
 		Map<String, Object> values = processor.getValues();
-		assertThat(values.get("string")).isEqualTo("1");
 		assertThat(values.get("stringNone")).isNull();
 		assertThat(values.get("stringConst")).isEqualTo("c");
 		assertThat(values.get("bool")).isEqualTo(true);
@@ -115,7 +113,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 
 		private FieldValuesParser processor;
 
-		private Map<String, Object> values = new HashMap<>();
+		private final Map<String, Object> values = new HashMap<>();
 
 		@Override
 		public synchronized void init(ProcessingEnvironment env) {
@@ -126,9 +124,9 @@ public abstract class AbstractFieldValuesProcessorTests {
 		public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 			for (TypeElement annotation : annotations) {
 				for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
-					if (element instanceof TypeElement) {
+					if (element instanceof TypeElement typeElement) {
 						try {
-							this.values.putAll(this.processor.getFieldValues((TypeElement) element));
+							this.values.putAll(this.processor.getFieldValues(typeElement));
 						}
 						catch (Exception ex) {
 							throw new IllegalStateException(ex);

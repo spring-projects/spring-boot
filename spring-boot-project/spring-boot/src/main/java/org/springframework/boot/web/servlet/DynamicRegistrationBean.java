@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import jakarta.servlet.ServletContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.core.Conventions;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -34,9 +35,11 @@ import org.springframework.util.StringUtils;
  *
  * @param <D> the dynamic registration result
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
-public abstract class DynamicRegistrationBean<D extends Registration.Dynamic> extends RegistrationBean {
+public abstract class DynamicRegistrationBean<D extends Registration.Dynamic> extends RegistrationBean
+		implements BeanNameAware {
 
 	private static final Log logger = LogFactory.getLog(RegistrationBean.class);
 
@@ -45,6 +48,10 @@ public abstract class DynamicRegistrationBean<D extends Registration.Dynamic> ex
 	private boolean asyncSupported = true;
 
 	private Map<String, String> initParameters = new LinkedHashMap<>();
+
+	private String beanName;
+
+	private boolean ignoreRegistrationFailure;
 
 	/**
 	 * Set the name of this registration. If not specified the bean name will be used.
@@ -106,10 +113,30 @@ public abstract class DynamicRegistrationBean<D extends Registration.Dynamic> ex
 	protected final void register(String description, ServletContext servletContext) {
 		D registration = addRegistration(description, servletContext);
 		if (registration == null) {
-			logger.info(StringUtils.capitalize(description) + " was not registered (possibly already registered?)");
-			return;
+			if (this.ignoreRegistrationFailure) {
+				logger.info(StringUtils.capitalize(description) + " was not registered (possibly already registered?)");
+				return;
+			}
+			throw new IllegalStateException(
+					"Failed to register '%s' on the servlet context. Possibly already registered?"
+						.formatted(description));
 		}
 		configure(registration);
+	}
+
+	/**
+	 * Sets whether registration failures should be ignored. If set to true, a failure
+	 * will be logged. If set to false, an {@link IllegalStateException} will be thrown.
+	 * @param ignoreRegistrationFailure whether to ignore registration failures
+	 * @since 3.1.0
+	 */
+	public void setIgnoreRegistrationFailure(boolean ignoreRegistrationFailure) {
+		this.ignoreRegistrationFailure = ignoreRegistrationFailure;
+	}
+
+	@Override
+	public void setBeanName(String name) {
+		this.beanName = name;
 	}
 
 	protected abstract D addRegistration(String description, ServletContext servletContext);
@@ -123,12 +150,19 @@ public abstract class DynamicRegistrationBean<D extends Registration.Dynamic> ex
 
 	/**
 	 * Deduces the name for this registration. Will return user specified name or fallback
-	 * to convention based naming.
+	 * to the bean name. If the bean name is not available, convention based naming is
+	 * used.
 	 * @param value the object used for convention based names
 	 * @return the deduced name
 	 */
 	protected final String getOrDeduceName(Object value) {
-		return (this.name != null) ? this.name : Conventions.getVariableName(value);
+		if (this.name != null) {
+			return this.name;
+		}
+		if (this.beanName != null) {
+			return this.beanName;
+		}
+		return Conventions.getVariableName(value);
 	}
 
 }

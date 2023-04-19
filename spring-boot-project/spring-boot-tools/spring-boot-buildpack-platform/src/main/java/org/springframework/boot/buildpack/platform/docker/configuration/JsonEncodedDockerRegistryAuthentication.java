@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,11 @@
 
 package org.springframework.boot.buildpack.platform.docker.configuration;
 
+import java.util.Base64;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
-import org.springframework.util.Base64Utils;
 
 /**
  * {@link DockerRegistryAuthentication} that uses a Base64 encoded auth header value based
@@ -38,7 +39,7 @@ class JsonEncodedDockerRegistryAuthentication implements DockerRegistryAuthentic
 
 	protected void createAuthHeader() {
 		try {
-			this.authHeader = Base64Utils.encodeToUrlSafeString(SharedObjectMapper.get().writeValueAsBytes(this));
+			this.authHeader = Base64.getUrlEncoder().encodeToString(SharedObjectMapper.get().writeValueAsBytes(this));
 		}
 		catch (JsonProcessingException ex) {
 			throw new IllegalStateException("Error creating Docker registry authentication header", ex);

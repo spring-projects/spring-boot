@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -324,7 +324,7 @@ public class JmsProperties {
 	 *
 	 * <p>
 	 * {@link jakarta.jms.Session#SESSION_TRANSACTED} is not defined as we take care of
-	 * this already via a call to {@code setSessionTransacted}.
+	 * this already through a call to {@code setSessionTransacted}.
 	 */
 	public enum AcknowledgeMode {
 

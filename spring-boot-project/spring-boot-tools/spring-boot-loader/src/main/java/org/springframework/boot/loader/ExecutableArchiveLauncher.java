@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,7 +165,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	protected abstract boolean isNestedArchive(Archive.Entry entry);
 
 	/**
-	 * Return if post processing needs to be applied to the archives. For back
+	 * Return if post-processing needs to be applied to the archives. For back
 	 * compatibility this method returns {@code true}, but subclasses that don't override
 	 * {@link #postProcessClassPathArchives(List)} should provide an implementation that
 	 * returns {@code false}.
@@ -180,7 +180,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 	 * Called to post-process archive entries before they are used. Implementations can
 	 * add and remove entries.
 	 * @param archives the archives
-	 * @throws Exception if the post processing fails
+	 * @throws Exception if the post-processing fails
 	 * @see #isPostProcessingClassPathArchives()
 	 */
 	protected void postProcessClassPathArchives(List<Archive> archives) throws Exception {

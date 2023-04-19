@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,25 +40,12 @@ import org.springframework.session.web.http.SessionRepositoryFilter;
 public class SessionProperties {
 
 	/**
-	 * Session store type.
-	 */
-	private StoreType storeType;
-
-	/**
 	 * Session timeout. If a duration suffix is not specified, seconds will be used.
 	 */
 	@DurationUnit(ChronoUnit.SECONDS)
 	private Duration timeout;
 
 	private Servlet servlet = new Servlet();
-
-	public StoreType getStoreType() {
-		return this.storeType;
-	}
-
-	public void setStoreType(StoreType storeType) {
-		this.storeType = storeType;
-	}
 
 	public Duration getTimeout() {
 		return this.timeout;

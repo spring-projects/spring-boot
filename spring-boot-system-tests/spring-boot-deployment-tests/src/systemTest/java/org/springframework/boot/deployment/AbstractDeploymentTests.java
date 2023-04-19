@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,12 @@ package org.springframework.boot.deployment;
 
 import java.io.File;
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
+import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.util.TimeValue;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
 import org.junit.jupiter.api.Test;
@@ -93,10 +95,11 @@ abstract class AbstractDeploymentTests {
 
 		private void test(Consumer<TestRestTemplate> consumer) {
 			TestRestTemplate rest = new TestRestTemplate(new RestTemplateBuilder()
-					.rootUri("http://" + this.container.getHost() + ":" + this.container.getMappedPort(this.port)
-							+ "/spring-boot")
-					.requestFactory(() -> new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
-							.setRetryHandler(new StandardHttpRequestRetryHandler(10, false)).build())));
+				.rootUri("http://" + this.container.getHost() + ":" + this.container.getMappedPort(this.port)
+						+ "/spring-boot")
+				.requestFactory(() -> new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
+					.setRetryStrategy(new DefaultHttpRequestRetryStrategy(10, TimeValue.of(1, TimeUnit.SECONDS)))
+					.build())));
 			try {
 				Awaitility.await().atMost(Duration.ofMinutes(10)).until(() -> {
 					try {
@@ -120,8 +123,9 @@ abstract class AbstractDeploymentTests {
 
 		WarDeploymentContainer(String baseImage, String deploymentLocation, int port) {
 			super(new ImageFromDockerfile().withFileFromFile("spring-boot.war", findWarToDeploy())
-					.withDockerfileFromBuilder((builder) -> builder.from(baseImage)
-							.add("spring-boot.war", deploymentLocation + "/spring-boot.war").build()));
+				.withDockerfileFromBuilder((builder) -> builder.from(baseImage)
+					.add("spring-boot.war", deploymentLocation + "/spring-boot.war")
+					.build()));
 			withExposedPorts(port).withStartupTimeout(Duration.ofMinutes(5)).withStartupAttempts(3);
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration.PropertiesCouchbaseConnectionDetails;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -48,56 +49,102 @@ import static org.mockito.Mockito.mock;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class CouchbaseAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class));
 
 	@Test
 	void connectionStringIsRequired() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ClusterEnvironment.class)
-				.doesNotHaveBean(Cluster.class));
+			.doesNotHaveBean(Cluster.class));
+	}
+
+	@Test
+	void definesPropertiesBasedConnectionDetailsByDefault() {
+		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
+			.withPropertyValues("spring.couchbase.connection-string=localhost")
+			.run((context) -> assertThat(context).hasSingleBean(PropertiesCouchbaseConnectionDetails.class));
+	}
+
+	@Test
+	void shouldUseCustomConnectionDetailsWhenDefined() {
+		this.contextRunner.withBean(CouchbaseConnectionDetails.class, this::couchbaseConnectionDetails)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ClusterEnvironment.class)
+					.hasSingleBean(Cluster.class)
+					.hasSingleBean(CouchbaseConnectionDetails.class)
+					.doesNotHaveBean(PropertiesCouchbaseConnectionDetails.class);
+				Cluster cluster = context.getBean(Cluster.class);
+				assertThat(cluster.core()).extracting("connectionString.hosts")
+					.asList()
+					.extractingResultOf("host")
+					.containsExactly("couchbase.example.com");
+			});
 	}
 
 	@Test
 	void connectionStringCreateEnvironmentAndCluster() {
 		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
-				.withPropertyValues("spring.couchbase.connection-string=localhost").run((context) -> {
-					assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
-					assertThat(context.getBean(Cluster.class))
-							.isSameAs(context.getBean(CouchbaseTestConfiguration.class).couchbaseCluster());
-				});
+			.withPropertyValues("spring.couchbase.connection-string=localhost")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
+				assertThat(context.getBean(Cluster.class))
+					.isSameAs(context.getBean(CouchbaseTestConfiguration.class).couchbaseCluster());
+			});
+	}
+
+	@Test
+	void connectionDetailsShouldOverrideProperties() {
+		this.contextRunner.withBean(CouchbaseConnectionDetails.class, this::couchbaseConnectionDetails)
+			.withPropertyValues("spring.couchbase.connection-string=localhost", "spring.couchbase.username=a-user",
+					"spring.couchbase.password=a-password")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
+				Cluster cluster = context.getBean(Cluster.class);
+				assertThat(cluster.core()).extracting("connectionString.hosts")
+					.asList()
+					.extractingResultOf("host")
+					.containsExactly("couchbase.example.com");
+			});
 	}
 
 	@Test
 	void whenObjectMapperBeanIsDefinedThenClusterEnvironmentObjectMapperIsDerivedFromIt() {
 		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
-				.withPropertyValues("spring.couchbase.connection-string=localhost").run((context) -> {
-					ClusterEnvironment env = context.getBean(ClusterEnvironment.class);
-					Set<Object> expectedModuleIds = new HashSet<>(
-							context.getBean(ObjectMapper.class).getRegisteredModuleIds());
-					expectedModuleIds.add(new JsonValueModule().getTypeId());
-					JsonSerializer serializer = env.jsonSerializer();
-					assertThat(serializer).extracting("wrapped").isInstanceOf(JacksonJsonSerializer.class)
-							.extracting("mapper", as(InstanceOfAssertFactories.type(ObjectMapper.class)))
-							.extracting(ObjectMapper::getRegisteredModuleIds).isEqualTo(expectedModuleIds);
-				});
+			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+			.withPropertyValues("spring.couchbase.connection-string=localhost")
+			.run((context) -> {
+				ClusterEnvironment env = context.getBean(ClusterEnvironment.class);
+				Set<Object> expectedModuleIds = new HashSet<>(
+						context.getBean(ObjectMapper.class).getRegisteredModuleIds());
+				expectedModuleIds.add(new JsonValueModule().getTypeId());
+				JsonSerializer serializer = env.jsonSerializer();
+				assertThat(serializer).extracting("wrapped")
+					.isInstanceOf(JacksonJsonSerializer.class)
+					.extracting("mapper", as(InstanceOfAssertFactories.type(ObjectMapper.class)))
+					.extracting(ObjectMapper::getRegisteredModuleIds)
+					.isEqualTo(expectedModuleIds);
+			});
 	}
 
 	@Test
 	void customizeJsonSerializer() {
 		JsonSerializer customJsonSerializer = mock(JsonSerializer.class);
 		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
-				.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
-				.withBean(ClusterEnvironmentBuilderCustomizer.class,
-						() -> (builder) -> builder.jsonSerializer(customJsonSerializer))
-				.withPropertyValues("spring.couchbase.connection-string=localhost").run((context) -> {
-					ClusterEnvironment env = context.getBean(ClusterEnvironment.class);
-					JsonSerializer serializer = env.jsonSerializer();
-					assertThat(serializer).extracting("wrapped").isSameAs(customJsonSerializer);
-				});
+			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+			.withBean(ClusterEnvironmentBuilderCustomizer.class,
+					() -> (builder) -> builder.jsonSerializer(customJsonSerializer))
+			.withPropertyValues("spring.couchbase.connection-string=localhost")
+			.run((context) -> {
+				ClusterEnvironment env = context.getBean(ClusterEnvironment.class);
+				JsonSerializer serializer = env.jsonSerializer();
+				assertThat(serializer).extracting("wrapped").isSameAs(customJsonSerializer);
+			});
 	}
 
 	@Test
@@ -152,23 +199,44 @@ class CouchbaseAutoConfigurationTests {
 
 	private void testClusterEnvironment(Consumer<ClusterEnvironment> environmentConsumer, String... environment) {
 		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
-				.withPropertyValues("spring.couchbase.connection-string=localhost").withPropertyValues(environment)
-				.run((context) -> environmentConsumer.accept(context.getBean(ClusterEnvironment.class)));
+			.withPropertyValues("spring.couchbase.connection-string=localhost")
+			.withPropertyValues(environment)
+			.run((context) -> environmentConsumer.accept(context.getBean(ClusterEnvironment.class)));
 	}
 
 	@Test
 	void customizeEnvWithCustomCouchbaseConfiguration() {
 		this.contextRunner
-				.withUserConfiguration(CouchbaseTestConfiguration.class,
-						ClusterEnvironmentCustomizerConfiguration.class)
-				.withPropertyValues("spring.couchbase.connection-string=localhost",
-						"spring.couchbase.env.timeouts.connect=100")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ClusterEnvironment.class);
-					ClusterEnvironment env = context.getBean(ClusterEnvironment.class);
-					assertThat(env.timeoutConfig().kvTimeout()).isEqualTo(Duration.ofSeconds(5));
-					assertThat(env.timeoutConfig().connectTimeout()).isEqualTo(Duration.ofSeconds(2));
-				});
+			.withUserConfiguration(CouchbaseTestConfiguration.class, ClusterEnvironmentCustomizerConfiguration.class)
+			.withPropertyValues("spring.couchbase.connection-string=localhost",
+					"spring.couchbase.env.timeouts.connect=100")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ClusterEnvironment.class);
+				ClusterEnvironment env = context.getBean(ClusterEnvironment.class);
+				assertThat(env.timeoutConfig().kvTimeout()).isEqualTo(Duration.ofSeconds(5));
+				assertThat(env.timeoutConfig().connectTimeout()).isEqualTo(Duration.ofSeconds(2));
+			});
+	}
+
+	private CouchbaseConnectionDetails couchbaseConnectionDetails() {
+		return new CouchbaseConnectionDetails() {
+
+			@Override
+			public String getConnectionString() {
+				return "couchbase.example.com";
+			}
+
+			@Override
+			public String getUsername() {
+				return "user-1";
+			}
+
+			@Override
+			public String getPassword() {
+				return "password-1";
+			}
+
+		};
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -176,8 +244,9 @@ class CouchbaseAutoConfigurationTests {
 
 		@Bean
 		ClusterEnvironmentBuilderCustomizer clusterEnvironmentBuilderCustomizer() {
-			return (builder) -> builder.timeoutConfig().kvTimeout(Duration.ofSeconds(5))
-					.connectTimeout(Duration.ofSeconds(2));
+			return (builder) -> builder.timeoutConfig()
+				.kvTimeout(Duration.ofSeconds(5))
+				.connectTimeout(Duration.ofSeconds(2));
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -89,8 +89,7 @@ public final class ChangedFile {
 		if (obj == null) {
 			return false;
 		}
-		if (obj instanceof ChangedFile) {
-			ChangedFile other = (ChangedFile) obj;
+		if (obj instanceof ChangedFile other) {
 			return this.file.equals(other.file) && this.type.equals(other.type);
 		}
 		return super.equals(obj);

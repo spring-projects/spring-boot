@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -217,7 +217,7 @@ public final class EndpointRequest {
 			streamPaths(this.excludes, pathMappedEndpoints).forEach(paths::remove);
 			List<ServerWebExchangeMatcher> delegateMatchers = getDelegateMatchers(paths);
 			if (this.includeLinks && StringUtils.hasText(pathMappedEndpoints.getBasePath())) {
-				delegateMatchers.add(new PathPatternParserServerWebExchangeMatcher(pathMappedEndpoints.getBasePath()));
+				delegateMatchers.add(new LinksServerWebExchangeMatcher());
 			}
 			return new OrServerWebExchangeMatcher(delegateMatchers);
 		}
@@ -226,12 +226,38 @@ public final class EndpointRequest {
 			return source.stream().filter(Objects::nonNull).map(this::getEndpointId).map(pathMappedEndpoints::getPath);
 		}
 
+		@Override
+		protected Mono<MatchResult> matches(ServerWebExchange exchange, Supplier<PathMappedEndpoints> context) {
+			return this.delegate.matches(exchange);
+		}
+
+		private List<ServerWebExchangeMatcher> getDelegateMatchers(Set<String> paths) {
+			return paths.stream().map(this::getDelegateMatcher).collect(Collectors.toCollection(ArrayList::new));
+		}
+
+		private PathPatternParserServerWebExchangeMatcher getDelegateMatcher(String path) {
+			return new PathPatternParserServerWebExchangeMatcher(path + "/**");
+		}
+
+		@Override
+		public String toString() {
+			return String.format("EndpointRequestMatcher includes=%s, excludes=%s, includeLinks=%s",
+					toString(this.includes, "[*]"), toString(this.excludes, "[]"), this.includeLinks);
+		}
+
+		private String toString(List<Object> endpoints, String emptyValue) {
+			return (!endpoints.isEmpty()) ? endpoints.stream()
+				.map(this::getEndpointId)
+				.map(Object::toString)
+				.collect(Collectors.joining(", ", "[", "]")) : emptyValue;
+		}
+
 		private EndpointId getEndpointId(Object source) {
-			if (source instanceof EndpointId) {
-				return (EndpointId) source;
+			if (source instanceof EndpointId endpointId) {
+				return endpointId;
 			}
-			if (source instanceof String) {
-				return (EndpointId.of((String) source));
+			if (source instanceof String string) {
+				return EndpointId.of(string);
 			}
 			if (source instanceof Class) {
 				return getEndpointId((Class<?>) source);
@@ -243,16 +269,6 @@ public final class EndpointRequest {
 			MergedAnnotation<Endpoint> annotation = MergedAnnotations.from(source).get(Endpoint.class);
 			Assert.state(annotation.isPresent(), () -> "Class " + source + " is not annotated with @Endpoint");
 			return EndpointId.of(annotation.getString("id"));
-		}
-
-		private List<ServerWebExchangeMatcher> getDelegateMatchers(Set<String> paths) {
-			return paths.stream().map((path) -> new PathPatternParserServerWebExchangeMatcher(path + "/**"))
-					.collect(Collectors.toList());
-		}
-
-		@Override
-		protected Mono<MatchResult> matches(ServerWebExchange exchange, Supplier<PathMappedEndpoints> context) {
-			return this.delegate.matches(exchange);
 		}
 
 	}
@@ -275,7 +291,9 @@ public final class EndpointRequest {
 
 		private ServerWebExchangeMatcher createDelegate(WebEndpointProperties properties) {
 			if (StringUtils.hasText(properties.getBasePath())) {
-				return new PathPatternParserServerWebExchangeMatcher(properties.getBasePath());
+				return new OrServerWebExchangeMatcher(
+						new PathPatternParserServerWebExchangeMatcher(properties.getBasePath()),
+						new PathPatternParserServerWebExchangeMatcher(properties.getBasePath() + "/"));
 			}
 			return EMPTY_MATCHER;
 		}

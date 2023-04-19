@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -237,31 +237,20 @@ public class DeferredLog implements Log {
 	 * @return the destination
 	 */
 	public static Log replay(Log source, Log destination) {
-		if (source instanceof DeferredLog) {
-			((DeferredLog) source).replayTo(destination);
+		if (source instanceof DeferredLog deferredLog) {
+			deferredLog.replayTo(destination);
 		}
 		return destination;
 	}
 
 	static void logTo(Log log, LogLevel level, Object message, Throwable throwable) {
 		switch (level) {
-		case TRACE:
-			log.trace(message, throwable);
-			return;
-		case DEBUG:
-			log.debug(message, throwable);
-			return;
-		case INFO:
-			log.info(message, throwable);
-			return;
-		case WARN:
-			log.warn(message, throwable);
-			return;
-		case ERROR:
-			log.error(message, throwable);
-			return;
-		case FATAL:
-			log.fatal(message, throwable);
+			case TRACE -> log.trace(message, throwable);
+			case DEBUG -> log.debug(message, throwable);
+			case INFO -> log.info(message, throwable);
+			case WARN -> log.warn(message, throwable);
+			case ERROR -> log.error(message, throwable);
+			case FATAL -> log.fatal(message, throwable);
 		}
 	}
 

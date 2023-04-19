@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ class LaunchedURLClassLoaderTests {
 			URL url = jarFile.getUrl();
 			try (LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[] { url }, null)) {
 				URL resource = loader.getResource("nested.jar!/3.dat");
-				assertThat(resource.toString()).isEqualTo(url + "nested.jar!/3.dat");
+				assertThat(resource).hasToString(url + "nested.jar!/3.dat");
 				try (InputStream input = resource.openConnection().getInputStream()) {
 					assertThat(input.read()).isEqualTo(3);
 				}
@@ -95,7 +95,7 @@ class LaunchedURLClassLoaderTests {
 			try (LaunchedURLClassLoader loader = new LaunchedURLClassLoader(new URL[] { url }, null)) {
 				Thread.currentThread().interrupt();
 				URL resource = loader.getResource("nested.jar!/3.dat");
-				assertThat(resource.toString()).isEqualTo(url + "nested.jar!/3.dat");
+				assertThat(resource).hasToString(url + "nested.jar!/3.dat");
 				URLConnection connection = resource.openConnection();
 				try (InputStream input = connection.getInputStream()) {
 					assertThat(input.read()).isEqualTo(3);

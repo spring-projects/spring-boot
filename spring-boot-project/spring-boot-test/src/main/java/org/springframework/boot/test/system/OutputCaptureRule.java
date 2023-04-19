@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.junit.runners.model.Statement;
 import static org.hamcrest.Matchers.allOf;
 
 /**
- * JUnit {@code @Rule} to capture output from System.out and System.err.
+ * JUnit {@code @Rule} to capture output from {@code System.out} and {@code System.err}.
  * <p>
  * To use add as a {@link Rule @Rule}:
  *
@@ -55,7 +55,7 @@ public class OutputCaptureRule implements TestRule, CapturedOutput {
 
 	private final OutputCapture delegate = new OutputCapture();
 
-	private List<Matcher<? super String>> matchers = new ArrayList<>();
+	private final List<Matcher<? super String>> matchers = new ArrayList<>();
 
 	@Override
 	public Statement apply(Statement base, Description description) {

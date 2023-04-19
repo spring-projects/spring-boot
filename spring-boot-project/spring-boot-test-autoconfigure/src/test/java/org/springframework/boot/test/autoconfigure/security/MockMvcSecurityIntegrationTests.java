@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.test.autoconfigure.security;
 
+import java.util.Base64;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.util.Base64Utils;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -55,8 +56,10 @@ class MockMvcSecurityIntegrationTests {
 
 	@Test
 	void okResponseWithBasicAuthCredentialsForKnownUser() throws Exception {
-		this.mockMvc.perform(get("/").header(HttpHeaders.AUTHORIZATION,
-				"Basic " + Base64Utils.encodeToString("user:secret".getBytes()))).andExpect(status().isOk());
+		this.mockMvc
+			.perform(get("/").header(HttpHeaders.AUTHORIZATION,
+					"Basic " + Base64.getEncoder().encodeToString("user:secret".getBytes())))
+			.andExpect(status().isOk());
 	}
 
 }

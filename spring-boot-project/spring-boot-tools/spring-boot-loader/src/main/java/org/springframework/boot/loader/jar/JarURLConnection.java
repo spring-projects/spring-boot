@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import java.security.Permission;
  */
 final class JarURLConnection extends java.net.JarURLConnection {
 
-	private static ThreadLocal<Boolean> useFastExceptions = new ThreadLocal<>();
+	private static final ThreadLocal<Boolean> useFastExceptions = new ThreadLocal<>();
 
 	private static final FileNotFoundException FILE_NOT_FOUND_EXCEPTION = new FileNotFoundException(
 			"Jar file or entry not found");

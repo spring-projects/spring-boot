@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,7 +61,8 @@ class CompositeHandlerAdapter implements HandlerAdapter {
 	}
 
 	@Override
-	@Deprecated
+	@Deprecated(since = "2.4.9", forRemoval = false)
+	@SuppressWarnings("deprecation")
 	public long getLastModified(HttpServletRequest request, Object handler) {
 		Optional<HandlerAdapter> adapter = getAdapter(handler);
 		return adapter.map((handlerAdapter) -> handlerAdapter.getLastModified(request, handler)).orElse(0L);

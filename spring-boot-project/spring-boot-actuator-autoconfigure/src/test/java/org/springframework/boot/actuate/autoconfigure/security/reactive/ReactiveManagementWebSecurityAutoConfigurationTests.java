@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,6 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.http.server.reactive.MockServerHttpResponse;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.WebFilterChainProxy;
@@ -57,6 +56,7 @@ import org.springframework.web.server.adapter.HttpWebHandlerAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.springframework.security.config.Customizer.withDefaults;
 
 /**
  * Tests for {@link ReactiveManagementWebSecurityAutoConfiguration}.
@@ -66,12 +66,12 @@ import static org.mockito.Mockito.mock;
 class ReactiveManagementWebSecurityAutoConfigurationTests {
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
-					HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
-					WebFluxAutoConfiguration.class, EnvironmentEndpointAutoConfiguration.class,
-					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-					ReactiveSecurityAutoConfiguration.class, ReactiveUserDetailsServiceAutoConfiguration.class,
-					ReactiveManagementWebSecurityAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
+				HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
+				WebFluxAutoConfiguration.class, EnvironmentEndpointAutoConfiguration.class,
+				EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+				ReactiveSecurityAutoConfiguration.class, ReactiveUserDetailsServiceAutoConfiguration.class,
+				ReactiveManagementWebSecurityAutoConfiguration.class));
 
 	@Test
 	void permitAllForHealth() {
@@ -105,9 +105,9 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 	@Test
 	void backOffIfReactiveOAuth2ResourceServerAutoConfigurationPresent() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ResourceServerAutoConfiguration.class))
-				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://authserver")
-				.run((context) -> assertThat(context)
-						.doesNotHaveBean(ReactiveManagementWebSecurityAutoConfiguration.class));
+			.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://authserver")
+			.run((context) -> assertThat(context)
+				.doesNotHaveBean(ReactiveManagementWebSecurityAutoConfiguration.class));
 	}
 
 	@Test
@@ -164,7 +164,7 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 				exchanges.pathMatchers("/foo").permitAll();
 				exchanges.anyExchange().authenticated();
 			});
-			http.formLogin(Customizer.withDefaults());
+			http.formLogin(withDefaults());
 			return http.build();
 		}
 
@@ -192,7 +192,7 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 
 		private List<SecurityWebFilterChain> getFilterChains(ServerHttpSecurity http) {
 			http.authorizeExchange((exchanges) -> exchanges.anyExchange().authenticated());
-			http.formLogin(Customizer.withDefaults());
+			http.formLogin(withDefaults());
 			return Collections.singletonList(http.build());
 		}
 

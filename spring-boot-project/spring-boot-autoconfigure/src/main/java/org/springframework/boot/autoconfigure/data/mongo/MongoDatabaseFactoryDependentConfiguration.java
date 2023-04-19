@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import com.mongodb.client.MongoDatabase;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails.GridFs;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties.Gridfs;
 import org.springframework.context.annotation.Bean;
@@ -46,16 +48,12 @@ import org.springframework.util.StringUtils;
  * Configuration for Mongo-related beans that depend on a {@link MongoDatabaseFactory}.
  *
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
+ * @author Phillip Webb
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(MongoDatabaseFactory.class)
 class MongoDatabaseFactoryDependentConfiguration {
-
-	private final MongoProperties properties;
-
-	MongoDatabaseFactoryDependentConfiguration(MongoProperties properties) {
-		this.properties = properties;
-	}
 
 	@Bean
 	@ConditionalOnMissingBean(MongoOperations.class)
@@ -75,31 +73,34 @@ class MongoDatabaseFactoryDependentConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(GridFsOperations.class)
-	GridFsTemplate gridFsTemplate(MongoDatabaseFactory factory, MongoTemplate mongoTemplate) {
-		return new GridFsTemplate(new GridFsMongoDatabaseFactory(factory, this.properties),
-				mongoTemplate.getConverter(), this.properties.getGridfs().getBucket());
+	GridFsTemplate gridFsTemplate(MongoProperties properties, MongoDatabaseFactory factory, MongoTemplate mongoTemplate,
+			MongoConnectionDetails connectionDetails) {
+		return new GridFsTemplate(new GridFsMongoDatabaseFactory(factory, connectionDetails),
+				mongoTemplate.getConverter(),
+				(connectionDetails.getGridFs() != null) ? connectionDetails.getGridFs().getBucket() : null);
 	}
 
 	/**
-	 * {@link MongoDatabaseFactory} decorator to respect {@link Gridfs#getDatabase()} if
-	 * set.
+	 * {@link MongoDatabaseFactory} decorator to respect {@link Gridfs#getDatabase()} or
+	 * {@link GridFs#getGridFs()} from the {@link MongoConnectionDetails} if set.
 	 */
 	static class GridFsMongoDatabaseFactory implements MongoDatabaseFactory {
 
 		private final MongoDatabaseFactory mongoDatabaseFactory;
 
-		private final MongoProperties properties;
+		private final MongoConnectionDetails connectionDetails;
 
-		GridFsMongoDatabaseFactory(MongoDatabaseFactory mongoDatabaseFactory, MongoProperties properties) {
+		GridFsMongoDatabaseFactory(MongoDatabaseFactory mongoDatabaseFactory,
+				MongoConnectionDetails connectionDetails) {
 			Assert.notNull(mongoDatabaseFactory, "MongoDatabaseFactory must not be null");
-			Assert.notNull(properties, "Properties must not be null");
+			Assert.notNull(connectionDetails, "ConnectionDetails must not be null");
 			this.mongoDatabaseFactory = mongoDatabaseFactory;
-			this.properties = properties;
+			this.connectionDetails = connectionDetails;
 		}
 
 		@Override
 		public MongoDatabase getMongoDatabase() throws DataAccessException {
-			String gridFsDatabase = this.properties.getGridfs().getDatabase();
+			String gridFsDatabase = getGridFsDatabase(this.connectionDetails);
 			if (StringUtils.hasText(gridFsDatabase)) {
 				return this.mongoDatabaseFactory.getMongoDatabase(gridFsDatabase);
 			}
@@ -124,6 +125,10 @@ class MongoDatabaseFactoryDependentConfiguration {
 		@Override
 		public MongoDatabaseFactory withSession(ClientSession session) {
 			return this.mongoDatabaseFactory.withSession(session);
+		}
+
+		private String getGridFsDatabase(MongoConnectionDetails connectionDetails) {
+			return (connectionDetails.getGridFs() != null) ? connectionDetails.getGridFs().getDatabase() : null;
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,19 +51,19 @@ class HttpTunnelPayloadTests {
 	@Test
 	void sequenceMustBePositive() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelPayload(0, ByteBuffer.allocate(1)))
-				.withMessageContaining("Sequence must be positive");
+			.withMessageContaining("Sequence must be positive");
 	}
 
 	@Test
 	void dataMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new HttpTunnelPayload(1, null))
-				.withMessageContaining("Data must not be null");
+			.withMessageContaining("Data must not be null");
 	}
 
 	@Test
 	void getSequence() {
 		HttpTunnelPayload payload = new HttpTunnelPayload(1, ByteBuffer.allocate(1));
-		assertThat(payload.getSequence()).isEqualTo(1L);
+		assertThat(payload.getSequence()).isOne();
 	}
 
 	@Test
@@ -98,7 +98,7 @@ class HttpTunnelPayloadTests {
 		servletRequest.setContent("hello".getBytes());
 		HttpInputMessage request = new ServletServerHttpRequest(servletRequest);
 		assertThatIllegalStateException().isThrownBy(() -> HttpTunnelPayload.get(request))
-				.withMessageContaining("Missing sequence header");
+			.withMessageContaining("Missing sequence header");
 	}
 
 	@Test

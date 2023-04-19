@@ -1,7 +1,0 @@
-[[cli.whats-next]]
-== What to Read Next
-There are some {spring-boot-code}/spring-boot-project/spring-boot-cli/samples[sample groovy scripts] available from the GitHub repository that you can use to try out the Spring Boot CLI.
-There is also extensive Javadoc throughout the {spring-boot-cli-module-code}[source code].
-
-If you find that you reach the limit of the CLI tool, you probably want to look at converting your application to a full Gradle or Maven built "`Groovy project`".
-The next section covers Spring Boot's "<<build-tool-plugins#build-tool-plugins, Build tool plugins>>", which you can use with Gradle or Maven.

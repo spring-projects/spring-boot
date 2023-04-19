@@ -1,5 +1,5 @@
 [[documentation.using]]
-== Developing with Spring Boot
+== Developing With Spring Boot
 Ready to actually start using Spring Boot? <<using#using, We have you covered>>:
 
 * *Build systems:* <<using#using.build-systems.maven, Maven>> | <<using#using.build-systems.gradle, Gradle>> | <<using#using.build-systems.ant, Ant>> | <<using#using.build-systems.starters, Starters>>

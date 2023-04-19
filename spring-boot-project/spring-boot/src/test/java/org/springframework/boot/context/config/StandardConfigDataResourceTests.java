@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,12 @@
 
 package org.springframework.boot.context.config;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileUrlResource;
 import org.springframework.core.io.Resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,13 +43,13 @@ class StandardConfigDataResourceTests {
 	@Test
 	void createWhenReferenceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new StandardConfigDataResource(null, this.resource))
-				.withMessage("Reference must not be null");
+			.withMessage("Reference must not be null");
 	}
 
 	@Test
 	void createWhenResourceIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new StandardConfigDataResource(this.reference, null))
-				.withMessage("Resource must not be null");
+			.withMessage("Resource must not be null");
 	}
 
 	@Test
@@ -64,6 +67,17 @@ class StandardConfigDataResourceTests {
 		StandardConfigDataResource location = new StandardConfigDataResource(this.reference, resource1);
 		StandardConfigDataResource other = new StandardConfigDataResource(this.reference, resource2);
 		assertThat(location).isNotEqualTo(other);
+	}
+
+	@Test // gh-34212
+	void equalsAndHashCodeWhenSameUnderlyingResource() throws IOException {
+		ClassPathResource classPathResource = new ClassPathResource("log4j2.springboot");
+		FileUrlResource fileUrlResource = new FileUrlResource(classPathResource.getURL());
+		ConfigDataResource classPathConfigDataResource = new StandardConfigDataResource(this.reference,
+				classPathResource);
+		ConfigDataResource fileUrlConfigDataResource = new StandardConfigDataResource(this.reference, fileUrlResource);
+		assertThat(classPathConfigDataResource.hashCode()).isEqualTo(fileUrlConfigDataResource.hashCode());
+		assertThat(classPathConfigDataResource).isEqualTo(fileUrlConfigDataResource);
 	}
 
 }

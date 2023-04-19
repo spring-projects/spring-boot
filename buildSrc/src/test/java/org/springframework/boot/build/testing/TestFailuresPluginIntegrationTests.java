@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
@@ -44,35 +43,47 @@ class TestFailuresPluginIntegrationTests {
 	private File projectDir;
 
 	@BeforeEach
-	void setup(@TempDir File projectDir) throws IOException {
+	void setup(@TempDir File projectDir) {
 		this.projectDir = projectDir;
 	}
 
 	@Test
-	void singleProject() throws IOException {
+	void singleProject() {
 		createProject(this.projectDir);
-		BuildResult result = GradleRunner.create().withDebug(true).withProjectDir(this.projectDir)
-				.withArguments("build").withPluginClasspath().buildAndFail();
+		BuildResult result = GradleRunner.create()
+			.withDebug(true)
+			.withProjectDir(this.projectDir)
+			.withArguments("build")
+			.withPluginClasspath()
+			.buildAndFail();
 		assertThat(readLines(result.getOutput())).containsSequence("Found test failures in 1 test task:", "", ":test",
 				"    example.ExampleTests > bad()", "    example.ExampleTests > fail()",
 				"    example.MoreTests > bad()", "    example.MoreTests > fail()", "");
 	}
 
 	@Test
-	void multiProject() throws IOException {
+	void multiProject() {
 		createMultiProjectBuild();
-		BuildResult result = GradleRunner.create().withDebug(true).withProjectDir(this.projectDir)
-				.withArguments("build").withPluginClasspath().buildAndFail();
+		BuildResult result = GradleRunner.create()
+			.withDebug(true)
+			.withProjectDir(this.projectDir)
+			.withArguments("build")
+			.withPluginClasspath()
+			.buildAndFail();
 		assertThat(readLines(result.getOutput())).containsSequence("Found test failures in 1 test task:", "",
 				":project-one:test", "    example.ExampleTests > bad()", "    example.ExampleTests > fail()",
 				"    example.MoreTests > bad()", "    example.MoreTests > fail()", "");
 	}
 
 	@Test
-	void multiProjectContinue() throws IOException {
+	void multiProjectContinue() {
 		createMultiProjectBuild();
-		BuildResult result = GradleRunner.create().withDebug(true).withProjectDir(this.projectDir)
-				.withArguments("build", "--continue").withPluginClasspath().buildAndFail();
+		BuildResult result = GradleRunner.create()
+			.withDebug(true)
+			.withProjectDir(this.projectDir)
+			.withArguments("build", "--continue")
+			.withPluginClasspath()
+			.buildAndFail();
 		assertThat(readLines(result.getOutput())).containsSequence("Found test failures in 2 test tasks:", "",
 				":project-one:test", "    example.ExampleTests > bad()", "    example.ExampleTests > fail()",
 				"    example.MoreTests > bad()", "    example.MoreTests > fail()", "", ":project-two:test",
@@ -81,10 +92,14 @@ class TestFailuresPluginIntegrationTests {
 	}
 
 	@Test
-	void multiProjectParallel() throws IOException {
+	void multiProjectParallel() {
 		createMultiProjectBuild();
-		BuildResult result = GradleRunner.create().withDebug(true).withProjectDir(this.projectDir)
-				.withArguments("build", "--parallel", "--stacktrace").withPluginClasspath().buildAndFail();
+		BuildResult result = GradleRunner.create()
+			.withDebug(true)
+			.withProjectDir(this.projectDir)
+			.withArguments("build", "--parallel", "--stacktrace")
+			.withPluginClasspath()
+			.buildAndFail();
 		assertThat(readLines(result.getOutput())).containsSequence("Found test failures in 2 test tasks:", "",
 				":project-one:test", "    example.ExampleTests > bad()", "    example.ExampleTests > fail()",
 				"    example.MoreTests > bad()", "    example.MoreTests > fail()", "", ":project-two:test",
@@ -170,7 +185,7 @@ class TestFailuresPluginIntegrationTests {
 
 	private List<String> readLines(String output) {
 		try (BufferedReader reader = new BufferedReader(new StringReader(output))) {
-			return reader.lines().collect(Collectors.toList());
+			return reader.lines().toList();
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);

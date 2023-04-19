@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,9 @@
 package org.springframework.boot.autoconfigure.elasticsearch;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.time.Duration;
+import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -27,6 +28,7 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
+import org.apache.http.impl.nio.reactor.IOReactorConfig;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.sniff.Sniffer;
@@ -36,6 +38,8 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails.Node.Protocol;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,6 +49,10 @@ import org.springframework.util.StringUtils;
  * Elasticsearch rest client configurations.
  *
  * @author Stephane Nicoll
+ * @author Filip Hrisafov
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class ElasticsearchRestClientConfigurations {
 
@@ -54,20 +62,30 @@ class ElasticsearchRestClientConfigurations {
 
 		private final ElasticsearchProperties properties;
 
-		RestClientBuilderConfiguration(ElasticsearchProperties properties) {
+		RestClientBuilderConfiguration(ElasticsearchProperties properties,
+				ObjectProvider<ElasticsearchConnectionDetails> connectionDetails) {
 			this.properties = properties;
 		}
 
 		@Bean
-		RestClientBuilderCustomizer defaultRestClientBuilderCustomizer() {
-			return new DefaultRestClientBuilderCustomizer(this.properties);
+		@ConditionalOnMissingBean(ElasticsearchConnectionDetails.class)
+		PropertiesElasticsearchConnectionDetails elasticsearchConnectionDetails() {
+			return new PropertiesElasticsearchConnectionDetails(this.properties);
 		}
 
 		@Bean
-		RestClientBuilder elasticsearchRestClientBuilder(
+		RestClientBuilderCustomizer defaultRestClientBuilderCustomizer(
+				ElasticsearchConnectionDetails connectionDetails) {
+			return new DefaultRestClientBuilderCustomizer(this.properties, connectionDetails);
+		}
+
+		@Bean
+		RestClientBuilder elasticsearchRestClientBuilder(ElasticsearchConnectionDetails connectionDetails,
 				ObjectProvider<RestClientBuilderCustomizer> builderCustomizers) {
-			HttpHost[] hosts = this.properties.getUris().stream().map(this::createHttpHost).toArray(HttpHost[]::new);
-			RestClientBuilder builder = RestClient.builder(hosts);
+			RestClientBuilder builder = RestClient.builder(connectionDetails.getNodes()
+				.stream()
+				.map((node) -> new HttpHost(node.hostname(), node.port(), node.protocol().getScheme()))
+				.toArray(HttpHost[]::new));
 			builder.setHttpClientConfigCallback((httpClientBuilder) -> {
 				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(httpClientBuilder));
 				return httpClientBuilder;
@@ -76,66 +94,40 @@ class ElasticsearchRestClientConfigurations {
 				builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(requestConfigBuilder));
 				return requestConfigBuilder;
 			});
-			if (this.properties.getPathPrefix() != null) {
-				builder.setPathPrefix(this.properties.getPathPrefix());
+			String pathPrefix = connectionDetails.getPathPrefix();
+			if (pathPrefix != null) {
+				builder.setPathPrefix(pathPrefix);
 			}
 			builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;
 		}
 
-		private HttpHost createHttpHost(String uri) {
-			try {
-				return createHttpHost(URI.create(uri));
-			}
-			catch (IllegalArgumentException ex) {
-				return HttpHost.create(uri);
-			}
-		}
-
-		private HttpHost createHttpHost(URI uri) {
-			if (!StringUtils.hasLength(uri.getUserInfo())) {
-				return HttpHost.create(uri.toString());
-			}
-			try {
-				return HttpHost.create(new URI(uri.getScheme(), null, uri.getHost(), uri.getPort(), uri.getPath(),
-						uri.getQuery(), uri.getFragment()).toString());
-			}
-			catch (URISyntaxException ex) {
-				throw new IllegalStateException(ex);
-			}
-		}
-
 	}
 
-	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(org.elasticsearch.client.RestHighLevelClient.class)
-	@ConditionalOnMissingBean({ org.elasticsearch.client.RestHighLevelClient.class, RestClient.class })
-	static class RestHighLevelClientConfiguration {
+	@ConditionalOnMissingBean(RestClient.class)
+	static class RestClientConfiguration {
 
 		@Bean
-		org.elasticsearch.client.RestHighLevelClient elasticsearchRestHighLevelClient(
-				RestClientBuilder restClientBuilder) {
-			return new org.elasticsearch.client.RestHighLevelClient(restClientBuilder);
+		RestClient elasticsearchRestClient(RestClientBuilder restClientBuilder) {
+			return restClientBuilder.build();
 		}
 
 	}
 
-	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Sniffer.class)
-	@ConditionalOnSingleCandidate(org.elasticsearch.client.RestHighLevelClient.class)
+	@ConditionalOnSingleCandidate(RestClient.class)
 	static class RestClientSnifferConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		Sniffer elasticsearchSniffer(org.elasticsearch.client.RestHighLevelClient client,
-				ElasticsearchRestClientProperties properties) {
-			SnifferBuilder builder = Sniffer.builder(client.getLowLevelClient());
+		Sniffer elasticsearchSniffer(RestClient client, ElasticsearchProperties properties) {
+			SnifferBuilder builder = Sniffer.builder(client);
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			Duration interval = properties.getSniffer().getInterval();
+			Duration interval = properties.getRestclient().getSniffer().getInterval();
 			map.from(interval).asInt(Duration::toMillis).to(builder::setSniffIntervalMillis);
-			Duration delayAfterFailure = properties.getSniffer().getDelayAfterFailure();
+			Duration delayAfterFailure = properties.getRestclient().getSniffer().getDelayAfterFailure();
 			map.from(delayAfterFailure).asInt(Duration::toMillis).to(builder::setSniffAfterFailureDelayMillis);
 			return builder.build();
 		}
@@ -148,8 +140,12 @@ class ElasticsearchRestClientConfigurations {
 
 		private final ElasticsearchProperties properties;
 
-		DefaultRestClientBuilderCustomizer(ElasticsearchProperties properties) {
+		private final ElasticsearchConnectionDetails connectionDetails;
+
+		DefaultRestClientBuilderCustomizer(ElasticsearchProperties properties,
+				ElasticsearchConnectionDetails connectionDetails) {
 			this.properties = properties;
+			this.connectionDetails = connectionDetails;
 		}
 
 		@Override
@@ -158,38 +154,40 @@ class ElasticsearchRestClientConfigurations {
 
 		@Override
 		public void customize(HttpAsyncClientBuilder builder) {
-			builder.setDefaultCredentialsProvider(new PropertiesCredentialsProvider(this.properties));
+			builder.setDefaultCredentialsProvider(new ConnectionDetailsCredentialsProvider(this.connectionDetails));
+			map.from(this.properties::isSocketKeepAlive)
+				.to((keepAlive) -> builder
+					.setDefaultIOReactorConfig(IOReactorConfig.custom().setSoKeepAlive(keepAlive).build()));
 		}
 
 		@Override
 		public void customize(RequestConfig.Builder builder) {
-			map.from(this.properties::getConnectionTimeout).whenNonNull().asInt(Duration::toMillis)
-					.to(builder::setConnectTimeout);
-			map.from(this.properties::getSocketTimeout).whenNonNull().asInt(Duration::toMillis)
-					.to(builder::setSocketTimeout);
+			map.from(this.properties::getConnectionTimeout)
+				.whenNonNull()
+				.asInt(Duration::toMillis)
+				.to(builder::setConnectTimeout);
+			map.from(this.properties::getSocketTimeout)
+				.whenNonNull()
+				.asInt(Duration::toMillis)
+				.to(builder::setSocketTimeout);
 		}
 
 	}
 
-	private static class PropertiesCredentialsProvider extends BasicCredentialsProvider {
+	private static class ConnectionDetailsCredentialsProvider extends BasicCredentialsProvider {
 
-		PropertiesCredentialsProvider(ElasticsearchProperties properties) {
-			if (StringUtils.hasText(properties.getUsername())) {
-				Credentials credentials = new UsernamePasswordCredentials(properties.getUsername(),
-						properties.getPassword());
+		ConnectionDetailsCredentialsProvider(ElasticsearchConnectionDetails connectionDetails) {
+			String username = connectionDetails.getUsername();
+			if (StringUtils.hasText(username)) {
+				Credentials credentials = new UsernamePasswordCredentials(username, connectionDetails.getPassword());
 				setCredentials(AuthScope.ANY, credentials);
 			}
-			properties.getUris().stream().map(this::toUri).filter(this::hasUserInfo)
-					.forEach(this::addUserInfoCredentials);
+			Stream<URI> uris = getUris(connectionDetails);
+			uris.filter(this::hasUserInfo).forEach(this::addUserInfoCredentials);
 		}
 
-		private URI toUri(String uri) {
-			try {
-				return URI.create(uri);
-			}
-			catch (IllegalArgumentException ex) {
-				return null;
-			}
+		private Stream<URI> getUris(ElasticsearchConnectionDetails connectionDetails) {
+			return connectionDetails.getNodes().stream().map(Node::toUri);
 		}
 
 		private boolean hasUserInfo(URI uri) {
@@ -210,6 +208,61 @@ class ElasticsearchRestClientConfigurations {
 			String username = userInfo.substring(0, delimiter);
 			String password = userInfo.substring(delimiter + 1);
 			return new UsernamePasswordCredentials(username, password);
+		}
+
+	}
+
+	/**
+	 * Adapts {@link ElasticsearchProperties} to {@link ElasticsearchConnectionDetails}.
+	 */
+	static class PropertiesElasticsearchConnectionDetails implements ElasticsearchConnectionDetails {
+
+		private final ElasticsearchProperties properties;
+
+		PropertiesElasticsearchConnectionDetails(ElasticsearchProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public List<Node> getNodes() {
+			return this.properties.getUris().stream().map(this::createNode).toList();
+		}
+
+		@Override
+		public String getUsername() {
+			return this.properties.getUsername();
+		}
+
+		@Override
+		public String getPassword() {
+			return this.properties.getPassword();
+		}
+
+		@Override
+		public String getPathPrefix() {
+			return this.properties.getPathPrefix();
+		}
+
+		private Node createNode(String uri) {
+			if (!(uri.startsWith("http://") || uri.startsWith("https://"))) {
+				uri = "http://" + uri;
+			}
+			return createNode(URI.create(uri));
+		}
+
+		private Node createNode(URI uri) {
+			String userInfo = uri.getUserInfo();
+			Protocol protocol = Protocol.forScheme(uri.getScheme());
+			if (!StringUtils.hasLength(userInfo)) {
+				return new Node(uri.getHost(), uri.getPort(), protocol, null, null);
+			}
+			int separatorIndex = userInfo.indexOf(':');
+			if (separatorIndex == -1) {
+				return new Node(uri.getHost(), uri.getPort(), protocol, userInfo, null);
+			}
+			String[] components = userInfo.split(":");
+			return new Node(uri.getHost(), uri.getPort(), protocol, components[0],
+					(components.length > 1) ? components[1] : "");
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ class BuildpackReferenceTests {
 	@Test
 	void ofWhenValueIsEmptyThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildpackReference.of(""))
-				.withMessage("Value must not be empty");
+			.withMessage("Value must not be empty");
 	}
 
 	@Test
@@ -54,7 +54,7 @@ class BuildpackReferenceTests {
 		BuildpackReference b = BuildpackReference.of("test1");
 		BuildpackReference c = BuildpackReference.of("test2");
 		assertThat(a).isEqualTo(a).isEqualTo(b).isNotEqualTo(c);
-		assertThat(a.hashCode()).isEqualTo(b.hashCode());
+		assertThat(a).hasSameHashCodeAs(b);
 	}
 
 	@Test
@@ -64,7 +64,7 @@ class BuildpackReferenceTests {
 	}
 
 	@Test
-	void hasPrefixWhenPrifixMismatchReturnsFalse() {
+	void hasPrefixWhenPrefixMismatchReturnsFalse() {
 		BuildpackReference reference = BuildpackReference.of("test");
 		assertThat(reference.hasPrefix("st")).isFalse();
 	}

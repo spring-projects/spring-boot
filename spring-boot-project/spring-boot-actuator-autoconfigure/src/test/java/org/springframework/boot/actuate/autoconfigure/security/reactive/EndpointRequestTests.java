@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,24 +88,28 @@ class EndpointRequestTests {
 	void toEndpointClassShouldMatchEndpointPath() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.to(FooEndpoint.class);
 		assertMatcher(matcher).matches("/actuator/foo");
+		assertMatcher(matcher).matches("/actuator/foo/");
 	}
 
 	@Test
 	void toEndpointClassShouldNotMatchOtherPath() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.to(FooEndpoint.class);
 		assertMatcher(matcher).doesNotMatch("/actuator/bar");
+		assertMatcher(matcher).doesNotMatch("/actuator/bar/");
 	}
 
 	@Test
 	void toEndpointIdShouldMatchEndpointPath() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.to("foo");
 		assertMatcher(matcher).matches("/actuator/foo");
+		assertMatcher(matcher).matches("/actuator/foo/");
 	}
 
 	@Test
 	void toEndpointIdShouldNotMatchOtherPath() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.to("foo");
 		assertMatcher(matcher).doesNotMatch("/actuator/bar");
+		assertMatcher(matcher).doesNotMatch("/actuator/bar/");
 	}
 
 	@Test
@@ -128,48 +132,63 @@ class EndpointRequestTests {
 
 	@Test
 	void excludeByClassShouldNotMatchExcluded() {
-		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint().excluding(FooEndpoint.class,
-				BazServletEndpoint.class);
+		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint()
+			.excluding(FooEndpoint.class, BazServletEndpoint.class);
 		List<ExposableEndpoint<?>> endpoints = new ArrayList<>();
 		endpoints.add(mockEndpoint(EndpointId.of("foo"), "foo"));
 		endpoints.add(mockEndpoint(EndpointId.of("bar"), "bar"));
 		endpoints.add(mockEndpoint(EndpointId.of("baz"), "baz"));
 		PathMappedEndpoints pathMappedEndpoints = new PathMappedEndpoints("/actuator", () -> endpoints);
 		assertMatcher(matcher, pathMappedEndpoints).doesNotMatch("/actuator/foo");
+		assertMatcher(matcher, pathMappedEndpoints).doesNotMatch("/actuator/foo/");
 		assertMatcher(matcher, pathMappedEndpoints).doesNotMatch("/actuator/baz");
+		assertMatcher(matcher, pathMappedEndpoints).doesNotMatch("/actuator/baz/");
 		assertMatcher(matcher).matches("/actuator/bar");
+		assertMatcher(matcher).matches("/actuator/bar/");
 		assertMatcher(matcher).matches("/actuator");
+		assertMatcher(matcher).matches("/actuator/");
 	}
 
 	@Test
 	void excludeByClassShouldNotMatchLinksIfExcluded() {
-		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint().excludingLinks()
-				.excluding(FooEndpoint.class);
+		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint()
+			.excludingLinks()
+			.excluding(FooEndpoint.class);
 		assertMatcher(matcher).doesNotMatch("/actuator/foo");
+		assertMatcher(matcher).doesNotMatch("/actuator/foo/");
 		assertMatcher(matcher).doesNotMatch("/actuator");
+		assertMatcher(matcher).doesNotMatch("/actuator/");
 	}
 
 	@Test
 	void excludeByIdShouldNotMatchExcluded() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint().excluding("foo");
 		assertMatcher(matcher).doesNotMatch("/actuator/foo");
+		assertMatcher(matcher).doesNotMatch("/actuator/foo/");
 		assertMatcher(matcher).matches("/actuator/bar");
+		assertMatcher(matcher).matches("/actuator/bar/");
 		assertMatcher(matcher).matches("/actuator");
+		assertMatcher(matcher).matches("/actuator/");
 	}
 
 	@Test
 	void excludeByIdShouldNotMatchLinksIfExcluded() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint().excludingLinks().excluding("foo");
 		assertMatcher(matcher).doesNotMatch("/actuator/foo");
+		assertMatcher(matcher).doesNotMatch("/actuator/foo/");
 		assertMatcher(matcher).doesNotMatch("/actuator");
+		assertMatcher(matcher).doesNotMatch("/actuator/");
 	}
 
 	@Test
 	void excludeLinksShouldNotMatchBasePath() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint().excludingLinks();
 		assertMatcher(matcher).doesNotMatch("/actuator");
+		assertMatcher(matcher).doesNotMatch("/actuator/");
 		assertMatcher(matcher).matches("/actuator/foo");
+		assertMatcher(matcher).matches("/actuator/foo/");
 		assertMatcher(matcher).matches("/actuator/bar");
+		assertMatcher(matcher).matches("/actuator/bar/");
 	}
 
 	@Test
@@ -178,14 +197,42 @@ class EndpointRequestTests {
 		RequestMatcherAssert assertMatcher = assertMatcher(matcher, "");
 		assertMatcher.doesNotMatch("/");
 		assertMatcher.matches("/foo");
+		assertMatcher.matches("/foo/");
 		assertMatcher.matches("/bar");
+		assertMatcher.matches("/bar/");
 	}
 
 	@Test
 	void noEndpointPathsBeansShouldNeverMatch() {
 		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint();
 		assertMatcher(matcher, (PathMappedEndpoints) null).doesNotMatch("/actuator/foo");
+		assertMatcher(matcher, (PathMappedEndpoints) null).doesNotMatch("/actuator/foo/");
 		assertMatcher(matcher, (PathMappedEndpoints) null).doesNotMatch("/actuator/bar");
+		assertMatcher(matcher, (PathMappedEndpoints) null).doesNotMatch("/actuator/bar/");
+	}
+
+	@Test
+	void toStringWhenIncludedEndpoints() {
+		ServerWebExchangeMatcher matcher = EndpointRequest.to("foo", "bar");
+		assertThat(matcher).hasToString("EndpointRequestMatcher includes=[foo, bar], excludes=[], includeLinks=false");
+	}
+
+	@Test
+	void toStringWhenEmptyIncludedEndpoints() {
+		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint();
+		assertThat(matcher).hasToString("EndpointRequestMatcher includes=[*], excludes=[], includeLinks=true");
+	}
+
+	@Test
+	void toStringWhenIncludedEndpointsClasses() {
+		ServerWebExchangeMatcher matcher = EndpointRequest.to(FooEndpoint.class).excluding("bar");
+		assertThat(matcher).hasToString("EndpointRequestMatcher includes=[foo], excludes=[bar], includeLinks=false");
+	}
+
+	@Test
+	void toStringWhenIncludedExcludedEndpoints() {
+		ServerWebExchangeMatcher matcher = EndpointRequest.toAnyEndpoint().excluding("bar").excludingLinks();
+		assertThat(matcher).hasToString("EndpointRequestMatcher includes=[*], excludes=[bar], includeLinks=false");
 	}
 
 	private RequestMatcherAssert assertMatcher(ServerWebExchangeMatcher matcher) {
@@ -243,7 +290,8 @@ class EndpointRequestTests {
 
 		private void matches(ServerWebExchange exchange) {
 			assertThat(this.matcher.matches(exchange).block(Duration.ofSeconds(30)).isMatch())
-					.as("Matches " + getRequestPath(exchange)).isTrue();
+				.as("Matches " + getRequestPath(exchange))
+				.isTrue();
 		}
 
 		void doesNotMatch(String path) {
@@ -254,7 +302,8 @@ class EndpointRequestTests {
 
 		private void doesNotMatch(ServerWebExchange exchange) {
 			assertThat(this.matcher.matches(exchange).block(Duration.ofSeconds(30)).isMatch())
-					.as("Does not match " + getRequestPath(exchange)).isFalse();
+				.as("Does not match " + getRequestPath(exchange))
+				.isFalse();
 		}
 
 		private TestHttpWebHandlerAdapter webHandler() {

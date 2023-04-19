@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,6 +54,8 @@ class BootArchiveSupport {
 
 	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
 
+	private static final String UNSPECIFIED_VERSION = "unspecified";
+
 	private static final Set<String> DEFAULT_LAUNCHER_CLASSES;
 
 	static {
@@ -85,7 +87,7 @@ class BootArchiveSupport {
 	}
 
 	void configureManifest(Manifest manifest, String mainClass, String classes, String lib, String classPathIndex,
-			String layersIndex) {
+			String layersIndex, String jdkVersion, String implementationTitle, Object implementationVersion) {
 		Attributes attributes = manifest.getAttributes();
 		attributes.putIfAbsent("Main-Class", this.loaderMainClass);
 		attributes.putIfAbsent("Start-Class", mainClass);
@@ -98,6 +100,14 @@ class BootArchiveSupport {
 		if (layersIndex != null) {
 			attributes.putIfAbsent("Spring-Boot-Layers-Index", layersIndex);
 		}
+		attributes.putIfAbsent("Build-Jdk-Spec", jdkVersion);
+		attributes.putIfAbsent("Implementation-Title", implementationTitle);
+		if (implementationVersion != null) {
+			String versionString = implementationVersion.toString();
+			if (!UNSPECIFIED_VERSION.equals(versionString)) {
+				attributes.putIfAbsent("Implementation-Version", versionString);
+			}
+		}
 	}
 
 	private String determineSpringBootVersion() {
@@ -105,11 +115,12 @@ class BootArchiveSupport {
 		return (version != null) ? version : "unknown";
 	}
 
-	CopyAction createCopyAction(Jar jar) {
-		return createCopyAction(jar, null, null);
+	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies) {
+		return createCopyAction(jar, resolvedDependencies, null, null);
 	}
 
-	CopyAction createCopyAction(Jar jar, LayerResolver layerResolver, String layerToolsLocation) {
+	CopyAction createCopyAction(Jar jar, ResolvedDependencies resolvedDependencies, LayerResolver layerResolver,
+			String layerToolsLocation) {
 		File output = jar.getArchiveFile().get().getAsFile();
 		Manifest manifest = jar.getManifest();
 		boolean preserveFileTimestamps = jar.isPreserveFileTimestamps();
@@ -122,7 +133,7 @@ class BootArchiveSupport {
 		String encoding = jar.getMetadataCharset();
 		CopyAction action = new BootZipCopyAction(output, manifest, preserveFileTimestamps, includeDefaultLoader,
 				layerToolsLocation, requiresUnpack, exclusions, launchScript, librarySpec, compressionResolver,
-				encoding, layerResolver);
+				encoding, resolvedDependencies, layerResolver);
 		return jar.isReproducibleFileOrder() ? new ReproducibleOrderingCopyAction(action) : action;
 	}
 

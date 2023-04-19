@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ class LogbackLoggingSystemPropertiesTests {
 		this.systemPropertyNames = new HashSet<>(System.getProperties().keySet());
 		this.environment = new MockEnvironment();
 		this.environment
-				.setConversionService((ConfigurableConversionService) ApplicationConversionService.getSharedInstance());
+			.setConversionService((ConfigurableConversionService) ApplicationConversionService.getSharedInstance());
 
 	}
 
@@ -74,11 +74,11 @@ class LogbackLoggingSystemPropertiesTests {
 		this.environment.setProperty("logging.logback.rollingpolicy.max-history", "mh");
 		new LogbackLoggingSystemProperties(this.environment).apply();
 		assertThat(System.getProperties())
-				.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_FILE_NAME_PATTERN, "fnp")
-				.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_CLEAN_HISTORY_ON_START, "chos")
-				.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_MAX_FILE_SIZE, "1024")
-				.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_TOTAL_SIZE_CAP, "2048")
-				.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_MAX_HISTORY, "mh");
+			.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_FILE_NAME_PATTERN, "fnp")
+			.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_CLEAN_HISTORY_ON_START, "chos")
+			.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_MAX_FILE_SIZE, "1024")
+			.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_TOTAL_SIZE_CAP, "2048")
+			.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_MAX_HISTORY, "mh");
 	}
 
 	@Test
@@ -90,25 +90,25 @@ class LogbackLoggingSystemPropertiesTests {
 		this.environment.setProperty("logging.file.max-history", "mh");
 		new LogbackLoggingSystemProperties(this.environment).apply();
 		assertThat(System.getProperties())
-				.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_FILE_NAME_PATTERN, "fnp")
-				.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_CLEAN_HISTORY_ON_START, "chos")
-				.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_MAX_FILE_SIZE, "1024")
-				.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_TOTAL_SIZE_CAP, "2048")
-				.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_MAX_HISTORY, "mh");
+			.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_FILE_NAME_PATTERN, "fnp")
+			.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_CLEAN_HISTORY_ON_START, "chos")
+			.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_MAX_FILE_SIZE, "1024")
+			.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_TOTAL_SIZE_CAP, "2048")
+			.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_MAX_HISTORY, "mh");
 	}
 
 	@Test
 	void consoleCharsetWhenNoPropertyUsesDefault() {
 		new LoggingSystemProperties(new MockEnvironment()).apply(null);
 		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_CHARSET))
-				.isEqualTo(Charset.defaultCharset().name());
+			.isEqualTo(Charset.defaultCharset().name());
 	}
 
 	@Test
 	void fileCharsetWhenNoPropertyUsesDefault() {
 		new LoggingSystemProperties(new MockEnvironment()).apply(null);
 		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_CHARSET))
-				.isEqualTo(Charset.defaultCharset().name());
+			.isEqualTo(Charset.defaultCharset().name());
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public final class MockPeriodTypeDescriptor {
 		}
 		if (style != null) {
 			PeriodFormat formatAnnotation = AnnotationUtils
-					.synthesizeAnnotation(Collections.singletonMap("value", style), PeriodFormat.class, null);
+				.synthesizeAnnotation(Collections.singletonMap("value", style), PeriodFormat.class, null);
 			given(descriptor.getAnnotation(PeriodFormat.class)).willReturn(formatAnnotation);
 		}
 		given(descriptor.getType()).willReturn((Class) Period.class);

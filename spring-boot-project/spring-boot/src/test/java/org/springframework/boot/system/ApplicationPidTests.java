@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,19 +37,19 @@ class ApplicationPidTests {
 
 	@Test
 	void toStringWithPid() {
-		assertThat(new ApplicationPid("123").toString()).isEqualTo("123");
+		assertThat(new ApplicationPid("123")).hasToString("123");
 	}
 
 	@Test
 	void toStringWithoutPid() {
-		assertThat(new ApplicationPid(null).toString()).isEqualTo("???");
+		assertThat(new ApplicationPid(null)).hasToString("???");
 	}
 
 	@Test
 	void throwIllegalStateWritingMissingPid() {
 		ApplicationPid pid = new ApplicationPid(null);
 		assertThatIllegalStateException().isThrownBy(() -> pid.write(new File(this.tempDir, "pid")))
-				.withMessageContaining("No PID available");
+			.withMessageContaining("No PID available");
 	}
 
 	@Test

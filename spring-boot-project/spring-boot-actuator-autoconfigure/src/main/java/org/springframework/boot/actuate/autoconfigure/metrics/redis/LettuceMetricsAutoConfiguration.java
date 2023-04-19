@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfigu
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.data.redis.ClientResourcesBuilderCustomizer;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -44,8 +45,13 @@ import org.springframework.context.annotation.Bean;
 public class LettuceMetricsAutoConfiguration {
 
 	@Bean
-	public ClientResourcesBuilderCustomizer lettuceMetrics(MeterRegistry meterRegistry) {
-		MicrometerOptions options = MicrometerOptions.builder().histogram(true).build();
+	@ConditionalOnMissingBean
+	MicrometerOptions micrometerOptions() {
+		return MicrometerOptions.create();
+	}
+
+	@Bean
+	ClientResourcesBuilderCustomizer lettuceMetrics(MeterRegistry meterRegistry, MicrometerOptions options) {
 		return (client) -> client.commandLatencyRecorder(new MicrometerCommandLatencyRecorder(meterRegistry, options));
 	}
 

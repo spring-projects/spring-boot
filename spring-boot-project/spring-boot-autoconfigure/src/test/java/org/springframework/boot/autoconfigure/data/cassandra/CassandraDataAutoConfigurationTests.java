@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.data.cassandra;
 
 import java.util.Collections;
-import java.util.Set;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import org.junit.jupiter.api.AfterEach;
@@ -36,6 +35,7 @@ import org.springframework.data.cassandra.core.convert.CassandraConverter;
 import org.springframework.data.cassandra.core.convert.CassandraCustomConversions;
 import org.springframework.data.cassandra.core.mapping.CassandraMappingContext;
 import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
+import org.springframework.data.domain.ManagedTypes;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.ObjectUtils;
 
@@ -66,13 +66,11 @@ class CassandraDataAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
-	void entityScanShouldSetInitialEntitySet() {
+	void entityScanShouldSetManagedTypes() {
 		load(EntityScanConfig.class);
 		CassandraMappingContext mappingContext = this.context.getBean(CassandraMappingContext.class);
-		Set<Class<?>> initialEntitySet = (Set<Class<?>>) ReflectionTestUtils.getField(mappingContext,
-				"initialEntitySet");
-		assertThat(initialEntitySet).containsOnly(City.class);
+		ManagedTypes managedTypes = (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
+		assertThat(managedTypes.toList()).containsOnly(City.class);
 	}
 
 	@Test
@@ -87,7 +85,7 @@ class CassandraDataAutoConfigurationTests {
 		load();
 		CassandraConverter cassandraConverter = this.context.getBean(CassandraConverter.class);
 		assertThat(cassandraConverter.getCodecRegistry())
-				.isSameAs(this.context.getBean(CassandraMockConfiguration.class).codecRegistry);
+			.isSameAs(this.context.getBean(CassandraMockConfiguration.class).codecRegistry);
 	}
 
 	@Test
@@ -112,7 +110,7 @@ class CassandraDataAutoConfigurationTests {
 
 	void load(Class<?>... config) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.data.cassandra.keyspaceName:boot_test").applyTo(ctx);
+		TestPropertyValues.of("spring.cassandra.keyspaceName:boot_test").applyTo(ctx);
 		if (!ObjectUtils.isEmpty(config)) {
 			ctx.register(config);
 		}

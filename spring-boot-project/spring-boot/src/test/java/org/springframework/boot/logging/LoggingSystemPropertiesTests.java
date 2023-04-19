@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ class LoggingSystemPropertiesTests {
 	@Test
 	void consoleLogPatternIsSet() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.pattern.console", "console pattern"))
-				.apply(null);
+			.apply(null);
 		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN)).isEqualTo("console pattern");
 	}
 
@@ -75,14 +75,14 @@ class LoggingSystemPropertiesTests {
 	@Test
 	void consoleCharsetIsSet() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.charset.console", "UTF-16"))
-				.apply(null);
+			.apply(null);
 		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_CHARSET)).isEqualTo("UTF-16");
 	}
 
 	@Test
 	void fileLogPatternIsSet() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.pattern.file", "file pattern"))
-				.apply(null);
+			.apply(null);
 		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN)).isEqualTo("file pattern");
 	}
 

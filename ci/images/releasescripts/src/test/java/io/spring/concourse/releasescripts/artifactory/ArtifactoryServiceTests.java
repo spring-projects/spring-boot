@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package io.spring.concourse.releasescripts.artifactory;
 
+import java.util.Base64;
+
 import io.spring.concourse.releasescripts.ReleaseInfo;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +31,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.response.DefaultResponseCreator;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.client.HttpClientErrorException;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -69,8 +70,11 @@ class ArtifactoryServiceTests {
 				.andExpect(method(HttpMethod.POST))
 				.andExpect(content().json(
 						"{\"status\": \"staged\", \"sourceRepo\": \"libs-staging-local\", \"targetRepo\": \"libs-milestone-local\"}"))
-				.andExpect(header("Authorization", "Basic " + Base64Utils.encodeToString(String
-						.format("%s:%s", this.properties.getUsername(), this.properties.getPassword()).getBytes())))
+				.andExpect(
+						header("Authorization",
+								"Basic " + Base64.getEncoder()
+										.encodeToString(String.format("%s:%s", this.properties.getUsername(),
+												this.properties.getPassword()).getBytes())))
 				.andExpect(header("Content-Type", MediaType.APPLICATION_JSON.toString())).andRespond(withSuccess());
 		this.service.promote("libs-milestone-local", getReleaseInfo());
 		this.server.verify();

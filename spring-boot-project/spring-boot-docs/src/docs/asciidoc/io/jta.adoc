@@ -1,5 +1,5 @@
 [[io.jta]]
-== Distributed Transactions with JTA
+== Distributed Transactions With JTA
 Spring Boot supports distributed JTA transactions across multiple XA resources by using a transaction manager retrieved from JNDI.
 
 When a JTA environment is detected, Spring's `JtaTransactionManager` is used to manage transactions.

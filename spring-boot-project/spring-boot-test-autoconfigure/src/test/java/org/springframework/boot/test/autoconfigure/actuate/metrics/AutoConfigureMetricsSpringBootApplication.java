@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 
 /**
  * Example {@link SpringBootApplication @SpringBootApplication} for use with
@@ -28,7 +30,8 @@ import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfigurati
  * @author Chris Bono
  */
 @SpringBootConfiguration
-@EnableAutoConfiguration(exclude = CassandraAutoConfiguration.class)
+@EnableAutoConfiguration(exclude = { CassandraAutoConfiguration.class, MongoAutoConfiguration.class,
+		MongoReactiveAutoConfiguration.class })
 class AutoConfigureMetricsSpringBootApplication {
 
 }

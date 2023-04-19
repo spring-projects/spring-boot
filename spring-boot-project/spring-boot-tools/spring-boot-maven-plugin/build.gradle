@@ -12,30 +12,21 @@ configurations {
 	documentation
 }
 
-repositories {
-	maven {
-		url "https://repo.spring.io/release"
-		mavenContent {
-			includeGroup "io.spring.asciidoctor"
-			includeGroup "io.spring.asciidoctor.backends"
-		}
-	}
-}
-
 dependencies {
 	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
 	compileOnly("org.sonatype.plexus:plexus-build-api")
+	compileOnly("org.apache.maven.shared:maven-common-artifact-filters") {
+		exclude(group: "javax.enterprise", module: "cdi-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
+	compileOnly("org.apache.maven:maven-plugin-api") {
+		exclude(group: "javax.enterprise", module: "cdi-api")
+		exclude(group: "javax.inject", module: "javax.inject")
+	}
 
+	implementation("org.springframework:spring-context")
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
-	implementation("org.apache.maven.shared:maven-common-artifact-filters") {
-		exclude(group: "javax.enterprise", module: "cdi-api")
-		exclude(group: "javax.inject", module: "javax.inject")
-	}
-	implementation("org.apache.maven:maven-plugin-api") {
-		exclude(group: "javax.enterprise", module: "cdi-api")
-		exclude(group: "javax.inject", module: "javax.inject")
-	}
 
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
@@ -53,6 +44,9 @@ dependencies {
 		exclude(group: "javax.inject", module: "javax.inject")
 	}
 
+	mavenRepository(project(path: ":spring-boot-project:spring-boot", configuration: "mavenRepository"))
+	mavenRepository(project(path: ":spring-boot-project:spring-boot-test", configuration: "mavenRepository"))
+
 	runtimeOnly("org.sonatype.plexus:plexus-build-api")
 
 	testImplementation("org.assertj:assertj-core")
@@ -64,6 +58,11 @@ dependencies {
 	versionProperties(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "effectiveBom"))
 }
 
+ext {
+	versionElements = version.split("\\.")
+	xsdVersion = versionElements[0] + "." + versionElements[1]
+}
+
 syncDocumentationSourceForAsciidoctor {
 	from(documentPluginGoals) {
 		into "asciidoc/goals"
@@ -71,6 +70,9 @@ syncDocumentationSourceForAsciidoctor {
 }
 
 sourceSets {
+	main {
+		output.dir("${buildDir}/generated/resources/xsd", builtBy: "xsdResources")
+	}
 	intTest {
 		output.dir("${buildDir}/generated-resources", builtBy: "extractVersionProperties")
 	}
@@ -78,8 +80,7 @@ sourceSets {
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	doFirst {
-		def versionEl = version.split("\\.")
-		attributes "spring-boot-xsd-version": versionEl[0] + '.' + versionEl[1]
+		attributes "spring-boot-xsd-version" : project.ext.xsdVersion
 	}
 }
 
@@ -129,8 +130,14 @@ task zip(type: Zip) {
 	}
 }
 
+task xsdResources(type: Sync) {
+	from "src/main/xsd/layers-${project.ext.xsdVersion}.xsd"
+	into "${buildDir}/generated/resources/xsd/org/springframework/boot/maven"
+	rename { fileName -> "layers.xsd" }
+}
+
 prepareMavenBinaries {
-	versions "3.8.1", "3.6.3", "3.5.4"
+	versions "3.9.0", "3.8.5", "3.6.3"
 }
 
 artifacts {

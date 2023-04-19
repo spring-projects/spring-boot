@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.web.embedded.tomcat;
 import java.io.File;
 import java.io.IOException;
 import java.net.SocketException;
-import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
@@ -27,6 +26,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -57,11 +57,11 @@ import org.apache.catalina.util.CharsetMapper;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
-import org.apache.http.HttpResponse;
-import org.apache.http.NoHttpResponseException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.hc.client5.http.HttpHostConnectException;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.NoHttpResponseException;
 import org.apache.jasper.servlet.JspServlet;
 import org.apache.tomcat.JarScanFilter;
 import org.apache.tomcat.JarScanType;
@@ -69,6 +69,7 @@ import org.apache.tomcat.util.scan.StandardJarScanFilter;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
@@ -80,6 +81,8 @@ import org.springframework.boot.web.server.WebServerException;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactoryTests;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -115,6 +118,11 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	@AfterEach
 	void restoreTccl() {
 		Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+	}
+
+	@Override
+	protected boolean isCookieCommentSupported() {
+		return false;
 	}
 
 	// JMX MBean names clash if you get more than one Engine with the same name...
@@ -214,7 +222,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	void tomcatProtocolHandlerCanBeCustomized() {
 		TomcatServletWebServerFactory factory = getFactory();
 		TomcatProtocolHandlerCustomizer<AbstractHttp11Protocol<?>> customizer = (protocolHandler) -> protocolHandler
-				.setProcessorCache(250);
+			.setProcessorCache(250);
 		factory.addProtocolHandlerCustomizers(customizer);
 		Tomcat tomcat = getTomcat(factory);
 		Connector connector = ((TomcatWebServer) this.webServer).getServiceConnectors().get(tomcat.getService())[0];
@@ -237,7 +245,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	void addNullAdditionalConnectorThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.addAdditionalTomcatConnectors((Connector[]) null))
-				.withMessageContaining("Connectors must not be null");
+			.withMessageContaining("Connectors must not be null");
 	}
 
 	@Test
@@ -274,45 +282,45 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	void setNullTomcatContextCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setTomcatContextCustomizers(null))
-				.withMessageContaining("TomcatContextCustomizers must not be null");
+			.withMessageContaining("TomcatContextCustomizers must not be null");
 	}
 
 	@Test
 	void addNullContextCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> factory.addContextCustomizers((TomcatContextCustomizer[]) null))
-				.withMessageContaining("TomcatContextCustomizers must not be null");
+			.isThrownBy(() -> factory.addContextCustomizers((TomcatContextCustomizer[]) null))
+			.withMessageContaining("TomcatContextCustomizers must not be null");
 	}
 
 	@Test
 	void setNullTomcatConnectorCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setTomcatConnectorCustomizers(null))
-				.withMessageContaining("TomcatConnectorCustomizers must not be null");
+			.withMessageContaining("TomcatConnectorCustomizers must not be null");
 	}
 
 	@Test
 	void addNullConnectorCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null))
-				.withMessageContaining("TomcatConnectorCustomizers must not be null");
+			.isThrownBy(() -> factory.addConnectorCustomizers((TomcatConnectorCustomizer[]) null))
+			.withMessageContaining("TomcatConnectorCustomizers must not be null");
 	}
 
 	@Test
 	void setNullTomcatProtocolHandlerCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException().isThrownBy(() -> factory.setTomcatProtocolHandlerCustomizers(null))
-				.withMessageContaining("TomcatProtocolHandlerCustomizers must not be null");
+			.withMessageContaining("TomcatProtocolHandlerCustomizers must not be null");
 	}
 
 	@Test
 	void addNullTomcatProtocolHandlerCustomizersThrows() {
 		TomcatServletWebServerFactory factory = getFactory();
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> factory.addProtocolHandlerCustomizers((TomcatProtocolHandlerCustomizer[]) null))
-				.withMessageContaining("TomcatProtocolHandlerCustomizers must not be null");
+			.isThrownBy(() -> factory.addProtocolHandlerCustomizers((TomcatProtocolHandlerCustomizer[]) null))
+			.withMessageContaining("TomcatProtocolHandlerCustomizers must not be null");
 	}
 
 	@Test
@@ -404,15 +412,19 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Test
-	void defaultLocaleCharsetMappingsAreOverridden() {
+	void defaultLocaleCharsetMappingsAreOverridden() throws IOException {
 		TomcatServletWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer();
 		// override defaults, see org.apache.catalina.util.CharsetMapperDefault.properties
-		assertThat(getCharset(Locale.ENGLISH)).isEqualTo(StandardCharsets.UTF_8);
-		assertThat(getCharset(Locale.FRENCH)).isEqualTo(StandardCharsets.UTF_8);
+		Properties charsetMapperDefault = PropertiesLoaderUtils
+			.loadProperties(new ClassPathResource("CharsetMapperDefault.properties", CharsetMapper.class));
+		for (String language : charsetMapperDefault.stringPropertyNames()) {
+			assertThat(getCharset(new Locale(language))).isEqualTo(StandardCharsets.UTF_8);
+		}
 	}
 
 	@Test
+	@Disabled("See https://github.com/apache/tomcat/commit/c3e33b62101c5ee155808dd1932acde0cac65fe3")
 	void sessionIdGeneratorIsConfiguredWithAttributesFromTheManager() {
 		System.setProperty("jvmRoute", "test");
 		try {
@@ -453,7 +465,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		Context context = (Context) tomcat.getHost().findChildren()[0];
 		JarScanFilter jarScanFilter = context.getJarScanner().getJarScanFilter();
 		String tldScan = ((StandardJarScanFilter) jarScanFilter).getTldScan();
-		assertThat(tldScan).isEqualTo("log4j-taglib*.jar,log4j-web*.jar,log4javascript*.jar,slf4j-taglib*.jar");
+		assertThat(tldScan).isEqualTo("log4j-taglib*.jar,log4j-jakarta-web*.jar,log4javascript*.jar,slf4j-taglib*.jar");
 	}
 
 	@Test
@@ -471,12 +483,12 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	void exceptionThrownOnLoadFailureWhenFailCtxIfServletStartFailsIsTrue() {
 		TomcatServletWebServerFactory factory = getFactory();
 		factory.addContextCustomizers((context) -> {
-			if (context instanceof StandardContext) {
-				((StandardContext) context).setFailCtxIfServletStartFails(true);
+			if (context instanceof StandardContext standardContext) {
+				standardContext.setFailCtxIfServletStartFails(true);
 			}
 		});
 		this.webServer = factory
-				.getWebServer((context) -> context.addServlet("failing", FailingServlet.class).setLoadOnStartup(0));
+			.getWebServer((context) -> context.addServlet("failing", FailingServlet.class).setLoadOnStartup(0));
 		assertThatExceptionOfType(WebServerException.class).isThrownBy(this.webServer::start);
 	}
 
@@ -484,12 +496,12 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	void exceptionThrownOnLoadFailureWhenFailCtxIfServletStartFailsIsFalse() {
 		TomcatServletWebServerFactory factory = getFactory();
 		factory.addContextCustomizers((context) -> {
-			if (context instanceof StandardContext) {
-				((StandardContext) context).setFailCtxIfServletStartFails(false);
+			if (context instanceof StandardContext standardContext) {
+				standardContext.setFailCtxIfServletStartFails(false);
 			}
 		});
 		this.webServer = factory
-				.getWebServer((context) -> context.addServlet("failing", FailingServlet.class).setLoadOnStartup(0));
+			.getWebServer((context) -> context.addServlet("failing", FailingServlet.class).setLoadOnStartup(0));
 		this.webServer.start();
 	}
 
@@ -506,7 +518,7 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Test
-	void nonExistentUploadDirectoryIsCreatedUponMultipartUpload() throws IOException, URISyntaxException {
+	void nonExistentUploadDirectoryIsCreatedUponMultipartUpload() {
 		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory(0);
 		AtomicReference<ServletContext> servletContextReference = new AtomicReference<>();
 		factory.addInitializers((servletContext) -> {
@@ -586,9 +598,9 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		blockingServlet.awaitQueue();
 		this.webServer.shutDownGracefully((result) -> {
 		});
-		Object unconnectableRequest = Awaitility.await().until(
-				() -> initiateGetRequest(HttpClients.createDefault(), port, "/").get(),
-				(result) -> result instanceof Exception);
+		Object unconnectableRequest = Awaitility.await()
+			.until(() -> initiateGetRequest(HttpClients.createDefault(), port, "/").get(),
+					(result) -> result instanceof Exception);
 		assertThat(unconnectableRequest).isInstanceOf(HttpHostConnectException.class);
 		blockingServlet.admitOne();
 		assertThat(request.get()).isInstanceOf(HttpResponse.class);
@@ -622,8 +634,8 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 			return result;
 		}, (result) -> result instanceof Exception);
 		assertThat(idleConnectionRequestResult).isInstanceOfAny(SocketException.class, NoHttpResponseException.class);
-		if (idleConnectionRequestResult instanceof SocketException) {
-			assertThat((SocketException) idleConnectionRequestResult).hasMessage("Connection reset");
+		if (idleConnectionRequestResult instanceof SocketException socketException) {
+			assertThat(socketException).hasMessage("Connection reset");
 		}
 		blockingServlet.admitOne();
 		Object response = request.get();

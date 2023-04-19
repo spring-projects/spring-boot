@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class WebServiceTemplateAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(WebServiceTemplateAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(WebServiceTemplateAutoConfiguration.class));
 
 	@Test
 	void autoConfiguredBuilderShouldNotHaveMarshallerAndUnmarshaller() {
@@ -70,27 +70,27 @@ class WebServiceTemplateAutoConfigurationTests {
 	@Test
 	void webServiceTemplateWhenHasCustomBuilderShouldUseCustomBuilder() {
 		this.contextRunner.withUserConfiguration(CustomWebServiceTemplateBuilderConfig.class)
-				.run(assertWebServiceTemplateBuilder((builder) -> {
-					WebServiceTemplate webServiceTemplate = builder.build();
-					assertThat(webServiceTemplate.getMarshaller())
-							.isSameAs(CustomWebServiceTemplateBuilderConfig.marshaller);
-				}));
+			.run(assertWebServiceTemplateBuilder((builder) -> {
+				WebServiceTemplate webServiceTemplate = builder.build();
+				assertThat(webServiceTemplate.getMarshaller())
+					.isSameAs(CustomWebServiceTemplateBuilderConfig.marshaller);
+			}));
 	}
 
 	@Test
 	void webServiceTemplateShouldApplyCustomizer() {
 		this.contextRunner.withUserConfiguration(WebServiceTemplateCustomizerConfig.class)
-				.run(assertWebServiceTemplateBuilder((builder) -> {
-					WebServiceTemplate webServiceTemplate = builder.build();
-					assertThat(webServiceTemplate.getUnmarshaller())
-							.isSameAs(WebServiceTemplateCustomizerConfig.unmarshaller);
-				}));
+			.run(assertWebServiceTemplateBuilder((builder) -> {
+				WebServiceTemplate webServiceTemplate = builder.build();
+				assertThat(webServiceTemplate.getUnmarshaller())
+					.isSameAs(WebServiceTemplateCustomizerConfig.unmarshaller);
+			}));
 	}
 
 	@Test
 	void builderShouldBeFreshForEachUse() {
 		this.contextRunner.withUserConfiguration(DirtyWebServiceTemplateConfig.class)
-				.run((context) -> assertThat(context).hasNotFailed());
+			.run((context) -> assertThat(context).hasNotFailed());
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertWebServiceTemplateBuilder(

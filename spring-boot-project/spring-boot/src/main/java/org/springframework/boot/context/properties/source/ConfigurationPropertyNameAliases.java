@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,8 +67,12 @@ public final class ConfigurationPropertyNameAliases implements Iterable<Configur
 	}
 
 	public ConfigurationPropertyName getNameForAlias(ConfigurationPropertyName alias) {
-		return this.aliases.entrySet().stream().filter((e) -> e.getValue().contains(alias)).map(Map.Entry::getKey)
-				.findFirst().orElse(null);
+		return this.aliases.entrySet()
+			.stream()
+			.filter((e) -> e.getValue().contains(alias))
+			.map(Map.Entry::getKey)
+			.findFirst()
+			.orElse(null);
 	}
 
 	@Override

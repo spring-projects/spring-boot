@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,29 +91,31 @@ class MailSenderAutoConfigurationTests {
 	@Test
 	void smtpHostWithSettings() {
 		String host = "192.168.1.234";
-		this.contextRunner.withPropertyValues("spring.mail.host:" + host, "spring.mail.port:42",
-				"spring.mail.username:john", "spring.mail.password:secret", "spring.mail.default-encoding:US-ASCII",
-				"spring.mail.protocol:smtps").run((context) -> {
-					assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
-					JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
-					assertThat(mailSender.getHost()).isEqualTo(host);
-					assertThat(mailSender.getPort()).isEqualTo(42);
-					assertThat(mailSender.getUsername()).isEqualTo("john");
-					assertThat(mailSender.getPassword()).isEqualTo("secret");
-					assertThat(mailSender.getDefaultEncoding()).isEqualTo("US-ASCII");
-					assertThat(mailSender.getProtocol()).isEqualTo("smtps");
-				});
+		this.contextRunner
+			.withPropertyValues("spring.mail.host:" + host, "spring.mail.port:42", "spring.mail.username:john",
+					"spring.mail.password:secret", "spring.mail.default-encoding:US-ASCII",
+					"spring.mail.protocol:smtps")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
+				JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
+				assertThat(mailSender.getHost()).isEqualTo(host);
+				assertThat(mailSender.getPort()).isEqualTo(42);
+				assertThat(mailSender.getUsername()).isEqualTo("john");
+				assertThat(mailSender.getPassword()).isEqualTo("secret");
+				assertThat(mailSender.getDefaultEncoding()).isEqualTo("US-ASCII");
+				assertThat(mailSender.getProtocol()).isEqualTo("smtps");
+			});
 	}
 
 	@Test
 	void smtpHostWithJavaMailProperties() {
 		this.contextRunner
-				.withPropertyValues("spring.mail.host:localhost", "spring.mail.properties.mail.smtp.auth:true")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
-					JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
-					assertThat(mailSender.getJavaMailProperties().get("mail.smtp.auth")).isEqualTo("true");
-				});
+			.withPropertyValues("spring.mail.host:localhost", "spring.mail.properties.mail.smtp.auth:true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
+				JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
+				assertThat(mailSender.getJavaMailProperties()).containsEntry("mail.smtp.auth", "true");
+			});
 	}
 
 	@Test
@@ -124,14 +126,14 @@ class MailSenderAutoConfigurationTests {
 	@Test
 	void mailSenderBackOff() {
 		this.contextRunner.withUserConfiguration(ManualMailConfiguration.class)
-				.withPropertyValues("spring.mail.host:smtp.acme.org", "spring.mail.user:user",
-						"spring.mail.password:secret")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
-					JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
-					assertThat(mailSender.getUsername()).isNull();
-					assertThat(mailSender.getPassword()).isNull();
-				});
+			.withPropertyValues("spring.mail.host:smtp.acme.org", "spring.mail.user:user",
+					"spring.mail.password:secret")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
+				JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
+				assertThat(mailSender.getUsername()).isNull();
+				assertThat(mailSender.getPassword()).isNull();
+			});
 	}
 
 	@Test
@@ -179,7 +181,7 @@ class MailSenderAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.mail.jndi-name:foo").run((context) -> {
 			assertThat(context).hasFailed();
 			assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class)
-					.hasMessageContaining("Unable to find Session in JNDI location foo");
+				.hasMessageContaining("Unable to find Session in JNDI location foo");
 		});
 	}
 
@@ -187,54 +189,55 @@ class MailSenderAutoConfigurationTests {
 	void jndiSessionTakesPrecedenceOverProperties() {
 		Session session = configureJndiSession("foo");
 		this.contextRunner.withPropertyValues("spring.mail.jndi-name:foo", "spring.mail.host:localhost")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(Session.class);
-					Session sessionBean = context.getBean(Session.class);
-					assertThat(sessionBean).isEqualTo(session);
-					assertThat(context.getBean(JavaMailSenderImpl.class).getSession()).isEqualTo(sessionBean);
-				});
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Session.class);
+				Session sessionBean = context.getBean(Session.class);
+				assertThat(sessionBean).isEqualTo(session);
+				assertThat(context.getBean(JavaMailSenderImpl.class).getSession()).isEqualTo(sessionBean);
+			});
 	}
 
 	@Test
 	void defaultEncodingWithProperties() {
 		this.contextRunner.withPropertyValues("spring.mail.host:localhost", "spring.mail.default-encoding:UTF-16")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
-					JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
-					assertThat(mailSender.getDefaultEncoding()).isEqualTo("UTF-16");
-				});
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
+				JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
+				assertThat(mailSender.getDefaultEncoding()).isEqualTo("UTF-16");
+			});
 	}
 
 	@Test
 	void defaultEncodingWithJndi() {
 		configureJndiSession("foo");
 		this.contextRunner.withPropertyValues("spring.mail.jndi-name:foo", "spring.mail.default-encoding:UTF-16")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
-					JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
-					assertThat(mailSender.getDefaultEncoding()).isEqualTo("UTF-16");
-				});
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
+				JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
+				assertThat(mailSender.getDefaultEncoding()).isEqualTo("UTF-16");
+			});
 	}
 
 	@Test
 	void connectionOnStartup() {
 		this.contextRunner.withUserConfiguration(MockMailConfiguration.class)
-				.withPropertyValues("spring.mail.host:10.0.0.23", "spring.mail.test-connection:true").run((context) -> {
-					assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
-					JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
-					then(mailSender).should().testConnection();
-				});
+			.withPropertyValues("spring.mail.host:10.0.0.23", "spring.mail.test-connection:true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
+				JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
+				then(mailSender).should().testConnection();
+			});
 	}
 
 	@Test
 	void connectionOnStartupNotCalled() {
 		this.contextRunner.withUserConfiguration(MockMailConfiguration.class)
-				.withPropertyValues("spring.mail.host:10.0.0.23", "spring.mail.test-connection:false")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
-					JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
-					then(mailSender).should(never()).testConnection();
-				});
+			.withPropertyValues("spring.mail.host:10.0.0.23", "spring.mail.test-connection:false")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
+				JavaMailSenderImpl mailSender = context.getBean(JavaMailSenderImpl.class);
+				then(mailSender).should(never()).testConnection();
+			});
 	}
 
 	private Session configureJndiSession(String name) {

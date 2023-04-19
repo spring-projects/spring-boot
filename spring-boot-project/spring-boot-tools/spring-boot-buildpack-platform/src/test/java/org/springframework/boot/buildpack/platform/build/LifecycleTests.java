@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,14 +28,20 @@ import java.util.Map;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.sun.jna.Platform;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.stubbing.Answer;
+import org.skyscreamer.jsonassert.JSONAssert;
 
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ContainerApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ImageApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.VolumeApi;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
+import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
 import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerContent;
@@ -129,7 +135,7 @@ class LifecycleTests {
 		Lifecycle lifecycle = createLifecycle();
 		lifecycle.execute();
 		assertThatIllegalStateException().isThrownBy(lifecycle::execute)
-				.withMessage("Lifecycle has already been executed");
+			.withMessage("Lifecycle has already been executed");
 	}
 
 	@Test
@@ -138,7 +144,7 @@ class LifecycleTests {
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(9, null));
 		assertThatExceptionOfType(BuilderException.class).isThrownBy(() -> createLifecycle().execute())
-				.withMessage("Builder lifecycle 'creator' failed with status code 9");
+			.withMessage("Builder lifecycle 'creator' failed with status code 9");
 	}
 
 	@Test
@@ -159,8 +165,8 @@ class LifecycleTests {
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		assertThatIllegalStateException()
-				.isThrownBy(() -> createLifecycle("builder-metadata-unsupported-api.json").execute()).withMessage(
-						"Detected platform API versions '0.2' are not included in supported versions '0.3,0.4,0.5,0.6,0.7,0.8'");
+			.isThrownBy(() -> createLifecycle("builder-metadata-unsupported-api.json").execute())
+			.withMessageContaining("Detected platform API versions '0.2' are not included in supported versions");
 	}
 
 	@Test
@@ -169,8 +175,8 @@ class LifecycleTests {
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		assertThatIllegalStateException()
-				.isThrownBy(() -> createLifecycle("builder-metadata-unsupported-apis.json").execute()).withMessage(
-						"Detected platform API versions '0.1,0.2' are not included in supported versions '0.3,0.4,0.5,0.6,0.7,0.8'");
+			.isThrownBy(() -> createLifecycle("builder-metadata-unsupported-apis.json").execute())
+			.withMessageContaining("Detected platform API versions '0.1,0.2' are not included in supported versions");
 	}
 
 	@Test
@@ -206,9 +212,53 @@ class LifecycleTests {
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		BuildRequest request = getTestRequest().withBuildCache(Cache.volume("build-volume"))
-				.withLaunchCache(Cache.volume("launch-volume"));
+			.withLaunchCache(Cache.volume("launch-volume"));
 		createLifecycle(request).execute();
 		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-cache-volumes.json"));
+		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+	}
+
+	@Test
+	void executeWithCreatedDateExecutesPhases() throws Exception {
+		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
+		BuildRequest request = getTestRequest().withCreatedDate("2020-07-01T12:34:56Z");
+		createLifecycle(request).execute();
+		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-created-date.json"));
+		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+	}
+
+	@Test
+	void executeWithApplicationDirectoryExecutesPhases() throws Exception {
+		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
+		BuildRequest request = getTestRequest().withApplicationDirectory("/application");
+		createLifecycle(request).execute();
+		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-app-dir.json"));
+		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+	}
+
+	@Test
+	void executeWithDockerHostAndRemoteAddressExecutesPhases() throws Exception {
+		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
+		BuildRequest request = getTestRequest();
+		createLifecycle(request, ResolvedDockerHost.from(new DockerHost("tcp://192.168.1.2:2376"))).execute();
+		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-inherit-remote.json"));
+		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+	}
+
+	@Test
+	void executeWithDockerHostAndLocalAddressExecutesPhases() throws Exception {
+		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
+		BuildRequest request = getTestRequest();
+		createLifecycle(request, ResolvedDockerHost.from(new DockerHost("/var/alt.sock"))).execute();
+		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-inherit-local.json"));
 		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
 	}
 
@@ -243,8 +293,13 @@ class LifecycleTests {
 		return createLifecycle(getTestRequest(), builder);
 	}
 
+	private Lifecycle createLifecycle(BuildRequest request, ResolvedDockerHost dockerHost) throws IOException {
+		EphemeralBuilder builder = mockEphemeralBuilder();
+		return new TestLifecycle(BuildLog.to(this.out), this.docker, dockerHost, request, builder);
+	}
+
 	private Lifecycle createLifecycle(BuildRequest request, EphemeralBuilder ephemeralBuilder) {
-		return new TestLifecycle(BuildLog.to(this.out), this.docker, request, ephemeralBuilder);
+		return new TestLifecycle(BuildLog.to(this.out), this.docker, null, request, ephemeralBuilder);
 	}
 
 	private EphemeralBuilder mockEphemeralBuilder() throws IOException {
@@ -288,16 +343,27 @@ class LifecycleTests {
 
 	private IOConsumer<ContainerConfig> withExpectedConfig(String name) {
 		return (config) -> {
-			InputStream in = getClass().getResourceAsStream(name);
-			String json = FileCopyUtils.copyToString(new InputStreamReader(in, StandardCharsets.UTF_8));
-			assertThat(config.toString()).isEqualToIgnoringWhitespace(json);
+			try {
+				InputStream in = getClass().getResourceAsStream(name);
+				String jsonString = FileCopyUtils.copyToString(new InputStreamReader(in, StandardCharsets.UTF_8));
+				JSONObject json = new JSONObject(jsonString);
+				if (Platform.isWindows()) {
+					JSONObject hostConfig = json.getJSONObject("HostConfig");
+					hostConfig.remove("SecurityOpt");
+				}
+				JSONAssert.assertEquals(config.toString(), json, true);
+			}
+			catch (JSONException ex) {
+				throw new IOException(ex);
+			}
 		};
 	}
 
 	static class TestLifecycle extends Lifecycle {
 
-		TestLifecycle(BuildLog log, DockerApi docker, BuildRequest request, EphemeralBuilder builder) {
-			super(log, docker, request, builder);
+		TestLifecycle(BuildLog log, DockerApi docker, ResolvedDockerHost dockerHost, BuildRequest request,
+				EphemeralBuilder builder) {
+			super(log, docker, dockerHost, request, builder);
 		}
 
 		@Override

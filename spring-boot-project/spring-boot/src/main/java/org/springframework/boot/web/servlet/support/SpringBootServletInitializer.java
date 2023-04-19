@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 
 	/**
 	 * Set if the {@link ErrorPageFilter} should be registered. Set to {@code false} if
-	 * error page mappings should be handled via the server and not Spring Boot.
+	 * error page mappings should be handled through the server and not Spring Boot.
 	 * @param registerErrorPageFilter if the {@link ErrorPageFilter} should be registered.
 	 */
 	protected final void setRegisterErrorPageFilter(boolean registerErrorPageFilter) {
@@ -176,8 +176,8 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 
 	private ApplicationContext getExistingRootWebApplicationContext(ServletContext servletContext) {
 		Object context = servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
-		if (context instanceof ApplicationContext) {
-			return (ApplicationContext) context;
+		if (context instanceof ApplicationContext applicationContext) {
+			return applicationContext;
 		}
 		return null;
 	}
@@ -211,8 +211,8 @@ public abstract class SpringBootServletInitializer implements WebApplicationInit
 		@Override
 		public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 			ConfigurableEnvironment environment = event.getEnvironment();
-			if (environment instanceof ConfigurableWebEnvironment) {
-				((ConfigurableWebEnvironment) environment).initPropertySources(this.servletContext, null);
+			if (environment instanceof ConfigurableWebEnvironment configurableWebEnvironment) {
+				configurableWebEnvironment.initPropertySources(this.servletContext, null);
 			}
 		}
 

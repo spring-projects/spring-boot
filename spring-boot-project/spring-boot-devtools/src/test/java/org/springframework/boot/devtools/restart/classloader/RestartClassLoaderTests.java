@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,14 +104,14 @@ class RestartClassLoaderTests {
 	@Test
 	void parentMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RestartClassLoader(null, new URL[] {}))
-				.withMessageContaining("Parent must not be null");
+			.withMessageContaining("Parent must not be null");
 	}
 
 	@Test
 	void updatedFilesMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new RestartClassLoader(this.parentClassLoader, new URL[] {}, null))
-				.withMessageContaining("UpdatedFiles must not be null");
+			.isThrownBy(() -> new RestartClassLoader(this.parentClassLoader, new URL[] {}, null))
+			.withMessageContaining("UpdatedFiles must not be null");
 	}
 
 	@Test
@@ -129,7 +129,7 @@ class RestartClassLoaderTests {
 	@Test
 	void getResourcesFiltersDuplicates() throws Exception {
 		List<URL> resources = toList(this.reloadClassLoader.getResources(PACKAGE_PATH + "/Sample.txt"));
-		assertThat(resources.size()).isEqualTo(1);
+		assertThat(resources).hasSize(1);
 	}
 
 	@Test
@@ -189,7 +189,7 @@ class RestartClassLoaderTests {
 		String name = PACKAGE_PATH + "/Sample.class";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
 		assertThatExceptionOfType(ClassNotFoundException.class)
-				.isThrownBy(() -> Class.forName(PACKAGE + ".Sample", false, this.reloadClassLoader));
+			.isThrownBy(() -> Class.forName(PACKAGE + ".Sample", false, this.reloadClassLoader));
 	}
 
 	@Test
@@ -197,7 +197,7 @@ class RestartClassLoaderTests {
 		String name = PACKAGE_PATH + "/Sample.class";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.MODIFIED, new byte[10]));
 		assertThatExceptionOfType(ClassFormatError.class)
-				.isThrownBy(() -> Class.forName(PACKAGE + ".Sample", false, this.reloadClassLoader));
+			.isThrownBy(() -> Class.forName(PACKAGE + ".Sample", false, this.reloadClassLoader));
 	}
 
 	@Test
@@ -222,13 +222,14 @@ class RestartClassLoaderTests {
 		try (RestartClassLoader restartClassLoader = new RestartClassLoader(ExampleTransactional.class.getClassLoader(),
 				new URL[] { this.sampleJarFile.toURI().toURL() }, this.updatedFiles)) {
 			new ApplicationContextRunner().withClassLoader(restartClassLoader)
-					.withUserConfiguration(ProxyConfiguration.class).run((context) -> {
-						assertThat(context).hasNotFailed();
-						ExampleTransactional transactional = context.getBean(ExampleTransactional.class);
-						assertThat(AopUtils.isCglibProxy(transactional)).isTrue();
-						assertThat(transactional.getClass().getClassLoader())
-								.isEqualTo(ExampleTransactional.class.getClassLoader());
-					});
+				.withUserConfiguration(ProxyConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasNotFailed();
+					ExampleTransactional transactional = context.getBean(ExampleTransactional.class);
+					assertThat(AopUtils.isCglibProxy(transactional)).isTrue();
+					assertThat(transactional.getClass().getClassLoader())
+						.isEqualTo(ExampleTransactional.class.getClassLoader());
+				});
 		}
 	}
 

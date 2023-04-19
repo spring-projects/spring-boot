@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,14 +30,14 @@ import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.NativeDetector;
-import org.springframework.core.annotation.Order;
+import org.springframework.core.Ordered;
 import org.springframework.format.support.DefaultFormattingConversionService;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 
 /**
  * {@link ApplicationListener} to trigger early initialization in a background thread of
- * time consuming tasks.
+ * time-consuming tasks.
  * <p>
  * Set the {@link #IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME} system property to
  * {@code true} to disable this mechanism and let such initialization happen in the
@@ -49,8 +49,7 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
  * @author Sebastien Deleuze
  * @since 1.3.0
  */
-@Order(LoggingApplicationListener.DEFAULT_ORDER + 1)
-public class BackgroundPreinitializer implements ApplicationListener<SpringApplicationEvent> {
+public class BackgroundPreinitializer implements ApplicationListener<SpringApplicationEvent>, Ordered {
 
 	/**
 	 * System property that instructs Spring Boot how to run pre initialization. When the
@@ -65,16 +64,17 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 
 	private static final CountDownLatch preinitializationComplete = new CountDownLatch(1);
 
-	private static final boolean ENABLED;
+	private static final boolean ENABLED = !Boolean.getBoolean(IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME)
+			&& Runtime.getRuntime().availableProcessors() > 1;
 
-	static {
-		ENABLED = !Boolean.getBoolean(IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME) && !NativeDetector.inNativeImage()
-				&& Runtime.getRuntime().availableProcessors() > 1;
+	@Override
+	public int getOrder() {
+		return LoggingApplicationListener.DEFAULT_ORDER + 1;
 	}
 
 	@Override
 	public void onApplicationEvent(SpringApplicationEvent event) {
-		if (!ENABLED) {
+		if (!ENABLED || NativeDetector.inNativeImage()) {
 			return;
 		}
 		if (event instanceof ApplicationEnvironmentPreparedEvent
@@ -100,18 +100,23 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 				public void run() {
 					runSafely(new ConversionServiceInitializer());
 					runSafely(new ValidationInitializer());
-					runSafely(new MessageConverterInitializer());
-					runSafely(new JacksonInitializer());
+					if (!runSafely(new MessageConverterInitializer())) {
+						// If the MessageConverterInitializer fails to run, we still might
+						// be able to
+						// initialize Jackson
+						runSafely(new JacksonInitializer());
+					}
 					runSafely(new CharsetInitializer());
 					preinitializationComplete.countDown();
 				}
 
-				public void runSafely(Runnable runnable) {
+				boolean runSafely(Runnable runnable) {
 					try {
 						runnable.run();
+						return true;
 					}
 					catch (Throwable ex) {
-						// Ignore
+						return false;
 					}
 				}
 

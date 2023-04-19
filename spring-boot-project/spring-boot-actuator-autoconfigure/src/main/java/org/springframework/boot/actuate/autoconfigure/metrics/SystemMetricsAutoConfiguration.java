@@ -19,11 +19,11 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import java.io.File;
 import java.util.List;
 
-import io.micrometer.binder.system.FileDescriptorMetrics;
-import io.micrometer.binder.system.ProcessorMetrics;
-import io.micrometer.binder.system.UptimeMetrics;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
+import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics;
+import io.micrometer.core.instrument.binder.system.ProcessorMetrics;
+import io.micrometer.core.instrument.binder.system.UptimeMetrics;
 
 import org.springframework.boot.actuate.metrics.system.DiskSpaceMetricsBinder;
 import org.springframework.boot.autoconfigure.AutoConfiguration;

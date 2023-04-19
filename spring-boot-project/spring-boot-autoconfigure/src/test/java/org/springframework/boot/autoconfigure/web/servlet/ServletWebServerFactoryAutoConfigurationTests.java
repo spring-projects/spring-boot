@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,8 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.testsupport.web.servlet.DirtiesUrlFactories;
+import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
@@ -76,13 +78,14 @@ import static org.mockito.Mockito.mock;
  * @author Raheela Aslam
  * @author Madhura Bhave
  */
+@DirtiesUrlFactories
 class ServletWebServerFactoryAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 			AnnotationConfigServletWebServerApplicationContext::new)
-					.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class,
-							DispatcherServletAutoConfiguration.class))
-					.withUserConfiguration(WebServerConfiguration.class);
+		.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class,
+				DispatcherServletAutoConfiguration.class))
+		.withUserConfiguration(WebServerConfiguration.class);
 
 	@Test
 	void createFromConfigClass() {
@@ -121,10 +124,10 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	@Test
 	void contextAlreadyHasDispatcherServletAndRegistration() {
 		this.contextRunner.withUserConfiguration(DispatcherServletWithRegistrationConfiguration.class)
-				.run((context) -> {
-					verifyContext(context);
-					assertThat(context).hasSingleBean(DispatcherServlet.class);
-				});
+			.run((context) -> {
+				verifyContext(context);
+				assertThat(context).hasSingleBean(DispatcherServlet.class);
+			});
 	}
 
 	@Test
@@ -142,22 +145,25 @@ class ServletWebServerFactoryAutoConfigurationTests {
 
 	@Test
 	void initParametersAreConfiguredOnTheServletContext() {
-		this.contextRunner.withPropertyValues("server.servlet.context-parameters.a:alpha",
-				"server.servlet.context-parameters.b:bravo").run((context) -> {
-					ServletContext servletContext = context.getServletContext();
-					assertThat(servletContext.getInitParameter("a")).isEqualTo("alpha");
-					assertThat(servletContext.getInitParameter("b")).isEqualTo("bravo");
-				});
+		this.contextRunner
+			.withPropertyValues("server.servlet.context-parameters.a:alpha",
+					"server.servlet.context-parameters.b:bravo")
+			.run((context) -> {
+				ServletContext servletContext = context.getServletContext();
+				assertThat(servletContext.getInitParameter("a")).isEqualTo("alpha");
+				assertThat(servletContext.getInitParameter("b")).isEqualTo("bravo");
+			});
 	}
 
 	@Test
+	@Servlet5ClassPathOverrides
 	void jettyServerCustomizerBeanIsAddedToFactory() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class))
-						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(JettyServerCustomizerConfiguration.class)
-						.withPropertyValues("server.port:0");
+			.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class))
+			.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(JettyServerCustomizerConfiguration.class)
+			.withPropertyValues("server.port:0");
 		runner.run((context) -> {
 			JettyServletWebServerFactory factory = context.getBean(JettyServletWebServerFactory.class);
 			assertThat(factory.getServerCustomizers()).hasSize(1);
@@ -165,13 +171,14 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
+	@Servlet5ClassPathOverrides
 	void jettyServerCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class))
-						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(DoubleRegistrationJettyServerCustomizerConfiguration.class)
-						.withPropertyValues("server.port: 0");
+			.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class))
+			.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(DoubleRegistrationJettyServerCustomizerConfiguration.class)
+			.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			JettyServletWebServerFactory factory = context.getBean(JettyServletWebServerFactory.class);
 			JettyServerCustomizer customizer = context.getBean("serverCustomizer", JettyServerCustomizer.class);
@@ -184,10 +191,10 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	void undertowDeploymentInfoCustomizerBeanIsAddedToFactory() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
-						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(UndertowDeploymentInfoCustomizerConfiguration.class)
-						.withPropertyValues("server.port:0");
+			.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
+			.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(UndertowDeploymentInfoCustomizerConfiguration.class)
+			.withPropertyValues("server.port:0");
 		runner.run((context) -> {
 			UndertowServletWebServerFactory factory = context.getBean(UndertowServletWebServerFactory.class);
 			assertThat(factory.getDeploymentInfoCustomizers()).hasSize(1);
@@ -198,10 +205,10 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	void undertowDeploymentInfoCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
-						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(DoubleRegistrationUndertowDeploymentInfoCustomizerConfiguration.class)
-						.withPropertyValues("server.port: 0");
+			.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
+			.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(DoubleRegistrationUndertowDeploymentInfoCustomizerConfiguration.class)
+			.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			UndertowServletWebServerFactory factory = context.getBean(UndertowServletWebServerFactory.class);
 			UndertowDeploymentInfoCustomizer customizer = context.getBean("deploymentInfoCustomizer",
@@ -215,10 +222,10 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	void undertowBuilderCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
-						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(DoubleRegistrationUndertowBuilderCustomizerConfiguration.class)
-						.withPropertyValues("server.port: 0");
+			.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
+			.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(DoubleRegistrationUndertowBuilderCustomizerConfiguration.class)
+			.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			UndertowServletWebServerFactory factory = context.getBean(UndertowServletWebServerFactory.class);
 			UndertowBuilderCustomizer customizer = context.getBean("builderCustomizer",
@@ -232,10 +239,10 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	void undertowBuilderCustomizerBeanIsAddedToFactory() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
-						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(UndertowBuilderCustomizerConfiguration.class)
-						.withPropertyValues("server.port:0");
+			.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
+			.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(UndertowBuilderCustomizerConfiguration.class)
+			.withPropertyValues("server.port:0");
 		runner.run((context) -> {
 			UndertowServletWebServerFactory factory = context.getBean(UndertowServletWebServerFactory.class);
 			assertThat(factory.getBuilderCustomizers()).hasSize(1);
@@ -246,10 +253,10 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	void undertowServletWebServerFactoryCustomizerIsAutoConfigured() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
-						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(UndertowBuilderCustomizerConfiguration.class)
-						.withPropertyValues("server.port:0");
+			.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
+			.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(UndertowBuilderCustomizerConfiguration.class)
+			.withPropertyValues("server.port:0");
 		runner.run((context) -> assertThat(context).hasSingleBean(UndertowServletWebServerFactoryCustomizer.class));
 	}
 
@@ -257,9 +264,9 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	void tomcatConnectorCustomizerBeanIsAddedToFactory() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(TomcatConnectorCustomizerConfiguration.class)
-						.withPropertyValues("server.port: 0");
+			.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(TomcatConnectorCustomizerConfiguration.class)
+			.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
 			TomcatConnectorCustomizer customizer = context.getBean("connectorCustomizer",
@@ -273,9 +280,9 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	void tomcatConnectorCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(DoubleRegistrationTomcatConnectorCustomizerConfiguration.class)
-						.withPropertyValues("server.port: 0");
+			.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(DoubleRegistrationTomcatConnectorCustomizerConfiguration.class)
+			.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
 			TomcatConnectorCustomizer customizer = context.getBean("connectorCustomizer",
@@ -289,9 +296,9 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	void tomcatContextCustomizerBeanIsAddedToFactory() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(TomcatContextCustomizerConfiguration.class)
-						.withPropertyValues("server.port: 0");
+			.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(TomcatContextCustomizerConfiguration.class)
+			.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
 			TomcatContextCustomizer customizer = context.getBean("contextCustomizer", TomcatContextCustomizer.class);
@@ -304,9 +311,9 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	void tomcatContextCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(DoubleRegistrationTomcatContextCustomizerConfiguration.class)
-						.withPropertyValues("server.port: 0");
+			.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(DoubleRegistrationTomcatContextCustomizerConfiguration.class)
+			.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
 			TomcatContextCustomizer customizer = context.getBean("contextCustomizer", TomcatContextCustomizer.class);
@@ -319,9 +326,9 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	void tomcatProtocolHandlerCustomizerBeanIsAddedToFactory() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(TomcatProtocolHandlerCustomizerConfiguration.class)
-						.withPropertyValues("server.port: 0");
+			.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(TomcatProtocolHandlerCustomizerConfiguration.class)
+			.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
 			TomcatProtocolHandlerCustomizer<?> customizer = context.getBean("protocolHandlerCustomizer",
@@ -335,9 +342,9 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	void tomcatProtocolHandlerCustomizerRegisteredAsBeanAndViaFactoryIsOnlyCalledOnce() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withUserConfiguration(DoubleRegistrationTomcatProtocolHandlerCustomizerConfiguration.class)
-						.withPropertyValues("server.port: 0");
+			.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+			.withUserConfiguration(DoubleRegistrationTomcatProtocolHandlerCustomizerConfiguration.class)
+			.withPropertyValues("server.port: 0");
 		runner.run((context) -> {
 			TomcatServletWebServerFactory factory = context.getBean(TomcatServletWebServerFactory.class);
 			TomcatProtocolHandlerCustomizer<?> customizer = context.getBean("protocolHandlerCustomizer",
@@ -360,14 +367,14 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	@Test
 	void forwardedHeaderFilterWhenStrategyNotFilterShouldNotBeConfigured() {
 		this.contextRunner.withPropertyValues("server.forward-headers-strategy=native")
-				.run((context) -> assertThat(context).doesNotHaveBean(FilterRegistrationBean.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(FilterRegistrationBean.class));
 	}
 
 	@Test
 	void forwardedHeaderFilterWhenFilterAlreadyRegisteredShouldBackOff() {
 		this.contextRunner.withUserConfiguration(ForwardedHeaderFilterConfiguration.class)
-				.withPropertyValues("server.forward-headers-strategy=framework")
-				.run((context) -> assertThat(context).hasSingleBean(FilterRegistrationBean.class));
+			.withPropertyValues("server.forward-headers-strategy=framework")
+			.run((context) -> assertThat(context).hasSingleBean(FilterRegistrationBean.class));
 	}
 
 	@Test
@@ -382,9 +389,9 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	void relativeRedirectsShouldBeEnabledWhenUsingTomcatContainerAndUseRelativeRedirects() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withPropertyValues("server.forward-headers-strategy=framework",
-								"server.tomcat.use-relative-redirects=true", "server.port=0");
+			.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+			.withPropertyValues("server.forward-headers-strategy=framework",
+					"server.tomcat.use-relative-redirects=true", "server.port=0");
 		runner.run((context) -> {
 			Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
 			assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
@@ -396,9 +403,9 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	void relativeRedirectsShouldNotBeEnabledWhenUsingTomcatContainerAndNotUsingRelativeRedirects() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withPropertyValues("server.forward-headers-strategy=framework",
-								"server.tomcat.use-relative-redirects=false", "server.port=0");
+			.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+			.withPropertyValues("server.forward-headers-strategy=framework",
+					"server.tomcat.use-relative-redirects=false", "server.port=0");
 		runner.run((context) -> {
 			Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
 			assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
@@ -410,9 +417,9 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	void relativeRedirectsShouldNotBeEnabledWhenNotUsingTomcatContainer() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
-						.withClassLoader(new FilteredClassLoader(Tomcat.class))
-						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
-						.withPropertyValues("server.forward-headers-strategy=framework", "server.port=0");
+			.withClassLoader(new FilteredClassLoader(Tomcat.class, Server.class))
+			.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+			.withPropertyValues("server.forward-headers-strategy=framework", "server.port=0");
 		runner.run((context) -> {
 			Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
 			assertThat(filter).isInstanceOf(ForwardedHeaderFilter.class);
@@ -496,7 +503,10 @@ class ServletWebServerFactoryAutoConfigurationTests {
 
 		@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_REGISTRATION_BEAN_NAME)
 		ServletRegistrationBean<DispatcherServlet> dispatcherRegistration(DispatcherServlet dispatcherServlet) {
-			return new ServletRegistrationBean<>(dispatcherServlet, "/app/*");
+			ServletRegistrationBean<DispatcherServlet> registration = new ServletRegistrationBean<>(dispatcherServlet,
+					"/app/*");
+			registration.setName(DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
+			return registration;
 		}
 
 	}

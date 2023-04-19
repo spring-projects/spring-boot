@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,9 @@ package org.springframework.boot.diagnostics.analyzer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.InjectionPoint;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory;
@@ -36,16 +34,18 @@ import org.springframework.util.StringUtils;
  * {@link BeanCurrentlyInCreationException}.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
-class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<BeanCurrentlyInCreationException>
-		implements BeanFactoryAware {
+class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<BeanCurrentlyInCreationException> {
 
-	private AbstractAutowireCapableBeanFactory beanFactory;
+	private final AbstractAutowireCapableBeanFactory beanFactory;
 
-	@Override
-	public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
-		if (beanFactory instanceof AbstractAutowireCapableBeanFactory) {
-			this.beanFactory = (AbstractAutowireCapableBeanFactory) beanFactory;
+	BeanCurrentlyInCreationFailureAnalyzer(BeanFactory beanFactory) {
+		if (beanFactory instanceof AbstractAutowireCapableBeanFactory autowireCapableBeanFactory) {
+			this.beanFactory = autowireCapableBeanFactory;
+		}
+		else {
+			this.beanFactory = null;
 		}
 	}
 
@@ -157,10 +157,10 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 		}
 
 		private InjectionPoint findFailedInjectionPoint(BeanCreationException ex) {
-			if (!(ex instanceof UnsatisfiedDependencyException)) {
-				return null;
+			if (ex instanceof UnsatisfiedDependencyException unsatisfiedDependencyException) {
+				return unsatisfiedDependencyException.getInjectionPoint();
 			}
-			return ((UnsatisfiedDependencyException) ex).getInjectionPoint();
+			return null;
 		}
 
 		@Override
@@ -185,8 +185,8 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 		}
 
 		static BeanInCycle get(Throwable ex) {
-			if (ex instanceof BeanCreationException) {
-				return get((BeanCreationException) ex);
+			if (ex instanceof BeanCreationException beanCreationException) {
+				return get(beanCreationException);
 			}
 			return null;
 		}

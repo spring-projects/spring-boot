@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,17 +52,21 @@ import org.springframework.util.StringUtils;
  *
  * @author Mark Paluch
  * @author Andy Wilkinson
+ * @author Moritz Halbritter
+ * @author Phillip Webb
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisClient.class)
-@ConditionalOnProperty(name = "spring.redis.client-type", havingValue = "lettuce", matchIfMissing = true)
+@ConditionalOnProperty(name = "spring.data.redis.client-type", havingValue = "lettuce", matchIfMissing = true)
 class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	LettuceConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
-			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider) {
-		super(properties, standaloneConfigurationProvider, sentinelConfigurationProvider, clusterConfigurationProvider);
+			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
+			RedisConnectionDetails connectionDetails) {
+		super(properties, connectionDetails, standaloneConfigurationProvider, sentinelConfigurationProvider,
+				clusterConfigurationProvider);
 	}
 
 	@Bean(destroyMethod = "shutdown")
@@ -116,7 +120,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private LettuceClientConfigurationBuilder applyProperties(
 			LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
-		if (getProperties().isSsl()) {
+		if (getConnectionDetails() instanceof PropertiesRedisConnectionDetails && getProperties().isSsl()) {
 			builder.useSsl();
 		}
 		if (getProperties().getTimeout() != null) {
@@ -148,7 +152,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			ClusterClientOptions.Builder builder = ClusterClientOptions.builder();
 			Refresh refreshProperties = getProperties().getLettuce().getCluster().getRefresh();
 			Builder refreshBuilder = ClusterTopologyRefreshOptions.builder()
-					.dynamicRefreshSources(refreshProperties.isDynamicRefreshSources());
+				.dynamicRefreshSources(refreshProperties.isDynamicRefreshSources());
 			if (refreshProperties.getPeriod() != null) {
 				refreshBuilder.enablePeriodicRefresh(refreshProperties.getPeriod());
 			}
@@ -161,8 +165,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private void customizeConfigurationFromUrl(LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
-		ConnectionInfo connectionInfo = parseUrl(getProperties().getUrl());
-		if (connectionInfo.isUseSsl()) {
+		if (urlUsesSsl()) {
 			builder.useSsl();
 		}
 	}

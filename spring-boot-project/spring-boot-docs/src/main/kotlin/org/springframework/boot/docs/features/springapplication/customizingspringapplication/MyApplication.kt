@@ -17,14 +17,14 @@
 package org.springframework.boot.docs.features.springapplication.customizingspringapplication
 
 import org.springframework.boot.Banner
-import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.boot.runApplication
 
 @SpringBootApplication
 class MyApplication
 
 fun main(args: Array<String>) {
-	val application = SpringApplication(MyApplication::class.java)
-	application.setBannerMode(Banner.Mode.OFF)
-	application.run(*args)
+	runApplication<MyApplication>(*args) {
+		setBannerMode(Banner.Mode.OFF)
+	}
 }

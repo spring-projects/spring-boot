@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,9 @@ class SingleRow extends Row {
 			return null;
 		}
 		if (defaultValue.getClass().isArray()) {
-			return Arrays.stream((Object[]) defaultValue).map(Object::toString)
-					.collect(Collectors.joining("," + System.lineSeparator()));
+			return Arrays.stream((Object[]) defaultValue)
+				.map(Object::toString)
+				.collect(Collectors.joining("," + System.lineSeparator()));
 		}
 		return defaultValue.toString();
 	}

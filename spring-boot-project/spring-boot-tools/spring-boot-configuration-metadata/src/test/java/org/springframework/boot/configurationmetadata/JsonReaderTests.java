@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,13 +94,13 @@ class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		ValueHint valueHint = hint.getValueHints().get(0);
 		assertThat(valueHint.getValue()).isEqualTo(42);
 		assertThat(valueHint.getDescription())
-				.isEqualTo("Because that's the answer to any question, choose it. \nReally.");
+			.isEqualTo("Because that's the answer to any question, choose it. \nReally.");
 		assertThat(valueHint.getShortDescription()).isEqualTo("Because that's the answer to any question, choose it.");
 		assertThat(hint.getValueProviders()).hasSize(1);
 		ValueProvider valueProvider = hint.getValueProviders().get(0);
 		assertThat(valueProvider.getName()).isEqualTo("handle-as");
 		assertThat(valueProvider.getParameters()).hasSize(1);
-		assertThat(valueProvider.getParameters().get("target")).isEqualTo(Integer.class.getName());
+		assertThat(valueProvider.getParameters()).containsEntry("target", Integer.class.getName());
 	}
 
 	@Test
@@ -123,7 +123,7 @@ class JsonReaderTests extends AbstractConfigurationMetadataTests {
 		ValueProvider valueProvider = hint.getValueProviders().get(0);
 		assertThat(valueProvider.getName()).isEqualTo("handle-as");
 		assertThat(valueProvider.getParameters()).hasSize(1);
-		assertThat(valueProvider.getParameters().get("target")).isEqualTo(String.class.getName());
+		assertThat(valueProvider.getParameters()).containsEntry("target", String.class.getName());
 		ValueProvider valueProvider2 = hint.getValueProviders().get(1);
 		assertThat(valueProvider2.getName()).isEqualTo("any");
 		assertThat(valueProvider2.getParameters()).isEmpty();

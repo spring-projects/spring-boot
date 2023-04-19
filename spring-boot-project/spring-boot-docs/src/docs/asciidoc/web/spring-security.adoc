@@ -38,7 +38,7 @@ To switch off the default web application security configuration completely or t
 
 To also switch off the `UserDetailsService` configuration, you can add a bean of type `UserDetailsService`, `AuthenticationProvider`, or `AuthenticationManager`.
 
-Access rules can be overridden by adding a custom `SecurityFilterChain` or `WebSecurityConfigurerAdapter` bean.
+Access rules can be overridden by adding a custom `SecurityFilterChain` bean.
 Spring Boot provides convenience methods that can be used to override access rules for actuator endpoints and static resources.
 `EndpointRequest` can be used to create a `RequestMatcher` that is based on the configprop:management.endpoints.web.base-path[] property.
 `PathRequest` can be used to create a `RequestMatcher` for resources in commonly used locations.
@@ -74,7 +74,7 @@ https://oauth.net/2/[OAuth2] is a widely used authorization framework that is su
 
 [[web.security.oauth2.client]]
 ==== Client
-If you have `spring-security-oauth2-client` on your classpath, you can take advantage of some auto-configuration to set up an OAuth2/Open ID Connect clients.
+If you have `spring-security-oauth2-client` on your classpath, you can take advantage of some auto-configuration to set up OAuth2/Open ID Connect clients.
 This configuration makes use of the properties under `OAuth2ClientProperties`.
 The same properties are applicable to both servlet and reactive applications.
 
@@ -95,7 +95,7 @@ You can register multiple OAuth2 clients and providers under the `spring.securit
 	            scope: "user"
 	            redirect-uri: "https://my-redirect-uri.com"
 	            client-authentication-method: "basic"
-	            authorization-grant-type: "authorization-code"
+	            authorization-grant-type: "authorization_code"
 
 	          my-client-2:
 	            client-id: "abcd"
@@ -118,9 +118,9 @@ You can register multiple OAuth2 clients and providers under the `spring.securit
 ----
 
 For OpenID Connect providers that support https://openid.net/specs/openid-connect-discovery-1_0.html[OpenID Connect discovery], the configuration can be further simplified.
-The provider needs to be configured with an `issuer-uri` which is the URI that the it asserts as its Issuer Identifier.
-For example, if the `issuer-uri` provided is "https://example.com", then an `OpenID Provider Configuration Request` will be made to "https://example.com/.well-known/openid-configuration".
-The result is expected to be an `OpenID Provider Configuration Response`.
+The provider needs to be configured with an `issuer-uri` which is the URI that it asserts as its Issuer Identifier.
+For example, if the `issuer-uri` provided is "https://example.com", then an "OpenID Provider Configuration Request" will be made to "https://example.com/.well-known/openid-configuration".
+The result is expected to be an "OpenID Provider Configuration Response".
 The following example shows how an OpenID Connect Provider can be configured with the `issuer-uri`:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -147,7 +147,7 @@ For production environments, consider using a `JdbcOAuth2AuthorizedClientService
 
 
 [[web.security.oauth2.client.common-providers]]
-===== OAuth2 client registration for common providers
+===== OAuth2 Client Registration for Common Providers
 For common OAuth2 and OpenID providers, including Google, Github, Facebook, and Okta, we provide a set of provider defaults (`google`, `github`, `facebook`, and `okta`, respectively).
 
 If you do not need to customize these providers, you can set the `provider` attribute to the one for which you need to infer defaults.
@@ -227,9 +227,70 @@ Alternatively, you can define your own `OpaqueTokenIntrospector` bean for servle
 
 [[web.security.oauth2.authorization-server]]
 ==== Authorization Server
-Currently, Spring Security does not provide support for implementing an OAuth 2.0 Authorization Server.
-However, this functionality is available from the {spring-security-oauth2}[Spring Security OAuth] project, which will eventually be superseded by Spring Security completely.
-Until then, you can use the `spring-security-oauth2-autoconfigure` module to easily set up an OAuth 2.0 authorization server; see its https://docs.spring.io/spring-security-oauth2-boot/[documentation] for instructions.
+If you have `spring-security-oauth2-authorization-server` on your classpath, you can take advantage of some auto-configuration to set up a Servlet-based OAuth2 Authorization Server.
+
+You can register multiple OAuth2 clients under the `spring.security.oauth2.authorizationserver.client` prefix, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  security:
+	    oauth2:
+	      authorizationserver:
+	        client:
+	          my-client-1:
+	            registration:
+	              client-id: "abcd"
+	              client-secret: "{noop}secret1"
+	              client-authentication-methods:
+	                - "client_secret_basic"
+	              authorization-grant-types:
+	                - "authorization_code"
+	                - "refresh_token"
+	              redirect-uris:
+	                - "https://my-client-1.com/login/oauth2/code/abcd"
+	                - "https://my-client-1.com/authorized"
+	              scopes:
+	                - "openid"
+	                - "profile"
+	                - "email"
+	                - "phone"
+	                - "address"
+	            require-authorization-consent: true
+	          my-client-2:
+	            registration:
+	              client-id: "efgh"
+	              client-secret: "{noop}secret2"
+	              client-authentication-methods:
+	                - "client_secret_jwt"
+	              authorization-grant-types:
+	                - "client_credentials"
+	              scopes:
+	                - "user.read"
+	                - "user.write"
+	            jwk-set-uri: "https://my-client-2.com/jwks"
+		        token-endpoint-authentication-signing-algorithm: "RS256"
+----
+
+NOTE: The `client-secret` property must be in a format that can be matched by the configured `PasswordEncoder`.
+The default instance of `PasswordEncoder` is created via `PasswordEncoderFactories.createDelegatingPasswordEncoder()`.
+
+The auto-configuration Spring Boot provides for Spring Authorization Server is designed for getting started quickly.
+Most applications will require customization and will want to define several beans to override auto-configuration.
+
+The following components can be defined as beans to override auto-configuration specific to Spring Authorization Server:
+
+* `RegisteredClientRepository`
+* `AuthorizationServerSettings`
+* `SecurityFilterChain`
+* `com.nimbusds.jose.jwk.source.JWKSource<com.nimbusds.jose.proc.SecurityContext>`
+* `JwtDecoder`
+
+TIP: Spring Boot auto-configures an `InMemoryRegisteredClientRepository` which is used by Spring Authorization Server for the management of registered clients.
+The `InMemoryRegisteredClientRepository` has limited capabilities and we recommend using it only for development environments.
+For production environments, consider using a `JdbcRegisteredClientRepository` or creating your own implementation of `RegisteredClientRepository`.
+
+Additional information can be found in the {spring-authorization-server-docs}/getting-started.html[Getting Started] chapter of the {spring-authorization-server-docs}/index.html[Spring Authorization Server Reference Guide].
 
 
 
@@ -262,7 +323,11 @@ You can register multiple relying parties under the `spring.security.saml2.relyi
 	              credentials:
 	              - private-key-location: "path-to-private-key"
                     certificate-location: "path-to-certificate"
-	            identityprovider:
+                singlelogout:
+                   url: "https://myapp/logout/saml2/slo"
+                   response-url: "https://remoteidp2.slo.url"
+                   binding: "POST"
+	            assertingparty:
 	              verification:
 	                credentials:
 	                - certificate-location: "path-to-verification-cert"
@@ -278,10 +343,20 @@ You can register multiple relying parties under the `spring.security.saml2.relyi
 	              credentials:
 	              - private-key-location: "path-to-private-key"
                     certificate-location: "path-to-certificate"
-                identityprovider:
+                assertingparty:
                   verification:
                     credentials:
                     - certificate-location: "path-to-other-verification-cert"
                   entity-id: "remote-idp-entity-id2"
                   sso-url: "https://remoteidp2.sso.url"
+                  singlelogout:
+                    url: "https://remoteidp2.slo.url"
+                    response-url: "https://myapp/logout/saml2/slo"
+                    binding: "POST"
 ----
+
+For SAML2 logout, by default, Spring Security's `Saml2LogoutRequestFilter` and `Saml2LogoutResponseFilter` only process URLs matching `/logout/saml2/slo`.
+If you want to customize the `url` to which AP-initiated logout requests get sent to or the `response-url` to which an AP sends logout responses to, to use a different pattern, you need to provide configuration to process that custom pattern.
+For example, for servlet applications, you can add your own `SecurityFilterChain` that resembles the following:
+
+include::code:MySamlRelyingPartyConfiguration[]

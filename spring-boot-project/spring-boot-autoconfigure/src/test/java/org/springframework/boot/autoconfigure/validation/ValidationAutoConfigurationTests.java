@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,15 @@ package org.springframework.boot.autoconfigure.validation;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Validator;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -36,6 +39,7 @@ import org.springframework.boot.validation.beanvalidation.MethodValidationExclud
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.annotation.Order;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.validation.beanvalidation.CustomValidatorBean;
@@ -46,6 +50,8 @@ import org.springframework.validation.beanvalidation.OptionalValidatorFactoryBea
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -57,16 +63,16 @@ import static org.mockito.Mockito.mock;
 class ValidationAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class));
 
 	@Test
 	void validationAutoConfigurationShouldConfigureDefaultValidator() {
 		this.contextRunner.run((context) -> {
 			assertThat(context.getBeanNamesForType(Validator.class)).containsExactly("defaultValidator");
 			assertThat(context.getBeanNamesForType(org.springframework.validation.Validator.class))
-					.containsExactly("defaultValidator");
+				.containsExactly("defaultValidator");
 			assertThat(context.getBean(Validator.class)).isInstanceOf(LocalValidatorFactoryBean.class)
-					.isEqualTo(context.getBean(org.springframework.validation.Validator.class));
+				.isEqualTo(context.getBean(org.springframework.validation.Validator.class));
 			assertThat(isPrimaryBean(context, "defaultValidator")).isTrue();
 		});
 	}
@@ -76,9 +82,9 @@ class ValidationAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(UserDefinedValidatorConfig.class).run((context) -> {
 			assertThat(context.getBeanNamesForType(Validator.class)).containsExactly("customValidator");
 			assertThat(context.getBeanNamesForType(org.springframework.validation.Validator.class))
-					.containsExactly("customValidator");
+				.containsExactly("customValidator");
 			assertThat(context.getBean(Validator.class)).isInstanceOf(OptionalValidatorFactoryBean.class)
-					.isEqualTo(context.getBean(org.springframework.validation.Validator.class));
+				.isEqualTo(context.getBean(org.springframework.validation.Validator.class));
 			assertThat(isPrimaryBean(context, "customValidator")).isFalse();
 		});
 	}
@@ -88,7 +94,7 @@ class ValidationAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(UserDefinedDefaultValidatorConfig.class).run((context) -> {
 			assertThat(context.getBeanNamesForType(Validator.class)).containsExactly("defaultValidator");
 			assertThat(context.getBeanNamesForType(org.springframework.validation.Validator.class))
-					.containsExactly("defaultValidator");
+				.containsExactly("defaultValidator");
 			assertThat(isPrimaryBean(context, "defaultValidator")).isFalse();
 		});
 	}
@@ -107,9 +113,9 @@ class ValidationAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(UserDefinedSpringValidatorConfig.class).run((context) -> {
 			assertThat(context.getBeanNamesForType(Validator.class)).containsExactly("defaultValidator");
 			assertThat(context.getBeanNamesForType(org.springframework.validation.Validator.class))
-					.containsExactly("customValidator", "anotherCustomValidator", "defaultValidator");
+				.containsExactly("customValidator", "anotherCustomValidator", "defaultValidator");
 			assertThat(context.getBean(Validator.class)).isInstanceOf(LocalValidatorFactoryBean.class)
-					.isEqualTo(context.getBean(org.springframework.validation.Validator.class));
+				.isEqualTo(context.getBean(org.springframework.validation.Validator.class));
 			assertThat(isPrimaryBean(context, "defaultValidator")).isTrue();
 		});
 	}
@@ -119,10 +125,10 @@ class ValidationAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(UserDefinedPrimarySpringValidatorConfig.class).run((context) -> {
 			assertThat(context.getBeanNamesForType(Validator.class)).containsExactly("defaultValidator");
 			assertThat(context.getBeanNamesForType(org.springframework.validation.Validator.class))
-					.containsExactly("customValidator", "anotherCustomValidator", "defaultValidator");
+				.containsExactly("customValidator", "anotherCustomValidator", "defaultValidator");
 			assertThat(context.getBean(Validator.class)).isInstanceOf(LocalValidatorFactoryBean.class);
 			assertThat(context.getBean(org.springframework.validation.Validator.class))
-					.isEqualTo(context.getBean("anotherCustomValidator"));
+				.isEqualTo(context.getBean("anotherCustomValidator"));
 			assertThat(isPrimaryBean(context, "defaultValidator")).isFalse();
 		});
 	}
@@ -133,10 +139,10 @@ class ValidationAutoConfigurationTests {
 			this.contextRunner.withParent(parent).run((context) -> {
 				assertThat(context.getBeanNamesForType(Validator.class)).containsExactly("defaultValidator");
 				assertThat(context.getBeanNamesForType(org.springframework.validation.Validator.class))
-						.containsExactly("defaultValidator");
+					.containsExactly("defaultValidator");
 				assertThat(BeanFactoryUtils.beanNamesForTypeIncludingAncestors(context.getBeanFactory(),
-						org.springframework.validation.Validator.class)).containsExactly("defaultValidator",
-								"customValidator", "anotherCustomValidator");
+						org.springframework.validation.Validator.class))
+					.containsExactly("defaultValidator", "customValidator", "anotherCustomValidator");
 				assertThat(isPrimaryBean(context, "defaultValidator")).isTrue();
 			});
 		});
@@ -145,17 +151,17 @@ class ValidationAutoConfigurationTests {
 	@Test
 	void whenUserProvidesPrimarySpringValidatorInParentContextThenAutoConfiguredValidatorIsPrimary() {
 		new ApplicationContextRunner().withUserConfiguration(UserDefinedPrimarySpringValidatorConfig.class)
-				.run((parent) -> {
-					this.contextRunner.withParent(parent).run((context) -> {
-						assertThat(context.getBeanNamesForType(Validator.class)).containsExactly("defaultValidator");
-						assertThat(context.getBeanNamesForType(org.springframework.validation.Validator.class))
-								.containsExactly("defaultValidator");
-						assertThat(BeanFactoryUtils.beanNamesForTypeIncludingAncestors(context.getBeanFactory(),
-								org.springframework.validation.Validator.class)).containsExactly("defaultValidator",
-										"customValidator", "anotherCustomValidator");
-						assertThat(isPrimaryBean(context, "defaultValidator")).isTrue();
-					});
+			.run((parent) -> {
+				this.contextRunner.withParent(parent).run((context) -> {
+					assertThat(context.getBeanNamesForType(Validator.class)).containsExactly("defaultValidator");
+					assertThat(context.getBeanNamesForType(org.springframework.validation.Validator.class))
+						.containsExactly("defaultValidator");
+					assertThat(BeanFactoryUtils.beanNamesForTypeIncludingAncestors(context.getBeanFactory(),
+							org.springframework.validation.Validator.class))
+						.containsExactly("defaultValidator", "customValidator", "anotherCustomValidator");
+					assertThat(isPrimaryBean(context, "defaultValidator")).isTrue();
 				});
+			});
 	}
 
 	@Test
@@ -191,48 +197,65 @@ class ValidationAutoConfigurationTests {
 	@Test
 	void validationCanBeConfiguredToUseJdkProxy() {
 		this.contextRunner.withUserConfiguration(AnotherSampleServiceConfiguration.class)
-				.withPropertyValues("spring.aop.proxy-target-class=false").run((context) -> {
-					assertThat(context.getBeansOfType(Validator.class)).hasSize(1);
-					assertThat(context.getBeansOfType(DefaultAnotherSampleService.class)).isEmpty();
-					AnotherSampleService service = context.getBean(AnotherSampleService.class);
-					service.doSomething(42);
-					assertThatExceptionOfType(ConstraintViolationException.class)
-							.isThrownBy(() -> service.doSomething(2));
-				});
+			.withPropertyValues("spring.aop.proxy-target-class=false")
+			.run((context) -> {
+				assertThat(context.getBeansOfType(Validator.class)).hasSize(1);
+				assertThat(context.getBeansOfType(DefaultAnotherSampleService.class)).isEmpty();
+				AnotherSampleService service = context.getBean(AnotherSampleService.class);
+				service.doSomething(42);
+				assertThatExceptionOfType(ConstraintViolationException.class).isThrownBy(() -> service.doSomething(2));
+			});
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void userDefinedMethodValidationPostProcessorTakesPrecedence() {
 		this.contextRunner.withUserConfiguration(SampleConfiguration.class).run((context) -> {
 			assertThat(context.getBeansOfType(Validator.class)).hasSize(1);
 			Object userMethodValidationPostProcessor = context.getBean("testMethodValidationPostProcessor");
 			assertThat(context.getBean(MethodValidationPostProcessor.class))
-					.isSameAs(userMethodValidationPostProcessor);
+				.isSameAs(userMethodValidationPostProcessor);
 			assertThat(context.getBeansOfType(MethodValidationPostProcessor.class)).hasSize(1);
-			assertThat(context.getBean(Validator.class))
-					.isNotSameAs(ReflectionTestUtils.getField(userMethodValidationPostProcessor, "validator"));
+			Object validator = ReflectionTestUtils.getField(userMethodValidationPostProcessor, "validator");
+			assertThat(validator).isNotNull().isInstanceOf(Supplier.class);
+			assertThat(context.getBean(Validator.class)).isNotSameAs(((Supplier<Validator>) validator).get());
 		});
 	}
 
 	@Test
 	void methodValidationPostProcessorValidatorDependencyDoesNotTriggerEarlyInitialization() {
 		this.contextRunner.withUserConfiguration(CustomValidatorConfiguration.class)
-				.run((context) -> assertThat(context.getBean(TestBeanPostProcessor.class).postProcessed)
-						.contains("someService"));
+			.run((context) -> assertThat(context.getBean(TestBeanPostProcessor.class).postProcessed)
+				.contains("someService"));
 	}
 
 	@Test
 	void validationIsEnabledInChildContext() {
 		this.contextRunner.run((parent) -> new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
-				.withUserConfiguration(SampleService.class).withParent(parent).run((context) -> {
-					assertThat(context.getBeansOfType(Validator.class)).hasSize(0);
-					assertThat(parent.getBeansOfType(Validator.class)).hasSize(1);
-					SampleService service = context.getBean(SampleService.class);
-					service.doSomething("Valid");
-					assertThatExceptionOfType(ConstraintViolationException.class)
-							.isThrownBy(() -> service.doSomething("KO"));
-				}));
+			.withConfiguration(AutoConfigurations.of(ValidationAutoConfiguration.class))
+			.withUserConfiguration(SampleService.class)
+			.withParent(parent)
+			.run((context) -> {
+				assertThat(context.getBeansOfType(Validator.class)).isEmpty();
+				assertThat(parent.getBeansOfType(Validator.class)).hasSize(1);
+				SampleService service = context.getBean(SampleService.class);
+				service.doSomething("Valid");
+				assertThatExceptionOfType(ConstraintViolationException.class)
+					.isThrownBy(() -> service.doSomething("KO"));
+			}));
+	}
+
+	@Test
+	void configurationCustomizerBeansAreCalledInOrder() {
+		this.contextRunner.withUserConfiguration(ConfigurationCustomizersConfiguration.class).run((context) -> {
+			ValidationConfigurationCustomizer customizerOne = context.getBean("customizerOne",
+					ValidationConfigurationCustomizer.class);
+			ValidationConfigurationCustomizer customizerTwo = context.getBean("customizerTwo",
+					ValidationConfigurationCustomizer.class);
+			InOrder inOrder = Mockito.inOrder(customizerOne, customizerTwo);
+			then(customizerTwo).should(inOrder).customize(any(jakarta.validation.Configuration.class));
+			then(customizerOne).should(inOrder).customize(any(jakarta.validation.Configuration.class));
+		});
 	}
 
 	private boolean isPrimaryBean(AssertableApplicationContext context, String beanName) {
@@ -404,7 +427,7 @@ class ValidationAutoConfigurationTests {
 
 		static class TestBeanPostProcessor implements BeanPostProcessor {
 
-			private Set<String> postProcessed = new HashSet<>();
+			private final Set<String> postProcessed = new HashSet<>();
 
 			@Override
 			public Object postProcessAfterInitialization(Object bean, String name) {
@@ -417,6 +440,23 @@ class ValidationAutoConfigurationTests {
 				return bean;
 			}
 
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ConfigurationCustomizersConfiguration {
+
+		@Bean
+		@Order(1)
+		ValidationConfigurationCustomizer customizerOne() {
+			return mock(ValidationConfigurationCustomizer.class);
+		}
+
+		@Bean
+		@Order(0)
+		ValidationConfigurationCustomizer customizerTwo() {
+			return mock(ValidationConfigurationCustomizer.class);
 		}
 
 	}

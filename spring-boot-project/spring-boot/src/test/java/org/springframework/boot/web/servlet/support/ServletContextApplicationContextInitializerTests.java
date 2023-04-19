@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,14 +47,14 @@ class ServletContextApplicationContextInitializerTests {
 	void applicationContextIsNotStoredInServletContextByDefault() {
 		new ServletContextApplicationContextInitializer(this.servletContext).initialize(this.applicationContext);
 		then(this.servletContext).should(never())
-				.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.applicationContext);
+			.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.applicationContext);
 	}
 
 	@Test
 	void applicationContextCanBeStoredInServletContext() {
 		new ServletContextApplicationContextInitializer(this.servletContext, true).initialize(this.applicationContext);
-		then(this.servletContext).should().setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE,
-				this.applicationContext);
+		then(this.servletContext).should()
+			.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.applicationContext);
 	}
 
 }

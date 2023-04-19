@@ -47,7 +47,7 @@ class SpyBeanWithDirtiesContextClassModeBeforeMethodIntegrationTests {
 	private ExampleServiceCaller caller;
 
 	@Test
-	void testSpying() throws Exception {
+	void testSpying() {
 		this.caller.sayGreeting();
 		then(this.exampleService).should().greeting();
 	}

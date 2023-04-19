@@ -33,6 +33,9 @@
       "pack-cache-b35197ac41ea.launch:/launch-cache",
       "/host/src/path:/container/dest/path:ro",
       "volume-name:/container/volume/path:rw"
+    ],
+    "SecurityOpt" : [
+      "label=disable"
     ]
   }
 }

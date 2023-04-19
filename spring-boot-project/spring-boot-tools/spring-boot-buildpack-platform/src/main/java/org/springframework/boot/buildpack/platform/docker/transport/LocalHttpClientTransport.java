@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,27 +20,28 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 
 import com.sun.jna.Platform;
-import org.apache.http.HttpHost;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.DnsResolver;
-import org.apache.http.conn.HttpClientConnectionManager;
-import org.apache.http.conn.SchemePortResolver;
-import org.apache.http.conn.UnsupportedSchemeException;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.Args;
+import org.apache.hc.client5.http.DnsResolver;
+import org.apache.hc.client5.http.SchemePortResolver;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.BasicHttpClientConnectionManager;
+import org.apache.hc.client5.http.io.HttpClientConnectionManager;
+import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.config.Registry;
+import org.apache.hc.core5.http.config.RegistryBuilder;
+import org.apache.hc.core5.http.protocol.HttpContext;
+import org.apache.hc.core5.util.Args;
+import org.apache.hc.core5.util.TimeValue;
 
+import org.springframework.boot.buildpack.platform.docker.configuration.ResolvedDockerHost;
 import org.springframework.boot.buildpack.platform.socket.DomainSocket;
 import org.springframework.boot.buildpack.platform.socket.NamedPipeSocket;
-import org.springframework.boot.buildpack.platform.system.Environment;
 
 /**
  * {@link HttpClientTransport} that talks to local Docker.
@@ -50,29 +51,26 @@ import org.springframework.boot.buildpack.platform.system.Environment;
  */
 final class LocalHttpClientTransport extends HttpClientTransport {
 
-	private static final String UNIX_SOCKET_PREFIX = "unix://";
+	private static final HttpHost LOCAL_DOCKER_HOST;
 
-	private static final String DOCKER_HOST = "DOCKER_HOST";
+	static {
+		try {
+			LOCAL_DOCKER_HOST = HttpHost.create("docker://localhost");
+		}
+		catch (URISyntaxException ex) {
+			throw new RuntimeException("Error creating local Docker host address", ex);
+		}
+	}
 
-	private static final HttpHost LOCAL_DOCKER_HOST = HttpHost.create("docker://localhost");
-
-	private LocalHttpClientTransport(CloseableHttpClient client) {
+	private LocalHttpClientTransport(HttpClient client) {
 		super(client, LOCAL_DOCKER_HOST);
 	}
 
-	static LocalHttpClientTransport create(Environment environment) {
+	static LocalHttpClientTransport create(ResolvedDockerHost dockerHost) {
 		HttpClientBuilder builder = HttpClients.custom();
-		builder.setConnectionManager(new LocalConnectionManager(socketFilePath(environment)));
+		builder.setConnectionManager(new LocalConnectionManager(dockerHost.getAddress()));
 		builder.setSchemePortResolver(new LocalSchemePortResolver());
 		return new LocalHttpClientTransport(builder.build());
-	}
-
-	private static String socketFilePath(Environment environment) {
-		String host = environment.get(DOCKER_HOST);
-		if (host != null && host.startsWith(UNIX_SOCKET_PREFIX)) {
-			return host.substring(UNIX_SOCKET_PREFIX.length());
-		}
-		return host;
 	}
 
 	/**
@@ -97,11 +95,16 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 	 */
 	private static class LocalDnsResolver implements DnsResolver {
 
-		private static final InetAddress[] LOOPBACK = new InetAddress[] { InetAddress.getLoopbackAddress() };
+		private static final InetAddress LOOPBACK = InetAddress.getLoopbackAddress();
 
 		@Override
 		public InetAddress[] resolve(String host) throws UnknownHostException {
-			return LOOPBACK;
+			return new InetAddress[] { LOOPBACK };
+		}
+
+		@Override
+		public String resolveCanonicalHostname(String host) throws UnknownHostException {
+			return LOOPBACK.getCanonicalHostName();
 		}
 
 	}
@@ -112,10 +115,6 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 	 */
 	private static class LocalConnectionSocketFactory implements ConnectionSocketFactory {
 
-		private static final String DOMAIN_SOCKET_PATH = "/var/run/docker.sock";
-
-		private static final String WINDOWS_NAMED_PIPE_PATH = "//./pipe/docker_engine";
-
 		private final String host;
 
 		LocalConnectionSocketFactory(String host) {
@@ -125,15 +124,16 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 		@Override
 		public Socket createSocket(HttpContext context) throws IOException {
 			if (Platform.isWindows()) {
-				return NamedPipeSocket.get((this.host != null) ? this.host : WINDOWS_NAMED_PIPE_PATH);
+				return NamedPipeSocket.get(this.host);
 			}
-			return DomainSocket.get((this.host != null) ? this.host : DOMAIN_SOCKET_PATH);
+			return DomainSocket.get(this.host);
 		}
 
 		@Override
-		public Socket connectSocket(int connectTimeout, Socket sock, HttpHost host, InetSocketAddress remoteAddress,
-				InetSocketAddress localAddress, HttpContext context) throws IOException {
-			return sock;
+		public Socket connectSocket(TimeValue connectTimeout, Socket socket, HttpHost host,
+				InetSocketAddress remoteAddress, InetSocketAddress localAddress, HttpContext context)
+				throws IOException {
+			return socket;
 		}
 
 	}
@@ -146,13 +146,13 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 		private static final int DEFAULT_DOCKER_PORT = 2376;
 
 		@Override
-		public int resolve(HttpHost host) throws UnsupportedSchemeException {
+		public int resolve(HttpHost host) {
 			Args.notNull(host, "HTTP host");
 			String name = host.getSchemeName();
 			if ("docker".equals(name)) {
 				return DEFAULT_DOCKER_PORT;
 			}
-			throw new UnsupportedSchemeException(name + " protocol is not supported");
+			return -1;
 		}
 
 	}

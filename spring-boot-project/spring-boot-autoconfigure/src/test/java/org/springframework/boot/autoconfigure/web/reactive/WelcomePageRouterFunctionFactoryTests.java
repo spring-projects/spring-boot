@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,15 +63,27 @@ class WelcomePageRouterFunctionFactoryTests {
 	@Test
 	void handlesRequestForStaticPageThatAcceptsTextHtml() {
 		WebTestClient client = withStaticIndex();
-		client.get().uri("/").accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class)
-				.isEqualTo("welcome-page-static");
+		client.get()
+			.uri("/")
+			.accept(MediaType.TEXT_HTML)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody(String.class)
+			.isEqualTo("welcome-page-static");
 	}
 
 	@Test
 	void handlesRequestForStaticPageThatAcceptsAll() {
 		WebTestClient client = withStaticIndex();
-		client.get().uri("/").accept(MediaType.ALL).exchange().expectStatus().isOk().expectBody(String.class)
-				.isEqualTo("welcome-page-static");
+		client.get()
+			.uri("/")
+			.accept(MediaType.ALL)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody(String.class)
+			.isEqualTo("welcome-page-static");
 	}
 
 	@Test
@@ -83,15 +95,26 @@ class WelcomePageRouterFunctionFactoryTests {
 	@Test
 	void handlesRequestWithNoAcceptHeader() {
 		WebTestClient client = withStaticIndex();
-		client.get().uri("/").exchange().expectStatus().isOk().expectBody(String.class)
-				.isEqualTo("welcome-page-static");
+		client.get()
+			.uri("/")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody(String.class)
+			.isEqualTo("welcome-page-static");
 	}
 
 	@Test
 	void handlesRequestWithEmptyAcceptHeader() {
 		WebTestClient client = withStaticIndex();
-		client.get().uri("/").header(HttpHeaders.ACCEPT, "").exchange().expectStatus().isOk().expectBody(String.class)
-				.isEqualTo("welcome-page-static");
+		client.get()
+			.uri("/")
+			.header(HttpHeaders.ACCEPT, "")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody(String.class)
+			.isEqualTo("welcome-page-static");
 	}
 
 	@Test
@@ -103,22 +126,40 @@ class WelcomePageRouterFunctionFactoryTests {
 	@Test
 	void handlesRequestForTemplateThatAcceptsTextHtml() {
 		WebTestClient client = withTemplateIndex();
-		client.get().uri("/").accept(MediaType.TEXT_HTML).exchange().expectStatus().isOk().expectBody(String.class)
-				.isEqualTo("welcome-page-template");
+		client.get()
+			.uri("/")
+			.accept(MediaType.TEXT_HTML)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody(String.class)
+			.isEqualTo("welcome-page-template");
 	}
 
 	@Test
 	void handlesRequestForTemplateThatAcceptsAll() {
 		WebTestClient client = withTemplateIndex();
-		client.get().uri("/").accept(MediaType.ALL).exchange().expectStatus().isOk().expectBody(String.class)
-				.isEqualTo("welcome-page-template");
+		client.get()
+			.uri("/")
+			.accept(MediaType.ALL)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody(String.class)
+			.isEqualTo("welcome-page-template");
 	}
 
 	@Test
 	void prefersAStaticResourceToATemplate() {
 		WebTestClient client = withStaticAndTemplateIndex();
-		client.get().uri("/").accept(MediaType.ALL).exchange().expectStatus().isOk().expectBody(String.class)
-				.isEqualTo("welcome-page-static");
+		client.get()
+			.uri("/")
+			.accept(MediaType.ALL)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody(String.class)
+			.isEqualTo("welcome-page-static");
 	}
 
 	private WebTestClient withStaticIndex() {
@@ -130,14 +171,16 @@ class WelcomePageRouterFunctionFactoryTests {
 		WelcomePageRouterFunctionFactory factory = factoryWithTemplateSupport(this.noIndexLocations);
 		TestViewResolver testViewResolver = new TestViewResolver();
 		return WebTestClient.bindToRouterFunction(factory.createRouterFunction())
-				.handlerStrategies(HandlerStrategies.builder().viewResolver(testViewResolver).build()).build();
+			.handlerStrategies(HandlerStrategies.builder().viewResolver(testViewResolver).build())
+			.build();
 	}
 
 	private WebTestClient withStaticAndTemplateIndex() {
 		WelcomePageRouterFunctionFactory factory = factoryWithTemplateSupport(this.indexLocations);
 		TestViewResolver testViewResolver = new TestViewResolver();
 		return WebTestClient.bindToRouterFunction(factory.createRouterFunction())
-				.handlerStrategies(HandlerStrategies.builder().viewResolver(testViewResolver).build()).build();
+			.handlerStrategies(HandlerStrategies.builder().viewResolver(testViewResolver).build())
+			.build();
 	}
 
 	private WelcomePageRouterFunctionFactory factoryWithoutTemplateSupport(String[] locations,

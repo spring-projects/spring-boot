@@ -11,8 +11,9 @@ By default, batch applications require a `DataSource` to store job details.
 Spring Batch expects a single `DataSource` by default.
 To have it use a `DataSource` other than the application’s main `DataSource`, declare a `DataSource` bean, annotating its `@Bean` method with `@BatchDataSource`.
 If you do so and want two data sources, remember to mark the other one `@Primary`.
-To take greater control, implement `BatchConfigurer`.
-See {spring-batch-api}/core/configuration/annotation/EnableBatchProcessing.html[The Javadoc of `@EnableBatchProcessing`] for more details.
+To take greater control, add `@EnableBatchProcessing` to one of your `@Configuration` classes or extend `DefaultBatchConfiguration`.
+See the Javadoc of {spring-batch-api}/core/configuration/annotation/EnableBatchProcessing.html[`@EnableBatchProcessing`]
+and {spring-batch-api}/core/configuration/support/DefaultBatchConfiguration.html[`DefaultBatchConfiguration`] for more details.
 
 For more info about Spring Batch, see the {spring-batch}[Spring Batch project page].
 
@@ -20,17 +21,19 @@ For more info about Spring Batch, see the {spring-batch}[Spring Batch project pa
 
 [[howto.batch.running-jobs-on-startup]]
 === Running Spring Batch Jobs on Startup
-Spring Batch auto-configuration is enabled by adding `@EnableBatchProcessing` to one of your `@Configuration` classes.
+Spring Batch auto-configuration is enabled by adding `spring-boot-starter-batch` to your application's classpath.
 
-By default, it executes *all* `Jobs` in the application context on startup (see {spring-boot-autoconfigure-module-code}/batch/JobLauncherApplicationRunner.java[`JobLauncherApplicationRunner`] for details).
-You can narrow down to a specific job or jobs by specifying `spring.batch.job.names` (which takes a comma-separated list of job name patterns).
+If a single `Job` is found in the application context, it is executed on startup (see {spring-boot-autoconfigure-module-code}/batch/JobLauncherApplicationRunner.java[`JobLauncherApplicationRunner`] for details).
+If multiple `Job` beans are found, the job that should be executed must be specified using configprop:spring.batch.job.name[].
 
-See {spring-boot-autoconfigure-module-code}/batch/BatchAutoConfiguration.java[BatchAutoConfiguration] and {spring-batch-api}/core/configuration/annotation/EnableBatchProcessing.html[@EnableBatchProcessing] for more details.
+To disable running a `Job` found in the application context, set the configprop:spring.batch.job.enabled[] to `false.`
+
+See {spring-boot-autoconfigure-module-code}/batch/BatchAutoConfiguration.java[BatchAutoConfiguration] for more details.
 
 
 
 [[howto.batch.running-from-the-command-line]]
-=== Running from the Command Line
+=== Running From the Command Line
 Spring Boot converts any command line argument starting with `--` to a property to add to the `Environment`, see <<features#features.external-config.command-line-args,accessing command line properties>>.
 This should not be used to pass arguments to batch jobs.
 To specify batch arguments on the command line, use the regular format (that is without `--`), as shown in the following example:

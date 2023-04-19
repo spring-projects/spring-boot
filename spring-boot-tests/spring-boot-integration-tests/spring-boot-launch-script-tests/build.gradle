@@ -40,5 +40,4 @@ task buildApp(type: GradleBuild) {
 
 intTest {
 	dependsOn buildApp
-	enabled = !JavaVersion.current().java9Compatible
 }

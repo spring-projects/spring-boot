@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,14 +47,15 @@ class ApplicationContextRequestMatcherTests {
 	@Test
 	void createWhenContextClassIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestApplicationContextRequestMatcher<>(null))
-				.withMessageContaining("Context class must not be null");
+			.withMessageContaining("Context class must not be null");
 	}
 
 	@Test
 	void matchesWhenContextClassIsApplicationContextShouldProvideContext() {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		assertThat(new TestApplicationContextRequestMatcher<>(ApplicationContext.class)
-				.callMatchesAndReturnProvidedContext(context).get()).isEqualTo(context);
+			.callMatchesAndReturnProvidedContext(context)
+			.get()).isEqualTo(context);
 	}
 
 	@Test
@@ -62,14 +63,15 @@ class ApplicationContextRequestMatcherTests {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		context.registerSingleton("existingBean", ExistingBean.class);
 		assertThat(new TestApplicationContextRequestMatcher<>(ExistingBean.class)
-				.callMatchesAndReturnProvidedContext(context).get()).isEqualTo(context.getBean(ExistingBean.class));
+			.callMatchesAndReturnProvidedContext(context)
+			.get()).isEqualTo(context.getBean(ExistingBean.class));
 	}
 
 	@Test
 	void matchesWhenContextClassIsBeanThatDoesNotExistShouldSupplyException() {
 		StaticWebApplicationContext context = createWebApplicationContext();
 		Supplier<ExistingBean> supplier = new TestApplicationContextRequestMatcher<>(ExistingBean.class)
-				.callMatchesAndReturnProvidedContext(context);
+			.callMatchesAndReturnProvidedContext(context);
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(supplier::get);
 	}
 
@@ -86,7 +88,7 @@ class ApplicationContextRequestMatcherTests {
 	@Test
 	void initializeAndMatchesAreNotCalledIfContextIsIgnored() {
 		StaticWebApplicationContext context = createWebApplicationContext();
-		TestApplicationContextRequestMatcher<ApplicationContext> matcher = new TestApplicationContextRequestMatcher<ApplicationContext>(
+		TestApplicationContextRequestMatcher<ApplicationContext> matcher = new TestApplicationContextRequestMatcher<>(
 				ApplicationContext.class) {
 
 			@Override
@@ -220,7 +222,7 @@ class ApplicationContextRequestMatcherTests {
 		private volatile Throwable ex;
 
 		@Override
-		public void uncaughtException(Thread thead, Throwable ex) {
+		public void uncaughtException(Thread thread, Throwable ex) {
 			this.ex = ex;
 		}
 

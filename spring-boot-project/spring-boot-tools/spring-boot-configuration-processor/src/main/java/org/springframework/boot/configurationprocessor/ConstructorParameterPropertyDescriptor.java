@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.configurationprocessor;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
@@ -69,8 +68,7 @@ class ConstructorParameterPropertyDescriptor extends PropertyDescriptor<Variable
 				if (defaultValue.size() == 1) {
 					return coerceValue(specificType, defaultValue.get(0));
 				}
-				return defaultValue.stream().map((value) -> coerceValue(specificType, value))
-						.collect(Collectors.toList());
+				return defaultValue.stream().map((value) -> coerceValue(specificType, value)).toList();
 			}
 			catch (IllegalArgumentException ex) {
 				environment.getMessager().printMessage(Kind.ERROR, ex.getMessage(), element, annotation);

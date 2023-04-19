@@ -16,11 +16,11 @@
 
 package org.springframework.boot.docs.data.nosql.elasticsearch.connectingusingspringdata
 
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate
 import org.springframework.stereotype.Component
 
 @Component
-class MyBean(private val template: ElasticsearchRestTemplate) {
+@Suppress("DEPRECATION")
+class MyBean(private val template: org.springframework.data.elasticsearch.client.erhlc.ElasticsearchRestTemplate ) {
 
 	// @fold:on // ...
 	fun someMethod(id: String): Boolean {

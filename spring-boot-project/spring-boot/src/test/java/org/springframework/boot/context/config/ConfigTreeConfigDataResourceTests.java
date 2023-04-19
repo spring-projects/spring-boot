@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,13 +35,13 @@ class ConfigTreeConfigDataResourceTests {
 	@Test
 	void constructorWhenPathStringIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreeConfigDataResource((String) null))
-				.withMessage("Path must not be null");
+			.withMessage("Path must not be null");
 	}
 
 	@Test
 	void constructorWhenPathIsNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreeConfigDataResource((Path) null))
-				.withMessage("Path must not be null");
+			.withMessage("Path must not be null");
 	}
 
 	@Test
@@ -61,7 +61,7 @@ class ConfigTreeConfigDataResourceTests {
 	@Test
 	void toStringReturnsDescriptiveString() {
 		ConfigTreeConfigDataResource location = new ConfigTreeConfigDataResource("/etc/config");
-		assertThat(location.toString()).isEqualTo("config tree [" + new File("/etc/config").getAbsolutePath() + "]");
+		assertThat(location).hasToString("config tree [" + new File("/etc/config").getAbsolutePath() + "]");
 	}
 
 }

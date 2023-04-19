@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.autoconfigure.mongo;
+
+import java.util.List;
 
 import com.mongodb.ConnectionString;
 import org.bson.UuidRepresentation;
@@ -33,6 +35,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Nasko Vasilev
  * @author Mark Paluch
  * @author Artsiom Yudovin
+ * @author Safeer Ansari
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.data.mongodb")
@@ -59,8 +62,14 @@ public class MongoProperties {
 	private Integer port = null;
 
 	/**
-	 * Mongo database URI. Cannot be set with host, port, credentials and replica set
-	 * name.
+	 * Additional server hosts. Cannot be set with URI or if 'host' is not specified.
+	 * Additional hosts will use the default mongo port of 27017. If you want to use a
+	 * different port you can use the "host:port" syntax.
+	 */
+	private List<String> additionalHosts;
+
+	/**
+	 * Mongo database URI. Overrides host, port, username, password, and database.
 	 */
 	private String uri;
 
@@ -207,6 +216,14 @@ public class MongoProperties {
 
 	public void setAutoIndexCreation(Boolean autoIndexCreation) {
 		this.autoIndexCreation = autoIndexCreation;
+	}
+
+	public List<String> getAdditionalHosts() {
+		return this.additionalHosts;
+	}
+
+	public void setAdditionalHosts(List<String> additionalHosts) {
+		this.additionalHosts = additionalHosts;
 	}
 
 	public static class Gridfs {

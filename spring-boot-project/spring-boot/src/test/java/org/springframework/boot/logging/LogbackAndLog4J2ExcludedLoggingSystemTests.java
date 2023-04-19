@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-// Log4j2 is implicitly excluded due to LOG4J-2030
-@ClassPathExclusions("logback-*.jar")
+@ClassPathExclusions({ "log4j-*.jar", "logback-*.jar" })
 class LogbackAndLog4J2ExcludedLoggingSystemTests {
 
 	@Test

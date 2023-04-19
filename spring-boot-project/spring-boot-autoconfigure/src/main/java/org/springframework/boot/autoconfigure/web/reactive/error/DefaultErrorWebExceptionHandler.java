@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,10 +121,10 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		int errorStatus = getHttpStatus(error);
 		ServerResponse.BodyBuilder responseBody = ServerResponse.status(errorStatus).contentType(TEXT_HTML_UTF8);
 		return Flux.just(getData(errorStatus).toArray(new String[] {}))
-				.flatMap((viewName) -> renderErrorView(viewName, responseBody, error))
-				.switchIfEmpty(this.errorProperties.getWhitelabel().isEnabled()
-						? renderDefaultErrorView(responseBody, error) : Mono.error(getError(request)))
-				.next();
+			.flatMap((viewName) -> renderErrorView(viewName, responseBody, error))
+			.switchIfEmpty(this.errorProperties.getWhitelabel().isEnabled()
+					? renderDefaultErrorView(responseBody, error) : Mono.error(getError(request)))
+			.next();
 	}
 
 	private List<String> getData(int errorStatus) {
@@ -145,8 +145,9 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 */
 	protected Mono<ServerResponse> renderErrorResponse(ServerRequest request) {
 		Map<String, Object> error = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.ALL));
-		return ServerResponse.status(getHttpStatus(error)).contentType(MediaType.APPLICATION_JSON)
-				.body(BodyInserters.fromValue(error));
+		return ServerResponse.status(getHttpStatus(error))
+			.contentType(MediaType.APPLICATION_JSON)
+			.body(BodyInserters.fromValue(error));
 	}
 
 	protected ErrorAttributeOptions getErrorAttributeOptions(ServerRequest request, MediaType mediaType) {
@@ -173,14 +174,11 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return if the stacktrace attribute should be included
 	 */
 	protected boolean isIncludeStackTrace(ServerRequest request, MediaType produces) {
-		switch (this.errorProperties.getIncludeStacktrace()) {
-		case ALWAYS:
-			return true;
-		case ON_PARAM:
-			return isTraceEnabled(request);
-		default:
-			return false;
-		}
+		return switch (this.errorProperties.getIncludeStacktrace()) {
+			case ALWAYS -> true;
+			case ON_PARAM -> isTraceEnabled(request);
+			default -> false;
+		};
 	}
 
 	/**
@@ -190,14 +188,11 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return if the message attribute should be included
 	 */
 	protected boolean isIncludeMessage(ServerRequest request, MediaType produces) {
-		switch (this.errorProperties.getIncludeMessage()) {
-		case ALWAYS:
-			return true;
-		case ON_PARAM:
-			return isMessageEnabled(request);
-		default:
-			return false;
-		}
+		return switch (this.errorProperties.getIncludeMessage()) {
+			case ALWAYS -> true;
+			case ON_PARAM -> isMessageEnabled(request);
+			default -> false;
+		};
 	}
 
 	/**
@@ -207,14 +202,11 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @return if the errors attribute should be included
 	 */
 	protected boolean isIncludeBindingErrors(ServerRequest request, MediaType produces) {
-		switch (this.errorProperties.getIncludeBindingErrors()) {
-		case ALWAYS:
-			return true;
-		case ON_PARAM:
-			return isBindingErrorsEnabled(request);
-		default:
-			return false;
-		}
+		return switch (this.errorProperties.getIncludeBindingErrors()) {
+			case ALWAYS -> true;
+			case ON_PARAM -> isBindingErrorsEnabled(request);
+			default -> false;
+		};
 	}
 
 	/**

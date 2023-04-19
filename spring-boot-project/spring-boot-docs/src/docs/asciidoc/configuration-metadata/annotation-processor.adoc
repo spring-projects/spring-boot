@@ -59,6 +59,13 @@ You could also let the AspectJ plugin run all the processing and disable annotat
 ----
 ====
 
+[NOTE]
+====
+If you are using Lombok in your project, you need to make sure that its annotation processor runs before `spring-boot-configuration-processor`.
+To do so with Maven, you can list the annotation processors in the right order using the `annotationProcessors` attribute of the Maven compiler plugin.
+If you are not using this attribute, and annotation processors are picked up by the dependencies available on the classpath, make sure that the `lombok` dependency is defined before the  `spring-boot-configuration-processor` dependency.
+====
+
 
 
 [[appendix.configuration-metadata.annotation-processor.automatic-metadata-generation]]

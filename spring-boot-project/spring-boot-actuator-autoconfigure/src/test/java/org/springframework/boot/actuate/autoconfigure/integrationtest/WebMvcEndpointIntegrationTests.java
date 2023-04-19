@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,9 +52,11 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.test.context.TestSecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.DefaultMockMvcBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcConfigurer;
+import org.springframework.web.util.pattern.PathPatternParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.both;
@@ -86,7 +88,7 @@ class WebMvcEndpointIntegrationTests {
 		this.context.setServletContext(new MockServletContext());
 		this.context.refresh();
 		WebMvcEndpointHandlerMapping handlerMapping = this.context.getBean(WebMvcEndpointHandlerMapping.class);
-		assertThat(handlerMapping.getPatternParser()).isEqualTo(WebMvcAutoConfiguration.pathPatternParser);
+		assertThat(handlerMapping.getPatternParser()).isInstanceOf(PathPatternParser.class);
 	}
 
 	@Test
@@ -104,18 +106,18 @@ class WebMvcEndpointIntegrationTests {
 		TestPropertyValues.of("management.endpoints.web.base-path:/management").applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/beans").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isUnauthorized());
+			.andExpect(status().isUnauthorized());
 	}
 
 	@Test
 	void endpointsAreSecureWithActuatorRoleWithCustomBasePath() throws Exception {
 		TestSecurityContextHolder.getContext()
-				.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
+			.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.register(SecureConfiguration.class);
 		TestPropertyValues
-				.of("management.endpoints.web.base-path:/management", "management.endpoints.web.exposure.include=*")
-				.applyTo(this.context);
+			.of("management.endpoints.web.base-path:/management", "management.endpoints.web.exposure.include=*")
+			.applyTo(this.context);
 		MockMvc mockMvc = createSecureMockMvc();
 		mockMvc.perform(get("/management/beans")).andExpect(status().isOk());
 	}
@@ -126,8 +128,12 @@ class WebMvcEndpointIntegrationTests {
 		this.context.register(DefaultConfiguration.class, EndpointsConfiguration.class);
 		TestPropertyValues.of("management.endpoints.web.exposure.include=*").applyTo(this.context);
 		MockMvc mockMvc = doCreateMockMvc();
-		mockMvc.perform(get("/actuator").accept("*/*")).andExpect(status().isOk()).andExpect(jsonPath("_links",
-				both(hasKey("beans")).and(hasKey("servlet")).and(hasKey("restcontroller")).and(hasKey("controller"))));
+		mockMvc.perform(get("/actuator").accept("*/*"))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("_links",
+					both(hasKey("beans")).and(hasKey("servlet"))
+						.and(hasKey("restcontroller"))
+						.and(hasKey("controller"))));
 	}
 
 	@Test
@@ -137,6 +143,16 @@ class WebMvcEndpointIntegrationTests {
 		TestPropertyValues.of("management.endpoints.web.discovery.enabled=false").applyTo(this.context);
 		MockMvc mockMvc = doCreateMockMvc();
 		mockMvc.perform(get("/actuator").accept("*/*")).andExpect(status().isNotFound());
+	}
+
+	@Test
+	void endpointObjectMapperCanBeApplied() throws Exception {
+		this.context = new AnnotationConfigServletWebApplicationContext();
+		this.context.register(EndpointObjectMapperConfiguration.class, DefaultConfiguration.class);
+		TestPropertyValues.of("management.endpoints.web.exposure.include=*").applyTo(this.context);
+		MockMvc mockMvc = doCreateMockMvc();
+		MvcResult result = mockMvc.perform(get("/actuator/beans")).andExpect(status().isOk()).andReturn();
+		assertThat(result.getResponse().getContentAsString()).contains("\"scope\":\"notelgnis\"");
 	}
 
 	private MockMvc createSecureMockMvc() {

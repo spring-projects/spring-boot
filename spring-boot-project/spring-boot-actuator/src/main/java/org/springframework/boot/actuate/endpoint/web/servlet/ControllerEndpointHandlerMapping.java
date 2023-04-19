@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.util.pattern.PathPattern;
 
 /**
  * {@link HandlerMapping} that exposes {@link ControllerEndpoint @ControllerEndpoint} and
@@ -57,7 +58,6 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 	 * @param endpoints the web endpoints
 	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
 	 */
-	@SuppressWarnings("deprecation")
 	public ControllerEndpointHandlerMapping(EndpointMapping endpointMapping,
 			Collection<ExposableControllerEndpoint> endpoints, CorsConfiguration corsConfiguration) {
 		Assert.notNull(endpointMapping, "EndpointMapping must not be null");
@@ -66,7 +66,6 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 		this.handlers = getHandlers(endpoints);
 		this.corsConfiguration = corsConfiguration;
 		setOrder(-100);
-		setUseSuffixPatternMatch(false);
 	}
 
 	private Map<Object, ExposableControllerEndpoint> getHandlers(Collection<ExposableControllerEndpoint> endpoints) {
@@ -89,16 +88,17 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 
 	private RequestMappingInfo withEndpointMappedPatterns(ExposableControllerEndpoint endpoint,
 			RequestMappingInfo mapping) {
-		Set<String> patterns = mapping.getPatternsCondition().getPatterns();
+		Set<PathPattern> patterns = mapping.getPathPatternsCondition().getPatterns();
 		if (patterns.isEmpty()) {
-			patterns = Collections.singleton("");
+			patterns = Collections.singleton(getPatternParser().parse(""));
 		}
 		String[] endpointMappedPatterns = patterns.stream()
-				.map((pattern) -> getEndpointMappedPattern(endpoint, pattern)).toArray(String[]::new);
+			.map((pattern) -> getEndpointMappedPattern(endpoint, pattern))
+			.toArray(String[]::new);
 		return mapping.mutate().paths(endpointMappedPatterns).build();
 	}
 
-	private String getEndpointMappedPattern(ExposableControllerEndpoint endpoint, String pattern) {
+	private String getEndpointMappedPattern(ExposableControllerEndpoint endpoint, PathPattern pattern) {
 		return this.endpointMapping.createSubPath(endpoint.getRootPath() + pattern);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,27 +67,27 @@ class ClassPathChangeUploaderTests {
 	@Test
 	void urlMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ClassPathChangeUploader(null, this.requestFactory))
-				.withMessageContaining("URL must not be empty");
+			.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	void urlMustNotBeEmpty() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ClassPathChangeUploader("", this.requestFactory))
-				.withMessageContaining("URL must not be empty");
+			.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
 	void requestFactoryMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassPathChangeUploader("http://localhost:8080", null))
-				.withMessageContaining("RequestFactory must not be null");
+			.isThrownBy(() -> new ClassPathChangeUploader("http://localhost:8080", null))
+			.withMessageContaining("RequestFactory must not be null");
 	}
 
 	@Test
 	void urlMustNotBeMalformed() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassPathChangeUploader("htttttp:///ttest", this.requestFactory))
-				.withMessageContaining("Malformed URL 'htttttp:///ttest'");
+			.isThrownBy(() -> new ClassPathChangeUploader("htttttp:///ttest", this.requestFactory))
+			.withMessageContaining("Malformed URL 'htttttp:///ttest'");
 	}
 
 	@Test
@@ -114,7 +114,7 @@ class ClassPathChangeUploaderTests {
 			throws IOException, ClassNotFoundException {
 		ClassLoaderFiles classLoaderFiles = deserialize(request.getBodyAsBytes());
 		Collection<SourceDirectory> sourceDirectories = classLoaderFiles.getSourceDirectories();
-		assertThat(sourceDirectories.size()).isEqualTo(1);
+		assertThat(sourceDirectories).hasSize(1);
 		SourceDirectory classSourceDirectory = sourceDirectories.iterator().next();
 		assertThat(classSourceDirectory.getName()).isEqualTo(sourceDirectory.getAbsolutePath());
 		Iterator<ClassLoaderFile> classFiles = classSourceDirectory.getFiles().iterator();

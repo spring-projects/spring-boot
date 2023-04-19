@@ -45,7 +45,7 @@ The endpoint uses query parameters to <<metrics.drilling-down,drill down>> into 
 The following table shows the single supported query parameter:
 
 [cols="2,4"]
-include::{snippets}/metrics/metric-with-tags/request-parameters.adoc[]
+include::{snippets}/metrics/metric-with-tags/query-parameters.adoc[]
 
 
 

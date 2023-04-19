@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,14 @@ package org.springframework.boot.autoconfigure.data.r2dbc;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+import org.springframework.boot.autoconfigure.data.r2dbc.city.City;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.data.domain.ManagedTypes;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import org.springframework.data.r2dbc.mapping.R2dbcMappingContext;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,11 +38,25 @@ import static org.assertj.core.api.Assertions.assertThat;
 class R2dbcDataAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class, R2dbcDataAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class, R2dbcDataAutoConfiguration.class));
 
 	@Test
 	void r2dbcEntityTemplateIsConfigured() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(R2dbcEntityTemplate.class));
+	}
+
+	@Test
+	void entityScanShouldSetManagedTypes() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class).run((context) -> {
+			R2dbcMappingContext mappingContext = context.getBean(R2dbcMappingContext.class);
+			ManagedTypes managedTypes = (ManagedTypes) ReflectionTestUtils.getField(mappingContext, "managedTypes");
+			assertThat(managedTypes.toList()).containsOnly(City.class);
+		});
+	}
+
+	@TestAutoConfigurationPackage(City.class)
+	static class TestConfiguration {
+
 	}
 
 }

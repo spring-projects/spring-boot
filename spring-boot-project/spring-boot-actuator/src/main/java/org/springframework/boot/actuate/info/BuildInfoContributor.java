@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,12 @@ package org.springframework.boot.actuate.info;
 import java.util.Map;
 import java.util.Properties;
 
+import org.springframework.aot.hint.BindingReflectionHintsRegistrar;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.RuntimeHintsRegistrar;
+import org.springframework.boot.actuate.info.BuildInfoContributor.BuildInfoContributorRuntimeHints;
 import org.springframework.boot.info.BuildProperties;
+import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.core.env.PropertiesPropertySource;
 import org.springframework.core.env.PropertySource;
 
@@ -29,6 +34,7 @@ import org.springframework.core.env.PropertySource;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
+@ImportRuntimeHints(BuildInfoContributorRuntimeHints.class)
 public class BuildInfoContributor extends InfoPropertiesInfoContributor<BuildProperties> {
 
 	public BuildInfoContributor(BuildProperties properties) {
@@ -54,6 +60,17 @@ public class BuildInfoContributor extends InfoPropertiesInfoContributor<BuildPro
 	@Override
 	protected void postProcessContent(Map<String, Object> content) {
 		replaceValue(content, "time", getProperties().getTime());
+	}
+
+	static class BuildInfoContributorRuntimeHints implements RuntimeHintsRegistrar {
+
+		private final BindingReflectionHintsRegistrar bindingRegistrar = new BindingReflectionHintsRegistrar();
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			this.bindingRegistrar.registerReflectionHints(hints.reflection(), BuildProperties.class);
+		}
+
 	}
 
 }

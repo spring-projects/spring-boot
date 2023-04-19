@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,28 +31,28 @@ class Ansi8BitColorTests {
 
 	@Test
 	void toStringWhenForegroundAddsCorrectPrefix() {
-		assertThat(Ansi8BitColor.foreground(208).toString()).isEqualTo("38;5;208");
+		assertThat(Ansi8BitColor.foreground(208)).hasToString("38;5;208");
 	}
 
 	@Test
 	void toStringWhenBackgroundAddsCorrectPrefix() {
-		assertThat(Ansi8BitColor.background(208).toString()).isEqualTo("48;5;208");
+		assertThat(Ansi8BitColor.background(208)).hasToString("48;5;208");
 	}
 
 	@Test
 	void foregroundWhenOutsideBoundsThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Ansi8BitColor.foreground(-1))
-				.withMessage("Code must be between 0 and 255");
+			.withMessage("Code must be between 0 and 255");
 		assertThatIllegalArgumentException().isThrownBy(() -> Ansi8BitColor.foreground(256))
-				.withMessage("Code must be between 0 and 255");
+			.withMessage("Code must be between 0 and 255");
 	}
 
 	@Test
 	void backgroundWhenOutsideBoundsThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Ansi8BitColor.background(-1))
-				.withMessage("Code must be between 0 and 255");
+			.withMessage("Code must be between 0 and 255");
 		assertThatIllegalArgumentException().isThrownBy(() -> Ansi8BitColor.background(256))
-				.withMessage("Code must be between 0 and 255");
+			.withMessage("Code must be between 0 and 255");
 	}
 
 	@Test
@@ -60,8 +60,8 @@ class Ansi8BitColorTests {
 		Ansi8BitColor one = Ansi8BitColor.foreground(123);
 		Ansi8BitColor two = Ansi8BitColor.foreground(123);
 		Ansi8BitColor three = Ansi8BitColor.background(123);
-		assertThat(one.hashCode()).isEqualTo(two.hashCode());
-		assertThat(one).isEqualTo(one).isEqualTo(two).isNotEqualTo(three).isNotEqualTo(null).isNotEqualTo("foo");
+		assertThat(one).hasSameHashCodeAs(two);
+		assertThat(one).isEqualTo(one).isEqualTo(two).isNotEqualTo(three).isNotNull().isNotEqualTo("foo");
 	}
 
 }

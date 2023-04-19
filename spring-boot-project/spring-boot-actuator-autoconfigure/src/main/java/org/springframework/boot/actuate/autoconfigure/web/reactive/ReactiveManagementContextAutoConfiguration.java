@@ -18,11 +18,15 @@ package org.springframework.boot.actuate.autoconfigure.web.reactive;
 
 import reactor.core.publisher.Flux;
 
+import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.actuate.autoconfigure.web.ManagementContextFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.web.reactive.ReactiveWebServerFactoryAutoConfiguration;
+import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.context.annotation.Bean;
 
 /**
@@ -38,8 +42,9 @@ import org.springframework.context.annotation.Bean;
 public class ReactiveManagementContextAutoConfiguration {
 
 	@Bean
-	public ReactiveManagementContextFactory reactiveWebChildContextFactory() {
-		return new ReactiveManagementContextFactory();
+	public static ManagementContextFactory reactiveWebChildContextFactory() {
+		return new ManagementContextFactory(WebApplicationType.REACTIVE, ReactiveWebServerFactory.class,
+				ReactiveWebServerFactoryAutoConfiguration.class);
 	}
 
 }

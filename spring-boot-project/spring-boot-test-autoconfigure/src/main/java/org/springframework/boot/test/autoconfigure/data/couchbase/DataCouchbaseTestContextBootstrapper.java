@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,7 @@
 package org.springframework.boot.test.autoconfigure.data.couchbase;
 
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
-import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
+import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -31,8 +30,9 @@ class DataCouchbaseTestContextBootstrapper extends SpringBootTestContextBootstra
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS).get(DataCouchbaseTest.class)
-				.getValue("properties", String[].class).orElse(null);
+		DataCouchbaseTest dataCouchbaseTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
+				DataCouchbaseTest.class);
+		return (dataCouchbaseTest != null) ? dataCouchbaseTest.properties() : null;
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,22 +50,21 @@ public class ConnectionPoolMetrics implements MeterBinder {
 		this.pool.getMetrics().ifPresent((poolMetrics) -> {
 			bindConnectionPoolMetric(registry,
 					Gauge.builder(metricKey("acquired"), poolMetrics, PoolMetrics::acquiredSize)
-							.description("Size of successfully acquired connections which are in active use."));
+						.description("Size of successfully acquired connections which are in active use."));
 			bindConnectionPoolMetric(registry,
 					Gauge.builder(metricKey("allocated"), poolMetrics, PoolMetrics::allocatedSize)
-							.description("Size of allocated connections in the pool which are in active use or idle."));
+						.description("Size of allocated connections in the pool which are in active use or idle."));
 			bindConnectionPoolMetric(registry, Gauge.builder(metricKey("idle"), poolMetrics, PoolMetrics::idleSize)
-					.description("Size of idle connections in the pool."));
+				.description("Size of idle connections in the pool."));
 			bindConnectionPoolMetric(registry,
-					Gauge.builder(metricKey("pending"), poolMetrics, PoolMetrics::pendingAcquireSize).description(
-							"Size of pending to acquire connections from the underlying connection factory."));
+					Gauge.builder(metricKey("pending"), poolMetrics, PoolMetrics::pendingAcquireSize)
+						.description("Size of pending to acquire connections from the underlying connection factory."));
 			bindConnectionPoolMetric(registry,
 					Gauge.builder(metricKey("max.allocated"), poolMetrics, PoolMetrics::getMaxAllocatedSize)
-							.description("Maximum size of allocated connections that this pool allows."));
+						.description("Maximum size of allocated connections that this pool allows."));
 			bindConnectionPoolMetric(registry,
 					Gauge.builder(metricKey("max.pending"), poolMetrics, PoolMetrics::getMaxPendingAcquireSize)
-							.description(
-									"Maximum size of pending state to acquire connections that this pool allows."));
+						.description("Maximum size of pending state to acquire connections that this pool allows."));
 		});
 	}
 

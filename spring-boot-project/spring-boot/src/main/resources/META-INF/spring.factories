@@ -19,6 +19,11 @@ org.springframework.boot.context.config.ConfigDataLoader=\
 org.springframework.boot.context.config.ConfigTreeConfigDataLoader,\
 org.springframework.boot.context.config.StandardConfigDataLoader
 
+# Application Context Factories
+org.springframework.boot.ApplicationContextFactory=\
+org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContextFactory,\
+org.springframework.boot.web.servlet.context.ServletWebServerApplicationContextFactory
+
 # Run Listeners
 org.springframework.boot.SpringApplicationRunListener=\
 org.springframework.boot.context.event.EventPublishingRunListener
@@ -65,7 +70,6 @@ org.springframework.boot.diagnostics.analyzer.BeanNotOfRequiredTypeFailureAnalyz
 org.springframework.boot.diagnostics.analyzer.BindFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.BindValidationFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.UnboundConfigurationPropertyFailureAnalyzer,\
-org.springframework.boot.diagnostics.analyzer.ConnectorStartFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.MutuallyExclusiveConfigurationPropertiesFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.NoSuchMethodFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.NoUniqueBeanDefinitionFailureAnalyzer,\
@@ -74,7 +78,9 @@ org.springframework.boot.diagnostics.analyzer.ValidationExceptionFailureAnalyzer
 org.springframework.boot.diagnostics.analyzer.InvalidConfigurationPropertyNameFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.InvalidConfigurationPropertyValueFailureAnalyzer,\
 org.springframework.boot.diagnostics.analyzer.PatternParseFailureAnalyzer,\
-org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer
+org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer,\
+org.springframework.boot.web.context.MissingWebServerFactoryBeanFailureAnalyzer,\
+org.springframework.boot.web.embedded.tomcat.ConnectorStartFailureAnalyzer
 
 # Failure Analysis Reporters
 org.springframework.boot.diagnostics.FailureAnalysisReporter=\

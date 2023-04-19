@@ -1,12 +1,13 @@
 [[features.external-config]]
 == Externalized Configuration
 Spring Boot lets you externalize your configuration so that you can work with the same application code in different environments.
-You can use a variety of external configuration sources, include Java properties files, YAML files, environment variables, and command-line arguments.
+You can use a variety of external configuration sources including Java properties files, YAML files, environment variables, and command-line arguments.
 
 Property values can be injected directly into your beans by using the `@Value` annotation, accessed through Spring's `Environment` abstraction, or be <<features#features.external-config.typesafe-configuration-properties,bound to structured objects>> through `@ConfigurationProperties`.
 
 Spring Boot uses a very particular `PropertySource` order that is designed to allow sensible overriding of values.
-Properties are considered in the following order (with values from lower items overriding earlier ones):
+Later property sources can override the values defined in earlier ones.
+Sources are considered in the following order:
 
 . Default properties (specified by setting `SpringApplication.setDefaultProperties`).
 . {spring-framework-api}/context/annotation/PropertySource.html[`@PropertySource`] annotations on your `@Configuration` classes.
@@ -97,7 +98,7 @@ This means that the JSON cannot override properties from lower order property so
 
 
 [[features.external-config.files]]
-=== External Application Properties [[features.external-config.files]]
+=== External Application Properties
 Spring Boot will automatically find and load `application.properties` and `application.yaml` files from the following locations when your application starts:
 
 . From the classpath
@@ -105,8 +106,8 @@ Spring Boot will automatically find and load `application.properties` and `appli
 .. The classpath `/config` package
 . From the current directory
 .. The current directory
-.. The `/config` subdirectory in the current directory
-.. Immediate child directories of the `/config` subdirectory
+.. The `config/` subdirectory in the current directory
+.. Immediate child directories of the `config/` subdirectory
 
 The list is ordered by precedence (with values from lower items overriding earlier ones).
 Documents from the loaded files are added as `PropertySources` to the Spring `Environment`.
@@ -120,7 +121,7 @@ For example, to look for `myproject.properties` and `myproject.yaml` files you c
 ----
 
 You can also refer to an explicit location by using the configprop:spring.config.location[] environment property.
-This properties accepts a comma-separated list of one or more locations to check.
+This property accepts a comma-separated list of one or more locations to check.
 
 The following example shows how to specify two distinct files:
 
@@ -453,7 +454,16 @@ The use of placeholders with and without defaults is shown in the following exam
 	  description: "${app.name} is a Spring Boot application written by ${username:Unknown}"
 ----
 
-Assuming that the `username` property has not be set elsewhere, `app.description` will have the value `MyApp is a Spring Boot application written by Unknown`.
+Assuming that the `username` property has not been set elsewhere, `app.description` will have the value `MyApp is a Spring Boot application written by Unknown`.
+
+[NOTE]
+====
+You should always refer to property names in the placeholder using their canonical form (kebab-case using only lowercase letters).
+This will allow Spring Boot to use the same logic as it does when <<features#features.external-config.typesafe-configuration-properties.relaxed-binding, relaxed binding>> `@ConfigurationProperties`.
+
+For example, `${demo.item-price}` will pick up `demo.item-price` and `demo.itemPrice` forms from the `application.properties` file, as well as `DEMO_ITEMPRICE` from the system environment.
+If you used `${demo.itemPrice}` instead, `demo.item-price` and `DEMO_ITEMPRICE` would not be considered.
+====
 
 TIP: You can also use this technique to create "`short`" variants of existing Spring Boot properties.
 See the _<<howto#howto.properties-and-configuration.short-command-line-arguments>>_ how-to for details.
@@ -461,7 +471,7 @@ See the _<<howto#howto.properties-and-configuration.short-command-line-arguments
 
 
 [[features.external-config.files.multi-document]]
-==== Working with Multi-Document Files
+==== Working With Multi-Document Files
 Spring Boot allows you to split a single physical file into multiple logical documents which are each added independently.
 Documents are processed in order, from top to bottom.
 Later documents can override the properties defined in earlier ones.
@@ -485,7 +495,7 @@ For example, the following file has two logical documents:
 	      on-cloud-platform: "kubernetes"
 ----
 
-For `application.properties` files a special `#---` comment is used to mark the document splits:
+For `application.properties` files a special `#---` or `!---` comment is used to mark the document splits:
 
 [source,properties,indent=0,subs="verbatim"]
 ----
@@ -496,7 +506,7 @@ For `application.properties` files a special `#---` comment is used to mark the 
 ----
 
 NOTE: Property file separators must not have any leading whitespace and must have exactly three hyphen characters.
-The lines immediately before and after the separator must not be comments.
+The lines immediately before and after the separator must not be same comment prefix.
 
 TIP: Multi-document property files are often used in conjunction with activation properties such as `spring.config.activate.on-profile`.
 See the <<features#features.external-config.files.activation-properties, next section>> for details.
@@ -545,7 +555,7 @@ For example, the following specifies that the second document is only active whe
 
 [[features.external-config.encrypting]]
 === Encrypting Properties
-Spring Boot does not provide any built in support for encrypting property values, however, it does provide the hook points necessary to modify values contained in the Spring `Environment`.
+Spring Boot does not provide any built-in support for encrypting property values, however, it does provide the hook points necessary to modify values contained in the Spring `Environment`.
 The `EnvironmentPostProcessor` interface allows you to manipulate the `Environment` before the application starts.
 See <<howto#howto.application.customize-the-environment-or-application-context>> for details.
 
@@ -554,9 +564,9 @@ If you need a secure way to store credentials and passwords, the https://cloud.s
 
 
 [[features.external-config.yaml]]
-=== Working with YAML
+=== Working With YAML
 https://yaml.org[YAML] is a superset of JSON and, as such, is a convenient format for specifying hierarchical configuration data.
-The `SpringApplication` class automatically supports YAML as an alternative to properties whenever you have the https://bitbucket.org/asomov/snakeyaml[SnakeYAML] library on your classpath.
+The `SpringApplication` class automatically supports YAML as an alternative to properties whenever you have the https://github.com/snakeyaml/snakeyaml[SnakeYAML] library on your classpath.
 
 NOTE: If you use "`Starters`", SnakeYAML is automatically provided by `spring-boot-starter`.
 
@@ -667,7 +677,7 @@ TIP: See also the <<features#features.external-config.typesafe-configuration-pro
 
 
 [[features.external-config.typesafe-configuration-properties.java-bean-binding]]
-==== JavaBean properties binding
+==== JavaBean Properties Binding
 It is possible to bind a bean declaring standard JavaBean properties as shown in the following example:
 
 include::code:MyProperties[]
@@ -705,7 +715,7 @@ Finally, only standard Java Bean properties are considered and binding on static
 
 
 [[features.external-config.typesafe-configuration-properties.constructor-binding]]
-==== Constructor binding
+==== Constructor Binding
 The example in the previous section can be rewritten in an immutable fashion as shown in the following example:
 
 include::code:MyProperties[]
@@ -714,21 +724,24 @@ In this setup, the presence of a single parameterized constructor implies that c
 This means that the binder will find a constructor with the parameters that you wish to have bound.
 If your class has multiple constructors, the `@ConstructorBinding` annotation can be used to specify which constructor to use for constructor binding.
 To opt out of constructor binding for a class with a single parameterized constructor, the constructor must be annotated with `@Autowired`.
-If you are using Java 16 or later, constructor binding can be used with records.
+Constructor binding can be used with records.
 Unless your record has multiple constructors, there is no need to use `@ConstructorBinding`.
 
 Nested members of a constructor bound class (such as `Security` in the example above) will also be bound through their constructor.
 
 Default values can be specified using `@DefaultValue` on constructor parameters and record components.
 The conversion service will be applied to coerce the annotation's `String` value to the target type of a missing property.
-By default, if no properties are bound to `Security`, the `MyProperties` instance will contain a `null` value for `security`.
-If you wish you return a non-null instance of `Security` even when no properties are bound to it, you can use an empty `@DefaultValue` annotation to do so:
+
+Referring to the previous example, if no properties are bound to `Security`, the `MyProperties` instance will contain a `null` value for `security`.
+To make it contain a non-null instance of `Security` even when no properties are bound to it (when using Kotlin, this will require the `username` and `password` parameters of `Security` to be declared as nullable as they do not have default values), use an empty `@DefaultValue` annotation:
 
 include::code:nonnull/MyProperties[tag=*]
 
-
 NOTE: To use constructor binding the class must be enabled using `@EnableConfigurationProperties` or configuration property scanning.
 You cannot use constructor binding with beans that are created by the regular Spring mechanisms (for example `@Component` beans, beans created by using `@Bean` methods or beans loaded by using `@Import`)
+
+NOTE: To use constructor binding in a native image the class must be compiled with `-parameters`.
+This will happen automatically if you use Spring Boot's Gradle plugin or if you use Maven and `spring-boot-starter-parent`.
 
 NOTE: The use of `java.util.Optional` with `@ConfigurationProperties` is not recommended as it is primarily intended for use as a return type.
 As such, it is not well-suited to configuration property injection.
@@ -737,7 +750,7 @@ For consistency with properties of other types, if you do declare an `Optional` 
 
 
 [[features.external-config.typesafe-configuration-properties.enabling-annotated-types]]
-==== Enabling @ConfigurationProperties-annotated types
+==== Enabling @ConfigurationProperties-annotated Types
 Spring Boot provides infrastructure to bind `@ConfigurationProperties` types and register them as beans.
 You can either enable configuration properties on a class-by-class basis or enable configuration property scanning that works in a similar manner to component scanning.
 
@@ -746,6 +759,7 @@ In these cases, specify the list of types to process using the `@EnableConfigura
 This can be done on any `@Configuration` class, as shown in the following example:
 
 include::code:MyConfiguration[]
+include::code:SomeProperties[]
 
 To use configuration property scanning, add the `@ConfigurationPropertiesScan` annotation to your application.
 Typically, it is added to the main application class that is annotated with `@SpringBootApplication` but it can be added to any `@Configuration` class.
@@ -759,7 +773,7 @@ include::code:MyApplication[]
 When the `@ConfigurationProperties` bean is registered using configuration property scanning or through `@EnableConfigurationProperties`, the bean has a conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix specified in the `@ConfigurationProperties` annotation and `<fqn>` is the fully qualified name of the bean.
 If the annotation does not provide any prefix, only the fully qualified name of the bean is used.
 
-The bean name in the example above is `com.example.app-com.example.app.SomeProperties`.
+Assuming that it is in the `com.example.app` package, the bean name of the `SomeProperties` example above is `some.properties-com.example.app.SomeProperties`.
 ====
 
 We recommend that `@ConfigurationProperties` only deal with the environment and, in particular, does not inject other beans from the context.
@@ -769,7 +783,7 @@ If you still want to inject other beans using the constructor, the configuration
 
 
 [[features.external-config.typesafe-configuration-properties.using-annotated-types]]
-==== Using @ConfigurationProperties-annotated types
+==== Using @ConfigurationProperties-annotated Types
 This style of configuration works particularly well with the `SpringApplication` external YAML configuration, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim"]
@@ -894,13 +908,16 @@ NOTE: For YAML files, the brackets need to be surrounded by quotes for the keys 
 The properties above will bind to a `Map` with `/key1`, `/key2` and `key3` as the keys in the map.
 The slash has been removed from `key3` because it was not surrounded by square brackets.
 
-You may also occasionally need to use the bracket notation if your `key` contains a `.` and you are binding to non-scalar value.
+When binding to scalar values, keys with `.` in them do not need to be surrounded by `[]`.
+Scalar values include enums and all types in the `java.lang` package except for `Object`.
+Binding `a.b=c` to `Map<String, String>` will preserve the `.` in the key and return a Map with the entry `{"a.b"="c"}`.
+For any other types you need to use the bracket notation if your `key` contains a `.`.
 For example, binding `a.b=c` to `Map<String, Object>` will return a Map with the entry `{"a"={"b"="c"}}` whereas `[a.b]=c` will return a Map with the entry `{"a.b"="c"}`.
 
 
 
 [[features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables]]
-===== Binding from Environment Variables
+===== Binding From Environment Variables
 Most operating systems impose strict rules around the names that can be used for environment variables.
 For example, Linux shell variables can contain only letters (`a` to `z` or `A` to `Z`), numbers (`0` to `9`) or the underscore character (`_`).
 By convention, Unix shell variables will also have their names in UPPERCASE.
@@ -1064,7 +1081,7 @@ Doing so gives a transparent upgrade path while supporting a much richer format.
 
 
 [[features.external-config.typesafe-configuration-properties.conversion.periods]]
-===== Converting periods
+===== Converting Periods
 In addition to durations, Spring Boot can also work with `java.time.Period` type.
 The following formats can be used in application properties:
 
@@ -1121,7 +1138,7 @@ Doing so gives a transparent upgrade path while supporting a much richer format.
 [[features.external-config.typesafe-configuration-properties.validation]]
 ==== @ConfigurationProperties Validation
 Spring Boot attempts to validate `@ConfigurationProperties` classes whenever they are annotated with Spring's `@Validated` annotation.
-You can use JSR-303 `javax.validation` constraint annotations directly on your configuration class.
+You can use JSR-303 `jakarta.validation` constraint annotations directly on your configuration class.
 To do so, ensure that a compliant JSR-303 implementation is on your classpath and then add constraint annotations to your fields, as shown in the following example:
 
 include::code:MyProperties[]
@@ -1167,10 +1184,14 @@ The following table summarizes the features that are supported by `@Configuratio
 |===
 
 [[features.external-config.typesafe-configuration-properties.vs-value-annotation.note]]
-NOTE: If you do want to use `@Value`, we recommend that you refer to property names using their canonical form (kebab-case using only lowercase letters).
-This will allow Spring Boot to use the same logic as it does when relaxed binding `@ConfigurationProperties`.
-For example, `@Value("{demo.item-price}")` will pick up `demo.item-price` and `demo.itemPrice` forms from the `application.properties` file, as well as `DEMO_ITEMPRICE` from the system environment.
-If you used `@Value("{demo.itemPrice}")` instead, `demo.item-price` and `DEMO_ITEMPRICE` would not be considered.
+[NOTE]
+====
+If you do want to use `@Value`, we recommend that you refer to property names using their canonical form (kebab-case using only lowercase letters).
+This will allow Spring Boot to use the same logic as it does when <<features#features.external-config.typesafe-configuration-properties.relaxed-binding, relaxed binding>> `@ConfigurationProperties`.
+
+For example, `@Value("${demo.item-price}")` will pick up `demo.item-price` and `demo.itemPrice` forms from the `application.properties` file, as well as `DEMO_ITEMPRICE` from the system environment.
+If you used `@Value("${demo.itemPrice}")` instead, `demo.item-price` and `DEMO_ITEMPRICE` would not be considered.
+====
 
 If you define a set of configuration keys for your own components, we recommend you group them in a POJO annotated with `@ConfigurationProperties`.
 Doing so will provide you with structured, type-safe object that you can inject into your own beans.

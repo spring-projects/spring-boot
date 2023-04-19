@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ class FileSystemWatcherTests {
 
 	private FileSystemWatcher watcher;
 
-	private List<Set<ChangedFiles>> changes = Collections.synchronizedList(new ArrayList<>());
+	private final List<Set<ChangedFiles>> changes = Collections.synchronizedList(new ArrayList<>());
 
 	@TempDir
 	File tempDir;
@@ -63,57 +63,57 @@ class FileSystemWatcherTests {
 	@Test
 	void pollIntervalMustBePositive() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(0), Duration.ofMillis(1)))
-				.withMessageContaining("PollInterval must be positive");
+			.isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(0), Duration.ofMillis(1)))
+			.withMessageContaining("PollInterval must be positive");
 	}
 
 	@Test
 	void quietPeriodMustBePositive() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(1), Duration.ofMillis(0)))
-				.withMessageContaining("QuietPeriod must be positive");
+			.isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(1), Duration.ofMillis(0)))
+			.withMessageContaining("QuietPeriod must be positive");
 	}
 
 	@Test
 	void pollIntervalMustBeGreaterThanQuietPeriod() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(1), Duration.ofMillis(1)))
-				.withMessageContaining("PollInterval must be greater than QuietPeriod");
+			.isThrownBy(() -> new FileSystemWatcher(true, Duration.ofMillis(1), Duration.ofMillis(1)))
+			.withMessageContaining("PollInterval must be greater than QuietPeriod");
 	}
 
 	@Test
 	void listenerMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.watcher.addListener(null))
-				.withMessageContaining("FileChangeListener must not be null");
+			.withMessageContaining("FileChangeListener must not be null");
 	}
 
 	@Test
 	void cannotAddListenerToStartedListener() {
 		this.watcher.start();
 		assertThatIllegalStateException().isThrownBy(() -> this.watcher.addListener(mock(FileChangeListener.class)))
-				.withMessageContaining("FileSystemWatcher already started");
+			.withMessageContaining("FileSystemWatcher already started");
 	}
 
 	@Test
 	void sourceDirectoryMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.watcher.addSourceDirectory(null))
-				.withMessageContaining("Directory must not be null");
+			.withMessageContaining("Directory must not be null");
 	}
 
 	@Test
 	void sourceDirectoryMustNotBeAFile() throws IOException {
 		File file = new File(this.tempDir, "file");
 		assertThat(file.createNewFile()).isTrue();
-		assertThat(file.isFile()).isTrue();
+		assertThat(file).isFile();
 		assertThatIllegalArgumentException().isThrownBy(() -> this.watcher.addSourceDirectory(file))
-				.withMessageContaining("Directory '" + file + "' must not be a file");
+			.withMessageContaining("Directory '" + file + "' must not be a file");
 	}
 
 	@Test
 	void cannotAddSourceDirectoryToStartedListener() {
 		this.watcher.start();
 		assertThatIllegalStateException().isThrownBy(() -> this.watcher.addSourceDirectory(this.tempDir))
-				.withMessageContaining("FileSystemWatcher already started");
+			.withMessageContaining("FileSystemWatcher already started");
 	}
 
 	@Test
@@ -137,7 +137,7 @@ class FileSystemWatcherTests {
 	@Test
 	void createSourceDirectoryAndAddFile() throws IOException {
 		File directory = new File(this.tempDir, "does/not/exist");
-		assertThat(directory.exists()).isFalse();
+		assertThat(directory).doesNotExist();
 		this.watcher.addSourceDirectory(directory);
 		this.watcher.start();
 		directory.mkdirs();
@@ -157,7 +157,7 @@ class FileSystemWatcherTests {
 		}
 		touch(new File(directory, "test2.txt"));
 		this.watcher.stopAfter(1);
-		assertThat(this.changes.size()).isEqualTo(2);
+		assertThat(this.changes).hasSize(2);
 	}
 
 	@Test
@@ -198,7 +198,7 @@ class FileSystemWatcherTests {
 		File file2 = touch(new File(directory2, "test.txt"));
 		this.watcher.stopAfter(1);
 		Set<ChangedFiles> change = this.changes.stream().flatMap(Set<ChangedFiles>::stream).collect(Collectors.toSet());
-		assertThat(change.size()).isEqualTo(2);
+		assertThat(change).hasSize(2);
 		for (ChangedFiles changedFiles : change) {
 			if (changedFiles.getSourceDirectory().equals(directory1)) {
 				ChangedFile file = new ChangedFile(directory1, file1, Type.ADD);
@@ -313,8 +313,10 @@ class FileSystemWatcherTests {
 	}
 
 	private Set<ChangedFile> getAllFileChanges(List<Set<ChangedFiles>> changes) {
-		return changes.stream().flatMap(Set<ChangedFiles>::stream)
-				.flatMap((changedFiles) -> changedFiles.getFiles().stream()).collect(Collectors.toSet());
+		return changes.stream()
+			.flatMap(Set<ChangedFiles>::stream)
+			.flatMap((changedFiles) -> changedFiles.getFiles().stream())
+			.collect(Collectors.toSet());
 	}
 
 	private File touch(File file) throws IOException {

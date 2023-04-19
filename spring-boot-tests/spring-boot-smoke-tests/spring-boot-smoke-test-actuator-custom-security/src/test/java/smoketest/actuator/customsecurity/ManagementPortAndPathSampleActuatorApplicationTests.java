@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ package smoketest.actuator.customsecurity;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.web.server.LocalManagementPort;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalManagementPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +53,7 @@ class ManagementPortAndPathSampleActuatorApplicationTests extends AbstractSample
 	@Test
 	void testMissing() {
 		ResponseEntity<String> entity = new TestRestTemplate("admin", "admin")
-				.getForEntity("http://localhost:" + this.managementPort + "/management/actuator/missing", String.class);
+			.getForEntity("http://localhost:" + this.managementPort + "/management/actuator/missing", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(entity.getBody()).contains("\"status\":404");
 	}

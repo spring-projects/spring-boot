@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,9 @@
 package org.springframework.boot.build.bom.bomr;
 
 import java.io.StringReader;
-import java.util.Arrays;
+import java.net.URI;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedSet;
@@ -49,35 +50,48 @@ final class MavenMetadataVersionResolver implements VersionResolver {
 
 	private final RestTemplate rest;
 
-	private final Collection<String> repositoryUrls;
+	private final Collection<URI> repositoryUrls;
 
-	MavenMetadataVersionResolver(Collection<String> repositoryUrls) {
-		this(new RestTemplate(Arrays.asList(new StringHttpMessageConverter())), repositoryUrls);
+	MavenMetadataVersionResolver(Collection<URI> repositoryUrls) {
+		this(new RestTemplate(Collections.singletonList(new StringHttpMessageConverter())), repositoryUrls);
 	}
 
-	MavenMetadataVersionResolver(RestTemplate restTemplate, Collection<String> repositoryUrls) {
+	MavenMetadataVersionResolver(RestTemplate restTemplate, Collection<URI> repositoryUrls) {
 		this.rest = restTemplate;
-		this.repositoryUrls = repositoryUrls;
+		this.repositoryUrls = normalize(repositoryUrls);
+	}
+
+	private Collection<URI> normalize(Collection<URI> uris) {
+		return uris.stream().map(this::normalize).toList();
+	}
+
+	private URI normalize(URI uri) {
+		if ("/".equals(uri.getPath())) {
+			return uri;
+		}
+		return URI.create(uri.toString() + "/");
 	}
 
 	@Override
 	public SortedSet<DependencyVersion> resolveVersions(String groupId, String artifactId) {
 		Set<String> versions = new HashSet<>();
-		for (String repositoryUrl : this.repositoryUrls) {
+		for (URI repositoryUrl : this.repositoryUrls) {
 			versions.addAll(resolveVersions(groupId, artifactId, repositoryUrl));
 		}
-		return new TreeSet<>(versions.stream().map(DependencyVersion::parse).collect(Collectors.toSet()));
+		return versions.stream().map(DependencyVersion::parse).collect(Collectors.toCollection(TreeSet::new));
 	}
 
-	private Set<String> resolveVersions(String groupId, String artifactId, String repositoryUrl) {
+	private Set<String> resolveVersions(String groupId, String artifactId, URI repositoryUrl) {
 		Set<String> versions = new HashSet<>();
-		String url = repositoryUrl + "/" + groupId.replace('.', '/') + "/" + artifactId + "/maven-metadata.xml";
+		URI url = repositoryUrl.resolve(groupId.replace('.', '/') + "/" + artifactId + "/maven-metadata.xml");
 		try {
 			String metadata = this.rest.getForObject(url, String.class);
-			Document metadataDocument = DocumentBuilderFactory.newInstance().newDocumentBuilder()
-					.parse(new InputSource(new StringReader(metadata)));
-			NodeList versionNodes = (NodeList) XPathFactory.newInstance().newXPath()
-					.evaluate("/metadata/versioning/versions/version", metadataDocument, XPathConstants.NODESET);
+			Document metadataDocument = DocumentBuilderFactory.newInstance()
+				.newDocumentBuilder()
+				.parse(new InputSource(new StringReader(metadata)));
+			NodeList versionNodes = (NodeList) XPathFactory.newInstance()
+				.newXPath()
+				.evaluate("/metadata/versioning/versions/version", metadataDocument, XPathConstants.NODESET);
 			for (int i = 0; i < versionNodes.getLength(); i++) {
 				versions.add(versionNodes.item(i).getTextContent());
 			}

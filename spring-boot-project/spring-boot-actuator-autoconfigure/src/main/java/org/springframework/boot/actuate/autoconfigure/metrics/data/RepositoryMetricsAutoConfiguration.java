@@ -23,6 +23,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegi
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Data.Repository;
+import org.springframework.boot.actuate.autoconfigure.metrics.PropertiesAutoTimer;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.metrics.data.DefaultRepositoryTagsProvider;
 import org.springframework.boot.actuate.metrics.data.MetricsRepositoryMethodInvocationListener;
@@ -67,7 +68,7 @@ public class RepositoryMetricsAutoConfiguration {
 			ObjectProvider<MeterRegistry> registry, RepositoryTagsProvider tagsProvider) {
 		Repository properties = this.properties.getData().getRepository();
 		return new MetricsRepositoryMethodInvocationListener(registry::getObject, tagsProvider,
-				properties.getMetricName(), properties.getAutotime());
+				properties.getMetricName(), new PropertiesAutoTimer(properties.getAutotime()));
 	}
 
 	@Bean

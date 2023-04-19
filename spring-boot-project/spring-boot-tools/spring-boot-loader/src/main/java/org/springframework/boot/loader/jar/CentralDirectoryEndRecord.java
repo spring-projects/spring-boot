@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -221,7 +221,7 @@ class CentralDirectoryEndRecord {
 
 		private final long offset;
 
-		private Zip64Locator(long offset, byte[] block) throws IOException {
+		private Zip64Locator(long offset, byte[] block) {
 			this.offset = offset;
 			this.zip64EndOffset = Bytes.littleEndianValue(block, ZIP64_LOCOFF, 8);
 		}

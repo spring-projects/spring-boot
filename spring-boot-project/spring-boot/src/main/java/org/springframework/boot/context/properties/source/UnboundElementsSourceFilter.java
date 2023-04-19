@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,8 +37,8 @@ import org.springframework.core.env.StandardEnvironment;
 public class UnboundElementsSourceFilter implements Function<ConfigurationPropertySource, Boolean> {
 
 	private static final Set<String> BENIGN_PROPERTY_SOURCE_NAMES = Collections
-			.unmodifiableSet(new HashSet<>(Arrays.asList(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-					StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME)));
+		.unmodifiableSet(new HashSet<>(Arrays.asList(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+				StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME)));
 
 	@Override
 	public Boolean apply(ConfigurationPropertySource configurationPropertySource) {

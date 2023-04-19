@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,16 +34,29 @@ class IntegrationGraphEndpointWebIntegrationTests {
 
 	@WebEndpointTest
 	void graph(WebTestClient client) {
-		client.get().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
-				.isOk().expectBody().jsonPath("contentDescriptor.providerVersion").isNotEmpty()
-				.jsonPath("contentDescriptor.providerFormatVersion").isEqualTo(1.2f)
-				.jsonPath("contentDescriptor.provider").isEqualTo("spring-integration");
+		client.get()
+			.uri("/actuator/integrationgraph")
+			.accept(MediaType.APPLICATION_JSON)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("contentDescriptor.providerVersion")
+			.isNotEmpty()
+			.jsonPath("contentDescriptor.providerFormatVersion")
+			.isEqualTo(1.2f)
+			.jsonPath("contentDescriptor.provider")
+			.isEqualTo("spring-integration");
 	}
 
 	@WebEndpointTest
 	void rebuild(WebTestClient client) {
-		client.post().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
-				.isNoContent();
+		client.post()
+			.uri("/actuator/integrationgraph")
+			.accept(MediaType.APPLICATION_JSON)
+			.exchange()
+			.expectStatus()
+			.isNoContent();
 	}
 
 	@Configuration(proxyBeanMethods = false)

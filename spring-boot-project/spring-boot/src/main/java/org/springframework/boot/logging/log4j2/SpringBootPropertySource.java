@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.log4j2;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -34,11 +35,11 @@ public class SpringBootPropertySource implements PropertySource {
 	private static final String PREFIX = "log4j.";
 
 	private final Map<String, String> properties = Collections
-			.singletonMap(ShutdownCallbackRegistry.SHUTDOWN_HOOK_ENABLED, "false");
+		.singletonMap(ShutdownCallbackRegistry.SHUTDOWN_HOOK_ENABLED, "false");
 
 	@Override
 	public void forEach(BiConsumer<String, String> action) {
-		this.properties.forEach((key, value) -> action.accept(key, value));
+		this.properties.forEach(action::accept);
 	}
 
 	@Override
@@ -49,6 +50,21 @@ public class SpringBootPropertySource implements PropertySource {
 	@Override
 	public int getPriority() {
 		return -200;
+	}
+
+	@Override
+	public String getProperty(String key) {
+		return this.properties.get(key);
+	}
+
+	@Override
+	public boolean containsProperty(String key) {
+		return this.properties.containsKey(key);
+	}
+
+	@Override
+	public Collection<String> getPropertyNames() {
+		return this.properties.keySet();
 	}
 
 }

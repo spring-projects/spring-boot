@@ -42,7 +42,44 @@ The following Maven example shows how to exclude Tomcat and include Jetty for Sp
 ----
 
 NOTE: The version of the servlet API has been overridden as, unlike Tomcat 9 and Undertow 2, Jetty 9.4 does not support servlet 4.0.
-If you wish to use Jetty 10, which does support servlet 4.0, override the `jetty.version` property rather than the `servlet-api.version` property.
+
+If you wish to use Jetty 10, which does support servlet 4.0, you can do so as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim"]
+----
+	<properties>
+		<jetty.version>10.0.8</jetty.version>
+	</properties>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+		<exclusions>
+			<!-- Exclude the Tomcat dependency -->
+			<exclusion>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-starter-tomcat</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+	<!-- Use Jetty instead -->
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-jetty</artifactId>
+		<exclusions>
+			<!-- Exclude the Jetty-9 specific dependencies -->
+			<exclusion>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>websocket-server</artifactId>
+			</exclusion>
+			<exclusion>
+				<groupId>org.eclipse.jetty.websocket</groupId>
+				<artifactId>javax-websocket-server-impl</artifactId>
+			</exclusion>
+		</exclusions>
+	</dependency>
+----
+
+Note that along with excluding the Tomcat starter, a couple of Jetty9-specific dependencies also need to be excluded.
 
 The following Gradle example configures the necessary dependencies and a {gradle-docs}/resolution_rules.html#sec:module_replacement[module replacement] to use Undertow in place of Reactor Netty for Spring WebFlux:
 
@@ -115,7 +152,7 @@ Contrary to a test, application code callbacks are processed early (before the v
 
 [[howto.webserver.enable-response-compression]]
 === Enable HTTP Response Compression
-HTTP response compression is supported by Jetty, Tomcat, and Undertow.
+HTTP response compression is supported by Jetty, Tomcat, Reactor Netty, and Undertow.
 It can be enabled in `application.properties`, as follows:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -146,7 +183,7 @@ You can configure this behavior by setting the configprop:server.compression.mim
 [[howto.webserver.configure-ssl]]
 === Configure SSL
 SSL can be configured declaratively by setting the various `+server.ssl.*+` properties, typically in `application.properties` or `application.yml`.
-The following example shows setting SSL properties in `application.properties`:
+The following example shows setting SSL properties using a Java KeyStore file:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -156,6 +193,18 @@ The following example shows setting SSL properties in `application.properties`:
 	    key-store: "classpath:keystore.jks"
 	    key-store-password: "secret"
 	    key-password: "another-secret"
+----
+
+The following example shows setting SSL properties using PEM-encoded certificate and private key files:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	server:
+	  port: 8443
+	  ssl:
+	    certificate: "classpath:my-cert.crt"
+	    certificate-private-key: "classpath:my-cert.key"
+	    trust-certificate: "classpath:ca-cert.crt"
 ----
 
 See {spring-boot-module-code}/web/server/Ssl.java[`Ssl`] for details of all of the supported properties.
@@ -173,48 +222,37 @@ You can enable HTTP/2 support in your Spring Boot application with the configpro
 Both `h2` (HTTP/2 over TLS) and `h2c` (HTTP/2 over TCP) are supported.
 To use `h2`, SSL must also be enabled.
 When SSL is not enabled, `h2c` will be used.
-The details of the `h2` support depend on the chosen web server and the application environment, since that protocol is not supported out-of-the-box by all JDK 8 releases.
+You may, for example, want to use `h2c` when your application is <<howto.webserver.use-behind-a-proxy-server,running behind a proxy server>> that is performing TLS termination.
 
 
 
 [[howto.webserver.configure-http2.tomcat]]
-==== HTTP/2 with Tomcat
-Spring Boot ships by default with Tomcat 9.0.x which supports `h2c` out of the box and `h2` out of the box when using JDK 9 or later.
-Alternatively, `h2` can be used on JDK 8 if the `libtcnative` library and its dependencies are installed on the host operating system.
+==== HTTP/2 With Tomcat
+Spring Boot ships by default with Tomcat 10.1.x which supports `h2c` and `h2` out of the box.
+Alternatively, you can use `libtcnative` for `h2` support if the library and its dependencies are installed on the host operating system.
 
 The library directory must be made available, if not already, to the JVM library path.
 You can do so with a JVM argument such as `-Djava.library.path=/usr/local/opt/tomcat-native/lib`.
-More on this in the https://tomcat.apache.org/tomcat-9.0-doc/apr.html[official Tomcat documentation].
-
-Starting Tomcat 9.0.x on JDK 8 with HTTP/2 and SSL enabled but without that native support logs the following error:
-
-[indent=0,subs="verbatim"]
-----
-	ERROR 8787 --- [           main] o.a.coyote.http11.Http11NioProtocol      : The upgrade handler [org.apache.coyote.http2.Http2Protocol] for [h2] only supports upgrade via ALPN but has been configured for the ["https-jsse-nio-8443"] connector that does not support ALPN.
-----
-
-This error is not fatal, and the application still starts with HTTP/1.1 SSL support.
+More on this in the {tomcat-docs}/apr.html[official Tomcat documentation].
 
 
 
 [[howto.webserver.configure-http2.jetty]]
-==== HTTP/2 with Jetty
+==== HTTP/2 With Jetty
 For HTTP/2 support, Jetty requires the additional `org.eclipse.jetty.http2:http2-server` dependency.
 To use `h2c` no other dependencies are required.
 To use `h2`, you also need to choose one of the following dependencies, depending on your deployment:
 
-* `org.eclipse.jetty:jetty-alpn-java-server` for applications running on JDK9+
-* `org.eclipse.jetty:jetty-alpn-openjdk8-server` for applications running on JDK8u252+
-* `org.eclipse.jetty:jetty-alpn-conscrypt-server` and the https://www.conscrypt.org/[Conscrypt library] with no JDK requirement
+* `org.eclipse.jetty:jetty-alpn-java-server` to use the JDK built-in support
+* `org.eclipse.jetty:jetty-alpn-conscrypt-server` and the https://www.conscrypt.org/[Conscrypt library]
 
 
 
 [[howto.webserver.configure-http2.netty]]
-==== HTTP/2 with Reactor Netty
+==== HTTP/2 With Reactor Netty
 The `spring-boot-webflux-starter` is using by default Reactor Netty as a server.
-Reactor Netty supports `h2c` using JDK 8 or later with no additional dependencies.
-Reactor Netty supports `h2` using the JDK support with JDK 9 or later.
-For JDK 8 environments, or for optimal runtime performance, this server also supports `h2` with native libraries.
+Reactor Netty supports `h2c` and `h2` out of the box.
+For optimal runtime performance, this server also supports `h2` with native libraries.
 To enable that, your application needs to have an additional dependency.
 
 Spring Boot manages the version for the `io.netty:netty-tcnative-boringssl-static` "uber jar", containing native libraries for all platforms.
@@ -223,8 +261,8 @@ Developers can choose to import only the required dependencies using a classifie
 
 
 [[howto.webserver.configure-http2.undertow]]
-==== HTTP/2 with Undertow
-As of Undertow 1.4.0+, both `h2` and `h2c` are supported on JDK 8 without any additional dependencies.
+==== HTTP/2 With Undertow
+Undertow supports `h2c` and `h2` out of the box.
 
 
 
@@ -351,8 +389,13 @@ Access logging for Undertow can be configured in a similar fashion, as shown in 
 	    accesslog:
 	      enabled: true
 	      pattern: "%t %a %r %s (%D ms)"
+	    options:
+	      server:
+	        record-request-start-time: true
 ----
 
+Note that, in addition to enabling access logging and configuring its pattern, recording request start times has also been enabled.
+This is required when including the response time (`%D`) in the access log pattern.
 Logs are stored in a `logs` directory relative to the working directory of the application.
 You can customize this location by setting the configprop:server.undertow.accesslog.dir[] property.
 
@@ -408,8 +451,8 @@ If you use Tomcat, you can additionally configure the names of the headers used 
 	      protocol-header: "x-your-protocol-header"
 ----
 
-Tomcat is also configured with a default regular expression that matches internal proxies that are to be trusted.
-By default, IP addresses in `10/8`, `192.168/16`, `169.254/16` and `127/8` are trusted.
+Tomcat is also configured with a regular expression that matches internal proxies that are to be trusted.
+See the <<application-properties.adoc#application-properties.server.server.tomcat.remoteip.internal-proxies,configprop:server.tomcat.remoteip.internal-proxies[] entry in the appendix>> for its default value.
 You can customize the valve's configuration by adding an entry to `application.properties`, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
@@ -431,23 +474,6 @@ You can take complete control of the configuration of Tomcat's `RemoteIpValve` b
 You can add an `org.apache.catalina.connector.Connector` to the `TomcatServletWebServerFactory`, which can allow multiple connectors, including HTTP and HTTPS connectors, as shown in the following example:
 
 include::code:MyTomcatConfiguration[]
-
-
-
-[[howto.webserver.use-tomcat-legacycookieprocessor]]
-=== Use Tomcat's LegacyCookieProcessor
-By default, the embedded Tomcat used by Spring Boot does not support "Version 0" of the Cookie format, so you may see the following error:
-
-[indent=0]
-----
-	java.lang.IllegalArgumentException: An invalid character [32] was present in the Cookie value
-----
-
-If at all possible, you should consider updating your code to only store values compliant with later Cookie specifications.
-If, however, you cannot change the way that cookies are written, you can instead configure Tomcat to use a `LegacyCookieProcessor`.
-To switch to the `LegacyCookieProcessor`, use an `WebServerFactoryCustomizer` bean that adds a `TomcatContextCustomizer`, as shown in the following example:
-
-include::code:MyLegacyCookieProcessorConfiguration[]
 
 
 

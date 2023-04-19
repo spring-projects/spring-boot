@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -52,6 +53,7 @@ import org.springframework.util.function.SingletonSupplier;
  *
  * @author Phillip Webb
  * @author Artsiom Yudovin
+ * @author Chris Bono
  * @since 2.0.0
  */
 public final class PropertyMapper {
@@ -181,7 +183,8 @@ public final class PropertyMapper {
 		}
 
 		/**
-		 * Return an adapted version of the source changed via the given adapter function.
+		 * Return an adapted version of the source changed through the given adapter
+		 * function.
 		 * @param <R> the resulting type
 		 * @param adapter the adapter to apply
 		 * @return a new adapted source instance
@@ -280,7 +283,7 @@ public final class PropertyMapper {
 
 		/**
 		 * Complete the mapping by passing any non-filtered value to the specified
-		 * consumer.
+		 * consumer. The method is designed to be used with mutable objects.
 		 * @param consumer the consumer that should accept the value if it's not been
 		 * filtered
 		 */
@@ -290,6 +293,24 @@ public final class PropertyMapper {
 			if (this.predicate.test(value)) {
 				consumer.accept(value);
 			}
+		}
+
+		/**
+		 * Complete the mapping for any non-filtered value by applying the given function
+		 * to an existing instance and returning a new one. For filtered values, the
+		 * {@code instance} parameter is returned unchanged. The method is designed to be
+		 * used with immutable objects.
+		 * @param <R> the result type
+		 * @param instance the current instance
+		 * @param mapper the mapping function
+		 * @return a new mapped instance or the original instance
+		 * @since 3.0.0
+		 */
+		public <R> R to(R instance, BiFunction<R, T, R> mapper) {
+			Assert.notNull(instance, "Instance must not be null");
+			Assert.notNull(mapper, "Mapper must not be null");
+			T value = this.supplier.get();
+			return (!this.predicate.test(value)) ? instance : mapper.apply(instance, value);
 		}
 
 		/**

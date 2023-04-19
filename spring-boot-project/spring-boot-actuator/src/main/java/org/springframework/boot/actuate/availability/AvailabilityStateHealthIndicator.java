@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public class AvailabilityStateHealthIndicator extends AbstractHealthIndicator {
 	 * @param <S> the availability state type
 	 * @param applicationAvailability the application availability
 	 * @param stateType the availability state type
-	 * @param statusMappings consumer used to setup the status mappings
+	 * @param statusMappings consumer used to set up the status mappings
 	 */
 	public <S extends AvailabilityState> AvailabilityStateHealthIndicator(
 			ApplicationAvailability applicationAvailability, Class<S> stateType,

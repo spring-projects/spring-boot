@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.StandardEnvironment;
 
@@ -49,7 +50,7 @@ class ConditionalOnPropertyTests {
 
 	private ConfigurableApplicationContext context;
 
-	private ConfigurableEnvironment environment = new StandardEnvironment();
+	private final ConfigurableEnvironment environment = new StandardEnvironment();
 
 	@AfterEach
 	void tearDown() {
@@ -195,15 +196,14 @@ class ConditionalOnPropertyTests {
 	@Test
 	void nameOrValueMustBeSpecified() {
 		assertThatIllegalStateException().isThrownBy(() -> load(NoNameOrValueAttribute.class, "some.property"))
-				.satisfies(causeMessageContaining(
-						"The name or value attribute of @ConditionalOnProperty must be specified"));
+			.satisfies(
+					causeMessageContaining("The name or value attribute of @ConditionalOnProperty must be specified"));
 	}
 
 	@Test
 	void nameAndValueMustNotBeSpecified() {
 		assertThatIllegalStateException().isThrownBy(() -> load(NameAndValueAttribute.class, "some.property"))
-				.satisfies(causeMessageContaining(
-						"The name and value attributes of @ConditionalOnProperty are exclusive"));
+			.satisfies(causeMessageContaining("The name and value attributes of @ConditionalOnProperty are exclusive"));
 	}
 
 	private <T extends Exception> Consumer<T> causeMessageContaining(String message) {
@@ -246,10 +246,36 @@ class ConditionalOnPropertyTests {
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
+	@Test
+	void metaAnnotationWithAliasConditionMatchesWhenPropertyIsSet() {
+		load(MetaAnnotationWithAlias.class, "my.feature.enabled=true");
+		assertThat(this.context.containsBean("foo")).isTrue();
+	}
+
+	@Test
+	void metaAndDirectAnnotationWithAliasConditionDoesNotMatchWhenOnlyMetaPropertyIsSet() {
+		load(MetaAnnotationAndDirectAnnotationWithAlias.class, "my.feature.enabled=true");
+		assertThat(this.context.containsBean("foo")).isFalse();
+	}
+
+	@Test
+	void metaAndDirectAnnotationWithAliasConditionDoesNotMatchWhenOnlyDirectPropertyIsSet() {
+		load(MetaAnnotationAndDirectAnnotationWithAlias.class, "my.other.feature.enabled=true");
+		assertThat(this.context.containsBean("foo")).isFalse();
+	}
+
+	@Test
+	void metaAndDirectAnnotationWithAliasConditionMatchesWhenBothPropertiesAreSet() {
+		load(MetaAnnotationAndDirectAnnotationWithAlias.class, "my.feature.enabled=true",
+				"my.other.feature.enabled=true");
+		assertThat(this.context.containsBean("foo")).isTrue();
+	}
+
 	private void load(Class<?> config, String... environment) {
 		TestPropertyValues.of(environment).applyTo(this.environment);
-		this.context = new SpringApplicationBuilder(config).environment(this.environment).web(WebApplicationType.NONE)
-				.run();
+		this.context = new SpringApplicationBuilder(config).environment(this.environment)
+			.web(WebApplicationType.NONE)
+			.run();
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -413,6 +439,39 @@ class ConditionalOnPropertyTests {
 	@Target({ ElementType.TYPE, ElementType.METHOD })
 	@ConditionalOnProperty(prefix = "my.feature", name = "enabled", havingValue = "true")
 	@interface ConditionalOnMyFeature {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMyFeatureWithAlias("my.feature")
+	static class MetaAnnotationWithAlias {
+
+		@Bean
+		String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMyFeatureWithAlias("my.feature")
+	@ConditionalOnProperty(prefix = "my.other.feature", name = "enabled", havingValue = "true")
+	static class MetaAnnotationAndDirectAnnotationWithAlias {
+
+		@Bean
+		String foo() {
+			return "foo";
+		}
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target({ ElementType.TYPE, ElementType.METHOD })
+	@ConditionalOnProperty(name = "enabled", havingValue = "true")
+	@interface ConditionalOnMyFeatureWithAlias {
+
+		@AliasFor(annotation = ConditionalOnProperty.class, attribute = "prefix")
+		String value();
 
 	}
 

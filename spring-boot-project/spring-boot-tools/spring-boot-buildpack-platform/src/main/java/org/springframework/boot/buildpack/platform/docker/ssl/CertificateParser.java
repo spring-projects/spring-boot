@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +18,17 @@ package org.springframework.boot.buildpack.platform.docker.ssl;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.springframework.util.Base64Utils;
 
 /**
  * Parser for X.509 certificates in PEM format.
@@ -76,7 +74,7 @@ final class CertificateParser {
 
 	private static void readCertificates(Path path, CertificateFactory factory, Consumer<X509Certificate> consumer) {
 		try {
-			String text = readText(path);
+			String text = Files.readString(path);
 			Matcher matcher = PATTERN.matcher(text);
 			while (matcher.find()) {
 				String encodedText = matcher.group(1);
@@ -92,14 +90,9 @@ final class CertificateParser {
 		}
 	}
 
-	private static String readText(Path path) throws IOException {
-		byte[] bytes = Files.readAllBytes(path);
-		return new String(bytes, StandardCharsets.UTF_8);
-	}
-
 	private static byte[] decodeBase64(String content) {
 		byte[] bytes = content.replaceAll("\r", "").replaceAll("\n", "").getBytes();
-		return Base64Utils.decode(bytes);
+		return Base64.getDecoder().decode(bytes);
 	}
 
 }

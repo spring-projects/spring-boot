@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,18 +38,18 @@ import static org.mockito.Mockito.mock;
  */
 class ClassLoaderFilesTests {
 
-	private ClassLoaderFiles files = new ClassLoaderFiles();
+	private final ClassLoaderFiles files = new ClassLoaderFiles();
 
 	@Test
 	void addFileNameMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.files.addFile(null, mock(ClassLoaderFile.class)))
-				.withMessageContaining("Name must not be null");
+			.withMessageContaining("Name must not be null");
 	}
 
 	@Test
 	void addFileFileMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.files.addFile("test", null))
-				.withMessageContaining("File must not be null");
+			.withMessageContaining("File must not be null");
 	}
 
 	@Test
@@ -85,8 +85,8 @@ class ClassLoaderFilesTests {
 		this.files.addFile("a", "myfile", file1);
 		this.files.addFile("b", "myfile", file2);
 		assertThat(this.files.getFile("myfile")).isEqualTo(file2);
-		assertThat(this.files.getOrCreateSourceDirectory("a").getFiles().size()).isEqualTo(0);
-		assertThat(this.files.getOrCreateSourceDirectory("b").getFiles().size()).isEqualTo(1);
+		assertThat(this.files.getOrCreateSourceDirectory("a").getFiles()).isEmpty();
+		assertThat(this.files.getOrCreateSourceDirectory("b").getFiles()).hasSize(1);
 	}
 
 	@Test
@@ -153,7 +153,7 @@ class ClassLoaderFilesTests {
 	@Test
 	void classLoaderFilesMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ClassLoaderFiles(null))
-				.withMessageContaining("ClassLoaderFiles must not be null");
+			.withMessageContaining("ClassLoaderFiles must not be null");
 	}
 
 	@Test

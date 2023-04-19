@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,17 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
+import com.mongodb.ConnectionString;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.data.mongodb.gridfs.ReactiveGridFsTemplate;
@@ -35,12 +39,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Mark Paluch
  * @author Artsiom Yudovin
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class MongoReactiveDataAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class,
-					MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class,
+				MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class));
 
 	@Test
 	void templateExists() {
@@ -55,7 +62,16 @@ class MongoReactiveDataAutoConfigurationTests {
 	@Test
 	void whenGridFsDatabaseIsConfiguredThenGridFsTemplateUsesIt() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.gridfs.database:grid")
-				.run((context) -> assertThat(grisFsTemplateDatabaseName(context)).isEqualTo("grid"));
+			.run((context) -> assertThat(grisFsTemplateDatabaseName(context)).isEqualTo("grid"));
+	}
+
+	@Test
+	void usesMongoConnectionDetailsIfAvailable() {
+		this.contextRunner.withUserConfiguration(ConnectionDetailsConfiguration.class).run((context) -> {
+			assertThat(grisFsTemplateDatabaseName(context)).isEqualTo("grid-database-1");
+			ReactiveGridFsTemplate template = context.getBean(ReactiveGridFsTemplate.class);
+			assertThat(template).hasFieldOrPropertyWithValue("bucket", "connection-details-bucket");
+		});
 	}
 
 	@Test
@@ -70,7 +86,7 @@ class MongoReactiveDataAutoConfigurationTests {
 	@Test
 	void backsOffIfMongoClientBeanIsNotPresent() {
 		ApplicationContextRunner runner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
-				.of(PropertyPlaceholderAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class));
+			.of(PropertyPlaceholderAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class));
 		runner.run((context) -> assertThat(context).doesNotHaveBean(MongoReactiveDataAutoConfiguration.class));
 	}
 
@@ -80,6 +96,40 @@ class MongoReactiveDataAutoConfigurationTests {
 		ReactiveMongoDatabaseFactory factory = (ReactiveMongoDatabaseFactory) ReflectionTestUtils.getField(template,
 				"dbFactory");
 		return factory.getMongoDatabase().block().getName();
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ConnectionDetailsConfiguration {
+
+		@Bean
+		MongoConnectionDetails mongoConnectionDetails() {
+			return new MongoConnectionDetails() {
+
+				@Override
+				public ConnectionString getConnectionString() {
+					return new ConnectionString("mongodb://localhost/db");
+				}
+
+				@Override
+				public GridFs getGridFs() {
+					return new GridFs() {
+
+						@Override
+						public String getDatabase() {
+							return "grid-database-1";
+						}
+
+						@Override
+						public String getBucket() {
+							return "connection-details-bucket";
+						}
+
+					};
+				}
+
+			};
+		}
+
 	}
 
 }

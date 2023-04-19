@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,11 +75,12 @@ class ClientHttpConnectorConfigurationTests {
 	@Test
 	void shouldApplyHttpClientMapper() {
 		new ReactiveWebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(ClientHttpConnectorConfiguration.ReactorNetty.class))
-				.withUserConfiguration(CustomHttpClientMapper.class).run((context) -> {
-					context.getBean("reactorClientHttpConnector");
-					assertThat(CustomHttpClientMapper.called).isTrue();
-				});
+			.withConfiguration(AutoConfigurations.of(ClientHttpConnectorConfiguration.ReactorNetty.class))
+			.withUserConfiguration(CustomHttpClientMapper.class)
+			.run((context) -> {
+				context.getBean("reactorClientHttpConnector");
+				assertThat(CustomHttpClientMapper.called).isTrue();
+			});
 	}
 
 	static class CustomHttpClientMapper {
