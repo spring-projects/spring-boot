@@ -1854,7 +1854,7 @@ bom {
 			]
 		}
 	}
-	library("Spring WS", "3.1.6-SNAPSHOT") {
+	library("Spring WS", "3.1.6") {
 		prohibit {
 			versionRange "[4.0.0-M1,)"
 			because "it uses Spring Framework 6"
