@@ -20,13 +20,10 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.availability.ApplicationAvailability;
-import org.springframework.boot.availability.AvailabilityChangeEvent;
-import org.springframework.boot.availability.AvailabilityState;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ApplicationAvailabilityAutoConfiguration}
@@ -46,35 +43,12 @@ class ApplicationAvailabilityAutoConfigurationTests {
 	}
 
 	@Test
-	void providerIsPresentWithRegisteredOne() {
-		this.contextRunner.withUserConfiguration(ApplicationAvailabilityConfig.class)
+	void providerIsNotConfiguredWhenCustomOneIsPresent() {
+		this.contextRunner
+			.withBean("customApplicationAvailability", ApplicationAvailability.class,
+					() -> mock(ApplicationAvailability.class))
 			.run(((context) -> assertThat(context).hasSingleBean(ApplicationAvailability.class)
 				.hasBean("customApplicationAvailability")));
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class ApplicationAvailabilityConfig {
-
-		@Bean
-		ApplicationAvailability customApplicationAvailability() {
-			return new ApplicationAvailability() {
-				@Override
-				public <S extends AvailabilityState> S getState(Class<S> stateType, S defaultState) {
-					return null;
-				}
-
-				@Override
-				public <S extends AvailabilityState> S getState(Class<S> stateType) {
-					return null;
-				}
-
-				@Override
-				public <S extends AvailabilityState> AvailabilityChangeEvent<S> getLastChangeEvent(Class<S> stateType) {
-					return null;
-				}
-			};
-		}
-
 	}
 
 }
