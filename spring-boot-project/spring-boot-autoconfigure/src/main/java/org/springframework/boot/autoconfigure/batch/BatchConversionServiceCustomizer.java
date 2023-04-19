@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
+import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 
 /**
- * Callback interface that can be implemented by beans wishing to further customize the
- * {@link ConfigurableConversionService} used in
- * {@link org.springframework.batch.core.configuration.support.DefaultBatchConfiguration}
- * retaining its default auto-configuration.
+ * Callback interface that can be implemented by beans wishing to customize the
+ * {@link ConfigurableConversionService} that is
+ * {@link DefaultBatchConfiguration#getConversionService provided by
+ * DefaultBatchAutoConfiguration} while retaining its default auto-configuration.
  *
  * @author Claudio Nave
  * @since 3.1.0

@@ -122,11 +122,11 @@ public class BatchAutoConfiguration {
 
 		SpringBootBatchConfiguration(DataSource dataSource, @BatchDataSource ObjectProvider<DataSource> batchDataSource,
 				PlatformTransactionManager transactionManager, BatchProperties properties,
-				List<BatchConversionServiceCustomizer> batchConversionServiceCustomizers) {
+				ObjectProvider<BatchConversionServiceCustomizer> batchConversionServiceCustomizers) {
 			this.dataSource = batchDataSource.getIfAvailable(() -> dataSource);
 			this.transactionManager = transactionManager;
 			this.properties = properties;
-			this.batchConversionServiceCustomizers = batchConversionServiceCustomizers;
+			this.batchConversionServiceCustomizers = batchConversionServiceCustomizers.orderedStream().toList();
 		}
 
 		@Override

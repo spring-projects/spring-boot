@@ -24,6 +24,8 @@ import javax.sql.DataSource;
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
@@ -71,7 +73,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.convert.converter.Converter;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -403,17 +405,20 @@ class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	void userProvidedCustomConverter() {
+	void conversionServiceCustomizersAreCalled() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
-			.withUserConfiguration(RegisterCustomConverter.class)
+			.withUserConfiguration(ConversionServiceCustomizersConfiguration.class)
 			.run((context) -> {
-				assertThat(context).hasSingleBean(SpringBootBatchConfiguration.class);
+				BatchConversionServiceCustomizer customizer = context.getBean("batchConversionServiceCustomizer",
+						BatchConversionServiceCustomizer.class);
+				BatchConversionServiceCustomizer anotherCustomizer = context
+					.getBean("anotherBatchConversionServiceCustomizer", BatchConversionServiceCustomizer.class);
+				InOrder inOrder = Mockito.inOrder(customizer, anotherCustomizer);
 				ConfigurableConversionService configurableConversionService = context
 					.getBean(SpringBootBatchConfiguration.class)
 					.getConversionService();
-				assertThat(configurableConversionService.canConvert(RegisterCustomConverter.Foo.class,
-						RegisterCustomConverter.Bar.class))
-					.isTrue();
+				inOrder.verify(customizer).customize(configurableConversionService);
+				inOrder.verify(anotherCustomizer).customize(configurableConversionService);
 			});
 	}
 
@@ -698,29 +703,18 @@ class BatchAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class RegisterCustomConverter {
+	static class ConversionServiceCustomizersConfiguration {
 
 		@Bean
+		@Order(1)
 		BatchConversionServiceCustomizer batchConversionServiceCustomizer() {
-			return (configurableConversionService) -> configurableConversionService
-				.addConverter(new FooToBarConverter());
+			return mock(BatchConversionServiceCustomizer.class);
 		}
 
-		static class Foo {
-
-		}
-
-		static class Bar {
-
-		}
-
-		static class FooToBarConverter implements Converter<Foo, Bar> {
-
-			@Override
-			public Bar convert(Foo source) {
-				return null;
-			}
-
+		@Bean
+		@Order(2)
+		BatchConversionServiceCustomizer anotherBatchConversionServiceCustomizer() {
+			return mock(BatchConversionServiceCustomizer.class);
 		}
 
 	}
