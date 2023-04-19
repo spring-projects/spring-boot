@@ -66,7 +66,6 @@ public final class DockerImageNames {
 		return DockerImageName.parse("symptoma/activemq").withTag(ACTIVE_MQ_VERSION);
 	}
 
-
 	/**
 	 * Return a {@link DockerImageName} suitable for running Cassandra.
 	 * @return a docker image name for running cassandra
