@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.health;
 
 import java.util.Map;
+import java.util.function.Function;
 
 import org.springframework.boot.actuate.health.CompositeHealthContributor;
 import org.springframework.boot.actuate.health.HealthContributor;
@@ -34,6 +35,28 @@ import org.springframework.boot.actuate.health.HealthIndicator;
  */
 public abstract class CompositeHealthContributorConfiguration<I extends HealthIndicator, B>
 		extends AbstractCompositeHealthContributorConfiguration<HealthContributor, I, B> {
+
+	/**
+	 * Creates a {@code CompositeHealthContributorConfiguration} that will use reflection
+	 * to create {@link HealthIndicator} instances.
+	 * @deprecated since 3.0.0 in favor of
+	 * {@link #CompositeHealthContributorConfiguration(Function)}
+	 */
+	@SuppressWarnings("removal")
+	@Deprecated(since = "3.0.0", forRemoval = true)
+	public CompositeHealthContributorConfiguration() {
+		super();
+	}
+
+	/**
+	 * Creates a {@code CompositeHealthContributorConfiguration} that will use the given
+	 * {@code indicatorFactory} to create {@link HealthIndicator} instances.
+	 * @param indicatorFactory the function to create health indicator instances
+	 * @since 3.0.0
+	 */
+	public CompositeHealthContributorConfiguration(Function<B, I> indicatorFactory) {
+		super(indicatorFactory);
+	}
 
 	@Override
 	protected final HealthContributor createComposite(Map<String, B> beans) {

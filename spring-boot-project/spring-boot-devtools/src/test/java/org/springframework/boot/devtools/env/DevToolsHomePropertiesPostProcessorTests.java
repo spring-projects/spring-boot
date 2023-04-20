@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Properties;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -47,15 +49,18 @@ class DevToolsHomePropertiesPostProcessorTests {
 
 	private File home;
 
+	private File customHome;
+
 	@BeforeEach
 	void setup(@TempDir File tempDir) {
-		this.home = tempDir;
+		this.home = new File(tempDir, "default-home");
+		this.customHome = new File(tempDir, "custom-home");
 		this.configDir = this.home + "/.config/spring-boot/";
 		new File(this.configDir).mkdirs();
 	}
 
 	@Test
-	void loadsPropertiesFromHomeFolderUsingProperties() throws Exception {
+	void loadsPropertiesFromHomeDirectoryUsingProperties() throws Exception {
 		Properties properties = new Properties();
 		properties.put("abc", "def");
 		writeFile(properties, ".spring-boot-devtools.properties");
@@ -64,7 +69,28 @@ class DevToolsHomePropertiesPostProcessorTests {
 	}
 
 	@Test
-	void loadsPropertiesFromConfigFolderUsingProperties() throws Exception {
+	void loadsPropertiesFromCustomHomeDirectorySetUsingSystemProperty() throws Exception {
+		Properties properties = new Properties();
+		properties.put("uvw", "xyz");
+		writeFile(properties, this.customHome, ".config/spring-boot/spring-boot-devtools.properties");
+		Properties systemProperties = new Properties();
+		systemProperties.setProperty("spring.devtools.home", this.customHome.getAbsolutePath());
+		ConfigurableEnvironment environment = getPostProcessedEnvironment(systemProperties);
+		assertThat(environment.getProperty("uvw")).isEqualTo("xyz");
+	}
+
+	@Test
+	void loadsPropertiesFromCustomHomeDirectorySetUsingEnvironmentVariable() throws Exception {
+		Properties properties = new Properties();
+		properties.put("uvw", "xyz");
+		writeFile(properties, this.customHome, ".config/spring-boot/spring-boot-devtools.properties");
+		ConfigurableEnvironment environment = getPostProcessedEnvironment(
+				Collections.singletonMap("SPRING_DEVTOOLS_HOME", this.customHome.getAbsolutePath()));
+		assertThat(environment.getProperty("uvw")).isEqualTo("xyz");
+	}
+
+	@Test
+	void loadsPropertiesFromConfigDirectoryUsingProperties() throws Exception {
 		Properties properties = new Properties();
 		properties.put("abc", "def");
 		OutputStream out = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.properties"));
@@ -75,7 +101,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 	}
 
 	@Test
-	void loadsPropertiesFromConfigFolderUsingYml() throws Exception {
+	void loadsPropertiesFromConfigDirectoryUsingYml() throws Exception {
 		OutputStream out = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.yml"));
 		File file = new ClassPathResource("spring-devtools.yaml", getClass()).getFile();
 		byte[] content = Files.readAllBytes(file.toPath());
@@ -86,7 +112,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 	}
 
 	@Test
-	void loadsPropertiesFromConfigFolderUsingYaml() throws Exception {
+	void loadsPropertiesFromConfigDirectoryUsingYaml() throws Exception {
 		OutputStream out = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.yaml"));
 		File file = new ClassPathResource("spring-devtools.yaml", getClass()).getFile();
 		byte[] content = Files.readAllBytes(file.toPath());
@@ -97,7 +123,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 	}
 
 	@Test
-	void loadFromConfigFolderWithPropertiesTakingPrecedence() throws Exception {
+	void loadFromConfigDirectoryWithPropertiesTakingPrecedence() throws Exception {
 		OutputStream out = new FileOutputStream(new File(this.configDir, "spring-boot-devtools.yaml"));
 		File file = new ClassPathResource("spring-devtools.yaml", getClass()).getFile();
 		byte[] content = Files.readAllBytes(file.toPath());
@@ -114,7 +140,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 	}
 
 	@Test
-	void loadFromConfigFolderTakesPrecedenceOverHomeFolder() throws Exception {
+	void loadFromConfigDirectoryTakesPrecedenceOverHomeDirectory() throws Exception {
 		Properties properties = new Properties();
 		properties.put("abc", "def");
 		properties.put("bar", "baz");
@@ -126,11 +152,11 @@ class DevToolsHomePropertiesPostProcessorTests {
 		out2.close();
 		ConfigurableEnvironment environment = getPostProcessedEnvironment();
 		assertThat(environment.getProperty("abc")).isEqualTo("jkl");
-		assertThat(environment.getProperty("bar")).isEqualTo(null);
+		assertThat(environment.getProperty("bar")).isNull();
 	}
 
 	@Test
-	void loadFromConfigFolderWithYamlTakesPrecedenceOverHomeFolder() throws Exception {
+	void loadFromConfigDirectoryWithYamlTakesPrecedenceOverHomeDirectory() throws Exception {
 		Properties properties = new Properties();
 		properties.put("abc.xyz", "jkl");
 		properties.put("bar", "baz");
@@ -142,7 +168,7 @@ class DevToolsHomePropertiesPostProcessorTests {
 		out2.close();
 		ConfigurableEnvironment environment = getPostProcessedEnvironment();
 		assertThat(environment.getProperty("abc.xyz")).isEqualTo("def");
-		assertThat(environment.getProperty("bar")).isEqualTo(null);
+		assertThat(environment.getProperty("bar")).isNull();
 	}
 
 	@Test
@@ -151,15 +177,39 @@ class DevToolsHomePropertiesPostProcessorTests {
 		assertThat(environment.getProperty("abc")).isNull();
 	}
 
-	private void writeFile(Properties properties, String s) throws IOException {
-		OutputStream out = new FileOutputStream(new File(this.home, s));
-		properties.store(out, null);
-		out.close();
+	private void writeFile(Properties properties, String path) throws IOException {
+		writeFile(properties, this.home, path);
+	}
+
+	private void writeFile(Properties properties, File home, String path) throws IOException {
+		File file = new File(home, path);
+		file.getParentFile().mkdirs();
+		try (OutputStream out = new FileOutputStream(file)) {
+			properties.store(out, null);
+		}
 	}
 
 	private ConfigurableEnvironment getPostProcessedEnvironment() throws Exception {
+		return getPostProcessedEnvironment(null, null);
+	}
+
+	private ConfigurableEnvironment getPostProcessedEnvironment(Properties systemProperties) throws Exception {
+		return getPostProcessedEnvironment(null, systemProperties);
+	}
+
+	private ConfigurableEnvironment getPostProcessedEnvironment(Map<String, String> env) throws Exception {
+		return getPostProcessedEnvironment(env, null);
+	}
+
+	private ConfigurableEnvironment getPostProcessedEnvironment(Map<String, String> env, Properties systemProperties)
+			throws Exception {
+		if (systemProperties == null) {
+			systemProperties = new Properties();
+			systemProperties.setProperty("user.home", this.home.getAbsolutePath());
+		}
 		ConfigurableEnvironment environment = new MockEnvironment();
-		MockDevToolHomePropertiesPostProcessor postProcessor = new MockDevToolHomePropertiesPostProcessor();
+		DevToolsHomePropertiesPostProcessor postProcessor = new DevToolsHomePropertiesPostProcessor(
+				(env != null) ? env : Collections.emptyMap(), systemProperties);
 		runPostProcessor(() -> postProcessor.postProcessEnvironment(environment, null));
 		return environment;
 	}
@@ -168,15 +218,6 @@ class DevToolsHomePropertiesPostProcessorTests {
 		Thread thread = new Thread(runnable);
 		thread.start();
 		thread.join();
-	}
-
-	private class MockDevToolHomePropertiesPostProcessor extends DevToolsHomePropertiesPostProcessor {
-
-		@Override
-		protected File getHomeFolder() {
-			return DevToolsHomePropertiesPostProcessorTests.this.home;
-		}
-
 	}
 
 }

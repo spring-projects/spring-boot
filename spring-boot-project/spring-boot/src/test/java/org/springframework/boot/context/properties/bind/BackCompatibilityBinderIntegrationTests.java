@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,9 @@ class BackCompatibilityBinderIntegrationTests {
 				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 				Collections.singletonMap("FOO_ZK_NODES", "foo"));
 		environment.getPropertySources().addFirst(propertySource);
-		ExampleCamelCaseBean result = Binder.get(environment).bind("foo", Bindable.of(ExampleCamelCaseBean.class))
-				.get();
+		ExampleCamelCaseBean result = Binder.get(environment)
+			.bind("foo", Bindable.of(ExampleCamelCaseBean.class))
+			.get();
 		assertThat(result.getZkNodes()).isEqualTo("foo");
 	}
 

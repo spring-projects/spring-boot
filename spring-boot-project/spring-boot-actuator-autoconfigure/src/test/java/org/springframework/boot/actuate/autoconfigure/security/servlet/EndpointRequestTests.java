@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.security.servlet;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.assertj.core.api.AssertDelegateTarget;
 import org.junit.jupiter.api.Test;
 
@@ -214,6 +213,30 @@ class EndpointRequestTests {
 		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
 		assertMatcher(matcher, (PathMappedEndpoints) null).doesNotMatch("/actuator/foo");
 		assertMatcher(matcher, (PathMappedEndpoints) null).doesNotMatch("/actuator/bar");
+	}
+
+	@Test
+	void toStringWhenIncludedEndpoints() {
+		RequestMatcher matcher = EndpointRequest.to("foo", "bar");
+		assertThat(matcher).hasToString("EndpointRequestMatcher includes=[foo, bar], excludes=[], includeLinks=false");
+	}
+
+	@Test
+	void toStringWhenEmptyIncludedEndpoints() {
+		RequestMatcher matcher = EndpointRequest.toAnyEndpoint();
+		assertThat(matcher).hasToString("EndpointRequestMatcher includes=[*], excludes=[], includeLinks=true");
+	}
+
+	@Test
+	void toStringWhenIncludedEndpointsClasses() {
+		RequestMatcher matcher = EndpointRequest.to(FooEndpoint.class).excluding("bar");
+		assertThat(matcher).hasToString("EndpointRequestMatcher includes=[foo], excludes=[bar], includeLinks=false");
+	}
+
+	@Test
+	void toStringWhenIncludedExcludedEndpoints() {
+		RequestMatcher matcher = EndpointRequest.toAnyEndpoint().excluding("bar").excludingLinks();
+		assertThat(matcher).hasToString("EndpointRequestMatcher includes=[*], excludes=[bar], includeLinks=false");
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher) {

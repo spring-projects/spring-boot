@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.test.mock.mockito;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.SpyBeanOnContextHierarchyIntegrationTests.ChildConfig;
 import org.springframework.boot.test.mock.mockito.SpyBeanOnContextHierarchyIntegrationTests.ParentConfig;
@@ -54,8 +53,8 @@ class SpyBeanOnContextHierarchyIntegrationTests {
 		ApplicationContext context = this.childConfig.getContext();
 		ApplicationContext parentContext = context.getParent();
 		assertThat(parentContext.getBeanNamesForType(ExampleService.class)).hasSize(1);
-		assertThat(parentContext.getBeanNamesForType(ExampleServiceCaller.class)).hasSize(0);
-		assertThat(context.getBeanNamesForType(ExampleService.class)).hasSize(0);
+		assertThat(parentContext.getBeanNamesForType(ExampleServiceCaller.class)).isEmpty();
+		assertThat(context.getBeanNamesForType(ExampleService.class)).isEmpty();
 		assertThat(context.getBeanNamesForType(ExampleServiceCaller.class)).hasSize(1);
 		assertThat(context.getBean(ExampleService.class)).isNotNull();
 		assertThat(context.getBean(ExampleServiceCaller.class)).isNotNull();
@@ -74,7 +73,7 @@ class SpyBeanOnContextHierarchyIntegrationTests {
 		private ApplicationContext context;
 
 		@Override
-		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		public void setApplicationContext(ApplicationContext applicationContext) {
 			this.context = applicationContext;
 		}
 

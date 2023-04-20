@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.context.properties.bind.Bindable.BindRestriction;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -41,13 +42,13 @@ class BindableTests {
 	@Test
 	void ofClassWhenTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Bindable.of((Class<?>) null))
-				.withMessageContaining("Type must not be null");
+			.withMessageContaining("Type must not be null");
 	}
 
 	@Test
 	void ofTypeWhenTypeIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Bindable.of((ResolvableType) null))
-				.withMessageContaining("Type must not be null");
+			.withMessageContaining("Type must not be null");
 	}
 
 	@Test
@@ -77,14 +78,14 @@ class BindableTests {
 	@Test
 	void ofTypeWithExistingValueShouldSetTypeAndExistingValue() {
 		assertThat(Bindable.of(ResolvableType.forClass(String.class)).withExistingValue("foo").getValue().get())
-				.isEqualTo("foo");
+			.isEqualTo("foo");
 	}
 
 	@Test
 	void ofTypeWhenExistingValueIsNotInstanceOfTypeShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> Bindable.of(ResolvableType.forClass(String.class)).withExistingValue(123))
-				.withMessageContaining("ExistingValue must be an instance of " + String.class.getName());
+			.isThrownBy(() -> Bindable.of(ResolvableType.forClass(String.class)).withExistingValue(123))
+			.withMessageContaining("ExistingValue must be an instance of " + String.class.getName());
 	}
 
 	@Test
@@ -130,7 +131,7 @@ class BindableTests {
 	void getAnnotationWhenMatchShouldReturnAnnotation() {
 		Test annotation = AnnotationUtils.synthesizeAnnotation(Test.class);
 		assertThat(Bindable.of(String.class).withAnnotations(annotation).getAnnotation(Test.class))
-				.isSameAs(annotation);
+			.isSameAs(annotation);
 	}
 
 	@Test
@@ -144,8 +145,8 @@ class BindableTests {
 		Annotation annotation = AnnotationUtils.synthesizeAnnotation(TestAnnotation.class);
 		Bindable<String> bindable = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation);
 		assertThat(bindable.toString())
-				.contains("type = java.lang.String, value = 'provided', annotations = array<Annotation>["
-						+ "@org.springframework.boot.context.properties.bind.BindableTests$TestAnnotation()]");
+			.contains("type = java.lang.String, value = 'provided', annotations = array<Annotation>["
+					+ "@org.springframework.boot.context.properties.bind.BindableTests.TestAnnotation()]");
 	}
 
 	@Test
@@ -154,7 +155,7 @@ class BindableTests {
 		Bindable<String> bindable1 = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation);
 		Bindable<String> bindable2 = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation);
 		Bindable<String> bindable3 = Bindable.of(String.class).withExistingValue("fof").withAnnotations(annotation);
-		assertThat(bindable1.hashCode()).isEqualTo(bindable2.hashCode());
+		assertThat(bindable1).hasSameHashCodeAs(bindable2);
 		assertThat(bindable1).isEqualTo(bindable1).isEqualTo(bindable2);
 		assertThat(bindable1).isEqualTo(bindable3);
 	}
@@ -171,6 +172,22 @@ class BindableTests {
 		Annotation annotation = AnnotationUtils.synthesizeAnnotation(TestAnnotation.class);
 		Bindable<?> bindable = Bindable.of(String.class).withAnnotations(annotation).withSuppliedValue(() -> "");
 		assertThat(bindable.getAnnotations()).containsExactly(annotation);
+	}
+
+	@Test
+	void hasBindRestrictionWhenDefaultReturnsFalse() {
+		Bindable<String> bindable = Bindable.of(String.class);
+		for (BindRestriction bindRestriction : BindRestriction.values()) {
+			assertThat(bindable.hasBindRestriction(bindRestriction)).isFalse();
+		}
+	}
+
+	@Test
+	void withBindRestrictionAddsBindRestriction() {
+		Bindable<String> bindable = Bindable.of(String.class);
+		Bindable<String> restricted = bindable.withBindRestrictions(BindRestriction.NO_DIRECT_PROPERTY);
+		assertThat(bindable.hasBindRestriction(BindRestriction.NO_DIRECT_PROPERTY)).isFalse();
+		assertThat(restricted.hasBindRestriction(BindRestriction.NO_DIRECT_PROPERTY)).isTrue();
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)

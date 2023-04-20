@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,14 +37,17 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.naming.ContextBindings;
 
+import org.springframework.boot.web.server.GracefulShutdownCallback;
+import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.util.Assert;
 
 /**
  * {@link WebServer} that can be used to control a Tomcat web server. Usually this class
- * should be created using the {@link TomcatReactiveWebServerFactory} of
+ * should be created using the {@link TomcatReactiveWebServerFactory} or
  * {@link TomcatServletWebServerFactory}, but not directly.
  *
  * @author Brian Clozel
@@ -65,6 +68,8 @@ public class TomcatWebServer implements WebServer {
 
 	private final boolean autoStart;
 
+	private final GracefulShutdown gracefulShutdown;
+
 	private volatile boolean started;
 
 	/**
@@ -81,9 +86,21 @@ public class TomcatWebServer implements WebServer {
 	 * @param autoStart if the server should be started
 	 */
 	public TomcatWebServer(Tomcat tomcat, boolean autoStart) {
+		this(tomcat, autoStart, Shutdown.IMMEDIATE);
+	}
+
+	/**
+	 * Create a new {@link TomcatWebServer} instance.
+	 * @param tomcat the underlying Tomcat server
+	 * @param autoStart if the server should be started
+	 * @param shutdown type of shutdown supported by the server
+	 * @since 2.3.0
+	 */
+	public TomcatWebServer(Tomcat tomcat, boolean autoStart, Shutdown shutdown) {
 		Assert.notNull(tomcat, "Tomcat Server must not be null");
 		this.tomcat = tomcat;
 		this.autoStart = autoStart;
+		this.gracefulShutdown = (shutdown == Shutdown.GRACEFUL) ? new GracefulShutdown(tomcat) : null;
 		initialize();
 	}
 
@@ -129,8 +146,8 @@ public class TomcatWebServer implements WebServer {
 
 	private Context findContext() {
 		for (Container child : this.tomcat.getHost().findChildren()) {
-			if (child instanceof Context) {
-				return (Context) child;
+			if (child instanceof Context context) {
+				return context;
 			}
 		}
 		throw new IllegalStateException("The host does not contain a Context");
@@ -157,8 +174,8 @@ public class TomcatWebServer implements WebServer {
 	private void rethrowDeferredStartupExceptions() throws Exception {
 		Container[] children = this.tomcat.getHost().findChildren();
 		for (Container container : children) {
-			if (container instanceof TomcatEmbeddedContext) {
-				TomcatStarter tomcatStarter = ((TomcatEmbeddedContext) container).getStarter();
+			if (container instanceof TomcatEmbeddedContext embeddedContext) {
+				TomcatStarter tomcatStarter = embeddedContext.getStarter();
 				if (tomcatStarter != null) {
 					Exception exception = tomcatStarter.getStartUpException();
 					if (exception != null) {
@@ -284,14 +301,14 @@ public class TomcatWebServer implements WebServer {
 	private void performDeferredLoadOnStartup() {
 		try {
 			for (Container child : this.tomcat.getHost().findChildren()) {
-				if (child instanceof TomcatEmbeddedContext) {
-					((TomcatEmbeddedContext) child).deferredLoadOnStartup();
+				if (child instanceof TomcatEmbeddedContext embeddedContext) {
+					embeddedContext.deferredLoadOnStartup();
 				}
 			}
 		}
 		catch (Exception ex) {
-			if (ex instanceof WebServerException) {
-				throw (WebServerException) ex;
+			if (ex instanceof WebServerException webServerException) {
+				throw webServerException;
 			}
 			throw new WebServerException("Unable to start embedded Tomcat connectors", ex);
 		}
@@ -308,6 +325,9 @@ public class TomcatWebServer implements WebServer {
 			try {
 				this.started = false;
 				try {
+					if (this.gracefulShutdown != null) {
+						this.gracefulShutdown.abort();
+					}
 					stopTomcat();
 					this.tomcat.destroy();
 				}
@@ -344,13 +364,15 @@ public class TomcatWebServer implements WebServer {
 		if (connector != null) {
 			return connector.getLocalPort();
 		}
-		return 0;
+		return -1;
 	}
 
 	private String getContextPath() {
-		return Arrays.stream(this.tomcat.getHost().findChildren()).filter(TomcatEmbeddedContext.class::isInstance)
-				.map(TomcatEmbeddedContext.class::cast).map(TomcatEmbeddedContext::getPath)
-				.collect(Collectors.joining(" "));
+		return Arrays.stream(this.tomcat.getHost().findChildren())
+			.filter(TomcatEmbeddedContext.class::isInstance)
+			.map(TomcatEmbeddedContext.class::cast)
+			.map(TomcatEmbeddedContext::getPath)
+			.collect(Collectors.joining(" "));
 	}
 
 	/**
@@ -359,6 +381,15 @@ public class TomcatWebServer implements WebServer {
 	 */
 	public Tomcat getTomcat() {
 		return this.tomcat;
+	}
+
+	@Override
+	public void shutDownGracefully(GracefulShutdownCallback callback) {
+		if (this.gracefulShutdown == null) {
+			callback.shutdownComplete(GracefulShutdownResult.IMMEDIATE);
+			return;
+		}
+		this.gracefulShutdown.shutDownGracefully(callback);
 	}
 
 }

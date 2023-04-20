@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,22 +25,19 @@ import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.autoconfigure.freemarker.FreeMarkerAutoConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
 import org.springframework.core.annotation.AliasFor;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link ImportAutoConfigurationImportSelector}.
@@ -54,12 +51,10 @@ class ImportAutoConfigurationImportSelectorTests {
 
 	private final ConfigurableListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
-	@Mock
-	private Environment environment;
+	private final MockEnvironment environment = new MockEnvironment();
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.importSelector.setBeanFactory(this.beanFactory);
 		this.importSelector.setEnvironment(this.environment);
 		this.importSelector.setResourceLoader(new DefaultResourceLoader());
@@ -80,10 +75,11 @@ class ImportAutoConfigurationImportSelectorTests {
 	}
 
 	@Test
-	void propertyExclusionsAreNotApplied() throws Exception {
-		AnnotationMetadata annotationMetadata = getAnnotationMetadata(ImportFreeMarker.class);
-		this.importSelector.selectImports(annotationMetadata);
-		verifyNoInteractions(this.environment);
+	void propertyExclusionsAreApplied() throws IOException {
+		this.environment.setProperty("spring.autoconfigure.exclude", FreeMarkerAutoConfiguration.class.getName());
+		AnnotationMetadata annotationMetadata = getAnnotationMetadata(MultipleImports.class);
+		String[] imports = this.importSelector.selectImports(annotationMetadata);
+		assertThat(imports).containsExactly(ThymeleafAutoConfiguration.class.getName());
 	}
 
 	@Test
@@ -125,58 +121,58 @@ class ImportAutoConfigurationImportSelectorTests {
 	@Test
 	void determineImportsWhenUsingMetaWithoutClassesShouldBeEqual() throws Exception {
 		Set<Object> set1 = this.importSelector
-				.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationWithUnrelatedOne.class));
+			.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationWithUnrelatedOne.class));
 		Set<Object> set2 = this.importSelector
-				.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationWithUnrelatedTwo.class));
+			.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationWithUnrelatedTwo.class));
 		assertThat(set1).isEqualTo(set2);
-		assertThat(set1.hashCode()).isEqualTo(set2.hashCode());
+		assertThat(set1).hasSameHashCodeAs(set2);
 	}
 
 	@Test
 	void determineImportsWhenUsingNonMetaWithoutClassesShouldBeSame() throws Exception {
 		Set<Object> set1 = this.importSelector
-				.determineImports(getAnnotationMetadata(ImportAutoConfigurationWithUnrelatedOne.class));
+			.determineImports(getAnnotationMetadata(ImportAutoConfigurationWithUnrelatedOne.class));
 		Set<Object> set2 = this.importSelector
-				.determineImports(getAnnotationMetadata(ImportAutoConfigurationWithUnrelatedTwo.class));
+			.determineImports(getAnnotationMetadata(ImportAutoConfigurationWithUnrelatedTwo.class));
 		assertThat(set1).isEqualTo(set2);
 	}
 
 	@Test
 	void determineImportsWhenUsingNonMetaWithClassesShouldBeSame() throws Exception {
 		Set<Object> set1 = this.importSelector
-				.determineImports(getAnnotationMetadata(ImportAutoConfigurationWithItemsOne.class));
+			.determineImports(getAnnotationMetadata(ImportAutoConfigurationWithItemsOne.class));
 		Set<Object> set2 = this.importSelector
-				.determineImports(getAnnotationMetadata(ImportAutoConfigurationWithItemsTwo.class));
+			.determineImports(getAnnotationMetadata(ImportAutoConfigurationWithItemsTwo.class));
 		assertThat(set1).isEqualTo(set2);
 	}
 
 	@Test
 	void determineImportsWhenUsingMetaExcludeWithoutClassesShouldBeEqual() throws Exception {
 		Set<Object> set1 = this.importSelector
-				.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationExcludeWithUnrelatedOne.class));
+			.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationExcludeWithUnrelatedOne.class));
 		Set<Object> set2 = this.importSelector
-				.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationExcludeWithUnrelatedTwo.class));
+			.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationExcludeWithUnrelatedTwo.class));
 		assertThat(set1).isEqualTo(set2);
-		assertThat(set1.hashCode()).isEqualTo(set2.hashCode());
+		assertThat(set1).hasSameHashCodeAs(set2);
 	}
 
 	@Test
 	void determineImportsWhenUsingMetaDifferentExcludeWithoutClassesShouldBeDifferent() throws Exception {
 		Set<Object> set1 = this.importSelector
-				.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationExcludeWithUnrelatedOne.class));
+			.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationExcludeWithUnrelatedOne.class));
 		Set<Object> set2 = this.importSelector
-				.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationWithUnrelatedTwo.class));
+			.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationWithUnrelatedTwo.class));
 		assertThat(set1).isNotEqualTo(set2);
 	}
 
 	@Test
 	void determineImportsShouldNotSetPackageImport() throws Exception {
-		Class<?> packageImportClass = ClassUtils.resolveClassName(
-				"org.springframework.boot.autoconfigure.AutoConfigurationPackages.PackageImport", null);
+		Class<?> packageImportsClass = ClassUtils
+			.resolveClassName("org.springframework.boot.autoconfigure.AutoConfigurationPackages.PackageImports", null);
 		Set<Object> selectedImports = this.importSelector
-				.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationExcludeWithUnrelatedOne.class));
+			.determineImports(getAnnotationMetadata(ImportMetaAutoConfigurationExcludeWithUnrelatedOne.class));
 		for (Object selectedImport : selectedImports) {
-			assertThat(selectedImport).isNotInstanceOf(packageImportClass);
+			assertThat(selectedImport).isNotInstanceOf(packageImportsClass);
 		}
 	}
 
@@ -288,7 +284,9 @@ class ImportAutoConfigurationImportSelectorTests {
 	@interface MetaImportAutoConfiguration {
 
 		@AliasFor(annotation = ImportAutoConfiguration.class)
-		Class<?>[] exclude() default {};
+		Class<?>[] exclude() default {
+
+		};
 
 	}
 
@@ -308,7 +306,9 @@ class ImportAutoConfigurationImportSelectorTests {
 	@interface SelfAnnotating {
 
 		@AliasFor(annotation = ImportAutoConfiguration.class, attribute = "exclude")
-		Class<?>[] excludeAutoConfiguration() default {};
+		Class<?>[] excludeAutoConfiguration() default {
+
+		};
 
 	}
 

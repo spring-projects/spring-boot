@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,13 +31,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 class HumioPropertiesTests extends StepRegistryPropertiesTests {
 
 	@Test
-	@SuppressWarnings("deprecation")
 	void defaultValuesAreConsistent() {
 		HumioProperties properties = new HumioProperties();
 		HumioConfig config = (key) -> null;
 		assertStepRegistryDefaultValues(properties, config);
 		assertThat(properties.getApiToken()).isEqualTo(config.apiToken());
-		assertThat(properties.getRepository()).isEqualTo(config.repository());
 		assertThat(properties.getTags()).isEmpty();
 		assertThat(config.tags()).isNull();
 		assertThat(properties.getUri()).isEqualTo(config.uri());

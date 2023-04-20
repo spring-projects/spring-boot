@@ -13,7 +13,7 @@ tasks.withType(KotlinCompile) {
 task('kotlinCompileTasksJavaParameters') {
 	doFirst {
 		tasks.withType(KotlinCompile) {
-			println "$name java parameters: ${kotlinOptions.javaParameters}"
+			println "${name} java parameters: ${kotlinOptions.javaParameters}"
 		}
 	}
 }

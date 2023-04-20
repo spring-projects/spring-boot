@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,24 @@
 
 package org.springframework.boot.test.autoconfigure;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import org.springframework.boot.autoconfigure.condition.ConditionEvaluationReport;
 import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportMessage;
-import org.springframework.boot.test.context.DefaultTestExecutionListenersPostProcessor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.test.context.ApplicationContextFailureProcessor;
 import org.springframework.test.context.TestContext;
-import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 
 /**
- * Alternative {@link DependencyInjectionTestExecutionListener} prints the
- * {@link ConditionEvaluationReport} when the context cannot be prepared.
+ * Since 3.0.0 this class has been replaced by
+ * {@link ConditionReportApplicationContextFailureProcessor} and is not used internally.
  *
  * @author Phillip Webb
  * @since 1.4.1
+ * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
+ * {@link ApplicationContextFailureProcessor}
  */
+@Deprecated(since = "3.0.0", forRemoval = true)
 public class SpringBootDependencyInjectionTestExecutionListener extends DependencyInjectionTestExecutionListener {
 
 	@Override
@@ -51,30 +50,14 @@ public class SpringBootDependencyInjectionTestExecutionListener extends Dependen
 	private void outputConditionEvaluationReport(TestContext testContext) {
 		try {
 			ApplicationContext context = testContext.getApplicationContext();
-			if (context instanceof ConfigurableApplicationContext) {
-				ConditionEvaluationReport report = ConditionEvaluationReport
-						.get(((ConfigurableApplicationContext) context).getBeanFactory());
+			if (context instanceof ConfigurableApplicationContext configurableContext) {
+				ConditionEvaluationReport report = ConditionEvaluationReport.get(configurableContext.getBeanFactory());
 				System.err.println(new ConditionEvaluationReportMessage(report));
 			}
 		}
 		catch (Exception ex) {
 			// Allow original failure to be reported
 		}
-	}
-
-	static class PostProcessor implements DefaultTestExecutionListenersPostProcessor {
-
-		@Override
-		public Set<Class<? extends TestExecutionListener>> postProcessDefaultTestExecutionListeners(
-				Set<Class<? extends TestExecutionListener>> listeners) {
-			Set<Class<? extends TestExecutionListener>> updated = new LinkedHashSet<>(listeners.size());
-			for (Class<? extends TestExecutionListener> listener : listeners) {
-				updated.add(listener.equals(DependencyInjectionTestExecutionListener.class)
-						? SpringBootDependencyInjectionTestExecutionListener.class : listener);
-			}
-			return updated;
-		}
-
 	}
 
 }

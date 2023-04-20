@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.specification.RequestSpecification;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -32,8 +33,8 @@ import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentationConfigurer;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
-import org.springframework.restdocs.restassured3.RestAssuredRestDocumentation;
-import org.springframework.restdocs.restassured3.RestAssuredRestDocumentationConfigurer;
+import org.springframework.restdocs.restassured.RestAssuredRestDocumentation;
+import org.springframework.restdocs.restassured.RestAssuredRestDocumentationConfigurer;
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation;
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentationConfigurer;
 
@@ -45,7 +46,7 @@ import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentation
  * @author Roman Zaynetdinov
  * @since 1.4.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnWebApplication
 public class RestDocsAutoConfiguration {
 
@@ -61,9 +62,9 @@ public class RestDocsAutoConfiguration {
 				ObjectProvider<RestDocsMockMvcConfigurationCustomizer> configurationCustomizers,
 				RestDocumentationContextProvider contextProvider) {
 			MockMvcRestDocumentationConfigurer configurer = MockMvcRestDocumentation
-					.documentationConfiguration(contextProvider);
+				.documentationConfiguration(contextProvider);
 			configurationCustomizers.orderedStream()
-					.forEach((configurationCustomizer) -> configurationCustomizer.customize(configurer));
+				.forEach((configurationCustomizer) -> configurationCustomizer.customize(configurer));
 			return configurer;
 		}
 
@@ -87,9 +88,9 @@ public class RestDocsAutoConfiguration {
 				ObjectProvider<RestDocsRestAssuredConfigurationCustomizer> configurationCustomizers,
 				RestDocumentationContextProvider contextProvider) {
 			RestAssuredRestDocumentationConfigurer configurer = RestAssuredRestDocumentation
-					.documentationConfiguration(contextProvider);
+				.documentationConfiguration(contextProvider);
 			configurationCustomizers.orderedStream()
-					.forEach((configurationCustomizer) -> configurationCustomizer.customize(configurer));
+				.forEach((configurationCustomizer) -> configurationCustomizer.customize(configurer));
 			return new RequestSpecBuilder().addFilter(configurer).build();
 		}
 
@@ -113,9 +114,9 @@ public class RestDocsAutoConfiguration {
 				ObjectProvider<RestDocsWebTestClientConfigurationCustomizer> configurationCustomizers,
 				RestDocumentationContextProvider contextProvider) {
 			WebTestClientRestDocumentationConfigurer configurer = WebTestClientRestDocumentation
-					.documentationConfiguration(contextProvider);
+				.documentationConfiguration(contextProvider);
 			configurationCustomizers.orderedStream()
-					.forEach((configurationCustomizer) -> configurationCustomizer.customize(configurer));
+				.forEach((configurationCustomizer) -> configurationCustomizer.customize(configurer));
 			return configurer;
 		}
 

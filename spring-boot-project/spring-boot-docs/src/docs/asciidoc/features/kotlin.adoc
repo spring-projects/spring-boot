@@ -1,0 +1,172 @@
+[[features.kotlin]]
+== Kotlin Support
+https://kotlinlang.org[Kotlin] is a statically-typed language targeting the JVM (and other platforms) which allows writing concise and elegant code while providing {kotlin-docs}java-interop.html[interoperability] with existing libraries written in Java.
+
+Spring Boot provides Kotlin support by leveraging the support in other Spring projects such as Spring Framework, Spring Data, and Reactor.
+See the {spring-framework-docs}/languages.html#kotlin[Spring Framework Kotlin support documentation] for more information.
+
+The easiest way to start with Spring Boot and Kotlin is to follow https://spring.io/guides/tutorials/spring-boot-kotlin/[this comprehensive tutorial].
+You can create new Kotlin projects by using https://start.spring.io/#!language=kotlin[start.spring.io].
+Feel free to join the #spring channel of https://slack.kotlinlang.org/[Kotlin Slack] or ask a question with the `spring` and `kotlin` tags on https://stackoverflow.com/questions/tagged/spring+kotlin[Stack Overflow] if you need support.
+
+
+
+[[features.kotlin.requirements]]
+=== Requirements
+Spring Boot requires at least Kotlin 1.7.x and manages a suitable Kotlin version through dependency management.
+To use Kotlin, `org.jetbrains.kotlin:kotlin-stdlib` and `org.jetbrains.kotlin:kotlin-reflect` must be present on the classpath.
+The `kotlin-stdlib` variants `kotlin-stdlib-jdk7` and `kotlin-stdlib-jdk8` can also be used.
+
+Since https://discuss.kotlinlang.org/t/classes-final-by-default/166[Kotlin classes are final by default], you are likely to want to configure {kotlin-docs}compiler-plugins.html#spring-support[kotlin-spring] plugin in order to automatically open Spring-annotated classes so that they can be proxied.
+
+https://github.com/FasterXML/jackson-module-kotlin[Jackson's Kotlin module] is required for serializing / deserializing JSON data in Kotlin.
+It is automatically registered when found on the classpath.
+A warning message is logged if Jackson and Kotlin are present but the Jackson Kotlin module is not.
+
+TIP: These dependencies and plugins are provided by default if one bootstraps a Kotlin project on https://start.spring.io/#!language=kotlin[start.spring.io].
+
+
+
+[[features.kotlin.null-safety]]
+=== Null-safety
+One of Kotlin's key features is {kotlin-docs}null-safety.html[null-safety].
+It deals with `null` values at compile time rather than deferring the problem to runtime and encountering a `NullPointerException`.
+This helps to eliminate a common source of bugs without paying the cost of wrappers like `Optional`.
+Kotlin also allows using functional constructs with nullable values as described in this https://www.baeldung.com/kotlin-null-safety[comprehensive guide to null-safety in Kotlin].
+
+Although Java does not allow one to express null-safety in its type system, Spring Framework, Spring Data, and Reactor now provide null-safety of their API through tooling-friendly annotations.
+By default, types from Java APIs used in Kotlin are recognized as {kotlin-docs}java-interop.html#null-safety-and-platform-types[platform types] for which null-checks are relaxed.
+{kotlin-docs}java-interop.html#jsr-305-support[Kotlin's support for JSR 305 annotations] combined with nullability annotations provide null-safety for the related Spring API in Kotlin.
+
+The JSR 305 checks can be configured by adding the `-Xjsr305` compiler flag with the following options: `-Xjsr305={strict|warn|ignore}`.
+The default behavior is the same as `-Xjsr305=warn`.
+The `strict` value is required to have null-safety taken in account in Kotlin types inferred from Spring API but should be used with the knowledge that Spring API nullability declaration could evolve even between minor releases and more checks may be added in the future).
+
+WARNING: Generic type arguments, varargs and array elements nullability are not yet supported.
+See https://jira.spring.io/browse/SPR-15942[SPR-15942] for up-to-date information.
+Also be aware that Spring Boot's own API is {github-issues}10712[not yet annotated].
+
+
+
+[[features.kotlin.api]]
+=== Kotlin API
+
+
+
+[[features.kotlin.api.run-application]]
+==== runApplication
+Spring Boot provides an idiomatic way to run an application with `runApplication<MyApplication>(*args)` as shown in the following example:
+
+[source,kotlin,indent=0,subs="verbatim"]
+----
+	import org.springframework.boot.autoconfigure.SpringBootApplication
+	import org.springframework.boot.runApplication
+
+	@SpringBootApplication
+	class MyApplication
+
+	fun main(args: Array<String>) {
+		runApplication<MyApplication>(*args)
+	}
+----
+
+This is a drop-in replacement for `SpringApplication.run(MyApplication::class.java, *args)`.
+It also allows customization of the application as shown in the following example:
+
+[source,kotlin,indent=0,subs="verbatim"]
+----
+	runApplication<MyApplication>(*args) {
+		setBannerMode(OFF)
+	}
+----
+
+
+
+[[features.kotlin.api.extensions]]
+==== Extensions
+Kotlin {kotlin-docs}extensions.html[extensions] provide the ability to extend existing classes with additional functionality.
+The Spring Boot Kotlin API makes use of these extensions to add new Kotlin specific conveniences to existing APIs.
+
+`TestRestTemplate` extensions, similar to those provided by Spring Framework for `RestOperations` in Spring Framework, are provided.
+Among other things, the extensions make it possible to take advantage of Kotlin reified type parameters.
+
+
+
+[[features.kotlin.dependency-management]]
+=== Dependency management
+In order to avoid mixing different versions of Kotlin dependencies on the classpath, Spring Boot imports the Kotlin BOM.
+
+With Maven, the Kotlin version can be customized by setting the `kotlin.version` property and plugin management is provided for `kotlin-maven-plugin`.
+With Gradle, the Spring Boot plugin automatically aligns the `kotlin.version` with the version of the Kotlin plugin.
+
+Spring Boot also manages the version of Coroutines dependencies by importing the Kotlin Coroutines BOM.
+The version can be customized by setting the `kotlin-coroutines.version` property.
+
+TIP: `org.jetbrains.kotlinx:kotlinx-coroutines-reactor` dependency is provided by default if one bootstraps a Kotlin project with at least one reactive dependency on https://start.spring.io/#!language=kotlin[start.spring.io].
+
+
+
+[[features.kotlin.configuration-properties]]
+=== @ConfigurationProperties
+`@ConfigurationProperties` when used in combination with <<features#features.external-config.typesafe-configuration-properties.constructor-binding,constructor binding>> supports classes with immutable `val` properties as shown in the following example:
+
+[source,kotlin,indent=0,subs="verbatim"]
+----
+@ConfigurationProperties("example.kotlin")
+data class KotlinExampleProperties(
+		val name: String,
+		val description: String,
+		val myService: MyService) {
+
+	data class MyService(
+			val apiToken: String,
+			val uri: URI
+	)
+}
+----
+
+TIP: To generate <<configuration-metadata#appendix.configuration-metadata.annotation-processor,your own metadata>> using the annotation processor, {kotlin-docs}kapt.html[`kapt` should be configured] with the `spring-boot-configuration-processor` dependency.
+Note that some features (such as detecting the default value or deprecated items) are not working due to limitations in the model kapt provides.
+
+
+
+[[features.kotlin.testing]]
+=== Testing
+While it is possible to use JUnit 4 to test Kotlin code, JUnit 5 is provided by default and is recommended.
+JUnit 5 enables a test class to be instantiated once and reused for all of the class's tests.
+This makes it possible to use `@BeforeAll` and `@AfterAll` annotations on non-static methods, which is a good fit for Kotlin.
+
+To mock Kotlin classes, https://mockk.io/[MockK] is recommended.
+If you need the `MockK` equivalent of the Mockito specific <<features#features.testing.spring-boot-applications.mocking-beans,`@MockBean` and `@SpyBean` annotations>>, you can use https://github.com/Ninja-Squad/springmockk[SpringMockK] which provides similar `@MockkBean` and `@SpykBean` annotations.
+
+
+
+[[features.kotlin.resources]]
+=== Resources
+
+
+
+[[features.kotlin.resources.further-reading]]
+==== Further reading
+* {kotlin-docs}[Kotlin language reference]
+* https://kotlinlang.slack.com/[Kotlin Slack] (with a dedicated #spring channel)
+* https://stackoverflow.com/questions/tagged/spring+kotlin[Stack Overflow with `spring` and `kotlin` tags]
+* https://try.kotlinlang.org/[Try Kotlin in your browser]
+* https://blog.jetbrains.com/kotlin/[Kotlin blog]
+* https://kotlin.link/[Awesome Kotlin]
+* https://spring.io/guides/tutorials/spring-boot-kotlin/[Tutorial: building web applications with Spring Boot and Kotlin]
+* https://spring.io/blog/2016/02/15/developing-spring-boot-applications-with-kotlin[Developing Spring Boot applications with Kotlin]
+* https://spring.io/blog/2016/03/20/a-geospatial-messenger-with-kotlin-spring-boot-and-postgresql[A Geospatial Messenger with Kotlin, Spring Boot and PostgreSQL]
+* https://spring.io/blog/2017/01/04/introducing-kotlin-support-in-spring-framework-5-0[Introducing Kotlin support in Spring Framework 5.0]
+* https://spring.io/blog/2017/08/01/spring-framework-5-kotlin-apis-the-functional-way[Spring Framework 5 Kotlin APIs, the functional way]
+
+
+
+[[features.kotlin.resources.examples]]
+==== Examples
+* https://github.com/sdeleuze/spring-boot-kotlin-demo[spring-boot-kotlin-demo]: regular Spring Boot + Spring Data JPA project
+* https://github.com/mixitconf/mixit[mixit]: Spring Boot 2 + WebFlux + Reactive Spring Data MongoDB
+* https://github.com/sdeleuze/spring-kotlin-fullstack[spring-kotlin-fullstack]: WebFlux Kotlin fullstack example with Kotlin2js for frontend instead of JavaScript or TypeScript
+* https://github.com/spring-petclinic/spring-petclinic-kotlin[spring-petclinic-kotlin]: Kotlin version of the Spring PetClinic Sample Application
+* https://github.com/sdeleuze/spring-kotlin-deepdive[spring-kotlin-deepdive]: a step by step migration for Boot 1.0 + Java to Boot 2.0 + Kotlin
+* https://github.com/sdeleuze/spring-boot-coroutines-demo[spring-boot-coroutines-demo]: Coroutines sample project

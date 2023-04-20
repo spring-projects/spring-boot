@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.junit.jupiter.api.extension.ParameterResolver;
 /**
  * JUnit Jupiter {@code @Extension} to capture {@link System#out System.out} and
  * {@link System#err System.err}. Can be registered for an entire test class or for an
- * individual test method via {@link ExtendWith @ExtendWith}. This extension provides
+ * individual test method through {@link ExtendWith @ExtendWith}. This extension provides
  * {@linkplain ParameterResolver parameter resolution} for a {@link CapturedOutput}
  * instance which can be used to assert that the correct output was written.
  * <p>

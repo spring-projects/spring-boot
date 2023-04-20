@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -152,7 +152,7 @@ public abstract class AbstractTemplateViewResolverProperties extends AbstractVie
 	 */
 	public void applyToMvcViewResolver(Object viewResolver) {
 		Assert.isInstanceOf(AbstractTemplateViewResolver.class, viewResolver,
-				"ViewResolver is not an instance of AbstractTemplateViewResolver :" + viewResolver);
+				() -> "ViewResolver is not an instance of AbstractTemplateViewResolver :" + viewResolver);
 		AbstractTemplateViewResolver resolver = (AbstractTemplateViewResolver) viewResolver;
 		resolver.setPrefix(getPrefix());
 		resolver.setSuffix(getSuffix());

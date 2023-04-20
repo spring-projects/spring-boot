@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,9 @@ package org.springframework.boot.actuate.metrics.web.servlet;
 
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import io.micrometer.core.instrument.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.actuate.metrics.http.Outcome;
 import org.springframework.http.HttpStatus;
@@ -38,7 +37,10 @@ import org.springframework.web.util.pattern.PathPattern;
  * @author Brian Clozel
  * @author Michael McFadyen
  * @since 2.0.0
+ * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
+ * {@link org.springframework.http.server.observation.ServerRequestObservationConvention}
  */
+@Deprecated(since = "3.0.0", forRemoval = true)
 public final class WebMvcTags {
 
 	private static final String DATA_REST_PATH_PATTERN_ATTRIBUTE = "org.springframework.data.rest.webmvc.RepositoryRestHandlerMapping.EFFECTIVE_REPOSITORY_RESOURCE_LOOKUP_PATH";
@@ -164,7 +166,7 @@ public final class WebMvcTags {
 	}
 
 	/**
-	 * Creates a {@code exception} tag based on the {@link Class#getSimpleName() simple
+	 * Creates an {@code exception} tag based on the {@link Class#getSimpleName() simple
 	 * name} of the class of the given {@code exception}.
 	 * @param exception the exception, may be {@code null}
 	 * @return the exception tag derived from the exception

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,8 @@ package org.springframework.boot.autoconfigure.dao;
 
 import java.util.Map;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,6 +35,7 @@ import org.springframework.stereotype.Repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link PersistenceExceptionTranslationAutoConfiguration}
@@ -58,7 +58,7 @@ class PersistenceExceptionTranslationAutoConfigurationTests {
 	void exceptionTranslationPostProcessorUsesCglibByDefault() {
 		this.context = new AnnotationConfigApplicationContext(PersistenceExceptionTranslationAutoConfiguration.class);
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
-				.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
+			.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
 		assertThat(beans).hasSize(1);
 		assertThat(beans.values().iterator().next().isProxyTargetClass()).isTrue();
 	}
@@ -70,7 +70,7 @@ class PersistenceExceptionTranslationAutoConfigurationTests {
 		this.context.register(PersistenceExceptionTranslationAutoConfiguration.class);
 		this.context.refresh();
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
-				.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
+			.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
 		assertThat(beans).hasSize(1);
 		assertThat(beans.values().iterator().next().isProxyTargetClass()).isFalse();
 	}
@@ -82,19 +82,16 @@ class PersistenceExceptionTranslationAutoConfigurationTests {
 		this.context.register(PersistenceExceptionTranslationAutoConfiguration.class);
 		this.context.refresh();
 		Map<String, PersistenceExceptionTranslationPostProcessor> beans = this.context
-				.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
+			.getBeansOfType(PersistenceExceptionTranslationPostProcessor.class);
 		assertThat(beans).isEmpty();
 	}
 
-	// @Test
-	// public void
-	// persistOfNullThrowsIllegalArgumentExceptionWithoutExceptionTranslation() {
-	// this.context = new AnnotationConfigApplicationContext(
-	// EmbeddedDataSourceConfiguration.class,
-	// HibernateJpaAutoConfiguration.class, TestConfiguration.class);
-	// assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(
-	// () -> this.context.getBean(TestRepository.class).doSomething());
-	// }
+	@Test
+	void persistOfNullThrowsIllegalArgumentExceptionWithoutExceptionTranslation() {
+		this.context = new AnnotationConfigApplicationContext(EmbeddedDataSourceConfiguration.class,
+				HibernateJpaAutoConfiguration.class, TestConfiguration.class);
+		assertThatIllegalArgumentException().isThrownBy(() -> this.context.getBean(TestRepository.class).doSomething());
+	}
 
 	@Test
 	void persistOfNullThrowsInvalidDataAccessApiUsageExceptionWithExceptionTranslation() {
@@ -102,7 +99,7 @@ class PersistenceExceptionTranslationAutoConfigurationTests {
 				HibernateJpaAutoConfiguration.class, TestConfiguration.class,
 				PersistenceExceptionTranslationAutoConfiguration.class);
 		assertThatExceptionOfType(InvalidDataAccessApiUsageException.class)
-				.isThrownBy(() -> this.context.getBean(TestRepository.class).doSomething());
+			.isThrownBy(() -> this.context.getBean(TestRepository.class).doSomething());
 	}
 
 	@Configuration(proxyBeanMethods = false)

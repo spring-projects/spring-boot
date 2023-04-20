@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,13 @@ package org.springframework.boot.autoconfigure.aop;
 import org.aspectj.weaver.Advice;
 
 import org.springframework.aop.config.AopConfigUtils;
-import org.springframework.beans.factory.BeanFactory;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
@@ -41,7 +43,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  * @since 1.0.0
  * @see EnableAspectJAutoProxy
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnProperty(prefix = "spring.aop", name = "auto", havingValue = "true", matchIfMissing = true)
 public class AopAutoConfiguration {
 
@@ -51,8 +53,7 @@ public class AopAutoConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
 		@EnableAspectJAutoProxy(proxyTargetClass = false)
-		@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "false",
-				matchIfMissing = false)
+		@ConditionalOnProperty(prefix = "spring.aop", name = "proxy-target-class", havingValue = "false")
 		static class JdkDynamicAutoProxyConfiguration {
 
 		}
@@ -73,12 +74,14 @@ public class AopAutoConfiguration {
 			matchIfMissing = true)
 	static class ClassProxyingConfiguration {
 
-		ClassProxyingConfiguration(BeanFactory beanFactory) {
-			if (beanFactory instanceof BeanDefinitionRegistry) {
-				BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
-				AopConfigUtils.registerAutoProxyCreatorIfNecessary(registry);
-				AopConfigUtils.forceAutoProxyCreatorToUseClassProxying(registry);
-			}
+		@Bean
+		static BeanFactoryPostProcessor forceAutoProxyCreatorToUseClassProxying() {
+			return (beanFactory) -> {
+				if (beanFactory instanceof BeanDefinitionRegistry registry) {
+					AopConfigUtils.registerAutoProxyCreatorIfNecessary(registry);
+					AopConfigUtils.forceAutoProxyCreatorToUseClassProxying(registry);
+				}
+			};
 		}
 
 	}

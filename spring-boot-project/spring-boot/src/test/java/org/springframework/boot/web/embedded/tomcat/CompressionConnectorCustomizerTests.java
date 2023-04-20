@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,30 +52,19 @@ class CompressionConnectorCustomizerTests {
 	}
 
 	@Test
-	void shouldCustomizeCompressionForHttp1AndHttp2Protocol() {
+	void shouldCustomizeCompression() {
 		CompressionConnectorCustomizer compressionConnectorCustomizer = new CompressionConnectorCustomizer(
 				this.compression);
 		Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-		connector.addUpgradeProtocol(new Http2Protocol());
+		Http2Protocol upgradeProtocol = new Http2Protocol();
+		upgradeProtocol.setHttp11Protocol((AbstractHttp11Protocol<?>) connector.getProtocolHandler());
+		connector.addUpgradeProtocol(upgradeProtocol);
 		compressionConnectorCustomizer.customize(connector);
 		AbstractHttp11Protocol<?> abstractHttp11Protocol = (AbstractHttp11Protocol<?>) connector.getProtocolHandler();
-		verifyHttp1(abstractHttp11Protocol);
-		Http2Protocol http2Protocol = (Http2Protocol) connector.findUpgradeProtocols()[0];
-		verifyHttp2Upgrade(http2Protocol);
-	}
-
-	private void verifyHttp1(AbstractHttp11Protocol<?> protocol) {
-		compressionOn(protocol.getCompression());
-		minSize(protocol.getCompressionMinSize());
-		mimeType(protocol.getCompressibleMimeTypes());
-		excludedUserAgents(protocol.getNoCompressionUserAgents());
-	}
-
-	private void verifyHttp2Upgrade(Http2Protocol protocol) {
-		compressionOn(protocol.getCompression());
-		minSize(protocol.getCompressionMinSize());
-		mimeType(protocol.getCompressibleMimeTypes());
-		excludedUserAgents(protocol.getNoCompressionUserAgents());
+		compressionOn(abstractHttp11Protocol.getCompression());
+		minSize(abstractHttp11Protocol.getCompressionMinSize());
+		mimeType(abstractHttp11Protocol.getCompressibleMimeTypes());
+		excludedUserAgents(abstractHttp11Protocol.getNoCompressionUserAgents());
 	}
 
 	private void compressionOn(String compression) {

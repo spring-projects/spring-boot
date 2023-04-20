@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,6 @@ class SampleActuatorApplicationTests {
 	void testHomeIsSecure() {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(this.restTemplate.getForEntity("/", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		assertThat(entity.getBody().get("error")).isEqualTo("Unauthorized");
 		assertThat(entity.getHeaders()).doesNotContainKey("Set-Cookie");
 	}
 
@@ -79,7 +78,7 @@ class SampleActuatorApplicationTests {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(
 				this.restTemplate.withBasicAuth("user", "password").getForEntity("/", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody().get("message")).isEqualTo("Hello Phil");
+		assertThat(entity.getBody()).containsEntry("message", "Hello Phil");
 	}
 
 	@Test
@@ -111,19 +110,9 @@ class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	void infoInsecureByDefault() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/actuator/info", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("\"artifact\":\"spring-boot-smoke-test-actuator\"");
-		assertThat(entity.getBody()).contains("\"someKey\":\"someValue\"");
-		assertThat(entity.getBody()).contains("\"java\":{", "\"source\":\"1.8\"", "\"target\":\"1.8\"");
-		assertThat(entity.getBody()).contains("\"encoding\":{", "\"source\":\"UTF-8\"", "\"reporting\":\"UTF-8\"");
-	}
-
-	@Test
 	void testErrorPage() {
-		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password").getForEntity("/foo",
-				String.class);
+		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password")
+			.getForEntity("/foo", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		String body = entity.getBody();
 		assertThat(body).contains("\"error\":");
@@ -134,8 +123,8 @@ class SampleActuatorApplicationTests {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		HttpEntity<?> request = new HttpEntity<Void>(headers);
-		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password").exchange("/foo",
-				HttpMethod.GET, request, String.class);
+		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password")
+			.exchange("/foo", HttpMethod.GET, request, String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
 		String body = entity.getBody();
 		assertThat(body).as("Body was null").isNotNull();
@@ -147,8 +136,8 @@ class SampleActuatorApplicationTests {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(
 				this.restTemplate.withBasicAuth("user", "password").getForEntity("/error", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-		assertThat(entity.getBody().get("error")).isEqualTo("None");
-		assertThat(entity.getBody().get("status")).isEqualTo(999);
+		assertThat(entity.getBody()).containsEntry("error", "None");
+		assertThat(entity.getBody()).containsEntry("status", 999);
 	}
 
 	@Test

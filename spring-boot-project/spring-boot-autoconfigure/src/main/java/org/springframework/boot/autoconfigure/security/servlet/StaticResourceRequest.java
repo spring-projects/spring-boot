@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,11 @@ package org.springframework.boot.autoconfigure.security.servlet;
 
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
@@ -134,16 +132,17 @@ public final class StaticResourceRequest {
 
 		@Override
 		protected void initialized(Supplier<DispatcherServletPath> dispatcherServletPath) {
-			this.delegate = new OrRequestMatcher(getDelegateMatchers(dispatcherServletPath.get()));
+			this.delegate = new OrRequestMatcher(getDelegateMatchers(dispatcherServletPath.get()).toList());
 		}
 
-		private List<RequestMatcher> getDelegateMatchers(DispatcherServletPath dispatcherServletPath) {
-			return getPatterns(dispatcherServletPath).map(AntPathRequestMatcher::new).collect(Collectors.toList());
+		private Stream<RequestMatcher> getDelegateMatchers(DispatcherServletPath dispatcherServletPath) {
+			return getPatterns(dispatcherServletPath).map(AntPathRequestMatcher::new);
 		}
 
 		private Stream<String> getPatterns(DispatcherServletPath dispatcherServletPath) {
-			return this.locations.stream().flatMap(StaticResourceLocation::getPatterns)
-					.map(dispatcherServletPath::getRelativePath);
+			return this.locations.stream()
+				.flatMap(StaticResourceLocation::getPatterns)
+				.map(dispatcherServletPath::getRelativePath);
 		}
 
 		@Override

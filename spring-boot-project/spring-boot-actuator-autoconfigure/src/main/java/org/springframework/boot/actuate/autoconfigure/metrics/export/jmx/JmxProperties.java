@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,13 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@ConfigurationProperties(prefix = "management.metrics.export.jmx")
+@ConfigurationProperties(prefix = "management.jmx.metrics.export")
 public class JmxProperties {
+
+	/**
+	 * Whether exporting of metrics to this backend is enabled.
+	 */
+	private boolean enabled = true;
 
 	/**
 	 * Metrics JMX domain name.
@@ -55,6 +60,14 @@ public class JmxProperties {
 
 	public void setStep(Duration step) {
 		this.step = step;
+	}
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 }

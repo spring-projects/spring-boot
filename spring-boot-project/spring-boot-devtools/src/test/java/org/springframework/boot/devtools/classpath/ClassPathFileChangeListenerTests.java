@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
@@ -37,14 +37,15 @@ import org.springframework.context.ApplicationEventPublisher;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ClassPathFileChangeListener}.
  *
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class ClassPathFileChangeListenerTests {
 
 	@Mock
@@ -59,44 +60,39 @@ class ClassPathFileChangeListenerTests {
 	@Captor
 	private ArgumentCaptor<ApplicationEvent> eventCaptor;
 
-	@BeforeEach
-	void setup() {
-		MockitoAnnotations.initMocks(this);
-	}
-
 	@Test
 	void eventPublisherMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassPathFileChangeListener(null, this.restartStrategy, this.fileSystemWatcher))
-				.withMessageContaining("EventPublisher must not be null");
+			.isThrownBy(() -> new ClassPathFileChangeListener(null, this.restartStrategy, this.fileSystemWatcher))
+			.withMessageContaining("EventPublisher must not be null");
 	}
 
 	@Test
 	void restartStrategyMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassPathFileChangeListener(this.eventPublisher, null, this.fileSystemWatcher))
-				.withMessageContaining("RestartStrategy must not be null");
+			.isThrownBy(() -> new ClassPathFileChangeListener(this.eventPublisher, null, this.fileSystemWatcher))
+			.withMessageContaining("RestartStrategy must not be null");
 	}
 
 	@Test
 	void sendsEventWithoutRestart() {
 		testSendsEvent(false);
-		verify(this.fileSystemWatcher, never()).stop();
+		then(this.fileSystemWatcher).should(never()).stop();
 	}
 
 	@Test
 	void sendsEventWithRestart() {
 		testSendsEvent(true);
-		verify(this.fileSystemWatcher).stop();
+		then(this.fileSystemWatcher).should().stop();
 	}
 
 	private void testSendsEvent(boolean restart) {
 		ClassPathFileChangeListener listener = new ClassPathFileChangeListener(this.eventPublisher,
 				this.restartStrategy, this.fileSystemWatcher);
-		File folder = new File("s1");
+		File directory = new File("s1");
 		File file = new File("f1");
-		ChangedFile file1 = new ChangedFile(folder, file, ChangedFile.Type.ADD);
-		ChangedFile file2 = new ChangedFile(folder, file, ChangedFile.Type.ADD);
+		ChangedFile file1 = new ChangedFile(directory, file, ChangedFile.Type.ADD);
+		ChangedFile file2 = new ChangedFile(directory, file, ChangedFile.Type.ADD);
 		Set<ChangedFile> files = new LinkedHashSet<>();
 		files.add(file1);
 		files.add(file2);
@@ -106,7 +102,7 @@ class ClassPathFileChangeListenerTests {
 			given(this.restartStrategy.isRestartRequired(file2)).willReturn(true);
 		}
 		listener.onChange(changeSet);
-		verify(this.eventPublisher).publishEvent(this.eventCaptor.capture());
+		then(this.eventPublisher).should().publishEvent(this.eventCaptor.capture());
 		ClassPathChangedEvent actualEvent = (ClassPathChangedEvent) this.eventCaptor.getValue();
 		assertThat(actualEvent.getChangeSet()).isEqualTo(changeSet);
 		assertThat(actualEvent.isRestartRequired()).isEqualTo(restart);

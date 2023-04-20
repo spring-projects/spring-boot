@@ -1,0 +1,7 @@
+# AutoConfigureDataCouchbase auto-configuration imports
+
+org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration
+org.springframework.boot.autoconfigure.data.couchbase.CouchbaseDataAutoConfiguration
+org.springframework.boot.autoconfigure.data.couchbase.CouchbaseReactiveDataAutoConfiguration
+org.springframework.boot.autoconfigure.data.couchbase.CouchbaseReactiveRepositoriesAutoConfiguration
+org.springframework.boot.autoconfigure.data.couchbase.CouchbaseRepositoriesAutoConfiguration

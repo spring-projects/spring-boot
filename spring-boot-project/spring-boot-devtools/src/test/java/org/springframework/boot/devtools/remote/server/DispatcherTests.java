@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.core.Ordered;
 import org.springframework.http.server.ServerHttpRequest;
@@ -38,10 +38,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.withSettings;
 
 /**
@@ -49,38 +48,28 @@ import static org.mockito.Mockito.withSettings;
  *
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class DispatcherTests {
 
 	@Mock
 	private AccessManager accessManager;
 
-	private MockHttpServletRequest request;
+	private final MockHttpServletResponse response = new MockHttpServletResponse();
 
-	private MockHttpServletResponse response;
+	private final ServerHttpRequest serverRequest = new ServletServerHttpRequest(new MockHttpServletRequest());
 
-	private ServerHttpRequest serverRequest;
-
-	private ServerHttpResponse serverResponse;
-
-	@BeforeEach
-	void setup() {
-		MockitoAnnotations.initMocks(this);
-		this.request = new MockHttpServletRequest();
-		this.response = new MockHttpServletResponse();
-		this.serverRequest = new ServletServerHttpRequest(this.request);
-		this.serverResponse = new ServletServerHttpResponse(this.response);
-	}
+	private final ServerHttpResponse serverResponse = new ServletServerHttpResponse(this.response);
 
 	@Test
 	void accessManagerMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Dispatcher(null, Collections.emptyList()))
-				.withMessageContaining("AccessManager must not be null");
+			.withMessageContaining("AccessManager must not be null");
 	}
 
 	@Test
 	void mappersMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new Dispatcher(this.accessManager, null))
-				.withMessageContaining("Mappers must not be null");
+			.withMessageContaining("Mappers must not be null");
 	}
 
 	@Test
@@ -91,7 +80,7 @@ class DispatcherTests {
 		given(mapper.getHandler(any(ServerHttpRequest.class))).willReturn(handler);
 		Dispatcher dispatcher = new Dispatcher(this.accessManager, Collections.singleton(mapper));
 		dispatcher.handle(this.serverRequest, this.serverResponse);
-		verifyNoInteractions(handler);
+		then(handler).shouldHaveNoInteractions();
 		assertThat(this.response.getStatus()).isEqualTo(403);
 	}
 
@@ -103,7 +92,7 @@ class DispatcherTests {
 		given(mapper.getHandler(any(ServerHttpRequest.class))).willReturn(handler);
 		Dispatcher dispatcher = new Dispatcher(this.accessManager, Collections.singleton(mapper));
 		dispatcher.handle(this.serverRequest, this.serverResponse);
-		verify(handler).handle(this.serverRequest, this.serverResponse);
+		then(handler).should().handle(this.serverRequest, this.serverResponse);
 	}
 
 	@Test
@@ -116,8 +105,8 @@ class DispatcherTests {
 		Dispatcher dispatcher = new Dispatcher(AccessManager.PERMIT_ALL, mappers);
 		dispatcher.handle(this.serverRequest, this.serverResponse);
 		InOrder inOrder = inOrder(mapper1, mapper2);
-		inOrder.verify(mapper1).getHandler(this.serverRequest);
-		inOrder.verify(mapper2).getHandler(this.serverRequest);
+		then(mapper1).should(inOrder).getHandler(this.serverRequest);
+		then(mapper2).should(inOrder).getHandler(this.serverRequest);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -44,29 +43,28 @@ import static org.mockito.Mockito.mock;
  */
 class OperationMethodParametersTests {
 
-	private Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example", String.class);
+	private final Method exampleMethod = ReflectionUtils.findMethod(getClass(), "example", String.class);
 
-	private Method exampleNoParamsMethod = ReflectionUtils.findMethod(getClass(), "exampleNoParams");
+	private final Method exampleNoParamsMethod = ReflectionUtils.findMethod(getClass(), "exampleNoParams");
 
 	@Test
 	void createWhenMethodIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new OperationMethodParameters(null, mock(ParameterNameDiscoverer.class)))
-				.withMessageContaining("Method must not be null");
+			.isThrownBy(() -> new OperationMethodParameters(null, mock(ParameterNameDiscoverer.class)))
+			.withMessageContaining("Method must not be null");
 	}
 
 	@Test
 	void createWhenParameterNameDiscovererIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new OperationMethodParameters(this.exampleMethod, null))
-				.withMessageContaining("ParameterNameDiscoverer must not be null");
+			.withMessageContaining("ParameterNameDiscoverer must not be null");
 	}
 
 	@Test
 	void createWhenParameterNameDiscovererReturnsNullShouldThrowException() {
 		assertThatIllegalStateException()
-				.isThrownBy(
-						() -> new OperationMethodParameters(this.exampleMethod, mock(ParameterNameDiscoverer.class)))
-				.withMessageContaining("Failed to extract parameter names");
+			.isThrownBy(() -> new OperationMethodParameters(this.exampleMethod, mock(ParameterNameDiscoverer.class)))
+			.withMessageContaining("Failed to extract parameter names");
 	}
 
 	@Test
@@ -87,7 +85,7 @@ class OperationMethodParametersTests {
 	void getParameterCountShouldReturnParameterCount() {
 		OperationMethodParameters parameters = new OperationMethodParameters(this.exampleMethod,
 				new DefaultParameterNameDiscoverer());
-		assertThat(parameters.getParameterCount()).isEqualTo(1);
+		assertThat(parameters.getParameterCount()).isOne();
 	}
 
 	@Test
@@ -107,7 +105,7 @@ class OperationMethodParametersTests {
 	}
 
 	private void assertParameters(Stream<OperationParameter> stream) {
-		List<OperationParameter> parameters = stream.collect(Collectors.toList());
+		List<OperationParameter> parameters = stream.toList();
 		assertThat(parameters).hasSize(1);
 		OperationParameter parameter = parameters.get(0);
 		assertThat(parameter.getName()).isEqualTo("name");

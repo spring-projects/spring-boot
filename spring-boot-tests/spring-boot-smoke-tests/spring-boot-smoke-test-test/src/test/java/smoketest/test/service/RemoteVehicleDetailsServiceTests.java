@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,13 +54,13 @@ class RemoteVehicleDetailsServiceTests {
 	@Test
 	void getVehicleDetailsWhenVinIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.service.getVehicleDetails(null))
-				.withMessage("VIN must not be null");
+			.withMessage("VIN must not be null");
 	}
 
 	@Test
 	void getVehicleDetailsWhenResultIsSuccessShouldReturnDetails() {
 		this.server.expect(requestTo("/vehicle/" + VIN + "/details"))
-				.andRespond(withSuccess(getClassPathResource("vehicledetails.json"), MediaType.APPLICATION_JSON));
+			.andRespond(withSuccess(getClassPathResource("vehicledetails.json"), MediaType.APPLICATION_JSON));
 		VehicleDetails details = this.service.getVehicleDetails(new VehicleIdentificationNumber(VIN));
 		assertThat(details.getMake()).isEqualTo("Honda");
 		assertThat(details.getModel()).isEqualTo("Civic");
@@ -70,14 +70,14 @@ class RemoteVehicleDetailsServiceTests {
 	void getVehicleDetailsWhenResultIsNotFoundShouldThrowException() {
 		this.server.expect(requestTo("/vehicle/" + VIN + "/details")).andRespond(withStatus(HttpStatus.NOT_FOUND));
 		assertThatExceptionOfType(VehicleIdentificationNumberNotFoundException.class)
-				.isThrownBy(() -> this.service.getVehicleDetails(new VehicleIdentificationNumber(VIN)));
+			.isThrownBy(() -> this.service.getVehicleDetails(new VehicleIdentificationNumber(VIN)));
 	}
 
 	@Test
 	void getVehicleDetailsWhenResultIServerErrorShouldThrowException() {
 		this.server.expect(requestTo("/vehicle/" + VIN + "/details")).andRespond(withServerError());
 		assertThatExceptionOfType(HttpServerErrorException.class)
-				.isThrownBy(() -> this.service.getVehicleDetails(new VehicleIdentificationNumber(VIN)));
+			.isThrownBy(() -> this.service.getVehicleDetails(new VehicleIdentificationNumber(VIN)));
 	}
 
 	private ClassPathResource getClassPathResource(String path) {

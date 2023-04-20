@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -43,6 +43,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Role;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StringUtils;
 import org.springframework.ws.config.annotation.EnableWs;
@@ -58,12 +59,11 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = ServletWebServerFactoryAutoConfiguration.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(MessageDispatcherServlet.class)
 @ConditionalOnMissingBean(WsConfigurationSupport.class)
 @EnableConfigurationProperties(WebServicesProperties.class)
-@AutoConfigureAfter(ServletWebServerFactoryAutoConfiguration.class)
 public class WebServicesAutoConfiguration {
 
 	@Bean
@@ -82,6 +82,7 @@ public class WebServicesAutoConfiguration {
 	}
 
 	@Bean
+	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	@Conditional(OnWsdlLocationsCondition.class)
 	public static WsdlDefinitionBeanFactoryPostProcessor wsdlDefinitionBeanFactoryPostProcessor() {
 		return new WsdlDefinitionBeanFactoryPostProcessor();
@@ -93,7 +94,7 @@ public class WebServicesAutoConfiguration {
 
 	}
 
-	private static class WsdlDefinitionBeanFactoryPostProcessor
+	static class WsdlDefinitionBeanFactoryPostProcessor
 			implements BeanDefinitionRegistryPostProcessor, ApplicationContextAware {
 
 		private ApplicationContext applicationContext;
@@ -107,7 +108,7 @@ public class WebServicesAutoConfiguration {
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 			Binder binder = Binder.get(this.applicationContext.getEnvironment());
 			List<String> wsdlLocations = binder.bind("spring.webservices.wsdl-locations", Bindable.listOf(String.class))
-					.orElse(Collections.emptyList());
+				.orElse(Collections.emptyList());
 			for (String wsdlLocation : wsdlLocations) {
 				registerBeans(wsdlLocation, "*.wsdl", SimpleWsdl11Definition.class, SimpleWsdl11Definition::new,
 						registry);
@@ -123,7 +124,8 @@ public class WebServicesAutoConfiguration {
 				Function<Resource, T> beanSupplier, BeanDefinitionRegistry registry) {
 			for (Resource resource : getResources(location, pattern)) {
 				BeanDefinition beanDefinition = BeanDefinitionBuilder
-						.genericBeanDefinition(type, () -> beanSupplier.apply(resource)).getBeanDefinition();
+					.genericBeanDefinition(type, () -> beanSupplier.apply(resource))
+					.getBeanDefinition();
 				registry.registerBeanDefinition(StringUtils.stripFilenameExtension(resource.getFilename()),
 						beanDefinition);
 			}

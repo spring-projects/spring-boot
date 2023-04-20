@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,9 @@ class DynatracePropertiesTests extends StepRegistryPropertiesTests {
 		DynatraceProperties properties = new DynatraceProperties();
 		DynatraceConfig config = (key) -> null;
 		assertStepRegistryDefaultValues(properties, config);
-		assertThat(properties.getTechnologyType()).isEqualTo(config.technologyType());
+		assertThat(properties.getV1().getTechnologyType()).isEqualTo(config.technologyType());
+		assertThat(properties.getV2().isUseDynatraceSummaryInstruments())
+			.isEqualTo(config.useDynatraceSummaryInstruments());
 	}
 
 }

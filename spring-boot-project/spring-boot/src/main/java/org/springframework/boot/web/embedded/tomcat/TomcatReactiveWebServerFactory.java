@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,9 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	private final List<Valve> engineValves = new ArrayList<>();
 
-	private List<LifecycleListener> contextLifecycleListeners = getDefaultLifecycleListeners();
+	private List<LifecycleListener> contextLifecycleListeners = new ArrayList<>();
+
+	private final List<LifecycleListener> serverLifecycleListeners = getDefaultServerLifecycleListeners();
 
 	private Set<TomcatContextCustomizer> tomcatContextCustomizers = new LinkedHashSet<>();
 
@@ -105,7 +107,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		super(port);
 	}
 
-	private static List<LifecycleListener> getDefaultLifecycleListeners() {
+	private static List<LifecycleListener> getDefaultServerLifecycleListeners() {
 		AprLifecycleListener aprLifecycleListener = new AprLifecycleListener();
 		return AprLifecycleListener.isAprAvailable() ? new ArrayList<>(Arrays.asList(aprLifecycleListener))
 				: new ArrayList<>();
@@ -119,6 +121,9 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		Tomcat tomcat = new Tomcat();
 		File baseDir = (this.baseDirectory != null) ? this.baseDirectory : createTempDir("tomcat");
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
+		for (LifecycleListener listener : this.serverLifecycleListeners) {
+			tomcat.getServer().addLifecycleListener(listener);
+		}
 		Connector connector = new Connector(this.protocol);
 		connector.setThrowOnFailure(true);
 		tomcat.getService().addConnector(connector);
@@ -147,10 +152,11 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		context.setPath("");
 		context.setDocBase(docBase.getAbsolutePath());
 		context.addLifecycleListener(new Tomcat.FixContextListener());
-		context.setParentClassLoader(ClassUtils.getDefaultClassLoader());
+		ClassLoader parentClassLoader = ClassUtils.getDefaultClassLoader();
+		context.setParentClassLoader(parentClassLoader);
 		skipAllTldScanning(context);
 		WebappLoader loader = new WebappLoader();
-		loader.setLoaderClass(TomcatEmbeddedWebappClassLoader.class.getName());
+		loader.setLoaderInstance(new TomcatEmbeddedWebappClassLoader(parentClassLoader));
 		loader.setDelegate(true);
 		context.setLoader(loader);
 		Tomcat.addServlet(context, "httpHandlerServlet", servlet).setAsyncSupported(true);
@@ -178,8 +184,8 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	protected void customizeConnector(Connector connector) {
 		int port = Math.max(getPort(), 0);
 		connector.setPort(port);
-		if (StringUtils.hasText(this.getServerHeader())) {
-			connector.setAttribute("server", this.getServerHeader());
+		if (StringUtils.hasText(getServerHeader())) {
+			connector.setProperty("server", getServerHeader());
 		}
 		if (connector.getProtocolHandler() instanceof AbstractProtocol) {
 			customizeProtocol((AbstractProtocol<?>) connector.getProtocolHandler());
@@ -190,6 +196,9 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 		}
 		// Don't bind to the socket prematurely if ApplicationContext is slow to start
 		connector.setProperty("bindOnInit", "false");
+		if (getHttp2() != null && getHttp2().isEnabled()) {
+			connector.addUpgradeProtocol(new Http2Protocol());
+		}
 		if (getSsl() != null && getSsl().isEnabled()) {
 			customizeSsl(connector);
 		}
@@ -202,8 +211,9 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 
 	@SuppressWarnings("unchecked")
 	private void invokeProtocolHandlerCustomizers(ProtocolHandler protocolHandler) {
-		LambdaSafe.callbacks(TomcatProtocolHandlerCustomizer.class, this.tomcatProtocolHandlerCustomizers,
-				protocolHandler).invoke((customizer) -> customizer.customize(protocolHandler));
+		LambdaSafe
+			.callbacks(TomcatProtocolHandlerCustomizer.class, this.tomcatProtocolHandlerCustomizers, protocolHandler)
+			.invoke((customizer) -> customizer.customize(protocolHandler));
 	}
 
 	private void customizeProtocol(AbstractProtocol<?> protocol) {
@@ -213,10 +223,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	}
 
 	private void customizeSsl(Connector connector) {
-		new SslConnectorCustomizer(getSsl(), getSslStoreProvider()).customize(connector);
-		if (getHttp2() != null && getHttp2().isEnabled()) {
-			connector.addUpgradeProtocol(new Http2Protocol());
-		}
+		new SslConnectorCustomizer(getSsl(), getOrCreateSslStoreProvider()).customize(connector);
 	}
 
 	@Override
@@ -413,7 +420,7 @@ public class TomcatReactiveWebServerFactory extends AbstractReactiveWebServerFac
 	 * @return a new {@link TomcatWebServer} instance
 	 */
 	protected TomcatWebServer getTomcatWebServer(Tomcat tomcat) {
-		return new TomcatWebServer(tomcat, getPort() >= 0);
+		return new TomcatWebServer(tomcat, getPort() >= 0, getShutdown());
 	}
 
 	/**

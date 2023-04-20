@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,16 @@ import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link GitProperties}.
  *
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  */
 class GitPropertiesTests {
 
@@ -92,6 +96,13 @@ class GitPropertiesTests {
 		GitProperties properties = new GitProperties(createProperties("master", "abcdefghijklmno", null, "1457527123"));
 		assertThat(properties.getCommitId()).isEqualTo("abcdefghijklmno");
 		assertThat(properties.getShortCommitId()).isEqualTo("abcdefg");
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new GitProperties.GitPropertiesRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.resource().forResource("git.properties")).accepts(runtimeHints);
 	}
 
 	private static Properties createProperties(String branch, String commitId, String commitIdAbbrev,

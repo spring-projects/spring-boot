@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,8 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import java.util.stream.Collectors;
-
-import javax.servlet.Servlet;
-
 import io.undertow.Undertow;
+import jakarta.servlet.Servlet;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.coyote.UpgradeProtocol;
 import org.eclipse.jetty.server.Server;
@@ -74,12 +71,9 @@ class ServletWebServerFactoryConfiguration {
 				ObjectProvider<TomcatContextCustomizer> contextCustomizers,
 				ObjectProvider<TomcatProtocolHandlerCustomizer<?>> protocolHandlerCustomizers) {
 			TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
-			factory.getTomcatConnectorCustomizers()
-					.addAll(connectorCustomizers.orderedStream().collect(Collectors.toList()));
-			factory.getTomcatContextCustomizers()
-					.addAll(contextCustomizers.orderedStream().collect(Collectors.toList()));
-			factory.getTomcatProtocolHandlerCustomizers()
-					.addAll(protocolHandlerCustomizers.orderedStream().collect(Collectors.toList()));
+			factory.getTomcatConnectorCustomizers().addAll(connectorCustomizers.orderedStream().toList());
+			factory.getTomcatContextCustomizers().addAll(contextCustomizers.orderedStream().toList());
+			factory.getTomcatProtocolHandlerCustomizers().addAll(protocolHandlerCustomizers.orderedStream().toList());
 			return factory;
 		}
 
@@ -94,10 +88,10 @@ class ServletWebServerFactoryConfiguration {
 	static class EmbeddedJetty {
 
 		@Bean
-		JettyServletWebServerFactory JettyServletWebServerFactory(
+		JettyServletWebServerFactory jettyServletWebServerFactory(
 				ObjectProvider<JettyServerCustomizer> serverCustomizers) {
 			JettyServletWebServerFactory factory = new JettyServletWebServerFactory();
-			factory.getServerCustomizers().addAll(serverCustomizers.orderedStream().collect(Collectors.toList()));
+			factory.getServerCustomizers().addAll(serverCustomizers.orderedStream().toList());
 			return factory;
 		}
 
@@ -116,9 +110,8 @@ class ServletWebServerFactoryConfiguration {
 				ObjectProvider<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers,
 				ObjectProvider<UndertowBuilderCustomizer> builderCustomizers) {
 			UndertowServletWebServerFactory factory = new UndertowServletWebServerFactory();
-			factory.getDeploymentInfoCustomizers()
-					.addAll(deploymentInfoCustomizers.orderedStream().collect(Collectors.toList()));
-			factory.getBuilderCustomizers().addAll(builderCustomizers.orderedStream().collect(Collectors.toList()));
+			factory.getDeploymentInfoCustomizers().addAll(deploymentInfoCustomizers.orderedStream().toList());
+			factory.getBuilderCustomizers().addAll(builderCustomizers.orderedStream().toList());
 			return factory;
 		}
 

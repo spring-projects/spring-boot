@@ -1,0 +1,14 @@
+[[order]]
+
+  [[order.group]]
+    id = "example/buildpack1"
+    version = "0.0.1"
+
+  [[order.group]]
+    id = "example/buildpack2"
+    version = "0.0.2"
+
+  [[order.group]]
+    id = "example/buildpack3"
+    version = "0.0.3"
+

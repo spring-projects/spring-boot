@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,19 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.aot.test.generate.TestGenerationContext;
+import org.springframework.beans.factory.aot.BeanFactoryInitializationAotContribution;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.jackson.JsonComponentModule.JsonComponentBeanFactoryInitializationAotProcessor;
+import org.springframework.boot.jackson.JsonComponentModuleTests.ComponentWithInnerAbstractClass.AbstractSerializer;
+import org.springframework.boot.jackson.JsonComponentModuleTests.ComponentWithInnerAbstractClass.ConcreteSerializer;
+import org.springframework.boot.jackson.JsonComponentModuleTests.ComponentWithInnerAbstractClass.NotSuitable;
+import org.springframework.boot.jackson.types.Name;
+import org.springframework.boot.jackson.types.NameAndAge;
+import org.springframework.boot.jackson.types.NameAndCareer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -112,6 +125,31 @@ class JsonComponentModuleTests {
 		assertDeserializeForSpecifiedClasses(module);
 	}
 
+	@Test
+	void aotContributionRegistersReflectionHintsForSuitableInnerClasses() {
+		load(ComponentWithInnerAbstractClass.class);
+		ConfigurableListableBeanFactory beanFactory = this.context.getBeanFactory();
+		BeanFactoryInitializationAotContribution contribution = new JsonComponentBeanFactoryInitializationAotProcessor()
+			.processAheadOfTime(beanFactory);
+		TestGenerationContext generationContext = new TestGenerationContext();
+		contribution.applyTo(generationContext, null);
+		RuntimeHints runtimeHints = generationContext.getRuntimeHints();
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(ComponentWithInnerAbstractClass.class)
+			.withMemberCategory(MemberCategory.DECLARED_CLASSES)).accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(ConcreteSerializer.class)
+			.withMemberCategory(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(AbstractSerializer.class)
+			.withMemberCategory(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)
+			.negate()).accepts(runtimeHints);
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(NotSuitable.class)
+			.withMemberCategory(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)
+			.negate()).accepts(runtimeHints);
+	}
+
 	private void load(Class<?>... configs) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		context.register(configs);
@@ -143,7 +181,7 @@ class JsonComponentModuleTests {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(module);
 		assertThatExceptionOfType(JsonMappingException.class)
-				.isThrownBy(() -> mapper.readValue("{\"name\":\"spring\",\"age\":100}", NameAndAge.class));
+			.isThrownBy(() -> mapper.readValue("{\"name\":\"spring\",\"age\":100}", NameAndAge.class));
 		NameAndCareer nameAndCareer = mapper.readValue("{\"name\":\"spring\",\"career\":\"developer\"}",
 				NameAndCareer.class);
 		assertThat(nameAndCareer.getName()).isEqualTo("spring");
@@ -162,7 +200,7 @@ class JsonComponentModuleTests {
 	private void assertKeyDeserialize(Module module) throws IOException {
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.registerModule(module);
-		TypeReference<Map<NameAndAge, Boolean>> typeRef = new TypeReference<Map<NameAndAge, Boolean>>() {
+		TypeReference<Map<NameAndAge, Boolean>> typeRef = new TypeReference<>() {
 		};
 		Map<NameAndAge, Boolean> map = mapper.readValue("{\"spring is 100\":  true}", typeRef);
 		assertThat(map).containsEntry(new NameAndAge("spring", 100), true);
@@ -181,11 +219,15 @@ class JsonComponentModuleTests {
 	@JsonComponent
 	static class ComponentWithInnerAbstractClass {
 
-		static class AbstractSerializer extends NameAndAgeJsonComponent.Serializer {
+		abstract static class AbstractSerializer extends NameAndAgeJsonComponent.Serializer {
 
 		}
 
 		static class ConcreteSerializer extends AbstractSerializer {
+
+		}
+
+		static class NotSuitable {
 
 		}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,17 +102,17 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		if (expected == null || expected instanceof CharSequence) {
 			return isEqualToJson((CharSequence) expected);
 		}
-		if (expected instanceof byte[]) {
-			return isEqualToJson((byte[]) expected);
+		if (expected instanceof byte[] bytes) {
+			return isEqualToJson(bytes);
 		}
-		if (expected instanceof File) {
-			return isEqualToJson((File) expected);
+		if (expected instanceof File file) {
+			return isEqualToJson(file);
 		}
-		if (expected instanceof InputStream) {
-			return isEqualToJson((InputStream) expected);
+		if (expected instanceof InputStream inputStream) {
+			return isEqualToJson(inputStream);
 		}
-		if (expected instanceof Resource) {
-			return isEqualToJson((Resource) expected);
+		if (expected instanceof Resource resource) {
+			return isEqualToJson(resource);
 		}
 		failWithMessage("Unsupported type for JSON assert %s", expected.getClass());
 		return null;
@@ -430,17 +430,17 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 		if (expected == null || expected instanceof CharSequence) {
 			return isNotEqualToJson((CharSequence) expected);
 		}
-		if (expected instanceof byte[]) {
-			return isNotEqualToJson((byte[]) expected);
+		if (expected instanceof byte[] bytes) {
+			return isNotEqualToJson(bytes);
 		}
-		if (expected instanceof File) {
-			return isNotEqualToJson((File) expected);
+		if (expected instanceof File file) {
+			return isNotEqualToJson(file);
 		}
-		if (expected instanceof InputStream) {
-			return isNotEqualToJson((InputStream) expected);
+		if (expected instanceof InputStream inputStream) {
+			return isNotEqualToJson(inputStream);
 		}
-		if (expected instanceof Resource) {
-			return isNotEqualToJson((Resource) expected);
+		if (expected instanceof Resource resource) {
+			return isNotEqualToJson(resource);
 		}
 		failWithMessage("Unsupported type for JSON assert %s", expected.getClass());
 		return null;
@@ -1003,8 +1003,8 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 					this.actual.toString(), compareMode);
 		}
 		catch (Exception ex) {
-			if (ex instanceof RuntimeException) {
-				throw (RuntimeException) ex;
+			if (ex instanceof RuntimeException runtimeException) {
+				throw runtimeException;
 			}
 			throw new IllegalStateException(ex);
 		}
@@ -1019,8 +1019,8 @@ public class JsonContentAssert extends AbstractAssert<JsonContentAssert, CharSeq
 					this.actual.toString(), comparator);
 		}
 		catch (Exception ex) {
-			if (ex instanceof RuntimeException) {
-				throw (RuntimeException) ex;
+			if (ex instanceof RuntimeException runtimeException) {
+				throw runtimeException;
 			}
 			throw new IllegalStateException(ex);
 		}

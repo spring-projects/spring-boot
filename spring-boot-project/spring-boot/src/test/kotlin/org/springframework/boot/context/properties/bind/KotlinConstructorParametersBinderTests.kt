@@ -10,17 +10,18 @@ import org.springframework.core.ResolvableType
  * Tests for `ConstructorParametersBinder`.
  *
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 class KotlinConstructorParametersBinderTests {
 
 	@Test
 	fun `Bind to class should create bound bean`() {
-		val source = MockConfigurationPropertySource()
-		source.put("foo.int-value", "12")
-		source.put("foo.long-value", "34")
-		source.put("foo.boolean-value", "true")
-		source.put("foo.string-value", "foo")
-		source.put("foo.enum-value", "foo-bar")
+		val source = MockConfigurationPropertySource(mapOf("foo.int-value" to "12",
+				"foo.int-value" to "12",
+				"foo.long-value" to "34",
+				"foo.boolean-value" to "true",
+				"foo.string-value" to "foo",
+				"foo.enum-value" to "foo-bar"))
 		val binder = Binder(source)
 		val bean = binder.bind("foo", Bindable.of(ExampleValueBean::class.java)).get()
 		assertThat(bean.intValue).isEqualTo(12)
@@ -32,12 +33,11 @@ class KotlinConstructorParametersBinderTests {
 
 	@Test
 	fun `Bind to class when has no prefix should create bound bean`() {
-		val source = MockConfigurationPropertySource()
-		source.put("int-value", "12")
-		source.put("long-value", "34")
-		source.put("boolean-value", "true")
-		source.put("string-value", "foo")
-		source.put("enum-value", "foo-bar")
+		val source = MockConfigurationPropertySource(mapOf("int-value" to "12",
+				"long-value" to "34",
+				"boolean-value" to "true",
+				"string-value" to "foo",
+				"enum-value" to "foo-bar"))
 		val binder = Binder(source)
 		val bean = binder.bind(ConfigurationPropertyName.of(""),
 				Bindable.of(ExampleValueBean::class.java)).get()
@@ -50,25 +50,24 @@ class KotlinConstructorParametersBinderTests {
 
 	@Test
 	fun `Bind to data class should create bound bean`() {
-		val source = MockConfigurationPropertySource()
-		source.put("foo.int-value", "12")
-		source.put("foo.long-value", "34")
-		source.put("foo.boolean-value", "true")
-		source.put("foo.string-value", "foo")
-		source.put("foo.enum-value", "foo-bar")
+		val source = MockConfigurationPropertySource(mapOf("foo.int-value" to "12",
+				"foo.long-value" to "34",
+				"foo.boolean-value" to "true",
+				"foo.string-value" to "foo",
+				"foo.enum-value" to "foo-bar"))
 		val binder = Binder(source)
 		val bean = binder.bind("foo", Bindable.of(ExampleDataClassBean::class.java)).get()
-		assertThat(bean.intValue).isEqualTo(12)
-		assertThat(bean.longValue).isEqualTo(34)
-		assertThat(bean.booleanValue).isTrue()
-		assertThat(bean.stringValue).isEqualTo("foo")
-		assertThat(bean.enumValue).isEqualTo(ExampleEnum.FOO_BAR)
+		val expectedBean = ExampleDataClassBean(intValue = 12,
+				longValue = 34,
+				booleanValue = true,
+				stringValue = "foo",
+				enumValue = ExampleEnum.FOO_BAR)
+		assertThat(bean).isEqualTo(expectedBean)
 	}
 
 	@Test
 	fun `Bind to class with multiple constructors and primary constructor should bind`() {
-		val source = MockConfigurationPropertySource()
-		source.put("foo.int-value", "12")
+		val source = MockConfigurationPropertySource("foo.int-value", "12")
 		val binder = Binder(source)
 		val bindable = binder.bind("foo", Bindable.of(
 				MultipleConstructorsWithPrimaryConstructorBean::class.java))
@@ -78,8 +77,7 @@ class KotlinConstructorParametersBinderTests {
 
 	@Test
 	fun `Bind to class with multiple constructors should not bind`() {
-		val source = MockConfigurationPropertySource()
-		source.put("foo.int-value", "12")
+		val source = MockConfigurationPropertySource("foo.int-value", "12")
 		val binder = Binder(source)
 		val bindable = binder.bind("foo", Bindable.of(
 				MultipleConstructorsBean::class.java))
@@ -88,8 +86,7 @@ class KotlinConstructorParametersBinderTests {
 
 	@Test
 	fun `Bind to class with only default constructor should not bind`() {
-		val source = MockConfigurationPropertySource()
-		source.put("foo.int-value", "12")
+		val source = MockConfigurationPropertySource("foo.int-value", "12")
 		val binder = Binder(source)
 		val bindable = binder.bind("foo", Bindable.of(
 				DefaultConstructorBean::class.java))
@@ -98,11 +95,10 @@ class KotlinConstructorParametersBinderTests {
 
 	@Test
 	fun `Bind to class should bind nested`() {
-		val source = MockConfigurationPropertySource()
-		source.put("foo.value-bean.int-value", "123")
-		source.put("foo.value-bean.long-value", "34")
-		source.put("foo.value-bean.boolean-value", "true")
-		source.put("foo.value-bean.string-value", "foo")
+		val source = MockConfigurationPropertySource(mapOf("foo.value-bean.int-value" to "123",
+				"foo.value-bean.long-value" to "34",
+				"foo.value-bean.boolean-value" to "true",
+				"foo.value-bean.string-value" to "foo"))
 		val binder = Binder(source)
 		val bean = binder.bind("foo", Bindable.of(ExampleNestedBean::class.java)).get()
 		assertThat(bean.valueBean.intValue).isEqualTo(123)
@@ -114,8 +110,7 @@ class KotlinConstructorParametersBinderTests {
 
 	@Test
 	fun `Bind to class with no value for optional should use null`() {
-		val source = MockConfigurationPropertySource()
-		source.put("foo.string-value", "foo")
+		val source = MockConfigurationPropertySource("foo.string-value", "foo")
 		val binder = Binder(source)
 		val bean = binder.bind("foo", Bindable.of(
 				ExampleValueBean::class.java)).get()
@@ -128,8 +123,7 @@ class KotlinConstructorParametersBinderTests {
 
 	@Test
 	fun `Bind to class with no value for primitive should use default value`() {
-		val source = MockConfigurationPropertySource()
-		source.put("foo.string-value", "foo")
+		val source = MockConfigurationPropertySource("foo.string-value", "foo")
 		val binder = Binder(source)
 		val bean = binder.bind("foo", Bindable.of(
 				ExamplePrimitiveDefaultBean::class.java)).get()
@@ -142,17 +136,15 @@ class KotlinConstructorParametersBinderTests {
 
 	@Test
 	fun `Bind to class with no value and default value should return unbound`() {
-		val source = MockConfigurationPropertySource()
-		source.put("foo.string-value", "foo")
+		val source = MockConfigurationPropertySource("foo.string-value", "foo")
 		val binder = Binder(source)
 		assertThat(binder.bind("foo", Bindable.of(
-				ExampleDefaultValueBean::class.java)).isBound()).isFalse();
+				ExampleDefaultValueBean::class.java)).isBound).isFalse()
 	}
 
 	@Test
 	fun `Bind or create to class with no value and default value should return default value`() {
-		val source = MockConfigurationPropertySource()
-		source.put("foo.string-value", "foo")
+		val source = MockConfigurationPropertySource("foo.string-value", "foo")
 		val binder = Binder(source)
 		val bean = binder.bindOrCreate("foo", Bindable.of(
 				ExampleDefaultValueBean::class.java))
@@ -163,28 +155,43 @@ class KotlinConstructorParametersBinderTests {
 
 	@Test
 	fun `Bind to data class with no value should use default value`() {
-		val source = MockConfigurationPropertySource()
-		source.put("foo.enum-value", "foo-bar")
+		val source = MockConfigurationPropertySource("foo.enum-value", "foo-bar")
 		val binder = Binder(source)
 		val bean = binder.bind("foo", Bindable.of(ExampleDataClassBean::class.java)).get()
-		assertThat(bean.intValue).isEqualTo(5)
-		assertThat(bean.longValue).isEqualTo(42)
-		assertThat(bean.booleanValue).isFalse()
-		assertThat(bean.stringValue).isEqualTo("my data")
-		assertThat(bean.enumValue).isEqualTo(ExampleEnum.FOO_BAR)
+		val expectedBean = ExampleDataClassBean(intValue = 5,
+				longValue = 42,
+				booleanValue = false,
+				stringValue = "my data",
+				enumValue = ExampleEnum.FOO_BAR)
+		assertThat(bean).isEqualTo(expectedBean)
 	}
 
 	@Test
 	fun `Bind to data class with generics`() {
-		val source = MockConfigurationPropertySource()
-		source.put("foo.value.bar", "baz")
+		val source = MockConfigurationPropertySource("foo.value.bar", "baz")
 		val binder = Binder(source)
 		val type = ResolvableType.forClassWithGenerics(Map::class.java, String::class.java,
 				String::class.java)
 		val bean = binder.bind("foo", Bindable
 				.of<GenericValue<Map<String, String>>>(ResolvableType.forClassWithGenerics(GenericValue::class.java, type)))
 				.get()
-		assertThat(bean.value.get("bar")).isEqualTo("baz");
+		assertThat(bean.value["bar"]).isEqualTo("baz")
+	}
+
+	@Test
+	fun `Bind to named constructor parameter`() {
+		val source = MockConfigurationPropertySource("foo.string-value", "test")
+		val binder = Binder(source)
+		val bean = binder.bind("foo", Bindable.of(ExampleNamedParameterBean::class.java)).get()
+		assertThat(bean.stringDataValue).isEqualTo("test")
+	}
+
+	@Test
+	fun `Bind to singleton object`() {
+		val source = MockConfigurationPropertySource("foo.string-value", "test")
+		val binder = Binder(source)
+		val bean = binder.bind("foo", Bindable.of(ExampleSingletonBean::class.java)).get()
+		assertThat(bean.stringValue).isEqualTo("test")
 	}
 
 	class ExampleValueBean(val intValue: Int?, val longValue: Long?,
@@ -228,8 +235,14 @@ class KotlinConstructorParametersBinderTests {
 									val stringValue: String = "my data",
 									val enumValue: ExampleEnum = ExampleEnum.BAR_BAZ)
 
+	data class ExampleNamedParameterBean(@Name("stringValue") val stringDataValue: String)
+
 	data class GenericValue<T>(
 		val value: T
 	)
+
+	object ExampleSingletonBean {
+		var stringValue: String? = null
+	}
 
 }

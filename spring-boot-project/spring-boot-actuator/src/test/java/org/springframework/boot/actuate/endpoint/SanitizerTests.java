@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,11 @@
 
 package org.springframework.boot.actuate.endpoint;
 
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,107 +31,87 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Chris Bono
  * @author David Good
+ * @author Madhura Bhave
  */
 class SanitizerTests {
 
 	@Test
-	void defaultNonUriKeys() {
+	void whenNoSanitizationFunctionAndShowUnsanitizedIsFalse() {
 		Sanitizer sanitizer = new Sanitizer();
-		assertThat(sanitizer.sanitize("password", "secret")).isEqualTo("******");
-		assertThat(sanitizer.sanitize("my-password", "secret")).isEqualTo("******");
-		assertThat(sanitizer.sanitize("my-OTHER.paSSword", "secret")).isEqualTo("******");
-		assertThat(sanitizer.sanitize("somesecret", "secret")).isEqualTo("******");
-		assertThat(sanitizer.sanitize("somekey", "secret")).isEqualTo("******");
-		assertThat(sanitizer.sanitize("token", "secret")).isEqualTo("******");
-		assertThat(sanitizer.sanitize("sometoken", "secret")).isEqualTo("******");
-		assertThat(sanitizer.sanitize("find", "secret")).isEqualTo("secret");
-		assertThat(sanitizer.sanitize("sun.java.command", "--spring.redis.password=pa55w0rd")).isEqualTo("******");
-	}
-
-	@ParameterizedTest(name = "key = {0}")
-	@MethodSource("matchingUriUserInfoKeys")
-	void uriWithSingleValueWithPasswordShouldBeSanitized(String key) {
-		Sanitizer sanitizer = new Sanitizer();
-		assertThat(sanitizer.sanitize(key, "http://user:password@localhost:8080"))
-				.isEqualTo("http://user:******@localhost:8080");
-	}
-
-	@ParameterizedTest(name = "key = {0}")
-	@MethodSource("matchingUriUserInfoKeys")
-	void uriWithSingleValueWithNoPasswordShouldNotBeSanitized(String key) {
-		Sanitizer sanitizer = new Sanitizer();
-		assertThat(sanitizer.sanitize(key, "http://localhost:8080")).isEqualTo("http://localhost:8080");
-		assertThat(sanitizer.sanitize(key, "http://user@localhost:8080")).isEqualTo("http://user@localhost:8080");
-	}
-
-	@ParameterizedTest(name = "key = {0}")
-	@MethodSource("matchingUriUserInfoKeys")
-	void uriWithSingleValueWithPasswordMatchingOtherPartsOfStringShouldBeSanitized(String key) {
-		Sanitizer sanitizer = new Sanitizer();
-		assertThat(sanitizer.sanitize(key, "http://user://@localhost:8080"))
-				.isEqualTo("http://user:******@localhost:8080");
-	}
-
-	@ParameterizedTest(name = "key = {0}")
-	@MethodSource("matchingUriUserInfoKeys")
-	void uriWithMultipleValuesEachWithPasswordShouldHaveAllSanitized(String key) {
-		Sanitizer sanitizer = new Sanitizer();
-		assertThat(
-				sanitizer.sanitize(key, "http://user1:password1@localhost:8080,http://user2:password2@localhost:8082"))
-						.isEqualTo("http://user1:******@localhost:8080,http://user2:******@localhost:8082");
-	}
-
-	@ParameterizedTest(name = "key = {0}")
-	@MethodSource("matchingUriUserInfoKeys")
-	void uriWithMultipleValuesNoneWithPasswordShouldHaveNoneSanitized(String key) {
-		Sanitizer sanitizer = new Sanitizer();
-		assertThat(sanitizer.sanitize(key, "http://user@localhost:8080,http://localhost:8082"))
-				.isEqualTo("http://user@localhost:8080,http://localhost:8082");
-	}
-
-	@ParameterizedTest(name = "key = {0}")
-	@MethodSource("matchingUriUserInfoKeys")
-	void uriWithMultipleValuesSomeWithPasswordShouldHaveThoseSanitized(String key) {
-		Sanitizer sanitizer = new Sanitizer();
-		assertThat(sanitizer.sanitize(key,
-				"http://user1:password1@localhost:8080,http://user2@localhost:8082,http://localhost:8083")).isEqualTo(
-						"http://user1:******@localhost:8080,http://user2@localhost:8082,http://localhost:8083");
-	}
-
-	@ParameterizedTest(name = "key = {0}")
-	@MethodSource("matchingUriUserInfoKeys")
-	void uriWithMultipleValuesWithPasswordMatchingOtherPartsOfStringShouldBeSanitized(String key) {
-		Sanitizer sanitizer = new Sanitizer();
-		assertThat(sanitizer.sanitize(key, "http://user1://@localhost:8080,http://user2://@localhost:8082"))
-				.isEqualTo("http://user1:******@localhost:8080,http://user2:******@localhost:8082");
-	}
-
-	@ParameterizedTest(name = "key = {0}")
-	@MethodSource("matchingUriUserInfoKeys")
-	void uriKeyWithUserProvidedListLiteralShouldBeSanitized(String key) {
-		Sanitizer sanitizer = new Sanitizer();
-		assertThat(sanitizer.sanitize(key, "[amqp://username:password@host/]"))
-				.isEqualTo("[amqp://username:******@host/]");
-		assertThat(sanitizer.sanitize(key,
-				"[http://user1:password1@localhost:8080,http://user2@localhost:8082,http://localhost:8083]")).isEqualTo(
-						"[http://user1:******@localhost:8080,http://user2@localhost:8082,http://localhost:8083]");
-		assertThat(sanitizer.sanitize(key,
-				"[http://user1:password1@localhost:8080,http://user2:password2@localhost:8082]"))
-						.isEqualTo("[http://user1:******@localhost:8080,http://user2:******@localhost:8082]");
-		assertThat(sanitizer.sanitize(key, "[http://user1@localhost:8080,http://user2@localhost:8082]"))
-				.isEqualTo("[http://user1@localhost:8080,http://user2@localhost:8082]");
-	}
-
-	private static Stream<String> matchingUriUserInfoKeys() {
-		return Stream.of("uri", "my.uri", "myuri", "uris", "my.uris", "myuris", "address", "my.address", "myaddress",
-				"addresses", "my.addresses", "myaddresses");
+		assertThat(sanitizer.sanitize(new SanitizableData(null, "password", "secret"), false)).isEqualTo("******");
+		assertThat(sanitizer.sanitize(new SanitizableData(null, "other", "something"), false)).isEqualTo("******");
 	}
 
 	@Test
-	void regex() {
-		Sanitizer sanitizer = new Sanitizer(".*lock.*");
-		assertThat(sanitizer.sanitize("verylOCkish", "secret")).isEqualTo("******");
-		assertThat(sanitizer.sanitize("veryokish", "secret")).isEqualTo("secret");
+	void whenNoSanitizationFunctionAndShowUnsanitizedIsTrue() {
+		Sanitizer sanitizer = new Sanitizer();
+		assertThat(sanitizer.sanitize(new SanitizableData(null, "password", "secret"), true)).isEqualTo("secret");
+		assertThat(sanitizer.sanitize(new SanitizableData(null, "other", "something"), true)).isEqualTo("something");
+	}
+
+	@Test
+	void whenCustomSanitizationFunctionAndShowUnsanitizedIsFalse() {
+		Sanitizer sanitizer = new Sanitizer(Collections.singletonList((data) -> {
+			if (data.getKey().equals("custom")) {
+				return data.withValue("$$$$$$");
+			}
+			return data;
+		}));
+		SanitizableData secret = new SanitizableData(null, "secret", "xyz");
+		assertThat(sanitizer.sanitize(secret, false)).isEqualTo("******");
+		SanitizableData custom = new SanitizableData(null, "custom", "abcde");
+		assertThat(sanitizer.sanitize(custom, false)).isEqualTo("******");
+		SanitizableData hello = new SanitizableData(null, "hello", "abc");
+		assertThat(sanitizer.sanitize(hello, false)).isEqualTo("******");
+	}
+
+	@Test
+	void whenCustomSanitizationFunctionAndShowUnsanitizedIsTrue() {
+		Sanitizer sanitizer = new Sanitizer(Collections.singletonList((data) -> {
+			if (data.getKey().equals("custom")) {
+				return data.withValue("$$$$$$");
+			}
+			return data;
+		}));
+		SanitizableData secret = new SanitizableData(null, "secret", "xyz");
+		assertThat(sanitizer.sanitize(secret, true)).isEqualTo("xyz");
+		SanitizableData custom = new SanitizableData(null, "custom", "abcde");
+		assertThat(sanitizer.sanitize(custom, true)).isEqualTo("$$$$$$");
+		SanitizableData hello = new SanitizableData(null, "hello", "abc");
+		assertThat(sanitizer.sanitize(hello, true)).isEqualTo("abc");
+	}
+
+	@Test
+	void overridingDefaultSanitizingFunction() {
+		Sanitizer sanitizer = new Sanitizer(Collections.singletonList((data) -> {
+			if (data.getKey().equals("password")) {
+				return data.withValue("------");
+			}
+			return data;
+		}));
+		SanitizableData password = new SanitizableData(null, "password", "123456");
+		assertThat(sanitizer.sanitize(password, true)).isEqualTo("------");
+	}
+
+	@Test
+	void whenValueSanitizedLaterSanitizingFunctionsShouldBeSkipped() {
+		final String sameKey = "custom";
+		List<SanitizingFunction> sanitizingFunctions = new ArrayList<>();
+		sanitizingFunctions.add((data) -> {
+			if (data.getKey().equals(sameKey)) {
+				return data.withValue("------");
+			}
+			return data;
+		});
+		sanitizingFunctions.add((data) -> {
+			if (data.getKey().equals(sameKey)) {
+				return data.withValue("******");
+			}
+			return data;
+		});
+		Sanitizer sanitizer = new Sanitizer(sanitizingFunctions);
+		SanitizableData custom = new SanitizableData(null, sameKey, "123456");
+		assertThat(sanitizer.sanitize(custom, true)).isEqualTo("------");
 	}
 
 }

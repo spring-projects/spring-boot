@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,19 @@
 
 package org.springframework.boot.test.autoconfigure.data.neo4j;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
-import org.neo4j.ogm.session.Session;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.ApplicationContext;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.data.neo4j.core.Neo4jTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -37,16 +39,21 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Michael Simons
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 @DataNeo4jTest
 @Testcontainers(disabledWithoutDocker = true)
 class DataNeo4jTestIntegrationTests {
 
 	@Container
-	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>().withoutAuthentication();
+	@ServiceConnection
+	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>(DockerImageNames.neo4j()).withStartupAttempts(5)
+		.withStartupTimeout(Duration.ofMinutes(10));
 
 	@Autowired
-	private Session session;
+	private Neo4jTemplate neo4jTemplate;
 
 	@Autowired
 	private ExampleRepository exampleRepository;
@@ -54,25 +61,19 @@ class DataNeo4jTestIntegrationTests {
 	@Autowired
 	private ApplicationContext applicationContext;
 
-	@DynamicPropertySource
-	static void neo4jProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.data.neo4j.uri", neo4j::getBoltUrl);
-	}
-
 	@Test
 	void testRepository() {
-		ExampleGraph exampleGraph = new ExampleGraph();
-		exampleGraph.setDescription("Look, new @DataNeo4jTest!");
+		ExampleGraph exampleGraph = new ExampleGraph("Look, new @DataNeo4jTest!");
 		assertThat(exampleGraph.getId()).isNull();
 		ExampleGraph savedGraph = this.exampleRepository.save(exampleGraph);
 		assertThat(savedGraph.getId()).isNotNull();
-		assertThat(this.session.countEntitiesOfType(ExampleGraph.class)).isEqualTo(1);
+		assertThat(this.neo4jTemplate.count(ExampleGraph.class)).isOne();
 	}
 
 	@Test
 	void didNotInjectExampleService() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
+			.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
 	}
 
 }

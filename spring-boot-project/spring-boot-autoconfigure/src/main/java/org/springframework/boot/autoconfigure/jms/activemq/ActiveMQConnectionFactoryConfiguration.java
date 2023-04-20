@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,7 @@ package org.springframework.boot.autoconfigure.jms.activemq;
 
 import java.util.stream.Collectors;
 
-import javax.jms.ConnectionFactory;
-
+import jakarta.jms.ConnectionFactory;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.commons.pool2.PooledObject;
 import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
@@ -63,7 +62,7 @@ class ActiveMQConnectionFactoryConfiguration {
 				ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
 			return new ActiveMQConnectionFactoryFactory(properties,
 					factoryCustomizers.orderedStream().collect(Collectors.toList()))
-							.createConnectionFactory(ActiveMQConnectionFactory.class);
+				.createConnectionFactory(ActiveMQConnectionFactory.class);
 		}
 
 		@Configuration(proxyBeanMethods = false)
@@ -98,9 +97,9 @@ class ActiveMQConnectionFactoryConfiguration {
 				ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(properties,
 					factoryCustomizers.orderedStream().collect(Collectors.toList()))
-							.createConnectionFactory(ActiveMQConnectionFactory.class);
+				.createConnectionFactory(ActiveMQConnectionFactory.class);
 			return new JmsPoolConnectionFactoryFactory(properties.getPool())
-					.createPooledConnectionFactory(connectionFactory);
+				.createPooledConnectionFactory(connectionFactory);
 		}
 
 	}

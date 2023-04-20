@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,13 +35,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 class NonAspectJAopAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(AopAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(AopAutoConfiguration.class));
 
 	@Test
 	void whenAspectJIsAbsentAndProxyTargetClassIsEnabledProxyCreatorBeanIsDefined() {
 		this.contextRunner.run((context) -> {
 			BeanDefinition autoProxyCreator = context.getBeanFactory()
-					.getBeanDefinition(AopConfigUtils.AUTO_PROXY_CREATOR_BEAN_NAME);
+				.getBeanDefinition(AopConfigUtils.AUTO_PROXY_CREATOR_BEAN_NAME);
 			assertThat(autoProxyCreator.getPropertyValues().get("proxyTargetClass")).isEqualTo(Boolean.TRUE);
 		});
 	}
@@ -49,7 +49,7 @@ class NonAspectJAopAutoConfigurationTests {
 	@Test
 	void whenAspectJIsAbsentAndProxyTargetClassIsDisabledNoProxyCreatorBeanIsDefined() {
 		this.contextRunner.withPropertyValues("spring.aop.proxy-target-class:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(AopConfigUtils.AUTO_PROXY_CREATOR_BEAN_NAME));
+			.run((context) -> assertThat(context).doesNotHaveBean(AopConfigUtils.AUTO_PROXY_CREATOR_BEAN_NAME));
 	}
 
 }

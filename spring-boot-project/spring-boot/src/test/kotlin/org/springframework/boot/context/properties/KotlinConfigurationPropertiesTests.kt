@@ -26,7 +26,6 @@ class KotlinConfigurationPropertiesTests {
 	}
 
 	@ConfigurationProperties(prefix = "foo")
-	@ConstructorBinding
 	class BingProperties(@Suppress("UNUSED_PARAMETER") bar: String) {
 
 	}

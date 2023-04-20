@@ -1,0 +1,29 @@
+[[messaging]]
+= Messaging
+include::attributes.adoc[]
+
+The Spring Framework provides extensive support for integrating with messaging systems, from simplified use of the JMS API using `JmsTemplate` to a complete infrastructure to receive messages asynchronously.
+Spring AMQP provides a similar feature set for the Advanced Message Queuing Protocol.
+Spring Boot also provides auto-configuration options for `RabbitTemplate` and RabbitMQ.
+Spring WebSocket natively includes support for STOMP messaging, and Spring Boot has support for that through starters and a small amount of auto-configuration.
+Spring Boot also has support for Apache Kafka.
+
+
+include::messaging/jms.adoc[]
+
+include::messaging/amqp.adoc[]
+
+include::messaging/kafka.adoc[]
+
+include::messaging/rsocket.adoc[]
+
+include::messaging/spring-integration.adoc[]
+
+include::messaging/websockets.adoc[]
+
+include::messaging/whats-next.adoc[]
+
+
+
+
+

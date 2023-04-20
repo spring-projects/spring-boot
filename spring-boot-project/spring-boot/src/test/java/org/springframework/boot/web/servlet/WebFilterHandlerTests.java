@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,14 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.annotation.WebInitParam;
-
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.annotation.WebFilter;
+import jakarta.servlet.annotation.WebInitParam;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.MutablePropertyValues;
@@ -60,11 +59,11 @@ class WebFilterHandlerTests {
 		AnnotatedBeanDefinition definition = createBeanDefinition(DefaultConfigurationFilter.class);
 		this.handler.handle(definition, this.registry);
 		BeanDefinition filterRegistrationBean = this.registry
-				.getBeanDefinition(DefaultConfigurationFilter.class.getName());
+			.getBeanDefinition(DefaultConfigurationFilter.class.getName());
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat(propertyValues.get("asyncSupported")).isEqualTo(false);
 		assertThat((EnumSet<DispatcherType>) propertyValues.get("dispatcherTypes"))
-				.containsExactly(DispatcherType.REQUEST);
+			.containsExactly(DispatcherType.REQUEST);
 		assertThat(((Map<String, String>) propertyValues.get("initParameters"))).isEmpty();
 		assertThat((String[]) propertyValues.get("servletNames")).isEmpty();
 		assertThat((String[]) propertyValues.get("urlPatterns")).isEmpty();
@@ -103,7 +102,7 @@ class WebFilterHandlerTests {
 		BeanDefinition filterRegistrationBean = handleBeanDefinitionForClass(InitParametersFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat((Map<String, String>) propertyValues.get("initParameters")).containsEntry("a", "alpha")
-				.containsEntry("b", "bravo");
+			.containsEntry("b", "bravo");
 	}
 
 	@Test
@@ -128,10 +127,10 @@ class WebFilterHandlerTests {
 	}
 
 	@Test
-	void urlPatternsDeclaredTwice() throws IOException {
+	void urlPatternsDeclaredTwice() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> handleBeanDefinitionForClass(UrlPatternsDeclaredTwiceFilter.class))
-				.withMessageContaining("The urlPatterns and value attributes are mutually exclusive.");
+			.isThrownBy(() -> handleBeanDefinitionForClass(UrlPatternsDeclaredTwiceFilter.class))
+			.withMessageContaining("The urlPatterns and value attributes are mutually exclusive.");
 	}
 
 	private AnnotatedBeanDefinition createBeanDefinition(Class<?> filterClass) throws IOException {

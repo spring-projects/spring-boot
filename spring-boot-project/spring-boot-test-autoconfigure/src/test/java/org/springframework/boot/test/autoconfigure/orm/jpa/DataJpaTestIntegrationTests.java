@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.context.ApplicationContext;
+import org.springframework.data.repository.config.BootstrapMode;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.test.context.TestPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -37,9 +37,9 @@ import static org.springframework.boot.test.autoconfigure.AutoConfigurationImpor
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 @DataJpaTest
-@TestPropertySource(properties = "spring.jpa.hibernate.use-new-id-generator-mappings=false")
 class DataJpaTestIntegrationTests {
 
 	@Autowired
@@ -69,9 +69,10 @@ class DataJpaTestIntegrationTests {
 	@Test
 	void testEntityManagerPersistAndGetId() {
 		Long id = this.entities.persistAndGetId(new ExampleEntity("spring", "123"), Long.class);
+		this.entities.flush();
 		assertThat(id).isNotNull();
 		String reference = this.jdbcTemplate.queryForObject("SELECT REFERENCE FROM EXAMPLE_ENTITY WHERE ID = ?",
-				new Object[] { id }, String.class);
+				String.class, id);
 		assertThat(reference).isEqualTo("123");
 	}
 
@@ -93,7 +94,7 @@ class DataJpaTestIntegrationTests {
 	@Test
 	void didNotInjectExampleComponent() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(ExampleComponent.class));
+			.isThrownBy(() -> this.applicationContext.getBean(ExampleComponent.class));
 	}
 
 	@Test
@@ -104,6 +105,12 @@ class DataJpaTestIntegrationTests {
 	@Test
 	void liquibaseAutoConfigurationWasImported() {
 		assertThat(this.applicationContext).has(importedAutoConfiguration(LiquibaseAutoConfiguration.class));
+	}
+
+	@Test
+	void bootstrapModeIsDefaultByDefault() {
+		assertThat(this.applicationContext.getEnvironment().getProperty("spring.data.jpa.repositories.bootstrap-mode"))
+			.isEqualTo(BootstrapMode.DEFAULT.name());
 	}
 
 }

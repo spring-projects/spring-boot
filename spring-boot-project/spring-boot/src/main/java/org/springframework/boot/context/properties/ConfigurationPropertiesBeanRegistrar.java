@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -50,7 +50,8 @@ final class ConfigurationPropertiesBeanRegistrar {
 
 	void register(Class<?> type) {
 		MergedAnnotation<ConfigurationProperties> annotation = MergedAnnotations
-				.from(type, SearchStrategy.TYPE_HIERARCHY).get(ConfigurationProperties.class);
+			.from(type, SearchStrategy.TYPE_HIERARCHY)
+			.get(ConfigurationProperties.class);
 		register(type, annotation);
 	}
 
@@ -71,12 +72,12 @@ final class ConfigurationPropertiesBeanRegistrar {
 	}
 
 	private boolean containsBeanDefinition(BeanFactory beanFactory, String name) {
-		if (beanFactory instanceof ListableBeanFactory
-				&& ((ListableBeanFactory) beanFactory).containsBeanDefinition(name)) {
+		if (beanFactory instanceof ListableBeanFactory listableBeanFactory
+				&& listableBeanFactory.containsBeanDefinition(name)) {
 			return true;
 		}
-		if (beanFactory instanceof HierarchicalBeanFactory) {
-			return containsBeanDefinition(((HierarchicalBeanFactory) beanFactory).getParentBeanFactory(), name);
+		if (beanFactory instanceof HierarchicalBeanFactory hierarchicalBeanFactory) {
+			return containsBeanDefinition(hierarchicalBeanFactory.getParentBeanFactory(), name);
 		}
 		return false;
 	}
@@ -89,11 +90,12 @@ final class ConfigurationPropertiesBeanRegistrar {
 	}
 
 	private BeanDefinition createBeanDefinition(String beanName, Class<?> type) {
-		if (BindMethod.forType(type) == BindMethod.VALUE_OBJECT) {
-			return new ConfigurationPropertiesValueObjectBeanDefinition(this.beanFactory, beanName, type);
+		BindMethod bindMethod = BindMethod.get(type);
+		RootBeanDefinition definition = new RootBeanDefinition(type);
+		definition.setAttribute(BindMethod.class.getName(), bindMethod);
+		if (bindMethod == BindMethod.VALUE_OBJECT) {
+			definition.setInstanceSupplier(() -> ConstructorBound.from(this.beanFactory, beanName, type));
 		}
-		GenericBeanDefinition definition = new GenericBeanDefinition();
-		definition.setBeanClass(type);
 		return definition;
 	}
 

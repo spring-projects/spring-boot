@@ -1,0 +1,44 @@
+plugins {
+	id "java"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.integration-test"
+}
+
+description = "Spring Boot Loader Integration Tests"
+
+configurations {
+	app
+}
+
+dependencies {
+	app project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "mavenRepository")
+	app project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-web", configuration: "mavenRepository")
+
+	intTestImplementation(enforcedPlatform(project(":spring-boot-project:spring-boot-parent")))
+	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	intTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	intTestImplementation("org.testcontainers:junit-jupiter")
+	intTestImplementation("org.testcontainers:testcontainers")
+}
+
+task syncMavenRepository(type: Sync) {
+	from configurations.app
+	into "${buildDir}/int-test-maven-repository"
+}
+
+task syncAppSource(type: org.springframework.boot.build.SyncAppSource) {
+	sourceDirectory = file("spring-boot-loader-tests-app")
+	destinationDirectory = file("${buildDir}/spring-boot-loader-tests-app")
+}
+
+task buildApp(type: GradleBuild) {
+	dependsOn syncAppSource, syncMavenRepository
+	dir = "${buildDir}/spring-boot-loader-tests-app"
+	startParameter.buildCacheEnabled = false
+	tasks  = ["build"]
+}
+
+intTest {
+	dependsOn buildApp
+}

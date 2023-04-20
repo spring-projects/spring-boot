@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,11 @@
 package org.springframework.boot.convert;
 
 import java.text.ParseException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.ConfigurableApplicationContext;
@@ -32,9 +34,10 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.format.Parser;
 import org.springframework.format.Printer;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 /**
  * Tests for {@link ApplicationConversionService}.
@@ -43,15 +46,15 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  */
 class ApplicationConversionServiceTests {
 
-	private FormatterRegistry registry = mock(FormatterRegistry.class);
+	private final FormatterRegistry registry = mock(FormatterRegistry.class);
 
 	@Test
 	void addBeansWhenHasGenericConverterBeanAddConverter() {
 		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(
 				ExampleGenericConverter.class)) {
 			ApplicationConversionService.addBeans(this.registry, context);
-			verify(this.registry).addConverter(context.getBean(ExampleGenericConverter.class));
-			verifyNoMoreInteractions(this.registry);
+			then(this.registry).should().addConverter(context.getBean(ExampleGenericConverter.class));
+			then(this.registry).shouldHaveNoMoreInteractions();
 		}
 	}
 
@@ -59,8 +62,8 @@ class ApplicationConversionServiceTests {
 	void addBeansWhenHasConverterBeanAddConverter() {
 		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(ExampleConverter.class)) {
 			ApplicationConversionService.addBeans(this.registry, context);
-			verify(this.registry).addConverter(context.getBean(ExampleConverter.class));
-			verifyNoMoreInteractions(this.registry);
+			then(this.registry).should().addConverter(context.getBean(ExampleConverter.class));
+			then(this.registry).shouldHaveNoMoreInteractions();
 		}
 	}
 
@@ -68,8 +71,8 @@ class ApplicationConversionServiceTests {
 	void addBeansWhenHasFormatterBeanAddsOnlyFormatter() {
 		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(ExampleFormatter.class)) {
 			ApplicationConversionService.addBeans(this.registry, context);
-			verify(this.registry).addFormatter(context.getBean(ExampleFormatter.class));
-			verifyNoMoreInteractions(this.registry);
+			then(this.registry).should().addFormatter(context.getBean(ExampleFormatter.class));
+			then(this.registry).shouldHaveNoMoreInteractions();
 		}
 	}
 
@@ -77,8 +80,8 @@ class ApplicationConversionServiceTests {
 	void addBeansWhenHasPrinterBeanAddPrinter() {
 		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(ExamplePrinter.class)) {
 			ApplicationConversionService.addBeans(this.registry, context);
-			verify(this.registry).addPrinter(context.getBean(ExamplePrinter.class));
-			verifyNoMoreInteractions(this.registry);
+			then(this.registry).should().addPrinter(context.getBean(ExamplePrinter.class));
+			then(this.registry).shouldHaveNoMoreInteractions();
 		}
 	}
 
@@ -86,9 +89,51 @@ class ApplicationConversionServiceTests {
 	void addBeansWhenHasParserBeanAddParser() {
 		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(ExampleParser.class)) {
 			ApplicationConversionService.addBeans(this.registry, context);
-			verify(this.registry).addParser(context.getBean(ExampleParser.class));
-			verifyNoMoreInteractions(this.registry);
+			then(this.registry).should().addParser(context.getBean(ExampleParser.class));
+			then(this.registry).shouldHaveNoMoreInteractions();
 		}
+	}
+
+	@Test
+	void isConvertViaObjectSourceTypeWhenObjectSourceReturnsTrue() {
+		// Uses ObjectToCollectionConverter
+		ApplicationConversionService conversionService = new ApplicationConversionService();
+		TypeDescriptor sourceType = TypeDescriptor.valueOf(Long.class);
+		TypeDescriptor targetType = TypeDescriptor.valueOf(List.class);
+		assertThat(conversionService.canConvert(sourceType, targetType)).isTrue();
+		assertThat(conversionService.isConvertViaObjectSourceType(sourceType, targetType)).isTrue();
+	}
+
+	@Test
+	void isConvertViaObjectSourceTypeWhenNotObjectSourceReturnsFalse() {
+		// Uses StringToCollectionConverter
+		ApplicationConversionService conversionService = new ApplicationConversionService();
+		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
+		TypeDescriptor targetType = TypeDescriptor.valueOf(List.class);
+		assertThat(conversionService.canConvert(sourceType, targetType)).isTrue();
+		assertThat(conversionService.isConvertViaObjectSourceType(sourceType, targetType)).isFalse();
+	}
+
+	@Test
+	void sharedInstanceCannotBeModified() {
+		ApplicationConversionService instance = (ApplicationConversionService) ApplicationConversionService
+			.getSharedInstance();
+		assertUnmodifiableExceptionThrown(() -> instance.addPrinter(null));
+		assertUnmodifiableExceptionThrown(() -> instance.addParser(null));
+		assertUnmodifiableExceptionThrown(() -> instance.addFormatter(null));
+		assertUnmodifiableExceptionThrown(() -> instance.addFormatterForFieldType(null, null));
+		assertUnmodifiableExceptionThrown(() -> instance.addConverter((Converter<?, ?>) null));
+		assertUnmodifiableExceptionThrown(() -> instance.addFormatterForFieldType(null, null, null));
+		assertUnmodifiableExceptionThrown(() -> instance.addFormatterForFieldAnnotation(null));
+		assertUnmodifiableExceptionThrown(() -> instance.addConverter(null, null, null));
+		assertUnmodifiableExceptionThrown(() -> instance.addConverter((GenericConverter) null));
+		assertUnmodifiableExceptionThrown(() -> instance.addConverterFactory(null));
+		assertUnmodifiableExceptionThrown(() -> instance.removeConvertible(null, null));
+	}
+
+	private void assertUnmodifiableExceptionThrown(ThrowingCallable throwingCallable) {
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(throwingCallable)
+			.withMessage("This ApplicationConversionService cannot be modified");
 	}
 
 	static class ExampleGenericConverter implements GenericConverter {

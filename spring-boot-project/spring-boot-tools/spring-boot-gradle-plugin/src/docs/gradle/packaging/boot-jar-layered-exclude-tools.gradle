@@ -1,0 +1,16 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+tasks.named("bootJar") {
+	mainClass = 'com.example.ExampleApplication'
+}
+
+// tag::layered[]
+tasks.named("bootJar") {
+	layered {
+		includeLayerTools = false
+	}
+}
+// end::layered[]

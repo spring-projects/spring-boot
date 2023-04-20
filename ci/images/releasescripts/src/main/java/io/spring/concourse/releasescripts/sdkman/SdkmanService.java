@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.web.client.RestTemplate;
  * Central class for interacting with SDKMAN's API.
  *
  * @author Madhura Bhave
+ * @author Moritz Halbritter
  */
 @Component
 public class SdkmanService {
@@ -39,8 +40,10 @@ public class SdkmanService {
 
 	private static final String SDKMAN_URL = "https://vendors.sdkman.io/";
 
-	private static final String DOWNLOAD_URL = "https://repo.spring.io/simple/libs-release-local/org/springframework/boot/spring-boot-cli/"
+	private static final String DOWNLOAD_URL = "https://repo.maven.apache.org/maven2/org/springframework/boot/spring-boot-cli/"
 			+ "%s/spring-boot-cli-%s-bin.zip";
+
+	private static final String CHANGELOG_URL = "https://github.com/spring-projects/spring-boot/releases/tag/v%s";
 
 	private static final String SPRING_BOOT = "springboot";
 
@@ -66,7 +69,7 @@ public class SdkmanService {
 	}
 
 	private void broadcast(String version) {
-		BroadcastRequest broadcastRequest = new BroadcastRequest(version);
+		BroadcastRequest broadcastRequest = new BroadcastRequest(version, String.format(CHANGELOG_URL, version));
 		RequestEntity<BroadcastRequest> broadcastEntity = RequestEntity.post(URI.create(SDKMAN_URL + "announce/struct"))
 				.header(CONSUMER_KEY_HEADER, this.properties.getConsumerKey())
 				.header(CONSUMER_TOKEN_HEADER, this.properties.getConsumerToken())
@@ -135,12 +138,19 @@ public class SdkmanService {
 
 		private final String hashtag = SPRING_BOOT;
 
-		BroadcastRequest(String version) {
+		private final String url;
+
+		BroadcastRequest(String version, String url) {
 			super(version);
+			this.url = url;
 		}
 
 		public String getHashtag() {
 			return this.hashtag;
+		}
+
+		public String getUrl() {
+			return url;
 		}
 
 	}

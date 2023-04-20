@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,16 +68,6 @@ class LogFileWebEndpointTests {
 	@Test
 	void resourceResponseWithLogFile() throws Exception {
 		this.environment.setProperty("logging.file.name", this.logFile.getAbsolutePath());
-		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(LogFile.get(this.environment), null);
-		Resource resource = endpoint.logFile();
-		assertThat(resource).isNotNull();
-		assertThat(contentOf(resource.getFile())).isEqualTo("--TEST--");
-	}
-
-	@Test
-	@Deprecated
-	void resourceResponseWithLogFileAndDeprecatedProperty() throws Exception {
-		this.environment.setProperty("logging.file", this.logFile.getAbsolutePath());
 		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(LogFile.get(this.environment), null);
 		Resource resource = endpoint.logFile();
 		assertThat(resource).isNotNull();

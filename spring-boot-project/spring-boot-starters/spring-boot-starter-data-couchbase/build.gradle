@@ -1,0 +1,10 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Starter for using Couchbase document-oriented database and Spring Data Couchbase"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	api("org.springframework.data:spring-data-couchbase")
+}

@@ -33,11 +33,21 @@ class UndertowServletWebServerFactoryCustomizerTests {
 	@Test
 	void eagerFilterInitCanBeDisabled() {
 		UndertowServletWebServerFactory factory = new UndertowServletWebServerFactory(0);
-		assertThat(factory.isEagerInitFilters()).isTrue();
+		assertThat(factory.isEagerFilterInit()).isTrue();
 		ServerProperties serverProperties = new ServerProperties();
 		serverProperties.getUndertow().setEagerFilterInit(false);
 		new UndertowServletWebServerFactoryCustomizer(serverProperties).customize(factory);
-		assertThat(factory.isEagerInitFilters()).isFalse();
+		assertThat(factory.isEagerFilterInit()).isFalse();
+	}
+
+	@Test
+	void preservePathOnForwardCanBeEnabled() {
+		UndertowServletWebServerFactory factory = new UndertowServletWebServerFactory(0);
+		assertThat(factory.isPreservePathOnForward()).isFalse();
+		ServerProperties serverProperties = new ServerProperties();
+		serverProperties.getUndertow().setPreservePathOnForward(true);
+		new UndertowServletWebServerFactoryCustomizer(serverProperties).customize(factory);
+		assertThat(factory.isPreservePathOnForward()).isTrue();
 	}
 
 }

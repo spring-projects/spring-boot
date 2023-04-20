@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- tag::environment-variables[] -->
+<project>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<environmentVariables>
+						<ENV1>5000</ENV1>
+						<ENV2>Some Text</ENV2>
+						<ENV3/>
+						<ENV4></ENV4>
+					</environmentVariables>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+<!-- end::environment-variables[] -->
+
+

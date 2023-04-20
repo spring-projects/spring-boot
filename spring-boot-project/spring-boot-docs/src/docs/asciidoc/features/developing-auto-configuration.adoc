@@ -1,0 +1,322 @@
+[[features.developing-auto-configuration]]
+== Creating Your Own Auto-configuration
+If you work in a company that develops shared libraries, or if you work on an open-source or commercial library, you might want to develop your own auto-configuration.
+Auto-configuration classes can be bundled in external jars and still be picked up by Spring Boot.
+
+Auto-configuration can be associated to a "`starter`" that provides the auto-configuration code as well as the typical libraries that you would use with it.
+We first cover what you need to know to build your own auto-configuration and then we move on to the <<features#features.developing-auto-configuration.custom-starter,typical steps required to create a custom starter>>.
+
+
+
+[[features.developing-auto-configuration.understanding-auto-configured-beans]]
+=== Understanding Auto-configured Beans
+Classes that implement auto-configuration are annotated with `@AutoConfiguration`.
+This annotation itself is meta-annotated with `@Configuration`, making auto-configurations standard `@Configuration` classes.
+Additional `@Conditional` annotations are used to constrain when the auto-configuration should apply.
+Usually, auto-configuration classes use `@ConditionalOnClass` and `@ConditionalOnMissingBean` annotations.
+This ensures that auto-configuration applies only when relevant classes are found and when you have not declared your own `@Configuration`.
+
+You can browse the source code of {spring-boot-autoconfigure-module-code}[`spring-boot-autoconfigure`] to see the `@AutoConfiguration` classes that Spring provides (see the {spring-boot-code}/spring-boot-project/spring-boot-autoconfigure/src/main/resources/META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports[`META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`] file).
+
+
+
+[[features.developing-auto-configuration.locating-auto-configuration-candidates]]
+=== Locating Auto-configuration Candidates
+
+Spring Boot checks for the presence of a `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` file within your published jar.
+The file should list your configuration classes, with one class name per line, as shown in the following example:
+
+[indent=0]
+----
+    com.mycorp.libx.autoconfigure.LibXAutoConfiguration
+    com.mycorp.libx.autoconfigure.LibXWebAutoConfiguration
+----
+
+TIP: You can add comments to the imports file using the `#` character.
+
+NOTE: Auto-configurations must be loaded _only_ by being named in the imports file.
+Make sure that they are defined in a specific package space and that they are never the target of component scanning.
+Furthermore, auto-configuration classes should not enable component scanning to find additional components.
+Specific `@Import` annotations should be used instead.
+
+If your configuration needs to be applied in a specific order, you can use the `before`, `beforeName`, `after` and `afterName` attributes on the {spring-boot-autoconfigure-module-code}/AutoConfiguration.java[`@AutoConfiguration`] annotation or the dedicated {spring-boot-autoconfigure-module-code}/AutoConfigureBefore.java[`@AutoConfigureBefore`] and {spring-boot-autoconfigure-module-code}/AutoConfigureAfter.java[`@AutoConfigureAfter`] annotations.
+For example, if you provide web-specific configuration, your class may need to be applied after `WebMvcAutoConfiguration`.
+
+If you want to order certain auto-configurations that should not have any direct knowledge of each other, you can also use `@AutoConfigureOrder`.
+That annotation has the same semantic as the regular `@Order` annotation but provides a dedicated order for auto-configuration classes.
+
+As with standard `@Configuration` classes, the order in which auto-configuration classes are applied only affects the order in which their beans are defined.
+The order in which those beans are subsequently created is unaffected and is determined by each bean's dependencies and any `@DependsOn` relationships.
+
+
+
+[[features.developing-auto-configuration.condition-annotations]]
+=== Condition Annotations
+You almost always want to include one or more `@Conditional` annotations on your auto-configuration class.
+The `@ConditionalOnMissingBean` annotation is one common example that is used to allow developers to override auto-configuration if they are not happy with your defaults.
+
+Spring Boot includes a number of `@Conditional` annotations that you can reuse in your own code by annotating `@Configuration` classes or individual `@Bean` methods.
+These annotations include:
+
+* <<features#features.developing-auto-configuration.condition-annotations.class-conditions>>
+* <<features#features.developing-auto-configuration.condition-annotations.bean-conditions>>
+* <<features#features.developing-auto-configuration.condition-annotations.property-conditions>>
+* <<features#features.developing-auto-configuration.condition-annotations.resource-conditions>>
+* <<features#features.developing-auto-configuration.condition-annotations.web-application-conditions>>
+* <<features#features.developing-auto-configuration.condition-annotations.spel-conditions>>
+
+
+
+[[features.developing-auto-configuration.condition-annotations.class-conditions]]
+==== Class Conditions
+The `@ConditionalOnClass` and `@ConditionalOnMissingClass` annotations let `@Configuration` classes be included based on the presence or absence of specific classes.
+Due to the fact that annotation metadata is parsed by using https://asm.ow2.io/[ASM], you can use the `value` attribute to refer to the real class, even though that class might not actually appear on the running application classpath.
+You can also use the `name` attribute if you prefer to specify the class name by using a `String` value.
+
+This mechanism does not apply the same way to `@Bean` methods where typically the return type is the target of the condition: before the condition on the method applies, the JVM will have loaded the class and potentially processed method references which will fail if the class is not present.
+
+To handle this scenario, a separate `@Configuration` class can be used to isolate the condition, as shown in the following example:
+
+include::code:MyAutoConfiguration[]
+
+TIP: If you use `@ConditionalOnClass` or `@ConditionalOnMissingClass` as a part of a meta-annotation to compose your own composed annotations, you must use `name` as referring to the class in such a case is not handled.
+
+
+
+[[features.developing-auto-configuration.condition-annotations.bean-conditions]]
+==== Bean Conditions
+The `@ConditionalOnBean` and `@ConditionalOnMissingBean` annotations let a bean be included based on the presence or absence of specific beans.
+You can use the `value` attribute to specify beans by type or `name` to specify beans by name.
+The `search` attribute lets you limit the `ApplicationContext` hierarchy that should be considered when searching for beans.
+
+When placed on a `@Bean` method, the target type defaults to the return type of the method, as shown in the following example:
+
+include::code:MyAutoConfiguration[]
+
+In the preceding example, the `someService` bean is going to be created if no bean of type `SomeService` is already contained in the `ApplicationContext`.
+
+TIP: You need to be very careful about the order in which bean definitions are added, as these conditions are evaluated based on what has been processed so far.
+For this reason, we recommend using only `@ConditionalOnBean` and `@ConditionalOnMissingBean` annotations on auto-configuration classes (since these are guaranteed to load after any user-defined bean definitions have been added).
+
+NOTE: `@ConditionalOnBean` and `@ConditionalOnMissingBean` do not prevent `@Configuration` classes from being created.
+The only difference between using these conditions at the class level and marking each contained `@Bean` method with the annotation is that the former prevents registration of the `@Configuration` class as a bean if the condition does not match.
+
+TIP: When declaring a `@Bean` method, provide as much type information as possible in the method's return type.
+For example, if your bean's concrete class implements an interface the bean method's return type should be the concrete class and not the interface.
+Providing as much type information as possible in `@Bean` methods is particularly important when using bean conditions as their evaluation can only rely upon to type information that is available in the method signature.
+
+
+
+[[features.developing-auto-configuration.condition-annotations.property-conditions]]
+==== Property Conditions
+The `@ConditionalOnProperty` annotation lets configuration be included based on a Spring Environment property.
+Use the `prefix` and `name` attributes to specify the property that should be checked.
+By default, any property that exists and is not equal to `false` is matched.
+You can also create more advanced checks by using the `havingValue` and `matchIfMissing` attributes.
+
+
+
+[[features.developing-auto-configuration.condition-annotations.resource-conditions]]
+==== Resource Conditions
+The `@ConditionalOnResource` annotation lets configuration be included only when a specific resource is present.
+Resources can be specified by using the usual Spring conventions, as shown in the following example: `file:/home/user/test.dat`.
+
+
+
+[[features.developing-auto-configuration.condition-annotations.web-application-conditions]]
+==== Web Application Conditions
+The `@ConditionalOnWebApplication` and `@ConditionalOnNotWebApplication` annotations let configuration be included depending on whether the application is a web application.
+A servlet-based web application is any application that uses a Spring `WebApplicationContext`, defines a `session` scope, or has a `ConfigurableWebEnvironment`.
+A reactive web application is any application that uses a `ReactiveWebApplicationContext`, or has a `ConfigurableReactiveWebEnvironment`.
+
+The `@ConditionalOnWarDeployment` and `@ConditionalOnNotWarDeployment` annotations let configuration be included depending on whether the application is a traditional WAR application that is deployed to a servlet container.
+This condition will not match for applications that are run with an embedded web server.
+
+
+
+[[features.developing-auto-configuration.condition-annotations.spel-conditions]]
+==== SpEL Expression Conditions
+The `@ConditionalOnExpression` annotation lets configuration be included based on the result of a {spring-framework-docs}/core.html#expressions[SpEL expression].
+
+NOTE: Referencing a bean in the expression will cause that bean to be initialized very early in context refresh processing.
+As a result, the bean won't be eligible for post-processing (such as configuration properties binding) and its state may be incomplete.
+
+
+
+[[features.developing-auto-configuration.testing]]
+=== Testing your Auto-configuration
+An auto-configuration can be affected by many factors: user configuration (`@Bean` definition and `Environment` customization), condition evaluation (presence of a particular library), and others.
+Concretely, each test should create a well defined `ApplicationContext` that represents a combination of those customizations.
+`ApplicationContextRunner` provides a great way to achieve that.
+
+`ApplicationContextRunner` is usually defined as a field of the test class to gather the base, common configuration.
+The following example makes sure that `MyServiceAutoConfiguration` is always invoked:
+
+include::code:MyServiceAutoConfigurationTests[tag=runner]
+
+TIP: If multiple auto-configurations have to be defined, there is no need to order their declarations as they are invoked in the exact same order as when running the application.
+
+Each test can use the runner to represent a particular use case.
+For instance, the sample below invokes a user configuration (`UserConfiguration`) and checks that the auto-configuration backs off properly.
+Invoking `run` provides a callback context that can be used with `AssertJ`.
+
+include::code:MyServiceAutoConfigurationTests[tag=test-user-config]
+
+It is also possible to easily customize the `Environment`, as shown in the following example:
+
+include::code:MyServiceAutoConfigurationTests[tag=test-env]
+
+The runner can also be used to display the `ConditionEvaluationReport`.
+The report can be printed at `INFO` or `DEBUG` level.
+The following example shows how to use the `ConditionEvaluationReportLoggingListener` to print the report in auto-configuration tests.
+
+include::code:MyConditionEvaluationReportingTests[]
+
+
+
+[[features.developing-auto-configuration.testing.simulating-a-web-context]]
+==== Simulating a Web Context
+If you need to test an auto-configuration that only operates in a servlet or reactive web application context, use the `WebApplicationContextRunner` or `ReactiveWebApplicationContextRunner` respectively.
+
+
+
+[[features.developing-auto-configuration.testing.overriding-classpath]]
+==== Overriding the Classpath
+It is also possible to test what happens when a particular class and/or package is not present at runtime.
+Spring Boot ships with a `FilteredClassLoader` that can easily be used by the runner.
+In the following example, we assert that if `MyService` is not present, the auto-configuration is properly disabled:
+
+include::code:../MyServiceAutoConfigurationTests[tag=test-classloader]
+
+
+
+[[features.developing-auto-configuration.custom-starter]]
+=== Creating Your Own Starter
+A typical Spring Boot starter contains code to auto-configure and customize the infrastructure of a given technology, let's call that "acme".
+To make it easily extensible, a number of configuration keys in a dedicated namespace can be exposed to the environment.
+Finally, a single "starter" dependency is provided to help users get started as easily as possible.
+
+Concretely, a custom starter can contain the following:
+
+* The `autoconfigure` module that contains the auto-configuration code for "acme".
+* The `starter` module that provides a dependency to the `autoconfigure` module as well as "acme" and any additional dependencies that are typically useful.
+In a nutshell, adding the starter should provide everything needed to start using that library.
+
+This separation in two modules is in no way necessary.
+If "acme" has several flavors, options or optional features, then it is better to separate the auto-configuration as you can clearly express the fact some features are optional.
+Besides, you have the ability to craft a starter that provides an opinion about those optional dependencies.
+At the same time, others can rely only on the `autoconfigure` module and craft their own starter with different opinions.
+
+If the auto-configuration is relatively straightforward and does not have optional features, merging the two modules in the starter is definitely an option.
+
+
+
+[[features.developing-auto-configuration.custom-starter.naming]]
+==== Naming
+You should make sure to provide a proper namespace for your starter.
+Do not start your module names with `spring-boot`, even if you use a different Maven `groupId`.
+We may offer official support for the thing you auto-configure in the future.
+
+As a rule of thumb, you should name a combined module after the starter.
+For example, assume that you are creating a starter for "acme" and that you name the auto-configure module `acme-spring-boot` and the starter `acme-spring-boot-starter`.
+If you only have one module that combines the two, name it `acme-spring-boot-starter`.
+
+
+
+[[features.developing-auto-configuration.custom-starter.configuration-keys]]
+==== Configuration keys
+If your starter provides configuration keys, use a unique namespace for them.
+In particular, do not include your keys in the namespaces that Spring Boot uses (such as `server`, `management`, `spring`, and so on).
+If you use the same namespace, we may modify these namespaces in the future in ways that break your modules.
+As a rule of thumb, prefix all your keys with a namespace that you own (for example `acme`).
+
+Make sure that configuration keys are documented by adding field javadoc for each property, as shown in the following example:
+
+include::code:AcmeProperties[]
+
+NOTE: You should only use plain text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
+
+Here are some rules we follow internally to make sure descriptions are consistent:
+
+* Do not start the description by "The" or "A".
+* For `boolean` types, start the description with "Whether" or "Enable".
+* For collection-based types, start the description with "Comma-separated list"
+* Use `java.time.Duration` rather than `long` and describe the default unit if it differs from milliseconds, such as "If a duration suffix is not specified, seconds will be used".
+* Do not provide the default value in the description unless it has to be determined at runtime.
+
+Make sure to <<configuration-metadata#appendix.configuration-metadata.annotation-processor,trigger meta-data generation>> so that IDE assistance is available for your keys as well.
+You may want to review the generated metadata (`META-INF/spring-configuration-metadata.json`) to make sure your keys are properly documented.
+Using your own starter in a compatible IDE is also a good idea to validate that quality of the metadata.
+
+
+
+[[features.developing-auto-configuration.custom-starter.autoconfigure-module]]
+==== The "`autoconfigure`" Module
+The `autoconfigure` module contains everything that is necessary to get started with the library.
+It may also contain configuration key definitions (such as `@ConfigurationProperties`) and any callback interface that can be used to further customize how the components are initialized.
+
+TIP: You should mark the dependencies to the library as optional so that you can include the `autoconfigure` module in your projects more easily.
+If you do it that way, the library is not provided and, by default, Spring Boot backs off.
+
+Spring Boot uses an annotation processor to collect the conditions on auto-configurations in a metadata file (`META-INF/spring-autoconfigure-metadata.properties`).
+If that file is present, it is used to eagerly filter auto-configurations that do not match, which will improve startup time.
+
+When building with Maven, it is recommended to add the following dependency in a module that contains auto-configurations:
+
+[source,xml,indent=0,subs="verbatim"]
+----
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-autoconfigure-processor</artifactId>
+		<optional>true</optional>
+	</dependency>
+----
+
+If you have defined auto-configurations directly in your application, make sure to configure the `spring-boot-maven-plugin` to prevent the `repackage` goal from adding the dependency into the fat jar:
+
+[source,xml,indent=0,subs="verbatim"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<configuration>
+						<excludes>
+							<exclude>
+								<groupId>org.springframework.boot</groupId>
+								<artifactId>spring-boot-autoconfigure-processor</artifactId>
+							</exclude>
+						</excludes>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+With Gradle, the dependency should be declared in the `annotationProcessor` configuration, as shown in the following example:
+
+[source,gradle,indent=0,subs="verbatim"]
+----
+	dependencies {
+		annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"
+	}
+----
+
+
+
+[[features.developing-auto-configuration.custom-starter.starter-module]]
+==== Starter Module
+The starter is really an empty jar.
+Its only purpose is to provide the necessary dependencies to work with the library.
+You can think of it as an opinionated view of what is required to get started.
+
+Do not make assumptions about the project in which your starter is added.
+If the library you are auto-configuring typically requires other starters, mention them as well.
+Providing a proper set of _default_ dependencies may be hard if the number of optional dependencies is high, as you should avoid including dependencies that are unnecessary for a typical usage of the library.
+In other words, you should not include optional dependencies.
+
+NOTE: Either way, your starter must reference the core Spring Boot starter (`spring-boot-starter`) directly or indirectly (there is no need to add it if your starter relies on another starter).
+If a project is created with only your custom starter, Spring Boot's core features will be honoured by the presence of the core starter.

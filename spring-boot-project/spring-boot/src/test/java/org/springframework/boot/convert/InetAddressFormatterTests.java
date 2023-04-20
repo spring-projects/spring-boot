@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assumptions.assumingThat;
 class InetAddressFormatterTests {
 
 	@ConversionServiceTest
-	void convertFromInetAddressToStringShouldConvert(ConversionService conversionService) throws UnknownHostException {
+	void convertFromInetAddressToStringShouldConvert(ConversionService conversionService) {
 		assumingThat(isResolvable("example.com"), () -> {
 			InetAddress address = InetAddress.getByName("example.com");
 			String converted = conversionService.convert(address, String.class);
@@ -58,7 +58,7 @@ class InetAddressFormatterTests {
 		String missingDomain = "ireallydontexist.example.com";
 		assumingThat(!isResolvable("ireallydontexist.example.com"),
 				() -> assertThatExceptionOfType(ConversionFailedException.class)
-						.isThrownBy(() -> conversionService.convert(missingDomain, InetAddress.class)));
+					.isThrownBy(() -> conversionService.convert(missingDomain, InetAddress.class)));
 	}
 
 	private boolean isResolvable(String host) {

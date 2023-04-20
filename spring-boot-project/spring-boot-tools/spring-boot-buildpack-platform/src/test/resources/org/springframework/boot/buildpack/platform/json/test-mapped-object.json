@@ -1,0 +1,15 @@
+{
+	"string": "stringvalue",
+	"stringarray": [
+		"a",
+		"b"
+	],
+	"StartsWithUppercase": "value",
+	"person": {
+		"name": {
+			"title": "dr",
+			"first": "spring",
+			"last": "boot"
+		}
+	}
+}

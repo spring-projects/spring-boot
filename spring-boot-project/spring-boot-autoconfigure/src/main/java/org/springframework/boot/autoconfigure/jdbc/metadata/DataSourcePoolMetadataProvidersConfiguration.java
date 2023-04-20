@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,20 @@
 
 package org.springframework.boot.autoconfigure.jdbc.metadata;
 
+import com.zaxxer.hikari.HikariConfigMXBean;
 import com.zaxxer.hikari.HikariDataSource;
+import oracle.jdbc.OracleConnection;
+import oracle.ucp.jdbc.PoolDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSourceMXBean;
+import org.apache.tomcat.jdbc.pool.jmx.ConnectionPoolMBean;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.jdbc.DataSourceUnwrapper;
 import org.springframework.boot.jdbc.metadata.CommonsDbcp2DataSourcePoolMetadata;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.boot.jdbc.metadata.HikariDataSourcePoolMetadata;
+import org.springframework.boot.jdbc.metadata.OracleUcpDataSourcePoolMetadata;
 import org.springframework.boot.jdbc.metadata.TomcatDataSourcePoolMetadata;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +39,7 @@ import org.springframework.context.annotation.Configuration;
  * sources.
  *
  * @author Stephane Nicoll
+ * @author Fabio Grassi
  * @since 1.2.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -46,7 +53,7 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 		DataSourcePoolMetadataProvider tomcatPoolDataSourceMetadataProvider() {
 			return (dataSource) -> {
 				org.apache.tomcat.jdbc.pool.DataSource tomcatDataSource = DataSourceUnwrapper.unwrap(dataSource,
-						org.apache.tomcat.jdbc.pool.DataSource.class);
+						ConnectionPoolMBean.class, org.apache.tomcat.jdbc.pool.DataSource.class);
 				if (tomcatDataSource != null) {
 					return new TomcatDataSourcePoolMetadata(tomcatDataSource);
 				}
@@ -63,7 +70,8 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 		@Bean
 		DataSourcePoolMetadataProvider hikariPoolDataSourceMetadataProvider() {
 			return (dataSource) -> {
-				HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource, HikariDataSource.class);
+				HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource, HikariConfigMXBean.class,
+						HikariDataSource.class);
 				if (hikariDataSource != null) {
 					return new HikariDataSourcePoolMetadata(hikariDataSource);
 				}
@@ -80,9 +88,27 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 		@Bean
 		DataSourcePoolMetadataProvider commonsDbcp2PoolDataSourceMetadataProvider() {
 			return (dataSource) -> {
-				BasicDataSource dbcpDataSource = DataSourceUnwrapper.unwrap(dataSource, BasicDataSource.class);
+				BasicDataSource dbcpDataSource = DataSourceUnwrapper.unwrap(dataSource, BasicDataSourceMXBean.class,
+						BasicDataSource.class);
 				if (dbcpDataSource != null) {
 					return new CommonsDbcp2DataSourcePoolMetadata(dbcpDataSource);
+				}
+				return null;
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass({ PoolDataSource.class, OracleConnection.class })
+	static class OracleUcpPoolDataSourceMetadataProviderConfiguration {
+
+		@Bean
+		DataSourcePoolMetadataProvider oracleUcpPoolDataSourceMetadataProvider() {
+			return (dataSource) -> {
+				PoolDataSource ucpDataSource = DataSourceUnwrapper.unwrap(dataSource, PoolDataSource.class);
+				if (ucpDataSource != null) {
+					return new OracleUcpDataSourcePoolMetadata(ucpDataSource);
 				}
 				return null;
 			};

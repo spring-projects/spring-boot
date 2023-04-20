@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,16 @@
 package org.springframework.boot.web.embedded.jetty;
 
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Handler;
@@ -32,12 +35,14 @@ import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
+import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.ThreadPool;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
@@ -139,11 +144,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		return this.threadPool;
 	}
 
-	/**
-	 * Set a Jetty {@link ThreadPool} that should be used by the {@link Server}. If set to
-	 * {@code null} (default), the {@link Server} creates a {@link ThreadPool} implicitly.
-	 * @param threadPool a Jetty ThreadPool to be used
-	 */
+	@Override
 	public void setThreadPool(ThreadPool threadPool) {
 		this.threadPool = threadPool;
 	}
@@ -171,6 +172,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
 		Server server = new Server(getThreadPool());
 		server.addConnector(createConnector(address, server));
+		server.setStopTimeout(0);
 		ServletHolder servletHolder = new ServletHolder(servlet);
 		servletHolder.setAsyncSupported(true);
 		ServletContextHandler contextHandler = new ServletContextHandler(server, "/", false, false);
@@ -186,27 +188,35 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		if (this.useForwardHeaders) {
 			new ForwardHeadersCustomizer().customize(server);
 		}
+		if (getShutdown() == Shutdown.GRACEFUL) {
+			StatisticsHandler statisticsHandler = new StatisticsHandler();
+			statisticsHandler.setHandler(server.getHandler());
+			server.setHandler(statisticsHandler);
+		}
 		return server;
 	}
 
 	private AbstractConnector createConnector(InetSocketAddress address, Server server) {
-		ServerConnector connector;
+		HttpConfiguration httpConfiguration = new HttpConfiguration();
+		httpConfiguration.setSendServerVersion(false);
+		List<ConnectionFactory> connectionFactories = new ArrayList<>();
+		connectionFactories.add(new HttpConnectionFactory(httpConfiguration));
+		if (getHttp2() != null && getHttp2().isEnabled()) {
+			connectionFactories.add(new HTTP2CServerConnectionFactory(httpConfiguration));
+		}
 		JettyResourceFactory resourceFactory = getResourceFactory();
+		ServerConnector connector;
 		if (resourceFactory != null) {
 			connector = new ServerConnector(server, resourceFactory.getExecutor(), resourceFactory.getScheduler(),
-					resourceFactory.getByteBufferPool(), this.acceptors, this.selectors, new HttpConnectionFactory());
+					resourceFactory.getByteBufferPool(), this.acceptors, this.selectors,
+					connectionFactories.toArray(new ConnectionFactory[0]));
 		}
 		else {
-			connector = new ServerConnector(server, this.acceptors, this.selectors);
+			connector = new ServerConnector(server, this.acceptors, this.selectors,
+					connectionFactories.toArray(new ConnectionFactory[0]));
 		}
 		connector.setHost(address.getHostString());
 		connector.setPort(address.getPort());
-		for (ConnectionFactory connectionFactory : connector.getConnectionFactories()) {
-			if (connectionFactory instanceof HttpConfiguration.ConnectionFactory) {
-				((HttpConfiguration.ConnectionFactory) connectionFactory).getHttpConfiguration()
-						.setSendServerVersion(false);
-			}
-		}
 		return connector;
 	}
 
@@ -226,7 +236,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	private void customizeSsl(Server server, InetSocketAddress address) {
-		new SslServerCustomizer(address, getSsl(), getSslStoreProvider(), getHttp2()).customize(server);
+		new SslServerCustomizer(address, getSsl(), getOrCreateSslStoreProvider(), getHttp2()).customize(server);
 	}
 
 }

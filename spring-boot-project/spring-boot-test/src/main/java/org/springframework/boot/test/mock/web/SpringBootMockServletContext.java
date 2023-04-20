@@ -42,7 +42,7 @@ public class SpringBootMockServletContext extends MockServletContext {
 
 	private final ResourceLoader resourceLoader;
 
-	private File emptyRootFolder;
+	private File emptyRootDirectory;
 
 	public SpringBootMockServletContext(String resourceBasePath) {
 		this(resourceBasePath, new FileSystemResourceLoader());
@@ -92,14 +92,14 @@ public class SpringBootMockServletContext extends MockServletContext {
 			// Liquibase assumes that "/" always exists, if we don't have a directory
 			// use a temporary location.
 			try {
-				if (this.emptyRootFolder == null) {
+				if (this.emptyRootDirectory == null) {
 					synchronized (this) {
-						File tempFolder = Files.createTempDirectory("spr-servlet").toFile();
-						tempFolder.deleteOnExit();
-						this.emptyRootFolder = tempFolder;
+						File tempDirectory = Files.createTempDirectory("spr-servlet").toFile();
+						tempDirectory.deleteOnExit();
+						this.emptyRootDirectory = tempDirectory;
 					}
 				}
-				return this.emptyRootFolder.toURI().toURL();
+				return this.emptyRootDirectory.toURI().toURL();
 			}
 			catch (IOException ex) {
 				// Ignore

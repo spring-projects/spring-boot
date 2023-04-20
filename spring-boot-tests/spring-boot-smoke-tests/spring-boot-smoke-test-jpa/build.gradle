@@ -1,0 +1,20 @@
+plugins {
+	id "java"
+	id "org.springframework.boot.conventions"
+}
+
+description = "Spring Boot JPA smoke test"
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-freemarker"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+	implementation("jakarta.persistence:jakarta.persistence-api")
+	implementation("jakarta.xml.bind:jakarta.xml.bind-api")
+	implementation("org.hibernate.orm:hibernate-core")
+	implementation("org.springframework:spring-orm")
+
+	runtimeOnly("com.h2database:h2")
+	runtimeOnly("jakarta.transaction:jakarta.transaction-api")
+
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+}

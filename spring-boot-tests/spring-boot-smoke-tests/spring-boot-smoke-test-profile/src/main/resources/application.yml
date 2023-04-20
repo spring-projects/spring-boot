@@ -1,7 +1,6 @@
-name: Phil
+test.name: Phil
 
 ---
 
-spring:
-  profiles: goodbye,dev
-name: Everyone
+spring.config.activate.on-profile: goodbye | dev
+test.name: Everyone

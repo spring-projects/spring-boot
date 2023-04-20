@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,9 +40,10 @@ class ShutdownEndpointDocumentationTests extends MockMvcEndpointDocumentationTes
 
 	@Test
 	void shutdown() throws Exception {
-		this.mockMvc.perform(post("/actuator/shutdown")).andExpect(status().isOk())
-				.andDo(MockMvcRestDocumentation.document("shutdown", responseFields(
-						fieldWithPath("message").description("Message describing the result of the request."))));
+		this.mockMvc.perform(post("/actuator/shutdown"))
+			.andExpect(status().isOk())
+			.andDo(MockMvcRestDocumentation.document("shutdown", responseFields(
+					fieldWithPath("message").description("Message describing the result of the request."))));
 	}
 
 	@Configuration(proxyBeanMethods = false)

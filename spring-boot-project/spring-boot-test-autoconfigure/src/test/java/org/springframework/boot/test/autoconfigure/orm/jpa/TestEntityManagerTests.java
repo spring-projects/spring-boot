@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 
 package org.springframework.boot.test.autoconfigure.orm.jpa;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.PersistenceUnitUtil;
-
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnitUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.orm.jpa.EntityManagerHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -32,13 +32,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 /**
  * Tests for {@link TestEntityManager}.
  *
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class TestEntityManagerTests {
 
 	@Mock
@@ -54,24 +55,23 @@ class TestEntityManagerTests {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.testEntityManager = new TestEntityManager(this.entityManagerFactory);
-		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 	}
 
 	@Test
 	void createWhenEntityManagerIsNullShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TestEntityManager(null))
-				.withMessageContaining("EntityManagerFactory must not be null");
+			.withMessageContaining("EntityManagerFactory must not be null");
 	}
 
 	@Test
 	void persistAndGetIdShouldPersistAndGetId() {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
+		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		Object result = this.testEntityManager.persistAndGetId(entity);
-		verify(this.entityManager).persist(entity);
+		then(this.entityManager).should().persist(entity);
 		assertThat(result).isEqualTo(123);
 	}
 
@@ -79,9 +79,10 @@ class TestEntityManagerTests {
 	void persistAndGetIdForTypeShouldPersistAndGetId() {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
+		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		Integer result = this.testEntityManager.persistAndGetId(entity, Integer.class);
-		verify(this.entityManager).persist(entity);
+		then(this.entityManager).should().persist(entity);
 		assertThat(result).isEqualTo(123);
 	}
 
@@ -90,7 +91,7 @@ class TestEntityManagerTests {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		TestEntity result = this.testEntityManager.persist(entity);
-		verify(this.entityManager).persist(entity);
+		then(this.entityManager).should().persist(entity);
 		assertThat(result).isSameAs(entity);
 	}
 
@@ -99,8 +100,8 @@ class TestEntityManagerTests {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		TestEntity result = this.testEntityManager.persistAndFlush(entity);
-		verify(this.entityManager).persist(entity);
-		verify(this.entityManager).flush();
+		then(this.entityManager).should().persist(entity);
+		then(this.entityManager).should().flush();
 		assertThat(result).isSameAs(entity);
 	}
 
@@ -109,11 +110,12 @@ class TestEntityManagerTests {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		TestEntity found = new TestEntity();
+		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		given(this.entityManager.find(TestEntity.class, 123)).willReturn(found);
 		TestEntity result = this.testEntityManager.persistFlushFind(entity);
-		verify(this.entityManager).persist(entity);
-		verify(this.entityManager).flush();
+		then(this.entityManager).should().persist(entity);
+		then(this.entityManager).should().flush();
 		assertThat(result).isSameAs(found);
 	}
 
@@ -123,7 +125,7 @@ class TestEntityManagerTests {
 		TestEntity entity = new TestEntity();
 		given(this.entityManager.merge(entity)).willReturn(entity);
 		TestEntity result = this.testEntityManager.merge(entity);
-		verify(this.entityManager).merge(entity);
+		then(this.entityManager).should().merge(entity);
 		assertThat(result).isSameAs(entity);
 	}
 
@@ -132,7 +134,7 @@ class TestEntityManagerTests {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		this.testEntityManager.remove(entity);
-		verify(this.entityManager).remove(entity);
+		then(this.entityManager).should().remove(entity);
 	}
 
 	@Test
@@ -148,7 +150,7 @@ class TestEntityManagerTests {
 	void flushShouldFlush() {
 		bindEntityManager();
 		this.testEntityManager.flush();
-		verify(this.entityManager).flush();
+		then(this.entityManager).should().flush();
 	}
 
 	@Test
@@ -156,14 +158,14 @@ class TestEntityManagerTests {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		this.testEntityManager.refresh(entity);
-		verify(this.entityManager).refresh(entity);
+		then(this.entityManager).should().refresh(entity);
 	}
 
 	@Test
 	void clearShouldClear() {
 		bindEntityManager();
 		this.testEntityManager.clear();
-		verify(this.entityManager).clear();
+		then(this.entityManager).should().clear();
 	}
 
 	@Test
@@ -171,12 +173,13 @@ class TestEntityManagerTests {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		this.testEntityManager.detach(entity);
-		verify(this.entityManager).detach(entity);
+		then(this.entityManager).should().detach(entity);
 	}
 
 	@Test
 	void getIdForTypeShouldGetId() {
 		TestEntity entity = new TestEntity();
+		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		Integer result = this.testEntityManager.getId(entity, Integer.class);
 		assertThat(result).isEqualTo(123);
@@ -185,15 +188,17 @@ class TestEntityManagerTests {
 	@Test
 	void getIdForTypeWhenTypeIsWrongShouldThrowException() {
 		TestEntity entity = new TestEntity();
+		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		assertThatIllegalArgumentException().isThrownBy(() -> this.testEntityManager.getId(entity, Long.class))
-				.withMessageContaining("ID mismatch: Object of class [java.lang.Integer] "
-						+ "must be an instance of class java.lang.Long");
+			.withMessageContaining("ID mismatch: Object of class [java.lang.Integer] "
+					+ "must be an instance of class java.lang.Long");
 	}
 
 	@Test
 	void getIdShouldGetId() {
 		TestEntity entity = new TestEntity();
+		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		Object result = this.testEntityManager.getId(entity);
 		assertThat(result).isEqualTo(123);
@@ -208,7 +213,7 @@ class TestEntityManagerTests {
 	@Test
 	void getEntityManagerWhenNotSetShouldThrowException() {
 		assertThatIllegalStateException().isThrownBy(this.testEntityManager::getEntityManager)
-				.withMessageContaining("No transactional EntityManager found");
+			.withMessageContaining("No transactional EntityManager found");
 	}
 
 	private void bindEntityManager() {

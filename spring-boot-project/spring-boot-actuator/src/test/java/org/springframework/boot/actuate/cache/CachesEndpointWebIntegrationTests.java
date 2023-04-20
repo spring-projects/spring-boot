@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,18 +40,36 @@ class CachesEndpointWebIntegrationTests {
 
 	@WebEndpointTest
 	void allCaches(WebTestClient client) {
-		client.get().uri("/actuator/caches").exchange().expectStatus().isOk().expectBody()
-				.jsonPath("cacheManagers.one.caches.a.target").isEqualTo(ConcurrentHashMap.class.getName())
-				.jsonPath("cacheManagers.one.caches.b.target").isEqualTo(ConcurrentHashMap.class.getName())
-				.jsonPath("cacheManagers.two.caches.a.target").isEqualTo(ConcurrentHashMap.class.getName())
-				.jsonPath("cacheManagers.two.caches.c.target").isEqualTo(ConcurrentHashMap.class.getName());
+		client.get()
+			.uri("/actuator/caches")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("cacheManagers.one.caches.a.target")
+			.isEqualTo(ConcurrentHashMap.class.getName())
+			.jsonPath("cacheManagers.one.caches.b.target")
+			.isEqualTo(ConcurrentHashMap.class.getName())
+			.jsonPath("cacheManagers.two.caches.a.target")
+			.isEqualTo(ConcurrentHashMap.class.getName())
+			.jsonPath("cacheManagers.two.caches.c.target")
+			.isEqualTo(ConcurrentHashMap.class.getName());
 	}
 
 	@WebEndpointTest
 	void namedCache(WebTestClient client) {
-		client.get().uri("/actuator/caches/b").exchange().expectStatus().isOk().expectBody().jsonPath("name")
-				.isEqualTo("b").jsonPath("cacheManager").isEqualTo("one").jsonPath("target")
-				.isEqualTo(ConcurrentHashMap.class.getName());
+		client.get()
+			.uri("/actuator/caches/b")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("name")
+			.isEqualTo("b")
+			.jsonPath("cacheManager")
+			.isEqualTo("one")
+			.jsonPath("target")
+			.isEqualTo(ConcurrentHashMap.class.getName());
 	}
 
 	@WebEndpointTest

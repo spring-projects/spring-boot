@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,19 @@
 
 package org.springframework.boot.env;
 
+import java.util.Collections;
 import java.util.Random;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.env.SystemEnvironmentPropertySource;
+import org.springframework.mock.env.MockEnvironment;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.spy;
 
@@ -33,65 +40,115 @@ import static org.mockito.Mockito.spy;
  */
 class RandomValuePropertySourceTests {
 
-	private RandomValuePropertySource source = new RandomValuePropertySource();
+	private final RandomValuePropertySource source = new RandomValuePropertySource();
 
 	@Test
-	void notRandom() {
+	void getPropertyWhenNotRandomReturnsNull() {
 		assertThat(this.source.getProperty("foo")).isNull();
 	}
 
 	@Test
-	void string() {
+	void getPropertyWhenStringReturnsValue() {
 		assertThat(this.source.getProperty("random.string")).isNotNull();
 	}
 
 	@Test
-	void intValue() {
+	void getPropertyWhenIntReturnsValue() {
 		Integer value = (Integer) this.source.getProperty("random.int");
 		assertThat(value).isNotNull();
 	}
 
 	@Test
-	void uuidValue() {
+	void getPropertyWhenUuidReturnsValue() {
 		String value = (String) this.source.getProperty("random.uuid");
 		assertThat(value).isNotNull();
 		assertThat(UUID.fromString(value)).isNotNull();
 	}
 
 	@Test
-	void intRange() {
+	void getPropertyWhenIntRangeReturnsValue() {
 		Integer value = (Integer) this.source.getProperty("random.int[4,10]");
 		assertThat(value).isNotNull();
-		assertThat(value >= 4).isTrue();
-		assertThat(value < 10).isTrue();
+		assertThat(value).isGreaterThanOrEqualTo(4);
+		assertThat(value).isLessThan(10);
 	}
 
 	@Test
-	void intMax() {
+	void intRangeWhenLowerBoundEqualsUpperBoundShouldFailWithIllegalArgumentException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.int[4,4]"))
+			.withMessage("Lower bound must be less than upper bound.");
+	}
+
+	@Test
+	void intRangeWhenLowerBoundNegative() {
+		Integer value = (Integer) this.source.getProperty("random.int[-4,4]");
+		assertThat(value).isGreaterThanOrEqualTo(-4);
+		assertThat(value).isLessThan(4);
+	}
+
+	@Test
+	void getPropertyWhenIntMaxReturnsValue() {
 		Integer value = (Integer) this.source.getProperty("random.int(10)");
 		assertThat(value).isNotNull().isLessThan(10);
 	}
 
 	@Test
-	void longValue() {
+	void intMaxZero() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.int(0)"))
+			.withMessage("Bound must be positive.");
+	}
+
+	@Test
+	void intNegativeBound() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.int(-5)"))
+			.withMessage("Bound must be positive.");
+	}
+
+	@Test
+	void getPropertyWhenLongReturnsValue() {
 		Long value = (Long) this.source.getProperty("random.long");
 		assertThat(value).isNotNull();
 	}
 
 	@Test
-	void longRange() {
+	void getPropertyWhenLongRangeReturnsValue() {
 		Long value = (Long) this.source.getProperty("random.long[4,10]");
 		assertThat(value).isNotNull().isBetween(4L, 10L);
 	}
 
 	@Test
-	void longMax() {
+	void longRangeWhenLowerBoundEqualsUpperBoundShouldFailWithIllegalArgumentException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.long[4,4]"))
+			.withMessage("Lower bound must be less than upper bound.");
+	}
+
+	@Test
+	void longRangeWhenLowerBoundNegative() {
+		Long value = (Long) this.source.getProperty("random.long[-4,4]");
+		assertThat(value).isGreaterThanOrEqualTo(-4);
+		assertThat(value).isLessThan(4);
+	}
+
+	@Test
+	void getPropertyWhenLongMaxReturnsValue() {
 		Long value = (Long) this.source.getProperty("random.long(10)");
 		assertThat(value).isNotNull().isLessThan(10L);
 	}
 
 	@Test
-	void longOverflow() {
+	void longMaxZero() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.long(0)"))
+			.withMessage("Bound must be positive.");
+	}
+
+	@Test
+	void longNegativeBound() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.long(-5)"))
+			.withMessage("Bound must be positive.");
+	}
+
+	@Test
+	void getPropertyWhenLongOverflowReturnsValue() {
 		RandomValuePropertySource source = spy(this.source);
 		given(source.getSource()).willReturn(new Random() {
 
@@ -106,6 +163,33 @@ class RandomValuePropertySourceTests {
 		assertThat(value).isNotNull().isGreaterThanOrEqualTo(0L).isLessThan(10L);
 		value = (Long) source.getProperty("random.long[4,10]");
 		assertThat(value).isNotNull().isGreaterThanOrEqualTo(4L).isLessThan(10L);
+	}
+
+	@Test
+	void addToEnvironmentAddsSource() {
+		MockEnvironment environment = new MockEnvironment();
+		RandomValuePropertySource.addToEnvironment(environment);
+		assertThat(environment.getProperty("random.string")).isNotNull();
+	}
+
+	@Test
+	void addToEnvironmentWhenAlreadyAddedAddsSource() {
+		MockEnvironment environment = new MockEnvironment();
+		RandomValuePropertySource.addToEnvironment(environment);
+		RandomValuePropertySource.addToEnvironment(environment);
+		assertThat(environment.getProperty("random.string")).isNotNull();
+	}
+
+	@Test
+	void addToEnvironmentAddsAfterSystemEnvironment() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.getPropertySources()
+			.addFirst(new SystemEnvironmentPropertySource(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+					Collections.emptyMap()));
+		RandomValuePropertySource.addToEnvironment(environment);
+		assertThat(environment.getPropertySources().stream().map(PropertySource::getName)).containsExactly(
+				StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+				RandomValuePropertySource.RANDOM_PROPERTY_SOURCE_NAME, "mockProperties");
 	}
 
 }

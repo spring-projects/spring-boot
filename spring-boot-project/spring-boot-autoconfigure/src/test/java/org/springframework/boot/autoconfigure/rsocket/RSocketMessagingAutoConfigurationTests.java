@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
+import org.springframework.util.MimeType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,12 +34,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link RSocketMessagingAutoConfiguration}.
  *
  * @author Brian Clozel
+ * @author Madhura Bhave
  */
 class RSocketMessagingAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(RSocketMessagingAutoConfiguration.class))
-			.withUserConfiguration(BaseConfiguration.class);
+		.withConfiguration(AutoConfigurations.of(RSocketMessagingAutoConfiguration.class))
+		.withUserConfiguration(BaseConfiguration.class);
 
 	@Test
 	void shouldCreateDefaultBeans() {
@@ -48,17 +50,26 @@ class RSocketMessagingAutoConfigurationTests {
 	@Test
 	void shouldFailOnMissingStrategies() {
 		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(RSocketMessagingAutoConfiguration.class))
-				.run((context) -> {
-					assertThat(context).hasFailed();
-					assertThat(context.getStartupFailure().getMessage()).contains("No qualifying bean of type "
-							+ "'org.springframework.messaging.rsocket.RSocketStrategies' available");
-				});
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context.getStartupFailure().getMessage()).contains("No qualifying bean of type "
+						+ "'org.springframework.messaging.rsocket.RSocketStrategies' available");
+			});
 	}
 
 	@Test
 	void shouldUseCustomSocketAcceptor() {
-		this.contextRunner.withUserConfiguration(CustomMessageHandler.class).run((context) -> assertThat(context)
-				.getBeanNames(RSocketMessageHandler.class).containsOnly("customMessageHandler"));
+		this.contextRunner.withUserConfiguration(CustomMessageHandler.class)
+			.run((context) -> assertThat(context).getBeanNames(RSocketMessageHandler.class)
+				.containsOnly("customMessageHandler"));
+	}
+
+	@Test
+	void shouldApplyMessageHandlerCustomizers() {
+		this.contextRunner.withUserConfiguration(CustomizerConfiguration.class).run((context) -> {
+			RSocketMessageHandler handler = context.getBean(RSocketMessageHandler.class);
+			assertThat(handler.getDefaultDataMimeType()).isEqualTo(MimeType.valueOf("application/json"));
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -66,8 +77,10 @@ class RSocketMessagingAutoConfigurationTests {
 
 		@Bean
 		RSocketStrategies rSocketStrategies() {
-			return RSocketStrategies.builder().encoder(CharSequenceEncoder.textPlainOnly())
-					.decoder(StringDecoder.allMimeTypes()).build();
+			return RSocketStrategies.builder()
+				.encoder(CharSequenceEncoder.textPlainOnly())
+				.decoder(StringDecoder.allMimeTypes())
+				.build();
 		}
 
 	}
@@ -78,10 +91,22 @@ class RSocketMessagingAutoConfigurationTests {
 		@Bean
 		RSocketMessageHandler customMessageHandler() {
 			RSocketMessageHandler messageHandler = new RSocketMessageHandler();
-			RSocketStrategies strategies = RSocketStrategies.builder().encoder(CharSequenceEncoder.textPlainOnly())
-					.decoder(StringDecoder.allMimeTypes()).build();
+			RSocketStrategies strategies = RSocketStrategies.builder()
+				.encoder(CharSequenceEncoder.textPlainOnly())
+				.decoder(StringDecoder.allMimeTypes())
+				.build();
 			messageHandler.setRSocketStrategies(strategies);
 			return messageHandler;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomizerConfiguration {
+
+		@Bean
+		RSocketMessageHandlerCustomizer customizer() {
+			return (messageHandler) -> messageHandler.setDefaultDataMimeType(MimeType.valueOf("application/json"));
 		}
 
 	}

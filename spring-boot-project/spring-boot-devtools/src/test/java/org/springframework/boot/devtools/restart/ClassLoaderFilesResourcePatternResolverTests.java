@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,8 +41,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ClassLoaderFilesResourcePatternResolver}.
@@ -71,7 +71,7 @@ class ClassLoaderFilesResourcePatternResolverTests {
 	@Test
 	void getResourceShouldReturnResource() {
 		Resource resource = this.resolver.getResource("index.html");
-		assertThat(resource).isNotNull().isInstanceOf(ClassPathResource.class);
+		assertThat(resource).isInstanceOf(ClassPathResource.class);
 	}
 
 	@Test
@@ -79,29 +79,29 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		GenericWebApplicationContext context = new GenericWebApplicationContext(new MockServletContext());
 		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
 		Resource resource = this.resolver.getResource("index.html");
-		assertThat(resource).isNotNull().isInstanceOf(ServletContextResource.class);
+		assertThat(resource).isInstanceOf(ServletContextResource.class);
 	}
 
 	@Test
-	void getResourceWhenDeletedShouldReturnDeletedResource(@TempDir File folder) throws Exception {
-		File file = createFile(folder, "name.class");
-		this.files.addFile(folder.getName(), "name.class", new ClassLoaderFile(Kind.DELETED, null));
+	void getResourceWhenDeletedShouldReturnDeletedResource(@TempDir File directory) throws Exception {
+		File file = createFile(directory, "name.class");
+		this.files.addFile(directory.getName(), "name.class", new ClassLoaderFile(Kind.DELETED, null));
 		Resource resource = this.resolver.getResource("file:" + file.getAbsolutePath());
-		assertThat(resource).isNotNull().isInstanceOf(DeletedClassLoaderFileResource.class);
+		assertThat(resource).isInstanceOf(DeletedClassLoaderFileResource.class);
 	}
 
 	@Test
-	void getResourcesShouldReturnResources(@TempDir File folder) throws Exception {
-		createFile(folder, "name.class");
-		Resource[] resources = this.resolver.getResources("file:" + folder.getAbsolutePath() + "/**");
-		assertThat(resources).isNotEmpty();
+	void getResourcesShouldReturnResources(@TempDir File directory) throws Exception {
+		File file = createFile(directory, "name.class");
+		Resource[] resources = this.resolver.getResources("file:" + directory.getAbsolutePath() + "/**");
+		assertThat(resources).extracting(Resource::getFile).containsExactly(file);
 	}
 
 	@Test
-	void getResourcesWhenDeletedShouldFilterDeleted(@TempDir File folder) throws Exception {
-		createFile(folder, "name.class");
-		this.files.addFile(folder.getName(), "name.class", new ClassLoaderFile(Kind.DELETED, null));
-		Resource[] resources = this.resolver.getResources("file:" + folder.getAbsolutePath() + "/**");
+	void getResourcesWhenDeletedShouldFilterDeleted(@TempDir File directory) throws Exception {
+		createFile(directory, "name.class");
+		this.files.addFile(directory.getName(), "name.class", new ClassLoaderFile(Kind.DELETED, null));
+		Resource[] resources = this.resolver.getResources("file:" + directory.getAbsolutePath() + "/**");
 		assertThat(resources).isEmpty();
 	}
 
@@ -112,7 +112,7 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		context.setResourceLoader(resourceLoader);
 		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
 		this.resolver.getResource("foo.txt");
-		verify(resourceLoader).getResource("foo.txt");
+		then(resourceLoader).should().getResource("foo.txt");
 	}
 
 	@Test
@@ -124,7 +124,7 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
 		Resource actual = this.resolver.getResource("foo:some-file.txt");
 		assertThat(actual).isSameAs(resource);
-		verify(resolver).resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
+		then(resolver).should().resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
 	}
 
 	@Test
@@ -136,7 +136,7 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		context.addProtocolResolver(resolver);
 		Resource actual = this.resolver.getResource("foo:some-file.txt");
 		assertThat(actual).isSameAs(resource);
-		verify(resolver).resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
+		then(resolver).should().resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
 	}
 
 	@Test
@@ -146,7 +146,7 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		context.setResourceLoader(resourceLoader);
 		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
 		this.resolver.getResource("foo.txt");
-		verify(resourceLoader).getResource("foo.txt");
+		then(resourceLoader).should().getResource("foo.txt");
 	}
 
 	@Test
@@ -158,7 +158,7 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		this.resolver = new ClassLoaderFilesResourcePatternResolver(context, this.files);
 		Resource actual = this.resolver.getResource("foo:some-file.txt");
 		assertThat(actual).isSameAs(resource);
-		verify(resolver).resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
+		then(resolver).should().resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
 	}
 
 	@Test
@@ -170,7 +170,7 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		context.addProtocolResolver(resolver);
 		Resource actual = this.resolver.getResource("foo:some-file.txt");
 		assertThat(actual).isSameAs(resource);
-		verify(resolver).resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
+		then(resolver).should().resolve(eq("foo:some-file.txt"), any(ResourceLoader.class));
 	}
 
 	private ProtocolResolver mockProtocolResolver(String path, Resource resource) {
@@ -179,8 +179,8 @@ class ClassLoaderFilesResourcePatternResolverTests {
 		return resolver;
 	}
 
-	private File createFile(File folder, String name) throws IOException {
-		File file = new File(folder, name);
+	private File createFile(File directory, String name) throws IOException {
+		File file = new File(directory, name);
 		FileCopyUtils.copy("test".getBytes(), file);
 		return file;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfigurati
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -41,19 +41,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = { "spring.resources.chain.strategy.content.enabled=true",
+		properties = { "spring.web.resources.chain.strategy.content.enabled=true",
 				"spring.thymeleaf.prefix=classpath:/templates/thymeleaf/" })
 class WelcomePageIntegrationTests {
 
 	@LocalServerPort
 	private int port;
 
-	private TestRestTemplate template = new TestRestTemplate();
+	private final TestRestTemplate template = new TestRestTemplate();
 
 	@Test
 	void contentStrategyWithWelcomePage() throws Exception {
 		RequestEntity<?> entity = RequestEntity.get(new URI("http://localhost:" + this.port + "/"))
-				.header("Accept", MediaType.ALL.toString()).build();
+			.header("Accept", MediaType.ALL.toString())
+			.build();
 		ResponseEntity<String> content = this.template.exchange(entity, String.class);
 		assertThat(content.getBody()).contains("/custom-");
 	}

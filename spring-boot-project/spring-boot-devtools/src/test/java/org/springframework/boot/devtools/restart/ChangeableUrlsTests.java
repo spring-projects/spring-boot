@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,9 +46,9 @@ class ChangeableUrlsTests {
 	File tempDir;
 
 	@Test
-	void folderUrl() throws Exception {
+	void directoryUrl() throws Exception {
 		URL url = makeUrl("myproject");
-		assertThat(ChangeableUrls.fromUrls(url).size()).isEqualTo(1);
+		assertThat(ChangeableUrls.fromUrls(url).size()).isOne();
 	}
 
 	@Test
@@ -104,7 +104,7 @@ class ChangeableUrlsTests {
 	private URL makeUrl(String name) throws IOException {
 		File file = new File(this.tempDir, UUID.randomUUID().toString());
 		file = new File(file, name);
-		file = new File(file, "target");
+		file = new File(file, "build");
 		file = new File(file, "classes");
 		file.mkdirs();
 		return file.toURI().toURL();
@@ -114,8 +114,8 @@ class ChangeableUrlsTests {
 		File classpathJar = new File(this.tempDir, "classpath.jar");
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().putValue(Attributes.Name.MANIFEST_VERSION.toString(), "1.0");
-		manifest.getMainAttributes().putValue(Attributes.Name.CLASS_PATH.toString(),
-				StringUtils.arrayToDelimitedString(urls, " "));
+		manifest.getMainAttributes()
+			.putValue(Attributes.Name.CLASS_PATH.toString(), StringUtils.arrayToDelimitedString(urls, " "));
 		new JarOutputStream(new FileOutputStream(classpathJar), manifest).close();
 		return classpathJar;
 	}

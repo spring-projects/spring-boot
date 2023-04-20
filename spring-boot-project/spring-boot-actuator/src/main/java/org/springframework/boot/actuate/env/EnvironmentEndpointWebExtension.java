@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,23 @@
 
 package org.springframework.boot.actuate.env;
 
+import java.util.Set;
+
+import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.Show;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
+import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentDescriptor;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentEntryDescriptor;
+import org.springframework.lang.Nullable;
 
 /**
  * {@link EndpointWebExtension @EndpointWebExtension} for the {@link EnvironmentEndpoint}.
  *
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 2.0.0
  */
 @EndpointWebExtension(endpoint = EnvironmentEndpoint.class)
@@ -33,21 +40,29 @@ public class EnvironmentEndpointWebExtension {
 
 	private final EnvironmentEndpoint delegate;
 
-	public EnvironmentEndpointWebExtension(EnvironmentEndpoint delegate) {
+	private final Show showValues;
+
+	private final Set<String> roles;
+
+	public EnvironmentEndpointWebExtension(EnvironmentEndpoint delegate, Show showValues, Set<String> roles) {
 		this.delegate = delegate;
+		this.showValues = showValues;
+		this.roles = roles;
 	}
 
 	@ReadOperation
-	public WebEndpointResponse<EnvironmentEntryDescriptor> environmentEntry(@Selector String toMatch) {
-		EnvironmentEntryDescriptor descriptor = this.delegate.environmentEntry(toMatch);
-		return new WebEndpointResponse<>(descriptor, getStatus(descriptor));
+	public EnvironmentDescriptor environment(SecurityContext securityContext, @Nullable String pattern) {
+		boolean showUnsanitized = this.showValues.isShown(securityContext, this.roles);
+		return this.delegate.getEnvironmentDescriptor(pattern, showUnsanitized);
 	}
 
-	private int getStatus(EnvironmentEntryDescriptor descriptor) {
-		if (descriptor.getProperty() == null) {
-			return WebEndpointResponse.STATUS_NOT_FOUND;
-		}
-		return WebEndpointResponse.STATUS_OK;
+	@ReadOperation
+	public WebEndpointResponse<EnvironmentEntryDescriptor> environmentEntry(SecurityContext securityContext,
+			@Selector String toMatch) {
+		boolean showUnsanitized = this.showValues.isShown(securityContext, this.roles);
+		EnvironmentEntryDescriptor descriptor = this.delegate.getEnvironmentEntryDescriptor(toMatch, showUnsanitized);
+		return (descriptor.getProperty() != null) ? new WebEndpointResponse<>(descriptor, WebEndpointResponse.STATUS_OK)
+				: new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
 	}
 
 }

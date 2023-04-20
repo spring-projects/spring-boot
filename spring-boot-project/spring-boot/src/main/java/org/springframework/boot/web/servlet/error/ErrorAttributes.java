@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,10 @@
 
 package org.springframework.boot.web.servlet.error;
 
+import java.util.Collections;
 import java.util.Map;
 
+import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
@@ -26,20 +28,32 @@ import org.springframework.web.servlet.ModelAndView;
  * Provides access to error attributes which can be logged or presented to the user.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.0.0
  * @see DefaultErrorAttributes
  */
 public interface ErrorAttributes {
 
 	/**
+	 * Name of the {@link jakarta.servlet.http.HttpServletRequest#getAttribute(String)
+	 * request attribute} holding the error resolved by the {@code ErrorAttributes}
+	 * implementation.
+	 * @since 2.5.0
+	 */
+	String ERROR_ATTRIBUTE = ErrorAttributes.class.getName() + ".error";
+
+	/**
 	 * Returns a {@link Map} of the error attributes. The map can be used as the model of
 	 * an error page {@link ModelAndView}, or returned as a
 	 * {@link ResponseBody @ResponseBody}.
 	 * @param webRequest the source request
-	 * @param includeStackTrace if stack trace elements should be included
+	 * @param options options for error attribute contents
 	 * @return a map of error attributes
+	 * @since 2.3.0
 	 */
-	Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace);
+	default Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
+		return Collections.emptyMap();
+	}
 
 	/**
 	 * Return the underlying cause of the error or {@code null} if the error cannot be

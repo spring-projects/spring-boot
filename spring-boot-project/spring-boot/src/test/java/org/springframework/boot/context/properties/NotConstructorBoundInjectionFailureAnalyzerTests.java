@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ package org.springframework.boot.context.properties;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.FatalBeanException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -44,13 +46,13 @@ class NotConstructorBoundInjectionFailureAnalyzerTests {
 				+ " is annotated with @" + ConstructorBinding.class.getSimpleName()
 				+ " but it is defined as a regular bean which caused dependency injection to fail.");
 		assertThat(analysis.getAction())
-				.isEqualTo("Update your configuration so that " + ConstructorBoundProperties.class.getSimpleName()
-						+ " is defined via @" + ConfigurationPropertiesScan.class.getSimpleName() + " or @"
-						+ EnableConfigurationProperties.class.getSimpleName() + ".");
+			.isEqualTo("Update your configuration so that " + ConstructorBoundProperties.class.getSimpleName()
+					+ " is defined via @" + ConfigurationPropertiesScan.class.getSimpleName() + " or @"
+					+ EnableConfigurationProperties.class.getSimpleName() + ".");
 	}
 
 	@Test
-	void failureAnaylsisForNonConstructorBoundProperties() {
+	void failureAnalysisForNonConstructorBoundProperties() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(JavaBeanBoundPropertiesConfiguration.class));
 		assertThat(analysis).isNull();
 	}
@@ -75,7 +77,6 @@ class NotConstructorBoundInjectionFailureAnalyzerTests {
 		return analysis;
 	}
 
-	@ConstructorBinding
 	@ConfigurationProperties("test")
 	static class ConstructorBoundProperties {
 
@@ -102,6 +103,7 @@ class NotConstructorBoundInjectionFailureAnalyzerTests {
 
 		private String name;
 
+		@Autowired
 		JavaBeanBoundProperties(String dependency) {
 
 		}

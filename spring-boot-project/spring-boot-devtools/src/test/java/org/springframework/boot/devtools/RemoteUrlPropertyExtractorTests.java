@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,8 @@ class RemoteUrlPropertyExtractorTests {
 	@AfterEach
 	void preventRunFailuresFromPollutingLoggerContext() {
 		((Logger) LoggerFactory.getLogger(RemoteUrlPropertyExtractorTests.class)).getLoggerContext()
-				.getTurboFilterList().clear();
+			.getTurboFilterList()
+			.clear();
 	}
 
 	@Test
@@ -50,21 +51,20 @@ class RemoteUrlPropertyExtractorTests {
 	@Test
 	void malformedUrl() {
 		assertThatIllegalStateException().isThrownBy(() -> doTest("::://wibble"))
-				.withMessageContaining("Malformed URL '::://wibble'");
+			.withMessageContaining("Malformed URL '::://wibble'");
 
 	}
 
 	@Test
 	void multipleUrls() {
 		assertThatIllegalStateException().isThrownBy(() -> doTest("http://localhost:8080", "http://localhost:9090"))
-				.withMessageContaining("Multiple URLs specified");
+			.withMessageContaining("Multiple URLs specified");
 	}
 
 	@Test
 	void validUrl() {
 		ApplicationContext context = doTest("http://localhost:8080");
 		assertThat(context.getEnvironment().getProperty("remoteUrl")).isEqualTo("http://localhost:8080");
-		assertThat(context.getEnvironment().getProperty("spring.thymeleaf.cache")).isNull();
 	}
 
 	@Test

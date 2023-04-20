@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,8 @@ import org.springframework.ldap.core.LdapTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link LdapHealthIndicator}
@@ -45,8 +45,8 @@ class LdapHealthIndicatorTests {
 		LdapHealthIndicator healthIndicator = new LdapHealthIndicator(ldapTemplate);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("version")).isEqualTo("3");
-		verify(ldapTemplate).executeReadOnly((ContextExecutor<String>) any());
+		assertThat(health.getDetails()).containsEntry("version", "3");
+		then(ldapTemplate).should().executeReadOnly((ContextExecutor<String>) any());
 	}
 
 	@Test
@@ -54,12 +54,12 @@ class LdapHealthIndicatorTests {
 	void ldapIsDown() {
 		LdapTemplate ldapTemplate = mock(LdapTemplate.class);
 		given(ldapTemplate.executeReadOnly((ContextExecutor<String>) any()))
-				.willThrow(new CommunicationException(new javax.naming.CommunicationException("Connection failed")));
+			.willThrow(new CommunicationException(new javax.naming.CommunicationException("Connection failed")));
 		LdapHealthIndicator healthIndicator = new LdapHealthIndicator(ldapTemplate);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat((String) health.getDetails().get("error")).contains("Connection failed");
-		verify(ldapTemplate).executeReadOnly((ContextExecutor<String>) any());
+		then(ldapTemplate).should().executeReadOnly((ContextExecutor<String>) any());
 	}
 
 }

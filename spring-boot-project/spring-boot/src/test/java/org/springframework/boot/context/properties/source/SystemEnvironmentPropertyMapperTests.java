@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.context.properties.source;
+
+import java.util.function.BiPredicate;
 
 import org.junit.jupiter.api.Test;
 
@@ -35,44 +37,63 @@ class SystemEnvironmentPropertyMapperTests extends AbstractPropertyMapperTests {
 
 	@Test
 	void mapFromStringShouldReturnBestGuess() {
-		assertThat(namesFromString("SERVER")).toIterable().containsExactly("server");
-		assertThat(namesFromString("SERVER_PORT")).toIterable().containsExactly("server.port");
-		assertThat(namesFromString("HOST_0")).toIterable().containsExactly("host[0]");
-		assertThat(namesFromString("HOST_0_1")).toIterable().containsExactly("host[0][1]");
-		assertThat(namesFromString("HOST_0_NAME")).toIterable().containsExactly("host[0].name");
-		assertThat(namesFromString("HOST_F00_NAME")).toIterable().containsExactly("host.f00.name");
-		assertThat(namesFromString("S-ERVER")).toIterable().containsExactly("s-erver");
+		assertThat(mapPropertySourceName("SERVER")).isEqualTo("server");
+		assertThat(mapPropertySourceName("SERVER_PORT")).isEqualTo("server.port");
+		assertThat(mapPropertySourceName("HOST_0")).isEqualTo("host[0]");
+		assertThat(mapPropertySourceName("HOST_0_1")).isEqualTo("host[0][1]");
+		assertThat(mapPropertySourceName("HOST_0_NAME")).isEqualTo("host[0].name");
+		assertThat(mapPropertySourceName("HOST_F00_NAME")).isEqualTo("host.f00.name");
+		assertThat(mapPropertySourceName("S-ERVER")).isEqualTo("s-erver");
 	}
 
 	@Test
 	void mapFromConfigurationShouldReturnBestGuess() {
-		assertThat(namesFromConfiguration("server")).toIterable().containsExactly("SERVER");
-		assertThat(namesFromConfiguration("server.port")).toIterable().containsExactly("SERVER_PORT");
-		assertThat(namesFromConfiguration("host[0]")).toIterable().containsExactly("HOST_0");
-		assertThat(namesFromConfiguration("host[0][1]")).toIterable().containsExactly("HOST_0_1");
-		assertThat(namesFromConfiguration("host[0].name")).toIterable().containsExactly("HOST_0_NAME");
-		assertThat(namesFromConfiguration("host.f00.name")).toIterable().containsExactly("HOST_F00_NAME");
-		assertThat(namesFromConfiguration("foo.the-bar")).toIterable().containsExactly("FOO_THEBAR", "FOO_THE_BAR");
+		assertThat(mapConfigurationPropertyName("server")).containsExactly("SERVER");
+		assertThat(mapConfigurationPropertyName("server.port")).containsExactly("SERVER_PORT");
+		assertThat(mapConfigurationPropertyName("host[0]")).containsExactly("HOST_0");
+		assertThat(mapConfigurationPropertyName("host[0][1]")).containsExactly("HOST_0_1");
+		assertThat(mapConfigurationPropertyName("host[0].name")).containsExactly("HOST_0_NAME");
+		assertThat(mapConfigurationPropertyName("host.f00.name")).containsExactly("HOST_F00_NAME");
+		assertThat(mapConfigurationPropertyName("foo.the-bar")).containsExactly("FOO_THEBAR", "FOO_THE_BAR");
 	}
 
 	@Test
-	void underscoreShouldNotMapToEmptyString() {
-		PropertyMapping[] mappings = getMapper().map("_");
-		boolean applicable = false;
-		for (PropertyMapping mapping : mappings) {
-			applicable = mapping.isApplicable(ConfigurationPropertyName.of(""));
-		}
-		assertThat(applicable).isFalse();
+	void underscoreShouldMapToEmptyString() {
+		ConfigurationPropertyName mapped = getMapper().map("_");
+		assertThat(mapped.isEmpty()).isTrue();
 	}
 
 	@Test
-	void underscoreWithWhitespaceShouldNotMapToEmptyString() {
-		PropertyMapping[] mappings = getMapper().map("  _");
-		boolean applicable = false;
-		for (PropertyMapping mapping : mappings) {
-			applicable = mapping.isApplicable(ConfigurationPropertyName.of(""));
-		}
-		assertThat(applicable).isFalse();
+	void underscoreWithWhitespaceShouldMapToEmptyString() {
+		ConfigurationPropertyName mapped = getMapper().map(" _");
+		assertThat(mapped.isEmpty()).isTrue();
+	}
+
+	@Test
+	void isAncestorOfConsidersLegacyNames() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.of("my.spring-boot");
+		BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> check = getMapper().getAncestorOfCheck();
+		assertThat(check.test(name, ConfigurationPropertyName.adapt("MY_SPRING_BOOT_PROPERTY", '_'))).isTrue();
+		assertThat(check.test(name, ConfigurationPropertyName.adapt("MY_SPRINGBOOT_PROPERTY", '_'))).isTrue();
+		assertThat(check.test(name, ConfigurationPropertyName.adapt("MY_BOOT_PROPERTY", '_'))).isFalse();
+	}
+
+	@Test
+	void isAncestorOfWhenNonCanonicalSource() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("my.springBoot", '.');
+		BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> check = getMapper().getAncestorOfCheck();
+		assertThat(check.test(name, ConfigurationPropertyName.of("my.spring-boot.property"))).isTrue();
+		assertThat(check.test(name, ConfigurationPropertyName.of("my.springboot.property"))).isTrue();
+		assertThat(check.test(name, ConfigurationPropertyName.of("my.boot.property"))).isFalse();
+	}
+
+	@Test
+	void isAncestorOfWhenNonCanonicalAndDashedSource() {
+		ConfigurationPropertyName name = ConfigurationPropertyName.adapt("my.springBoot.input-value", '.');
+		BiPredicate<ConfigurationPropertyName, ConfigurationPropertyName> check = getMapper().getAncestorOfCheck();
+		assertThat(check.test(name, ConfigurationPropertyName.of("my.spring-boot.input-value.property"))).isTrue();
+		assertThat(check.test(name, ConfigurationPropertyName.of("my.springboot.inputvalue.property"))).isTrue();
+		assertThat(check.test(name, ConfigurationPropertyName.of("my.boot.property"))).isFalse();
 	}
 
 }

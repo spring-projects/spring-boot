@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,6 @@ import static org.mockito.Mockito.mock;
  */
 class OnInitializedRestarterConditionTests {
 
-	private static Object wait = new Object();
-
 	@BeforeEach
 	@AfterEach
 	void cleanup() {
@@ -67,9 +65,8 @@ class OnInitializedRestarterConditionTests {
 	void initialized() throws Exception {
 		Thread thread = new Thread(TestInitialized::main);
 		thread.start();
-		synchronized (wait) {
-			wait.wait();
-		}
+		thread.join(30000);
+		assertThat(thread.isAlive()).isFalse();
 	}
 
 	static class TestInitialized {
@@ -81,9 +78,6 @@ class OnInitializedRestarterConditionTests {
 			ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(Config.class);
 			assertThat(context.containsBean("bean")).isTrue();
 			context.close();
-			synchronized (wait) {
-				wait.notify();
-			}
 		}
 
 	}

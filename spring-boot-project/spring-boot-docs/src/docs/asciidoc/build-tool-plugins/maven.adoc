@@ -1,0 +1,9 @@
+[[build-tool-plugins.maven]]
+== Spring Boot Maven Plugin
+The Spring Boot Maven Plugin provides Spring Boot support in Maven, letting you package executable jar or war archives and run an application "`in-place`".
+To use it, you must use Maven 3.6.3 or later.
+
+See the plugin's documentation to learn more:
+
+* Reference ({spring-boot-maven-plugin-docs}[HTML] and {spring-boot-maven-plugin-pdfdocs}[PDF])
+* {spring-boot-maven-plugin-api}[API]

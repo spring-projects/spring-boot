@@ -1,0 +1,290 @@
+[[appendix.configuration-metadata.format]]
+== Metadata Format
+Configuration metadata files are located inside jars under `META-INF/spring-configuration-metadata.json`.
+They use a JSON format with items categorized under either "`groups`" or "`properties`" and additional values hints categorized under "hints", as shown in the following example:
+
+[source,json,indent=0,subs="verbatim"]
+----
+	{"groups": [
+		{
+			"name": "server",
+			"type": "org.springframework.boot.autoconfigure.web.ServerProperties",
+			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties"
+		},
+		{
+			"name": "spring.jpa.hibernate",
+			"type": "org.springframework.boot.autoconfigure.orm.jpa.JpaProperties$Hibernate",
+			"sourceType": "org.springframework.boot.autoconfigure.orm.jpa.JpaProperties",
+			"sourceMethod": "getHibernate()"
+		}
+		...
+	],"properties": [
+		{
+			"name": "server.port",
+			"type": "java.lang.Integer",
+			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties"
+		},
+		{
+			"name": "server.address",
+			"type": "java.net.InetAddress",
+			"sourceType": "org.springframework.boot.autoconfigure.web.ServerProperties"
+		},
+		{
+			  "name": "spring.jpa.hibernate.ddl-auto",
+			  "type": "java.lang.String",
+			  "description": "DDL mode. This is actually a shortcut for the \"hibernate.hbm2ddl.auto\" property.",
+			  "sourceType": "org.springframework.boot.autoconfigure.orm.jpa.JpaProperties$Hibernate"
+		}
+		...
+	],"hints": [
+		{
+			"name": "spring.jpa.hibernate.ddl-auto",
+			"values": [
+				{
+					"value": "none",
+					"description": "Disable DDL handling."
+				},
+				{
+					"value": "validate",
+					"description": "Validate the schema, make no changes to the database."
+				},
+				{
+					"value": "update",
+					"description": "Update the schema if necessary."
+				},
+				{
+					"value": "create",
+					"description": "Create the schema and destroy previous data."
+				},
+				{
+					"value": "create-drop",
+					"description": "Create and then destroy the schema at the end of the session."
+				}
+			]
+		}
+	]}
+----
+
+Each "`property`" is a configuration item that the user specifies with a given value.
+For example, `server.port` and `server.address` might be specified in your `application.properties`/`application.yaml`, as follows:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	server:
+	  port: 9090
+	  address: 127.0.0.1
+----
+
+The "`groups`" are higher level items that do not themselves specify a value but instead provide a contextual grouping for properties.
+For example, the `server.port` and `server.address` properties are part of the `server` group.
+
+NOTE: It is not required that every "`property`" has a "`group`".
+Some properties might exist in their own right.
+
+Finally, "`hints`" are additional information used to assist the user in configuring a given property.
+For example, when a developer is configuring the configprop:spring.jpa.hibernate.ddl-auto[] property, a tool can use the hints to offer some auto-completion help for the `none`, `validate`, `update`, `create`, and `create-drop` values.
+
+
+
+[[appendix.configuration-metadata.format.group]]
+=== Group Attributes
+The JSON object contained in the `groups` array can contain the attributes shown in the following table:
+
+[cols="1,1,4"]
+|===
+| Name | Type | Purpose
+
+| `name`
+| String
+| The full name of the group.
+  This attribute is mandatory.
+
+| `type`
+| String
+| The class name of the data type of the group.
+  For example, if the group were based on a class annotated with `@ConfigurationProperties`, the attribute would contain the fully qualified name of that class.
+  If it were based on a `@Bean` method, it would be the return type of that method.
+  If the type is not known, the attribute may be omitted.
+
+| `description`
+| String
+| A short description of the group that can be displayed to users.
+  If no description is available, it may be omitted.
+  It is recommended that descriptions be short paragraphs, with the first line providing a concise summary.
+  The last line in the description should end with a period (`.`).
+
+| `sourceType`
+| String
+| The class name of the source that contributed this group.
+  For example, if the group were based on a `@Bean` method annotated with `@ConfigurationProperties`, this attribute would contain the fully qualified name of the `@Configuration` class that contains the method.
+  If the source type is not known, the attribute may be omitted.
+
+| `sourceMethod`
+| String
+| The full name of the method (include parenthesis and argument types) that contributed this group (for example, the name of a `@ConfigurationProperties` annotated `@Bean` method).
+  If the source method is not known, it may be omitted.
+|===
+
+
+
+[[appendix.configuration-metadata.format.property]]
+=== Property Attributes
+The JSON object contained in the `properties` array can contain the attributes described in the following table:
+
+[cols="1,1,4"]
+|===
+| Name | Type | Purpose
+
+| `name`
+| String
+| The full name of the property.
+  Names are in lower-case period-separated form (for example, `server.address`).
+  This attribute is mandatory.
+
+| `type`
+| String
+| The full signature of the data type of the property (for example, `java.lang.String`) but also a full generic type (such as `java.util.Map<java.lang.String,com.example.MyEnum>`).
+  You can use this attribute to guide the user as to the types of values that they can enter.
+  For consistency, the type of a primitive is specified by using its wrapper counterpart (for example, `boolean` becomes `java.lang.Boolean`).
+  Note that this class may be a complex type that gets converted from a `String` as values are bound.
+  If the type is not known, it may be omitted.
+
+| `description`
+| String
+| A short description of the property that can be displayed to users.
+  If no description is available, it may be omitted.
+  It is recommended that descriptions be short paragraphs, with the first line providing a concise summary.
+  The last line in the description should end with a period (`.`).
+
+| `sourceType`
+| String
+| The class name of the source that contributed this property.
+  For example, if the property were from a class annotated with `@ConfigurationProperties`, this attribute would contain the fully qualified name of that class.
+  If the source type is unknown, it may be omitted.
+
+| `defaultValue`
+| Object
+| The default value, which is used if the property is not specified.
+  If the type of the property is an array, it can be an array of value(s).
+  If the default value is unknown, it may be omitted.
+
+| `deprecation`
+| Deprecation
+| Specify whether the property is deprecated.
+  If the field is not deprecated or if that information is not known, it may be omitted.
+  The next table offers more detail about the `deprecation` attribute.
+|===
+
+The JSON object contained in the `deprecation` attribute of each `properties` element can contain the following attributes:
+
+[cols="1,1,4"]
+|===
+| Name | Type | Purpose
+
+| `level`
+| String
+| The level of deprecation, which can be either `warning` (the default) or `error`.
+  When a property has a `warning` deprecation level, it should still be bound in the environment.
+  However, when it has an `error` deprecation level, the property is no longer managed and is not bound.
+
+| `reason`
+| String
+| A short description of the reason why the property was deprecated.
+  If no reason is available, it may be omitted.
+  It is recommended that descriptions be short paragraphs, with the first line providing a concise summary.
+  The last line in the description should end with a period (`.`).
+
+| `replacement`
+| String
+| The full name of the property that _replaces_ this deprecated property.
+  If there is no replacement for this property, it may be omitted.
+|===
+
+NOTE: Prior to Spring Boot 1.3, a single `deprecated` boolean attribute can be used instead of the `deprecation` element.
+This is still supported in a deprecated fashion and should no longer be used.
+If no reason and replacement are available, an empty `deprecation` object should be set.
+
+Deprecation can also be specified declaratively in code by adding the `@DeprecatedConfigurationProperty` annotation to the getter exposing the deprecated property.
+For instance, assume that the `my.app.target` property was confusing and was renamed to `my.app.name`.
+The following example shows how to handle that situation:
+
+include::code:MyProperties[]
+
+NOTE: There is no way to set a `level`.
+`warning` is always assumed, since code is still handling the property.
+
+The preceding code makes sure that the deprecated property still works (delegating to the `name` property behind the scenes).
+Once the `getTarget` and `setTarget` methods can be removed from your public API, the automatic deprecation hint in the metadata goes away as well.
+If you want to keep a hint, adding manual metadata with an `error` deprecation level ensures that users are still informed about that property.
+Doing so is particularly useful when a `replacement` is provided.
+
+
+
+[[appendix.configuration-metadata.format.hints]]
+=== Hint Attributes
+The JSON object contained in the `hints` array can contain the attributes shown in the following table:
+
+[cols="1,1,4"]
+|===
+| Name | Type | Purpose
+
+| `name`
+| String
+| The full name of the property to which this hint refers.
+  Names are in lower-case period-separated form (such as `spring.mvc.servlet.path`).
+  If the property refers to a map (such as `system.contexts`), the hint either applies to the _keys_ of the map (`system.contexts.keys`) or the _values_ (`system.contexts.values`) of the map.
+  This attribute is mandatory.
+
+| `values`
+| ValueHint[]
+| A list of valid values as defined by the `ValueHint` object (described in the next table).
+  Each entry defines the value and may have a description.
+
+| `providers`
+| ValueProvider[]
+| A list of providers as defined by the `ValueProvider` object (described later in this document).
+  Each entry defines the name of the provider and its parameters, if any.
+|===
+
+The JSON object contained in the `values` attribute of each `hint` element can contain the attributes described in the following table:
+
+[cols="1,1,4"]
+|===
+| Name | Type | Purpose
+
+| `value`
+| Object
+| A valid value for the element to which the hint refers.
+  If the type of the property is an array, it can also be an array of value(s).
+  This attribute is mandatory.
+
+| `description`
+| String
+| A short description of the value that can be displayed to users.
+  If no description is available, it may be omitted.
+  It is recommended that descriptions be short paragraphs, with the first line providing a concise summary.
+  The last line in the description should end with a period (`.`).
+|===
+
+The JSON object contained in the `providers` attribute of each `hint` element can contain the attributes described in the following table:
+
+[cols="1,1,4"]
+|===
+|Name | Type |Purpose
+
+| `name`
+| String
+| The name of the provider to use to offer additional content assistance for the element to which the hint refers.
+
+| `parameters`
+| JSON object
+| Any additional parameter that the provider supports (check the documentation of the provider for more details).
+|===
+
+
+
+[[appendix.configuration-metadata.format.repeated-items]]
+=== Repeated Metadata Items
+Objects with the same "`property`" and "`group`" name can appear multiple times within a metadata file.
+For example, you could bind two separate classes to the same prefix, with each having potentially overlapping property names.
+While the same names appearing in the metadata multiple times should not be common, consumers of metadata should take care to ensure that they support it.

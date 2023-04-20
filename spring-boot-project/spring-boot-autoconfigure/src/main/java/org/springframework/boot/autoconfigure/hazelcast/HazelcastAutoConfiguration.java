@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,14 @@ package org.springframework.boot.autoconfigure.hazelcast;
 
 import com.hazelcast.core.HazelcastInstance;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Hazelcast. Creates a
+ * {@link EnableAutoConfiguration Auto-configuration} for Hazelcast IMDG. Creates a
  * {@link HazelcastInstance} based on explicit configuration or when a default
  * configuration file is found in the environment.
  *
@@ -34,7 +34,7 @@ import org.springframework.context.annotation.Import;
  * @since 1.3.0
  * @see HazelcastConfigResourceCondition
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnClass(HazelcastInstance.class)
 @EnableConfigurationProperties(HazelcastProperties.class)
 @Import({ HazelcastClientConfiguration.class, HazelcastServerConfiguration.class })

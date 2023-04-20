@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,11 +29,25 @@ import org.springframework.util.unit.DataSize;
 public class CodecProperties {
 
 	/**
+	 * Whether to log form data at DEBUG level, and headers at TRACE level.
+	 */
+	private boolean logRequestDetails;
+
+	/**
 	 * Limit on the number of bytes that can be buffered whenever the input stream needs
-	 * to be aggregated. By default this is not set, in which case individual codec
+	 * to be aggregated. This applies only to the auto-configured WebFlux server and
+	 * WebClient instances. By default this is not set, in which case individual codec
 	 * defaults apply. Most codecs are limited to 256K by default.
 	 */
 	private DataSize maxInMemorySize;
+
+	public boolean isLogRequestDetails() {
+		return this.logRequestDetails;
+	}
+
+	public void setLogRequestDetails(boolean logRequestDetails) {
+		this.logRequestDetails = logRequestDetails;
+	}
 
 	public DataSize getMaxInMemorySize() {
 		return this.maxInMemorySize;

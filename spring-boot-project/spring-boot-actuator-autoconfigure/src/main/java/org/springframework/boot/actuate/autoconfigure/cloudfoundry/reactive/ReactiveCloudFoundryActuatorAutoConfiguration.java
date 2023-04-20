@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
@@ -33,10 +32,10 @@ import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoC
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
-import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
+import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
 import org.springframework.boot.actuate.health.HealthEndpoint;
 import org.springframework.boot.actuate.health.ReactiveHealthEndpointWebExtension;
@@ -44,7 +43,7 @@ import org.springframework.boot.actuate.info.GitInfoContributor;
 import org.springframework.boot.actuate.info.InfoContributor;
 import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.boot.actuate.info.InfoPropertiesInfoContributor;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -75,12 +74,13 @@ import org.springframework.web.server.WebFilter;
  * @author Madhura Bhave
  * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = { HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class })
 @ConditionalOnProperty(prefix = "management.cloudfoundry", name = "enabled", matchIfMissing = true)
-@AutoConfigureAfter({ HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
 public class ReactiveCloudFoundryActuatorAutoConfiguration {
+
+	private static final String BASE_PATH = "/cloudfoundryapplication";
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -98,9 +98,9 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 	public CloudFoundryInfoEndpointWebExtension cloudFoundryInfoEndpointWebExtension(GitProperties properties,
 			ObjectProvider<InfoContributor> infoContributors) {
 		List<InfoContributor> contributors = infoContributors.orderedStream()
-				.map((infoContributor) -> (infoContributor instanceof GitInfoContributor)
-						? new GitInfoContributor(properties, InfoPropertiesInfoContributor.Mode.FULL) : infoContributor)
-				.collect(Collectors.toList());
+			.map((infoContributor) -> (infoContributor instanceof GitInfoContributor)
+					? new GitInfoContributor(properties, InfoPropertiesInfoContributor.Mode.FULL) : infoContributor)
+			.toList();
 		return new CloudFoundryInfoEndpointWebExtension(new InfoEndpoint(contributors));
 	}
 
@@ -117,9 +117,8 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 		List<ExposableEndpoint<?>> allEndpoints = new ArrayList<>();
 		allEndpoints.addAll(webEndpoints);
 		allEndpoints.addAll(controllerEndpointsSupplier.getEndpoints());
-		return new CloudFoundryWebFluxEndpointHandlerMapping(new EndpointMapping("/cloudfoundryapplication"),
-				webEndpoints, endpointMediaTypes, getCorsConfiguration(), securityInterceptor,
-				new EndpointLinksResolver(allEndpoints));
+		return new CloudFoundryWebFluxEndpointHandlerMapping(new EndpointMapping(BASE_PATH), webEndpoints,
+				endpointMediaTypes, getCorsConfiguration(), securityInterceptor, allEndpoints);
 	}
 
 	private CloudFoundrySecurityInterceptor getSecurityInterceptor(WebClient.Builder webClientBuilder,
@@ -145,8 +144,8 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 		CorsConfiguration corsConfiguration = new CorsConfiguration();
 		corsConfiguration.addAllowedOrigin(CorsConfiguration.ALL);
 		corsConfiguration.setAllowedMethods(Arrays.asList(HttpMethod.GET.name(), HttpMethod.POST.name()));
-		corsConfiguration.setAllowedHeaders(
-				Arrays.asList(HttpHeaders.AUTHORIZATION, "X-Cf-App-Instance", HttpHeaders.CONTENT_TYPE));
+		corsConfiguration
+			.setAllowedHeaders(Arrays.asList(HttpHeaders.AUTHORIZATION, "X-Cf-App-Instance", HttpHeaders.CONTENT_TYPE));
 		return corsConfiguration;
 	}
 
@@ -155,31 +154,47 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 	static class IgnoredPathsSecurityConfiguration {
 
 		@Bean
-		WebFilterChainPostProcessor webFilterChainPostProcessor() {
-			return new WebFilterChainPostProcessor();
+		WebFilterChainPostProcessor webFilterChainPostProcessor(
+				CloudFoundryWebFluxEndpointHandlerMapping handlerMapping) {
+			return new WebFilterChainPostProcessor(handlerMapping);
 		}
 
 	}
 
-	private static class WebFilterChainPostProcessor implements BeanPostProcessor {
+	static class WebFilterChainPostProcessor implements BeanPostProcessor {
+
+		private final PathMappedEndpoints pathMappedEndpoints;
+
+		WebFilterChainPostProcessor(CloudFoundryWebFluxEndpointHandlerMapping handlerMapping) {
+			this.pathMappedEndpoints = new PathMappedEndpoints(BASE_PATH, handlerMapping::getAllEndpoints);
+		}
 
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-			if (bean instanceof WebFilterChainProxy) {
-				return postProcess((WebFilterChainProxy) bean);
+			if (bean instanceof WebFilterChainProxy webFilterChainProxy) {
+				return postProcess(webFilterChainProxy, this.pathMappedEndpoints);
 			}
 			return bean;
 		}
 
-		private WebFilterChainProxy postProcess(WebFilterChainProxy existing) {
+		private WebFilterChainProxy postProcess(WebFilterChainProxy existing, PathMappedEndpoints pathMappedEndpoints) {
+			List<String> paths = getPaths(pathMappedEndpoints);
 			ServerWebExchangeMatcher cloudFoundryRequestMatcher = ServerWebExchangeMatchers
-					.pathMatchers("/cloudfoundryapplication/**");
+				.pathMatchers(paths.toArray(new String[] {}));
 			WebFilter noOpFilter = (exchange, chain) -> chain.filter(exchange);
 			MatcherSecurityWebFilterChain ignoredRequestFilterChain = new MatcherSecurityWebFilterChain(
 					cloudFoundryRequestMatcher, Collections.singletonList(noOpFilter));
 			MatcherSecurityWebFilterChain allRequestsFilterChain = new MatcherSecurityWebFilterChain(
 					ServerWebExchangeMatchers.anyExchange(), Collections.singletonList(existing));
 			return new WebFilterChainProxy(ignoredRequestFilterChain, allRequestsFilterChain);
+		}
+
+		private static List<String> getPaths(PathMappedEndpoints pathMappedEndpoints) {
+			List<String> paths = new ArrayList<>();
+			pathMappedEndpoints.getAllPaths().forEach((path) -> paths.add(path + "/**"));
+			paths.add(BASE_PATH);
+			paths.add(BASE_PATH + "/");
+			return paths;
 		}
 
 	}

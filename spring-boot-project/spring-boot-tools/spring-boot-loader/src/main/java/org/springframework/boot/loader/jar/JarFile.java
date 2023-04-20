@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,12 @@ import java.net.URLStreamHandlerFactory;
 import java.security.Permission;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.Supplier;
 import java.util.jar.Manifest;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import java.util.zip.ZipEntry;
 
 import org.springframework.boot.loader.data.RandomAccessData;
@@ -49,7 +53,7 @@ import org.springframework.boot.loader.data.RandomAccessDataFile;
  * @author Andy Wilkinson
  * @since 1.0.0
  */
-public class JarFile extends AbstractJarFile {
+public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.JarEntry> {
 
 	private static final String MANIFEST_NAME = "META-INF/MANIFEST.MF";
 
@@ -75,9 +79,9 @@ public class JarFile extends AbstractJarFile {
 
 	private String urlString;
 
-	private JarFileEntries entries;
+	private final JarFileEntries entries;
 
-	private Supplier<Manifest> manifestSupplier;
+	private final Supplier<Manifest> manifestSupplier;
 
 	private SoftReference<Manifest> manifest;
 
@@ -86,6 +90,8 @@ public class JarFile extends AbstractJarFile {
 	private String comment;
 
 	private volatile boolean closed;
+
+	private volatile JarFileWrapper wrapper;
 
 	/**
 	 * Create a new {@link JarFile} backed by the specified file.
@@ -133,7 +139,12 @@ public class JarFile extends AbstractJarFile {
 			this.data = parser.parse(data, filter == null);
 		}
 		catch (RuntimeException ex) {
-			close();
+			try {
+				this.rootFile.close();
+				super.close();
+			}
+			catch (IOException ioex) {
+			}
 			throw ex;
 		}
 		this.manifestSupplier = (manifestSupplier != null) ? manifestSupplier : () -> {
@@ -158,7 +169,7 @@ public class JarFile extends AbstractJarFile {
 			}
 
 			@Override
-			public void visitFileHeader(CentralDirectoryFileHeader fileHeader, int dataOffset) {
+			public void visitFileHeader(CentralDirectoryFileHeader fileHeader, long dataOffset) {
 				AsciiBytes name = fileHeader.getName();
 				if (name.startsWith(META_INF) && name.endsWith(SIGNATURE_FILE_EXTENSION)) {
 					JarFile.this.signed = true;
@@ -170,6 +181,15 @@ public class JarFile extends AbstractJarFile {
 			}
 
 		};
+	}
+
+	JarFileWrapper getWrapper() throws IOException {
+		JarFileWrapper wrapper = this.wrapper;
+		if (wrapper == null) {
+			wrapper = new JarFileWrapper(this);
+			this.wrapper = wrapper;
+		}
+		return wrapper;
 	}
 
 	@Override
@@ -205,6 +225,24 @@ public class JarFile extends AbstractJarFile {
 		return new JarEntryEnumeration(this.entries.iterator());
 	}
 
+	@Override
+	public Stream<java.util.jar.JarEntry> stream() {
+		Spliterator<java.util.jar.JarEntry> spliterator = Spliterators.spliterator(iterator(), size(),
+				Spliterator.ORDERED | Spliterator.DISTINCT | Spliterator.IMMUTABLE | Spliterator.NONNULL);
+		return StreamSupport.stream(spliterator, false);
+	}
+
+	/**
+	 * Return an iterator for the contained entries.
+	 * @since 2.3.0
+	 * @see java.lang.Iterable#iterator()
+	 */
+	@Override
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Iterator<java.util.jar.JarEntry> iterator() {
+		return (Iterator) this.entries.iterator(this::ensureOpen);
+	}
+
 	public JarEntry getJarEntry(CharSequence name) {
 		return this.entries.getEntry(name);
 	}
@@ -220,6 +258,7 @@ public class JarFile extends AbstractJarFile {
 
 	@Override
 	public ZipEntry getEntry(String name) {
+		ensureOpen();
 		return this.entries.getEntry(name);
 	}
 
@@ -230,8 +269,9 @@ public class JarFile extends AbstractJarFile {
 
 	@Override
 	public synchronized InputStream getInputStream(ZipEntry entry) throws IOException {
-		if (entry instanceof JarEntry) {
-			return this.entries.getInputStream((JarEntry) entry);
+		ensureOpen();
+		if (entry instanceof JarEntry jarEntry) {
+			return this.entries.getInputStream(jarEntry);
 		}
 		return getInputStream((entry != null) ? entry.getName() : null);
 	}
@@ -298,11 +338,13 @@ public class JarFile extends AbstractJarFile {
 
 	@Override
 	public String getComment() {
+		ensureOpen();
 		return this.comment;
 	}
 
 	@Override
 	public int size() {
+		ensureOpen();
 		return this.entries.getSize();
 	}
 
@@ -311,9 +353,16 @@ public class JarFile extends AbstractJarFile {
 		if (this.closed) {
 			return;
 		}
-		this.closed = true;
+		super.close();
 		if (this.type == JarFileType.DIRECT) {
 			this.rootFile.close();
+		}
+		this.closed = true;
+	}
+
+	private void ensureOpen() {
+		if (this.closed) {
+			throw new IllegalStateException("zip file closed");
 		}
 	}
 
@@ -379,9 +428,10 @@ public class JarFile extends AbstractJarFile {
 	 * {@link URLStreamHandler} will be located to deal with jar URLs.
 	 */
 	public static void registerUrlProtocolHandler() {
+		Handler.captureJarContextUrl();
 		String handlers = System.getProperty(PROTOCOL_HANDLER, "");
 		System.setProperty(PROTOCOL_HANDLER,
-				("".equals(handlers) ? HANDLERS_PACKAGE : handlers + "|" + HANDLERS_PACKAGE));
+				((handlers == null || handlers.isEmpty()) ? HANDLERS_PACKAGE : handlers + "|" + HANDLERS_PACKAGE));
 		resetCachedUrlHandlers();
 	}
 

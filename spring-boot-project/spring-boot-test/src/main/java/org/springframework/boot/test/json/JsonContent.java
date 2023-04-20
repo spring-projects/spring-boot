@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.springframework.core.ResolvableType;
 import org.springframework.util.Assert;
 
 /**
- * JSON content created usually from a JSON tester. Generally used only to
+ * JSON content usually created from a JSON tester. Generally used only to
  * {@link AssertProvider provide} {@link JsonContentAssert} to AssertJ {@code assertThat}
  * calls.
  *
@@ -76,7 +76,7 @@ public final class JsonContent<T> implements AssertProvider<JsonContentAssert> {
 	 * {@code assertThat(context)...} calls instead.
 	 */
 	@Override
-	@Deprecated
+	@Deprecated(since = "1.5.7", forRemoval = false)
 	public JsonContentAssert assertThat() {
 		return new JsonContentAssert(this.resourceLoadClass, null, this.json, this.configuration);
 	}

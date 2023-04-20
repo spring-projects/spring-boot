@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  */
 @DirtiesContext
-@SpringBootTest(webEnvironment = WebEnvironment.NONE, properties = { "env.FOO=There", "foo=World" })
+@SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class MustacheStandaloneIntegrationTests {
 
 	@Autowired
@@ -46,23 +46,7 @@ class MustacheStandaloneIntegrationTests {
 	@Test
 	void directCompilation() {
 		assertThat(this.compiler.compile("Hello: {{world}}").execute(Collections.singletonMap("world", "World")))
-				.isEqualTo("Hello: World");
-	}
-
-	@Test
-	void environmentCollectorCompoundKey() {
-		assertThat(this.compiler.compile("Hello: {{env.foo}}").execute(new Object())).isEqualTo("Hello: There");
-	}
-
-	@Test
-	void environmentCollectorCompoundKeyStandard() {
-		assertThat(this.compiler.standardsMode(true).compile("Hello: {{env.foo}}").execute(new Object()))
-				.isEqualTo("Hello: There");
-	}
-
-	@Test
-	void environmentCollectorSimpleKey() {
-		assertThat(this.compiler.compile("Hello: {{foo}}").execute(new Object())).isEqualTo("Hello: World");
+			.isEqualTo("Hello: World");
 	}
 
 	@Configuration(proxyBeanMethods = false)

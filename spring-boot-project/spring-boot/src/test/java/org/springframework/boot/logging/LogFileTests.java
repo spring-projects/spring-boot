@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,18 +52,11 @@ class LogFileTests {
 		testLoggingFile(resolver);
 	}
 
-	@Test
-	@Deprecated
-	void loggingFileWithDeprecatedProperties() {
-		PropertyResolver resolver = getPropertyResolver(Collections.singletonMap("logging.file", "log.file"));
-		testLoggingFile(resolver);
-	}
-
 	private void testLoggingFile(PropertyResolver resolver) {
 		LogFile logFile = LogFile.get(resolver);
 		Properties properties = new Properties();
 		logFile.applyTo(properties);
-		assertThat(logFile.toString()).isEqualTo("log.file");
+		assertThat(logFile).hasToString("log.file");
 		assertThat(properties.getProperty(LoggingSystemProperties.LOG_FILE)).isEqualTo("log.file");
 		assertThat(properties.getProperty(LoggingSystemProperties.LOG_PATH)).isNull();
 	}
@@ -74,20 +67,13 @@ class LogFileTests {
 		testLoggingPath(resolver);
 	}
 
-	@Test
-	@Deprecated
-	void loggingPathWithDeprecatedProperties() {
-		PropertyResolver resolver = getPropertyResolver(Collections.singletonMap("logging.path", "logpath"));
-		testLoggingPath(resolver);
-	}
-
 	private void testLoggingPath(PropertyResolver resolver) {
 		LogFile logFile = LogFile.get(resolver);
 		Properties properties = new Properties();
 		logFile.applyTo(properties);
-		assertThat(logFile.toString()).isEqualTo("logpath" + File.separatorChar + "spring.log");
+		assertThat(logFile).hasToString("logpath" + File.separatorChar + "spring.log");
 		assertThat(properties.getProperty(LoggingSystemProperties.LOG_FILE))
-				.isEqualTo("logpath" + File.separatorChar + "spring.log");
+			.isEqualTo("logpath" + File.separatorChar + "spring.log");
 		assertThat(properties.getProperty(LoggingSystemProperties.LOG_PATH)).isEqualTo("logpath");
 	}
 
@@ -100,21 +86,11 @@ class LogFileTests {
 		testLoggingFileAndPath(resolver);
 	}
 
-	@Test
-	@Deprecated
-	void loggingFileAndPathWithDeprecatedProperties() {
-		Map<String, Object> properties = new LinkedHashMap<>();
-		properties.put("logging.file", "log.file");
-		properties.put("logging.path", "logpath");
-		PropertyResolver resolver = getPropertyResolver(properties);
-		testLoggingFileAndPath(resolver);
-	}
-
 	private void testLoggingFileAndPath(PropertyResolver resolver) {
 		LogFile logFile = LogFile.get(resolver);
 		Properties properties = new Properties();
 		logFile.applyTo(properties);
-		assertThat(logFile.toString()).isEqualTo("log.file");
+		assertThat(logFile).hasToString("log.file");
 		assertThat(properties.getProperty(LoggingSystemProperties.LOG_FILE)).isEqualTo("log.file");
 		assertThat(properties.getProperty(LoggingSystemProperties.LOG_PATH)).isEqualTo("logpath");
 	}

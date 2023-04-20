@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,12 +28,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.boot.actuate.endpoint.Producible;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoke.reflect.OperationMethod;
+import org.springframework.util.MimeType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -121,6 +123,14 @@ class DiscoveredOperationsFactoryTests {
 		assertThat(advisor.getParameters()).isEmpty();
 	}
 
+	@Test
+	void createOperationShouldApplyProducesFrom() {
+		TestOperation operation = getFirst(
+				this.factory.createOperations(EndpointId.of("test"), new ExampleWithProducesFrom()));
+		DiscoveredOperationMethod method = (DiscoveredOperationMethod) operation.getOperationMethod();
+		assertThat(method.getProducesMediaTypes()).containsExactly("one/*", "two/*", "three/*");
+	}
+
 	private <T> T getFirst(Iterable<T> iterable) {
 		return iterable.iterator().next();
 	}
@@ -175,6 +185,15 @@ class DiscoveredOperationsFactoryTests {
 
 	}
 
+	static class ExampleWithProducesFrom {
+
+		@ReadOperation(producesFrom = ExampleProducible.class)
+		String read() {
+			return "read";
+		}
+
+	}
+
 	static class TestDiscoveredOperationsFactory extends DiscoveredOperationsFactory<TestOperation> {
 
 		TestDiscoveredOperationsFactory(ParameterValueMapper parameterValueMapper,
@@ -225,6 +244,17 @@ class DiscoveredOperationsFactoryTests {
 
 		OperationParameters getParameters() {
 			return this.parameters;
+		}
+
+	}
+
+	enum ExampleProducible implements Producible<ExampleProducible> {
+
+		ONE, TWO, THREE;
+
+		@Override
+		public MimeType getProducedMimeType() {
+			return new MimeType(toString().toLowerCase());
 		}
 
 	}

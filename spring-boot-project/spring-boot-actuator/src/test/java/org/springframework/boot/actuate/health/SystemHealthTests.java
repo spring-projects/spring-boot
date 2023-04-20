@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import java.util.Set;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.endpoint.http.ApiVersion;
+import org.springframework.boot.actuate.endpoint.ApiVersion;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -45,7 +45,7 @@ class SystemHealthTests {
 		CompositeHealth health = new SystemHealth(ApiVersion.V3, Status.UP, components, groups);
 		ObjectMapper mapper = new ObjectMapper();
 		String json = mapper.writeValueAsString(health);
-		assertThat(json).isEqualTo("{\"status\":\"UP\",\"components\":{" + "\"db1\":{\"status\":\"UP\"},"
+		assertThat(json).isEqualTo("{\"status\":\"UP\",\"components\":{\"db1\":{\"status\":\"UP\"},"
 				+ "\"db2\":{\"status\":\"DOWN\",\"details\":{\"a\":\"b\"}}},"
 				+ "\"groups\":[\"liveness\",\"readiness\"]}");
 	}

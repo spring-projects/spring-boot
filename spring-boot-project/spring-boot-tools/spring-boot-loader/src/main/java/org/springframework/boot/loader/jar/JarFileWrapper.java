@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.security.Permission;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
 /**
@@ -68,6 +69,11 @@ class JarFileWrapper extends AbstractJarFile {
 	}
 
 	@Override
+	public Stream<JarEntry> stream() {
+		return this.parent.stream();
+	}
+
+	@Override
 	public JarEntry getJarEntry(String name) {
 		return this.parent.getJarEntry(name);
 	}
@@ -108,11 +114,11 @@ class JarFileWrapper extends AbstractJarFile {
 	}
 
 	static JarFile unwrap(java.util.jar.JarFile jarFile) {
-		if (jarFile instanceof JarFile) {
-			return (JarFile) jarFile;
+		if (jarFile instanceof JarFile file) {
+			return file;
 		}
-		if (jarFile instanceof JarFileWrapper) {
-			return unwrap(((JarFileWrapper) jarFile).parent);
+		if (jarFile instanceof JarFileWrapper wrapper) {
+			return unwrap(wrapper.parent);
 		}
 		throw new IllegalStateException("Not a JarFile or Wrapper");
 	}

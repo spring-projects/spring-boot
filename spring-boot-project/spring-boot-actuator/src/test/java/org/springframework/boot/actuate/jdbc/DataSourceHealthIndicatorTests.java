@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.jdbc;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
@@ -26,7 +27,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
-import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
@@ -34,9 +34,9 @@ import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link DataSourceHealthIndicator}.
@@ -52,7 +52,7 @@ class DataSourceHealthIndicatorTests {
 
 	@BeforeEach
 	void init() {
-		EmbeddedDatabaseConnection db = EmbeddedDatabaseConnection.HSQL;
+		EmbeddedDatabaseConnection db = EmbeddedDatabaseConnection.HSQLDB;
 		this.dataSource = new SingleConnectionDataSource(db.getUrl("testdb") + ";shutdown=true", "sa", "", false);
 		this.dataSource.setDriverClassName(db.getDriverClassName());
 	}
@@ -69,8 +69,8 @@ class DataSourceHealthIndicatorTests {
 		this.indicator.setDataSource(this.dataSource);
 		Health health = this.indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails()).containsOnly(entry("database", "HSQL Database Engine"), entry("result", 1L),
-				entry("validationQuery", DatabaseDriver.HSQLDB.getValidationQuery()));
+		assertThat(health.getDetails()).containsOnly(entry("database", "HSQL Database Engine"),
+				entry("validationQuery", "isValid()"));
 	}
 
 	@Test
@@ -105,8 +105,22 @@ class DataSourceHealthIndicatorTests {
 		given(dataSource.getConnection()).willReturn(connection);
 		this.indicator.setDataSource(dataSource);
 		Health health = this.indicator.health();
-		assertThat(health.getDetails().get("database")).isNotNull();
-		verify(connection, times(2)).close();
+		assertThat(health.getDetails()).containsKey("database");
+		then(connection).should(times(2)).close();
+	}
+
+	@Test
+	void healthIndicatorWithConnectionValidationFailure() throws SQLException {
+		DataSource dataSource = mock(DataSource.class);
+		Connection connection = mock(Connection.class);
+		given(connection.isValid(0)).willReturn(false);
+		given(connection.getMetaData()).willReturn(this.dataSource.getConnection().getMetaData());
+		given(dataSource.getConnection()).willReturn(connection);
+		this.indicator.setDataSource(dataSource);
+		Health health = this.indicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+		assertThat(health.getDetails()).containsOnly(entry("database", "HSQL Database Engine"),
+				entry("validationQuery", "isValid()"));
 	}
 
 }

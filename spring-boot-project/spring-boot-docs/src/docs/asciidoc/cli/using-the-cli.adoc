@@ -1,0 +1,174 @@
+[[cli.using-the-cli]]
+== Using the CLI
+Once you have installed the CLI, you can run it by typing `spring` and pressing Enter at the command line.
+If you run `spring` without any arguments, a help screen is displayed, as follows:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ spring
+	usage: spring [--help] [--version]
+	       <command> [<args>]
+
+	Available commands are:
+
+	  init [options] [location]
+	    Initialize a new project using Spring Initializr (start.spring.io)
+
+	  encodepassword [options] <password to encode>
+	    Encode a password for use with Spring Security
+
+	  shell
+	    Start a nested shell
+
+	Common options:
+
+	  --debug Verbose mode
+	    Print additional status information for the command you are running
+
+
+	See 'spring help <command>' for more information on a specific command.
+----
+
+You can type `spring help` to get more details about any of the supported commands, as shown in the following example:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ spring help init
+	spring init - Initialize a new project using Spring Initializr (start.spring.io)
+
+	usage: spring init [options] [location]
+
+	Option                       Description
+	------                       -----------
+	-a, --artifact-id <String>   Project coordinates; infer archive name (for
+	                               example 'test')
+	-b, --boot-version <String>  Spring Boot version (for example '1.2.0.RELEASE')
+	--build <String>             Build system to use (for example 'maven' or
+	                               'gradle') (default: maven)
+	-d, --dependencies <String>  Comma-separated list of dependency identifiers to
+	                               include in the generated project
+	--description <String>       Project description
+	-f, --force                  Force overwrite of existing files
+	--format <String>            Format of the generated content (for example
+	                               'build' for a build file, 'project' for a
+	                               project archive) (default: project)
+	-g, --group-id <String>      Project coordinates (for example 'org.test')
+	-j, --java-version <String>  Language level (for example '1.8')
+	-l, --language <String>      Programming language  (for example 'java')
+	--list                       List the capabilities of the service. Use it to
+	                               discover the dependencies and the types that are
+	                               available
+	-n, --name <String>          Project name; infer application name
+	-p, --packaging <String>     Project packaging (for example 'jar')
+	--package-name <String>      Package name
+	-t, --type <String>          Project type. Not normally needed if you use --
+	                               build and/or --format. Check the capabilities of
+	                               the service (--list) for more details
+	--target <String>            URL of the service to use (default: https://start.
+	                               spring.io)
+	-v, --version <String>       Project version (for example '0.0.1-SNAPSHOT')
+	-x, --extract                Extract the project archive. Inferred if a
+	                               location is specified without an extension
+
+	examples:
+
+	    To list all the capabilities of the service:
+	        $ spring init --list
+
+	    To creates a default project:
+	        $ spring init
+
+	    To create a web my-app.zip:
+	        $ spring init -d=web my-app.zip
+
+	    To create a web/data-jpa gradle project unpacked:
+	        $ spring init -d=web,jpa --build=gradle my-dir
+----
+
+The `version` command provides a quick way to check which version of Spring Boot you are using, as follows:
+
+[source,shell,indent=0,subs="verbatim,attributes"]
+----
+	$ spring version
+	Spring CLI v{spring-boot-version}
+----
+
+
+
+[[cli.using-the-cli.initialize-new-project]]
+=== Initialize a New Project
+The `init` command lets you create a new project by using https://start.spring.io without leaving the shell, as shown in the following example:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ spring init --dependencies=web,data-jpa my-project
+	Using service at https://start.spring.io
+	Project extracted to '/Users/developer/example/my-project'
+----
+
+The preceding example creates a `my-project` directory with a Maven-based project that uses `spring-boot-starter-web` and `spring-boot-starter-data-jpa`.
+You can list the capabilities of the service by using the `--list` flag, as shown in the following example:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ spring init --list
+	=======================================
+	Capabilities of https://start.spring.io
+	=======================================
+
+	Available dependencies:
+	-----------------------
+	actuator - Actuator: Production ready features to help you monitor and manage your application
+	...
+	web - Web: Support for full-stack web development, including Tomcat and spring-webmvc
+	websocket - Websocket: Support for WebSocket development
+	ws - WS: Support for Spring Web Services
+
+	Available project types:
+	------------------------
+	gradle-build -  Gradle Config [format:build, build:gradle]
+	gradle-project -  Gradle Project [format:project, build:gradle]
+	maven-build -  Maven POM [format:build, build:maven]
+	maven-project -  Maven Project [format:project, build:maven] (default)
+
+	...
+----
+
+The `init` command supports many options.
+See the `help` output for more details.
+For instance, the following command creates a Gradle project that uses Java 17 and `war` packaging:
+
+[source,shell,indent=0,subs="verbatim"]
+----
+	$ spring init --build=gradle --java-version=17 --dependencies=websocket --packaging=war sample-app.zip
+	Using service at https://start.spring.io
+	Content saved to 'sample-app.zip'
+----
+
+
+
+[[cli.using-the-cli.embedded-shell]]
+=== Using the Embedded Shell
+Spring Boot includes command-line completion scripts for the BASH and zsh shells.
+If you do not use either of these shells (perhaps you are a Windows user), you can use the `shell` command to launch an integrated shell, as shown in the following example:
+
+[source,shell,indent=0,subs="verbatim,quotes,attributes"]
+----
+	$ spring shell
+	*Spring Boot* (v{spring-boot-version})
+	Hit TAB to complete. Type \'help' and hit RETURN for help, and \'exit' to quit.
+----
+
+From inside the embedded shell, you can run other commands directly:
+
+[source,shell,indent=0,subs="verbatim,attributes"]
+----
+	$ version
+	Spring CLI v{spring-boot-version}
+----
+
+The embedded shell supports ANSI color output as well as `tab` completion.
+If you need to run a native command, you can use the `!` prefix.
+To exit the embedded shell, press `ctrl-c`.
+
+

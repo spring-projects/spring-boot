@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,28 +114,28 @@ abstract class AbstractJerseySecureTests {
 
 	@Test
 	void secureServletEndpointWithAnonymous() {
-		ResponseEntity<String> entity = restTemplate().getForEntity(getManagementPath() + "/actuator/jolokia",
+		ResponseEntity<String> entity = restTemplate().getForEntity(getManagementPath() + "/actuator/se1",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		entity = restTemplate().getForEntity(getManagementPath() + "/actuator/jolokia/list", String.class);
+		entity = restTemplate().getForEntity(getManagementPath() + "/actuator/se1/list", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 	}
 
 	@Test
 	void secureServletEndpointWithUnauthorizedUser() {
-		ResponseEntity<String> entity = userRestTemplate().getForEntity(getManagementPath() + "/actuator/jolokia",
+		ResponseEntity<String> entity = userRestTemplate().getForEntity(getManagementPath() + "/actuator/se1",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
-		entity = userRestTemplate().getForEntity(getManagementPath() + "/actuator/jolokia/list", String.class);
+		entity = userRestTemplate().getForEntity(getManagementPath() + "/actuator/se1/list", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 
 	@Test
 	void secureServletEndpointWithAuthorizedUser() {
-		ResponseEntity<String> entity = adminRestTemplate().getForEntity(getManagementPath() + "/actuator/jolokia",
+		ResponseEntity<String> entity = adminRestTemplate().getForEntity(getManagementPath() + "/actuator/se1",
 				String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		entity = adminRestTemplate().getForEntity(getManagementPath() + "/actuator/jolokia/list", String.class);
+		entity = adminRestTemplate().getForEntity(getManagementPath() + "/actuator/se1/list", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 

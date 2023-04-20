@@ -37,11 +37,6 @@ public abstract class PushRegistryPropertiesConfigAdapter<T extends PushRegistry
 	}
 
 	@Override
-	public String prefix() {
-		return null;
-	}
-
-	@Override
 	public String get(String k) {
 		return null;
 	}
@@ -54,12 +49,6 @@ public abstract class PushRegistryPropertiesConfigAdapter<T extends PushRegistry
 	@Override
 	public boolean enabled() {
 		return get(T::isEnabled, PushRegistryConfig.super::enabled);
-	}
-
-	@Override
-	@SuppressWarnings("deprecation")
-	public int numThreads() {
-		return get(T::getNumThreads, PushRegistryConfig.super::numThreads);
 	}
 
 	@Override

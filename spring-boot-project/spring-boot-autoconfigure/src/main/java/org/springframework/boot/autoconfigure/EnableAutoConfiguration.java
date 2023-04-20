@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,12 @@ import java.lang.annotation.Target;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.annotation.ImportCandidates;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 
 /**
  * Enable auto-configuration of the Spring Application Context, attempting to guess and
@@ -48,21 +48,20 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * Auto-configuration tries to be as intelligent as possible and will back-away as you
  * define more of your own configuration. You can always manually {@link #exclude()} any
  * configuration that you never want to apply (use {@link #excludeName()} if you don't
- * have access to them). You can also exclude them via the
+ * have access to them). You can also exclude them through the
  * {@code spring.autoconfigure.exclude} property. Auto-configuration is always applied
  * after user-defined beans have been registered.
  * <p>
  * The package of the class that is annotated with {@code @EnableAutoConfiguration},
- * usually via {@code @SpringBootApplication}, has specific significance and is often used
- * as a 'default'. For example, it will be used when scanning for {@code @Entity} classes.
- * It is generally recommended that you place {@code @EnableAutoConfiguration} (if you're
- * not using {@code @SpringBootApplication}) in a root package so that all sub-packages
- * and classes can be searched.
+ * usually through {@code @SpringBootApplication}, has specific significance and is often
+ * used as a 'default'. For example, it will be used when scanning for {@code @Entity}
+ * classes. It is generally recommended that you place {@code @EnableAutoConfiguration}
+ * (if you're not using {@code @SpringBootApplication}) in a root package so that all
+ * sub-packages and classes can be searched.
  * <p>
  * Auto-configuration classes are regular Spring {@link Configuration @Configuration}
- * beans. They are located using the {@link SpringFactoriesLoader} mechanism (keyed
- * against this class). Generally auto-configuration beans are
- * {@link Conditional @Conditional} beans (most often using
+ * beans. They are located using {@link ImportCandidates}. Generally auto-configuration
+ * beans are {@link Conditional @Conditional} beans (most often using
  * {@link ConditionalOnClass @ConditionalOnClass} and
  * {@link ConditionalOnMissingBean @ConditionalOnMissingBean} annotations).
  *

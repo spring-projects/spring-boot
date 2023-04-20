@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 
 import java.io.File;
 
-import javax.servlet.Filter;
-
+import jakarta.servlet.Filter;
 import org.apache.catalina.Valve;
 import org.apache.catalina.valves.AccessLogValve;
 import org.eclipse.jetty.server.CustomRequestLog;
@@ -50,6 +49,7 @@ import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -108,6 +108,13 @@ class ServletManagementChildContextConfiguration {
 			return parent.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN, Filter.class);
 		}
 
+		@Bean
+		@ConditionalOnBean(name = "securityFilterChainRegistration", search = SearchStrategy.ANCESTORS)
+		DelegatingFilterProxyRegistrationBean securityFilterChainRegistration(HierarchicalBeanFactory beanFactory) {
+			return beanFactory.getParentBeanFactory()
+				.getBean("securityFilterChainRegistration", DelegatingFilterProxyRegistrationBean.class);
+		}
+
 	}
 
 	static class ServletManagementWebServerFactoryCustomizer
@@ -123,7 +130,12 @@ class ServletManagementChildContextConfiguration {
 		protected void customize(ConfigurableServletWebServerFactory webServerFactory,
 				ManagementServerProperties managementServerProperties, ServerProperties serverProperties) {
 			super.customize(webServerFactory, managementServerProperties, serverProperties);
-			webServerFactory.setContextPath(managementServerProperties.getServlet().getContextPath());
+			webServerFactory.setContextPath(getContextPath(managementServerProperties));
+		}
+
+		private String getContextPath(ManagementServerProperties managementServerProperties) {
+			String basePath = managementServerProperties.getBasePath();
+			return StringUtils.hasText(basePath) ? basePath : "";
 		}
 
 	}
@@ -161,8 +173,8 @@ class ServletManagementChildContextConfiguration {
 
 		private AccessLogValve findAccessLogValve(TomcatServletWebServerFactory factory) {
 			for (Valve engineValve : factory.getEngineValves()) {
-				if (engineValve instanceof AccessLogValve) {
-					return (AccessLogValve) engineValve;
+				if (engineValve instanceof AccessLogValve accessLogValve) {
+					return accessLogValve;
 				}
 			}
 			return null;
@@ -190,14 +202,14 @@ class ServletManagementChildContextConfiguration {
 
 		private void customizeServer(Server server) {
 			RequestLog requestLog = server.getRequestLog();
-			if (requestLog instanceof CustomRequestLog) {
-				customizeRequestLog((CustomRequestLog) requestLog);
+			if (requestLog instanceof CustomRequestLog customRequestLog) {
+				customizeRequestLog(customRequestLog);
 			}
 		}
 
 		private void customizeRequestLog(CustomRequestLog requestLog) {
-			if (requestLog.getWriter() instanceof RequestLogWriter) {
-				customizeRequestLogWriter((RequestLogWriter) requestLog.getWriter());
+			if (requestLog.getWriter() instanceof RequestLogWriter requestLogWriter) {
+				customizeRequestLogWriter(requestLogWriter);
 			}
 		}
 

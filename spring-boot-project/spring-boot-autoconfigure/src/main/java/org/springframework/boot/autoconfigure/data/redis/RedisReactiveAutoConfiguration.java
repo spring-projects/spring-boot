@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,12 @@ package org.springframework.boot.autoconfigure.data.redis;
 
 import reactor.core.publisher.Flux;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
@@ -40,9 +39,8 @@ import org.springframework.data.redis.serializer.RedisSerializationContext;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = RedisAutoConfiguration.class)
 @ConditionalOnClass({ ReactiveRedisConnectionFactory.class, ReactiveRedisTemplate.class, Flux.class })
-@AutoConfigureAfter(RedisAutoConfiguration.class)
 public class RedisReactiveAutoConfiguration {
 
 	@Bean
@@ -53,8 +51,12 @@ public class RedisReactiveAutoConfiguration {
 		JdkSerializationRedisSerializer jdkSerializer = new JdkSerializationRedisSerializer(
 				resourceLoader.getClassLoader());
 		RedisSerializationContext<Object, Object> serializationContext = RedisSerializationContext
-				.newSerializationContext().key(jdkSerializer).value(jdkSerializer).hashKey(jdkSerializer)
-				.hashValue(jdkSerializer).build();
+			.newSerializationContext()
+			.key(jdkSerializer)
+			.value(jdkSerializer)
+			.hashKey(jdkSerializer)
+			.hashValue(jdkSerializer)
+			.build();
 		return new ReactiveRedisTemplate<>(reactiveRedisConnectionFactory, serializationContext);
 	}
 

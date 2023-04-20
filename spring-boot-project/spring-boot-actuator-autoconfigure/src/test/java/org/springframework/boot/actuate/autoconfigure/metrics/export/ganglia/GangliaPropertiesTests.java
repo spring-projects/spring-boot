@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,7 @@ class GangliaPropertiesTests {
 		GangliaConfig config = GangliaConfig.DEFAULT;
 		assertThat(properties.isEnabled()).isEqualTo(config.enabled());
 		assertThat(properties.getStep()).isEqualTo(config.step());
-		assertThat(properties.getRateUnits()).isEqualTo(config.rateUnits());
 		assertThat(properties.getDurationUnits()).isEqualTo(config.durationUnits());
-		assertThat(properties.getProtocolVersion()).isEqualTo(config.protocolVersion());
 		assertThat(properties.getAddressingMode()).isEqualTo(config.addressingMode());
 		assertThat(properties.getTimeToLive()).isEqualTo(config.ttl());
 		assertThat(properties.getHost()).isEqualTo(config.host());

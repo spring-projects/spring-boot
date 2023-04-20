@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.context.properties.bind.Nested;
+
 /**
  * Indicates that a field in a {@link ConfigurationProperties @ConfigurationProperties}
  * object should be treated as if it were a nested type. This annotation has no bearing on
@@ -39,6 +41,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Nested
 public @interface NestedConfigurationProperty {
 
 }

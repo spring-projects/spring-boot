@@ -1,0 +1,14 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+tasks.named("bootJar") {
+	mainClass = 'com.example.ExampleApplication'
+}
+
+// tag::include-launch-script[]
+tasks.named("bootJar") {
+	launchScript()
+}
+// end::include-launch-script[]

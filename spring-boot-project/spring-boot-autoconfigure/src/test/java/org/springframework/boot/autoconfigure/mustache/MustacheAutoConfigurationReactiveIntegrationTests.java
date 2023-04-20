@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,15 +56,27 @@ class MustacheAutoConfigurationReactiveIntegrationTests {
 
 	@Test
 	void testHomePage() {
-		String result = this.client.get().uri("/").exchange().expectStatus().isOk().expectBody(String.class)
-				.returnResult().getResponseBody();
+		String result = this.client.get()
+			.uri("/")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody(String.class)
+			.returnResult()
+			.getResponseBody();
 		assertThat(result).contains("Hello App").contains("Hello World");
 	}
 
 	@Test
 	void testPartialPage() {
-		String result = this.client.get().uri("/partial").exchange().expectStatus().isOk().expectBody(String.class)
-				.returnResult().getResponseBody();
+		String result = this.client.get()
+			.uri("/partial")
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody(String.class)
+			.returnResult()
+			.getResponseBody();
 		assertThat(result).contains("Hello App").contains("Hello World");
 	}
 
@@ -93,7 +105,7 @@ class MustacheAutoConfigurationReactiveIntegrationTests {
 		@Bean
 		MustacheViewResolver viewResolver() {
 			Mustache.Compiler compiler = Mustache.compiler()
-					.withLoader(new MustacheResourceTemplateLoader("classpath:/mustache-templates/", ".html"));
+				.withLoader(new MustacheResourceTemplateLoader("classpath:/mustache-templates/", ".html"));
 			MustacheViewResolver resolver = new MustacheViewResolver(compiler);
 			resolver.setPrefix("classpath:/mustache-templates/");
 			resolver.setSuffix(".html");

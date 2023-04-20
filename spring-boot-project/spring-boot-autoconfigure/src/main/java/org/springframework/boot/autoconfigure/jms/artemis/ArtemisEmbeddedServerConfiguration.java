@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,9 @@
 
 package org.springframework.boot.autoconfigure.jms.artemis;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+import org.apache.activemq.artemis.api.core.QueueConfiguration;
 import org.apache.activemq.artemis.api.core.RoutingType;
 import org.apache.activemq.artemis.core.config.CoreAddressConfiguration;
-import org.apache.activemq.artemis.core.config.CoreQueueConfiguration;
 import org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ;
 import org.apache.activemq.artemis.jms.server.config.JMSConfiguration;
 import org.apache.activemq.artemis.jms.server.config.JMSQueueConfiguration;
@@ -65,19 +62,20 @@ class ArtemisEmbeddedServerConfiguration {
 	@Bean(initMethod = "start", destroyMethod = "stop")
 	@ConditionalOnMissingBean
 	EmbeddedActiveMQ embeddedActiveMq(org.apache.activemq.artemis.core.config.Configuration configuration,
-			JMSConfiguration jmsConfiguration, ObjectProvider<ArtemisConfigurationCustomizer> configurationCustomizers)
-			throws Exception {
+			JMSConfiguration jmsConfiguration,
+			ObjectProvider<ArtemisConfigurationCustomizer> configurationCustomizers) {
 		for (JMSQueueConfiguration queueConfiguration : jmsConfiguration.getQueueConfigurations()) {
 			String queueName = queueConfiguration.getName();
-			configuration.addAddressConfiguration(
-					new CoreAddressConfiguration().setName(queueName).addRoutingType(RoutingType.ANYCAST)
-							.addQueueConfiguration(new CoreQueueConfiguration().setAddress(queueName).setName(queueName)
-									.setFilterString(queueConfiguration.getSelector())
-									.setDurable(queueConfiguration.isDurable()).setRoutingType(RoutingType.ANYCAST)));
+			configuration.addAddressConfiguration(new CoreAddressConfiguration().setName(queueName)
+				.addRoutingType(RoutingType.ANYCAST)
+				.addQueueConfiguration(new QueueConfiguration(queueName).setAddress(queueName)
+					.setFilterString(queueConfiguration.getSelector())
+					.setDurable(queueConfiguration.isDurable())
+					.setRoutingType(RoutingType.ANYCAST)));
 		}
 		for (TopicConfiguration topicConfiguration : jmsConfiguration.getTopicConfigurations()) {
 			configuration.addAddressConfiguration(new CoreAddressConfiguration().setName(topicConfiguration.getName())
-					.addRoutingType(RoutingType.MULTICAST));
+				.addRoutingType(RoutingType.MULTICAST));
 		}
 		configurationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(configuration));
 		EmbeddedActiveMQ embeddedActiveMq = new EmbeddedActiveMQ();
@@ -90,17 +88,11 @@ class ArtemisEmbeddedServerConfiguration {
 	JMSConfiguration artemisJmsConfiguration(ObjectProvider<JMSQueueConfiguration> queuesConfiguration,
 			ObjectProvider<TopicConfiguration> topicsConfiguration) {
 		JMSConfiguration configuration = new JMSConfigurationImpl();
-		addAll(configuration.getQueueConfigurations(), queuesConfiguration);
-		addAll(configuration.getTopicConfigurations(), topicsConfiguration);
+		configuration.getQueueConfigurations().addAll(queuesConfiguration.orderedStream().toList());
+		configuration.getTopicConfigurations().addAll(topicsConfiguration.orderedStream().toList());
 		addQueues(configuration, this.properties.getEmbedded().getQueues());
 		addTopics(configuration, this.properties.getEmbedded().getTopics());
 		return configuration;
-	}
-
-	private <T> void addAll(List<T> list, ObjectProvider<T> items) {
-		if (items != null) {
-			list.addAll(items.orderedStream().collect(Collectors.toList()));
-		}
 	}
 
 	private void addQueues(JMSConfiguration configuration, String[] queues) {

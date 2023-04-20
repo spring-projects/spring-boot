@@ -1,0 +1,23 @@
+[[getting-started]]
+= Getting Started
+include::attributes.adoc[]
+
+
+
+If you are getting started with Spring Boot, or "`Spring`" in general, start by reading this section.
+It answers the basic "`what?`", "`how?`" and "`why?`" questions.
+It includes an introduction to Spring Boot, along with installation instructions.
+We then walk you through building your first Spring Boot application, discussing some core principles as we go.
+
+
+
+include::getting-started/introducing-spring-boot.adoc[]
+
+include::getting-started/system-requirements.adoc[]
+
+include::getting-started/installing.adoc[]
+
+include::getting-started/first-application.adoc[]
+
+include::getting-started/whats-next.adoc[]
+

@@ -1,0 +1,52 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: snicoll
+      changes:
+        - createTable:
+            tableName: city
+            columns:
+              - column:
+                  name: id
+                  type: int
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(30)
+              - column:
+                  name: state
+                  type: varchar(30)
+              - column:
+                  name: country
+                  type: varchar(30)
+  - changeSet:
+      id: 2
+      author: snicoll
+      changes:
+        - insert:
+            tableName: city
+            columns:
+              - column:
+                  name: name
+                  value: Washington
+              - column:
+                  name: state
+                  value: DC
+              - column:
+                  name: country
+                  value: US
+        - insert:
+            tableName: city
+            columns:
+              - column:
+                  name: name
+                  value: San Francisco
+              - column:
+                  name: state
+                  value: CA
+              - column:
+                  name: country
+                  value: US

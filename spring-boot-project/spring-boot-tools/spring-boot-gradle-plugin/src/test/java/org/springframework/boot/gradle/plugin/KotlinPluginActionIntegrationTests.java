@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,18 @@
 
 package org.springframework.boot.gradle.plugin;
 
-import org.junit.jupiter.api.TestTemplate;
-import org.junit.jupiter.api.extension.ExtendWith;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.HashSet;
+import java.util.Set;
 
-import org.springframework.boot.gradle.junit.GradleCompatibilityExtension;
-import org.springframework.boot.gradle.testkit.GradleBuild;
+import org.gradle.testkit.runner.BuildResult;
+import org.gradle.util.GradleVersion;
+import org.junit.jupiter.api.TestTemplate;
+
+import org.springframework.boot.gradle.junit.GradleCompatibility;
+import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@ExtendWith(GradleCompatibilityExtension.class)
+@GradleCompatibility
 class KotlinPluginActionIntegrationTests {
 
 	GradleBuild gradleBuild;
@@ -41,21 +48,46 @@ class KotlinPluginActionIntegrationTests {
 
 	@TestTemplate
 	void kotlinVersionPropertyIsSet() {
-		String output = this.gradleBuild.build("kotlinVersion", "dependencies", "--configuration", "compileClasspath")
-				.getOutput();
+		String output = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.1-rc-1")
+			.build("kotlinVersion", "dependencies", "--configuration", "compileClasspath")
+			.getOutput();
 		assertThat(output).containsPattern("Kotlin version: [0-9]\\.[0-9]\\.[0-9]+");
 	}
 
 	@TestTemplate
 	void kotlinCompileTasksUseJavaParametersFlagByDefault() {
-		assertThat(this.gradleBuild.build("kotlinCompileTasksJavaParameters").getOutput())
-				.contains("compileKotlin java parameters: true").contains("compileTestKotlin java parameters: true");
+		assertThat(this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.1-rc-1")
+			.build("kotlinCompileTasksJavaParameters")
+			.getOutput()).contains("compileKotlin java parameters: true")
+			.contains("compileTestKotlin java parameters: true");
 	}
 
 	@TestTemplate
 	void kotlinCompileTasksCanOverrideDefaultJavaParametersFlag() {
-		assertThat(this.gradleBuild.build("kotlinCompileTasksJavaParameters").getOutput())
-				.contains("compileKotlin java parameters: false").contains("compileTestKotlin java parameters: false");
+		assertThat(this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.1-rc-1")
+			.build("kotlinCompileTasksJavaParameters")
+			.getOutput()).contains("compileKotlin java parameters: false")
+			.contains("compileTestKotlin java parameters: false");
+	}
+
+	@TestTemplate
+	void taskConfigurationIsAvoided() throws IOException {
+		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.1-rc-1").build("help");
+		String output = result.getOutput();
+		BufferedReader reader = new BufferedReader(new StringReader(output));
+		String line;
+		Set<String> configured = new HashSet<>();
+		while ((line = reader.readLine()) != null) {
+			if (line.startsWith("Configuring :")) {
+				configured.add(line.substring("Configuring :".length()));
+			}
+		}
+		if (GradleVersion.version(this.gradleBuild.getGradleVersion()).compareTo(GradleVersion.version("7.3.3")) < 0) {
+			assertThat(configured).containsExactly("help");
+		}
+		else {
+			assertThat(configured).containsExactlyInAnyOrder("help", "clean");
+		}
 	}
 
 }

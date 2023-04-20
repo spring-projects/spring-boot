@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,17 +23,30 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation that can be used to indicate that configuration properties should be bound
- * using constructor arguments rather than by calling setters. Can be added at the type
- * level (if there is an unambiguous constructor) or on the actual constructor to use.
+ * Annotation that can be used to indicate which constructor to use when binding
+ * configuration properties using constructor arguments rather than by calling setters. A
+ * single parameterized constructor implicitly indicates that constructor binding should
+ * be used unless the constructor is annotated with `@Autowired`.
+ * <p>
+ * Note: To use constructor binding the class must be enabled using
+ * {@link EnableConfigurationProperties @EnableConfigurationProperties} or configuration
+ * property scanning. Constructor binding cannot be used with beans that are created by
+ * the regular Spring mechanisms (e.g.
+ * {@link org.springframework.stereotype.Component @Component} beans, beans created via
+ * {@link org.springframework.context.annotation.Bean @Bean} methods or beans loaded using
+ * {@link org.springframework.context.annotation.Import @Import}).
  *
  * @author Phillip Webb
  * @since 2.2.0
  * @see ConfigurationProperties
+ * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
+ * {@link org.springframework.boot.context.properties.bind.ConstructorBinding}
  */
-@Target({ ElementType.TYPE, ElementType.CONSTRUCTOR })
+@Target({ ElementType.CONSTRUCTOR, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
+@Deprecated(since = "3.0.0", forRemoval = true)
+@org.springframework.boot.context.properties.bind.ConstructorBinding
 public @interface ConstructorBinding {
 
 }

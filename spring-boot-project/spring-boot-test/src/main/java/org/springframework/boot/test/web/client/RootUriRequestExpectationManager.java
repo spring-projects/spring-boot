@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.http.client.ClientHttpRequest;
@@ -95,9 +96,9 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 		URI uri;
 		try {
 			uri = new URI(replacementUri);
-			if (request instanceof MockClientHttpRequest) {
-				((MockClientHttpRequest) request).setURI(uri);
-				return request;
+			if (request instanceof MockClientHttpRequest mockClientHttpRequest) {
+				mockClientHttpRequest.setURI(uri);
+				return mockClientHttpRequest;
 			}
 			return new ReplaceUriClientHttpRequest(uri, request);
 		}
@@ -109,6 +110,11 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 	@Override
 	public void verify() {
 		this.expectationManager.verify();
+	}
+
+	@Override
+	public void verify(Duration timeout) {
+		this.expectationManager.verify(timeout);
 	}
 
 	@Override
@@ -152,9 +158,8 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 			RequestExpectationManager expectationManager) {
 		Assert.notNull(restTemplate, "RestTemplate must not be null");
 		UriTemplateHandler templateHandler = restTemplate.getUriTemplateHandler();
-		if (templateHandler instanceof RootUriTemplateHandler) {
-			return new RootUriRequestExpectationManager(((RootUriTemplateHandler) templateHandler).getRootUri(),
-					expectationManager);
+		if (templateHandler instanceof RootUriTemplateHandler rootHandler) {
+			return new RootUriRequestExpectationManager(rootHandler.getRootUri(), expectationManager);
 		}
 		return expectationManager;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package org.springframework.boot.autoconfigure.data.couchbase;
 
-import javax.validation.Validator;
-
 import com.couchbase.client.java.Bucket;
+import jakarta.validation.Validator;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
@@ -40,11 +39,11 @@ import org.springframework.data.couchbase.repository.CouchbaseRepository;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = { CouchbaseAutoConfiguration.class, ValidationAutoConfiguration.class })
 @ConditionalOnClass({ Bucket.class, CouchbaseRepository.class })
-@AutoConfigureAfter({ CouchbaseAutoConfiguration.class, ValidationAutoConfiguration.class })
 @EnableConfigurationProperties(CouchbaseDataProperties.class)
-@Import({ CouchbaseConfigurerAdapterConfiguration.class, SpringBootCouchbaseDataConfiguration.class })
+@Import({ CouchbaseDataConfiguration.class, CouchbaseClientFactoryConfiguration.class,
+		CouchbaseClientFactoryDependentConfiguration.class })
 public class CouchbaseDataAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)

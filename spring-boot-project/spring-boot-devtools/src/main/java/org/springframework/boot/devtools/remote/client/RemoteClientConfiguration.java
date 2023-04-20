@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ package org.springframework.boot.devtools.remote.client;
 import java.net.InetSocketAddress;
 import java.net.Proxy.Type;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -90,12 +90,12 @@ public class RemoteClientConfiguration implements InitializingBean {
 
 	@Bean
 	public ClientHttpRequestFactory clientHttpRequestFactory() {
-		List<ClientHttpRequestInterceptor> interceptors = Arrays.asList(getSecurityInterceptor());
+		List<ClientHttpRequestInterceptor> interceptors = Collections.singletonList(getSecurityInterceptor());
 		SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
 		Proxy proxy = this.properties.getRemote().getProxy();
 		if (proxy.getHost() != null && proxy.getPort() != null) {
 			requestFactory
-					.setProxy(new java.net.Proxy(Type.HTTP, new InetSocketAddress(proxy.getHost(), proxy.getPort())));
+				.setProxy(new java.net.Proxy(Type.HTTP, new InetSocketAddress(proxy.getHost(), proxy.getPort())));
 		}
 		return new InterceptingClientHttpRequestFactory(requestFactory, interceptors);
 	}
@@ -139,7 +139,7 @@ public class RemoteClientConfiguration implements InitializingBean {
 
 		private final String remoteUrl;
 
-		private ExecutorService executor = Executors.newSingleThreadExecutor();
+		private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
 		LiveReloadConfiguration(DevToolsProperties properties, ClientHttpRequestFactory clientHttpRequestFactory,
 				@Value("${remoteUrl}") String remoteUrl) {

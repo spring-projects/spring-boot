@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,17 +44,17 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 class SpringApplicationJsonEnvironmentPostProcessorTests {
 
-	private SpringApplicationJsonEnvironmentPostProcessor processor = new SpringApplicationJsonEnvironmentPostProcessor();
+	private final SpringApplicationJsonEnvironmentPostProcessor processor = new SpringApplicationJsonEnvironmentPostProcessor();
 
-	private ConfigurableEnvironment environment = new StandardEnvironment();
+	private final ConfigurableEnvironment environment = new StandardEnvironment();
 
 	@Test
 	void error() {
 		assertThat(this.environment.resolvePlaceholders("${foo:}")).isEmpty();
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "spring.application.json=foo:bar");
 		assertThatExceptionOfType(JsonParseException.class)
-				.isThrownBy(() -> this.processor.postProcessEnvironment(this.environment, null))
-				.withMessageContaining("Cannot parse JSON");
+			.isThrownBy(() -> this.processor.postProcessEnvironment(this.environment, null))
+			.withMessageContaining("Cannot parse JSON");
 	}
 
 	@Test

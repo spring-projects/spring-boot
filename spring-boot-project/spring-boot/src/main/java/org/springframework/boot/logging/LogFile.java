@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,22 +36,6 @@ import org.springframework.util.StringUtils;
  * @see #get(PropertyResolver)
  */
 public class LogFile {
-
-	/**
-	 * The name of the Spring property that contains the name of the log file. Names can
-	 * be an exact location or relative to the current directory.
-	 * @deprecated since 2.2.0 in favor of {@link #FILE_NAME_PROPERTY}
-	 */
-	@Deprecated
-	public static final String FILE_PROPERTY = "logging.file";
-
-	/**
-	 * The name of the Spring property that contains the directory where log files are
-	 * written.
-	 * @deprecated since 2.2.0 in favor of {@link #FILE_PATH_PROPERTY}
-	 */
-	@Deprecated
-	public static final String PATH_PROPERTY = "logging.path";
 
 	/**
 	 * The name of the Spring property that contains the name of the log file. Names can
@@ -128,21 +112,12 @@ public class LogFile {
 	 * suitable properties
 	 */
 	public static LogFile get(PropertyResolver propertyResolver) {
-		String file = getLogFileProperty(propertyResolver, FILE_NAME_PROPERTY, FILE_PROPERTY);
-		String path = getLogFileProperty(propertyResolver, FILE_PATH_PROPERTY, PATH_PROPERTY);
+		String file = propertyResolver.getProperty(FILE_NAME_PROPERTY);
+		String path = propertyResolver.getProperty(FILE_PATH_PROPERTY);
 		if (StringUtils.hasLength(file) || StringUtils.hasLength(path)) {
 			return new LogFile(file, path);
 		}
 		return null;
-	}
-
-	private static String getLogFileProperty(PropertyResolver propertyResolver, String propertyName,
-			String deprecatedPropertyName) {
-		String property = propertyResolver.getProperty(propertyName);
-		if (property != null) {
-			return property;
-		}
-		return propertyResolver.getProperty(deprecatedPropertyName);
 	}
 
 }

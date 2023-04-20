@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,14 +32,14 @@ class ConfigurationPropertyNameAliasesTests {
 	@Test
 	void createWithStringWhenNullNameShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigurationPropertyNameAliases((String) null))
-				.withMessageContaining("Name must not be null");
+			.withMessageContaining("Name must not be null");
 	}
 
 	@Test
 	void createWithStringShouldAddMapping() {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases("foo", "bar", "baz");
 		assertThat(aliases.getAliases(ConfigurationPropertyName.of("foo")))
-				.containsExactly(ConfigurationPropertyName.of("bar"), ConfigurationPropertyName.of("baz"));
+			.containsExactly(ConfigurationPropertyName.of("bar"), ConfigurationPropertyName.of("baz"));
 	}
 
 	@Test
@@ -48,7 +48,7 @@ class ConfigurationPropertyNameAliasesTests {
 				ConfigurationPropertyName.of("foo"), ConfigurationPropertyName.of("bar"),
 				ConfigurationPropertyName.of("baz"));
 		assertThat(aliases.getAliases(ConfigurationPropertyName.of("foo")))
-				.containsExactly(ConfigurationPropertyName.of("bar"), ConfigurationPropertyName.of("baz"));
+			.containsExactly(ConfigurationPropertyName.of("bar"), ConfigurationPropertyName.of("baz"));
 	}
 
 	@Test
@@ -56,7 +56,7 @@ class ConfigurationPropertyNameAliasesTests {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases("foo", "bar", "baz");
 		assertThat(aliases.getAliases(ConfigurationPropertyName.of("foo")))
-				.containsExactly(ConfigurationPropertyName.of("bar"), ConfigurationPropertyName.of("baz"));
+			.containsExactly(ConfigurationPropertyName.of("bar"), ConfigurationPropertyName.of("baz"));
 	}
 
 	@Test
@@ -65,7 +65,7 @@ class ConfigurationPropertyNameAliasesTests {
 		aliases.addAliases(ConfigurationPropertyName.of("foo"), ConfigurationPropertyName.of("bar"),
 				ConfigurationPropertyName.of("baz"));
 		assertThat(aliases.getAliases(ConfigurationPropertyName.of("foo")))
-				.containsExactly(ConfigurationPropertyName.of("bar"), ConfigurationPropertyName.of("baz"));
+			.containsExactly(ConfigurationPropertyName.of("bar"), ConfigurationPropertyName.of("baz"));
 	}
 
 	@Test
@@ -74,7 +74,7 @@ class ConfigurationPropertyNameAliasesTests {
 		aliases.addAliases("foo", "bar");
 		aliases.addAliases("foo", "baz");
 		assertThat(aliases.getAliases(ConfigurationPropertyName.of("foo")))
-				.containsExactly(ConfigurationPropertyName.of("bar"), ConfigurationPropertyName.of("baz"));
+			.containsExactly(ConfigurationPropertyName.of("bar"), ConfigurationPropertyName.of("baz"));
 	}
 
 	@Test
@@ -88,7 +88,7 @@ class ConfigurationPropertyNameAliasesTests {
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases("foo", "bar");
 		assertThat(aliases.getAliases(ConfigurationPropertyName.of("foo")))
-				.containsExactly(ConfigurationPropertyName.of("bar"));
+			.containsExactly(ConfigurationPropertyName.of("bar"));
 	}
 
 	@Test
@@ -97,9 +97,9 @@ class ConfigurationPropertyNameAliasesTests {
 		aliases.addAliases("foo", "bar");
 		aliases.addAliases("foo", "baz");
 		assertThat((Object) aliases.getNameForAlias(ConfigurationPropertyName.of("bar")))
-				.isEqualTo(ConfigurationPropertyName.of("foo"));
+			.isEqualTo(ConfigurationPropertyName.of("foo"));
 		assertThat((Object) aliases.getNameForAlias(ConfigurationPropertyName.of("baz")))
-				.isEqualTo(ConfigurationPropertyName.of("foo"));
+			.isEqualTo(ConfigurationPropertyName.of("foo"));
 	}
 
 	@Test

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- tag::docker-token-authentication[] -->
+<project>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<docker>
+						<builderRegistry>
+							<token>9cbaf023786cd7...</token>
+						</builderRegistry>
+					</docker>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+<!-- end::docker-token-authentication[] -->
+

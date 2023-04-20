@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,12 @@ import org.apache.tomcat.jdbc.pool.interceptor.SlowQueryReport;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -41,12 +44,19 @@ import static org.junit.jupiter.api.Assertions.fail;
  *
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class TomcatDataSourceConfigurationTests {
 
 	private static final String PREFIX = "spring.datasource.tomcat.";
 
 	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+		.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+		.withPropertyValues("spring.datasource.type=" + org.apache.tomcat.jdbc.pool.DataSource.class.getName());
 
 	@BeforeEach
 	void init() {
@@ -66,11 +76,11 @@ class TomcatDataSourceConfigurationTests {
 	void testDataSourcePropertiesOverridden() throws Exception {
 		this.context.register(TomcatDataSourceConfiguration.class);
 		TestPropertyValues
-				.of(PREFIX + "url:jdbc:h2:mem:testdb", PREFIX + "testWhileIdle:true", PREFIX + "testOnBorrow:true",
-						PREFIX + "testOnReturn:true", PREFIX + "timeBetweenEvictionRunsMillis:10000",
-						PREFIX + "minEvictableIdleTimeMillis:12345", PREFIX + "maxWait:1234",
-						PREFIX + "jdbcInterceptors:SlowQueryReport", PREFIX + "validationInterval:9999")
-				.applyTo(this.context);
+			.of(PREFIX + "url:jdbc:h2:mem:testdb", PREFIX + "testWhileIdle:true", PREFIX + "testOnBorrow:true",
+					PREFIX + "testOnReturn:true", PREFIX + "timeBetweenEvictionRunsMillis:10000",
+					PREFIX + "minEvictableIdleTimeMillis:12345", PREFIX + "maxWait:1234",
+					PREFIX + "jdbcInterceptors:SlowQueryReport", PREFIX + "validationInterval:9999")
+			.applyTo(this.context);
 		this.context.refresh();
 		org.apache.tomcat.jdbc.pool.DataSource ds = this.context.getBean(org.apache.tomcat.jdbc.pool.DataSource.class);
 		assertThat(ds.getUrl()).isEqualTo("jdbc:h2:mem:testdb");
@@ -104,6 +114,25 @@ class TomcatDataSourceConfigurationTests {
 		assertThat(ds.getMinEvictableIdleTimeMillis()).isEqualTo(60000);
 		assertThat(ds.getMaxWait()).isEqualTo(30000);
 		assertThat(ds.getValidationInterval()).isEqualTo(3000L);
+	}
+
+	@Test
+	void usesCustomJdbcConnectionDetailsWhenDefined() {
+		this.contextRunner.withBean(JdbcConnectionDetails.class, TestJdbcConnectionDetails::new)
+			.withPropertyValues(PREFIX + "url=jdbc:broken", PREFIX + "username=alice", PREFIX + "password=secret")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JdbcConnectionDetails.class)
+					.doesNotHaveBean(PropertiesJdbcConnectionDetails.class);
+				DataSource dataSource = context.getBean(DataSource.class);
+				assertThat(dataSource).isInstanceOf(org.apache.tomcat.jdbc.pool.DataSource.class);
+				org.apache.tomcat.jdbc.pool.DataSource tomcat = (org.apache.tomcat.jdbc.pool.DataSource) dataSource;
+				assertThat(tomcat.getPoolProperties().getUsername()).isEqualTo("user-1");
+				assertThat(tomcat.getPoolProperties().getPassword()).isEqualTo("password-1");
+				assertThat(tomcat.getPoolProperties().getDriverClassName())
+					.isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());
+				assertThat(tomcat.getPoolProperties().getUrl())
+					.isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)

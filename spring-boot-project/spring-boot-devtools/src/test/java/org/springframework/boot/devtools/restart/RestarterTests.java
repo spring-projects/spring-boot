@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,13 @@ package org.springframework.boot.devtools.restart;
 
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -46,8 +49,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link Restarter}.
@@ -72,18 +75,19 @@ class RestarterTests {
 	void cantGetInstanceBeforeInitialize() {
 		Restarter.clearInstance();
 		assertThatIllegalStateException().isThrownBy(Restarter::getInstance)
-				.withMessageContaining("Restarter has not been initialized");
+			.withMessageContaining("Restarter has not been initialized");
 	}
 
 	@Test
-	void testRestart(CapturedOutput output) throws Exception {
+	void testRestart(CapturedOutput output) {
 		Restarter.clearInstance();
 		Thread thread = new Thread(SampleApplication::main);
 		thread.start();
-		Thread.sleep(2600);
-		assertThat(StringUtils.countOccurrencesOf(output.toString(), "Tick 0")).isGreaterThan(1);
-		assertThat(StringUtils.countOccurrencesOf(output.toString(), "Tick 1")).isGreaterThan(1);
-		assertThat(CloseCountingApplicationListener.closed).isGreaterThan(0);
+		Awaitility.await().atMost(Duration.ofSeconds(30)).untilAsserted(() -> {
+			assertThat(StringUtils.countOccurrencesOf(output.toString(), "Tick 0")).isGreaterThan(1);
+			assertThat(StringUtils.countOccurrencesOf(output.toString(), "Tick 1")).isGreaterThan(1);
+			assertThat(CloseCountingApplicationListener.closed).isGreaterThan(0);
+		});
 	}
 
 	@Test
@@ -98,7 +102,7 @@ class RestarterTests {
 	@Test
 	void addUrlsMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Restarter.getInstance().addUrls(null))
-				.withMessageContaining("Urls must not be null");
+			.withMessageContaining("Urls must not be null");
 	}
 
 	@Test
@@ -115,7 +119,7 @@ class RestarterTests {
 	@Test
 	void addClassLoaderFilesMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> Restarter.getInstance().addClassLoaderFiles(null))
-				.withMessageContaining("ClassLoaderFiles must not be null");
+			.withMessageContaining("ClassLoaderFiles must not be null");
 	}
 
 	@Test
@@ -136,7 +140,7 @@ class RestarterTests {
 		ObjectFactory objectFactory = mock(ObjectFactory.class);
 		Object attribute = Restarter.getInstance().getOrAddAttribute("x", objectFactory);
 		assertThat(attribute).isEqualTo("abc");
-		verifyNoInteractions(objectFactory);
+		then(objectFactory).shouldHaveNoInteractions();
 	}
 
 	@Test
@@ -174,7 +178,7 @@ class RestarterTests {
 
 		private int count = 0;
 
-		private static volatile boolean quit = false;
+		private static final AtomicBoolean restart = new AtomicBoolean();
 
 		@Scheduled(fixedDelay = 200)
 		void tickBean() {
@@ -183,8 +187,7 @@ class RestarterTests {
 
 		@Scheduled(initialDelay = 500, fixedDelay = 500)
 		void restart() {
-			System.out.println("Restart " + Thread.currentThread());
-			if (!SampleApplication.quit) {
+			if (SampleApplication.restart.compareAndSet(false, true)) {
 				Restarter.getInstance().restart();
 			}
 		}
@@ -195,18 +198,6 @@ class RestarterTests {
 					SampleApplication.class);
 			context.addApplicationListener(new CloseCountingApplicationListener());
 			Restarter.getInstance().prepare(context);
-			System.out.println("Sleep " + Thread.currentThread());
-			sleep();
-			quit = true;
-		}
-
-		private static void sleep() {
-			try {
-				Thread.sleep(1200);
-			}
-			catch (InterruptedException ex) {
-				// Ignore
-			}
 		}
 
 	}

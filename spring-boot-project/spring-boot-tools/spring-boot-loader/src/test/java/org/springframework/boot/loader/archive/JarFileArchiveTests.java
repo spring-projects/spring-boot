@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.archive.Archive.Entry;
+import org.springframework.boot.loader.jar.JarFile;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,20 +87,20 @@ class JarFileArchiveTests {
 	@Test
 	void getEntries() {
 		Map<String, Archive.Entry> entries = getEntriesMap(this.archive);
-		assertThat(entries.size()).isEqualTo(12);
+		assertThat(entries).hasSize(12);
 	}
 
 	@Test
 	void getUrl() throws Exception {
 		URL url = this.archive.getUrl();
-		assertThat(url.toString()).isEqualTo(this.rootJarFileUrl);
+		assertThat(url).hasToString(this.rootJarFileUrl);
 	}
 
 	@Test
 	void getNestedArchive() throws Exception {
 		Entry entry = getEntriesMap(this.archive).get("nested.jar");
 		try (Archive nested = this.archive.getNestedArchive(entry)) {
-			assertThat(nested.getUrl().toString()).isEqualTo("jar:" + this.rootJarFileUrl + "!/nested.jar!/");
+			assertThat(nested.getUrl()).hasToString("jar:" + this.rootJarFileUrl + "!/nested.jar!/");
 		}
 	}
 
@@ -135,10 +136,10 @@ class JarFileArchiveTests {
 		setup(true);
 		try (Archive nestedArchive = this.archive.getNestedArchive(getEntriesMap(this.archive).get("nested.jar"));
 				Archive anotherNestedArchive = this.archive
-						.getNestedArchive(getEntriesMap(this.archive).get("another-nested.jar"))) {
+					.getNestedArchive(getEntriesMap(this.archive).get("another-nested.jar"))) {
 			File nested = new File(nestedArchive.getUrl().toURI());
 			File anotherNested = new File(anotherNestedArchive.getUrl().toURI());
-			assertThat(nested.getParent()).isEqualTo(anotherNested.getParent());
+			assertThat(nested).hasParent(anotherNested.getParent());
 		}
 	}
 
@@ -147,6 +148,7 @@ class JarFileArchiveTests {
 		File file = new File(this.tempDir, "test.jar");
 		FileCopyUtils.copy(writeZip64Jar(), file);
 		try (JarFileArchive zip64Archive = new JarFileArchive(file)) {
+			@SuppressWarnings("deprecation")
 			Iterator<Entry> entries = zip64Archive.iterator();
 			for (int i = 0; i < 65537; i++) {
 				assertThat(entries.hasNext()).as(i + "nth file is present").isTrue();
@@ -171,13 +173,14 @@ class JarFileArchiveTests {
 			output.write(zip64JarData);
 			output.closeEntry();
 		}
-		try (JarFileArchive jarFileArchive = new JarFileArchive(file);
-				Archive nestedArchive = jarFileArchive
-						.getNestedArchive(getEntriesMap(jarFileArchive).get("nested/zip64.jar"))) {
-			Iterator<Entry> it = nestedArchive.iterator();
-			for (int i = 0; i < 65537; i++) {
-				assertThat(it.hasNext()).as(i + "nth file is present").isTrue();
-				it.next();
+		try (JarFile jarFile = new JarFile(file)) {
+			ZipEntry nestedEntry = jarFile.getEntry("nested/zip64.jar");
+			try (JarFile nestedJarFile = jarFile.getNestedJarFile(nestedEntry)) {
+				Iterator<JarEntry> iterator = nestedJarFile.iterator();
+				for (int i = 0; i < 65537; i++) {
+					assertThat(iterator.hasNext()).as(i + "nth file is present").isTrue();
+					iterator.next();
+				}
 			}
 		}
 	}

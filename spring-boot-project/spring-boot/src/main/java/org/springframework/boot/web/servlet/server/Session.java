@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.convert.DurationUnit;
 
 /**
@@ -46,10 +47,6 @@ public class Session {
 	private final Cookie cookie = new Cookie();
 
 	private final SessionStoreDirectory sessionStoreDirectory = new SessionStoreDirectory();
-
-	public Cookie getCookie() {
-		return this.cookie;
-	}
 
 	public Duration getTimeout() {
 		return this.timeout;
@@ -96,120 +93,45 @@ public class Session {
 		this.storeDir = storeDir;
 	}
 
+	public Cookie getCookie() {
+		return this.cookie;
+	}
+
 	SessionStoreDirectory getSessionStoreDirectory() {
 		return this.sessionStoreDirectory;
 	}
 
 	/**
-	 * Cookie properties.
+	 * Session cookie properties.
 	 */
-	public static class Cookie {
+	public static class Cookie extends org.springframework.boot.web.server.Cookie {
 
-		private String name;
-
-		private String domain;
-
-		private String path;
-
+		/**
+		 * Comment for the session cookie.
+		 */
 		private String comment;
-
-		private Boolean httpOnly;
-
-		private Boolean secure;
-
-		@DurationUnit(ChronoUnit.SECONDS)
-		private Duration maxAge;
-
-		/**
-		 * Return the session cookie name.
-		 * @return the session cookie name
-		 */
-		public String getName() {
-			return this.name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		/**
-		 * Return the domain for the session cookie.
-		 * @return the session cookie domain
-		 */
-		public String getDomain() {
-			return this.domain;
-		}
-
-		public void setDomain(String domain) {
-			this.domain = domain;
-		}
-
-		/**
-		 * Return the path of the session cookie.
-		 * @return the session cookie path
-		 */
-		public String getPath() {
-			return this.path;
-		}
-
-		public void setPath(String path) {
-			this.path = path;
-		}
 
 		/**
 		 * Return the comment for the session cookie.
 		 * @return the session cookie comment
+		 * @deprecated since 3.0.0 without replacement
 		 */
+		@Deprecated(since = "3.0.0", forRemoval = true)
+		@DeprecatedConfigurationProperty
 		public String getComment() {
 			return this.comment;
 		}
 
+		@Deprecated(since = "3.0.0", forRemoval = true)
 		public void setComment(String comment) {
 			this.comment = comment;
-		}
-
-		/**
-		 * Return whether to use "HttpOnly" cookies for session cookies.
-		 * @return {@code true} to use "HttpOnly" cookies for session cookies.
-		 */
-		public Boolean getHttpOnly() {
-			return this.httpOnly;
-		}
-
-		public void setHttpOnly(Boolean httpOnly) {
-			this.httpOnly = httpOnly;
-		}
-
-		/**
-		 * Return whether to always mark the session cookie as secure.
-		 * @return {@code true} to mark the session cookie as secure even if the request
-		 * that initiated the corresponding session is using plain HTTP
-		 */
-		public Boolean getSecure() {
-			return this.secure;
-		}
-
-		public void setSecure(Boolean secure) {
-			this.secure = secure;
-		}
-
-		/**
-		 * Return the maximum age of the session cookie.
-		 * @return the maximum age of the session cookie
-		 */
-		public Duration getMaxAge() {
-			return this.maxAge;
-		}
-
-		public void setMaxAge(Duration maxAge) {
-			this.maxAge = maxAge;
 		}
 
 	}
 
 	/**
 	 * Available session tracking modes (mirrors
-	 * {@link javax.servlet.SessionTrackingMode}.
+	 * {@link jakarta.servlet.SessionTrackingMode}.
 	 */
 	public enum SessionTrackingMode {
 

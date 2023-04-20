@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;
 
 /**
- * Encapsulates a {@link FileSystemWatcher} to watch the local classpath folders for
+ * Encapsulates a {@link FileSystemWatcher} to watch the local classpath directories for
  * changes.
  *
  * @author Phillip Webb
@@ -39,7 +39,7 @@ public class ClassPathFileSystemWatcher implements InitializingBean, DisposableB
 
 	private final FileSystemWatcher fileSystemWatcher;
 
-	private ClassPathRestartStrategy restartStrategy;
+	private final ClassPathRestartStrategy restartStrategy;
 
 	private ApplicationContext applicationContext;
 
@@ -58,7 +58,7 @@ public class ClassPathFileSystemWatcher implements InitializingBean, DisposableB
 		Assert.notNull(urls, "Urls must not be null");
 		this.fileSystemWatcher = fileSystemWatcherFactory.getFileSystemWatcher();
 		this.restartStrategy = restartStrategy;
-		this.fileSystemWatcher.addSourceFolders(new ClassPathFolders(urls));
+		this.fileSystemWatcher.addSourceDirectories(new ClassPathDirectories(urls));
 	}
 
 	/**

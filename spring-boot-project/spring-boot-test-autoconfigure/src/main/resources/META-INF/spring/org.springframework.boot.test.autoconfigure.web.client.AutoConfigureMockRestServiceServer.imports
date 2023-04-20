@@ -1,0 +1,2 @@
+# AutoConfigureMockRestServiceServer
+org.springframework.boot.test.autoconfigure.web.client.MockRestServiceServerAutoConfiguration

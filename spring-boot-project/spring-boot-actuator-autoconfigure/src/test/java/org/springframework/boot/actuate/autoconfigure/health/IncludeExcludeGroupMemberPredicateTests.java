@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.health;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -29,19 +30,26 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link IncludeExcludeGroupMemberPredicate}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 class IncludeExcludeGroupMemberPredicateTests {
 
 	@Test
-	void testWhenEmptyIncludeAndExcludeRejectsAll() {
+	void testWhenEmptyIncludeAndExcludeAcceptsAll() {
 		Predicate<String> predicate = new IncludeExcludeGroupMemberPredicate(null, null);
-		assertThat(predicate).rejects("a", "b", "c");
+		assertThat(predicate).accepts("a", "b", "c");
 	}
 
 	@Test
 	void testWhenStarIncludeAndEmptyExcludeAcceptsAll() {
 		Predicate<String> predicate = include("*").exclude();
 		assertThat(predicate).accepts("a", "b", "c");
+	}
+
+	@Test
+	void testWhenEmptyIncludeAndNonEmptyExcludeAcceptsAllButExclude() {
+		Predicate<String> predicate = new IncludeExcludeGroupMemberPredicate(null, Collections.singleton("c"));
+		assertThat(predicate).accepts("a", "b");
 	}
 
 	@Test
@@ -84,6 +92,30 @@ class IncludeExcludeGroupMemberPredicateTests {
 	void testWhenExtraWhitespaceAcceptsTrimmedVersion() {
 		Predicate<String> predicate = include("  myEndpoint  ").exclude();
 		assertThat(predicate).accepts("myEndpoint").rejects("d");
+	}
+
+	@Test
+	void testWhenSpecifiedIncludeWithSlash() {
+		Predicate<String> predicate = include("test/a").exclude();
+		assertThat(predicate).accepts("test/a").rejects("test").rejects("test/b");
+	}
+
+	@Test
+	void specifiedIncludeShouldIncludeNested() {
+		Predicate<String> predicate = include("test").exclude();
+		assertThat(predicate).accepts("test/a/d").accepts("test/b").rejects("foo");
+	}
+
+	@Test
+	void specifiedIncludeShouldNotIncludeExcludedNested() {
+		Predicate<String> predicate = include("test").exclude("test/b");
+		assertThat(predicate).accepts("test/a").rejects("test/b").rejects("foo");
+	}
+
+	@Test // gh-29251
+	void specifiedExcludeShouldExcludeNestedChildren() {
+		Predicate<String> predicate = include("*").exclude("test");
+		assertThat(predicate).rejects("test").rejects("test/a").rejects("test/a").accepts("other");
 	}
 
 	private Builder include(String... include) {

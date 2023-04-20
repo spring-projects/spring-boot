@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.servlet.ServletException;
-
+import jakarta.servlet.ServletException;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -80,9 +79,11 @@ class BasicErrorControllerDirectMockMvcTests {
 	@Test
 	void errorPageAvailableWithParentContext() throws Exception {
 		setup((ConfigurableWebApplicationContext) new SpringApplicationBuilder(ParentConfiguration.class)
-				.child(ChildConfiguration.class).run("--server.port=0"));
+			.child(ChildConfiguration.class)
+			.run("--server.port=0"));
 		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().is5xxServerError()).andReturn();
+			.andExpect(status().is5xxServerError())
+			.andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("status=999");
 	}
@@ -90,27 +91,29 @@ class BasicErrorControllerDirectMockMvcTests {
 	@Test
 	void errorPageAvailableWithMvcIncluded() throws Exception {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(WebMvcIncludedConfiguration.class)
-				.run("--server.port=0"));
+			.run("--server.port=0"));
 		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().is5xxServerError()).andReturn();
+			.andExpect(status().is5xxServerError())
+			.andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("status=999");
 	}
 
 	@Test
-	void errorPageNotAvailableWithWhitelabelDisabled() throws Exception {
+	void errorPageNotAvailableWithWhitelabelDisabled() {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(WebMvcIncludedConfiguration.class)
-				.run("--server.port=0", "--server.error.whitelabel.enabled=false"));
+			.run("--server.port=0", "--server.error.whitelabel.enabled=false"));
 		assertThatExceptionOfType(ServletException.class)
-				.isThrownBy(() -> this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML)));
+			.isThrownBy(() -> this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML)));
 	}
 
 	@Test
 	void errorControllerWithAop() throws Exception {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(WithAopConfiguration.class)
-				.run("--server.port=0"));
+			.run("--server.port=0"));
 		MvcResult response = this.mockMvc.perform(get("/error").accept(MediaType.TEXT_HTML))
-				.andExpect(status().is5xxServerError()).andReturn();
+			.andExpect(status().is5xxServerError())
+			.andReturn();
 		String content = response.getResponse().getContentAsString();
 		assertThat(content).contains("status=999");
 	}

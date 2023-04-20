@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
  * Member predicate that matches based on {@code include} and {@code exclude} sets.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 
@@ -40,15 +41,38 @@ class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 
 	@Override
 	public boolean test(String name) {
+		name = clean(name);
 		return isIncluded(name) && !isExcluded(name);
 	}
 
 	private boolean isIncluded(String name) {
-		return this.include.contains("*") || this.include.contains(clean(name));
+		return this.include.isEmpty() || this.include.contains("*") || isIncludedName(name);
+	}
+
+	private boolean isIncludedName(String name) {
+		if (this.include.contains(name)) {
+			return true;
+		}
+		if (name.contains("/")) {
+			String parent = name.substring(0, name.lastIndexOf("/"));
+			return isIncludedName(parent);
+		}
+		return false;
 	}
 
 	private boolean isExcluded(String name) {
-		return this.exclude.contains("*") || this.exclude.contains(clean(name));
+		return this.exclude.contains("*") || isExcludedName(name);
+	}
+
+	private boolean isExcludedName(String name) {
+		if (this.exclude.contains(name)) {
+			return true;
+		}
+		if (name.contains("/")) {
+			String parent = name.substring(0, name.lastIndexOf("/"));
+			return isExcludedName(parent);
+		}
+		return false;
 	}
 
 	private Set<String> clean(Set<String> names) {
@@ -60,7 +84,7 @@ class IncludeExcludeGroupMemberPredicate implements Predicate<String> {
 	}
 
 	private String clean(String name) {
-		return name.trim();
+		return (name != null) ? name.trim() : null;
 	}
 
 }

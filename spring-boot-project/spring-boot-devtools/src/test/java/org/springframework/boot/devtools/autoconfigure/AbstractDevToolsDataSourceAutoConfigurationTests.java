@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.AnnotatedGenericBeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.test.util.TestPropertyValues;
@@ -37,11 +36,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Base class for tests for {@link DevToolsDataSourceAutoConfiguration}.
@@ -55,7 +54,7 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		ConfigurableApplicationContext context = getContext(() -> createContext(SingleDataSourceConfiguration.class));
 		DataSource dataSource = context.getBean(DataSource.class);
 		Statement statement = configureDataSourceBehavior(dataSource);
-		verify(statement, never()).execute("SHUTDOWN");
+		then(statement).should(never()).execute("SHUTDOWN");
 	}
 
 	@Test
@@ -65,7 +64,7 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		Collection<DataSource> dataSources = context.getBeansOfType(DataSource.class).values();
 		for (DataSource dataSource : dataSources) {
 			Statement statement = configureDataSourceBehavior(dataSource);
-			verify(statement, never()).execute("SHUTDOWN");
+			then(statement).should(never()).execute("SHUTDOWN");
 		}
 	}
 
@@ -83,7 +82,7 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 	protected final Statement configureDataSourceBehavior(DataSource dataSource) throws SQLException {
 		Connection connection = mock(Connection.class);
 		Statement statement = mock(Statement.class);
-		doReturn(connection).when(dataSource).getConnection();
+		willReturn(connection).given(dataSource).getConnection();
 		given(connection.createStatement()).willReturn(statement);
 		return statement;
 	}
@@ -101,11 +100,11 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 	}
 
 	protected final ConfigurableApplicationContext createContext(Class<?>... classes) {
-		return this.createContext(null, classes);
+		return createContext(null, classes);
 	}
 
 	protected final ConfigurableApplicationContext createContext(String driverClassName, Class<?>... classes) {
-		return this.createContext(driverClassName, null, classes);
+		return createContext(driverClassName, null, classes);
 	}
 
 	protected final ConfigurableApplicationContext createContext(String driverClassName, String url,
@@ -161,7 +160,7 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 	static class DataSourceSpyBeanPostProcessor implements BeanPostProcessor {
 
 		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+		public Object postProcessBeforeInitialization(Object bean, String beanName) {
 			if (bean instanceof DataSource) {
 				bean = spy(bean);
 			}
@@ -169,7 +168,7 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 		}
 
 		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+		public Object postProcessAfterInitialization(Object bean, String beanName) {
 			return bean;
 		}
 

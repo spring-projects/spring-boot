@@ -1,0 +1,45 @@
+[[io.jta]]
+== Distributed Transactions With JTA
+Spring Boot supports distributed JTA transactions across multiple XA resources by using a transaction manager retrieved from JNDI.
+
+When a JTA environment is detected, Spring's `JtaTransactionManager` is used to manage transactions.
+Auto-configured JMS, DataSource, and JPA beans are upgraded to support XA transactions.
+You can use standard Spring idioms, such as `@Transactional`, to participate in a distributed transaction.
+If you are within a JTA environment and still want to use local transactions, you can set the configprop:spring.jta.enabled[] property to `false` to disable the JTA auto-configuration.
+
+
+
+[[io.jta.jakartaee]]
+=== Using a Jakarta EE Managed Transaction Manager
+If you package your Spring Boot application as a `war` or `ear` file and deploy it to a Jakarta EE application server, you can use your application server's built-in transaction manager.
+Spring Boot tries to auto-configure a transaction manager by looking at common JNDI locations (`java:comp/UserTransaction`, `java:comp/TransactionManager`, and so on).
+When using a transaction service provided by your application server, you generally also want to ensure that all resources are managed by the server and exposed over JNDI.
+Spring Boot tries to auto-configure JMS by looking for a `ConnectionFactory` at the JNDI path (`java:/JmsXA` or `java:/XAConnectionFactory`), and you can use the <<data#data.sql.datasource.jndi, configprop:spring.datasource.jndi-name[] property>> to configure your `DataSource`.
+
+
+
+[[io.jta.mixing-xa-and-non-xa-connections]]
+=== Mixing XA and Non-XA JMS Connections
+When using JTA, the primary JMS `ConnectionFactory` bean is XA-aware and participates in distributed transactions.
+You can inject into your bean without needing to use any `@Qualifier`:
+
+include::code:primary/MyBean[tag=*]
+
+In some situations, you might want to process certain JMS messages by using a non-XA `ConnectionFactory`.
+For example, your JMS processing logic might take longer than the XA timeout.
+
+If you want to use a non-XA `ConnectionFactory`, you can the `nonXaJmsConnectionFactory` bean:
+
+include::code:nonxa/MyBean[tag=*]
+
+For consistency, the `jmsConnectionFactory` bean is also provided by using the bean alias `xaJmsConnectionFactory`:
+
+include::code:xa/MyBean[tag=*]
+
+
+
+[[io.jta.supporting-embedded-transaction-manager]]
+=== Supporting an Embedded Transaction Manager
+The {spring-boot-module-code}/jms/XAConnectionFactoryWrapper.java[`XAConnectionFactoryWrapper`] and {spring-boot-module-code}/jdbc/XADataSourceWrapper.java[`XADataSourceWrapper`] interfaces can be used to support embedded transaction managers.
+The interfaces are responsible for wrapping `XAConnectionFactory` and `XADataSource` beans and exposing them as regular `ConnectionFactory` and `DataSource` beans, which transparently enroll in the distributed transaction.
+DataSource and JMS auto-configuration use JTA variants, provided you have a `JtaTransactionManager` bean and appropriate XA wrapper beans registered within your `ApplicationContext`.

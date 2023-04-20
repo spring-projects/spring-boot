@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ class TomcatEmbeddedWebappClassLoaderTests {
 	void getResourceFindsResourceFromParentClassLoader() throws Exception {
 		File war = createWar();
 		withWebappClassLoader(war, (classLoader) -> assertThat(classLoader.getResource("test.txt"))
-				.isEqualTo(new URL(webInfClassesUrlString(war) + "test.txt")));
+			.isEqualTo(new URL(webInfClassesUrlString(war) + "test.txt")));
 	}
 
 	@Test

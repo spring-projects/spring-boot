@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,13 @@ package org.springframework.boot.test.web.client;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.web.client.TestRestTemplateContextCustomizer.TestRestTemplateRegistrar;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.test.context.MergedContextConfiguration;
 
@@ -39,13 +40,27 @@ import static org.mockito.Mockito.mock;
 class TestRestTemplateContextCustomizerTests {
 
 	@Test
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	void whenContextIsNotABeanDefinitionRegistryTestRestTemplateIsRegistered() {
-		new ApplicationContextRunner(TestApplicationContext::new).withInitializer((context) -> {
-			MergedContextConfiguration configuration = mock(MergedContextConfiguration.class);
-			given(configuration.getTestClass()).willReturn((Class) TestClass.class);
-			new TestRestTemplateContextCustomizer().customizeContext(context, configuration);
-		}).run((context) -> assertThat(context).hasSingleBean(TestRestTemplate.class));
+		new ApplicationContextRunner(TestApplicationContext::new)
+			.withInitializer(this::applyTestRestTemplateContextCustomizer)
+			.run((context) -> assertThat(context).hasSingleBean(TestRestTemplate.class));
+	}
+
+	@Test
+	void whenUsingAotGeneratedArtifactsTestRestTemplateIsNotRegistered() {
+		new ApplicationContextRunner().withSystemProperties("spring.aot.enabled:true")
+			.withInitializer(this::applyTestRestTemplateContextCustomizer)
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(TestRestTemplateRegistrar.class);
+				assertThat(context).doesNotHaveBean(TestRestTemplate.class);
+			});
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	void applyTestRestTemplateContextCustomizer(ConfigurableApplicationContext context) {
+		MergedContextConfiguration configuration = mock(MergedContextConfiguration.class);
+		given(configuration.getTestClass()).willReturn((Class) TestClass.class);
+		new TestRestTemplateContextCustomizer().customizeContext(context, configuration);
 	}
 
 	@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -58,7 +73,7 @@ class TestRestTemplateContextCustomizerTests {
 		private final ConfigurableListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
 		@Override
-		protected void refreshBeanFactory() throws BeansException, IllegalStateException {
+		protected void refreshBeanFactory() {
 		}
 
 		@Override
@@ -67,7 +82,7 @@ class TestRestTemplateContextCustomizerTests {
 		}
 
 		@Override
-		public ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException {
+		public ConfigurableListableBeanFactory getBeanFactory() {
 			return this.beanFactory;
 		}
 

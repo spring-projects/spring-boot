@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import org.springframework.test.context.ContextConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -36,15 +34,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Sample tests for {@link DataMongoTest @DataMongoTest} using reactive repositories.
  *
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
+ * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 @DataMongoTest
 @Testcontainers(disabledWithoutDocker = true)
-@ContextConfiguration(initializers = DataMongoTestReactiveIntegrationTests.Initializer.class)
 class DataMongoTestReactiveIntegrationTests {
 
 	@Container
-	static final MongoDBContainer mongoDB = new MongoDBContainer("mongo:4.0.10").withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(5));
+	@ServiceConnection
+	static final MongoDBContainer mongoDB = new MongoDBContainer(DockerImageNames.mongo()).withStartupAttempts(5)
+		.withStartupTimeout(Duration.ofMinutes(5));
 
 	@Autowired
 	private ReactiveMongoTemplate mongoTemplate;
@@ -59,16 +60,6 @@ class DataMongoTestReactiveIntegrationTests {
 		exampleDocument = this.exampleRepository.save(exampleDocument).block(Duration.ofSeconds(30));
 		assertThat(exampleDocument.getId()).isNotNull();
 		assertThat(this.mongoTemplate.collectionExists("exampleDocuments").block(Duration.ofSeconds(30))).isTrue();
-	}
-
-	static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-
-		@Override
-		public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues.of("spring.data.mongodb.uri=" + mongoDB.getReplicaSetUrl())
-					.applyTo(configurableApplicationContext.getEnvironment());
-		}
-
 	}
 
 }

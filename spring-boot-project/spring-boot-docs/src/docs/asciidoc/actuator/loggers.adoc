@@ -1,0 +1,31 @@
+[[actuator.loggers]]
+== Loggers
+Spring Boot Actuator includes the ability to view and configure the log levels of your application at runtime.
+You can view either the entire list or an individual logger's configuration, which is made up of both the explicitly configured logging level as well as the effective logging level given to it by the logging framework.
+These levels can be one of:
+
+* `TRACE`
+* `DEBUG`
+* `INFO`
+* `WARN`
+* `ERROR`
+* `FATAL`
+* `OFF`
+* `null`
+
+`null` indicates that there is no explicit configuration.
+
+
+
+[[actuator.loggers.configure]]
+=== Configure a Logger
+To configure a given logger, `POST` a partial entity to the resource's URI, as the following example shows:
+
+[source,json,indent=0,subs="verbatim"]
+----
+	{
+		"configuredLevel": "DEBUG"
+	}
+----
+
+TIP: To "`reset`" the specific level of the logger (and use the default configuration instead), you can pass a value of `null` as the `configuredLevel`.

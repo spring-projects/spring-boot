@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,10 +78,10 @@ public class UndertowWebServerFactoryCustomizer
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		ServerOptions options = new ServerOptions(factory);
 		ServerProperties properties = this.serverProperties;
-		map.from(properties::getMaxHttpHeaderSize).asInt(DataSize::toBytes).when(this::isPositive)
-				.to(options.option(UndertowOptions.MAX_HEADER_SIZE));
-		map.from(properties::getConnectionTimeout).asInt(Duration::toMillis)
-				.to(options.option(UndertowOptions.NO_REQUEST_TIMEOUT));
+		map.from(properties::getMaxHttpRequestHeaderSize)
+			.asInt(DataSize::toBytes)
+			.when(this::isPositive)
+			.to(options.option(UndertowOptions.MAX_HEADER_SIZE));
 		mapUndertowProperties(factory, options);
 		mapAccessLogProperties(factory);
 		map.from(this::getOrDeduceUseForwardHeaders).to(factory::setUseForwardHeaders);
@@ -91,23 +91,35 @@ public class UndertowWebServerFactoryCustomizer
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		Undertow properties = this.serverProperties.getUndertow();
 		map.from(properties::getBufferSize).whenNonNull().asInt(DataSize::toBytes).to(factory::setBufferSize);
-		map.from(properties::getIoThreads).to(factory::setIoThreads);
-		map.from(properties::getWorkerThreads).to(factory::setWorkerThreads);
+		ServerProperties.Undertow.Threads threadProperties = properties.getThreads();
+		map.from(threadProperties::getIo).to(factory::setIoThreads);
+		map.from(threadProperties::getWorker).to(factory::setWorkerThreads);
 		map.from(properties::getDirectBuffers).to(factory::setUseDirectBuffers);
-		map.from(properties::getMaxHttpPostSize).as(DataSize::toBytes).when(this::isPositive)
-				.to(serverOptions.option(UndertowOptions.MAX_ENTITY_SIZE));
+		map.from(properties::getMaxHttpPostSize)
+			.as(DataSize::toBytes)
+			.when(this::isPositive)
+			.to(serverOptions.option(UndertowOptions.MAX_ENTITY_SIZE));
 		map.from(properties::getMaxParameters).to(serverOptions.option(UndertowOptions.MAX_PARAMETERS));
 		map.from(properties::getMaxHeaders).to(serverOptions.option(UndertowOptions.MAX_HEADERS));
 		map.from(properties::getMaxCookies).to(serverOptions.option(UndertowOptions.MAX_COOKIES));
-		map.from(properties::isAllowEncodedSlash).to(serverOptions.option(UndertowOptions.ALLOW_ENCODED_SLASH));
+		mapSlashProperties(properties, serverOptions);
 		map.from(properties::isDecodeUrl).to(serverOptions.option(UndertowOptions.DECODE_URL));
 		map.from(properties::getUrlCharset).as(Charset::name).to(serverOptions.option(UndertowOptions.URL_CHARSET));
 		map.from(properties::isAlwaysSetKeepAlive).to(serverOptions.option(UndertowOptions.ALWAYS_SET_KEEP_ALIVE));
-		map.from(properties::getNoRequestTimeout).asInt(Duration::toMillis)
-				.to(serverOptions.option(UndertowOptions.NO_REQUEST_TIMEOUT));
+		map.from(properties::getNoRequestTimeout)
+			.asInt(Duration::toMillis)
+			.to(serverOptions.option(UndertowOptions.NO_REQUEST_TIMEOUT));
 		map.from(properties.getOptions()::getServer).to(serverOptions.forEach(serverOptions::option));
 		SocketOptions socketOptions = new SocketOptions(factory);
 		map.from(properties.getOptions()::getSocket).to(socketOptions.forEach(socketOptions::option));
+	}
+
+	@SuppressWarnings({ "deprecation", "removal" })
+	private void mapSlashProperties(Undertow properties, ServerOptions serverOptions) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(properties::isAllowEncodedSlash).to(serverOptions.option(UndertowOptions.ALLOW_ENCODED_SLASH));
+		map.from(properties::getDecodeSlash).to(serverOptions.option(UndertowOptions.DECODE_SLASH));
+
 	}
 
 	private boolean isPositive(Number value) {
@@ -166,21 +178,21 @@ public class UndertowWebServerFactoryCustomizer
 
 		@SuppressWarnings("unchecked")
 		<T> Consumer<Map<String, String>> forEach(Function<Option<T>, Consumer<T>> function) {
-			return (map) -> {
-				map.forEach((key, value) -> {
-					Option<T> option = (Option<T>) this.nameLookup.get(getCanonicalName(key));
-					Assert.state(option != null,
-							"Unable to find '" + key + "' in " + ClassUtils.getShortName(this.source));
-					T parsed = option.parseValue(value, getClass().getClassLoader());
-					function.apply(option).accept(parsed);
-				});
-			};
+			return (map) -> map.forEach((key, value) -> {
+				Option<T> option = (Option<T>) this.nameLookup.get(getCanonicalName(key));
+				Assert.state(option != null,
+						() -> "Unable to find '" + key + "' in " + ClassUtils.getShortName(this.source));
+				T parsed = option.parseValue(value, getClass().getClassLoader());
+				function.apply(option).accept(parsed);
+			});
 		}
 
 		private static String getCanonicalName(String name) {
 			StringBuilder canonicalName = new StringBuilder(name.length());
-			name.chars().filter(Character::isLetterOrDigit).map(Character::toLowerCase)
-					.forEach((c) -> canonicalName.append((char) c));
+			name.chars()
+				.filter(Character::isLetterOrDigit)
+				.map(Character::toLowerCase)
+				.forEach((c) -> canonicalName.append((char) c));
 			return canonicalName.toString();
 		}
 

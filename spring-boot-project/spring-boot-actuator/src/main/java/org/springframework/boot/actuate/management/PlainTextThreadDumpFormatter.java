@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,9 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.MonitorInfo;
 import java.lang.management.RuntimeMXBean;
 import java.lang.management.ThreadInfo;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -47,8 +46,8 @@ class PlainTextThreadDumpFormatter {
 	}
 
 	private void writePreamble(PrintWriter writer) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		writer.println(dateFormat.format(new Date()));
+		DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		writer.println(dateFormat.format(LocalDateTime.now()));
 		RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
 		writer.printf("Full thread dump %s (%s %s):%n", runtime.getVmName(), runtime.getVmVersion(),
 				System.getProperty("java.vm.info"));
@@ -73,8 +72,7 @@ class PlainTextThreadDumpFormatter {
 	}
 
 	private List<MonitorInfo> lockedMonitorsForDepth(MonitorInfo[] lockedMonitors, int depth) {
-		return Stream.of(lockedMonitors).filter((lockedMonitor) -> lockedMonitor.getLockedStackDepth() == depth)
-				.collect(Collectors.toList());
+		return Stream.of(lockedMonitors).filter((candidate) -> candidate.getLockedStackDepth() == depth).toList();
 	}
 
 	private void writeStackTraceElement(PrintWriter writer, StackTraceElement element, ThreadInfo info,

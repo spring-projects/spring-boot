@@ -1,0 +1,21 @@
+plugins {
+	id "java"
+	id "org.springframework.boot"
+}
+
+apply plugin: "io.spring.dependency-management"
+
+repositories {
+	maven { url "file:${rootDir}/../int-test-maven-repository"}
+	mavenCentral()
+	maven { url "https://repo.spring.io/milestone" }
+	maven { url "https://repo.spring.io/snapshot" }
+}
+
+dependencies {
+	implementation("org.apache.tomcat.embed:tomcat-embed-core")
+}
+
+bootJar {
+	launchScript()
+}

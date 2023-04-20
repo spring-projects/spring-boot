@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Andy Wilkinson
  * @since 2.1.0
  */
-@ConfigurationProperties(prefix = "management.metrics.export.elastic")
+@ConfigurationProperties(prefix = "management.elastic.metrics.export")
 public class ElasticProperties extends StepRegistryProperties {
 
 	/**
@@ -37,13 +37,17 @@ public class ElasticProperties extends StepRegistryProperties {
 	/**
 	 * Index to export metrics to.
 	 */
-	private String index = "metrics";
+	private String index = "micrometer-metrics";
 
 	/**
-	 * Index date format used for rolling indices. Appended to the index name, preceded by
-	 * a '-'.
+	 * Index date format used for rolling indices. Appended to the index name.
 	 */
 	private String indexDateFormat = "yyyy-MM";
+
+	/**
+	 * Prefix to separate the index name from the date format used for rolling indices.
+	 */
+	private String indexDateSeparator = "-";
 
 	/**
 	 * Name of the timestamp field.
@@ -56,14 +60,24 @@ public class ElasticProperties extends StepRegistryProperties {
 	private boolean autoCreateIndex = true;
 
 	/**
-	 * Login user of the Elastic server.
+	 * Login user of the Elastic server. Mutually exclusive with api-key-credentials.
 	 */
-	private String userName = "";
+	private String userName;
 
 	/**
-	 * Login password of the Elastic server.
+	 * Login password of the Elastic server. Mutually exclusive with api-key-credentials.
 	 */
-	private String password = "";
+	private String password;
+
+	/**
+	 * Ingest pipeline name. By default, events are not pre-processed.
+	 */
+	private String pipeline;
+
+	/**
+	 * Base64-encoded credentials string. Mutually exclusive with user-name and password.
+	 */
+	private String apiKeyCredentials;
 
 	public String getHost() {
 		return this.host;
@@ -87,6 +101,14 @@ public class ElasticProperties extends StepRegistryProperties {
 
 	public void setIndexDateFormat(String indexDateFormat) {
 		this.indexDateFormat = indexDateFormat;
+	}
+
+	public String getIndexDateSeparator() {
+		return this.indexDateSeparator;
+	}
+
+	public void setIndexDateSeparator(String indexDateSeparator) {
+		this.indexDateSeparator = indexDateSeparator;
 	}
 
 	public String getTimestampFieldName() {
@@ -119,6 +141,22 @@ public class ElasticProperties extends StepRegistryProperties {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getPipeline() {
+		return this.pipeline;
+	}
+
+	public void setPipeline(String pipeline) {
+		this.pipeline = pipeline;
+	}
+
+	public String getApiKeyCredentials() {
+		return this.apiKeyCredentials;
+	}
+
+	public void setApiKeyCredentials(String apiKeyCredentials) {
+		this.apiKeyCredentials = apiKeyCredentials;
 	}
 
 }

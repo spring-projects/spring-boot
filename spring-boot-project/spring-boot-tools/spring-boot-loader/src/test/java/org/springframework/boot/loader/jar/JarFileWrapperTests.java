@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import java.util.Enumeration;
 import java.util.Set;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
 import org.junit.jupiter.api.AfterEach;
@@ -147,7 +148,13 @@ class JarFileWrapperTests {
 		// of additional memory being used since cleanup only occurs when the
 		// finalizer thread runs. See gh-22991
 		assertThatExceptionOfType(NoSuchMethodException.class)
-				.isThrownBy(() -> JarFileWrapper.class.getDeclaredMethod("close"));
+			.isThrownBy(() -> JarFileWrapper.class.getDeclaredMethod("close"));
+	}
+
+	@Test
+	void streamDelegatesToParent() {
+		this.wrapper.stream();
+		this.parent.verify(Call.STREAM);
 	}
 
 	/**
@@ -177,6 +184,12 @@ class JarFileWrapperTests {
 		public Enumeration<java.util.jar.JarEntry> entries() {
 			mark(Call.ENTRIES);
 			return super.entries();
+		}
+
+		@Override
+		public Stream<java.util.jar.JarEntry> stream() {
+			mark(Call.STREAM);
+			return super.stream();
 		}
 
 		@Override
@@ -257,7 +270,9 @@ class JarFileWrapperTests {
 
 			GET_COMMENT,
 
-			SIZE
+			SIZE,
+
+			STREAM
 
 		}
 

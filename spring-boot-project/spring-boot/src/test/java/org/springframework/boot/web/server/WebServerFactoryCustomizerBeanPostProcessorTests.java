@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,15 +17,15 @@
 package org.springframework.boot.web.server;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -40,29 +40,27 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class WebServerFactoryCustomizerBeanPostProcessorTests {
 
-	private WebServerFactoryCustomizerBeanPostProcessor processor = new WebServerFactoryCustomizerBeanPostProcessor();
+	private final WebServerFactoryCustomizerBeanPostProcessor processor = new WebServerFactoryCustomizerBeanPostProcessor();
 
 	@Mock
 	private ListableBeanFactory beanFactory;
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.processor.setBeanFactory(this.beanFactory);
 	}
 
 	@Test
 	void setBeanFactoryWhenNotListableShouldThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> this.processor.setBeanFactory(mock(BeanFactory.class)))
-				.withMessageContaining(
-						"WebServerCustomizerBeanPostProcessor can only be used with a ListableBeanFactory");
+			.withMessageContaining("WebServerCustomizerBeanPostProcessor can only be used with a ListableBeanFactory");
 	}
 
 	@Test
 	void postProcessBeforeShouldReturnBean() {
-		addMockBeans(Collections.emptyMap());
 		Object bean = new Object();
 		Object result = this.processor.postProcessBeforeInitialization(bean, "foo");
 		assertThat(result).isSameAs(bean);
@@ -70,7 +68,6 @@ class WebServerFactoryCustomizerBeanPostProcessorTests {
 
 	@Test
 	void postProcessAfterShouldReturnBean() {
-		addMockBeans(Collections.emptyMap());
 		Object bean = new Object();
 		Object result = this.processor.postProcessAfterInitialization(bean, "foo");
 		assertThat(result).isSameAs(bean);
@@ -155,7 +152,7 @@ class WebServerFactoryCustomizerBeanPostProcessorTests {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void addMockBeans(Map<String, ?> beans) {
 		given(this.beanFactory.getBeansOfType(WebServerFactoryCustomizer.class, false, false))
-				.willReturn((Map<String, WebServerFactoryCustomizer>) beans);
+			.willReturn((Map<String, WebServerFactoryCustomizer>) beans);
 	}
 
 	private void postProcessBeforeInitialization(Class<?> type) {

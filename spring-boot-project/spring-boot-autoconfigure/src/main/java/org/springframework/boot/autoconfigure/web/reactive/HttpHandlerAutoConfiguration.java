@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,11 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import java.util.Collections;
+import java.util.Map;
+
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -26,7 +30,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.http.server.reactive.ContextPathCompositeHandler;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.DispatcherHandler;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 
@@ -37,26 +43,31 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = { WebFluxAutoConfiguration.class })
 @ConditionalOnClass({ DispatcherHandler.class, HttpHandler.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnMissingBean(HttpHandler.class)
-@AutoConfigureAfter({ WebFluxAutoConfiguration.class })
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE + 10)
 public class HttpHandlerAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	public static class AnnotationConfig {
 
-		private ApplicationContext applicationContext;
+		private final ApplicationContext applicationContext;
 
 		public AnnotationConfig(ApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
 		}
 
 		@Bean
-		public HttpHandler httpHandler() {
-			return WebHttpHandlerBuilder.applicationContext(this.applicationContext).build();
+		public HttpHandler httpHandler(ObjectProvider<WebFluxProperties> propsProvider) {
+			HttpHandler httpHandler = WebHttpHandlerBuilder.applicationContext(this.applicationContext).build();
+			WebFluxProperties properties = propsProvider.getIfAvailable();
+			if (properties != null && StringUtils.hasText(properties.getBasePath())) {
+				Map<String, HttpHandler> handlersMap = Collections.singletonMap(properties.getBasePath(), httpHandler);
+				return new ContextPathCompositeHandler(handlersMap);
+			}
+			return httpHandler;
 		}
 
 	}

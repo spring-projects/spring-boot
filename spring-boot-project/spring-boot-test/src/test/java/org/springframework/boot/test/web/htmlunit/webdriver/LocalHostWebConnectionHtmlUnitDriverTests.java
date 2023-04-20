@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,17 @@ package org.springframework.boot.test.web.htmlunit.webdriver;
 import java.net.URL;
 
 import com.gargoylesoftware.htmlunit.BrowserVersion;
+import com.gargoylesoftware.htmlunit.TopLevelWindow;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebClientOptions;
 import com.gargoylesoftware.htmlunit.WebConsole;
 import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebWindow;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.openqa.selenium.Capabilities;
 
 import org.springframework.core.env.Environment;
@@ -37,52 +39,55 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link LocalHostWebConnectionHtmlUnitDriver}.
  *
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class LocalHostWebConnectionHtmlUnitDriverTests {
 
-	@Mock
-	private WebClient webClient;
+	private final WebClient webClient;
 
-	LocalHostWebConnectionHtmlUnitDriverTests() {
-		MockitoAnnotations.initMocks(this);
+	LocalHostWebConnectionHtmlUnitDriverTests(@Mock WebClient webClient) {
+		this.webClient = webClient;
 		given(this.webClient.getOptions()).willReturn(new WebClientOptions());
 		given(this.webClient.getWebConsole()).willReturn(new WebConsole());
+		WebWindow currentWindow = mock(WebWindow.class);
+		given(currentWindow.isClosed()).willReturn(false);
+		given(this.webClient.getCurrentWindow()).willReturn(currentWindow);
 	}
 
 	@Test
 	void createWhenEnvironmentIsNullWillThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null))
-				.withMessageContaining("Environment must not be null");
+			.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
 	void createWithJavascriptFlagWhenEnvironmentIsNullWillThrowException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, true))
-				.withMessageContaining("Environment must not be null");
+			.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
 	void createWithBrowserVersionWhenEnvironmentIsNullWillThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, BrowserVersion.CHROME))
-				.withMessageContaining("Environment must not be null");
+			.isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, BrowserVersion.CHROME))
+			.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
 	void createWithCapabilitiesWhenEnvironmentIsNullWillThrowException() {
 		Capabilities capabilities = mock(Capabilities.class);
 		given(capabilities.getBrowserName()).willReturn("htmlunit");
-		given(capabilities.getVersion()).willReturn("chrome");
+		given(capabilities.getBrowserVersion()).willReturn("chrome");
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, capabilities))
-				.withMessageContaining("Environment must not be null");
+			.isThrownBy(() -> new LocalHostWebConnectionHtmlUnitDriver(null, capabilities))
+			.withMessageContaining("Environment must not be null");
 	}
 
 	@Test
@@ -90,7 +95,8 @@ class LocalHostWebConnectionHtmlUnitDriverTests {
 		MockEnvironment environment = new MockEnvironment();
 		LocalHostWebConnectionHtmlUnitDriver driver = new TestLocalHostWebConnectionHtmlUnitDriver(environment);
 		driver.get("/test");
-		verify(this.webClient).getPage(any(WebWindow.class), requestToUrl(new URL("http://localhost:8080/test")));
+		then(this.webClient).should()
+			.getPage(any(TopLevelWindow.class), requestToUrl(new URL("http://localhost:8080/test")));
 	}
 
 	@Test
@@ -99,7 +105,8 @@ class LocalHostWebConnectionHtmlUnitDriverTests {
 		environment.setProperty("local.server.port", "8181");
 		LocalHostWebConnectionHtmlUnitDriver driver = new TestLocalHostWebConnectionHtmlUnitDriver(environment);
 		driver.get("/test");
-		verify(this.webClient).getPage(any(WebWindow.class), requestToUrl(new URL("http://localhost:8181/test")));
+		then(this.webClient).should()
+			.getPage(any(TopLevelWindow.class), requestToUrl(new URL("http://localhost:8181/test")));
 	}
 
 	private WebRequest requestToUrl(URL url) {

@@ -1,0 +1,13 @@
+plugins {
+	id "com.gradle.plugin-publish" version "0.15.0"
+}
+tasks.register("publishExisting", com.gradle.publish.PublishExistingTask) {
+	pluginId = "org.springframework.boot"
+	fileRepositoryRoot = new File("${repositoryRoot}")
+	pluginVersion = "${bootVersion}"
+	pluginCoordinates = "org.springframework.boot:spring-boot-gradle-plugin:${bootVersion}"
+	displayName = "Spring Boot Gradle Plugin"
+	pluginDescription = "Spring Boot Gradle Plugin"
+	website = "https://spring.io/projects/spring-boot"
+	vcsUrl = "https://github.com/spring-projects/spring-boot"
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,10 @@
  */
 
 package io.spring.concourse.releasescripts.sonatype;
+
+import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -34,6 +38,32 @@ public class SonatypeProperties {
 	@JsonProperty("password")
 	private String passwordToken;
 
+	/**
+	 * URL of the Nexus instance used to publish releases.
+	 */
+	private String url;
+
+	/**
+	 * ID of the staging profile used to publish releases.
+	 */
+	private String stagingProfileId;
+
+	/**
+	 * Time between requests made to determine if the closing of a staging repository has
+	 * completed.
+	 */
+	private Duration pollingInterval = Duration.ofSeconds(15);
+
+	/**
+	 * Number of threads used to upload artifacts to the staging repository.
+	 */
+	private int uploadThreads = 8;
+
+	/**
+	 * Regular expression patterns of artifacts to exclude
+	 */
+	private List<String> exclude = new ArrayList<>();
+
 	public String getUserToken() {
 		return this.userToken;
 	}
@@ -48,6 +78,46 @@ public class SonatypeProperties {
 
 	public void setPasswordToken(String passwordToken) {
 		this.passwordToken = passwordToken;
+	}
+
+	public String getUrl() {
+		return this.url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public String getStagingProfileId() {
+		return this.stagingProfileId;
+	}
+
+	public void setStagingProfileId(String stagingProfileId) {
+		this.stagingProfileId = stagingProfileId;
+	}
+
+	public Duration getPollingInterval() {
+		return this.pollingInterval;
+	}
+
+	public void setPollingInterval(Duration pollingInterval) {
+		this.pollingInterval = pollingInterval;
+	}
+
+	public int getUploadThreads() {
+		return this.uploadThreads;
+	}
+
+	public void setUploadThreads(int uploadThreads) {
+		this.uploadThreads = uploadThreads;
+	}
+
+	public List<String> getExclude() {
+		return this.exclude;
+	}
+
+	public void setExclude(List<String> exclude) {
+		this.exclude = exclude;
 	}
 
 }

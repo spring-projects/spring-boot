@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,8 @@ package org.springframework.boot.autoconfigure.task;
 import java.util.concurrent.ScheduledExecutorService;
 
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.LazyInitializationExcludeFilter;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -29,7 +30,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.task.TaskSchedulerBuilder;
 import org.springframework.boot.task.TaskSchedulerCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -42,9 +42,8 @@ import org.springframework.scheduling.config.TaskManagementConfigUtils;
  * @since 2.1.0
  */
 @ConditionalOnClass(ThreadPoolTaskScheduler.class)
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(after = TaskExecutionAutoConfiguration.class)
 @EnableConfigurationProperties(TaskSchedulingProperties.class)
-@AutoConfigureAfter(TaskExecutionAutoConfiguration.class)
 public class TaskSchedulingAutoConfiguration {
 
 	@Bean
@@ -52,6 +51,12 @@ public class TaskSchedulingAutoConfiguration {
 	@ConditionalOnMissingBean({ SchedulingConfigurer.class, TaskScheduler.class, ScheduledExecutorService.class })
 	public ThreadPoolTaskScheduler taskScheduler(TaskSchedulerBuilder builder) {
 		return builder.build();
+	}
+
+	@Bean
+	@ConditionalOnBean(name = TaskManagementConfigUtils.SCHEDULED_ANNOTATION_PROCESSOR_BEAN_NAME)
+	public static LazyInitializationExcludeFilter scheduledBeanLazyInitializationExcludeFilter() {
+		return new ScheduledBeanLazyInitializationExcludeFilter();
 	}
 
 	@Bean

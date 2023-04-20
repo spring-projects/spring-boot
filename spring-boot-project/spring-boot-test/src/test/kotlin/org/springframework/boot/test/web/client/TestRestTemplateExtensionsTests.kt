@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.test.web.client
 
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.Assert
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.HttpEntity
@@ -251,9 +251,9 @@ class TestRestTemplateExtensionsTests {
 							.apply { addAll(method.parameterTypes.filter { it != kClass.java }) }
 					val f = extensions.getDeclaredMethod(method.name,
 							*parameters.toTypedArray()).kotlinFunction!!
-					Assert.assertEquals(1, f.typeParameters.size)
-					Assert.assertEquals(listOf(Any::class.createType()),
-							f.typeParameters[0].upperBounds)
+					assertThat(f.typeParameters.size).isEqualTo(1)
+					assertThat(listOf(Any::class.createType()))
+						.isEqualTo(f.typeParameters[0].upperBounds)
 				}
 			}
 		}

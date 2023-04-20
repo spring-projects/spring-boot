@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.endpoint;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -25,11 +24,11 @@ import org.springframework.boot.actuate.endpoint.annotation.EndpointConverter;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoke.convert.ConversionServiceParameterValueMapper;
 import org.springframework.boot.actuate.endpoint.invoker.cache.CachingOperationInvokerAdvisor;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
@@ -44,7 +43,7 @@ import org.springframework.core.env.Environment;
  * @author Chao Chang
  * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 public class EndpointAutoConfiguration {
 
 	@Bean
@@ -52,9 +51,8 @@ public class EndpointAutoConfiguration {
 	public ParameterValueMapper endpointOperationParameterMapper(
 			@EndpointConverter ObjectProvider<Converter<?, ?>> converters,
 			@EndpointConverter ObjectProvider<GenericConverter> genericConverters) {
-		ConversionService conversionService = createConversionService(
-				converters.orderedStream().collect(Collectors.toList()),
-				genericConverters.orderedStream().collect(Collectors.toList()));
+		ConversionService conversionService = createConversionService(converters.orderedStream().toList(),
+				genericConverters.orderedStream().toList());
 		return new ConversionServiceParameterValueMapper(conversionService);
 	}
 

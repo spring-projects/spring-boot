@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,8 @@ import org.springframework.session.Session;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link SessionsEndpoint}.
@@ -48,7 +48,7 @@ class SessionsEndpointTests {
 	@Test
 	void sessionsForUsername() {
 		given(this.repository.findByPrincipalName("user"))
-				.willReturn(Collections.singletonMap(session.getId(), session));
+			.willReturn(Collections.singletonMap(session.getId(), session));
 		List<SessionDescriptor> result = this.endpoint.sessionsForUsername("user").getSessions();
 		assertThat(result).hasSize(1);
 		assertThat(result.get(0).getId()).isEqualTo(session.getId());
@@ -80,7 +80,7 @@ class SessionsEndpointTests {
 	@Test
 	void deleteSession() {
 		this.endpoint.deleteSession(session.getId());
-		verify(this.repository).deleteById(session.getId());
+		then(this.repository).should().deleteById(session.getId());
 	}
 
 }

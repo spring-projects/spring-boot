@@ -3,7 +3,10 @@ platform: linux
 image_resource:
   type: registry-image
   source:
-    repository: vito/oci-build-task
+    repository: concourse/oci-build-task
+    tag: 0.10.0
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
 inputs:
 - name: ci-images-git-repo
 outputs:
@@ -14,6 +17,7 @@ params:
   CONTEXT: ci-images-git-repo/ci/images
   DOCKERFILE: ci-images-git-repo/ci/images/((ci-image-name))/Dockerfile
   DOCKER_HUB_AUTH: ((docker-hub-auth))
+  REGISTRY_MIRRORS: ((docker-hub-mirror))
 run:
   path: /bin/sh
   args:

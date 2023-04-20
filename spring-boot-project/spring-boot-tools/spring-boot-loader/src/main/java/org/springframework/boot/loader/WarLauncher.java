@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,17 +25,10 @@ import org.springframework.boot.loader.archive.Archive;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Scott Frederick
  * @since 1.0.0
  */
 public class WarLauncher extends ExecutableArchiveLauncher {
-
-	private static final String WEB_INF = "WEB-INF/";
-
-	private static final String WEB_INF_CLASSES = WEB_INF + "classes/";
-
-	private static final String WEB_INF_LIB = WEB_INF + "lib/";
-
-	private static final String WEB_INF_LIB_PROVIDED = WEB_INF + "lib-provided/";
 
 	public WarLauncher() {
 	}
@@ -45,13 +38,21 @@ public class WarLauncher extends ExecutableArchiveLauncher {
 	}
 
 	@Override
+	protected boolean isPostProcessingClassPathArchives() {
+		return false;
+	}
+
+	@Override
 	public boolean isNestedArchive(Archive.Entry entry) {
 		if (entry.isDirectory()) {
-			return entry.getName().equals(WEB_INF_CLASSES);
+			return entry.getName().equals("WEB-INF/classes/");
 		}
-		else {
-			return entry.getName().startsWith(WEB_INF_LIB) || entry.getName().startsWith(WEB_INF_LIB_PROVIDED);
-		}
+		return entry.getName().startsWith("WEB-INF/lib/") || entry.getName().startsWith("WEB-INF/lib-provided/");
+	}
+
+	@Override
+	protected String getArchiveEntryPathPrefix() {
+		return "WEB-INF/";
 	}
 
 	public static void main(String[] args) throws Exception {

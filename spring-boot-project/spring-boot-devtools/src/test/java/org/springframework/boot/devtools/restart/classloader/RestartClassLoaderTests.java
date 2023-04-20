@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
@@ -34,7 +35,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.aop.framework.ProxyFactory;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 
@@ -95,14 +104,14 @@ class RestartClassLoaderTests {
 	@Test
 	void parentMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new RestartClassLoader(null, new URL[] {}))
-				.withMessageContaining("Parent must not be null");
+			.withMessageContaining("Parent must not be null");
 	}
 
 	@Test
 	void updatedFilesMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new RestartClassLoader(this.parentClassLoader, new URL[] {}, null))
-				.withMessageContaining("UpdatedFiles must not be null");
+			.isThrownBy(() -> new RestartClassLoader(this.parentClassLoader, new URL[] {}, null))
+			.withMessageContaining("UpdatedFiles must not be null");
 	}
 
 	@Test
@@ -120,18 +129,18 @@ class RestartClassLoaderTests {
 	@Test
 	void getResourcesFiltersDuplicates() throws Exception {
 		List<URL> resources = toList(this.reloadClassLoader.getResources(PACKAGE_PATH + "/Sample.txt"));
-		assertThat(resources.size()).isEqualTo(1);
+		assertThat(resources).hasSize(1);
 	}
 
 	@Test
 	void loadClassFromReloadableUrl() throws Exception {
-		Class<?> loaded = this.reloadClassLoader.loadClass(PACKAGE + ".Sample");
+		Class<?> loaded = Class.forName(PACKAGE + ".Sample", false, this.reloadClassLoader);
 		assertThat(loaded.getClassLoader()).isEqualTo(this.reloadClassLoader);
 	}
 
 	@Test
 	void loadClassFromParent() throws Exception {
-		Class<?> loaded = this.reloadClassLoader.loadClass(PACKAGE + ".SampleParent");
+		Class<?> loaded = Class.forName(PACKAGE + ".SampleParent", false, this.reloadClassLoader);
 		assertThat(loaded.getClassLoader()).isEqualTo(getClass().getClassLoader());
 	}
 
@@ -176,19 +185,19 @@ class RestartClassLoaderTests {
 	}
 
 	@Test
-	void getDeletedClass() throws Exception {
+	void getDeletedClass() {
 		String name = PACKAGE_PATH + "/Sample.class";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
 		assertThatExceptionOfType(ClassNotFoundException.class)
-				.isThrownBy(() -> this.reloadClassLoader.loadClass(PACKAGE + ".Sample"));
+			.isThrownBy(() -> Class.forName(PACKAGE + ".Sample", false, this.reloadClassLoader));
 	}
 
 	@Test
-	void getUpdatedClass() throws Exception {
+	void getUpdatedClass() {
 		String name = PACKAGE_PATH + "/Sample.class";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.MODIFIED, new byte[10]));
 		assertThatExceptionOfType(ClassFormatError.class)
-				.isThrownBy(() -> this.reloadClassLoader.loadClass(PACKAGE + ".Sample"));
+			.isThrownBy(() -> Class.forName(PACKAGE + ".Sample", false, this.reloadClassLoader));
 	}
 
 	@Test
@@ -196,8 +205,32 @@ class RestartClassLoaderTests {
 		String name = PACKAGE_PATH + "/SampleParent.class";
 		byte[] bytes = FileCopyUtils.copyToByteArray(getClass().getResourceAsStream("SampleParent.class"));
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.ADDED, bytes));
-		Class<?> loaded = this.reloadClassLoader.loadClass(PACKAGE + ".SampleParent");
+		Class<?> loaded = Class.forName(PACKAGE + ".SampleParent", false, this.reloadClassLoader);
 		assertThat(loaded.getClassLoader()).isEqualTo(this.reloadClassLoader);
+	}
+
+	@Test
+	void proxyOnClassFromSystemClassLoaderDoesNotYieldWarning() {
+		ProxyFactory pf = new ProxyFactory(new HashMap<>());
+		pf.setProxyTargetClass(true);
+		pf.getProxy(this.reloadClassLoader);
+		// Warning would happen outside the boundary of the test
+	}
+
+	@Test
+	void packagePrivateClassLoadedByParentClassLoaderCanBeProxied() throws IOException {
+		try (RestartClassLoader restartClassLoader = new RestartClassLoader(ExampleTransactional.class.getClassLoader(),
+				new URL[] { this.sampleJarFile.toURI().toURL() }, this.updatedFiles)) {
+			new ApplicationContextRunner().withClassLoader(restartClassLoader)
+				.withUserConfiguration(ProxyConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasNotFailed();
+					ExampleTransactional transactional = context.getBean(ExampleTransactional.class);
+					assertThat(AopUtils.isCglibProxy(transactional)).isTrue();
+					assertThat(transactional.getClass().getClassLoader())
+						.isEqualTo(ExampleTransactional.class.getClassLoader());
+				});
+		}
 	}
 
 	private String readString(InputStream in) throws IOException {
@@ -206,6 +239,34 @@ class RestartClassLoaderTests {
 
 	private <T> List<T> toList(Enumeration<T> enumeration) {
 		return (enumeration != null) ? Collections.list(enumeration) : Collections.emptyList();
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableAspectJAutoProxy(proxyTargetClass = true)
+	@EnableTransactionManagement
+	static class ProxyConfiguration {
+
+		@Bean
+		ExampleTransactional exampleTransactional() {
+			return new ExampleTransactional();
+		}
+
+	}
+
+	static class ExampleTransactional implements ExampleInterface {
+
+		@Override
+		@Transactional
+		public String doIt() {
+			return "hello";
+		}
+
+	}
+
+	interface ExampleInterface {
+
+		String doIt();
+
 	}
 
 }

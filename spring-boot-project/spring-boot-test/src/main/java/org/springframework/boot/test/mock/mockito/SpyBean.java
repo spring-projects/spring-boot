@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,9 +37,9 @@ import org.springframework.test.context.junit4.SpringRunner;
  * {@link RunWith @RunWith} the {@link SpringRunner}.
  * <p>
  * Spies can be applied by type or by {@link #name() bean name}. All beans in the context
- * of the same type will be wrapped with the spy. If no existing bean is defined a new one
- * will be added. Dependencies that are known to the application context but are not beans
- * (such as those
+ * of a matching type (including subclasses) will be wrapped with the spy. If no existing
+ * bean is defined a new one will be added. Dependencies that are known to the application
+ * context but are not beans (such as those
  * {@link org.springframework.beans.factory.config.ConfigurableListableBeanFactory#registerResolvableDependency(Class, Object)
  * registered directly}) will not be found and a spied bean will be added to the context
  * alongside the existing dependency.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,16 +17,15 @@
 package org.springframework.boot.autoconfigure.webservices.client;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.webservices.client.WebServiceTemplateBuilder;
 import org.springframework.boot.webservices.client.WebServiceTemplateCustomizer;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.Marshaller;
 import org.springframework.oxm.Unmarshaller;
 import org.springframework.ws.client.core.WebServiceTemplate;
@@ -37,7 +36,7 @@ import org.springframework.ws.client.core.WebServiceTemplate;
  * @author Dmytro Nosan
  * @since 2.1.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnClass({ WebServiceTemplate.class, Unmarshaller.class, Marshaller.class })
 public class WebServiceTemplateAutoConfiguration {
 
@@ -46,8 +45,7 @@ public class WebServiceTemplateAutoConfiguration {
 	public WebServiceTemplateBuilder webServiceTemplateBuilder(
 			ObjectProvider<WebServiceTemplateCustomizer> webServiceTemplateCustomizers) {
 		WebServiceTemplateBuilder builder = new WebServiceTemplateBuilder();
-		List<WebServiceTemplateCustomizer> customizers = webServiceTemplateCustomizers.orderedStream()
-				.collect(Collectors.toList());
+		List<WebServiceTemplateCustomizer> customizers = webServiceTemplateCustomizers.orderedStream().toList();
 		if (!customizers.isEmpty()) {
 			builder = builder.customizers(customizers);
 		}

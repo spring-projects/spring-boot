@@ -1,0 +1,62 @@
+plugins {
+	id "java-library"
+	id "org.jetbrains.kotlin.jvm"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Test"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+
+	optional("com.fasterxml.jackson.core:jackson-databind")
+	optional("com.google.code.gson:gson")
+	optional("com.jayway.jsonpath:json-path")
+	optional("io.projectreactor.netty:reactor-netty-http")
+	optional("jakarta.json.bind:jakarta.json.bind-api")
+	optional("jakarta.servlet:jakarta.servlet-api")
+	optional("junit:junit")
+	optional("org.apache.httpcomponents.client5:httpclient5")
+	optional("org.assertj:assertj-core")
+	optional("org.hamcrest:hamcrest-core")
+	optional("org.hamcrest:hamcrest-library")
+	optional("org.jetbrains.kotlin:kotlin-stdlib")
+	optional("org.jetbrains.kotlin:kotlin-reflect")
+	optional("org.junit.jupiter:junit-jupiter-api")
+	optional("org.mockito:mockito-core")
+	optional("org.skyscreamer:jsonassert")
+	optional("org.seleniumhq.selenium:htmlunit-driver") {
+		exclude(group: "commons-logging", module: "commons-logging")
+		exclude(group: "com.sun.activation", module: "jakarta.activation")
+	}
+	optional("org.seleniumhq.selenium:selenium-api")
+	optional("org.springframework:spring-test")
+	optional("org.springframework:spring-web")
+	optional("org.springframework:spring-webflux")
+	optional("org.springframework.graphql:spring-graphql-test")
+	optional("net.sourceforge.htmlunit:htmlunit") {
+		exclude(group: "commons-logging", module: "commons-logging")
+	}
+
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("io.mockk:mockk")
+	testImplementation("jakarta.json:jakarta.json-api")
+	testImplementation("ch.qos.logback:logback-classic")
+	testImplementation("com.squareup.okhttp3:okhttp")
+	testImplementation("org.apache.tomcat.embed:tomcat-embed-core")
+	testImplementation("org.apache.groovy:groovy")
+	testImplementation("org.apache.groovy:groovy-xml")
+	testImplementation("org.eclipse:yasson")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-junit-jupiter")
+	testImplementation("org.slf4j:slf4j-api")
+	testImplementation("org.spockframework:spock-core")
+	testImplementation("org.springframework:spring-webmvc")
+	testImplementation("org.springframework:spring-core-test")
+	testImplementation("org.testng:testng")
+
+	testRuntimeOnly("org.junit.vintage:junit-vintage-engine")
+}
+

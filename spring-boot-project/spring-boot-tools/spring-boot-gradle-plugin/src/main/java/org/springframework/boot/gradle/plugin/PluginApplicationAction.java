@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,9 +30,11 @@ interface PluginApplicationAction extends Action<Project> {
 
 	/**
 	 * The class of the {@code Plugin} that, when applied, will trigger the execution of
-	 * this action. May return {@code null} if the plugin class is not on the classpath.
-	 * @return the plugin class or {@code null}
+	 * this action.
+	 * @return the plugin class
+	 * @throws ClassNotFoundException if the plugin class cannot be found
+	 * @throws NoClassDefFoundError if an error occurs when defining the plugin class
 	 */
-	Class<? extends Plugin<? extends Project>> getPluginClass();
+	Class<? extends Plugin<? extends Project>> getPluginClass() throws ClassNotFoundException, NoClassDefFoundError;
 
 }

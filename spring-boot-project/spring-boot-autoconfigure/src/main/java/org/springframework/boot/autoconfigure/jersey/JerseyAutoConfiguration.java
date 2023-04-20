@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,17 +19,16 @@ package org.springframework.boot.autoconfigure.jersey;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import javax.servlet.DispatcherType;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
-import javax.ws.rs.ext.ContextResolver;
-import javax.xml.bind.annotation.XmlElement;
-
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.cfg.MapperConfig;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
+import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRegistration;
+import jakarta.ws.rs.ext.ContextResolver;
+import jakarta.xml.bind.annotation.XmlElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.glassfish.jersey.jackson.JacksonFeature;
@@ -40,8 +39,7 @@ import org.glassfish.jersey.servlet.ServletProperties;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -78,13 +76,11 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Stephane Nicoll
  * @since 1.2.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration(before = DispatcherServletAutoConfiguration.class, after = JacksonAutoConfiguration.class)
 @ConditionalOnClass({ SpringComponentProvider.class, ServletRegistration.class })
 @ConditionalOnBean(type = "org.glassfish.jersey.server.ResourceConfig")
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
-@AutoConfigureBefore(DispatcherServletAutoConfiguration.class)
-@AutoConfigureAfter(JacksonAutoConfiguration.class)
 @EnableConfigurationProperties(JerseyProperties.class)
 public class JerseyAutoConfiguration implements ServletContextAware {
 
@@ -148,6 +144,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 		addInitParameters(registration);
 		registration.setName(getServletRegistrationName());
 		registration.setLoadOnStartup(this.jersey.getServlet().getLoadOnStartup());
+		registration.setIgnoreRegistrationFailure(true);
 		return registration;
 	}
 
@@ -189,7 +186,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 	static class JacksonResourceConfigCustomizer {
 
 		@Bean
-		ResourceConfigCustomizer resourceConfigCustomizer(final ObjectMapper objectMapper) {
+		ResourceConfigCustomizer jacksonResourceConfigCustomizer(ObjectMapper objectMapper) {
 			return (ResourceConfig config) -> {
 				config.register(JacksonFeature.class);
 				config.register(new ObjectMapperContextResolver(objectMapper), ContextResolver.class);
@@ -197,12 +194,12 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 		}
 
 		@Configuration(proxyBeanMethods = false)
-		@ConditionalOnClass({ JaxbAnnotationIntrospector.class, XmlElement.class })
+		@ConditionalOnClass({ JakartaXmlBindAnnotationIntrospector.class, XmlElement.class })
 		static class JaxbObjectMapperCustomizer {
 
 			@Autowired
 			void addJaxbAnnotationIntrospector(ObjectMapper objectMapper) {
-				JaxbAnnotationIntrospector jaxbAnnotationIntrospector = new JaxbAnnotationIntrospector(
+				JakartaXmlBindAnnotationIntrospector jaxbAnnotationIntrospector = new JakartaXmlBindAnnotationIntrospector(
 						objectMapper.getTypeFactory());
 				objectMapper.setAnnotationIntrospectors(
 						createPair(objectMapper.getSerializationConfig(), jaxbAnnotationIntrospector),
@@ -210,7 +207,7 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 			}
 
 			private AnnotationIntrospector createPair(MapperConfig<?> config,
-					JaxbAnnotationIntrospector jaxbAnnotationIntrospector) {
+					JakartaXmlBindAnnotationIntrospector jaxbAnnotationIntrospector) {
 				return AnnotationIntrospector.pair(config.getAnnotationIntrospector(), jaxbAnnotationIntrospector);
 			}
 

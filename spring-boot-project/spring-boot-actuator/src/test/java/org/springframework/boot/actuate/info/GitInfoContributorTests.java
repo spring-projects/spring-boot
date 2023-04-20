@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,10 @@ import java.util.Properties;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.aot.hint.MemberCategory;
+import org.springframework.aot.hint.RuntimeHints;
+import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
+import org.springframework.boot.actuate.info.GitInfoContributor.GitInfoContributorRuntimeHints;
 import org.springframework.boot.actuate.info.InfoPropertiesInfoContributor.Mode;
 import org.springframework.boot.info.GitProperties;
 
@@ -31,6 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link GitInfoContributor}.
  *
  * @author Stephane Nicoll
+ * @author Moritz Halbritter
  */
 class GitInfoContributorTests {
 
@@ -59,7 +64,7 @@ class GitInfoContributorTests {
 		Map<String, Object> content = contributor.generateContent();
 		assertThat(content.get("commit")).isInstanceOf(Map.class);
 		Map<String, Object> commit = (Map<String, Object>) content.get("commit");
-		assertThat(commit.get("id")).isEqualTo("8e29a0b");
+		assertThat(commit).containsEntry("id", "8e29a0b");
 	}
 
 	@Test
@@ -75,8 +80,19 @@ class GitInfoContributorTests {
 		Map<String, Object> commit = (Map<String, Object>) content.get("commit");
 		assertThat(commit.get("id")).isInstanceOf(Map.class);
 		Map<String, Object> id = (Map<String, Object>) commit.get("id");
-		assertThat(id.get("full")).isEqualTo("1b3cec34f7ca0a021244452f2cae07a80497a7c7");
-		assertThat(id.get("abbrev")).isEqualTo("1b3cec3");
+		assertThat(id).containsEntry("full", "1b3cec34f7ca0a021244452f2cae07a80497a7c7");
+		assertThat(id).containsEntry("abbrev", "1b3cec3");
+	}
+
+	@Test
+	void shouldRegisterHints() {
+		RuntimeHints runtimeHints = new RuntimeHints();
+		new GitInfoContributorRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());
+		assertThat(RuntimeHintsPredicates.reflection()
+			.onType(GitProperties.class)
+			.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS, MemberCategory.DECLARED_FIELDS))
+			.accepts(runtimeHints);
+
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ public class ImmutableSimpleProperties {
 	// An interface can still be injected because it might have a converter
 	private final Comparator<?> comparator;
 
-	// Even if it is not exposed, we're still offering a way to bind the value via the
-	// constructor so it should be present in the metadata
+	// Even if it is not exposed, we're still offering a way to bind the value through the
+	// constructor, so it should be present in the metadata
 	@SuppressWarnings("unused")
 	private final Long counter;
 

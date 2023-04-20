@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,10 @@
  */
 
 package org.springframework.boot.logging;
+
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.util.function.BiConsumer;
 
 import org.springframework.boot.system.ApplicationPid;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -62,9 +66,14 @@ public class LoggingSystemProperties {
 	public static final String CONSOLE_LOG_PATTERN = "CONSOLE_LOG_PATTERN";
 
 	/**
-	 * The name of the System property that contains the clean history on start flag.
+	 * The name of the System property that contains the console log charset.
 	 */
-	public static final String FILE_CLEAN_HISTORY_ON_START = "LOG_FILE_CLEAN_HISTORY_ON_START";
+	public static final String CONSOLE_LOG_CHARSET = "CONSOLE_LOG_CHARSET";
+
+	/**
+	 * The log level threshold for console log.
+	 */
+	public static final String CONSOLE_LOG_THRESHOLD = "CONSOLE_LOG_THRESHOLD";
 
 	/**
 	 * The name of the System property that contains the file log pattern.
@@ -72,19 +81,14 @@ public class LoggingSystemProperties {
 	public static final String FILE_LOG_PATTERN = "FILE_LOG_PATTERN";
 
 	/**
-	 * The name of the System property that contains the file log max history.
+	 * The name of the System property that contains the file log charset.
 	 */
-	public static final String FILE_MAX_HISTORY = "LOG_FILE_MAX_HISTORY";
+	public static final String FILE_LOG_CHARSET = "FILE_LOG_CHARSET";
 
 	/**
-	 * The name of the System property that contains the file log max size.
+	 * The log level threshold for file log.
 	 */
-	public static final String FILE_MAX_SIZE = "LOG_FILE_MAX_SIZE";
-
-	/**
-	 * The name of the System property that contains the file total size cap.
-	 */
-	public static final String FILE_TOTAL_SIZE_CAP = "LOG_FILE_TOTAL_SIZE_CAP";
+	public static final String FILE_LOG_THRESHOLD = "FILE_LOG_THRESHOLD";
 
 	/**
 	 * The name of the System property that contains the log level pattern.
@@ -96,63 +100,90 @@ public class LoggingSystemProperties {
 	 */
 	public static final String LOG_DATEFORMAT_PATTERN = "LOG_DATEFORMAT_PATTERN";
 
-	/**
-	 * The name of the System property that contains the rolled-over log file name
-	 * pattern.
-	 */
-	public static final String ROLLING_FILE_NAME_PATTERN = "ROLLING_FILE_NAME_PATTERN";
+	private static final BiConsumer<String, String> systemPropertySetter = (name, value) -> {
+		if (System.getProperty(name) == null && value != null) {
+			System.setProperty(name, value);
+		}
+	};
 
 	private final Environment environment;
+
+	private final BiConsumer<String, String> setter;
 
 	/**
 	 * Create a new {@link LoggingSystemProperties} instance.
 	 * @param environment the source environment
 	 */
 	public LoggingSystemProperties(Environment environment) {
-		Assert.notNull(environment, "Environment must not be null");
-		this.environment = environment;
+		this(environment, systemPropertySetter);
 	}
 
-	public void apply() {
+	/**
+	 * Create a new {@link LoggingSystemProperties} instance.
+	 * @param environment the source environment
+	 * @param setter setter used to apply the property
+	 * @since 2.4.2
+	 */
+	public LoggingSystemProperties(Environment environment, BiConsumer<String, String> setter) {
+		Assert.notNull(environment, "Environment must not be null");
+		Assert.notNull(setter, "Setter must not be null");
+		this.environment = environment;
+		this.setter = setter;
+	}
+
+	protected Charset getDefaultCharset() {
+		return StandardCharsets.UTF_8;
+	}
+
+	public final void apply() {
 		apply(null);
 	}
 
-	public void apply(LogFile logFile) {
+	public final void apply(LogFile logFile) {
 		PropertyResolver resolver = getPropertyResolver();
-		setSystemProperty(resolver, EXCEPTION_CONVERSION_WORD, "exception-conversion-word");
+		apply(logFile, resolver);
+	}
+
+	protected void apply(LogFile logFile, PropertyResolver resolver) {
+		setSystemProperty(resolver, EXCEPTION_CONVERSION_WORD, "logging.exception-conversion-word");
 		setSystemProperty(PID_KEY, new ApplicationPid().toString());
-		setSystemProperty(resolver, CONSOLE_LOG_PATTERN, "pattern.console");
-		setSystemProperty(resolver, FILE_LOG_PATTERN, "pattern.file");
-		setSystemProperty(resolver, FILE_CLEAN_HISTORY_ON_START, "file.clean-history-on-start");
-		setSystemProperty(resolver, FILE_MAX_HISTORY, "file.max-history");
-		setSystemProperty(resolver, FILE_MAX_SIZE, "file.max-size");
-		setSystemProperty(resolver, FILE_TOTAL_SIZE_CAP, "file.total-size-cap");
-		setSystemProperty(resolver, LOG_LEVEL_PATTERN, "pattern.level");
-		setSystemProperty(resolver, LOG_DATEFORMAT_PATTERN, "pattern.dateformat");
-		setSystemProperty(resolver, ROLLING_FILE_NAME_PATTERN, "pattern.rolling-file-name");
+		setSystemProperty(resolver, CONSOLE_LOG_PATTERN, "logging.pattern.console");
+		setSystemProperty(resolver, CONSOLE_LOG_CHARSET, "logging.charset.console", getDefaultCharset().name());
+		setSystemProperty(resolver, CONSOLE_LOG_THRESHOLD, "logging.threshold.console");
+		setSystemProperty(resolver, LOG_DATEFORMAT_PATTERN, "logging.pattern.dateformat");
+		setSystemProperty(resolver, FILE_LOG_PATTERN, "logging.pattern.file");
+		setSystemProperty(resolver, FILE_LOG_CHARSET, "logging.charset.file", getDefaultCharset().name());
+		setSystemProperty(resolver, FILE_LOG_THRESHOLD, "logging.threshold.file");
+		setSystemProperty(resolver, LOG_LEVEL_PATTERN, "logging.pattern.level");
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
 		}
 	}
 
 	private PropertyResolver getPropertyResolver() {
-		if (this.environment instanceof ConfigurableEnvironment) {
+		if (this.environment instanceof ConfigurableEnvironment configurableEnvironment) {
 			PropertySourcesPropertyResolver resolver = new PropertySourcesPropertyResolver(
-					((ConfigurableEnvironment) this.environment).getPropertySources());
+					configurableEnvironment.getPropertySources());
+			resolver.setConversionService(((ConfigurableEnvironment) this.environment).getConversionService());
 			resolver.setIgnoreUnresolvableNestedPlaceholders(true);
 			return resolver;
 		}
 		return this.environment;
 	}
 
-	private void setSystemProperty(PropertyResolver resolver, String systemPropertyName, String propertyName) {
-		setSystemProperty(systemPropertyName, resolver.getProperty("logging." + propertyName));
+	protected final void setSystemProperty(PropertyResolver resolver, String systemPropertyName, String propertyName) {
+		setSystemProperty(resolver, systemPropertyName, propertyName, null);
 	}
 
-	private void setSystemProperty(String name, String value) {
-		if (System.getProperty(name) == null && value != null) {
-			System.setProperty(name, value);
-		}
+	protected final void setSystemProperty(PropertyResolver resolver, String systemPropertyName, String propertyName,
+			String defaultValue) {
+		String value = resolver.getProperty(propertyName);
+		value = (value != null) ? value : defaultValue;
+		setSystemProperty(systemPropertyName, value);
+	}
+
+	protected final void setSystemProperty(String name, String value) {
+		this.setter.accept(name, value);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import java.security.AccessControlException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -49,7 +48,7 @@ class OnClassCondition extends FilteringSpringBootCondition {
 		// Split the work and perform half in a background thread if more than one
 		// processor is available. Using a single additional thread seems to offer the
 		// best performance. More threads make things worse.
-		if (Runtime.getRuntime().availableProcessors() > 1) {
+		if (autoConfigurationClasses.length > 1 && Runtime.getRuntime().availableProcessors() > 1) {
 			return resolveOutcomesThreaded(autoConfigurationClasses, autoConfigurationMetadata);
 		}
 		else {
@@ -78,12 +77,7 @@ class OnClassCondition extends FilteringSpringBootCondition {
 			AutoConfigurationMetadata autoConfigurationMetadata) {
 		OutcomesResolver outcomesResolver = new StandardOutcomesResolver(autoConfigurationClasses, start, end,
 				autoConfigurationMetadata, getBeanClassLoader());
-		try {
-			return new ThreadedOutcomesResolver(outcomesResolver);
-		}
-		catch (AccessControlException ex) {
-			return outcomesResolver;
-		}
+		return new ThreadedOutcomesResolver(outcomesResolver);
 	}
 
 	@Override
@@ -95,22 +89,24 @@ class OnClassCondition extends FilteringSpringBootCondition {
 			List<String> missing = filter(onClasses, ClassNameFilter.MISSING, classLoader);
 			if (!missing.isEmpty()) {
 				return ConditionOutcome.noMatch(ConditionMessage.forCondition(ConditionalOnClass.class)
-						.didNotFind("required class", "required classes").items(Style.QUOTE, missing));
+					.didNotFind("required class", "required classes")
+					.items(Style.QUOTE, missing));
 			}
 			matchMessage = matchMessage.andCondition(ConditionalOnClass.class)
-					.found("required class", "required classes")
-					.items(Style.QUOTE, filter(onClasses, ClassNameFilter.PRESENT, classLoader));
+				.found("required class", "required classes")
+				.items(Style.QUOTE, filter(onClasses, ClassNameFilter.PRESENT, classLoader));
 		}
 		List<String> onMissingClasses = getCandidates(metadata, ConditionalOnMissingClass.class);
 		if (onMissingClasses != null) {
 			List<String> present = filter(onMissingClasses, ClassNameFilter.PRESENT, classLoader);
 			if (!present.isEmpty()) {
 				return ConditionOutcome.noMatch(ConditionMessage.forCondition(ConditionalOnMissingClass.class)
-						.found("unwanted class", "unwanted classes").items(Style.QUOTE, present));
+					.found("unwanted class", "unwanted classes")
+					.items(Style.QUOTE, present));
 			}
 			matchMessage = matchMessage.andCondition(ConditionalOnMissingClass.class)
-					.didNotFind("unwanted class", "unwanted classes")
-					.items(Style.QUOTE, filter(onMissingClasses, ClassNameFilter.MISSING, classLoader));
+				.didNotFind("unwanted class", "unwanted classes")
+				.items(Style.QUOTE, filter(onMissingClasses, ClassNameFilter.MISSING, classLoader));
 		}
 		return ConditionOutcome.match(matchMessage);
 	}
@@ -164,7 +160,7 @@ class OnClassCondition extends FilteringSpringBootCondition {
 
 	}
 
-	private final class StandardOutcomesResolver implements OutcomesResolver {
+	private static final class StandardOutcomesResolver implements OutcomesResolver {
 
 		private final String[] autoConfigurationClasses;
 
@@ -226,7 +222,8 @@ class OnClassCondition extends FilteringSpringBootCondition {
 		private ConditionOutcome getOutcome(String className, ClassLoader classLoader) {
 			if (ClassNameFilter.MISSING.matches(className, classLoader)) {
 				return ConditionOutcome.noMatch(ConditionMessage.forCondition(ConditionalOnClass.class)
-						.didNotFind("required class").items(Style.QUOTE, className));
+					.didNotFind("required class")
+					.items(Style.QUOTE, className));
 			}
 			return null;
 		}

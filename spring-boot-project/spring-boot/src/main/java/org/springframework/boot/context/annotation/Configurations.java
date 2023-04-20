@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.OrderComparator;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -47,8 +48,8 @@ import org.springframework.util.ClassUtils;
  * This class is primarily intended for use with tests that need to specify configuration
  * classes but can't use {@link SpringRunner}.
  * <p>
- * Implementations of this class should be annotated with {@code @Order} or implement
- * {@link Ordered}.
+ * Implementations of this class should be annotated with {@link Order @Order} or
+ * implement {@link Ordered}.
  *
  * @author Phillip Webb
  * @since 2.0.0
@@ -57,7 +58,7 @@ import org.springframework.util.ClassUtils;
 public abstract class Configurations {
 
 	private static final Comparator<Object> COMPARATOR = OrderComparator.INSTANCE
-			.thenComparing((other) -> other.getClass().getName());
+		.thenComparing((other) -> other.getClass().getName());
 
 	private final Set<Class<?>> classes;
 
@@ -119,8 +120,9 @@ public abstract class Configurations {
 		List<Configurations> ordered = new ArrayList<>(configurations);
 		ordered.sort(COMPARATOR);
 		List<Configurations> collated = collate(ordered);
-		LinkedHashSet<Class<?>> classes = collated.stream().flatMap(Configurations::streamClasses)
-				.collect(Collectors.toCollection(LinkedHashSet::new));
+		LinkedHashSet<Class<?>> classes = collated.stream()
+			.flatMap(Configurations::streamClasses)
+			.collect(Collectors.toCollection(LinkedHashSet::new));
 		return ClassUtils.toClassArray(classes);
 	}
 

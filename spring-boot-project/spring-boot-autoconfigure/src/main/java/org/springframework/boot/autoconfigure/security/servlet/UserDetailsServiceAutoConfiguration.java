@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +23,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationManagerResolver;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.core.userdetails.User;
@@ -52,13 +52,16 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @since 2.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnClass(AuthenticationManager.class)
 @ConditionalOnBean(ObjectPostProcessor.class)
 @ConditionalOnMissingBean(
-		value = { AuthenticationManager.class, AuthenticationProvider.class, UserDetailsService.class },
+		value = { AuthenticationManager.class, AuthenticationProvider.class, UserDetailsService.class,
+				AuthenticationManagerResolver.class },
 		type = { "org.springframework.security.oauth2.jwt.JwtDecoder",
-				"org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector" })
+				"org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector",
+				"org.springframework.security.oauth2.client.registration.ClientRegistrationRepository",
+				"org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository" })
 public class UserDetailsServiceAutoConfiguration {
 
 	private static final String NOOP_PASSWORD_PREFIX = "{noop}";
@@ -68,22 +71,24 @@ public class UserDetailsServiceAutoConfiguration {
 	private static final Log logger = LogFactory.getLog(UserDetailsServiceAutoConfiguration.class);
 
 	@Bean
-	@ConditionalOnMissingBean(
-			type = "org.springframework.security.oauth2.client.registration.ClientRegistrationRepository")
-	@Lazy
 	public InMemoryUserDetailsManager inMemoryUserDetailsManager(SecurityProperties properties,
 			ObjectProvider<PasswordEncoder> passwordEncoder) {
 		SecurityProperties.User user = properties.getUser();
 		List<String> roles = user.getRoles();
-		return new InMemoryUserDetailsManager(
-				User.withUsername(user.getName()).password(getOrDeducePassword(user, passwordEncoder.getIfAvailable()))
-						.roles(StringUtils.toStringArray(roles)).build());
+		return new InMemoryUserDetailsManager(User.withUsername(user.getName())
+			.password(getOrDeducePassword(user, passwordEncoder.getIfAvailable()))
+			.roles(StringUtils.toStringArray(roles))
+			.build());
 	}
 
 	private String getOrDeducePassword(SecurityProperties.User user, PasswordEncoder encoder) {
 		String password = user.getPassword();
 		if (user.isPasswordGenerated()) {
-			logger.info(String.format("%n%nUsing generated security password: %s%n", user.getPassword()));
+			logger.warn(String.format(
+					"%n%nUsing generated security password: %s%n%nThis generated password is for development use only. "
+							+ "Your security configuration must be updated before running your application in "
+							+ "production.%n",
+					user.getPassword()));
 		}
 		if (encoder != null || PASSWORD_ALGORITHM_PATTERN.matcher(password).matches()) {
 			return password;

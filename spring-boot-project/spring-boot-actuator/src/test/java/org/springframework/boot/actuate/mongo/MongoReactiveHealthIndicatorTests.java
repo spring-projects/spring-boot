@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import org.springframework.boot.actuate.data.mongo.MongoReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
@@ -40,31 +41,31 @@ class MongoReactiveHealthIndicatorTests {
 	@Test
 	void testMongoIsUp() {
 		Document buildInfo = mock(Document.class);
-		given(buildInfo.getString("version")).willReturn("2.6.4");
+		given(buildInfo.getInteger("maxWireVersion")).willReturn(10);
 		ReactiveMongoTemplate reactiveMongoTemplate = mock(ReactiveMongoTemplate.class);
-		given(reactiveMongoTemplate.executeCommand("{ buildInfo: 1 }")).willReturn(Mono.just(buildInfo));
+		given(reactiveMongoTemplate.executeCommand("{ isMaster: 1 }")).willReturn(Mono.just(buildInfo));
 		MongoReactiveHealthIndicator mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(
 				reactiveMongoTemplate);
 		Mono<Health> health = mongoReactiveHealthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
-			assertThat(h.getDetails()).containsOnlyKeys("version");
-			assertThat(h.getDetails().get("version")).isEqualTo("2.6.4");
+			assertThat(h.getDetails()).containsOnlyKeys("maxWireVersion");
+			assertThat(h.getDetails()).containsEntry("maxWireVersion", 10);
 		}).verifyComplete();
 	}
 
 	@Test
 	void testMongoIsDown() {
 		ReactiveMongoTemplate reactiveMongoTemplate = mock(ReactiveMongoTemplate.class);
-		given(reactiveMongoTemplate.executeCommand("{ buildInfo: 1 }"))
-				.willThrow(new MongoException("Connection failed"));
+		given(reactiveMongoTemplate.executeCommand("{ isMaster: 1 }"))
+			.willThrow(new MongoException("Connection failed"));
 		MongoReactiveHealthIndicator mongoReactiveHealthIndicator = new MongoReactiveHealthIndicator(
 				reactiveMongoTemplate);
 		Mono<Health> health = mongoReactiveHealthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
 			assertThat(h.getDetails()).containsOnlyKeys("error");
-			assertThat(h.getDetails().get("error")).isEqualTo(MongoException.class.getName() + ": Connection failed");
+			assertThat(h.getDetails()).containsEntry("error", MongoException.class.getName() + ": Connection failed");
 		}).verifyComplete();
 	}
 

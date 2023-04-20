@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,13 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
-import java.net.UnknownHostException;
-
+import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
@@ -44,16 +43,22 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  * @author Mark Paluch
  * @since 1.0.0
  */
-@Configuration(proxyBeanMethods = false)
+@AutoConfiguration
 @ConditionalOnClass(RedisOperations.class)
 @EnableConfigurationProperties(RedisProperties.class)
 @Import({ LettuceConnectionConfiguration.class, JedisConnectionConfiguration.class })
 public class RedisAutoConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean(RedisConnectionDetails.class)
+	PropertiesRedisConnectionDetails redisConnectionDetails(RedisProperties properties) {
+		return new PropertiesRedisConnectionDetails(properties);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean(name = "redisTemplate")
-	public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory)
-			throws UnknownHostException {
+	@ConditionalOnSingleCandidate(RedisConnectionFactory.class)
+	public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
 		RedisTemplate<Object, Object> template = new RedisTemplate<>();
 		template.setConnectionFactory(redisConnectionFactory);
 		return template;
@@ -61,11 +66,9 @@ public class RedisAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory redisConnectionFactory)
-			throws UnknownHostException {
-		StringRedisTemplate template = new StringRedisTemplate();
-		template.setConnectionFactory(redisConnectionFactory);
-		return template;
+	@ConditionalOnSingleCandidate(RedisConnectionFactory.class)
+	public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+		return new StringRedisTemplate(redisConnectionFactory);
 	}
 
 }

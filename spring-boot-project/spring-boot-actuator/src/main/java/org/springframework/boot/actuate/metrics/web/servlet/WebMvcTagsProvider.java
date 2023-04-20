@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,10 @@
 
 package org.springframework.boot.actuate.metrics.web.servlet;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import io.micrometer.core.instrument.LongTaskTimer;
 import io.micrometer.core.instrument.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * Provides {@link Tag Tags} for Spring MVC-based request handling.
@@ -28,7 +27,10 @@ import io.micrometer.core.instrument.Tag;
  * @author Jon Schneider
  * @author Andy Wilkinson
  * @since 2.0.0
+ * @deprecated since 3.0.0 for removal in 3.2.0 in favor of
+ * {@link org.springframework.http.server.observation.ServerRequestObservationConvention}
  */
+@Deprecated(since = "3.0.0", forRemoval = true)
 public interface WebMvcTagsProvider {
 
 	/**

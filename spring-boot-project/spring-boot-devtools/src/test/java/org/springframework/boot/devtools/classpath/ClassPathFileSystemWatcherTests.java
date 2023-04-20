@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcherFactory;
 import org.springframework.context.ApplicationListener;
@@ -51,25 +53,25 @@ class ClassPathFileSystemWatcherTests {
 	@Test
 	void urlsMustNotBeNull() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ClassPathFileSystemWatcher(mock(FileSystemWatcherFactory.class),
-						mock(ClassPathRestartStrategy.class), (URL[]) null))
-				.withMessageContaining("Urls must not be null");
+			.isThrownBy(() -> new ClassPathFileSystemWatcher(mock(FileSystemWatcherFactory.class),
+					mock(ClassPathRestartStrategy.class), (URL[]) null))
+			.withMessageContaining("Urls must not be null");
 	}
 
 	@Test
-	void configuredWithRestartStrategy(@TempDir File folder) throws Exception {
+	void configuredWithRestartStrategy(@TempDir File directory) throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		Map<String, Object> properties = new HashMap<>();
 		List<URL> urls = new ArrayList<>();
 		urls.add(new URL("https://spring.io"));
-		urls.add(folder.toURI().toURL());
+		urls.add(directory.toURI().toURL());
 		properties.put("urls", urls);
 		MapPropertySource propertySource = new MapPropertySource("test", properties);
 		context.getEnvironment().getPropertySources().addLast(propertySource);
 		context.register(Config.class);
 		context.refresh();
 		Thread.sleep(200);
-		File classFile = new File(folder, "Example.class");
+		File classFile = new File(directory, "Example.class");
 		FileCopyUtils.copy("file".getBytes(), classFile);
 		Thread.sleep(1000);
 		List<ClassPathChangedEvent> events = context.getBean(Listener.class).getEvents();
@@ -79,9 +81,9 @@ class ClassPathFileSystemWatcherTests {
 			}
 			Thread.sleep(500);
 		}
-		assertThat(events.size()).isEqualTo(1);
-		assertThat(events.get(0).getChangeSet().iterator().next().getFiles().iterator().next().getFile())
-				.isEqualTo(classFile);
+		assertThat(events).hasSize(1);
+		assertThat(events.get(0).getChangeSet().iterator().next()).extracting(ChangedFile::getFile)
+			.containsExactly(classFile);
 		context.close();
 	}
 
@@ -115,7 +117,7 @@ class ClassPathFileSystemWatcherTests {
 
 	static class Listener implements ApplicationListener<ClassPathChangedEvent> {
 
-		private List<ClassPathChangedEvent> events = new ArrayList<>();
+		private final List<ClassPathChangedEvent> events = new CopyOnWriteArrayList<>();
 
 		@Override
 		public void onApplicationEvent(ClassPathChangedEvent event) {

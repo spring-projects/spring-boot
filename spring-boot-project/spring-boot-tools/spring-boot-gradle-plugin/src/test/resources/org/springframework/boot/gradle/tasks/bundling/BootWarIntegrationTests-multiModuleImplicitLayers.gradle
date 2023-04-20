@@ -1,0 +1,45 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+	id 'war'
+}
+
+subprojects {
+	apply plugin: 'java'
+	group = 'org.example.projects'
+	version = '1.2.3'
+	if (it.name == 'bravo') {
+		dependencies {
+			implementation(project(':charlie'))
+		}
+	}
+}
+
+bootWar {
+	mainClass = 'com.example.Application'
+}
+
+repositories {
+	mavenCentral()
+	maven { url "file:repository" }
+}
+
+dependencies {
+	implementation(project(':alpha'))
+	implementation(project(':bravo'))
+	implementation("com.example:library:1.0-SNAPSHOT")
+	implementation("org.apache.commons:commons-lang3:3.9")
+	implementation("org.springframework:spring-core:5.2.5.RELEASE")
+}
+
+task listLayers(type: JavaExec) {
+	classpath = bootWar.outputs.files
+	systemProperties = [ "jarmode": "layertools" ]
+	args "list"
+}
+
+task extractLayers(type: JavaExec) {
+	classpath = bootWar.outputs.files
+	systemProperties = [ "jarmode": "layertools" ]
+	args "extract"
+}

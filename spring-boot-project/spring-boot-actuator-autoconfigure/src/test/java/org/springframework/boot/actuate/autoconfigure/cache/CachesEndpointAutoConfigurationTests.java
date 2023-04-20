@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.cache;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.cache.CachesEndpoint;
+import org.springframework.boot.actuate.cache.CachesEndpointWebExtension;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.cache.CacheManager;
@@ -35,33 +36,42 @@ import static org.mockito.Mockito.mock;
 class CachesEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CachesEndpointAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(CachesEndpointAutoConfiguration.class));
 
 	@Test
 	void runShouldHaveEndpointBean() {
 		this.contextRunner.withBean(CacheManager.class, () -> mock(CacheManager.class))
-				.withPropertyValues("management.endpoints.web.exposure.include=caches")
-				.run((context) -> assertThat(context).hasSingleBean(CachesEndpoint.class));
+			.withPropertyValues("management.endpoints.web.exposure.include=caches")
+			.run((context) -> assertThat(context).hasSingleBean(CachesEndpoint.class));
 	}
 
 	@Test
 	void runWithoutCacheManagerShouldHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=caches")
-				.run((context) -> assertThat(context).hasSingleBean(CachesEndpoint.class));
+			.run((context) -> assertThat(context).hasSingleBean(CachesEndpoint.class));
 	}
 
 	@Test
 	void runWhenNotExposedShouldNotHaveEndpointBean() {
 		this.contextRunner.withBean(CacheManager.class, () -> mock(CacheManager.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(CachesEndpoint.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(CachesEndpoint.class));
 	}
 
 	@Test
 	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.caches.enabled:false")
-				.withPropertyValues("management.endpoints.web.exposure.include=*")
-				.withBean(CacheManager.class, () -> mock(CacheManager.class))
-				.run((context) -> assertThat(context).doesNotHaveBean(CachesEndpoint.class));
+			.withPropertyValues("management.endpoints.web.exposure.include=*")
+			.withBean(CacheManager.class, () -> mock(CacheManager.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(CachesEndpoint.class));
+	}
+
+	@Test
+	void runWhenOnlyExposedOverJmxShouldHaveEndpointBeanWithoutWebExtension() {
+		this.contextRunner.withBean(CacheManager.class, () -> mock(CacheManager.class))
+			.withPropertyValues("management.endpoints.web.exposure.include=info", "spring.jmx.enabled=true",
+					"management.endpoints.jmx.exposure.include=caches")
+			.run((context) -> assertThat(context).hasSingleBean(CachesEndpoint.class)
+				.doesNotHaveBean(CachesEndpointWebExtension.class));
 	}
 
 }

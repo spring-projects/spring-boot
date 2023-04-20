@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -214,7 +214,7 @@ public class HttpTunnelServer {
 
 		private boolean closed;
 
-		private AtomicLong responseSeq = new AtomicLong();
+		private final AtomicLong responseSeq = new AtomicLong();
 
 		private long lastHttpRequestTime;
 
@@ -354,7 +354,7 @@ public class HttpTunnelServer {
 	}
 
 	/**
-	 * Encapsulates a HTTP request/response pair.
+	 * Encapsulates an HTTP request/response pair.
 	 */
 	protected static class HttpConnection {
 
@@ -364,7 +364,7 @@ public class HttpTunnelServer {
 
 		private final ServerHttpResponse response;
 
-		private ServerHttpAsyncRequestControl async;
+		private final ServerHttpAsyncRequestControl async;
 
 		private volatile boolean complete = false;
 
@@ -446,7 +446,7 @@ public class HttpTunnelServer {
 		}
 
 		/**
-		 * Send a HTTP status response.
+		 * Send an HTTP status response.
 		 * @param status the status to send
 		 * @throws IOException in case of I/O errors
 		 */

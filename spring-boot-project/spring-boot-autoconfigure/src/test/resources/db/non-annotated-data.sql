@@ -1,1 +1,1 @@
-INSERT INTO NON_ANNOTATED (ID, VALUE) values (2000, 'Test');
+INSERT INTO NON_ANNOTATED (id, item) values (2000, 'Test');

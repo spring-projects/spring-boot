@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,11 +35,10 @@ class ReactiveHealthContributorTests {
 	@Test
 	void adaptWhenNullThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> ReactiveHealthContributor.adapt(null))
-				.withMessage("HealthContributor must not be null");
+			.withMessage("HealthContributor must not be null");
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
 	void adaptWhenHealthIndicatorReturnsHealthIndicatorReactiveAdapter() {
 		HealthIndicator indicator = () -> Health.outOfService().build();
 		ReactiveHealthContributor adapted = ReactiveHealthContributor.adapt(indicator);
@@ -51,7 +50,7 @@ class ReactiveHealthContributorTests {
 	void adaptWhenCompositeHealthContributorReturnsCompositeHealthContributorReactiveAdapter() {
 		HealthIndicator indicator = () -> Health.outOfService().build();
 		CompositeHealthContributor contributor = CompositeHealthContributor
-				.fromMap(Collections.singletonMap("a", indicator));
+			.fromMap(Collections.singletonMap("a", indicator));
 		ReactiveHealthContributor adapted = ReactiveHealthContributor.adapt(contributor);
 		assertThat(adapted).isInstanceOf(CompositeHealthContributorReactiveAdapter.class);
 		ReactiveHealthContributor contained = ((CompositeReactiveHealthContributor) adapted).getContributor("a");
@@ -61,8 +60,8 @@ class ReactiveHealthContributorTests {
 	@Test
 	void adaptWhenUnknownThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ReactiveHealthContributor.adapt(mock(HealthContributor.class)))
-				.withMessage("Unknown HealthContributor type");
+			.isThrownBy(() -> ReactiveHealthContributor.adapt(mock(HealthContributor.class)))
+			.withMessage("Unknown HealthContributor type");
 	}
 
 }

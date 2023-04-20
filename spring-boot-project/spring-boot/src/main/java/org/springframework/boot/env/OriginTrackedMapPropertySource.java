@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,8 +62,8 @@ public final class OriginTrackedMapPropertySource extends MapPropertySource impl
 	@Override
 	public Object getProperty(String name) {
 		Object value = super.getProperty(name);
-		if (value instanceof OriginTrackedValue) {
-			return ((OriginTrackedValue) value).getValue();
+		if (value instanceof OriginTrackedValue originTrackedValue) {
+			return originTrackedValue.getValue();
 		}
 		return value;
 	}
@@ -71,8 +71,8 @@ public final class OriginTrackedMapPropertySource extends MapPropertySource impl
 	@Override
 	public Origin getOrigin(String name) {
 		Object value = super.getProperty(name);
-		if (value instanceof OriginTrackedValue) {
-			return ((OriginTrackedValue) value).getOrigin();
+		if (value instanceof OriginTrackedValue originTrackedValue) {
+			return originTrackedValue.getOrigin();
 		}
 		return null;
 	}

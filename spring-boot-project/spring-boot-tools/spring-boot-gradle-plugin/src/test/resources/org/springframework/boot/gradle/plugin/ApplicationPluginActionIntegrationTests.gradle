@@ -1,5 +1,5 @@
 plugins {
-    id 'org.springframework.boot' version '{version}'
+	id 'org.springframework.boot' version '{version}'
 }
 
 if (project.hasProperty('applyApplicationPlugin')) {
@@ -9,7 +9,7 @@ if (project.hasProperty('applyApplicationPlugin')) {
 
 task('taskExists') {
 	doFirst {
-		println "$taskName exists = ${tasks.findByName(taskName) != null}"
+		println "${taskName} exists = ${tasks.findByName(taskName) != null}"
 	}
 }
 
@@ -17,14 +17,14 @@ task('distributionExists') {
 	doFirst {
 		boolean found = project.hasProperty('distributions') &&
 				distributions.findByName(distributionName) != null
-		println "$distributionName exists = $found"
+		println "${distributionName} exists = ${found}"
 	}
 }
 
 task('javaCompileEncoding') {
 	doFirst {
 		tasks.withType(JavaCompile) {
-			println "$name = ${options.encoding}"
+			println "${name} = ${options.encoding}"
 		}
 	}
 }

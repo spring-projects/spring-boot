@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.info;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
@@ -40,10 +39,21 @@ class InfoEndpointWebIntegrationTests {
 
 	@WebEndpointTest
 	void info(WebTestClient client) {
-		client.get().uri("/actuator/info").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk()
-				.expectBody().jsonPath("beanName1.key11").isEqualTo("value11").jsonPath("beanName1.key12")
-				.isEqualTo("value12").jsonPath("beanName2.key21").isEqualTo("value21").jsonPath("beanName2.key22")
-				.isEqualTo("value22");
+		client.get()
+			.uri("/actuator/info")
+			.accept(MediaType.APPLICATION_JSON)
+			.exchange()
+			.expectStatus()
+			.isOk()
+			.expectBody()
+			.jsonPath("beanName1.key11")
+			.isEqualTo("value11")
+			.jsonPath("beanName1.key12")
+			.isEqualTo("value12")
+			.jsonPath("beanName2.key21")
+			.isEqualTo("value21")
+			.jsonPath("beanName2.key22")
+			.isEqualTo("value22");
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -51,7 +61,7 @@ class InfoEndpointWebIntegrationTests {
 
 		@Bean
 		InfoEndpoint endpoint(ObjectProvider<InfoContributor> infoContributors) {
-			return new InfoEndpoint(infoContributors.orderedStream().collect(Collectors.toList()));
+			return new InfoEndpoint(infoContributors.orderedStream().toList());
 		}
 
 		@Bean

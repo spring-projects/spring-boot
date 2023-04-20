@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@ import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import org.springframework.aot.AotDetector;
 import org.springframework.boot.context.TypeExcludeFilter;
-import org.springframework.core.annotation.MergedAnnotation;
-import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
+import org.springframework.test.context.TestContextAnnotationUtils;
+import org.springframework.test.context.TestContextAnnotationUtils.AnnotationDescriptor;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -43,12 +43,16 @@ class TypeExcludeFiltersContextCustomizerFactory implements ContextCustomizerFac
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configurationAttributes) {
-		Class<?>[] filterClasses = MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS)
-				.get(TypeExcludeFilters.class).getValue(MergedAnnotation.VALUE, Class[].class).orElse(NO_FILTERS);
+		if (AotDetector.useGeneratedArtifacts()) {
+			return null;
+		}
+		AnnotationDescriptor<TypeExcludeFilters> descriptor = TestContextAnnotationUtils
+			.findAnnotationDescriptor(testClass, TypeExcludeFilters.class);
+		Class<?>[] filterClasses = (descriptor != null) ? descriptor.getAnnotation().value() : NO_FILTERS;
 		if (ObjectUtils.isEmpty(filterClasses)) {
 			return null;
 		}
-		return createContextCustomizer(testClass, filterClasses);
+		return createContextCustomizer(descriptor.getRootDeclaringClass(), filterClasses);
 	}
 
 	@SuppressWarnings("unchecked")

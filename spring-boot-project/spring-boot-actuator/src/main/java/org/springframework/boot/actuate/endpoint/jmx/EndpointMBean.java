@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import javax.management.MBeanException;
 import javax.management.MBeanInfo;
 import javax.management.ReflectionException;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
@@ -114,8 +115,10 @@ public class EndpointMBean implements DynamicMBean {
 
 	private Object invoke(JmxOperation operation, Object[] params) throws MBeanException, ReflectionException {
 		try {
-			String[] parameterNames = operation.getParameters().stream().map(JmxOperationParameter::getName)
-					.toArray(String[]::new);
+			String[] parameterNames = operation.getParameters()
+				.stream()
+				.map(JmxOperationParameter::getName)
+				.toArray(String[]::new);
 			Map<String, Object> arguments = getArguments(parameterNames, params);
 			InvocationContext context = new InvocationContext(SecurityContext.NONE, arguments);
 			Object result = operation.invoke(context);
@@ -172,6 +175,9 @@ public class EndpointMBean implements DynamicMBean {
 	private static class ReactiveHandler {
 
 		static Object handle(Object result) {
+			if (result instanceof Flux) {
+				result = ((Flux<?>) result).collectList();
+			}
 			if (result instanceof Mono) {
 				return ((Mono<?>) result).block();
 			}

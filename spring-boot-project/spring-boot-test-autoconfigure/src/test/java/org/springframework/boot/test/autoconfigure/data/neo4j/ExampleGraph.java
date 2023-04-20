@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,17 @@
 
 package org.springframework.boot.test.autoconfigure.data.neo4j;
 
-import org.neo4j.ogm.annotation.GeneratedValue;
-import org.neo4j.ogm.annotation.Id;
-import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.annotation.Property;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Property;
 
 /**
  * Example graph used with {@link DataNeo4jTest @DataNeo4jTest} tests.
  *
  * @author Eddú Meléndez
  */
-@NodeEntity
+@Node
 public class ExampleGraph {
 
 	@Id
@@ -35,6 +35,10 @@ public class ExampleGraph {
 
 	@Property
 	private String description;
+
+	public ExampleGraph(String description) {
+		this.description = description;
+	}
 
 	public Long getId() {
 		return this.id;

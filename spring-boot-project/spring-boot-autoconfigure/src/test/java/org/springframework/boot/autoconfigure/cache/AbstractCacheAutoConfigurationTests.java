@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import com.couchbase.client.spring.cache.CouchbaseCacheManager;
 import com.hazelcast.spring.cache.HazelcastCacheManager;
+import org.cache2k.extra.spring.SpringCache2kCacheManager;
 import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -32,10 +32,10 @@ import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.couchbase.cache.CouchbaseCacheManager;
 import org.springframework.data.redis.cache.RedisCacheManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 abstract class AbstractCacheAutoConfigurationTests {
 
 	protected final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(CacheAutoConfiguration.class));
 
 	protected <T extends CacheManager> T getCacheManager(AssertableApplicationContext loaded, Class<T> type) {
 		CacheManager cacheManager = loaded.getBean(CacheManager.class);
@@ -62,7 +62,7 @@ abstract class AbstractCacheAutoConfigurationTests {
 			CacheManager cacheManager = getCacheManager(context, CacheManager.class);
 			List<String> expected = new ArrayList<>(Arrays.asList(expectedCustomizerNames));
 			Map<String, CacheManagerTestCustomizer> customizer = context
-					.getBeansOfType(CacheManagerTestCustomizer.class);
+				.getBeansOfType(CacheManagerTestCustomizer.class);
 			customizer.forEach((key, value) -> {
 				if (expected.contains(key)) {
 					expected.remove(key);
@@ -72,7 +72,7 @@ abstract class AbstractCacheAutoConfigurationTests {
 					assertThat(value.cacheManager).isNull();
 				}
 			});
-			assertThat(expected).hasSize(0);
+			assertThat(expected).isEmpty();
 		};
 	}
 
@@ -81,63 +81,63 @@ abstract class AbstractCacheAutoConfigurationTests {
 
 		@Bean
 		CacheManagerCustomizer<CacheManager> allCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<CacheManager>() {
+			return new CacheManagerTestCustomizer<>() {
 
 			};
 		}
 
 		@Bean
 		CacheManagerCustomizer<ConcurrentMapCacheManager> simpleCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<ConcurrentMapCacheManager>() {
+			return new CacheManagerTestCustomizer<>() {
 
 			};
 		}
 
 		@Bean
 		CacheManagerCustomizer<SimpleCacheManager> genericCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<SimpleCacheManager>() {
+			return new CacheManagerTestCustomizer<>() {
 
 			};
 		}
 
 		@Bean
 		CacheManagerCustomizer<CouchbaseCacheManager> couchbaseCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<CouchbaseCacheManager>() {
+			return new CacheManagerTestCustomizer<>() {
 
 			};
 		}
 
 		@Bean
 		CacheManagerCustomizer<RedisCacheManager> redisCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<RedisCacheManager>() {
-
-			};
-		}
-
-		@Bean
-		CacheManagerCustomizer<EhCacheCacheManager> ehcacheCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<EhCacheCacheManager>() {
+			return new CacheManagerTestCustomizer<>() {
 
 			};
 		}
 
 		@Bean
 		CacheManagerCustomizer<HazelcastCacheManager> hazelcastCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<HazelcastCacheManager>() {
+			return new CacheManagerTestCustomizer<>() {
 
 			};
 		}
 
 		@Bean
 		CacheManagerCustomizer<SpringEmbeddedCacheManager> infinispanCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<SpringEmbeddedCacheManager>() {
+			return new CacheManagerTestCustomizer<>() {
+
+			};
+		}
+
+		@Bean
+		CacheManagerCustomizer<SpringCache2kCacheManager> cache2kCacheManagerCustomizer() {
+			return new CacheManagerTestCustomizer<>() {
 
 			};
 		}
 
 		@Bean
 		CacheManagerCustomizer<CaffeineCacheManager> caffeineCacheManagerCustomizer() {
-			return new CacheManagerTestCustomizer<CaffeineCacheManager>() {
+			return new CacheManagerTestCustomizer<>() {
 
 			};
 		}

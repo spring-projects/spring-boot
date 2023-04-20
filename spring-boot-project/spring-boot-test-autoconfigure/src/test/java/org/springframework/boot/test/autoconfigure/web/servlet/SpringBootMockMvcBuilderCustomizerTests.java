@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,12 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServlet;
-
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServlet;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.autoconfigure.web.servlet.SpringBootMockMvcBuilderCustomizer.DeferredLinesWriter;
@@ -65,7 +64,7 @@ class SpringBootMockMvcBuilderCustomizerTests {
 		this.customizer = new SpringBootMockMvcBuilderCustomizer(context);
 		this.customizer.customize(builder);
 		FilterRegistrationBean<?> registrationBean = (FilterRegistrationBean<?>) context
-				.getBean("filterRegistrationBean");
+			.getBean("filterRegistrationBean");
 		Filter testFilter = (Filter) context.getBean("testFilter");
 		Filter otherTestFilter = registrationBean.getFilter();
 		List<Filter> filters = (List<Filter>) ReflectionTestUtils.getField(builder, "filters");
@@ -99,7 +98,7 @@ class SpringBootMockMvcBuilderCustomizerTests {
 
 		assertThat(delegate.allWritten).hasSize(10000);
 		assertThat(delegate.allWritten)
-				.allSatisfy((written) -> assertThat(written).containsExactly("1", "2", "3", "4", "5"));
+			.allSatisfy((written) -> assertThat(written).containsExactly("1", "2", "3", "4", "5"));
 	}
 
 	private static final class CapturingLinesWriter implements LinesWriter {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 
-import javax.servlet.http.HttpServletRequest;
-
 import groovy.text.markup.MarkupTemplateEngine;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,7 +55,7 @@ class GroovyTemplateAutoConfigurationTests {
 
 	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
-	private AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
+	private final AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
 
 	@BeforeEach
 	void setupContext() {
@@ -153,7 +152,7 @@ class GroovyTemplateAutoConfigurationTests {
 	@Test
 	void disableCache() {
 		registerAndRefreshContext("spring.groovy.template.cache:false");
-		assertThat(this.context.getBean(GroovyMarkupViewResolver.class).getCacheLimit()).isEqualTo(0);
+		assertThat(this.context.getBean(GroovyMarkupViewResolver.class).getCacheLimit()).isZero();
 	}
 
 	@Test
@@ -163,7 +162,8 @@ class GroovyTemplateAutoConfigurationTests {
 		MarkupTemplateEngine engine = config.getTemplateEngine();
 		Writer writer = new StringWriter();
 		engine.createTemplate(new ClassPathResource("templates/message.tpl").getFile())
-				.make(new HashMap<String, Object>(Collections.singletonMap("greeting", "Hello World"))).writeTo(writer);
+			.make(new HashMap<String, Object>(Collections.singletonMap("greeting", "Hello World")))
+			.writeTo(writer);
 		assertThat(writer.toString()).contains("Hello World");
 	}
 
