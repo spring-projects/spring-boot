@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.otlp.OtlpConnectionDetails;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -54,15 +55,39 @@ public class OtlpMetricsExportAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean(OtlpConnectionDetails.class)
+	public OtlpConnectionDetails otlpConnectionDetails() {
+		return new PropertiesOtlpConnectionDetails(this.properties);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean
-	public OtlpConfig otlpConfig() {
-		return new OtlpPropertiesConfigAdapter(this.properties);
+	public OtlpConfig otlpConfig(OtlpConnectionDetails connectionDetails) {
+		return new OtlpPropertiesConfigAdapter(this.properties, connectionDetails);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public OtlpMeterRegistry otlpMeterRegistry(OtlpConfig otlpConfig, Clock clock) {
 		return new OtlpMeterRegistry(otlpConfig, clock);
+	}
+
+	/**
+	 * Adapts {@link OtlpProperties} to {@link OtlpConnectionDetails}.
+	 */
+	static class PropertiesOtlpConnectionDetails implements OtlpConnectionDetails {
+
+		private final OtlpProperties properties;
+
+		PropertiesOtlpConnectionDetails(OtlpProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public String getUrl() {
+			return this.properties.getUrl();
+		}
+
 	}
 
 }

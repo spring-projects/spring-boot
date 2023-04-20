@@ -34,13 +34,13 @@ class OtlpPropertiesConfigAdapterTests {
 	void whenPropertiesUrlIsSetAdapterUrlReturnsIt() {
 		OtlpProperties properties = new OtlpProperties();
 		properties.setUrl("http://another-url:4318/v1/metrics");
-		assertThat(new OtlpPropertiesConfigAdapter(properties).url()).isEqualTo("http://another-url:4318/v1/metrics");
+		assertThat(otlpPropertiesConfigAdapter(properties).url()).isEqualTo("http://another-url:4318/v1/metrics");
 	}
 
 	@Test
 	void whenPropertiesAggregationTemporalityIsNotSetAdapterAggregationTemporalityReturnsCumulative() {
 		OtlpProperties properties = new OtlpProperties();
-		assertThat(new OtlpPropertiesConfigAdapter(properties).aggregationTemporality())
+		assertThat(otlpPropertiesConfigAdapter(properties).aggregationTemporality())
 			.isSameAs(AggregationTemporality.CUMULATIVE);
 	}
 
@@ -48,7 +48,7 @@ class OtlpPropertiesConfigAdapterTests {
 	void whenPropertiesAggregationTemporalityIsSetAdapterAggregationTemporalityReturnsIt() {
 		OtlpProperties properties = new OtlpProperties();
 		properties.setAggregationTemporality(AggregationTemporality.DELTA);
-		assertThat(new OtlpPropertiesConfigAdapter(properties).aggregationTemporality())
+		assertThat(otlpPropertiesConfigAdapter(properties).aggregationTemporality())
 			.isSameAs(AggregationTemporality.DELTA);
 	}
 
@@ -56,7 +56,7 @@ class OtlpPropertiesConfigAdapterTests {
 	void whenPropertiesResourceAttributesIsSetAdapterResourceAttributesReturnsIt() {
 		OtlpProperties properties = new OtlpProperties();
 		properties.setResourceAttributes(Map.of("service.name", "boot-service"));
-		assertThat(new OtlpPropertiesConfigAdapter(properties).resourceAttributes()).containsEntry("service.name",
+		assertThat(otlpPropertiesConfigAdapter(properties).resourceAttributes()).containsEntry("service.name",
 				"boot-service");
 	}
 
@@ -64,7 +64,12 @@ class OtlpPropertiesConfigAdapterTests {
 	void whenPropertiesHeadersIsSetAdapterHeadersReturnsIt() {
 		OtlpProperties properties = new OtlpProperties();
 		properties.setHeaders(Map.of("header", "value"));
-		assertThat(new OtlpPropertiesConfigAdapter(properties).headers()).containsEntry("header", "value");
+		assertThat(otlpPropertiesConfigAdapter(properties).headers()).containsEntry("header", "value");
+	}
+
+	private static OtlpPropertiesConfigAdapter otlpPropertiesConfigAdapter(OtlpProperties properties) {
+		return new OtlpPropertiesConfigAdapter(properties,
+				new OtlpMetricsExportAutoConfiguration.PropertiesOtlpConnectionDetails(properties));
 	}
 
 }

@@ -22,6 +22,7 @@ import io.micrometer.registry.otlp.AggregationTemporality;
 import io.micrometer.registry.otlp.OtlpConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
+import org.springframework.boot.autoconfigure.otlp.OtlpConnectionDetails;
 
 /**
  * Adapter to convert {@link OtlpProperties} to an {@link OtlpConfig}.
@@ -31,8 +32,11 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  */
 class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<OtlpProperties> implements OtlpConfig {
 
-	OtlpPropertiesConfigAdapter(OtlpProperties properties) {
+	private final OtlpConnectionDetails connectionDetails;
+
+	OtlpPropertiesConfigAdapter(OtlpProperties properties, OtlpConnectionDetails connectionDetails) {
 		super(properties);
+		this.connectionDetails = connectionDetails;
 	}
 
 	@Override
@@ -42,7 +46,7 @@ class OtlpPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<Ot
 
 	@Override
 	public String url() {
-		return get(OtlpProperties::getUrl, OtlpConfig.super::url);
+		return get((properties) -> this.connectionDetails.getUrl(), OtlpConfig.super::url);
 	}
 
 	@Override
