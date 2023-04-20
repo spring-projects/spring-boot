@@ -16,6 +16,8 @@
 
 package smoketest.activemq;
 
+import java.time.Duration;
+
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,8 +30,6 @@ import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.ActiveMQContainer;
-
-import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
