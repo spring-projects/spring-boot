@@ -28,7 +28,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.DefaultBootstrapContext;
@@ -76,9 +75,6 @@ class ConfigDataEnvironmentContributorsTests {
 	private ConfigDataImporter importer;
 
 	private ConfigDataActivationContext activationContext;
-
-	@Captor
-	private ArgumentCaptor<ConfigDataLocationResolverContext> locationResolverContext;
 
 	@BeforeEach
 	void setup() {
@@ -213,10 +209,12 @@ class ConfigDataEnvironmentContributorsTests {
 		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofInitialImport(LOCATION_1);
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapContext, Arrays.asList(contributor));
+		ArgumentCaptor<ConfigDataLocationResolverContext> locationResolverContext = ArgumentCaptor
+			.forClass(ConfigDataLocationResolverContext.class);
 		contributors.withProcessedImports(this.importer, this.activationContext);
 		then(this.importer).should()
-			.resolveAndLoad(any(), this.locationResolverContext.capture(), any(), eq(secondLocations));
-		ConfigDataLocationResolverContext context = this.locationResolverContext.getValue();
+			.resolveAndLoad(any(), locationResolverContext.capture(), any(), eq(secondLocations));
+		ConfigDataLocationResolverContext context = locationResolverContext.getValue();
 		assertThat(context.getParent()).hasToString("a");
 	}
 

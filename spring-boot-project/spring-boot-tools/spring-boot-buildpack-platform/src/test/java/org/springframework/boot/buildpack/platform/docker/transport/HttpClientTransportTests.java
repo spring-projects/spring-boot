@@ -33,11 +33,10 @@ import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.HttpHost;
+import org.assertj.core.api.ThrowingConsumer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -78,9 +77,6 @@ class HttpClientTransportTests {
 	@Mock
 	private InputStream content;
 
-	@Captor
-	private ArgumentCaptor<HttpUriRequest> requestCaptor;
-
 	private HttpClientTransport http;
 
 	private URI uri;
@@ -117,13 +113,14 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.post(this.uri);
-		then(this.client).should().executeOpen(any(HttpHost.class), this.requestCaptor.capture(), isNull());
-		HttpUriRequest request = this.requestCaptor.getValue();
-		assertThat(request).isInstanceOf(HttpPost.class);
-		assertThat(request.getUri()).isEqualTo(this.uri);
-		assertThat(request.getFirstHeader(HttpHeaders.CONTENT_TYPE)).isNull();
-		assertThat(request.getFirstHeader(HttpClientTransport.REGISTRY_AUTH_HEADER)).isNull();
-		assertThat(response.getContent()).isSameAs(this.content);
+		then(this.client).should()
+			.executeOpen(any(HttpHost.class), assertArg((ThrowingConsumer<HttpPost>) (request) -> {
+				assertThat(request).isInstanceOf(HttpPost.class);
+				assertThat(request.getUri()).isEqualTo(this.uri);
+				assertThat(request.getFirstHeader(HttpHeaders.CONTENT_TYPE)).isNull();
+				assertThat(request.getFirstHeader(HttpClientTransport.REGISTRY_AUTH_HEADER)).isNull();
+				assertThat(response.getContent()).isSameAs(this.content);
+			}), isNull());
 	}
 
 	@Test
@@ -132,13 +129,15 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.post(this.uri, "auth token");
-		then(this.client).should().executeOpen(any(HttpHost.class), this.requestCaptor.capture(), isNull());
-		HttpUriRequest request = this.requestCaptor.getValue();
-		assertThat(request).isInstanceOf(HttpPost.class);
-		assertThat(request.getUri()).isEqualTo(this.uri);
-		assertThat(request.getFirstHeader(HttpHeaders.CONTENT_TYPE)).isNull();
-		assertThat(request.getFirstHeader(HttpClientTransport.REGISTRY_AUTH_HEADER).getValue()).isEqualTo("auth token");
-		assertThat(response.getContent()).isSameAs(this.content);
+		then(this.client).should()
+			.executeOpen(any(HttpHost.class), assertArg((ThrowingConsumer<HttpPost>) (request) -> {
+				assertThat(request).isInstanceOf(HttpPost.class);
+				assertThat(request.getUri()).isEqualTo(this.uri);
+				assertThat(request.getFirstHeader(HttpHeaders.CONTENT_TYPE)).isNull();
+				assertThat(request.getFirstHeader(HttpClientTransport.REGISTRY_AUTH_HEADER).getValue())
+					.isEqualTo("auth token");
+				assertThat(response.getContent()).isSameAs(this.content);
+			}), isNull());
 	}
 
 	@Test
@@ -147,13 +146,14 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.post(this.uri, "");
-		then(this.client).should().executeOpen(any(HttpHost.class), this.requestCaptor.capture(), isNull());
-		HttpUriRequest request = this.requestCaptor.getValue();
-		assertThat(request).isInstanceOf(HttpPost.class);
-		assertThat(request.getUri()).isEqualTo(this.uri);
-		assertThat(request.getFirstHeader(HttpHeaders.CONTENT_TYPE)).isNull();
-		assertThat(request.getFirstHeader(HttpClientTransport.REGISTRY_AUTH_HEADER)).isNull();
-		assertThat(response.getContent()).isSameAs(this.content);
+		then(this.client).should()
+			.executeOpen(any(HttpHost.class), assertArg((ThrowingConsumer<HttpPost>) (request) -> {
+				assertThat(request).isInstanceOf(HttpPost.class);
+				assertThat(request.getUri()).isEqualTo(this.uri);
+				assertThat(request.getFirstHeader(HttpHeaders.CONTENT_TYPE)).isNull();
+				assertThat(request.getFirstHeader(HttpClientTransport.REGISTRY_AUTH_HEADER)).isNull();
+				assertThat(response.getContent()).isSameAs(this.content);
+			}), isNull());
 	}
 
 	@Test
@@ -164,18 +164,19 @@ class HttpClientTransportTests {
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.post(this.uri, APPLICATION_JSON,
 				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
-		then(this.client).should().executeOpen(any(HttpHost.class), this.requestCaptor.capture(), isNull());
-		HttpUriRequest request = this.requestCaptor.getValue();
-		HttpEntity entity = request.getEntity();
-		assertThat(request).isInstanceOf(HttpPost.class);
-		assertThat(request.getUri()).isEqualTo(this.uri);
-		assertThat(entity.isRepeatable()).isFalse();
-		assertThat(entity.getContentLength()).isEqualTo(content.length());
-		assertThat(entity.getContentType()).isEqualTo(APPLICATION_JSON);
-		assertThat(entity.isStreaming()).isTrue();
-		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(entity::getContent);
-		assertThat(writeToString(entity)).isEqualTo(content);
-		assertThat(response.getContent()).isSameAs(this.content);
+		then(this.client).should()
+			.executeOpen(any(HttpHost.class), assertArg((ThrowingConsumer<HttpPost>) (request) -> {
+				HttpEntity entity = request.getEntity();
+				assertThat(request).isInstanceOf(HttpPost.class);
+				assertThat(request.getUri()).isEqualTo(this.uri);
+				assertThat(entity.isRepeatable()).isFalse();
+				assertThat(entity.getContentLength()).isEqualTo(content.length());
+				assertThat(entity.getContentType()).isEqualTo(APPLICATION_JSON);
+				assertThat(entity.isStreaming()).isTrue();
+				assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(entity::getContent);
+				assertThat(writeToString(entity)).isEqualTo(content);
+				assertThat(response.getContent()).isSameAs(this.content);
+			}), isNull());
 	}
 
 	@Test
@@ -186,18 +187,19 @@ class HttpClientTransportTests {
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.post(this.uri, APPLICATION_X_TAR,
 				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
-		then(this.client).should().executeOpen(any(HttpHost.class), this.requestCaptor.capture(), isNull());
-		HttpUriRequest request = this.requestCaptor.getValue();
-		HttpEntity entity = request.getEntity();
-		assertThat(request).isInstanceOf(HttpPost.class);
-		assertThat(request.getUri()).isEqualTo(this.uri);
-		assertThat(entity.isRepeatable()).isFalse();
-		assertThat(entity.getContentLength()).isEqualTo(-1);
-		assertThat(entity.getContentType()).isEqualTo(APPLICATION_X_TAR);
-		assertThat(entity.isStreaming()).isTrue();
-		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(entity::getContent);
-		assertThat(writeToString(entity)).isEqualTo(content);
-		assertThat(response.getContent()).isSameAs(this.content);
+		then(this.client).should()
+			.executeOpen(any(HttpHost.class), assertArg((ThrowingConsumer<HttpPost>) (request) -> {
+				HttpEntity entity = request.getEntity();
+				assertThat(request).isInstanceOf(HttpPost.class);
+				assertThat(request.getUri()).isEqualTo(this.uri);
+				assertThat(entity.isRepeatable()).isFalse();
+				assertThat(entity.getContentLength()).isEqualTo(-1);
+				assertThat(entity.getContentType()).isEqualTo(APPLICATION_X_TAR);
+				assertThat(entity.isStreaming()).isTrue();
+				assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(entity::getContent);
+				assertThat(writeToString(entity)).isEqualTo(content);
+				assertThat(response.getContent()).isSameAs(this.content);
+			}), isNull());
 	}
 
 	@Test
@@ -208,18 +210,18 @@ class HttpClientTransportTests {
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.put(this.uri, APPLICATION_JSON,
 				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
-		then(this.client).should().executeOpen(any(HttpHost.class), this.requestCaptor.capture(), isNull());
-		HttpUriRequest request = this.requestCaptor.getValue();
-		HttpEntity entity = request.getEntity();
-		assertThat(request).isInstanceOf(HttpPut.class);
-		assertThat(request.getUri()).isEqualTo(this.uri);
-		assertThat(entity.isRepeatable()).isFalse();
-		assertThat(entity.getContentLength()).isEqualTo(content.length());
-		assertThat(entity.getContentType()).isEqualTo(APPLICATION_JSON);
-		assertThat(entity.isStreaming()).isTrue();
-		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(entity::getContent);
-		assertThat(writeToString(entity)).isEqualTo(content);
-		assertThat(response.getContent()).isSameAs(this.content);
+		then(this.client).should().executeOpen(any(HttpHost.class), assertArg((ThrowingConsumer<HttpPut>) (request) -> {
+			HttpEntity entity = request.getEntity();
+			assertThat(request).isInstanceOf(HttpPut.class);
+			assertThat(request.getUri()).isEqualTo(this.uri);
+			assertThat(entity.isRepeatable()).isFalse();
+			assertThat(entity.getContentLength()).isEqualTo(content.length());
+			assertThat(entity.getContentType()).isEqualTo(APPLICATION_JSON);
+			assertThat(entity.isStreaming()).isTrue();
+			assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(entity::getContent);
+			assertThat(writeToString(entity)).isEqualTo(content);
+			assertThat(response.getContent()).isSameAs(this.content);
+		}), isNull());
 	}
 
 	@Test
@@ -230,18 +232,18 @@ class HttpClientTransportTests {
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.put(this.uri, APPLICATION_X_TAR,
 				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
-		then(this.client).should().executeOpen(any(HttpHost.class), this.requestCaptor.capture(), isNull());
-		HttpUriRequest request = this.requestCaptor.getValue();
-		HttpEntity entity = request.getEntity();
-		assertThat(request).isInstanceOf(HttpPut.class);
-		assertThat(request.getUri()).isEqualTo(this.uri);
-		assertThat(entity.isRepeatable()).isFalse();
-		assertThat(entity.getContentLength()).isEqualTo(-1);
-		assertThat(entity.getContentType()).isEqualTo(APPLICATION_X_TAR);
-		assertThat(entity.isStreaming()).isTrue();
-		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(entity::getContent);
-		assertThat(writeToString(entity)).isEqualTo(content);
-		assertThat(response.getContent()).isSameAs(this.content);
+		then(this.client).should().executeOpen(any(HttpHost.class), assertArg((ThrowingConsumer<HttpPut>) (request) -> {
+			HttpEntity entity = request.getEntity();
+			assertThat(request).isInstanceOf(HttpPut.class);
+			assertThat(request.getUri()).isEqualTo(this.uri);
+			assertThat(entity.isRepeatable()).isFalse();
+			assertThat(entity.getContentLength()).isEqualTo(-1);
+			assertThat(entity.getContentType()).isEqualTo(APPLICATION_X_TAR);
+			assertThat(entity.isStreaming()).isTrue();
+			assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(entity::getContent);
+			assertThat(writeToString(entity)).isEqualTo(content);
+			assertThat(response.getContent()).isSameAs(this.content);
+		}), isNull());
 	}
 
 	@Test
@@ -250,12 +252,14 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.delete(this.uri);
-		then(this.client).should().executeOpen(any(HttpHost.class), this.requestCaptor.capture(), isNull());
-		HttpUriRequest request = this.requestCaptor.getValue();
-		assertThat(request).isInstanceOf(HttpDelete.class);
-		assertThat(request.getUri()).isEqualTo(this.uri);
-		assertThat(request.getFirstHeader(HttpHeaders.CONTENT_TYPE)).isNull();
-		assertThat(response.getContent()).isSameAs(this.content);
+
+		then(this.client).should()
+			.executeOpen(any(HttpHost.class), assertArg((ThrowingConsumer<HttpDelete>) (request) -> {
+				assertThat(request).isInstanceOf(HttpDelete.class);
+				assertThat(request.getUri()).isEqualTo(this.uri);
+				assertThat(request.getFirstHeader(HttpHeaders.CONTENT_TYPE)).isNull();
+				assertThat(response.getContent()).isSameAs(this.content);
+			}), isNull());
 	}
 
 	@Test

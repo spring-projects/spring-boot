@@ -21,10 +21,9 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
@@ -83,12 +82,12 @@ class ServiceConnectionContextCustomizerTests {
 		given(this.factories.getConnectionDetails(this.source, true))
 			.willReturn(Map.of(JdbcConnectionDetails.class, connectionDetails));
 		customizer.customizeContext(context, mergedConfig);
-		ArgumentCaptor<BeanDefinition> beanDefinitionCaptor = ArgumentCaptor.forClass(BeanDefinition.class);
 		then(beanFactory).should()
-			.registerBeanDefinition(eq("testJdbcConnectionDetailsForTest"), beanDefinitionCaptor.capture());
-		RootBeanDefinition beanDefinition = (RootBeanDefinition) beanDefinitionCaptor.getValue();
-		assertThat(beanDefinition.getInstanceSupplier().get()).isSameAs(connectionDetails);
-		assertThat(beanDefinition.getBeanClass()).isEqualTo(TestJdbcConnectionDetails.class);
+			.registerBeanDefinition(eq("testJdbcConnectionDetailsForTest"),
+					ArgumentMatchers.<RootBeanDefinition>assertArg((beanDefinition) -> {
+						assertThat(beanDefinition.getInstanceSupplier().get()).isSameAs(connectionDetails);
+						assertThat(beanDefinition.getBeanClass()).isEqualTo(TestJdbcConnectionDetails.class);
+					}));
 	}
 
 	@Test
