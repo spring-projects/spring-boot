@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
+import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
 
@@ -30,9 +31,16 @@ import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
 public interface SdkTracerProviderBuilderCustomizer {
 
 	/**
-	 * Customize the given {@code builder}.
-	 * @param builder the builder to customize
+	 * Customize the {@link SdkTracerProviderBuilder}.
+	 * @param builder the SdkTracerProviderBuilder to customize
 	 */
 	void customize(SdkTracerProviderBuilder builder);
+
+	/**
+	 * Customize the {@link AttributesBuilder}.
+	 * @param builder the AttributesBuilder to customize
+	 */
+	default void customize(AttributesBuilder builder) {
+	}
 
 }

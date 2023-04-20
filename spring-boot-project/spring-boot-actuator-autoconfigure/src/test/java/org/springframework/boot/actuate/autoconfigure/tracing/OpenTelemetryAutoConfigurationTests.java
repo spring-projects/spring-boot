@@ -28,15 +28,20 @@ import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
 import io.micrometer.tracing.otel.bridge.Slf4JBaggageEventListener;
 import io.micrometer.tracing.otel.bridge.Slf4JEventListener;
 import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.context.propagation.TextMapPropagator;
 import io.opentelemetry.extension.trace.propagation.B3Propagator;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
+import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
 import io.opentelemetry.sdk.trace.SpanLimits;
 import io.opentelemetry.sdk.trace.SpanProcessor;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
+import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -212,6 +217,10 @@ class OpenTelemetryAutoConfigurationTests {
 			SdkTracerProvider tracerProvider = context.getBean(SdkTracerProvider.class);
 			assertThat(tracerProvider.getSpanLimits().getMaxNumberOfEvents()).isEqualTo(42);
 			assertThat(tracerProvider.getSampler()).isEqualTo(Sampler.alwaysOn());
+
+			Attributes expected = Attributes.of(ResourceAttributes.SERVICE_NAME, "application",
+					AttributeKey.stringKey("java.version"), System.getProperty("java.version"));
+			assertThat(tracerProvider).extracting("sharedState.resource.attributes").isEqualTo(expected);
 		});
 	}
 
@@ -308,6 +317,22 @@ class OpenTelemetryAutoConfigurationTests {
 			return (builder) -> {
 				SpanLimits spanLimits = SpanLimits.builder().setMaxNumberOfEvents(21).build();
 				builder.setSpanLimits(spanLimits).setSampler(Sampler.alwaysOn());
+			};
+		}
+
+		@Bean
+		SdkTracerProviderBuilderCustomizer sdkTracerProviderBuilderCustomizerThree() {
+			return new SdkTracerProviderBuilderCustomizer() {
+
+				@Override
+				public void customize(SdkTracerProviderBuilder builder) {
+
+				}
+
+				@Override
+				public void customize(AttributesBuilder builder) {
+					builder.put(AttributeKey.stringKey("java.version"), System.getProperty("java.version"));
+				}
 			};
 		}
 

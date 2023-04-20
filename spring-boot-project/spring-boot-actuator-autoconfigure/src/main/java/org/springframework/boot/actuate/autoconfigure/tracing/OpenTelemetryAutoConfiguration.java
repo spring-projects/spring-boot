@@ -38,6 +38,7 @@ import io.micrometer.tracing.otel.propagation.BaggageTextMapPropagator;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.baggage.propagation.W3CBaggagePropagator;
 import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.common.AttributesBuilder;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.ContextStorage;
@@ -104,9 +105,12 @@ public class OpenTelemetryAutoConfiguration {
 	SdkTracerProvider otelSdkTracerProvider(Environment environment, ObjectProvider<SpanProcessor> spanProcessors,
 			Sampler sampler, ObjectProvider<SdkTracerProviderBuilderCustomizer> customizers) {
 		String applicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
+		AttributesBuilder attributesBuilder = Attributes.builder();
+		attributesBuilder.put(ResourceAttributes.SERVICE_NAME, applicationName);
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(attributesBuilder));
 		SdkTracerProviderBuilder builder = SdkTracerProvider.builder()
 			.setSampler(sampler)
-			.setResource(Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, applicationName)));
+			.setResource(Resource.create(attributesBuilder.build()));
 		spanProcessors.orderedStream().forEach(builder::addSpanProcessor);
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
