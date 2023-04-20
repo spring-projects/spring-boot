@@ -31,10 +31,10 @@ import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
-import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
+import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpointsSupplier;
 import org.springframework.boot.actuate.endpoint.web.annotation.ServletEndpointsSupplier;
 import org.springframework.boot.actuate.health.HealthEndpoint;
@@ -66,6 +66,9 @@ import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.DispatcherServlet;
 
@@ -84,6 +87,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnBean(DispatcherServlet.class)
 @ConditionalOnCloudPlatform(CloudPlatform.CLOUD_FOUNDRY)
 public class CloudFoundryActuatorAutoConfiguration {
+
+	private static final String BASE_PATH = "/cloudfoundryapplication";
 
 	@Bean
 	@ConditionalOnMissingBean
@@ -122,8 +127,7 @@ public class CloudFoundryActuatorAutoConfiguration {
 		allEndpoints.addAll(servletEndpointsSupplier.getEndpoints());
 		allEndpoints.addAll(controllerEndpointsSupplier.getEndpoints());
 		return new CloudFoundryWebEndpointServletHandlerMapping(new EndpointMapping("/cloudfoundryapplication"),
-				webEndpoints, endpointMediaTypes, getCorsConfiguration(), securityInterceptor,
-				new EndpointLinksResolver(allEndpoints));
+				webEndpoints, endpointMediaTypes, getCorsConfiguration(), securityInterceptor, allEndpoints);
 	}
 
 	private CloudFoundrySecurityInterceptor getSecurityInterceptor(RestTemplateBuilder restTemplateBuilder,
@@ -163,8 +167,9 @@ public class CloudFoundryActuatorAutoConfiguration {
 	public static class IgnoredCloudFoundryPathsWebSecurityConfiguration {
 
 		@Bean
-		IgnoredCloudFoundryPathsWebSecurityCustomizer ignoreCloudFoundryPathsWebSecurityCustomizer() {
-			return new IgnoredCloudFoundryPathsWebSecurityCustomizer();
+		IgnoredCloudFoundryPathsWebSecurityCustomizer ignoreCloudFoundryPathsWebSecurityCustomizer(
+				CloudFoundryWebEndpointServletHandlerMapping handlerMapping) {
+			return new IgnoredCloudFoundryPathsWebSecurityCustomizer(handlerMapping);
 		}
 
 	}
@@ -172,9 +177,22 @@ public class CloudFoundryActuatorAutoConfiguration {
 	@Order(SecurityProperties.IGNORED_ORDER)
 	static class IgnoredCloudFoundryPathsWebSecurityCustomizer implements WebSecurityCustomizer {
 
+		private final PathMappedEndpoints pathMappedEndpoints;
+
+		IgnoredCloudFoundryPathsWebSecurityCustomizer(CloudFoundryWebEndpointServletHandlerMapping handlerMapping) {
+			this.pathMappedEndpoints = new PathMappedEndpoints(BASE_PATH, handlerMapping::getAllEndpoints);
+		}
+
 		@Override
 		public void customize(WebSecurity web) {
-			web.ignoring().requestMatchers(new AntPathRequestMatcher("/cloudfoundryapplication/**"));
+			List<RequestMatcher> requestMatchers = new ArrayList<>();
+			this.pathMappedEndpoints.getAllPaths()
+				.forEach((path) -> requestMatchers.add(new AntPathRequestMatcher(path + "/**")));
+			requestMatchers.add(new AntPathRequestMatcher(BASE_PATH));
+			requestMatchers.add(new AntPathRequestMatcher(BASE_PATH + "/"));
+			if (!CollectionUtils.isEmpty(requestMatchers)) {
+				web.ignoring().requestMatchers(new OrRequestMatcher(requestMatchers));
+			}
 		}
 
 	}
