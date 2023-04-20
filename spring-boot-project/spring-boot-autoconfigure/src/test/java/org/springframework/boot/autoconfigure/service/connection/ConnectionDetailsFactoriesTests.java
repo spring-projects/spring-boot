@@ -28,6 +28,7 @@ import org.springframework.core.test.io.support.MockSpringFactoriesLoader;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 /**
  * Tests for {@link ConnectionDetailsFactories}.
@@ -85,6 +86,12 @@ class ConnectionDetailsFactoriesTests {
 		assertThat(registrations.get(0).factory()).isEqualTo(orderOne);
 		assertThat(registrations.get(1).factory()).isEqualTo(orderTwo);
 		assertThat(registrations.get(2).factory()).isEqualTo(orderThree);
+	}
+
+	@Test
+	void factoryLoadFailureDoesNotPreventOtherFactoriesFromLoading() {
+		this.loader.add(ConnectionDetailsFactory.class.getName(), "com.example.NonExistentConnectionDetailsFactory");
+		assertThatNoException().isThrownBy(() -> new ConnectionDetailsFactories(this.loader));
 	}
 
 	private static final class TestConnectionDetailsFactory
