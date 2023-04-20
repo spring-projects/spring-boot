@@ -1337,7 +1337,7 @@ bom {
 			]
 		}
 	}
-	library("Selenium HtmlUnit", "4.8.1.1") {
+	library("Selenium HtmlUnit", "4.8.3") {
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"htmlunit-driver"
