@@ -54,8 +54,7 @@ class SampleActiveMqTests {
 	@Test
 	void sendSimpleMessage(CapturedOutput output) {
 		this.producer.send("Test message");
-		Awaitility.waitAtMost(Duration.ofMinutes(1))
-				.untilAsserted(() -> assertThat(output).contains("Test message"));
+		Awaitility.waitAtMost(Duration.ofMinutes(1)).untilAsserted(() -> assertThat(output).contains("Test message"));
 	}
 
 }
