@@ -37,11 +37,13 @@ public class DebugAgentEnvironmentPostProcessor implements EnvironmentPostProces
 
 	private static final String REACTOR_DEBUGAGENT_CLASS = "reactor.tools.agent.ReactorDebugAgent";
 
+	private static final String BYTE_BUDDYAGENT_CLASS = "net.bytebuddy.agent.ByteBuddyAgent";
+
 	private static final String DEBUGAGENT_ENABLED_CONFIG_KEY = "spring.reactor.debug-agent.enabled";
 
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-		if (ClassUtils.isPresent(REACTOR_DEBUGAGENT_CLASS, null)) {
+		if (ClassUtils.isPresent(REACTOR_DEBUGAGENT_CLASS, null) && ClassUtils.isPresent(BYTE_BUDDYAGENT_CLASS, null)) {
 			Boolean agentEnabled = environment.getProperty(DEBUGAGENT_ENABLED_CONFIG_KEY, Boolean.class);
 			if (agentEnabled != Boolean.FALSE) {
 				try {
