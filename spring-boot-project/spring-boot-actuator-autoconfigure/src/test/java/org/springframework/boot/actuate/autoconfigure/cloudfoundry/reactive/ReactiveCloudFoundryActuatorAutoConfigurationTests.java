@@ -95,6 +95,8 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 					InfoContributorAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
 					ProjectInfoAutoConfiguration.class, ReactiveCloudFoundryActuatorAutoConfiguration.class));
 
+	private static final String BASE_PATH = "/cloudfoundryapplication";
+
 	@AfterEach
 	void close() {
 		HttpResources.reset();
@@ -170,26 +172,36 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	void cloudFoundryPathsIgnoredBySpringSecurity() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
-				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
+		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new).withPropertyValues("VCAP_APPLICATION:---",
+				"vcap.application.application_id:my-app-id", "vcap.application.cf_api:https://my-cloud-controller.com")
+				.run((context) -> {
 					WebFilterChainProxy chainProxy = context.getBean(WebFilterChainProxy.class);
 					List<SecurityWebFilterChain> filters = (List<SecurityWebFilterChain>) ReflectionTestUtils
 							.getField(chainProxy, "filters");
-					Boolean cfRequestMatches = filters.get(0)
-							.matches(MockServerWebExchange
-									.from(MockServerHttpRequest.get("/cloudfoundryapplication/my-path").build()))
-							.block(Duration.ofSeconds(30));
-					Boolean otherRequestMatches = filters.get(0)
-							.matches(MockServerWebExchange.from(MockServerHttpRequest.get("/some-other-path").build()))
-							.block(Duration.ofSeconds(30));
+					Boolean cfBaseRequestMatches = getMatches(filters, BASE_PATH);
+					Boolean cfBaseWithTrailingSlashRequestMatches = getMatches(filters, BASE_PATH + "/");
+					Boolean cfRequestMatches = getMatches(filters, BASE_PATH + "/test");
+					Boolean cfRequestWithAdditionalPathMatches = getMatches(filters, BASE_PATH + "/test/a");
+					Boolean otherCfRequestMatches = getMatches(filters, BASE_PATH + "/other-path");
+					Boolean otherRequestMatches = getMatches(filters, "/some-other-path");
+					assertThat(cfBaseRequestMatches).isTrue();
+					assertThat(cfBaseWithTrailingSlashRequestMatches).isTrue();
 					assertThat(cfRequestMatches).isTrue();
+					assertThat(cfRequestWithAdditionalPathMatches).isTrue();
+					assertThat(otherCfRequestMatches).isFalse();
 					assertThat(otherRequestMatches).isFalse();
 					otherRequestMatches = filters.get(1)
 							.matches(MockServerWebExchange.from(MockServerHttpRequest.get("/some-other-path").build()))
 							.block(Duration.ofSeconds(30));
 					assertThat(otherRequestMatches).isTrue();
 				});
+	}
 
+	private static Boolean getMatches(List<SecurityWebFilterChain> filters, String urlTemplate) {
+		Boolean cfBaseRequestMatches = filters.get(0)
+				.matches(MockServerWebExchange.from(MockServerHttpRequest.get(urlTemplate).build()))
+				.block(Duration.ofSeconds(30));
+		return cfBaseRequestMatches;
 	}
 
 	@Test
