@@ -30,4 +30,6 @@ include::features/developing-auto-configuration.adoc[]
 
 include::features/kotlin.adoc[]
 
+include::features/ssl.adoc[]
+
 include::features/whats-next.adoc[]
