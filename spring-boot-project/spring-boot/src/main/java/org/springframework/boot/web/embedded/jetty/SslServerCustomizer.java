@@ -40,8 +40,6 @@ import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl.ClientAuth;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.ObjectUtils;
 
 /**
  * {@link JettyServerCustomizer} that configures SSL on the given Jetty server instance.
@@ -180,11 +178,11 @@ class SslServerCustomizer implements JettyServerCustomizer {
 			factory.setKeyStorePassword(stores.getKeyStorePassword());
 		}
 		factory.setCertAlias(key.getAlias());
-		if (!ObjectUtils.isEmpty(options.getCiphers())) {
+		if (options.getCiphers() != null) {
 			factory.setIncludeCipherSuites(options.getCiphers().toArray(String[]::new));
 			factory.setExcludeCipherSuites();
 		}
-		if (!CollectionUtils.isEmpty(options.getEnabledProtocols())) {
+		if (options.getEnabledProtocols() != null) {
 			factory.setIncludeProtocols(options.getEnabledProtocols().toArray(String[]::new));
 		}
 		try {

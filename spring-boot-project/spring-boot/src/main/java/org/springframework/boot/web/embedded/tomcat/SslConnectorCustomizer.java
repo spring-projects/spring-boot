@@ -30,7 +30,6 @@ import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.boot.web.server.Ssl.ClientAuth;
 import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -86,7 +85,7 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 			certificate.setCertificateKeyAlias(key.getAlias());
 		}
 		sslHostConfig.addCertificate(certificate);
-		if (!CollectionUtils.isEmpty(options.getCiphers())) {
+		if (options.getCiphers() != null) {
 			String ciphers = StringUtils.collectionToCommaDelimitedString(options.getCiphers());
 			sslHostConfig.setCiphers(ciphers);
 		}
@@ -96,9 +95,10 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 
 	private void configureEnabledProtocols(AbstractHttp11JsseProtocol<?> protocol) {
 		SslOptions options = this.sslBundle.getOptions();
-		if (!CollectionUtils.isEmpty(options.getEnabledProtocols())) {
+		if (options.getEnabledProtocols() != null) {
+			String enabledProtocols = StringUtils.collectionToCommaDelimitedString(options.getEnabledProtocols());
 			for (SSLHostConfig sslHostConfig : protocol.findSslHostConfigs()) {
-				sslHostConfig.setProtocols(StringUtils.collectionToCommaDelimitedString(options.getEnabledProtocols()));
+				sslHostConfig.setProtocols(enabledProtocols);
 			}
 		}
 	}

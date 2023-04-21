@@ -33,15 +33,15 @@ import javax.net.ssl.SSLEngine;
 public interface SslOptions {
 
 	/**
-	 * {@link SslOptions} that returns no values.
+	 * {@link SslOptions} that returns {@code null} results.
 	 */
-	SslOptions NONE = of(Collections.emptySet(), Collections.emptySet());
+	SslOptions NONE = of((Set<String>) null, (Set<String>) null);
 
 	/**
 	 * Return the ciphers that can be used or an empty set. The cipher names in this set
 	 * should be compatible with those supported by
 	 * {@link SSLEngine#getSupportedCipherSuites()}.
-	 * @return the ciphers that can be used
+	 * @return the ciphers that can be used or {@code null}
 	 */
 	Set<String> getCiphers();
 
@@ -49,7 +49,7 @@ public interface SslOptions {
 	 * Return the protocols that should be enabled or an empty set. The protocols names in
 	 * this set should be compatible with those supported by
 	 * {@link SSLEngine#getSupportedProtocols()}.
-	 * @return the protocols to enable
+	 * @return the protocols to enable or {@code null}
 	 */
 	Set<String> getEnabledProtocols();
 
@@ -74,12 +74,12 @@ public interface SslOptions {
 
 			@Override
 			public Set<String> getCiphers() {
-				return (ciphers != null) ? ciphers : Collections.emptySet();
+				return ciphers;
 			}
 
 			@Override
 			public Set<String> getEnabledProtocols() {
-				return (enabledProtocols != null) ? enabledProtocols : Collections.emptySet();
+				return enabledProtocols;
 			}
 
 		};

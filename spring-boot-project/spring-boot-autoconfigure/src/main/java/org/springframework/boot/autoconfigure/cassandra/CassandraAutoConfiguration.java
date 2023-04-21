@@ -58,7 +58,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.Resource;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -159,8 +158,7 @@ public class CassandraAutoConfiguration {
 
 	private void configureSsl(CqlSessionBuilder builder, SslBundle sslBundle) {
 		SslOptions options = sslBundle.getOptions();
-		String[] ciphers = (!CollectionUtils.isEmpty(options.getCiphers()) ? null
-				: options.getCiphers().toArray(String[]::new));
+		String[] ciphers = (options.getCiphers() != null) ? options.getCiphers().toArray(String[]::new) : null;
 		builder.withSslEngineFactory(new ProgrammaticSslEngineFactory(sslBundle.createSslContext(), ciphers));
 	}
 

@@ -30,10 +30,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SslOptionsTests {
 
 	@Test
-	void noneReturnsEmptyCollections() {
+	void noneReturnsNull() {
 		SslOptions options = SslOptions.NONE;
-		assertThat(options.getCiphers()).isEmpty();
-		assertThat(options.getEnabledProtocols()).isEmpty();
+		assertThat(options.getCiphers()).isNull();
+		assertThat(options.getEnabledProtocols()).isNull();
 	}
 
 	@Test
@@ -50,8 +50,8 @@ class SslOptionsTests {
 		String[] ciphers = null;
 		String[] enabledProtocols = null;
 		SslOptions options = SslOptions.of(ciphers, enabledProtocols);
-		assertThat(options.getCiphers()).isEmpty();
-		assertThat(options.getEnabledProtocols()).isEmpty();
+		assertThat(options.getCiphers()).isNull();
+		assertThat(options.getEnabledProtocols()).isNull();
 	}
 
 	@Test
@@ -68,8 +68,8 @@ class SslOptionsTests {
 		Set<String> ciphers = null;
 		Set<String> enabledProtocols = null;
 		SslOptions options = SslOptions.of(ciphers, enabledProtocols);
-		assertThat(options.getCiphers()).isEmpty();
-		assertThat(options.getEnabledProtocols()).isEmpty();
+		assertThat(options.getCiphers()).isNull();
+		assertThat(options.getEnabledProtocols()).isNull();
 	}
 
 }

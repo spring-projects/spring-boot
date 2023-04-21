@@ -22,6 +22,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.time.Duration;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -49,7 +50,6 @@ import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -172,16 +172,18 @@ public final class ClientHttpRequestFactories {
 			}
 			if (sslBundle != null) {
 				SslOptions options = sslBundle.getOptions();
-				String[] enabledProtocols = (!CollectionUtils.isEmpty(options.getEnabledProtocols()))
-						? options.getEnabledProtocols().toArray(String[]::new) : null;
-				String[] ciphers = (!CollectionUtils.isEmpty(options.getCiphers()))
-						? options.getCiphers().toArray(String[]::new) : null;
+				String[] enabledProtocols = toArray(options.getEnabledProtocols());
+				String[] ciphers = toArray(options.getCiphers());
 				SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslBundle.createSslContext(),
 						enabledProtocols, ciphers, new DefaultHostnameVerifier());
 				connectionManagerBuilder.setSSLSocketFactory(socketFactory);
 			}
 			PoolingHttpClientConnectionManager connectionManager = connectionManagerBuilder.build();
 			return HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+		}
+
+		private static String[] toArray(Set<String> set) {
+			return (set != null) ? set.toArray(String[]::new) : null;
 		}
 
 	}

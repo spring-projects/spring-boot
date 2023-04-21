@@ -26,7 +26,6 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
-import org.springframework.util.CollectionUtils;
 
 /**
  * {@link NettyServerCustomizer} that configures SSL for the given Reactor Netty server
@@ -66,12 +65,8 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 		sslContextSpec.configure((builder) -> {
 			builder.trustManager(this.sslBundle.getManagers().getTrustManagerFactory());
 			SslOptions options = this.sslBundle.getOptions();
-			if (!CollectionUtils.isEmpty(options.getEnabledProtocols())) {
-				builder.protocols(options.getEnabledProtocols());
-			}
-			if (!CollectionUtils.isEmpty(options.getCiphers())) {
-				builder.ciphers(options.getCiphers());
-			}
+			builder.protocols(options.getEnabledProtocols());
+			builder.ciphers(options.getCiphers());
 			builder.clientAuth(org.springframework.boot.web.server.Ssl.ClientAuth.map(this.clientAuth, ClientAuth.NONE,
 					ClientAuth.OPTIONAL, ClientAuth.REQUIRE));
 		});
