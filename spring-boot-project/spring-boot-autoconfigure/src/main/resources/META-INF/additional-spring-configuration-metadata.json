@@ -263,6 +263,10 @@
       "defaultValue": "immediate"
     },
     {
+      "name": "server.ssl.bundle",
+      "description": "The name of a configured SSL bundle."
+    },
+    {
       "name": "server.ssl.certificate",
       "description": "Path to a PEM-encoded SSL certificate file."
     },
