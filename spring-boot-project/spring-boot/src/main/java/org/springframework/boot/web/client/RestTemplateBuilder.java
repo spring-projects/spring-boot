@@ -459,7 +459,7 @@ public class RestTemplateBuilder {
 	 * Sets the SSL bundle on the underlying {@link ClientHttpRequestFactory}.
 	 * @param sslBundle the SSL bundle
 	 * @return a new builder instance
-	 * @since 2.1.0
+	 * @since 3.1.0
 	 */
 	public RestTemplateBuilder setSslBundle(SslBundle sslBundle) {
 		return new RestTemplateBuilder(this.requestFactorySettings.withSslBundle(sslBundle), this.detectRequestFactory,
