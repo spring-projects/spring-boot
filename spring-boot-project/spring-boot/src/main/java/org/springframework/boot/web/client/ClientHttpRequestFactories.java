@@ -16,13 +16,16 @@
 
 package org.springframework.boot.web.client;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.net.HttpURLConnection;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -220,12 +223,36 @@ public final class ClientHttpRequestFactories {
 	static class Simple {
 
 		static SimpleClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
-			SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+			SslBundle sslBundle = settings.sslBundle();
+			SimpleClientHttpRequestFactory requestFactory = (sslBundle != null)
+					? new SimpleClientHttpsRequestFactory(sslBundle) : new SimpleClientHttpRequestFactory();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
 			map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
 			map.from(settings::bufferRequestBody).to(requestFactory::setBufferRequestBody);
 			return requestFactory;
+		}
+
+		/**
+		 * {@link SimpleClientHttpsRequestFactory} to configure SSL from an
+		 * {@link SslBundle}.
+		 */
+		private static class SimpleClientHttpsRequestFactory extends SimpleClientHttpRequestFactory {
+
+			private SslBundle sslBundle;
+
+			SimpleClientHttpsRequestFactory(SslBundle sslBundle) {
+				this.sslBundle = sslBundle;
+			}
+
+			@Override
+			protected void prepareConnection(HttpURLConnection connection, String httpMethod) throws IOException {
+				if (this.sslBundle != null && connection instanceof HttpsURLConnection secureConnection) {
+					SSLSocketFactory socketFactory = this.sslBundle.createSslContext().getSocketFactory();
+					secureConnection.setSSLSocketFactory(socketFactory);
+				}
+			}
+
 		}
 
 	}

@@ -19,6 +19,7 @@ package org.springframework.boot.web.client;
 import java.io.File;
 
 import okhttp3.OkHttpClient;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
@@ -62,6 +63,11 @@ class ClientHttpRequestFactoriesOkHttp4Tests
 	@Override
 	protected long readTimeout(OkHttp3ClientHttpRequestFactory requestFactory) {
 		return ((OkHttpClient) ReflectionTestUtils.getField(requestFactory, "client")).readTimeoutMillis();
+	}
+
+	@Override
+	@Disabled("OkHostnameVerifier fails because the JSK doesn't have a type 2 SubjectAltName")
+	void connectWithSslBundle() throws Exception {
 	}
 
 }
