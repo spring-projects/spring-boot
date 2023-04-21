@@ -44,6 +44,8 @@ import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfigurati
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Timeouts;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -69,8 +71,7 @@ public class CouchbaseAutoConfiguration {
 
 	private final CouchbaseProperties properties;
 
-	CouchbaseAutoConfiguration(CouchbaseProperties properties,
-			ObjectProvider<CouchbaseConnectionDetails> connectionDetails) {
+	CouchbaseAutoConfiguration(CouchbaseProperties properties) {
 		this.properties = properties;
 	}
 
@@ -83,8 +84,8 @@ public class CouchbaseAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public ClusterEnvironment couchbaseClusterEnvironment(CouchbaseConnectionDetails connectionDetails,
-			ObjectProvider<ClusterEnvironmentBuilderCustomizer> customizers) {
-		Builder builder = initializeEnvironmentBuilder(connectionDetails);
+			ObjectProvider<ClusterEnvironmentBuilderCustomizer> customizers, ObjectProvider<SslBundles> sslBundles) {
+		Builder builder = initializeEnvironmentBuilder(connectionDetails, sslBundles.getIfAvailable());
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
@@ -99,7 +100,8 @@ public class CouchbaseAutoConfiguration {
 		return Cluster.connect(connectionDetails.getConnectionString(), options);
 	}
 
-	private ClusterEnvironment.Builder initializeEnvironmentBuilder(CouchbaseConnectionDetails connectionDetails) {
+	private ClusterEnvironment.Builder initializeEnvironmentBuilder(CouchbaseConnectionDetails connectionDetails,
+			SslBundles sslBundles) {
 		ClusterEnvironment.Builder builder = ClusterEnvironment.builder();
 		Timeouts timeouts = this.properties.getEnv().getTimeouts();
 		builder.timeoutConfig((config) -> config.kvTimeout(timeouts.getKeyValue())
@@ -117,13 +119,28 @@ public class CouchbaseAutoConfiguration {
 			.idleHttpConnectionTimeout(io.getIdleHttpConnectionTimeout()));
 		if ((connectionDetails instanceof PropertiesCouchbaseConnectionDetails)
 				&& this.properties.getEnv().getSsl().getEnabled()) {
-			builder.securityConfig((config) -> config.enableTls(true)
-				.trustManagerFactory(getTrustManagerFactory(this.properties.getEnv().getSsl())));
+			configureSsl(builder, sslBundles);
 		}
 		return builder;
 	}
 
-	private TrustManagerFactory getTrustManagerFactory(CouchbaseProperties.Ssl ssl) {
+	private void configureSsl(Builder builder, SslBundles sslBundles) {
+		builder.securityConfig((config) -> config.enableTls(true)
+			.trustManagerFactory(getTrustManagerFactory(this.properties.getEnv().getSsl(), sslBundles)));
+	}
+
+	private TrustManagerFactory getTrustManagerFactory(CouchbaseProperties.Ssl ssl, SslBundles sslBundles) {
+		if (ssl.getKeyStore() != null) {
+			return loadTrustManagerFactory(ssl);
+		}
+		if (ssl.getBundle() != null) {
+			SslBundle bundle = sslBundles.getBundle(ssl.getBundle());
+			return bundle.getManagers().getTrustManagerFactory();
+		}
+		throw new IllegalStateException("A key store or bundle must be configured when SSL is enabled");
+	}
+
+	private TrustManagerFactory loadTrustManagerFactory(CouchbaseProperties.Ssl ssl) {
 		String resource = ssl.getKeyStore();
 		try {
 			TrustManagerFactory trustManagerFactory = TrustManagerFactory

@@ -14,49 +14,49 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server;
+package org.springframework.boot.ssl.pem;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 
 import org.junit.jupiter.api.Test;
+
+import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
- * Tests for {@link PrivateKeyParser}.
+ * Tests for {@link PemPrivateKeyParser}.
  *
  * @author Scott Frederick
  */
-class PrivateKeyParserTests {
+class PemPrivateKeyParserTests {
 
 	@Test
-	void parsePkcs8KeyFile() {
-		PrivateKey privateKey = PrivateKeyParser.parse("classpath:test-key.pem");
+	void parsePkcs8KeyFile() throws Exception {
+		PrivateKey privateKey = PemPrivateKeyParser.parse(read("test-key.pem"));
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
 		assertThat(privateKey.getAlgorithm()).isEqualTo("RSA");
 	}
 
 	@Test
-	void parsePkcs8KeyFileWithEcdsa() {
-		PrivateKey privateKey = PrivateKeyParser.parse("classpath:test-ec-key.pem");
+	void parsePkcs8KeyFileWithEcdsa() throws Exception {
+		PrivateKey privateKey = PemPrivateKeyParser.parse(read("test-ec-key.pem"));
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
 		assertThat(privateKey.getAlgorithm()).isEqualTo("EC");
 	}
 
 	@Test
-	void parseWithNonKeyFileWillThrowException() {
-		String path = "classpath:test-banner.txt";
-		assertThatIllegalStateException().isThrownBy(() -> PrivateKeyParser.parse("file://" + path))
-			.withMessageContaining(path);
+	void parseWithNonKeyTextWillThrowException() {
+		assertThatIllegalStateException().isThrownBy(() -> PemPrivateKeyParser.parse(read("test-banner.txt")));
 	}
 
-	@Test
-	void parseWithInvalidPathWillThrowException() {
-		String path = "file:///bad/path/key.pem";
-		assertThatIllegalStateException().isThrownBy(() -> PrivateKeyParser.parse(path)).withMessageContaining(path);
+	private String read(String path) throws IOException {
+		return new ClassPathResource(path).getContentAsString(StandardCharsets.UTF_8);
 	}
 
 }

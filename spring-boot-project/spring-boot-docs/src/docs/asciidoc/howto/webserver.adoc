@@ -207,6 +207,16 @@ The following example shows setting SSL properties using PEM-encoded certificate
 	    trust-certificate: "classpath:ca-cert.crt"
 ----
 
+Alternatively, the SSL trust material can be configured in an <<features#features.ssl,SSL bundle>> and applied to the web server as shown in this example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	server:
+	  port: 8443
+	  ssl:
+	    bundle: "example"
+----
+
 See {spring-boot-module-code}/web/server/Ssl.java[`Ssl`] for details of all of the supported properties.
 
 Using configuration such as the preceding example means the application no longer supports a plain HTTP connector at port 8080.

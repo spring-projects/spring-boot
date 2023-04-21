@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server;
+package org.springframework.boot.ssl.pem;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -33,16 +30,13 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.springframework.util.FileCopyUtils;
-import org.springframework.util.ResourceUtils;
-
 /**
  * Parser for PKCS private key files in PEM format.
  *
  * @author Scott Frederick
  * @author Phillip Webb
  */
-final class PrivateKeyParser {
+final class PemPrivateKeyParser {
 
 	private static final String PKCS1_HEADER = "-+BEGIN\\s+RSA\\s+PRIVATE\\s+KEY[^-]*-+(?:\\s|\\r|\\n)+";
 
@@ -61,8 +55,8 @@ final class PrivateKeyParser {
 	private static final List<PemParser> PEM_PARSERS;
 	static {
 		List<PemParser> parsers = new ArrayList<>();
-		parsers.add(new PemParser(PKCS1_HEADER, PKCS1_FOOTER, "RSA", PrivateKeyParser::createKeySpecForPkcs1));
-		parsers.add(new PemParser(EC_HEADER, EC_FOOTER, "EC", PrivateKeyParser::createKeySpecForEc));
+		parsers.add(new PemParser(PKCS1_HEADER, PKCS1_FOOTER, "RSA", PemPrivateKeyParser::createKeySpecForPkcs1));
+		parsers.add(new PemParser(EC_HEADER, EC_FOOTER, "EC", PemPrivateKeyParser::createKeySpecForEc));
 		parsers.add(new PemParser(PKCS8_HEADER, PKCS8_FOOTER, "RSA", PKCS8EncodedKeySpec::new));
 		PEM_PARSERS = Collections.unmodifiableList(parsers);
 	}
@@ -82,7 +76,7 @@ final class PrivateKeyParser {
 	 */
 	private static final int[] EC_PARAMETERS = { 0x2b, 0x81, 0x04, 0x00, 0x22 };
 
-	private PrivateKeyParser() {
+	private PemPrivateKeyParser() {
 	}
 
 	private static PKCS8EncodedKeySpec createKeySpecForPkcs1(byte[] bytes) {
@@ -111,15 +105,17 @@ final class PrivateKeyParser {
 	}
 
 	/**
-	 * Load a private key from the specified resource.
-	 * @param resource the private key to parse
+	 * Parse a private key from the specified string.
+	 * @param key the private key to parse
 	 * @return the parsed private key
 	 */
-	static PrivateKey parse(String resource) {
+	static PrivateKey parse(String key) {
+		if (key == null) {
+			return null;
+		}
 		try {
-			String text = readText(resource);
 			for (PemParser pemParser : PEM_PARSERS) {
-				PrivateKey privateKey = pemParser.parse(text);
+				PrivateKey privateKey = pemParser.parse(key);
 				if (privateKey != null) {
 					return privateKey;
 				}
@@ -127,14 +123,7 @@ final class PrivateKeyParser {
 			throw new IllegalStateException("Unrecognized private key format");
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Error loading private key file " + resource, ex);
-		}
-	}
-
-	private static String readText(String resource) throws IOException {
-		URL url = ResourceUtils.getURL(resource);
-		try (Reader reader = new InputStreamReader(url.openStream())) {
-			return FileCopyUtils.copyToString(reader);
+			throw new IllegalStateException("Error loading private key file: " + ex.getMessage(), ex);
 		}
 	}
 

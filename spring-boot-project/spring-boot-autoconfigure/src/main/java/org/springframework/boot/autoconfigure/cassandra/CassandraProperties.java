@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.core.io.Resource;
  * @author Phillip Webb
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "spring.cassandra")
@@ -89,9 +90,9 @@ public class CassandraProperties {
 	private String schemaAction = "none";
 
 	/**
-	 * Enable SSL support.
+	 * SSL configuration.
 	 */
-	private boolean ssl = false;
+	private Ssl ssl = new Ssl();
 
 	/**
 	 * Connection configuration.
@@ -185,11 +186,11 @@ public class CassandraProperties {
 		this.compression = compression;
 	}
 
-	public boolean isSsl() {
+	public Ssl getSsl() {
 		return this.ssl;
 	}
 
-	public void setSsl(boolean ssl) {
+	public void setSsl(Ssl ssl) {
 		this.ssl = ssl;
 	}
 
@@ -215,6 +216,36 @@ public class CassandraProperties {
 
 	public Controlconnection getControlconnection() {
 		return this.controlconnection;
+	}
+
+	public static class Ssl {
+
+		/**
+		 * Whether to enable SSL support.
+		 */
+		private Boolean enabled;
+
+		/**
+		 * SSL bundle name.
+		 */
+		private String bundle;
+
+		public boolean isEnabled() {
+			return (this.enabled != null) ? this.enabled : this.bundle != null;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(String bundle) {
+			this.bundle = bundle;
+		}
+
 	}
 
 	public static class Connection {

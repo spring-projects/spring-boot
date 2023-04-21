@@ -56,6 +56,12 @@
       ]
     },
     {
+      "name": "management.endpoint.health.validate-group-membership",
+      "type": "java.lang.Boolean",
+      "description": "Whether to validate health group membership on startup. Validation fails if a group includes or excludes a health contributor that does not exist.",
+      "defaultValue": true
+    },
+    {
       "name": "management.endpoints.enabled-by-default",
       "type": "java.lang.Boolean",
       "description": "Whether to enable or disable all endpoints by default."
@@ -2033,6 +2039,10 @@
       }
     },
     {
+      "name": "management.otlp.tracing.compression",
+      "defaultValue": "none"
+    },
+    {
       "name": "management.prometheus.metrics.export.histogram-flavor",
       "defaultValue": "prometheus"
     },
@@ -2053,6 +2063,10 @@
         "replacement": "management.server.base-path",
         "level": "error"
       }
+    },
+    {
+      "name": "management.server.ssl.bundle",
+      "description": "The name of a configured SSL bundle."
     },
     {
       "name": "management.server.ssl.certificate",

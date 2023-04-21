@@ -54,7 +54,7 @@ class RedpandaContainerConnectionDetailsFactoryIntegrationTests {
 	@Container
 	@ServiceConnection
 	static final RedpandaContainer redpanda = new RedpandaContainer(DockerImageNames.redpanda())
-		.withStartupTimeout(Duration.ofMinutes(2));
+		.withStartupTimeout(Duration.ofMinutes(5));
 
 	@Autowired
 	KafkaTemplate<String, String> kafkaTemplate;

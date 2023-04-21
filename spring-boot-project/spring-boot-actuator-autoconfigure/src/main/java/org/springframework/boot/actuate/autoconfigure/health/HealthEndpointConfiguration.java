@@ -20,9 +20,11 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.health.CompositeHealthContributor;
 import org.springframework.boot.actuate.health.CompositeReactiveHealthContributor;
@@ -35,16 +37,19 @@ import org.springframework.boot.actuate.health.HealthEndpointGroupsPostProcessor
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.HttpCodeStatusMapper;
 import org.springframework.boot.actuate.health.NamedContributor;
+import org.springframework.boot.actuate.health.NamedContributors;
 import org.springframework.boot.actuate.health.ReactiveHealthContributor;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.SimpleHttpCodeStatusMapper;
 import org.springframework.boot.actuate.health.SimpleStatusAggregator;
 import org.springframework.boot.actuate.health.StatusAggregator;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 
 /**
  * Configuration for {@link HealthEndpoint} infrastructure beans.
@@ -83,6 +88,14 @@ class HealthEndpointConfiguration {
 			healthContributors.putAll(new AdaptedReactiveHealthContributors(reactiveHealthContributors).get());
 		}
 		return new AutoConfiguredHealthContributorRegistry(healthContributors, groups.getNames());
+	}
+
+	@Bean
+	@ConditionalOnProperty(name = "management.endpoint.health.validate-group-membership", havingValue = "true",
+			matchIfMissing = true)
+	HealthEndpointGroupMembershipValidator healthEndpointGroupMembershipValidator(HealthEndpointProperties properties,
+			HealthContributorRegistry healthContributorRegistry) {
+		return new HealthEndpointGroupMembershipValidator(properties, healthContributorRegistry);
 	}
 
 	@Bean
@@ -200,6 +213,77 @@ class HealthEndpointConfiguration {
 
 		Map<String, HealthContributor> get() {
 			return this.adapted;
+		}
+
+	}
+
+	/**
+	 * {@link SmartInitializingSingleton} that validates health endpoint group membership,
+	 * throwing a {@link NoSuchHealthContributorException} if an included or excluded
+	 * contributor does not exist.
+	 */
+	static class HealthEndpointGroupMembershipValidator implements SmartInitializingSingleton {
+
+		private final HealthEndpointProperties properties;
+
+		private final HealthContributorRegistry registry;
+
+		HealthEndpointGroupMembershipValidator(HealthEndpointProperties properties,
+				HealthContributorRegistry registry) {
+			this.properties = properties;
+			this.registry = registry;
+		}
+
+		@Override
+		public void afterSingletonsInstantiated() {
+			validateGroups();
+		}
+
+		private void validateGroups() {
+			this.properties.getGroup().forEach((name, group) -> {
+				validate(group.getInclude(), "Included", name);
+				validate(group.getExclude(), "Excluded", name);
+			});
+		}
+
+		private void validate(Set<String> names, String type, String group) {
+			if (CollectionUtils.isEmpty(names)) {
+				return;
+			}
+			for (String name : names) {
+				if ("*".equals(name)) {
+					return;
+				}
+				String[] path = name.split("/");
+				if (!contributorExists(path)) {
+					throw new NoSuchHealthContributorException(type, name, group);
+				}
+			}
+		}
+
+		private boolean contributorExists(String[] path) {
+			int pathOffset = 0;
+			Object contributor = this.registry;
+			while (pathOffset < path.length) {
+				if (!(contributor instanceof NamedContributors)) {
+					return false;
+				}
+				contributor = ((NamedContributors<?>) contributor).getContributor(path[pathOffset]);
+				pathOffset++;
+			}
+			return (contributor != null);
+		}
+
+		/**
+		 * Thrown when a contributor that does not exist is included in or excluded from a
+		 * group.
+		 */
+		static class NoSuchHealthContributorException extends RuntimeException {
+
+			NoSuchHealthContributorException(String type, String name, String group) {
+				super(type + " health contributor '" + name + "' in group '" + group + "' does not exist");
+			}
+
 		}
 
 	}

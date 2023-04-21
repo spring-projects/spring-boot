@@ -789,6 +789,9 @@ Similarly, to create a group that excludes the database indicators from the grou
 	          exclude: "db"
 ----
 
+By default, startup will fail if a health group includes or excludes a health indicator that does not exist.
+To disable this behavior set configprop:management.endpoint.health.validate-group-membership[] to `false`.
+
 By default, groups inherit the same `StatusAggregator` and `HttpCodeStatusMapper` settings as the system health.
 However, you can also define these on a per-group basis.
 You can also override the `show-details` and `roles` properties if required:

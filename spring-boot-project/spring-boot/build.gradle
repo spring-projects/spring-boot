@@ -29,6 +29,7 @@ dependencies {
 	optional("com.oracle.database.jdbc:ucp")
 	optional("com.oracle.database.jdbc:ojdbc8")
 	optional("com.samskivert:jmustache")
+	optional("com.squareup.okhttp3:okhttp")
 	optional("com.zaxxer:HikariCP")
 	optional("io.netty:netty-tcnative-boringssl-static")
 	optional("io.projectreactor:reactor-tools")
