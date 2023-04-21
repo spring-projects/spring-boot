@@ -11,6 +11,7 @@ description = "Spring Boot Testcontainers Support"
 dependencies {
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 
+	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional("org.springframework:spring-test")
 	optional("org.springframework.data:spring-data-mongodb")
 	optional("org.springframework.data:spring-data-neo4j")
@@ -31,7 +32,6 @@ dependencies {
 	optional("org.testcontainers:redpanda")
 	optional("org.testcontainers:r2dbc")
 
-	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	testImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("ch.qos.logback:logback-classic")

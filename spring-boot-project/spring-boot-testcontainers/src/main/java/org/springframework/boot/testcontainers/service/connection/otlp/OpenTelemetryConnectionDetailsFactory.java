@@ -19,7 +19,7 @@ package org.springframework.boot.testcontainers.service.connection.otlp;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
-import org.springframework.boot.autoconfigure.otlp.OtlpConnectionDetails;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpConnectionDetails;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionDetailsFactory;
 import org.springframework.boot.testcontainers.service.connection.ContainerConnectionSource;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
@@ -29,15 +29,14 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * a {@link ServiceConnection @ServiceConnection}-annotated {@link GenericContainer} using
  * the {@code "otel/opentelemetry-collector-contrib"} image.
  *
- * @author Moritz Halbritter
- * @author Andy Wilkinson
- * @author Phillip Webb
+ * @author Eddú Meléndez
  */
 class OpenTelemetryConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<OtlpConnectionDetails, Container<?>> {
 
 	OpenTelemetryConnectionDetailsFactory() {
-		super("otel/opentelemetry-collector-contrib");
+		super("otel/opentelemetry-collector-contrib",
+				"org.springframework.boot.actuate.autoconfigure.metrics.export.otlp.OtlpMetricsExportAutoConfiguration");
 	}
 
 	@Override

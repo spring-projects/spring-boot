@@ -22,7 +22,6 @@ import io.micrometer.registry.otlp.AggregationTemporality;
 import io.micrometer.registry.otlp.OtlpConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
-import org.springframework.boot.autoconfigure.otlp.OtlpConnectionDetails;
 
 /**
  * Adapter to convert {@link OtlpProperties} to an {@link OtlpConfig}.

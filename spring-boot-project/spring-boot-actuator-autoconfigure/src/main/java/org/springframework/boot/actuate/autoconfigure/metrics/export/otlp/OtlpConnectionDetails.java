@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.otlp;
+package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 
 /**
- * Details required to establish a connection to a OpenTelemetry Collector
- * service.
+ * Details required to establish a connection to a OpenTelemetry Collector service.
  *
  * @author Eddú Meléndez
  * @since 3.1.0
