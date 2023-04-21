@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,8 @@ package org.springframework.boot.web.server;
 public class Ssl {
 
 	private boolean enabled = true;
+
+	private String bundle;
 
 	private ClientAuth clientAuth;
 
@@ -75,6 +77,24 @@ public class Ssl {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	/**
+	 * Return the name of the SSL bundle to use.
+	 * @return the SSL bundle name
+	 * @since 3.1.0
+	 */
+	public String getBundle() {
+		return this.bundle;
+	}
+
+	/**
+	 * Set the name of the SSL bundle to use.
+	 * @param bundle the SSL bundle name
+	 * @since 3.1.0
+	 */
+	public void setBundle(String bundle) {
+		this.bundle = bundle;
 	}
 
 	/**
@@ -296,6 +316,28 @@ public class Ssl {
 	}
 
 	/**
+	 * Returns if SSL is enabled for the given instance.
+	 * @param ssl the {@link Ssl SSL} instance or {@code null}
+	 * @return {@code true} is SSL is enabled
+	 * @since 3.1.0
+	 */
+	public static boolean isEnabled(Ssl ssl) {
+		return (ssl != null) && ssl.isEnabled();
+	}
+
+	/**
+	 * Factory method to create an {@link Ssl} instance for a specific bundle name.
+	 * @param bundle the name of the bundle
+	 * @return a new {@link Ssl} instance with the bundle set
+	 * @since 3.1.0
+	 */
+	public static Ssl forBundle(String bundle) {
+		Ssl ssl = new Ssl();
+		ssl.setBundle(bundle);
+		return ssl;
+	}
+
+	/**
 	 * Client authentication types.
 	 */
 	public enum ClientAuth {
@@ -313,7 +355,25 @@ public class Ssl {
 		/**
 		 * Client authentication is needed and mandatory.
 		 */
-		NEED
+		NEED;
+
+		/**
+		 * Map an optional {@link ClientAuth} value to a different type.
+		 * @param <R> the result type
+		 * @param clientAuth the client auth to map (may be {@code null})
+		 * @param none the value for {@link ClientAuth#NONE} or {@code null}
+		 * @param want the value for {@link ClientAuth#WANT}
+		 * @param need the value for {@link ClientAuth#NEED}
+		 * @return the mapped value
+		 * @since 3.1.0
+		 */
+		public static <R> R map(ClientAuth clientAuth, R none, R want, R need) {
+			return switch ((clientAuth != null) ? clientAuth : NONE) {
+				case NONE -> none;
+				case WANT -> want;
+				case NEED -> need;
+			};
+		}
 
 	}
 

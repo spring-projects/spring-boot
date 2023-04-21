@@ -44,6 +44,13 @@ import reactor.test.StepVerifier;
 import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.rsocket.server.RSocketServer.Transport;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
+import org.springframework.boot.ssl.DefaultSslBundleRegistry;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundleKey;
+import org.springframework.boot.ssl.jks.JksSslStoreBundle;
+import org.springframework.boot.ssl.jks.JksSslStoreDetails;
+import org.springframework.boot.ssl.pem.PemSslStoreBundle;
+import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
@@ -191,6 +198,50 @@ class NettyRSocketServerFactoryTests {
 				"src/test/resources/test-cert.pem", Transport.WEBSOCKET);
 	}
 
+	@Test
+	void tcpTransportBasicSslFromClassPathWithBundle() {
+		testBasicSslWithKeyStoreFromBundle("classpath:test.jks", "password", Transport.TCP);
+	}
+
+	@Test
+	void tcpTransportBasicSslFromFileSystemWithBundle() {
+		testBasicSslWithKeyStoreFromBundle("src/test/resources/test.jks", "password", Transport.TCP);
+	}
+
+	@Test
+	void websocketTransportBasicSslFromClassPathWithBundle() {
+		testBasicSslWithKeyStoreFromBundle("classpath:test.jks", "password", Transport.WEBSOCKET);
+	}
+
+	@Test
+	void websocketTransportBasicSslFromFileSystemWithBundle() {
+		testBasicSslWithKeyStoreFromBundle("src/test/resources/test.jks", "password", Transport.WEBSOCKET);
+	}
+
+	@Test
+	void tcpTransportBasicSslCertificateFromClassPathWithBundle() {
+		testBasicSslWithPemCertificateFromBundle("classpath:test-cert.pem", "classpath:test-key.pem",
+				"classpath:test-cert.pem", Transport.TCP);
+	}
+
+	@Test
+	void tcpTransportBasicSslCertificateFromFileSystemWithBundle() {
+		testBasicSslWithPemCertificateFromBundle("src/test/resources/test-cert.pem", "src/test/resources/test-key.pem",
+				"src/test/resources/test-cert.pem", Transport.TCP);
+	}
+
+	@Test
+	void websocketTransportBasicSslCertificateFromClassPathWithBundle() {
+		testBasicSslWithPemCertificateFromBundle("classpath:test-cert.pem", "classpath:test-key.pem",
+				"classpath:test-cert.pem", Transport.WEBSOCKET);
+	}
+
+	@Test
+	void websocketTransportBasicSslCertificateFromFileSystemWithBundle() {
+		testBasicSslWithPemCertificateFromBundle("src/test/resources/test-cert.pem", "src/test/resources/test-key.pem",
+				"src/test/resources/test-cert.pem", Transport.WEBSOCKET);
+	}
+
 	private void checkEchoRequest() {
 		String payload = "test payload";
 		Mono<String> response = this.requester.route("test").data(payload).retrieveMono(String.class);
@@ -221,6 +272,39 @@ class NettyRSocketServerFactoryTests {
 		ssl.setTrustCertificate(trustCertificate);
 		ssl.setKeyStorePassword("");
 		factory.setSsl(ssl);
+		this.server = factory.create(new EchoRequestResponseAcceptor());
+		this.server.start();
+		this.requester = (transport == Transport.TCP) ? createSecureRSocketTcpClient()
+				: createSecureRSocketWebSocketClient();
+		checkEchoRequest();
+	}
+
+	private void testBasicSslWithKeyStoreFromBundle(String keyStore, String keyPassword, Transport transport) {
+		NettyRSocketServerFactory factory = getFactory();
+		factory.setTransport(transport);
+		JksSslStoreDetails keyStoreDetails = JksSslStoreDetails.forLocation(keyStore);
+		JksSslStoreDetails trustStoreDetails = null;
+		SslBundle sslBundle = SslBundle.of(new JksSslStoreBundle(keyStoreDetails, trustStoreDetails),
+				SslBundleKey.of(keyPassword));
+		factory.setSsl(Ssl.forBundle("test"));
+		factory.setSslBundles(new DefaultSslBundleRegistry("test", sslBundle));
+		this.server = factory.create(new EchoRequestResponseAcceptor());
+		this.server.start();
+		this.requester = (transport == Transport.TCP) ? createSecureRSocketTcpClient()
+				: createSecureRSocketWebSocketClient();
+		checkEchoRequest();
+	}
+
+	private void testBasicSslWithPemCertificateFromBundle(String certificate, String certificatePrivateKey,
+			String trustCertificate, Transport transport) {
+		NettyRSocketServerFactory factory = getFactory();
+		factory.setTransport(transport);
+		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate(certificate)
+			.withPrivateKey(certificatePrivateKey);
+		PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate(trustCertificate);
+		SslBundle sslBundle = SslBundle.of(new PemSslStoreBundle(keyStoreDetails, trustStoreDetails));
+		factory.setSsl(Ssl.forBundle("test"));
+		factory.setSslBundles(new DefaultSslBundleRegistry("test", sslBundle));
 		this.server = factory.create(new EchoRequestResponseAcceptor());
 		this.server.start();
 		this.requester = (transport == Transport.TCP) ? createSecureRSocketTcpClient()

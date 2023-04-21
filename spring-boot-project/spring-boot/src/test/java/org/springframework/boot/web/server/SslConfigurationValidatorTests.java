@@ -31,7 +31,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  *
  * @author Chris Bono
  */
-
+@SuppressWarnings("removal")
+@Deprecated(since = "3.1.0", forRemoval = true)
 class SslConfigurationValidatorTests {
 
 	private static final String VALID_ALIAS = "test-alias";
@@ -67,7 +68,7 @@ class SslConfigurationValidatorTests {
 	void validateKeyAliasWhenAliasNotFoundShouldThrowException() {
 		assertThatThrownBy(() -> SslConfigurationValidator.validateKeyAlias(this.keyStore, INVALID_ALIAS))
 			.isInstanceOf(IllegalStateException.class)
-			.hasMessage("Keystore does not contain specified alias '" + INVALID_ALIAS + "'");
+			.hasMessage("Keystore does not contain alias '" + INVALID_ALIAS + "'");
 	}
 
 	@Test

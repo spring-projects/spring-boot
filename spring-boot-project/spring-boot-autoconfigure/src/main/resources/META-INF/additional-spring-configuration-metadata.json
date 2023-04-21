@@ -2640,6 +2640,10 @@
       }
     },
     {
+      "name": "spring.rsocket.server.ssl.bundle",
+      "description": "The name of a configured SSL bundle."
+    },
+    {
       "name": "spring.rsocket.server.ssl.certificate",
       "description": "Path to a PEM-encoded SSL certificate file."
     },

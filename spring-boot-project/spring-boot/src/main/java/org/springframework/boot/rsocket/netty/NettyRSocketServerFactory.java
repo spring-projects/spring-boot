@@ -39,9 +39,12 @@ import org.springframework.boot.rsocket.server.ConfigurableRSocketServerFactory;
 import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.web.embedded.netty.SslServerCustomizer;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
-import org.springframework.boot.web.server.SslStoreProviderFactory;
+import org.springframework.boot.web.server.WebServerSslBundle;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.unit.DataSize;
@@ -55,6 +58,7 @@ import org.springframework.util.unit.DataSize;
  * @author Scott Frederick
  * @since 2.2.0
  */
+@SuppressWarnings("removal")
 public class NettyRSocketServerFactory implements RSocketServerFactory, ConfigurableRSocketServerFactory {
 
 	private int port = 9898;
@@ -74,6 +78,8 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	private Ssl ssl;
 
 	private SslStoreProvider sslStoreProvider;
+
+	private SslBundles sslBundles;
 
 	@Override
 	public void setPort(int port) {
@@ -103,6 +109,11 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	@Override
 	public void setSslStoreProvider(SslStoreProvider sslStoreProvider) {
 		this.sslStoreProvider = sslStoreProvider;
+	}
+
+	@Override
+	public void setSslBundles(SslBundles sslBundles) {
+		this.sslBundles = sslBundles;
 	}
 
 	/**
@@ -172,17 +183,14 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 		if (this.resourceFactory != null) {
 			httpServer = httpServer.runOn(this.resourceFactory.getLoopResources());
 		}
-		if (this.ssl != null && this.ssl.isEnabled()) {
+		if (Ssl.isEnabled(this.ssl)) {
 			httpServer = customizeSslConfiguration(httpServer);
 		}
 		return WebsocketServerTransport.create(httpServer.bindAddress(this::getListenAddress));
 	}
 
-	@SuppressWarnings("deprecation")
 	private HttpServer customizeSslConfiguration(HttpServer httpServer) {
-		org.springframework.boot.web.embedded.netty.SslServerCustomizer sslServerCustomizer = new org.springframework.boot.web.embedded.netty.SslServerCustomizer(
-				this.ssl, null, getOrCreateSslStoreProvider());
-		return sslServerCustomizer.apply(httpServer);
+		return new SslServerCustomizer(null, this.ssl.getClientAuth(), getSslBundle()).apply(httpServer);
 	}
 
 	private ServerTransport<CloseableChannel> createTcpTransport() {
@@ -190,19 +198,15 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 		if (this.resourceFactory != null) {
 			tcpServer = tcpServer.runOn(this.resourceFactory.getLoopResources());
 		}
-		if (this.ssl != null && this.ssl.isEnabled()) {
-			TcpSslServerCustomizer sslServerCustomizer = new TcpSslServerCustomizer(this.ssl,
-					getOrCreateSslStoreProvider());
-			tcpServer = sslServerCustomizer.apply(tcpServer);
+		if (Ssl.isEnabled(this.ssl)) {
+			tcpServer = new TcpSslServerCustomizer(this.ssl.getClientAuth(), getSslBundle()).apply(tcpServer);
 		}
 		return TcpServerTransport.create(tcpServer.bindAddress(this::getListenAddress));
 	}
 
-	private SslStoreProvider getOrCreateSslStoreProvider() {
-		if (this.sslStoreProvider != null) {
-			return this.sslStoreProvider;
-		}
-		return SslStoreProviderFactory.from(this.ssl);
+	@SuppressWarnings("deprecation")
+	private SslBundle getSslBundle() {
+		return WebServerSslBundle.get(this.ssl, this.sslBundles, this.sslStoreProvider);
 	}
 
 	private InetSocketAddress getListenAddress() {
@@ -212,12 +216,11 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 		return new InetSocketAddress(this.port);
 	}
 
-	@SuppressWarnings("deprecation")
 	private static final class TcpSslServerCustomizer
 			extends org.springframework.boot.web.embedded.netty.SslServerCustomizer {
 
-		private TcpSslServerCustomizer(Ssl ssl, SslStoreProvider sslStoreProvider) {
-			super(ssl, null, sslStoreProvider);
+		private TcpSslServerCustomizer(Ssl.ClientAuth clientAuth, SslBundle sslBundle) {
+			super(null, clientAuth, sslBundle);
 		}
 
 		private TcpServer apply(TcpServer server) {
