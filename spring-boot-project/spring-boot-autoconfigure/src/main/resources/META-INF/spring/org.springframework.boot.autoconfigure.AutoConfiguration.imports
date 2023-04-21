@@ -116,6 +116,7 @@ org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.Reactiv
 org.springframework.boot.autoconfigure.security.oauth2.server.servlet.OAuth2AuthorizationServerAutoConfiguration
 org.springframework.boot.autoconfigure.security.oauth2.server.servlet.OAuth2AuthorizationServerJwtAutoConfiguration
 org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration
+org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration
 org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration
 org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration

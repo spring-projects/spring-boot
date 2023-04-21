@@ -14,28 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.server;
+package org.springframework.boot.ssl;
 
 /**
- * Creates an {@link SslStoreProvider} based on SSL configuration properties.
+ * Interface that can be used to register an {@link SslBundle} for a given name.
  *
  * @author Scott Frederick
  * @since 3.1.0
  */
-public final class SslStoreProviderFactory {
-
-	private SslStoreProviderFactory() {
-	}
+public interface SslBundleRegistry {
 
 	/**
-	 * Create an {@link SslStoreProvider} if the appropriate SSL properties are
-	 * configured.
-	 * @param ssl the SSL properties
-	 * @return an {@code SslStoreProvider} or {@code null}
+	 * Register a named {@link SslBundle}.
+	 * @param name the bundle name
+	 * @param bundle the bundle
 	 */
-	public static SslStoreProvider from(Ssl ssl) {
-		SslStoreProvider sslStoreProvider = CertificateFileSslStoreProvider.from(ssl);
-		return ((sslStoreProvider != null) ? sslStoreProvider : JavaKeyStoreSslStoreProvider.from(ssl));
-	}
+	void registerBundle(String name, SslBundle bundle);
 
 }

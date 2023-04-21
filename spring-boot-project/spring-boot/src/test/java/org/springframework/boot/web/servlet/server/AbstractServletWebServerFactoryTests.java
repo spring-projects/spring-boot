@@ -111,6 +111,13 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.mockito.InOrder;
 
+import org.springframework.boot.ssl.DefaultSslBundleRegistry;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslStoreBundle;
+import org.springframework.boot.ssl.jks.JksSslStoreBundle;
+import org.springframework.boot.ssl.jks.JksSslStoreDetails;
+import org.springframework.boot.ssl.pem.PemSslStoreBundle;
+import org.springframework.boot.ssl.pem.PemSslStoreDetails;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.boot.system.ApplicationTemp;
 import org.springframework.boot.testsupport.system.CapturedOutput;
@@ -170,6 +177,7 @@ import static org.mockito.Mockito.mock;
  * @author Raja Kolli
  * @author Scott Frederick
  */
+@SuppressWarnings("removal")
 @ExtendWith(OutputCaptureExtension.class)
 @DirtiesUrlFactories
 public abstract class AbstractServletWebServerFactoryTests {
@@ -473,7 +481,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	protected void assertThatSslWithInvalidAliasCallFails(ThrowingCallable call) {
-		assertThatThrownBy(call).hasStackTraceContaining("Keystore does not contain specified alias 'test-alias-404'");
+		assertThatThrownBy(call).hasStackTraceContaining("Keystore does not contain alias 'test-alias-404'");
 	}
 
 	@Test
@@ -558,6 +566,44 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	void pkcs12KeyStoreAndTrustStoreFromBundle() throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		addTestTxtFile(factory);
+		factory.setSsl(Ssl.forBundle("test"));
+		factory.setSslBundles(
+				new DefaultSslBundleRegistry("test", createJksSslBundle("classpath:test.p12", "classpath:test.p12")));
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		KeyStore keyStore = KeyStore.getInstance("pkcs12");
+		loadStore(keyStore, new FileSystemResource("src/test/resources/test.p12"));
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
+					.loadKeyMaterial(keyStore, "secret".toCharArray())
+					.build());
+		HttpComponentsClientHttpRequestFactory requestFactory = createHttpComponentsRequestFactory(socketFactory);
+		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory)).isEqualTo("test");
+	}
+
+	@Test
+	void pemKeyStoreAndTrustStoreFromBundle() throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		addTestTxtFile(factory);
+		factory.setSsl(Ssl.forBundle("test"));
+		factory.setSslBundles(new DefaultSslBundleRegistry("test",
+				createPemSslBundle("classpath:test-cert.pem", "classpath:test-key.pem")));
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		KeyStore keyStore = KeyStore.getInstance("pkcs12");
+		loadStore(keyStore, new FileSystemResource("src/test/resources/test.p12"));
+		SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(
+				new SSLContextBuilder().loadTrustMaterial(null, new TrustSelfSignedStrategy())
+					.loadKeyMaterial(keyStore, "secret".toCharArray())
+					.build());
+		HttpComponentsClientHttpRequestFactory requestFactory = createHttpComponentsRequestFactory(socketFactory);
+		assertThat(getResponse(getLocalUrl("https", "/test.txt"), requestFactory)).isEqualTo("test");
+	}
+
+	@Test
 	void sslNeedsClientAuthenticationSucceedsWithClientCertificate() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		factory.setRegisterDefaultServlet(true);
@@ -621,6 +667,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	@Deprecated(since = "3.1.0", forRemoval = true)
 	void sslWithCustomSslStoreProvider() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		addTestTxtFile(factory);
@@ -713,6 +760,24 @@ public abstract class AbstractServletWebServerFactoryTests {
 		ssl.setCertificatePrivateKey(privateKey);
 		ssl.setTrustCertificate(cert);
 		return ssl;
+	}
+
+	private SslBundle createJksSslBundle(String keyStore, String trustStore) {
+		JksSslStoreDetails keyStoreDetails = getJksStoreDetails(keyStore);
+		JksSslStoreDetails trustStoreDetails = getJksStoreDetails(trustStore);
+		SslStoreBundle stores = new JksSslStoreBundle(keyStoreDetails, trustStoreDetails);
+		return SslBundle.of(stores);
+	}
+
+	private JksSslStoreDetails getJksStoreDetails(String location) {
+		return new JksSslStoreDetails(getStoreType(location), null, location, "secret");
+	}
+
+	private SslBundle createPemSslBundle(String cert, String privateKey) {
+		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate(cert).withPrivateKey(privateKey);
+		PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate(cert);
+		SslStoreBundle stores = new PemSslStoreBundle(keyStoreDetails, trustStoreDetails);
+		return SslBundle.of(stores);
 	}
 
 	protected void testRestrictedSSLProtocolsAndCipherSuites(String[] protocols, String[] ciphers) throws Exception {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import org.eclipse.jetty.util.thread.ThreadPool;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.Shutdown;
+import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
@@ -179,7 +180,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		contextHandler.addServlet(servletHolder, "/");
 		server.setHandler(addHandlerWrappers(contextHandler));
 		JettyReactiveWebServerFactory.logger.info("Server initialized with port: " + port);
-		if (getSsl() != null && getSsl().isEnabled()) {
+		if (Ssl.isEnabled(getSsl())) {
 			customizeSsl(server, address);
 		}
 		for (JettyServerCustomizer customizer : getServerCustomizers()) {
@@ -236,7 +237,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	private void customizeSsl(Server server, InetSocketAddress address) {
-		new SslServerCustomizer(address, getSsl(), getOrCreateSslStoreProvider(), getHttp2()).customize(server);
+		new SslServerCustomizer(getHttp2(), address, getSsl().getClientAuth(), getSslBundle()).customize(server);
 	}
 
 }

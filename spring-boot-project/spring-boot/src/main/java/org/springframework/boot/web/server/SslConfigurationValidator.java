@@ -17,33 +17,25 @@
 package org.springframework.boot.web.server;
 
 import java.security.KeyStore;
-import java.security.KeyStoreException;
 
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
+import org.springframework.boot.ssl.SslBundleKey;
 
 /**
  * Provides utilities around SSL.
  *
  * @author Chris Bono
  * @since 2.1.13
+ * @deprecated since 3.1.0 for removal in 3.3.0 in favor of
+ * {@link SslBundleKey#assertContainsAlias(KeyStore)}
  */
+@Deprecated(since = "3.1.0", forRemoval = true)
 public final class SslConfigurationValidator {
 
 	private SslConfigurationValidator() {
 	}
 
 	public static void validateKeyAlias(KeyStore keyStore, String keyAlias) {
-		if (StringUtils.hasLength(keyAlias)) {
-			try {
-				Assert.state(keyStore.containsAlias(keyAlias),
-						() -> String.format("Keystore does not contain specified alias '%s'", keyAlias));
-			}
-			catch (KeyStoreException ex) {
-				throw new IllegalStateException(
-						String.format("Could not determine if keystore contains alias '%s'", keyAlias), ex);
-			}
-		}
+		SslBundleKey.of(null, keyAlias).assertContainsAlias(keyStore);
 	}
 
 }

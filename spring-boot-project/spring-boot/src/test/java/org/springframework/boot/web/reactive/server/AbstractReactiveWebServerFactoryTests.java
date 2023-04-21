@@ -212,7 +212,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	protected void assertThatSslWithInvalidAliasCallFails(ThrowingCallable call) {
-		assertThatThrownBy(call).hasStackTraceContaining("Keystore does not contain specified alias 'test-alias-404'");
+		assertThatThrownBy(call).hasStackTraceContaining("Keystore does not contain alias 'test-alias-404'");
 	}
 
 	protected ReactorClientHttpConnector buildTrustAllSslConnector() {
@@ -402,7 +402,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	@Test
 	void whenSslIsEnabledAndNoKeyStoreIsConfiguredThenServerFailsToStart() {
 		assertThatIllegalStateException().isThrownBy(() -> testBasicSslWithKeyStore(null, null))
-			.withMessageContaining("KeyStore location must not be empty or null");
+			.withMessageContaining("SSL is enabled but no trust material is configured");
 	}
 
 	@Test
