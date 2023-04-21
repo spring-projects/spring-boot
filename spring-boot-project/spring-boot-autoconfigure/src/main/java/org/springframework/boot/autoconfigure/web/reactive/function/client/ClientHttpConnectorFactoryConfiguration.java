@@ -18,10 +18,7 @@ package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
 import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 import org.apache.hc.core5.http.nio.AsyncRequestProducer;
-import org.eclipse.jetty.client.HttpClient;
-import org.eclipse.jetty.client.http.HttpClientTransportOverHTTP;
-import org.eclipse.jetty.io.ClientConnector;
-import org.eclipse.jetty.util.ssl.SslContextFactory;
+import org.apache.hc.core5.reactive.ReactiveResponseConsumer;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -30,13 +27,7 @@ import org.springframework.boot.autoconfigure.reactor.netty.ReactorNettyConfigur
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.http.client.reactive.ClientHttpConnector;
-import org.springframework.http.client.reactive.HttpComponentsClientHttpConnector;
-import org.springframework.http.client.reactive.JdkClientHttpConnector;
-import org.springframework.http.client.reactive.JettyClientHttpConnector;
 import org.springframework.http.client.reactive.JettyResourceFactory;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 
 /**
@@ -47,30 +38,26 @@ import org.springframework.http.client.reactive.ReactorResourceFactory;
  *
  * @author Brian Clozel
  */
-@Configuration(proxyBeanMethods = false)
-class ClientHttpConnectorConfiguration {
+class ClientHttpConnectorFactoryConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(reactor.netty.http.client.HttpClient.class)
-	@ConditionalOnMissingBean(ClientHttpConnector.class)
+	@ConditionalOnMissingBean(ClientHttpConnectorFactory.class)
 	@Import(ReactorNettyConfigurations.ReactorResourceFactoryConfiguration.class)
 	static class ReactorNetty {
 
 		@Bean
-		@Lazy
-		ReactorClientHttpConnector reactorClientHttpConnector(ReactorResourceFactory reactorResourceFactory,
+		ReactorClientHttpConnectorFactory reactorClientHttpConnectorFactory(
+				ReactorResourceFactory reactorResourceFactory,
 				ObjectProvider<ReactorNettyHttpClientMapper> mapperProvider) {
-			ReactorNettyHttpClientMapper mapper = mapperProvider.orderedStream()
-				.reduce((before, after) -> (client) -> after.configure(before.configure(client)))
-				.orElse((client) -> client);
-			return new ReactorClientHttpConnector(reactorResourceFactory, mapper::configure);
+			return new ReactorClientHttpConnectorFactory(reactorResourceFactory, mapperProvider::orderedStream);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(org.eclipse.jetty.reactive.client.ReactiveRequest.class)
-	@ConditionalOnMissingBean(ClientHttpConnector.class)
+	@ConditionalOnMissingBean(ClientHttpConnectorFactory.class)
 	static class JettyClient {
 
 		@Bean
@@ -80,40 +67,32 @@ class ClientHttpConnectorConfiguration {
 		}
 
 		@Bean
-		@Lazy
-		JettyClientHttpConnector jettyClientHttpConnector(JettyResourceFactory jettyResourceFactory) {
-			SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
-			ClientConnector connector = new ClientConnector();
-			connector.setSslContextFactory(sslContextFactory);
-			HttpClientTransportOverHTTP transport = new HttpClientTransportOverHTTP(connector);
-			HttpClient httpClient = new HttpClient(transport);
-			return new JettyClientHttpConnector(httpClient, jettyResourceFactory);
+		JettyClientHttpConnectorFactory jettyClientHttpConnectorFactory(JettyResourceFactory jettyResourceFactory) {
+			return new JettyClientHttpConnectorFactory(jettyResourceFactory);
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ HttpAsyncClients.class, AsyncRequestProducer.class })
-	@ConditionalOnMissingBean(ClientHttpConnector.class)
+	@ConditionalOnClass({ HttpAsyncClients.class, AsyncRequestProducer.class, ReactiveResponseConsumer.class })
+	@ConditionalOnMissingBean(ClientHttpConnectorFactory.class)
 	static class HttpClient5 {
 
 		@Bean
-		@Lazy
-		HttpComponentsClientHttpConnector httpComponentsClientHttpConnector() {
-			return new HttpComponentsClientHttpConnector();
+		HttpComponentsClientHttpConnectorFactory httpComponentsClientHttpConnectorFactory() {
+			return new HttpComponentsClientHttpConnectorFactory();
 		}
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(java.net.http.HttpClient.class)
-	@ConditionalOnMissingBean(ClientHttpConnector.class)
+	@ConditionalOnMissingBean(ClientHttpConnectorFactory.class)
 	static class JdkClient {
 
 		@Bean
-		@Lazy
-		JdkClientHttpConnector jdkClientHttpConnector() {
-			return new JdkClientHttpConnector();
+		JdkClientHttpConnectorFactory jdkClientHttpConnectorFactory() {
+			return new JdkClientHttpConnectorFactory();
 		}
 
 	}

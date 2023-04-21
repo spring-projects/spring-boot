@@ -90,3 +90,16 @@ To make an application-wide, additive customization to all `WebClient.Builder` i
 
 Finally, you can fall back to the original API and use `WebClient.create()`.
 In that case, no auto-configuration or `WebClientCustomizer` is applied.
+
+
+
+[[io.rest-client.webclient.ssl]]
+==== WebClient SSL Support
+If you need custom SSL configuration on the `ClientHttpConnector` used by the `WebClient`, you can inject a `WebClientSsl` instance that can be used with the builder's `apply` method.
+
+The `WebClientSsl` interface provides access to any <<features#features.ssl.bundles,SSL bundles>> that you have defined in your `application.properties` or `application.yaml` file.
+
+The following code shows a typical example:
+
+include::code:MyService[]
+

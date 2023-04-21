@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.http.codec.CodecsAutoConfiguration;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.function.client.WebClientCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -53,6 +54,14 @@ public class WebClientAutoConfiguration {
 		WebClient.Builder builder = WebClient.builder();
 		customizerProvider.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(WebClientSsl.class)
+	@ConditionalOnBean(SslBundles.class)
+	AutoConfiguredWebClientSsl webClientSsl(ClientHttpConnectorFactory<?> clientHttpConnectorFactory,
+			SslBundles sslBundles) {
+		return new AutoConfiguredWebClientSsl(clientHttpConnectorFactory, sslBundles);
 	}
 
 	@Configuration(proxyBeanMethods = false)
