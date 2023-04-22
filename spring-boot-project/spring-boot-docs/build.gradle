@@ -49,6 +49,7 @@ dependencies {
 	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
 	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-devtools"))
+	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-docker-compose"))
 
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "autoConfigurationMetadata"))
 	autoConfiguration(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "autoConfigurationMetadata"))
