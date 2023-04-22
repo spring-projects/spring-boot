@@ -25,4 +25,5 @@ org.springframework.boot.testcontainers.service.connection.r2dbc.MySqlR2dbcConta
 org.springframework.boot.testcontainers.service.connection.r2dbc.OracleR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.PostgresR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.redis.RedisContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.redpanda.RedpandaContainerConnectionDetailsFactory
+org.springframework.boot.testcontainers.service.connection.redpanda.RedpandaContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.zipkin.ZipkinContainerConnectionDetailsFactory
