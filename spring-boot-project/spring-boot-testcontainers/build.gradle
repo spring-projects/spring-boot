@@ -32,11 +32,12 @@ dependencies {
 	optional("org.testcontainers:redpanda")
 	optional("org.testcontainers:r2dbc")
 
-	testImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("io.micrometer:micrometer-registry-otlp")
-	testImplementation("io.rest-assured:rest-assured")
+	testImplementation("io.rest-assured:rest-assured") {
+		exclude group: "commons-logging", module: "commons-logging"
+	}
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.influxdb:influxdb-java")
