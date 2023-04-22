@@ -250,17 +250,23 @@ If such test needs access to an `MBeanServer`, consider marking it dirty as well
 
 include::code:MyJmxTests[]
 
+
+
 [[features.testing.spring-boot-applications.metrics]]
 ==== Using Metrics
 Regardless of your classpath, meter registries, except the in-memory backed, are not auto-configured when using `@SpringBootTest`.
 
 If you need to export metrics to a different backend as part of an integration test, annotate it with `@AutoConfigureObservability`.
 
+
+
 [[features.testing.spring-boot-applications.tracing]]
 ==== Using Tracing
 Regardless of your classpath, tracing is not auto-configured when using `@SpringBootTest`.
 
 If you need tracing as part of an integration test, annotate it with `@AutoConfigureObservability`.
+
+
 
 [[features.testing.spring-boot-applications.mocking-beans]]
 ==== Mocking and Spying Beans
@@ -280,7 +286,6 @@ If your test uses one of Spring Boot's test annotations (such as `@SpringBootTes
 To use this feature with a different arrangement, listeners must be explicitly added, as shown in the following example:
 
 include::code:listener/MyTests[]
-
 ====
 
 The following example replaces an existing `RemoteService` bean with a mock implementation:
@@ -491,6 +496,7 @@ When using a random or defined port, a live server is configured and an `HttpGra
 When a MOCK environment is configured, you can also request an `HttpGraphQlTester` bean by annotating your test class with `@AutoConfigureHttpGraphQlTester`:
 
 include::code:GraphQlIntegrationTests[]
+
 
 
 [[features.testing.spring-boot-applications.autoconfigured-spring-data-cassandra]]
