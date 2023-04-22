@@ -1,7 +1,0 @@
-[[documentation.container-images]]
-== Container Images
-Spring Boot provides first-class support for building efficient container images. You can read more about it here:
-
-* *Efficient Container Images:* <<container-images#container-images.efficient-images, Tips to optimize container images such as Docker images>>
-* *Dockerfiles:* <<container-images#container-images.dockerfiles, Building container images using dockerfiles>>
-* *Cloud Native Buildpacks:* <<container-images#container-images.buildpacks, Support for Cloud Native Buildpacks with Maven and Gradle>>

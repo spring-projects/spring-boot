@@ -1,4 +1,0 @@
-# AutoConfigureDataLdap auto-configuration imports
-org.springframework.boot.autoconfigure.data.ldap.LdapRepositoriesAutoConfiguration
-org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration
-org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapAutoConfiguration

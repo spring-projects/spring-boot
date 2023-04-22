@@ -1,3 +1,0 @@
-beans {
-	foo String, "World"
-}

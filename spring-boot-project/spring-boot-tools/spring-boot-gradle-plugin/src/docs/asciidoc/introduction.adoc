@@ -1,7 +1,0 @@
-[[introduction]]
-= Introduction
-The Spring Boot Gradle Plugin provides Spring Boot support in https://gradle.org[Gradle].
-It allows you to package executable jar or war archives, run Spring Boot applications, and use the dependency management provided by `spring-boot-dependencies`.
-Spring Boot's Gradle plugin requires Gradle 7.x (7.5 or later) or 8.x and can be used with Gradle's {gradle-userguide}/configuration_cache.html[configuration cache].
-
-In addition to this user guide, {api-documentation}[API documentation] is also available.
