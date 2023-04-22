@@ -12,6 +12,7 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 	api("org.testcontainers:testcontainers")
 
+	optional(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	optional("org.springframework:spring-test")
 	optional("org.springframework.data:spring-data-mongodb")
 	optional("org.springframework.data:spring-data-neo4j")
