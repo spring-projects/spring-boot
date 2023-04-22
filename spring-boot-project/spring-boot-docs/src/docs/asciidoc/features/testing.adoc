@@ -978,6 +978,9 @@ The following service connection factories are provided in the `spring-boot-test
 
 | `RedisConnectionDetails`
 | Containers named "redis"
+
+| `ZipkinConnectionDetails`
+| Containers named "openzipkin/zipkin"
 |===
 
 [TIP]
