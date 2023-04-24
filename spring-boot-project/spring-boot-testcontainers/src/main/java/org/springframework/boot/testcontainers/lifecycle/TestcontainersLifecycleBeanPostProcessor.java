@@ -20,16 +20,16 @@ import org.testcontainers.lifecycle.Startable;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
 
 /**
  * {@link BeanPostProcessor} to manage the lifecycle of {@link Startable startable
- * container}.
+ * containers}.
  *
  * @author Phillip Webb
+ * @author Stephane Nicoll
  * @see TestcontainersLifecycleApplicationContextInitializer
  */
-class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPostProcessor {
+class TestcontainersLifecycleBeanPostProcessor implements BeanPostProcessor {
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
@@ -37,16 +37,6 @@ class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPo
 			startable.start();
 		}
 		return bean;
-	}
-
-	@Override
-	public void postProcessBeforeDestruction(Object bean, String beanName) throws BeansException {
-		// Startable extends AutoCloseable will always be closed by context
-	}
-
-	@Override
-	public boolean requiresDestruction(Object bean) {
-		return bean instanceof Startable;
 	}
 
 }
