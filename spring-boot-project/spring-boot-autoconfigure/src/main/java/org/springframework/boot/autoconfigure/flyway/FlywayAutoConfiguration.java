@@ -188,8 +188,7 @@ public class FlywayAutoConfiguration {
 
 		private void applyConnectionDetails(FlywayConnectionDetails connectionDetails, DataSourceBuilder<?> builder) {
 			builder.username(connectionDetails.getUsername());
-			String password = connectionDetails.getPassword();
-			builder.password((password != null) ? password : "");
+			builder.password(connectionDetails.getPassword());
 			String driverClassName = connectionDetails.getDriverClassName();
 			if (StringUtils.hasText(driverClassName)) {
 				builder.driverClassName(driverClassName);
