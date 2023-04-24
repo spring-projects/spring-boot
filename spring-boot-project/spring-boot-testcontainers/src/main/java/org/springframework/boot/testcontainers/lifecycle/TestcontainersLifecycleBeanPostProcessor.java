@@ -41,9 +41,7 @@ class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPo
 
 	@Override
 	public void postProcessBeforeDestruction(Object bean, String beanName) throws BeansException {
-		if (bean instanceof Startable startable) {
-			startable.stop();
-		}
+		// Startable extends AutoCloseable will always be closed by context
 	}
 
 	@Override
