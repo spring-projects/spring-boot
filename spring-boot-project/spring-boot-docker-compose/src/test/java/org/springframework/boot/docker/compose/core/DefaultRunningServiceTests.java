@@ -77,13 +77,13 @@ class DefaultRunningServiceTests {
 
 	@Test
 	void imageReturnsImageFromPsResponse() {
-		assertThat(this.runningService.image()).hasToString("redis");
+		assertThat(this.runningService.image()).hasToString("docker.io/library/redis");
 	}
 
 	@Test // gh-34992
 	void imageWhenUsingEarlierDockerVersionReturnsImageFromInspectResult() {
 		DefaultRunningService runningService = createRunningService(false);
-		assertThat(runningService.image()).hasToString("redis");
+		assertThat(runningService.image()).hasToString("docker.io/library/redis");
 
 	}
 

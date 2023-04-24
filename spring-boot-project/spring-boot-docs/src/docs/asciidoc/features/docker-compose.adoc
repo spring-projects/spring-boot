@@ -56,7 +56,7 @@ The following service connections are currently supported:
 | Containers named "redis"
 
 | `ZipkinConnectionDetails`
-| Containers named "zipkin".
+| Containers named "openzipkin/zipkin".
 |===
 
 

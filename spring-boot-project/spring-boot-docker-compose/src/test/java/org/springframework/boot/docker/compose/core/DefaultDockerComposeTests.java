@@ -133,7 +133,7 @@ class DefaultDockerComposeTests {
 		assertThat(runningServices).hasSize(1);
 		RunningService runningService = runningServices.get(0);
 		assertThat(runningService.name()).isEqualTo("name");
-		assertThat(runningService.image()).hasToString("redis");
+		assertThat(runningService.image()).hasToString("docker.io/library/redis");
 		assertThat(runningService.host()).isEqualTo(HOST);
 		assertThat(runningService.ports().getAll()).isEmpty();
 		assertThat(runningService.env()).containsExactly(entry("a", "b"));
