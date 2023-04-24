@@ -47,7 +47,7 @@ The following service connections are currently supported:
 | Containers named "mongo"
 
 | `R2dbcConnectionDetails`
-| Containers named "mariadb", "mysql" or "postgres"
+| Containers named "mariadb", "mssql/server", "mysql" or "postgres"
 
 | `RabbitConnectionDetails`
 | Containers named "rabbitmq"
