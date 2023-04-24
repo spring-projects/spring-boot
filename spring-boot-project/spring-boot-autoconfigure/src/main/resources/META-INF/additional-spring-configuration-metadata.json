@@ -543,6 +543,14 @@
       "defaultValue": "2s"
     },
     {
+      "name": "spring.cassandra.ssl",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.cassandra.ssl.enabled",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.couchbase.bootstrap-hosts",
       "type": "java.util.List<java.lang.String>",
       "description": "Couchbase nodes (host or IP address) to bootstrap from.",
@@ -905,7 +913,7 @@
       "name": "spring.data.cassandra.ssl",
       "type": "java.lang.Boolean",
       "deprecation": {
-        "replacement": "spring.cassandra.ssl",
+        "replacement": "spring.cassandra.ssl.enabled",
         "level": "error"
       }
     },
