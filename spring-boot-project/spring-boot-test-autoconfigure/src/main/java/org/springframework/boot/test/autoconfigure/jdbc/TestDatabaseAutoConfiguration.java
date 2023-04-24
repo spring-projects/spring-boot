@@ -38,6 +38,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.context.annotation.Bean;
@@ -56,6 +57,7 @@ import org.springframework.util.ObjectUtils;
  * Auto-configuration for a test database.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  * @since 1.4.0
  * @see AutoConfigureTestDatabase
  */
@@ -97,6 +99,11 @@ public class TestDatabaseAutoConfiguration {
 		}
 
 		private void process(BeanDefinitionRegistry registry, ConfigurableListableBeanFactory beanFactory) {
+			if (hasNonDefaultJdbcConnectionDetails(beanFactory)) {
+				logger.info(
+						"Skipping replace DataSource bean with embedded version due to non-default JdbcConnectionDetails exists, typical registered by @ServiceConnection");
+				return;
+			}
 			BeanDefinitionHolder holder = getDataSourceBeanDefinition(beanFactory);
 			if (holder != null) {
 				String beanName = holder.getBeanName();
@@ -133,6 +140,20 @@ public class TestDatabaseAutoConfiguration {
 			}
 			logger.warn("No primary DataSource found, embedded version will not be used");
 			return null;
+		}
+
+		private boolean hasNonDefaultJdbcConnectionDetails(ConfigurableListableBeanFactory beanFactory) {
+			String[] beanNames = beanFactory.getBeanNamesForType(JdbcConnectionDetails.class);
+			if (beanNames.length > 1) {
+				return true;
+			}
+			if (beanNames.length == 1) {
+				BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanNames[0]);
+				String factoryBeanName = beanDefinition.getFactoryBeanName();
+				return factoryBeanName == null
+						|| !factoryBeanName.startsWith(DataSourceAutoConfiguration.class.getName());
+			}
+			return false;
 		}
 
 	}
