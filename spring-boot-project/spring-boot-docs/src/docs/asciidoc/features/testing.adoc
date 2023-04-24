@@ -1016,7 +1016,7 @@ The above configuration allows Neo4j-related beans in the application to communi
 ==== Using Testcontainers at Development Time
 As well as using Testcontainers for integration testing, it's also possible to use them at development time.
 This approach allows developers to quickly start containers for the services that the application depends on, removing the need to manually provision things like database servers.
-Using Testcontaners in this way provides functionality similar to Docker Compose, except that your container configuration is in Java rather than YAML.
+Using Testcontainers in this way provides functionality similar to Docker Compose, except that your container configuration is in Java rather than YAML.
 
 To use Testcontainers at development time you need to launch your application using your "`test`" classpath rather than "`main`".
 This will allow you to access all declared test dependencies and give you a natural place to write your test configuration.
