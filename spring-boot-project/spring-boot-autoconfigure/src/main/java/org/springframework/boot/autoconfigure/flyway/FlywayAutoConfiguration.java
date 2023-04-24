@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 
 import javax.sql.DataSource;
 
@@ -85,7 +84,7 @@ import org.springframework.util.StringUtils;
  * @author Dominic Gunn
  * @author Dan Zheng
  * @author András Deák
- * @author Semyon Danilov
+ * @author Semyon Danilo
  * @author Chris Bono
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -126,7 +125,7 @@ public class FlywayAutoConfiguration {
 		@ConditionalOnMissingBean(FlywayConnectionDetails.class)
 		PropertiesFlywayConnectionDetails flywayConnectionDetails(FlywayProperties properties,
 				ObjectProvider<JdbcConnectionDetails> jdbcConnectionDetails) {
-			return new PropertiesFlywayConnectionDetails(properties, jdbcConnectionDetails.getIfAvailable());
+			return new PropertiesFlywayConnectionDetails(properties);
 		}
 
 		@Deprecated(since = "3.0.0", forRemoval = true)
@@ -134,14 +133,15 @@ public class FlywayAutoConfiguration {
 				ObjectProvider<DataSource> dataSource, ObjectProvider<DataSource> flywayDataSource,
 				ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers,
 				ObjectProvider<JavaMigration> javaMigrations, ObjectProvider<Callback> callbacks) {
-			return flyway(properties, new PropertiesFlywayConnectionDetails(properties, null), resourceLoader,
-					dataSource, flywayDataSource, fluentConfigurationCustomizers, javaMigrations, callbacks,
+			return flyway(properties, new PropertiesFlywayConnectionDetails(properties), resourceLoader, dataSource,
+					null, flywayDataSource, fluentConfigurationCustomizers, javaMigrations, callbacks,
 					new ResourceProviderCustomizer());
 		}
 
 		@Bean
 		Flyway flyway(FlywayProperties properties, FlywayConnectionDetails connectionDetails,
 				ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
+				ObjectProvider<JdbcConnectionDetails> jdbcConnectionDetails,
 				@FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
 				ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers,
 				ObjectProvider<JavaMigration> javaMigrations, ObjectProvider<Callback> callbacks,
@@ -412,46 +412,34 @@ public class FlywayAutoConfiguration {
 	}
 
 	/**
-	 * Adapts {@link FlywayProperties} to {@link FlywayConnectionDetails}, using
-	 * {@link JdbcConnectionDetails} as a fallback when Flyway-specific properties have
-	 * not be configured.
+	 * Adapts {@link FlywayProperties} to {@link FlywayConnectionDetails}.
 	 */
 	static final class PropertiesFlywayConnectionDetails implements FlywayConnectionDetails {
 
-		private final JdbcConnectionDetails fallback;
-
 		private final FlywayProperties properties;
 
-		PropertiesFlywayConnectionDetails(FlywayProperties properties, JdbcConnectionDetails fallback) {
-			this.fallback = fallback;
+		PropertiesFlywayConnectionDetails(FlywayProperties properties) {
 			this.properties = properties;
 		}
 
 		@Override
 		public String getUsername() {
-			return get(this.properties.getUser(), JdbcConnectionDetails::getUsername);
+			return this.properties.getUser();
 		}
 
 		@Override
 		public String getPassword() {
-			return get(this.properties.getPassword(), JdbcConnectionDetails::getPassword);
+			return this.properties.getPassword();
 		}
 
 		@Override
 		public String getJdbcUrl() {
-			return get(this.properties.getUrl(), JdbcConnectionDetails::getJdbcUrl);
+			return this.properties.getUrl();
 		}
 
 		@Override
 		public String getDriverClassName() {
-			return get(this.properties.getDriverClassName(), JdbcConnectionDetails::getDriverClassName);
-		}
-
-		private String get(String primary, Function<JdbcConnectionDetails, String> fallbackProperty) {
-			if (primary != null) {
-				return primary;
-			}
-			return (this.fallback != null) ? fallbackProperty.apply(this.fallback) : null;
+			return this.properties.getDriverClassName();
 		}
 
 	}

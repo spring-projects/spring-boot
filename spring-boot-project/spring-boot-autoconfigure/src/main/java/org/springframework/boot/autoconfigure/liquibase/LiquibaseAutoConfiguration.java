@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.liquibase;
 
-import java.util.function.Function;
-
 import javax.sql.DataSource;
 
 import liquibase.change.DatabaseChange;
@@ -33,8 +31,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.flyway.FlywayConnectionDetails;
-import org.springframework.boot.autoconfigure.flyway.FlywayProperties;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration.LiquibaseAutoConfigurationRuntimeHints;
@@ -93,7 +89,7 @@ public class LiquibaseAutoConfiguration {
 		@ConditionalOnMissingBean(LiquibaseConnectionDetails.class)
 		PropertiesLiquibaseConnectionDetails liquibaseConnectionDetails(LiquibaseProperties properties,
 				ObjectProvider<JdbcConnectionDetails> jdbcConnectionDetails) {
-			return new PropertiesLiquibaseConnectionDetails(properties, jdbcConnectionDetails.getIfAvailable());
+			return new PropertiesLiquibaseConnectionDetails(properties);
 		}
 
 		@Bean
@@ -198,46 +194,35 @@ public class LiquibaseAutoConfiguration {
 	}
 
 	/**
-	 * Adapts {@link FlywayProperties} to {@link FlywayConnectionDetails}, using
-	 * {@link JdbcConnectionDetails} as a fallback when Flyway-specific properties have
-	 * not be configured.
+	 * Adapts {@link LiquibaseProperties} to {@link LiquibaseConnectionDetails}.
 	 */
 	static final class PropertiesLiquibaseConnectionDetails implements LiquibaseConnectionDetails {
 
-		private final JdbcConnectionDetails fallback;
-
 		private final LiquibaseProperties properties;
 
-		PropertiesLiquibaseConnectionDetails(LiquibaseProperties properties, JdbcConnectionDetails fallback) {
-			this.fallback = fallback;
+		PropertiesLiquibaseConnectionDetails(LiquibaseProperties properties) {
 			this.properties = properties;
 		}
 
 		@Override
 		public String getUsername() {
-			return get(this.properties.getUser(), JdbcConnectionDetails::getUsername);
+			return this.properties.getUser();
 		}
 
 		@Override
 		public String getPassword() {
-			return get(this.properties.getPassword(), JdbcConnectionDetails::getPassword);
+			return this.properties.getPassword();
 		}
 
 		@Override
 		public String getJdbcUrl() {
-			return get(this.properties.getUrl(), JdbcConnectionDetails::getJdbcUrl);
+			return this.properties.getUrl();
 		}
 
 		@Override
 		public String getDriverClassName() {
-			return get(this.properties.getDriverClassName(), JdbcConnectionDetails::getDriverClassName);
-		}
-
-		private String get(String primary, Function<JdbcConnectionDetails, String> fallbackProperty) {
-			if (primary != null) {
-				return primary;
-			}
-			return (this.fallback != null) ? fallbackProperty.apply(this.fallback) : null;
+			String driverClassName = this.properties.getDriverClassName();
+			return (driverClassName != null) ? driverClassName : LiquibaseConnectionDetails.super.getDriverClassName();
 		}
 
 	}
