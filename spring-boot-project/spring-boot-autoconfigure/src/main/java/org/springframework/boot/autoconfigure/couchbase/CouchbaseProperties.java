@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.couchbase;
 import java.time.Duration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
 /**
@@ -177,18 +178,26 @@ public class CouchbaseProperties {
 			this.enabled = enabled;
 		}
 
+		@Deprecated(since = "3.1.0", forRemoval = true)
+		@DeprecatedConfigurationProperty(
+				reason = "SSL bundle support with spring.ssl.bundle and spring.couchbase.env.ssl.bundle should be used instead")
 		public String getKeyStore() {
 			return this.keyStore;
 		}
 
+		@Deprecated(since = "3.1.0", forRemoval = true)
 		public void setKeyStore(String keyStore) {
 			this.keyStore = keyStore;
 		}
 
+		@Deprecated(since = "3.1.0", forRemoval = true)
+		@DeprecatedConfigurationProperty(
+				reason = "SSL bundle support with spring.ssl.bundle and spring.couchbase.env.ssl.bundle should be used instead")
 		public String getKeyStorePassword() {
 			return this.keyStorePassword;
 		}
 
+		@Deprecated(since = "3.1.0", forRemoval = true)
 		public void setKeyStorePassword(String keyStorePassword) {
 			this.keyStorePassword = keyStorePassword;
 		}

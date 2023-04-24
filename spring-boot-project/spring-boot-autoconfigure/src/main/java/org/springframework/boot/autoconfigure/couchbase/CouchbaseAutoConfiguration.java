@@ -129,6 +129,7 @@ public class CouchbaseAutoConfiguration {
 			.trustManagerFactory(getTrustManagerFactory(this.properties.getEnv().getSsl(), sslBundles)));
 	}
 
+	@SuppressWarnings("removal")
 	private TrustManagerFactory getTrustManagerFactory(CouchbaseProperties.Ssl ssl, SslBundles sslBundles) {
 		if (ssl.getKeyStore() != null) {
 			return loadTrustManagerFactory(ssl);
@@ -140,6 +141,7 @@ public class CouchbaseAutoConfiguration {
 		throw new IllegalStateException("A key store or bundle must be configured when SSL is enabled");
 	}
 
+	@SuppressWarnings("removal")
 	private TrustManagerFactory loadTrustManagerFactory(CouchbaseProperties.Ssl ssl) {
 		String resource = ssl.getKeyStore();
 		try {
