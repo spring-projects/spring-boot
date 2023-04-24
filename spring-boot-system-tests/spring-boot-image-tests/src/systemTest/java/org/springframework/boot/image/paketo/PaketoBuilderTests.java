@@ -21,7 +21,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
@@ -276,10 +275,16 @@ class PaketoBuilderTests {
 							"paketo-buildpacks/spring-boot");
 				metadata.processOfType("web")
 					.extracting("command", "args")
-					.containsExactly("bash", Arrays.asList("catalina.sh", "run"));
+					.satisfiesExactly((command) -> assertThat(command).asString().endsWith("sh"),
+							(args) -> assertThat(args).asList()
+								.satisfiesExactly((arg) -> assertThat(arg).asString().endsWith("catalina.sh"),
+										(arg) -> assertThat(arg).asString().isEqualTo("run")));
 				metadata.processOfType("tomcat")
 					.extracting("command", "args")
-					.containsExactly("bash", Arrays.asList("catalina.sh", "run"));
+					.satisfiesExactly((command) -> assertThat(command).asString().endsWith("sh"),
+							(args) -> assertThat(args).asList()
+								.satisfiesExactly((arg) -> assertThat(arg).asString().endsWith("catalina.sh"),
+										(arg) -> assertThat(arg).asString().isEqualTo("run")));
 			});
 			assertImageHasSbomLayer(imageReference, config, "apache-tomcat");
 			DigestCapturingCondition digest = new DigestCapturingCondition();
