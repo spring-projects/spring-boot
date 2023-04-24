@@ -125,8 +125,14 @@ public class CouchbaseAutoConfiguration {
 	}
 
 	private void configureSsl(Builder builder, SslBundles sslBundles) {
-		builder.securityConfig((config) -> config.enableTls(true)
-			.trustManagerFactory(getTrustManagerFactory(this.properties.getEnv().getSsl(), sslBundles)));
+		builder.securityConfig((config) -> {
+			config.enableTls(true);
+			TrustManagerFactory trustManagerFactory = getTrustManagerFactory(this.properties.getEnv().getSsl(),
+					sslBundles);
+			if (trustManagerFactory != null) {
+				config.trustManagerFactory(trustManagerFactory);
+			}
+		});
 	}
 
 	@SuppressWarnings("removal")
@@ -138,7 +144,7 @@ public class CouchbaseAutoConfiguration {
 			SslBundle bundle = sslBundles.getBundle(ssl.getBundle());
 			return bundle.getManagers().getTrustManagerFactory();
 		}
-		throw new IllegalStateException("A key store or bundle must be configured when SSL is enabled");
+		return null;
 	}
 
 	@SuppressWarnings("removal")

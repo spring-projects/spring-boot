@@ -181,6 +181,15 @@ class CouchbaseAutoConfigurationTests {
 	}
 
 	@Test
+	void enableSsl() {
+		testClusterEnvironment((env) -> {
+			SecurityConfig securityConfig = env.securityConfig();
+			assertThat(securityConfig.tlsEnabled()).isTrue();
+			assertThat(securityConfig.trustManagerFactory()).isNull();
+		}, "spring.couchbase.env.ssl.enabled=true");
+	}
+
+	@Test
 	void enableSslWithKeyStore() {
 		testClusterEnvironment((env) -> {
 			SecurityConfig securityConfig = env.securityConfig();
