@@ -30,4 +30,5 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter")
 
 	testRuntimeOnly("com.microsoft.sqlserver:mssql-jdbc")
+	testRuntimeOnly("io.r2dbc:r2dbc-mssql")
 }

@@ -16,11 +16,14 @@
 
 package org.springframework.boot.docker.compose.service.connection.sqlserver;
 
+import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.r2dbc.core.DatabaseClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,12 +40,18 @@ class MsSqlServerR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests
 	}
 
 	@Test
-	void runCreatesConnectionDetails() {
+	void runCreatesConnectionDetailsThatCanBeUsedToAccessDatabase() {
 		R2dbcConnectionDetails connectionDetails = run(R2dbcConnectionDetails.class);
 		ConnectionFactoryOptions connectionFactoryOptions = connectionDetails.getConnectionFactoryOptions();
 		assertThat(connectionFactoryOptions.toString()).contains("driver=mssql", "password=REDACTED", "user=SA");
 		assertThat(connectionFactoryOptions.getRequiredValue(ConnectionFactoryOptions.PASSWORD))
 			.isEqualTo("verYs3cret");
+		Object result = DatabaseClient.create(ConnectionFactories.get(connectionFactoryOptions))
+			.sql(DatabaseDriver.SQLSERVER.getValidationQuery())
+			.map((row, metadata) -> row.get(0))
+			.first()
+			.block();
+		assertThat(result).isEqualTo(1);
 	}
 
 }
