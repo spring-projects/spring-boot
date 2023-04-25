@@ -23,7 +23,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 /**
  * {@link ApplicationContextInitializer} to manage the lifecycle of {@link Startable
- * startable container}.
+ * startable containers}.
  *
  * @author Phillip Webb
  * @since 3.1.0
