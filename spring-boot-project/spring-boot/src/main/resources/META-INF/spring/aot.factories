@@ -20,3 +20,6 @@ org.springframework.boot.jackson.JsonComponentModule.JsonComponentBeanFactoryIni
 org.springframework.beans.factory.aot.BeanRegistrationAotProcessor=\
 org.springframework.boot.context.properties.ConfigurationPropertiesBeanRegistrationAotProcessor,\
 org.springframework.boot.jackson.JsonMixinModuleEntriesBeanRegistrationAotProcessor
+
+org.springframework.beans.factory.aot.BeanRegistrationExcludeFilter=\
+org.springframework.boot.web.servlet.ServletComponentScanRegistrar.ServletComponentScanBeanRegistrationExcludeFilter
