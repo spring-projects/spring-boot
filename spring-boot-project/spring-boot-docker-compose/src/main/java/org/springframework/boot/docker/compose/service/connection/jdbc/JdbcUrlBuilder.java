@@ -48,17 +48,35 @@ public class JdbcUrlBuilder {
 	}
 
 	/**
+	 * Build a JDBC URL for the given {@link RunningService}.
+	 * @param service the running service
+	 * @return a new JDBC URL
+	 */
+	public String build(RunningService service) {
+		return build(service, null);
+	}
+
+	/**
 	 * Build a JDBC URL for the given {@link RunningService} and database.
 	 * @param service the running service
 	 * @param database the database to connect to
 	 * @return a new JDBC URL
 	 */
 	public String build(RunningService service, String database) {
+		return urlFor(service, database);
+	}
+
+	private String urlFor(RunningService service, String database) {
 		Assert.notNull(service, "Service must not be null");
-		Assert.notNull(database, "Database must not be null");
 		String parameters = getParameters(service);
-		return "jdbc:%s://%s:%d/%s%s".formatted(this.driverProtocol, service.host(),
-				service.ports().get(this.containerPort), database, parameters);
+		StringBuilder url = new StringBuilder("jdbc:%s://%s:%d".formatted(this.driverProtocol, service.host(),
+				service.ports().get(this.containerPort)));
+		if (StringUtils.hasLength(database)) {
+			url.append("/");
+			url.append(database);
+		}
+		url.append(parameters);
+		return url.toString();
 	}
 
 	private String getParameters(RunningService service) {
