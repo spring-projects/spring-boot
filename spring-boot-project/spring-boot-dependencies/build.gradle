@@ -1139,6 +1139,13 @@ bom {
 			]
 		}
 	}
+	library("R2DBC MSSQL", "1.0.0.RELEASE") {
+		group ("io.r2dbc") {
+			modules = [
+				"r2dbc-mssql"
+			]
+		}
+	}
 	library("R2DBC MySQL", "1.0.0") {
 		group("io.asyncer") {
 			modules = [
