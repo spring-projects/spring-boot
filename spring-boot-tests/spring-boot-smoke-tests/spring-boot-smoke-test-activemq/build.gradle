@@ -8,7 +8,6 @@ description = "Spring Boot Actuator ActiveMQ smoke test"
 dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-activemq"))
 
-	testImplementation("org.testcontainers:testcontainers")
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
