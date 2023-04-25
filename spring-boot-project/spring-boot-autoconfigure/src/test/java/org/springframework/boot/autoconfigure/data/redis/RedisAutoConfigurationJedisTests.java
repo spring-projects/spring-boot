@@ -239,7 +239,7 @@ class RedisAutoConfigurationJedisTests {
 	static class JedisConnectionFactoryCaptorConfiguration {
 
 		@Bean
-		JedisConnectionFactoryCaptor jedisConnectionFactoryCaptor() {
+		static JedisConnectionFactoryCaptor jedisConnectionFactoryCaptor() {
 			return new JedisConnectionFactoryCaptor();
 		}
 

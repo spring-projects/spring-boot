@@ -151,7 +151,7 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 	static class DataSourceSpyConfiguration {
 
 		@Bean
-		DataSourceSpyBeanPostProcessor dataSourceSpyBeanPostProcessor() {
+		static DataSourceSpyBeanPostProcessor dataSourceSpyBeanPostProcessor() {
 			return new DataSourceSpyBeanPostProcessor();
 		}
 

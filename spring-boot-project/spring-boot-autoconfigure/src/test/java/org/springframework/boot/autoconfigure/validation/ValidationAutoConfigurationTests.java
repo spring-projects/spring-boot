@@ -368,7 +368,7 @@ class ValidationAutoConfigurationTests {
 	static class SampleConfiguration {
 
 		@Bean
-		MethodValidationPostProcessor testMethodValidationPostProcessor() {
+		static MethodValidationPostProcessor testMethodValidationPostProcessor() {
 			return new MethodValidationPostProcessor();
 		}
 
