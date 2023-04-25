@@ -37,7 +37,7 @@ class ElasticsearchDockerComposeConnectionDetailsFactory
 
 	private static final int ELASTICSEARCH_PORT = 9200;
 
-	protected ElasticsearchDockerComposeConnectionDetailsFactory(String name) {
+	protected ElasticsearchDockerComposeConnectionDetailsFactory() {
 		super("elasticsearch");
 	}
 
