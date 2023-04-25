@@ -61,7 +61,6 @@ dependencies {
 	redisTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 	redisTestImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
 	redisTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
-	redisTestImplementation("org.testcontainers:testcontainers")
 	redisTestImplementation("org.testcontainers:junit-jupiter")
 }
 

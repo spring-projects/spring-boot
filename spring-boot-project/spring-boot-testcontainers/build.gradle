@@ -10,6 +10,7 @@ description = "Spring Boot Testcontainers Support"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-autoconfigure"))
+	api("org.testcontainers:testcontainers")
 
 	optional("org.springframework:spring-test")
 	optional("org.springframework.data:spring-data-mongodb")
