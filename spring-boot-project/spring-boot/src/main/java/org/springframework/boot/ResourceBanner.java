@@ -19,6 +19,7 @@ package org.springframework.boot;
 import java.io.PrintStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -65,7 +66,6 @@ public class ResourceBanner implements Banner {
 		try {
 			String banner = StreamUtils.copyToString(this.resource.getInputStream(),
 					environment.getProperty("spring.banner.charset", Charset.class, StandardCharsets.UTF_8));
-
 			for (PropertyResolver resolver : getPropertyResolvers(environment, sourceClass)) {
 				banner = resolver.resolvePlaceholders(banner);
 			}
@@ -77,15 +77,46 @@ public class ResourceBanner implements Banner {
 		}
 	}
 
+	/**
+	 * Return a mutable list of the {@link PropertyResolver} instances that will be used
+	 * to resolve placeholders.
+	 * @param environment the environment
+	 * @param sourceClass the source class
+	 * @return a mutable list of property resolvers
+	 */
 	protected List<PropertyResolver> getPropertyResolvers(Environment environment, Class<?> sourceClass) {
-		MutablePropertySources propertySources = new MutablePropertySources();
+		MutablePropertySources sources = new MutablePropertySources();
 		if (environment instanceof ConfigurableEnvironment) {
-			((ConfigurableEnvironment) environment).getPropertySources().forEach(propertySources::addLast);
+			((ConfigurableEnvironment) environment).getPropertySources().forEach(sources::addLast);
 		}
-		propertySources.addLast(getTitleSource(sourceClass));
-		propertySources.addLast(getAnsiSource());
-		propertySources.addLast(getVersionSource(sourceClass));
-		return Collections.singletonList(new PropertySourcesPropertyResolver(propertySources));
+		sources.addLast(getTitleSource(sourceClass));
+		sources.addLast(getAnsiSource());
+		sources.addLast(getVersionSource(sourceClass));
+		List<PropertyResolver> resolvers = new ArrayList<>();
+		resolvers.add(new PropertySourcesPropertyResolver(sources));
+		return resolvers;
+	}
+
+	private MapPropertySource getTitleSource(Class<?> sourceClass) {
+		String applicationTitle = getApplicationTitle(sourceClass);
+		Map<String, Object> titleMap = Collections.singletonMap("application.title",
+				(applicationTitle != null) ? applicationTitle : "");
+		return new MapPropertySource("title", titleMap);
+	}
+
+	/**
+	 * Return the application title that should be used for the source class. By default
+	 * will use {@link Package#getImplementationTitle()}.
+	 * @param sourceClass the source class
+	 * @return the application title
+	 */
+	protected String getApplicationTitle(Class<?> sourceClass) {
+		Package sourcePackage = (sourceClass != null) ? sourceClass.getPackage() : null;
+		return (sourcePackage != null) ? sourcePackage.getImplementationTitle() : null;
+	}
+
+	private AnsiPropertySource getAnsiSource() {
+		return new AnsiPropertySource("ansi", true);
 	}
 
 	private MapPropertySource getVersionSource(Class<?> sourceClass) {
@@ -117,22 +148,6 @@ public class ResourceBanner implements Banner {
 			return "";
 		}
 		return format ? " (v" + version + ")" : version;
-	}
-
-	private AnsiPropertySource getAnsiSource() {
-		return new AnsiPropertySource("ansi", true);
-	}
-
-	private MapPropertySource getTitleSource(Class<?> sourceClass) {
-		String applicationTitle = getApplicationTitle(sourceClass);
-		Map<String, Object> titleMap = Collections.singletonMap("application.title",
-				(applicationTitle != null) ? applicationTitle : "");
-		return new MapPropertySource("title", titleMap);
-	}
-
-	protected String getApplicationTitle(Class<?> sourceClass) {
-		Package sourcePackage = (sourceClass != null) ? sourceClass.getPackage() : null;
-		return (sourcePackage != null) ? sourcePackage.getImplementationTitle() : null;
 	}
 
 }
