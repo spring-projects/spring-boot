@@ -37,6 +37,9 @@ The following service connections are currently supported:
 |===
 | Connection Details | Matched on
 
+| `CassandraConnectionDetails`
+| Containers named "cassandra"
+
 | `ElasticsearchConnectionDetails`
 | Containers named "elasticsearch"
 
