@@ -19,6 +19,7 @@ package org.springframework.boot;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
@@ -26,8 +27,11 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
+import org.springframework.core.env.AbstractPropertyResolver;
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.env.MockEnvironment;
@@ -136,9 +140,20 @@ class ResourceBannerTests {
 		assertThat(banner).startsWith("banner 1 default-b 10.2 1.0");
 	}
 
+	@Test
+	void renderWithMutation() {
+		Resource resource = new ByteArrayResource("banner ${foo}".getBytes());
+		String banner = printBanner(new MutatingResourceBanner(resource, "1", "2", null));
+		assertThat(banner).startsWith("banner bar");
+
+	}
+
 	private String printBanner(Resource resource, String bootVersion, String applicationVersion,
 			String applicationTitle) {
-		ResourceBanner banner = new MockResourceBanner(resource, bootVersion, applicationVersion, applicationTitle);
+		return printBanner(new MockResourceBanner(resource, bootVersion, applicationVersion, applicationTitle));
+	}
+
+	private String printBanner(ResourceBanner banner) {
 		ConfigurableEnvironment environment = new MockEnvironment();
 		Map<String, Object> source = Collections.singletonMap("a", "1");
 		environment.getPropertySources().addLast(new MapPropertySource("map", source));
@@ -175,6 +190,36 @@ class ResourceBannerTests {
 		@Override
 		protected String getApplicationTitle(Class<?> sourceClass) {
 			return this.applicationTitle;
+		}
+
+	}
+
+	static class MutatingResourceBanner extends MockResourceBanner {
+
+		MutatingResourceBanner(Resource resource, String bootVersion, String applicationVersion,
+				String applicationTitle) {
+			super(resource, bootVersion, applicationVersion, applicationTitle);
+		}
+
+		@Override
+		protected List<PropertyResolver> getPropertyResolvers(Environment environment, Class<?> sourceClass) {
+			List<PropertyResolver> resolvers = super.getPropertyResolvers(environment, sourceClass);
+			PropertyResolver resolver = new AbstractPropertyResolver() {
+
+				@Override
+				@SuppressWarnings("unchecked")
+				public <T> T getProperty(String key, Class<T> targetType) {
+					return String.class.equals(targetType) ? (T) getPropertyAsRawString(key) : null;
+				}
+
+				@Override
+				protected String getPropertyAsRawString(String key) {
+					return ("foo".equals(key)) ? "bar" : null;
+				}
+
+			};
+			resolvers.add(resolver);
+			return resolvers;
 		}
 
 	}
