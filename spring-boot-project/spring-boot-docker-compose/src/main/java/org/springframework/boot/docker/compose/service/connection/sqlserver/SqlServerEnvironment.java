@@ -26,13 +26,13 @@ import org.springframework.util.StringUtils;
  *
  * @author Andy Wilkinson
  */
-class MsSqlServerEnvironment {
+class SqlServerEnvironment {
 
 	private final String username = "SA";
 
 	private final String password;
 
-	MsSqlServerEnvironment(Map<String, String> env) {
+	SqlServerEnvironment(Map<String, String> env) {
 		this.password = extractPassword(env);
 	}
 

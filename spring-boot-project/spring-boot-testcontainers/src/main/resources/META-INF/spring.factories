@@ -20,7 +20,7 @@ org.springframework.boot.testcontainers.service.connection.liquibase.LiquibaseCo
 org.springframework.boot.testcontainers.service.connection.mongo.MongoContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.neo4j.Neo4jContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.MariaDbR2dbcContainerConnectionDetailsFactory,\
-org.springframework.boot.testcontainers.service.connection.r2dbc.MsSqlServerR2dbcContainerConnectionDetailsFactory,\
+org.springframework.boot.testcontainers.service.connection.r2dbc.SqlServerR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.MySqlR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.OracleR2dbcContainerConnectionDetailsFactory,\
 org.springframework.boot.testcontainers.service.connection.r2dbc.PostgresR2dbcContainerConnectionDetailsFactory,\

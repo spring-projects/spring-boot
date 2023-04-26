@@ -28,34 +28,34 @@ import org.springframework.boot.docker.compose.service.connection.jdbc.JdbcUrlBu
  *
  * @author Andy Wilkinson
  */
-class MsSqlServerJdbcDockerComposeConnectionDetailsFactory
+class SqlServerJdbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<JdbcConnectionDetails> {
 
-	protected MsSqlServerJdbcDockerComposeConnectionDetailsFactory() {
+	protected SqlServerJdbcDockerComposeConnectionDetailsFactory() {
 		super("mssql/server");
 	}
 
 	@Override
 	protected JdbcConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
-		return new MsSqlJdbcDockerComposeConnectionDetails(source.getRunningService());
+		return new SqlServerJdbcDockerComposeConnectionDetails(source.getRunningService());
 	}
 
 	/**
 	 * {@link JdbcConnectionDetails} backed by a {@code mssql/server}
 	 * {@link RunningService}.
 	 */
-	static class MsSqlJdbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
+	static class SqlServerJdbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements JdbcConnectionDetails {
 
 		private static final JdbcUrlBuilder jdbcUrlBuilder = new JdbcUrlBuilder("sqlserver", 1433);
 
-		private final MsSqlServerEnvironment environment;
+		private final SqlServerEnvironment environment;
 
 		private final String jdbcUrl;
 
-		MsSqlJdbcDockerComposeConnectionDetails(RunningService service) {
+		SqlServerJdbcDockerComposeConnectionDetails(RunningService service) {
 			super(service);
-			this.environment = new MsSqlServerEnvironment(service.env());
+			this.environment = new SqlServerEnvironment(service.env());
 			this.jdbcUrl = disableEncryptionIfNecessary(jdbcUrlBuilder.build(service, ""));
 		}
 

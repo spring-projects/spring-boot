@@ -33,10 +33,10 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class MsSqlServerR2dbcContainerConnectionDetailsFactory
+class SqlServerR2dbcContainerConnectionDetailsFactory
 		extends ContainerConnectionDetailsFactory<R2dbcConnectionDetails, MSSQLServerContainer<?>> {
 
-	MsSqlServerR2dbcContainerConnectionDetailsFactory() {
+	SqlServerR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 

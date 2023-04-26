@@ -30,14 +30,13 @@ import org.springframework.util.ClassUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link MsSqlServerJdbcDockerComposeConnectionDetailsFactory}
+ * Integration tests for {@link SqlServerJdbcDockerComposeConnectionDetailsFactory}
  *
  * @author Andy Wilkinson
  */
-class MsSqlServerJdbcDockerComposeConnectionDetailsFactoryIntegrationTests
-		extends AbstractDockerComposeIntegrationTests {
+class SqlServerJdbcDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
-	MsSqlServerJdbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
+	SqlServerJdbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
 		super("mssqlserver-compose.yaml");
 	}
 

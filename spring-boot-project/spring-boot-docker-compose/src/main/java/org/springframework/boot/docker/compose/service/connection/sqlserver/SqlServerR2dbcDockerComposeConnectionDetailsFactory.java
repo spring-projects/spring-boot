@@ -32,22 +32,22 @@ import org.springframework.boot.docker.compose.service.connection.r2dbc.Connecti
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class MsSqlServerR2dbcDockerComposeConnectionDetailsFactory
+class SqlServerR2dbcDockerComposeConnectionDetailsFactory
 		extends DockerComposeConnectionDetailsFactory<R2dbcConnectionDetails> {
 
-	MsSqlServerR2dbcDockerComposeConnectionDetailsFactory() {
+	SqlServerR2dbcDockerComposeConnectionDetailsFactory() {
 		super("mssql/server", "io.r2dbc.spi.ConnectionFactoryOptions");
 	}
 
 	@Override
 	protected R2dbcConnectionDetails getDockerComposeConnectionDetails(DockerComposeConnectionSource source) {
-		return new MsSqlR2dbcDockerComposeConnectionDetails(source.getRunningService());
+		return new SqlServerR2dbcDockerComposeConnectionDetails(source.getRunningService());
 	}
 
 	/**
 	 * {@link R2dbcConnectionDetails} backed by a {@code mssql} {@link RunningService}.
 	 */
-	static class MsSqlR2dbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
+	static class SqlServerR2dbcDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements R2dbcConnectionDetails {
 
 		private static final ConnectionFactoryOptionsBuilder connectionFactoryOptionsBuilder = new ConnectionFactoryOptionsBuilder(
@@ -55,9 +55,9 @@ class MsSqlServerR2dbcDockerComposeConnectionDetailsFactory
 
 		private final ConnectionFactoryOptions connectionFactoryOptions;
 
-		MsSqlR2dbcDockerComposeConnectionDetails(RunningService service) {
+		SqlServerR2dbcDockerComposeConnectionDetails(RunningService service) {
 			super(service);
-			MsSqlServerEnvironment environment = new MsSqlServerEnvironment(service.env());
+			SqlServerEnvironment environment = new SqlServerEnvironment(service.env());
 			this.connectionFactoryOptions = connectionFactoryOptionsBuilder.build(service, "",
 					environment.getUsername(), environment.getPassword());
 		}

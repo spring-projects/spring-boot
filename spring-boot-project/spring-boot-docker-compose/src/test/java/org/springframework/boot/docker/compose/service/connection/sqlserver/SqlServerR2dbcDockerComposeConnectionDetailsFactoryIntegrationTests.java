@@ -28,14 +28,14 @@ import org.springframework.r2dbc.core.DatabaseClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link MsSqlServerR2dbcDockerComposeConnectionDetailsFactory}
+ * Integration tests for {@link SqlServerR2dbcDockerComposeConnectionDetailsFactory}
  *
  * @author Andy Wilkinson
  */
-class MsSqlServerR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests
+class SqlServerR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests
 		extends AbstractDockerComposeIntegrationTests {
 
-	MsSqlServerR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
+	SqlServerR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
 		super("mssqlserver-compose.yaml");
 	}
 

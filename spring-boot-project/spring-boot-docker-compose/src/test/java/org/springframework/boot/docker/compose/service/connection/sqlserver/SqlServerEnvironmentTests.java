@@ -25,39 +25,39 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
- * Tests for {@link MsSqlServerEnvironment}.
+ * Tests for {@link SqlServerEnvironment}.
  *
  * @author Andy Wilkinson
  */
-class MsSqlServerEnvironmentTests {
+class SqlServerEnvironmentTests {
 
 	@Test
 	void createWhenHasNoPasswordThrowsException() {
-		assertThatIllegalStateException().isThrownBy(() -> new MsSqlServerEnvironment(Collections.emptyMap()))
+		assertThatIllegalStateException().isThrownBy(() -> new SqlServerEnvironment(Collections.emptyMap()))
 			.withMessage("No MSSQL password found");
 	}
 
 	@Test
 	void getUsernameWhenHasNoMsSqlUser() {
-		MsSqlServerEnvironment environment = new MsSqlServerEnvironment(Map.of("MSSQL_SA_PASSWORD", "secret"));
+		SqlServerEnvironment environment = new SqlServerEnvironment(Map.of("MSSQL_SA_PASSWORD", "secret"));
 		assertThat(environment.getUsername()).isEqualTo("SA");
 	}
 
 	@Test
 	void getPasswordWhenHasMsSqlSaPassword() {
-		MsSqlServerEnvironment environment = new MsSqlServerEnvironment(Map.of("MSSQL_SA_PASSWORD", "secret"));
+		SqlServerEnvironment environment = new SqlServerEnvironment(Map.of("MSSQL_SA_PASSWORD", "secret"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
 	@Test
 	void getPasswordWhenHasSaPassword() {
-		MsSqlServerEnvironment environment = new MsSqlServerEnvironment(Map.of("SA_PASSWORD", "secret"));
+		SqlServerEnvironment environment = new SqlServerEnvironment(Map.of("SA_PASSWORD", "secret"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
 
 	@Test
 	void getPasswordWhenHasMsSqlSaPasswordAndSaPasswordPrefersMsSqlSaPassword() {
-		MsSqlServerEnvironment environment = new MsSqlServerEnvironment(
+		SqlServerEnvironment environment = new SqlServerEnvironment(
 				Map.of("MSSQL_SA_PASSWORD", "secret", "SA_PASSWORD", "not used"));
 		assertThat(environment.getPassword()).isEqualTo("secret");
 	}
