@@ -19,17 +19,24 @@ package org.springframework.boot.actuate.autoconfigure.observation.web.servlet;
 import java.util.EnumSet;
 
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.tck.TestObservationRegistry;
+import io.micrometer.observation.tck.TestObservationRegistryAssert;
 import jakarta.servlet.DispatcherType;
 import jakarta.servlet.Filter;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.endpoint.web.servlet.WebMvcEndpointManagementContextConfiguration;
+import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.TestController;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -57,6 +64,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Tadaya Tsuyukubo
  * @author Madhura Bhave
  * @author Chanhyeong LEE
+ * @author Jonatan Ivanov
  */
 @ExtendWith(OutputCaptureExtension.class)
 class WebMvcObservationAutoConfigurationTests {
@@ -169,6 +177,146 @@ class WebMvcObservationAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void whenAnActuatorEndpointIsCalledObservationsShouldBeRecorded() {
+		this.contextRunner.withUserConfiguration(TestController.class, TestObservationRegistryConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(InfoEndpointAutoConfiguration.class, WebMvcAutoConfiguration.class,
+					DispatcherServletAutoConfiguration.class, EndpointAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class, WebMvcEndpointManagementContextConfiguration.class,
+					MetricsAutoConfiguration.class, ObservationAutoConfiguration.class))
+			.withPropertyValues("management.endpoints.web.exposure.include=info")
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean("actuatorWebEndpointObservationPredicate");
+				TestObservationRegistry observationRegistry = getInitializedTestObservationRegistry(context, "/test0",
+						"/actuator/info");
+				TestObservationRegistryAssert.assertThat(observationRegistry)
+					.hasNumberOfObservationsWithNameEqualTo("http.server.requests", 2)
+					.hasAnObservationWithAKeyValue("http.url", "/test0")
+					.hasAnObservationWithAKeyValue("http.url", "/actuator/info");
+			});
+	}
+
+	@Test
+	void whenActuatorObservationsEnabledObservationsShouldBeRecorded() {
+		this.contextRunner.withUserConfiguration(TestController.class, TestObservationRegistryConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(InfoEndpointAutoConfiguration.class, WebMvcAutoConfiguration.class,
+					DispatcherServletAutoConfiguration.class, EndpointAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class, WebMvcEndpointManagementContextConfiguration.class,
+					MetricsAutoConfiguration.class, ObservationAutoConfiguration.class))
+			.withPropertyValues("management.endpoints.web.exposure.include=info",
+					"management.observations.http.server.actuator.enabled=true")
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean("actuatorWebEndpointObservationPredicate");
+				TestObservationRegistry observationRegistry = getInitializedTestObservationRegistry(context, "/test0",
+						"/actuator/info");
+				TestObservationRegistryAssert.assertThat(observationRegistry)
+					.hasNumberOfObservationsWithNameEqualTo("http.server.requests", 2)
+					.hasAnObservationWithAKeyValue("http.url", "/test0")
+					.hasAnObservationWithAKeyValue("http.url", "/actuator/info");
+			});
+	}
+
+	@Test
+	void whenActuatorObservationsDisabledObservationsShouldNotBeRecorded() {
+		this.contextRunner.withUserConfiguration(TestController.class, TestObservationRegistryConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(InfoEndpointAutoConfiguration.class, WebMvcAutoConfiguration.class,
+					DispatcherServletAutoConfiguration.class, EndpointAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class, WebMvcEndpointManagementContextConfiguration.class,
+					MetricsAutoConfiguration.class, ObservationAutoConfiguration.class))
+			.withPropertyValues("management.endpoints.web.exposure.include=info",
+					"management.observations.http.server.actuator.enabled=false")
+			.run((context) -> {
+				assertThat(context).hasBean("actuatorWebEndpointObservationPredicate");
+				TestObservationRegistry observationRegistry = getInitializedTestObservationRegistry(context, "/test0",
+						"/actuator/info");
+				TestObservationRegistryAssert.assertThat(observationRegistry)
+					.hasNumberOfObservationsWithNameEqualTo("http.server.requests", 1)
+					.hasAnObservationWithAKeyValue("http.url", "/test0");
+			});
+	}
+
+	@Test
+	void whenActuatorObservationsDisabledObservationsShouldNotBeRecordedUsingCustomEndpointBasePath() {
+		this.contextRunner.withUserConfiguration(TestController.class, TestObservationRegistryConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(InfoEndpointAutoConfiguration.class, WebMvcAutoConfiguration.class,
+					DispatcherServletAutoConfiguration.class, EndpointAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class, WebMvcEndpointManagementContextConfiguration.class,
+					MetricsAutoConfiguration.class, ObservationAutoConfiguration.class))
+			.withPropertyValues("management.endpoints.web.exposure.include=info",
+					"management.observations.http.server.actuator.enabled=false",
+					"management.endpoints.web.base-path=/management")
+			.run((context) -> {
+				assertThat(context).hasBean("actuatorWebEndpointObservationPredicate");
+				TestObservationRegistry observationRegistry = getInitializedTestObservationRegistry(context, "/test0",
+						"/management/info");
+				TestObservationRegistryAssert.assertThat(observationRegistry)
+					.hasNumberOfObservationsWithNameEqualTo("http.server.requests", 1)
+					.hasAnObservationWithAKeyValue("http.url", "/test0");
+			});
+	}
+
+	@Test
+	void whenActuatorObservationsDisabledObservationsShouldNotBeRecordedUsingCustomContextPath() {
+		this.contextRunner.withUserConfiguration(TestController.class, TestObservationRegistryConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(InfoEndpointAutoConfiguration.class, WebMvcAutoConfiguration.class,
+					DispatcherServletAutoConfiguration.class, EndpointAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class, WebMvcEndpointManagementContextConfiguration.class,
+					MetricsAutoConfiguration.class, ObservationAutoConfiguration.class))
+			.withPropertyValues("management.endpoints.web.exposure.include=info",
+					"management.observations.http.server.actuator.enabled=false",
+					"server.servlet.context-path=/test-context")
+			.run((context) -> {
+				assertThat(context).hasBean("actuatorWebEndpointObservationPredicate");
+				TestObservationRegistry observationRegistry = getInitializedTestObservationRegistry("/test-context",
+						context, "/test-context/test0", "/test-context/actuator/info");
+				TestObservationRegistryAssert.assertThat(observationRegistry)
+					.hasNumberOfObservationsWithNameEqualTo("http.server.requests", 1)
+					.hasAnObservationWithAKeyValue("http.url", "/test-context/test0");
+			});
+	}
+
+	@Test
+	void whenActuatorObservationsDisabledObservationsShouldNotBeRecordedUsingCustomServletPath() {
+		this.contextRunner.withUserConfiguration(TestController.class, TestObservationRegistryConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(InfoEndpointAutoConfiguration.class, WebMvcAutoConfiguration.class,
+					DispatcherServletAutoConfiguration.class, EndpointAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class, WebMvcEndpointManagementContextConfiguration.class,
+					MetricsAutoConfiguration.class, ObservationAutoConfiguration.class))
+			.withPropertyValues("management.endpoints.web.exposure.include=info",
+					"management.observations.http.server.actuator.enabled=false",
+					"spring.mvc.servlet.path=/test-servlet")
+			.run((context) -> {
+				assertThat(context).hasBean("actuatorWebEndpointObservationPredicate");
+				TestObservationRegistry observationRegistry = getInitializedTestObservationRegistry("/test-servlet",
+						context, "/test-servlet/test0", "/test-servlet/actuator/info");
+				TestObservationRegistryAssert.assertThat(observationRegistry)
+					.hasNumberOfObservationsWithNameEqualTo("http.server.requests", 1)
+					.hasAnObservationWithAKeyValue("http.url", "/test-servlet/test0");
+			});
+	}
+
+	@Test
+	void whenActuatorObservationsDisabledObservationsShouldNotBeRecordedUsingCustomContextPathAndCustomServletPathAndCustomEndpointBasePath() {
+		this.contextRunner.withUserConfiguration(TestController.class, TestObservationRegistryConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(InfoEndpointAutoConfiguration.class, WebMvcAutoConfiguration.class,
+					DispatcherServletAutoConfiguration.class, EndpointAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class, WebMvcEndpointManagementContextConfiguration.class,
+					MetricsAutoConfiguration.class, ObservationAutoConfiguration.class))
+			.withPropertyValues("management.endpoints.web.exposure.include=info",
+					"management.observations.http.server.actuator.enabled=false",
+					"server.servlet.context-path=/test-context", "spring.mvc.servlet.path=/test-servlet",
+					"management.endpoints.web.base-path=/management")
+			.run((context) -> {
+				assertThat(context).hasBean("actuatorWebEndpointObservationPredicate");
+				TestObservationRegistry observationRegistry = getInitializedTestObservationRegistry(
+						"/test-context/test-servlet", context, "/test-context/test-servlet/test0",
+						"/test-context/test-servlet/management/info");
+				TestObservationRegistryAssert.assertThat(observationRegistry)
+					.hasNumberOfObservationsWithNameEqualTo("http.server.requests", 1)
+					.hasAnObservationWithAKeyValue("http.url", "/test-context/test-servlet/test0");
+			});
+	}
+
 	private MeterRegistry getInitializedMeterRegistry(AssertableWebApplicationContext context) throws Exception {
 		return getInitializedMeterRegistry(context, "/test0", "/test1", "/test2");
 	}
@@ -183,6 +331,33 @@ class WebMvcObservationAutoConfigurationTests {
 			mockMvc.perform(MockMvcRequestBuilders.get(url)).andExpect(status().isOk());
 		}
 		return context.getBean(MeterRegistry.class);
+	}
+
+	private TestObservationRegistry getInitializedTestObservationRegistry(AssertableWebApplicationContext context,
+			String... urls) throws Exception {
+		return getInitializedTestObservationRegistry("", context, urls);
+	}
+
+	private TestObservationRegistry getInitializedTestObservationRegistry(String contextPath,
+			AssertableWebApplicationContext context, String... urls) throws Exception {
+		assertThat(context).hasSingleBean(FilterRegistrationBean.class);
+		Filter filter = context.getBean(FilterRegistrationBean.class).getFilter();
+		assertThat(filter).isInstanceOf(ServerHttpObservationFilter.class);
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).addFilters(filter).build();
+		for (String url : urls) {
+			mockMvc.perform(MockMvcRequestBuilders.get(url).contextPath(contextPath)).andExpect(status().isOk());
+		}
+		return context.getBean(TestObservationRegistry.class);
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestObservationRegistryConfiguration {
+
+		@Bean
+		ObservationRegistry observationRegistry() {
+			return TestObservationRegistry.create();
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

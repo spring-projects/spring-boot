@@ -16,9 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure.observation.web.servlet;
 
+import java.nio.file.Path;
+
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
 import jakarta.servlet.DispatcherType;
 
@@ -30,12 +33,17 @@ import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDen
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
+import org.springframework.boot.actuate.endpoint.web.PathMappedEndpoints;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.ServerProperties.Servlet;
 import org.springframework.boot.autoconfigure.web.servlet.ConditionalOnMissingFilterBean;
+import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
@@ -43,6 +51,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.server.observation.DefaultServerRequestObservationConvention;
+import org.springframework.http.server.observation.ServerRequestObservationContext;
 import org.springframework.http.server.observation.ServerRequestObservationConvention;
 import org.springframework.web.filter.ServerHttpObservationFilter;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -54,6 +63,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Brian Clozel
  * @author Jon Schneider
  * @author Dmytro Nosan
+ * @author Jonatan Ivanov
  * @since 3.0.0
  */
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
@@ -61,7 +71,8 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @ConditionalOnClass({ DispatcherServlet.class, Observation.class })
 @ConditionalOnBean(ObservationRegistry.class)
-@EnableConfigurationProperties({ MetricsProperties.class, ObservationProperties.class })
+@EnableConfigurationProperties({ MetricsProperties.class, ObservationProperties.class, ServerProperties.class,
+		WebMvcProperties.class })
 public class WebMvcObservationAutoConfiguration {
 
 	@Bean
@@ -93,6 +104,41 @@ public class WebMvcObservationAutoConfiguration {
 					() -> String.format("Reached the maximum number of URI tags for '%s'.", name));
 			return MeterFilter.maximumAllowableTags(name, "uri", metricsProperties.getWeb().getServer().getMaxUriTags(),
 					filter);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(value = "management.observations.http.server.actuator.enabled", havingValue = "false")
+	static class ActuatorWebEndpointObservationConfiguration {
+
+		@Bean
+		ObservationPredicate actuatorWebEndpointObservationPredicate(ServerProperties serverProperties,
+				WebMvcProperties webMvcProperties, PathMappedEndpoints pathMappedEndpoints) {
+			return (name, context) -> {
+				if (context instanceof ServerRequestObservationContext serverContext) {
+					String endpointPath = getEndpointPath(serverProperties, webMvcProperties, pathMappedEndpoints);
+					return !serverContext.getCarrier().getRequestURI().startsWith(endpointPath);
+				}
+				return true;
+			};
+		}
+
+		private static String getEndpointPath(ServerProperties serverProperties, WebMvcProperties webMvcProperties,
+				PathMappedEndpoints pathMappedEndpoints) {
+			String contextPath = getContextPath(serverProperties);
+			String servletPath = getServletPath(webMvcProperties);
+			return Path.of(contextPath, servletPath, pathMappedEndpoints.getBasePath()).toString();
+		}
+
+		private static String getContextPath(ServerProperties serverProperties) {
+			Servlet servlet = serverProperties.getServlet();
+			return (servlet.getContextPath() != null) ? servlet.getContextPath() : "";
+		}
+
+		private static String getServletPath(WebMvcProperties webMvcProperties) {
+			WebMvcProperties.Servlet servletProperties = webMvcProperties.getServlet();
+			return (servletProperties.getPath() != null) ? servletProperties.getPath() : "";
 		}
 
 	}

@@ -2055,6 +2055,12 @@
       }
     },
     {
+      "name": "management.observations.http.server.actuator.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable HTTP observations for actuator endpoints.",
+      "defaultValue": false
+    },
+    {
       "name": "management.otlp.tracing.compression",
       "defaultValue": "none"
     },
