@@ -22,7 +22,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.time.Duration;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
@@ -172,18 +171,14 @@ public final class ClientHttpRequestFactories {
 			}
 			if (sslBundle != null) {
 				SslOptions options = sslBundle.getOptions();
-				String[] enabledProtocols = toArray(options.getEnabledProtocols());
-				String[] ciphers = toArray(options.getCiphers());
+				String[] enabledProtocols = SslOptions.toArray(options.getEnabledProtocols());
+				String[] ciphers = SslOptions.toArray(options.getCiphers());
 				SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslBundle.createSslContext(),
 						enabledProtocols, ciphers, new DefaultHostnameVerifier());
 				connectionManagerBuilder.setSSLSocketFactory(socketFactory);
 			}
 			PoolingHttpClientConnectionManager connectionManager = connectionManagerBuilder.build();
 			return HttpClientBuilder.create().setConnectionManager(connectionManager).build();
-		}
-
-		private static String[] toArray(Set<String> set) {
-			return (set != null) ? set.toArray(String[]::new) : null;
 		}
 
 	}
@@ -205,6 +200,7 @@ public final class ClientHttpRequestFactories {
 
 		private static OkHttp3ClientHttpRequestFactory createRequestFactory(SslBundle sslBundle) {
 			if (sslBundle != null) {
+				Assert.state(!sslBundle.getOptions().isSpecified(), "SSL Options cannot be specified with OkHttp");
 				SSLSocketFactory socketFactory = sslBundle.createSslContext().getSocketFactory();
 				TrustManager[] trustManagers = sslBundle.getManagers().getTrustManagers();
 				Assert.state(trustManagers.length == 1,
@@ -228,6 +224,8 @@ public final class ClientHttpRequestFactories {
 			SslBundle sslBundle = settings.sslBundle();
 			SimpleClientHttpRequestFactory requestFactory = (sslBundle != null)
 					? new SimpleClientHttpsRequestFactory(sslBundle) : new SimpleClientHttpRequestFactory();
+			Assert.state(sslBundle == null || !sslBundle.getOptions().isSpecified(),
+					"SSL Options cannot be specified with Java connections");
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
 			map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);

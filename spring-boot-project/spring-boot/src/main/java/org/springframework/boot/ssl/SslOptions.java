@@ -17,6 +17,7 @@
 package org.springframework.boot.ssl;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -36,6 +37,14 @@ public interface SslOptions {
 	 * {@link SslOptions} that returns {@code null} results.
 	 */
 	SslOptions NONE = of((Set<String>) null, (Set<String>) null);
+
+	/**
+	 * Return if any SSL options have been specified.
+	 * @return {@true} if SSL options have been specified
+	 */
+	default boolean isSpecified() {
+		return (getCiphers() != null) && (getEnabledProtocols() != null);
+	}
 
 	/**
 	 * Return the ciphers that can be used or an empty set. The cipher names in this set
@@ -84,6 +93,16 @@ public interface SslOptions {
 
 		};
 
+	}
+
+	/**
+	 * Helper method that provides a null-safe way to convert a {@link Collection} to a
+	 * {@code String[]} for client libraries to use.
+	 * @param collection the collection to convert
+	 * @return a string array or {@code null}
+	 */
+	static String[] toArray(Collection<String> collection) {
+		return (collection != null) ? collection.toArray(String[]::new) : null;
 	}
 
 	private static Set<String> asSet(String[] array) {

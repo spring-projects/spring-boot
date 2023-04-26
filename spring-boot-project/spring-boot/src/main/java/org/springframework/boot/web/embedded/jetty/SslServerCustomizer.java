@@ -179,11 +179,12 @@ class SslServerCustomizer implements JettyServerCustomizer {
 		}
 		factory.setCertAlias(key.getAlias());
 		if (options.getCiphers() != null) {
-			factory.setIncludeCipherSuites(options.getCiphers().toArray(String[]::new));
+			factory.setIncludeCipherSuites(SslOptions.toArray(options.getCiphers()));
 			factory.setExcludeCipherSuites();
 		}
 		if (options.getEnabledProtocols() != null) {
-			factory.setIncludeProtocols(options.getEnabledProtocols().toArray(String[]::new));
+			factory.setIncludeProtocols(SslOptions.toArray(options.getEnabledProtocols()));
+			factory.setExcludeProtocols();
 		}
 		try {
 			if (key.getPassword() != null) {

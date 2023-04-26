@@ -52,10 +52,10 @@ class HttpComponentsClientHttpConnectorFactory
 				@Override
 				public TlsDetails verify(NamedEndpoint endpoint, SSLEngine sslEngine) throws SSLException {
 					if (options.getCiphers() != null) {
-						sslEngine.setEnabledCipherSuites(options.getCiphers().toArray(String[]::new));
+						sslEngine.setEnabledCipherSuites(SslOptions.toArray(options.getCiphers()));
 					}
 					if (options.getEnabledProtocols() != null) {
-						sslEngine.setEnabledProtocols(options.getEnabledProtocols().toArray(String[]::new));
+						sslEngine.setEnabledProtocols(SslOptions.toArray(options.getEnabledProtocols()));
 					}
 					return null;
 				}

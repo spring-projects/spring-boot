@@ -18,14 +18,13 @@ package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Builder;
-import java.util.Set;
 
 import javax.net.ssl.SSLParameters;
 
 import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.reactive.JdkClientHttpConnector;
 import org.springframework.http.client.reactive.JettyClientHttpConnector;
-import org.springframework.util.CollectionUtils;
 
 /**
  * {@link ClientHttpConnectorFactory} for {@link JettyClientHttpConnector}.
@@ -38,17 +37,14 @@ class JdkClientHttpConnectorFactory implements ClientHttpConnectorFactory<JdkCli
 	public JdkClientHttpConnector createClientHttpConnector(SslBundle sslBundle) {
 		Builder builder = HttpClient.newBuilder();
 		if (sslBundle != null) {
+			SslOptions options = sslBundle.getOptions();
 			builder.sslContext(sslBundle.createSslContext());
 			SSLParameters parameters = new SSLParameters();
-			parameters.setCipherSuites(asArray(sslBundle.getOptions().getCiphers()));
-			parameters.setProtocols(asArray(sslBundle.getOptions().getEnabledProtocols()));
+			parameters.setCipherSuites(SslOptions.toArray(options.getCiphers()));
+			parameters.setProtocols(SslOptions.toArray(options.getEnabledProtocols()));
 			builder.sslParameters(parameters);
 		}
 		return new JdkClientHttpConnector(builder.build());
-	}
-
-	private String[] asArray(Set<String> set) {
-		return (CollectionUtils.isEmpty(set)) ? null : set.toArray(String[]::new);
 	}
 
 }

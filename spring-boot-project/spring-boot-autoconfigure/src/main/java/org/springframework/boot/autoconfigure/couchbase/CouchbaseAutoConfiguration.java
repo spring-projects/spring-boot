@@ -41,6 +41,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration.CouchbaseCondition;
+import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Ssl;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Timeouts;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -50,7 +51,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
+import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Couchbase.
@@ -125,10 +128,14 @@ public class CouchbaseAutoConfiguration {
 	}
 
 	private void configureSsl(Builder builder, SslBundles sslBundles) {
+		Ssl sslProperties = this.properties.getEnv().getSsl();
+		SslBundle sslBundle = (StringUtils.hasText(sslProperties.getBundle()))
+				? sslBundles.getBundle(sslProperties.getBundle()) : null;
+		Assert.state(sslBundle == null || !sslBundle.getOptions().isSpecified(),
+				"SSL Options cannot be specified with Couchbase");
 		builder.securityConfig((config) -> {
 			config.enableTls(true);
-			TrustManagerFactory trustManagerFactory = getTrustManagerFactory(this.properties.getEnv().getSsl(),
-					sslBundles);
+			TrustManagerFactory trustManagerFactory = getTrustManagerFactory(sslProperties, sslBundle);
 			if (trustManagerFactory != null) {
 				config.trustManagerFactory(trustManagerFactory);
 			}
@@ -136,15 +143,11 @@ public class CouchbaseAutoConfiguration {
 	}
 
 	@SuppressWarnings("removal")
-	private TrustManagerFactory getTrustManagerFactory(CouchbaseProperties.Ssl ssl, SslBundles sslBundles) {
-		if (ssl.getKeyStore() != null) {
-			return loadTrustManagerFactory(ssl);
+	private TrustManagerFactory getTrustManagerFactory(CouchbaseProperties.Ssl sslProperties, SslBundle sslBundle) {
+		if (sslProperties.getKeyStore() != null) {
+			return loadTrustManagerFactory(sslProperties);
 		}
-		if (ssl.getBundle() != null) {
-			SslBundle bundle = sslBundles.getBundle(ssl.getBundle());
-			return bundle.getManagers().getTrustManagerFactory();
-		}
-		return null;
+		return (sslBundle != null) ? sslBundle.getManagers().getTrustManagerFactory() : null;
 	}
 
 	@SuppressWarnings("removal")

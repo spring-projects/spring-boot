@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.elasticsearch;
 import java.net.URI;
 import java.time.Duration;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import javax.net.ssl.HostnameVerifier;
@@ -117,14 +116,10 @@ class ElasticsearchRestClientConfigurations {
 		private void configureSsl(HttpAsyncClientBuilder httpClientBuilder, SslBundle sslBundle) {
 			SSLContext sslcontext = sslBundle.createSslContext();
 			SslOptions sslOptions = sslBundle.getOptions();
-			String[] enabledProtocols = toArray(sslOptions.getEnabledProtocols());
-			String[] ciphers = toArray(sslOptions.getCiphers());
+			String[] enabledProtocols = SslOptions.toArray(sslOptions.getEnabledProtocols());
+			String[] ciphers = SslOptions.toArray(sslOptions.getCiphers());
 			httpClientBuilder.setSSLStrategy(
 					new SSLIOSessionStrategy(sslcontext, enabledProtocols, ciphers, (HostnameVerifier) null));
-		}
-
-		private static String[] toArray(Set<String> set) {
-			return (set != null) ? set.toArray(String[]::new) : null;
 		}
 
 	}

@@ -24,6 +24,7 @@ import org.bson.UuidRepresentation;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.core.Ordered;
+import org.springframework.util.Assert;
 
 /**
  * A {@link MongoClientSettingsBuilderCustomizer} that applies standard settings to a
@@ -67,6 +68,7 @@ public class StandardMongoClientSettingsBuilderCustomizer implements MongoClient
 		settings.enabled(true);
 		if (this.ssl.getBundle() != null) {
 			SslBundle sslBundle = this.sslBundles.getBundle(this.ssl.getBundle());
+			Assert.state(!sslBundle.getOptions().isSpecified(), "SSL options cannot be specified with MongoDB");
 			settings.context(sslBundle.createSslContext());
 		}
 	}

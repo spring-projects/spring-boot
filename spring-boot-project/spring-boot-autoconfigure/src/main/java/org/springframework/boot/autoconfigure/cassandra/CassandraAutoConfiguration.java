@@ -58,6 +58,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
@@ -158,7 +159,8 @@ public class CassandraAutoConfiguration {
 
 	private void configureSsl(CqlSessionBuilder builder, SslBundle sslBundle) {
 		SslOptions options = sslBundle.getOptions();
-		String[] ciphers = (options.getCiphers() != null) ? options.getCiphers().toArray(String[]::new) : null;
+		Assert.state(options.getEnabledProtocols() == null, "SSL protocol options cannot be specified with Cassandra");
+		String[] ciphers = SslOptions.toArray(options.getCiphers());
 		builder.withSslEngineFactory(new ProgrammaticSslEngineFactory(sslBundle.createSslContext(), ciphers));
 	}
 
