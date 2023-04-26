@@ -938,6 +938,9 @@ This is done by automatically defining a `Neo4jConnectionDetails` bean which is 
 
 NOTE: You'll need to add the `spring-boot-testcontainers` module as a test dependency in order to use service connections with Testcontainers.
 
+NOTE: You'll need to add `@ImportAutoConfiguration(ServiceConnectionAutoConfiguration.class)` if you are using <<features#features.testing.spring-boot-applications.autoconfigured-tests, test slices>>, unless your container is not spring bean but using testcontainers `@Testcontainers` and `@Container` instead.
+You also need take other related annotations into account, for example you need add `@AutoConfigureTestDatabase(replace = NONE)` for `@DataJpaTest` to disable replacing containerized database with embedded database.
+
 Service connection annotations are processed by `ContainerConnectionDetailsFactory` classes registered with `spring.factories`.
 A `ContainerConnectionDetailsFactory` can create a `ConnectionDetails` bean based on a specific `Container` subclass, or the Docker image name.
 
