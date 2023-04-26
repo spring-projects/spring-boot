@@ -35,7 +35,8 @@ class ZipkinDockerComposeConnectionDetailsFactory
 	private static final int ZIPKIN_PORT = 9411;
 
 	ZipkinDockerComposeConnectionDetailsFactory() {
-		super("zipkin", "org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration");
+		super("openzipkin/zipkin",
+				"org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoConfiguration");
 	}
 
 	@Override

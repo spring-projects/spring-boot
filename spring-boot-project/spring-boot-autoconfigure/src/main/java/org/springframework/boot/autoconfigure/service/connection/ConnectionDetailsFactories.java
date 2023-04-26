@@ -24,9 +24,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.io.support.SpringFactoriesLoader.FailureHandler;
 import org.springframework.util.Assert;
 
 /**
@@ -39,6 +43,8 @@ import org.springframework.util.Assert;
  */
 public class ConnectionDetailsFactories {
 
+	private static final Log logger = LogFactory.getLog(ConnectionDetailsFactories.class);
+
 	private List<Registration<?, ?>> registrations = new ArrayList<>();
 
 	public ConnectionDetailsFactories() {
@@ -47,7 +53,8 @@ public class ConnectionDetailsFactories {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	ConnectionDetailsFactories(SpringFactoriesLoader loader) {
-		List<ConnectionDetailsFactory> factories = loader.load(ConnectionDetailsFactory.class);
+		List<ConnectionDetailsFactory> factories = loader.load(ConnectionDetailsFactory.class,
+				FailureHandler.logging(logger));
 		Stream<Registration<?, ?>> registrations = factories.stream().map(Registration::get);
 		registrations.filter(Objects::nonNull).forEach(this.registrations::add);
 	}

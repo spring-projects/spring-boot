@@ -17,6 +17,7 @@
 package org.springframework.boot.docker.compose.service.connection;
 
 import java.util.Arrays;
+import java.util.function.Predicate;
 
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
@@ -40,7 +41,7 @@ import org.springframework.util.ObjectUtils;
 public abstract class DockerComposeConnectionDetailsFactory<D extends ConnectionDetails>
 		implements ConnectionDetailsFactory<DockerComposeConnectionSource, D> {
 
-	private final String connectionName;
+	private final Predicate<DockerComposeConnectionSource> predicate;
 
 	private final String[] requiredClassNames;
 
@@ -50,7 +51,17 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 	 * @param requiredClassNames the names of classes that must be present
 	 */
 	protected DockerComposeConnectionDetailsFactory(String connectionName, String... requiredClassNames) {
-		this.connectionName = connectionName;
+		this(new ConnectionNamePredicate(connectionName), requiredClassNames);
+	}
+
+	/**
+	 * Create a new {@link DockerComposeConnectionDetailsFactory} instance.
+	 * @param predicate a predicate used to check when a service is accepted
+	 * @param requiredClassNames the names of classes that must be present
+	 */
+	protected DockerComposeConnectionDetailsFactory(Predicate<DockerComposeConnectionSource> predicate,
+			String... requiredClassNames) {
+		this.predicate = predicate;
 		this.requiredClassNames = requiredClassNames;
 	}
 
@@ -60,12 +71,7 @@ public abstract class DockerComposeConnectionDetailsFactory<D extends Connection
 	}
 
 	private boolean accept(DockerComposeConnectionSource source) {
-		return hasRequiredClasses() && this.connectionName.equals(getConnectionName(source.getRunningService()));
-	}
-
-	private String getConnectionName(RunningService service) {
-		String connectionName = service.labels().get("org.springframework.boot.service-connection");
-		return (connectionName != null) ? connectionName : service.image().getImageName();
+		return hasRequiredClasses() && this.predicate.test(source);
 	}
 
 	private boolean hasRequiredClasses() {

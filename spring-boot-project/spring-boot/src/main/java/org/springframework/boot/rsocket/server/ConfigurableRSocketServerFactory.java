@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.rsocket.server;
 
 import java.net.InetAddress;
 
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.util.unit.DataSize;
@@ -26,6 +27,7 @@ import org.springframework.util.unit.DataSize;
  * A configurable {@link RSocketServerFactory}.
  *
  * @author Brian Clozel
+ * @author Scott Frederick
  * @since 2.2.0
  */
 public interface ConfigurableRSocketServerFactory {
@@ -66,7 +68,18 @@ public interface ConfigurableRSocketServerFactory {
 	/**
 	 * Sets a provider that will be used to obtain SSL stores.
 	 * @param sslStoreProvider the SSL store provider
+	 * @deprecated since 3.1.0 for removal in 3.3.0 in favor of
+	 * {@link #setSslBundles(SslBundles)}
 	 */
+	@SuppressWarnings("removal")
+	@Deprecated(since = "3.1.0", forRemoval = true)
 	void setSslStoreProvider(SslStoreProvider sslStoreProvider);
+
+	/**
+	 * Sets an SSL bundle that can be used to get SSL configuration.
+	 * @param sslBundles the SSL bundles
+	 * @since 3.1.0
+	 */
+	void setSslBundles(SslBundles sslBundles);
 
 }

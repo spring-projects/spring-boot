@@ -102,18 +102,6 @@ class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	void createsDataSourceWithNoDataSourceBeanAndJdbcConnectionDetails() {
-		this.contextRunner.withSystemProperties("shouldRun=false")
-			.withUserConfiguration(JdbcConnectionDetailsConfiguration.class)
-			.run(assertLiquibase((liquibase) -> {
-				SimpleDriverDataSource dataSource = (SimpleDriverDataSource) liquibase.getDataSource();
-				assertThat(dataSource.getUrl()).isEqualTo("jdbc:postgresql://database.example.com:12345/database-1");
-				assertThat(dataSource.getUsername()).isEqualTo("user-1");
-				assertThat(dataSource.getPassword()).isEqualTo("secret-1");
-			}));
-	}
-
-	@Test
 	void backsOffWithLiquibaseUrlAndNoSpringJdbc() {
 		this.contextRunner.withPropertyValues("spring.liquibase.url:jdbc:hsqldb:mem:" + UUID.randomUUID())
 			.withClassLoader(new FilteredClassLoader("org.springframework.jdbc"))
@@ -133,15 +121,13 @@ class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	void jdbcConnectionDetailsAreUsedIfAvailable() {
+	void shouldUseMainDataSourceWhenThereIsNoLiquibaseSpecificConfiguration() {
 		this.contextRunner.withSystemProperties("shouldRun=false")
 			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JdbcConnectionDetailsConfiguration.class)
-			.run(assertLiquibase((liquibase) -> {
-				SimpleDriverDataSource dataSource = (SimpleDriverDataSource) liquibase.getDataSource();
-				assertThat(dataSource.getUrl()).isEqualTo("jdbc:postgresql://database.example.com:12345/database-1");
-				assertThat(dataSource.getUsername()).isEqualTo("user-1");
-				assertThat(dataSource.getPassword()).isEqualTo("secret-1");
-			}));
+			.run((context) -> {
+				SpringLiquibase liquibase = context.getBean(SpringLiquibase.class);
+				assertThat(liquibase.getDataSource()).isSameAs(context.getBean(DataSource.class));
+			});
 	}
 
 	@Test

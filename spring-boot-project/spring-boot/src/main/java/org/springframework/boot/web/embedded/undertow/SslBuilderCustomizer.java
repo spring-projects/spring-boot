@@ -17,30 +17,17 @@
 package org.springframework.boot.web.embedded.undertow;
 
 import java.net.InetAddress;
-import java.net.Socket;
-import java.security.KeyManagementException;
-import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
-import java.security.PrivateKey;
-import java.security.cert.X509Certificate;
 
-import javax.net.ssl.KeyManager;
-import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.TrustManagerFactory;
-import javax.net.ssl.X509ExtendedKeyManager;
 
 import io.undertow.Undertow;
 import org.xnio.Options;
 import org.xnio.Sequence;
 import org.xnio.SslClientAuthMode;
 
-import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.server.SslConfigurationValidator;
-import org.springframework.boot.web.server.SslStoreProvider;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslOptions;
+import org.springframework.boot.web.server.Ssl.ClientAuth;
 
 /**
  * {@link UndertowBuilderCustomizer} that configures SSL on the given builder instance.
@@ -56,34 +43,29 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 
 	private final InetAddress address;
 
-	private final Ssl ssl;
+	private final ClientAuth clientAuth;
 
-	private final SslStoreProvider sslStoreProvider;
+	private final SslBundle sslBundle;
 
-	SslBuilderCustomizer(int port, InetAddress address, Ssl ssl, SslStoreProvider sslStoreProvider) {
+	SslBuilderCustomizer(int port, InetAddress address, ClientAuth clientAuth, SslBundle sslBundle) {
 		this.port = port;
 		this.address = address;
-		this.ssl = ssl;
-		this.sslStoreProvider = sslStoreProvider;
+		this.clientAuth = clientAuth;
+		this.sslBundle = sslBundle;
 	}
 
 	@Override
 	public void customize(Undertow.Builder builder) {
-		try {
-			SSLContext sslContext = SSLContext.getInstance(this.ssl.getProtocol());
-			sslContext.init(getKeyManagers(this.ssl, this.sslStoreProvider), getTrustManagers(this.sslStoreProvider),
-					null);
-			builder.addHttpsListener(this.port, getListenAddress(), sslContext);
-			builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE, getSslClientAuthMode(this.ssl));
-			if (this.ssl.getEnabledProtocols() != null) {
-				builder.setSocketOption(Options.SSL_ENABLED_PROTOCOLS, Sequence.of(this.ssl.getEnabledProtocols()));
-			}
-			if (this.ssl.getCiphers() != null) {
-				builder.setSocketOption(Options.SSL_ENABLED_CIPHER_SUITES, Sequence.of(this.ssl.getCiphers()));
-			}
+		SslOptions options = this.sslBundle.getOptions();
+		SSLContext sslContext = this.sslBundle.createSslContext();
+		builder.addHttpsListener(this.port, getListenAddress(), sslContext);
+		builder.setSocketOption(Options.SSL_CLIENT_AUTH_MODE, ClientAuth.map(this.clientAuth,
+				SslClientAuthMode.NOT_REQUESTED, SslClientAuthMode.REQUESTED, SslClientAuthMode.REQUIRED));
+		if (options.getEnabledProtocols() != null) {
+			builder.setSocketOption(Options.SSL_ENABLED_PROTOCOLS, Sequence.of(options.getEnabledProtocols()));
 		}
-		catch (NoSuchAlgorithmException | KeyManagementException ex) {
-			throw new IllegalStateException(ex);
+		if (options.getCiphers() != null) {
+			builder.setSocketOption(Options.SSL_ENABLED_CIPHER_SUITES, Sequence.of(options.getCiphers()));
 		}
 	}
 
@@ -92,119 +74,6 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 			return "0.0.0.0";
 		}
 		return this.address.getHostAddress();
-	}
-
-	private SslClientAuthMode getSslClientAuthMode(Ssl ssl) {
-		if (ssl.getClientAuth() == Ssl.ClientAuth.NEED) {
-			return SslClientAuthMode.REQUIRED;
-		}
-		if (ssl.getClientAuth() == Ssl.ClientAuth.WANT) {
-			return SslClientAuthMode.REQUESTED;
-		}
-		return SslClientAuthMode.NOT_REQUESTED;
-	}
-
-	KeyManager[] getKeyManagers(Ssl ssl, SslStoreProvider sslStoreProvider) {
-		try {
-			KeyStore keyStore = sslStoreProvider.getKeyStore();
-			SslConfigurationValidator.validateKeyAlias(keyStore, ssl.getKeyAlias());
-			KeyManagerFactory keyManagerFactory = KeyManagerFactory
-				.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-			String keyPassword = sslStoreProvider.getKeyPassword();
-			if (keyPassword == null) {
-				keyPassword = (ssl.getKeyPassword() != null) ? ssl.getKeyPassword() : ssl.getKeyStorePassword();
-			}
-			keyManagerFactory.init(keyStore, (keyPassword != null) ? keyPassword.toCharArray() : null);
-			if (ssl.getKeyAlias() != null) {
-				return getConfigurableAliasKeyManagers(ssl, keyManagerFactory.getKeyManagers());
-			}
-			return keyManagerFactory.getKeyManagers();
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException("Could not load key managers: " + ex.getMessage(), ex);
-		}
-	}
-
-	private KeyManager[] getConfigurableAliasKeyManagers(Ssl ssl, KeyManager[] keyManagers) {
-		for (int i = 0; i < keyManagers.length; i++) {
-			if (keyManagers[i] instanceof X509ExtendedKeyManager) {
-				keyManagers[i] = new ConfigurableAliasKeyManager((X509ExtendedKeyManager) keyManagers[i],
-						ssl.getKeyAlias());
-			}
-		}
-		return keyManagers;
-	}
-
-	TrustManager[] getTrustManagers(SslStoreProvider sslStoreProvider) {
-		try {
-			KeyStore store = sslStoreProvider.getTrustStore();
-			TrustManagerFactory trustManagerFactory = TrustManagerFactory
-				.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-			trustManagerFactory.init(store);
-			return trustManagerFactory.getTrustManagers();
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException("Could not load trust managers: " + ex.getMessage(), ex);
-		}
-	}
-
-	/**
-	 * {@link X509ExtendedKeyManager} that supports custom alias configuration.
-	 */
-	private static class ConfigurableAliasKeyManager extends X509ExtendedKeyManager {
-
-		private final X509ExtendedKeyManager keyManager;
-
-		private final String alias;
-
-		ConfigurableAliasKeyManager(X509ExtendedKeyManager keyManager, String alias) {
-			this.keyManager = keyManager;
-			this.alias = alias;
-		}
-
-		@Override
-		public String chooseEngineClientAlias(String[] strings, Principal[] principals, SSLEngine sslEngine) {
-			return this.keyManager.chooseEngineClientAlias(strings, principals, sslEngine);
-		}
-
-		@Override
-		public String chooseEngineServerAlias(String s, Principal[] principals, SSLEngine sslEngine) {
-			if (this.alias == null) {
-				return this.keyManager.chooseEngineServerAlias(s, principals, sslEngine);
-			}
-			return this.alias;
-		}
-
-		@Override
-		public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
-			return this.keyManager.chooseClientAlias(keyType, issuers, socket);
-		}
-
-		@Override
-		public String chooseServerAlias(String keyType, Principal[] issuers, Socket socket) {
-			return this.keyManager.chooseServerAlias(keyType, issuers, socket);
-		}
-
-		@Override
-		public X509Certificate[] getCertificateChain(String alias) {
-			return this.keyManager.getCertificateChain(alias);
-		}
-
-		@Override
-		public String[] getClientAliases(String keyType, Principal[] issuers) {
-			return this.keyManager.getClientAliases(keyType, issuers);
-		}
-
-		@Override
-		public PrivateKey getPrivateKey(String alias) {
-			return this.keyManager.getPrivateKey(alias);
-		}
-
-		@Override
-		public String[] getServerAliases(String keyType, Principal[] issuers) {
-			return this.keyManager.getServerAliases(keyType, issuers);
-		}
-
 	}
 
 }

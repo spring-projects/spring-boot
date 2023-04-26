@@ -13,7 +13,6 @@ dependencies {
 	implementation("org.springframework.session:spring-session-data-mongodb")
 
 	testImplementation("org.testcontainers:mongodb")
-	testImplementation("org.testcontainers:testcontainers")
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation(project(":spring-boot-project:spring-boot-testcontainers"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))

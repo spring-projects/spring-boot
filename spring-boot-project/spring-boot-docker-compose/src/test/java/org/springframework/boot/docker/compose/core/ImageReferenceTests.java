@@ -19,85 +19,150 @@ package org.springframework.boot.docker.compose.core;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link ImageReference}.
  *
- * @author Moritz Halbritter
- * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class ImageReferenceTests {
 
 	@Test
-	void getImageNameWhenImageOnly() {
-		ImageReference imageReference = ImageReference.of("redis");
-		assertThat(imageReference.getImageName()).isEqualTo("redis");
+	void ofSimpleName() {
+		ImageReference reference = ImageReference.of("ubuntu");
+		assertThat(reference.getDomain()).isEqualTo("docker.io");
+		assertThat(reference.getName()).isEqualTo("library/ubuntu");
+		assertThat(reference.getTag()).isNull();
+		assertThat(reference.getDigest()).isNull();
+		assertThat(reference).hasToString("docker.io/library/ubuntu");
 	}
 
 	@Test
-	void getImageNameWhenImageAndTag() {
-		ImageReference imageReference = ImageReference.of("redis:5");
-		assertThat(imageReference.getImageName()).isEqualTo("redis");
+	void ofLibrarySlashName() {
+		ImageReference reference = ImageReference.of("library/ubuntu");
+		assertThat(reference.getDomain()).isEqualTo("docker.io");
+		assertThat(reference.getName()).isEqualTo("library/ubuntu");
+		assertThat(reference.getTag()).isNull();
+		assertThat(reference.getDigest()).isNull();
+		assertThat(reference).hasToString("docker.io/library/ubuntu");
 	}
 
 	@Test
-	void getImageNameWhenImageAndDigest() {
-		ImageReference imageReference = ImageReference
-			.of("redis@sha256:0ed5d5928d4737458944eb604cc8509e245c3e19d02ad83935398bc4b991aac7");
-		assertThat(imageReference.getImageName()).isEqualTo("redis");
+	void ofSlashName() {
+		ImageReference reference = ImageReference.of("adoptopenjdk/openjdk11");
+		assertThat(reference.getDomain()).isEqualTo("docker.io");
+		assertThat(reference.getName()).isEqualTo("adoptopenjdk/openjdk11");
+		assertThat(reference.getTag()).isNull();
+		assertThat(reference.getDigest()).isNull();
+		assertThat(reference).hasToString("docker.io/adoptopenjdk/openjdk11");
 	}
 
 	@Test
-	void getImageNameWhenProjectAndImage() {
-		ImageReference imageReference = ImageReference.of("library/redis");
-		assertThat(imageReference.getImageName()).isEqualTo("redis");
+	void ofCustomDomain() {
+		ImageReference reference = ImageReference.of("repo.example.com/java/jdk");
+		assertThat(reference.getDomain()).isEqualTo("repo.example.com");
+		assertThat(reference.getName()).isEqualTo("java/jdk");
+		assertThat(reference.getTag()).isNull();
+		assertThat(reference.getDigest()).isNull();
+		assertThat(reference).hasToString("repo.example.com/java/jdk");
 	}
 
 	@Test
-	void getImageNameWhenRegistryLibraryAndImage() {
-		ImageReference imageReference = ImageReference.of("docker.io/library/redis");
-		assertThat(imageReference.getImageName()).isEqualTo("redis");
+	void ofCustomDomainAndPort() {
+		ImageReference reference = ImageReference.of("repo.example.com:8080/java/jdk");
+		assertThat(reference.getDomain()).isEqualTo("repo.example.com:8080");
+		assertThat(reference.getName()).isEqualTo("java/jdk");
+		assertThat(reference.getTag()).isNull();
+		assertThat(reference.getDigest()).isNull();
+		assertThat(reference).hasToString("repo.example.com:8080/java/jdk");
 	}
 
 	@Test
-	void getImageNameWhenRegistryLibraryImageAndTag() {
-		ImageReference imageReference = ImageReference.of("docker.io/library/redis:5");
-		assertThat(imageReference.getImageName()).isEqualTo("redis");
+	void ofLegacyDomain() {
+		ImageReference reference = ImageReference.of("index.docker.io/ubuntu");
+		assertThat(reference.getDomain()).isEqualTo("docker.io");
+		assertThat(reference.getName()).isEqualTo("library/ubuntu");
+		assertThat(reference.getTag()).isNull();
+		assertThat(reference.getDigest()).isNull();
+		assertThat(reference).hasToString("docker.io/library/ubuntu");
 	}
 
 	@Test
-	void getImageNameWhenRegistryLibraryImageAndDigest() {
-		ImageReference imageReference = ImageReference
-			.of("docker.io/library/redis@sha256:0ed5d5928d4737458944eb604cc8509e245c3e19d02ad83935398bc4b991aac7");
-		assertThat(imageReference.getImageName()).isEqualTo("redis");
+	void ofNameAndTag() {
+		ImageReference reference = ImageReference.of("ubuntu:bionic");
+		assertThat(reference.getDomain()).isEqualTo("docker.io");
+		assertThat(reference.getName()).isEqualTo("library/ubuntu");
+		assertThat(reference.getTag()).isEqualTo("bionic");
+		assertThat(reference.getDigest()).isNull();
+		assertThat(reference).hasToString("docker.io/library/ubuntu:bionic");
 	}
 
 	@Test
-	void getImageNameWhenRegistryWithPort() {
-		ImageReference imageReference = ImageReference.of("my_private.registry:5000/redis");
-		assertThat(imageReference.getImageName()).isEqualTo("redis");
+	void ofDomainPortAndTag() {
+		ImageReference reference = ImageReference.of("repo.example.com:8080/library/ubuntu:v1");
+		assertThat(reference.getDomain()).isEqualTo("repo.example.com:8080");
+		assertThat(reference.getName()).isEqualTo("library/ubuntu");
+		assertThat(reference.getTag()).isEqualTo("v1");
+		assertThat(reference.getDigest()).isNull();
+		assertThat(reference).hasToString("repo.example.com:8080/library/ubuntu:v1");
 	}
 
 	@Test
-	void getImageNameWhenRegistryWithPortAndTag() {
-		ImageReference imageReference = ImageReference.of("my_private.registry:5000/redis:5");
-		assertThat(imageReference.getImageName()).isEqualTo("redis");
+	void ofNameAndDigest() {
+		ImageReference reference = ImageReference
+			.of("ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+		assertThat(reference.getDomain()).isEqualTo("docker.io");
+		assertThat(reference.getName()).isEqualTo("library/ubuntu");
+		assertThat(reference.getTag()).isNull();
+		assertThat(reference.getDigest())
+			.isEqualTo("sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+		assertThat(reference).hasToString(
+				"docker.io/library/ubuntu@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 	}
 
 	@Test
-	void toStringReturnsReferenceString() {
-		ImageReference imageReference = ImageReference.of("docker.io/library/redis");
-		assertThat(imageReference).hasToString("docker.io/library/redis");
+	void ofNameAndTagAndDigest() {
+		ImageReference reference = ImageReference
+			.of("ubuntu:bionic@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+		assertThat(reference.getDomain()).isEqualTo("docker.io");
+		assertThat(reference.getName()).isEqualTo("library/ubuntu");
+		assertThat(reference.getTag()).isEqualTo("bionic");
+		assertThat(reference.getDigest())
+			.isEqualTo("sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+		assertThat(reference).hasToString(
+				"docker.io/library/ubuntu:bionic@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+	}
+
+	@Test
+	void ofCustomDomainAndPortWithTag() {
+		ImageReference reference = ImageReference
+			.of("example.com:8080/canonical/ubuntu:bionic@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+		assertThat(reference.getDomain()).isEqualTo("example.com:8080");
+		assertThat(reference.getName()).isEqualTo("canonical/ubuntu");
+		assertThat(reference.getTag()).isEqualTo("bionic");
+		assertThat(reference.getDigest())
+			.isEqualTo("sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+		assertThat(reference).hasToString(
+				"example.com:8080/canonical/ubuntu:bionic@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+	}
+
+	@Test
+	void ofWhenHasIllegalCharacter() {
+		assertThatIllegalArgumentException()
+			.isThrownBy(() -> ImageReference
+				.of("registry.example.com/example/example-app:1.6.0-dev.2.uncommitted+wip.foo.c75795d"))
+			.withMessageContaining("Unable to parse image reference");
 	}
 
 	@Test
 	void equalsAndHashCode() {
-		ImageReference imageReference1 = ImageReference.of("docker.io/library/redis");
-		ImageReference imageReference2 = ImageReference.of("docker.io/library/redis");
-		ImageReference imageReference3 = ImageReference.of("docker.io/library/other");
-		assertThat(imageReference1.hashCode()).isEqualTo(imageReference2.hashCode());
-		assertThat(imageReference1).isEqualTo(imageReference1).isEqualTo(imageReference2).isNotEqualTo(imageReference3);
+		ImageReference r1 = ImageReference.of("ubuntu:bionic");
+		ImageReference r2 = ImageReference.of("docker.io/library/ubuntu:bionic");
+		ImageReference r3 = ImageReference.of("docker.io/library/ubuntu:latest");
+		assertThat(r1).hasSameHashCodeAs(r2);
+		assertThat(r1).isEqualTo(r1).isEqualTo(r2).isNotEqualTo(r3);
 	}
 
 }

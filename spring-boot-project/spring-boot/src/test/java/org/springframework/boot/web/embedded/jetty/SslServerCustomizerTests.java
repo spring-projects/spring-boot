@@ -35,7 +35,7 @@ import org.springframework.boot.web.embedded.test.MockPkcs11Security;
 import org.springframework.boot.web.embedded.test.MockPkcs11SecurityProvider;
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
-import org.springframework.boot.web.server.SslStoreProviderFactory;
+import org.springframework.boot.web.server.WebServerSslBundle;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -91,10 +91,10 @@ class SslServerCustomizerTests {
 	@Test
 	void configureSslWhenSslIsEnabledWithNoKeyStoreAndNotPkcs11ThrowsException() {
 		Ssl ssl = new Ssl();
-		SslServerCustomizer customizer = new SslServerCustomizer(null, ssl, null, null);
-		assertThatIllegalStateException().isThrownBy(
-				() -> customizer.configureSsl(new SslContextFactory.Server(), ssl, SslStoreProviderFactory.from(ssl)))
-			.withMessageContaining("KeyStore location must not be empty or null");
+		assertThatIllegalStateException().isThrownBy(() -> {
+			SslServerCustomizer customizer = new SslServerCustomizer(null, null, null, WebServerSslBundle.get(ssl));
+			customizer.configureSsl(new SslContextFactory.Server(), ssl.getClientAuth());
+		}).withMessageContaining("SSL is enabled but no trust material is configured");
 	}
 
 	@Test
@@ -104,10 +104,10 @@ class SslServerCustomizerTests {
 		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
 		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setKeyPassword("password");
-		SslServerCustomizer customizer = new SslServerCustomizer(null, ssl, null, null);
-		assertThatIllegalStateException().isThrownBy(
-				() -> customizer.configureSsl(new SslContextFactory.Server(), ssl, SslStoreProviderFactory.from(ssl)))
-			.withMessageContaining("must be empty or null for PKCS11 key stores");
+		assertThatIllegalStateException().isThrownBy(() -> {
+			SslServerCustomizer customizer = new SslServerCustomizer(null, null, null, WebServerSslBundle.get(ssl));
+			customizer.configureSsl(new SslContextFactory.Server(), ssl.getClientAuth());
+		}).withMessageContaining("must be empty or null for PKCS11 hardware key stores");
 	}
 
 	@Test
@@ -116,8 +116,10 @@ class SslServerCustomizerTests {
 		ssl.setKeyStoreType("PKCS11");
 		ssl.setKeyStoreProvider(MockPkcs11SecurityProvider.NAME);
 		ssl.setKeyStorePassword("1234");
-		SslServerCustomizer customizer = new SslServerCustomizer(null, ssl, null, null);
-		assertThatNoException().isThrownBy(() -> customizer.configureSsl(new SslContextFactory.Server(), ssl, null));
+		assertThatNoException().isThrownBy(() -> {
+			SslServerCustomizer customizer = new SslServerCustomizer(null, null, null, WebServerSslBundle.get(ssl));
+			customizer.configureSsl(new SslContextFactory.Server(), ssl.getClientAuth());
+		});
 	}
 
 	private Server createCustomizedServer() {
@@ -132,7 +134,8 @@ class SslServerCustomizerTests {
 
 	private Server createCustomizedServer(Ssl ssl, Http2 http2) {
 		Server server = new Server();
-		new SslServerCustomizer(new InetSocketAddress(0), ssl, null, http2).customize(server);
+		new SslServerCustomizer(http2, new InetSocketAddress(0), ssl.getClientAuth(), WebServerSslBundle.get(ssl))
+			.customize(server);
 		return server;
 	}
 

@@ -33,6 +33,7 @@ import java.util.function.Supplier;
 import reactor.netty.http.client.HttpClientRequest;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.boot.ssl.SslBundle;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -64,6 +65,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * @author Dmytro Nosan
  * @author Kevin Strijbos
  * @author Ilya Lukyanovich
+ * @author Scott Frederick
  * @since 1.4.0
  */
 public class RestTemplateBuilder {
@@ -451,6 +453,19 @@ public class RestTemplateBuilder {
 				this.detectRequestFactory, this.rootUri, this.messageConverters, this.interceptors, this.requestFactory,
 				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication, this.defaultHeaders,
 				this.customizers, this.requestCustomizers);
+	}
+
+	/**
+	 * Sets the SSL bundle on the underlying {@link ClientHttpRequestFactory}.
+	 * @param sslBundle the SSL bundle
+	 * @return a new builder instance
+	 * @since 3.1.0
+	 */
+	public RestTemplateBuilder setSslBundle(SslBundle sslBundle) {
+		return new RestTemplateBuilder(this.requestFactorySettings.withSslBundle(sslBundle), this.detectRequestFactory,
+				this.rootUri, this.messageConverters, this.interceptors, this.requestFactory, this.uriTemplateHandler,
+				this.errorHandler, this.basicAuthentication, this.defaultHeaders, this.customizers,
+				this.requestCustomizers);
 	}
 
 	/**

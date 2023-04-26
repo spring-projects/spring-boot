@@ -13,8 +13,9 @@ The following code shows a typical example:
 
 include::code:MyService[]
 
-TIP: `RestTemplateBuilder` includes a number of useful methods that can be used to quickly configure a `RestTemplate`.
-For example, to add BASIC auth support, you can use `builder.basicAuthentication("user", "password").build()`.
+`RestTemplateBuilder` includes a number of useful methods that can be used to quickly configure a `RestTemplate`.
+For example, to add BASIC authentication support, you can use `builder.basicAuthentication("user", "password").build()`.
+To add SSL support using an <<features#features.ssl.bundles,SSL bundle>>, you can use `builder.setSslBundle(sslBundle).build()`.
 
 
 
@@ -89,3 +90,16 @@ To make an application-wide, additive customization to all `WebClient.Builder` i
 
 Finally, you can fall back to the original API and use `WebClient.create()`.
 In that case, no auto-configuration or `WebClientCustomizer` is applied.
+
+
+
+[[io.rest-client.webclient.ssl]]
+==== WebClient SSL Support
+If you need custom SSL configuration on the `ClientHttpConnector` used by the `WebClient`, you can inject a `WebClientSsl` instance that can be used with the builder's `apply` method.
+
+The `WebClientSsl` interface provides access to any <<features#features.ssl.bundles,SSL bundles>> that you have defined in your `application.properties` or `application.yaml` file.
+
+The following code shows a typical example:
+
+include::code:MyService[]
+

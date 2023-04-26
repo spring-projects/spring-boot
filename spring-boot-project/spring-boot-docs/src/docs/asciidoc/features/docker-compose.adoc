@@ -1,0 +1,213 @@
+[[features.docker-compose]]
+== Docker Compose Support
+Docker Compose is a popular technology that can be used to define and manage multiple containers for services that your application needs.
+A `compose.yml` file is typically created next to your application which defines and configures service containers.
+
+A typical workflow with Docker Compose is to run `docker compose up`.
+Work on your application with it connecting to started services.
+Then run `docker compose down` when you are finished.
+
+To help with this workflow, the `spring-boot-docker-compose` module can be used. When this modules is included as a dependency Spring Boot will do the following:
+
+* Search for a `compose.yml` and other common compose filenames in your application directory
+* Call `docker compose up` with the discovered `compose.yml`
+* Create service connection beans for each supported container
+* Call `docker compose down` when the application is shutdown
+
+NOTE: The `docker compose` or `docker-compose` CLI application needs to be on your path in order for Spring Boot’s support to work correctly.
+
+
+
+[[features.docker-compose.service-connections]]
+=== Service Connections
+A service connection is a connection to any remote service.
+Spring Boot’s auto-configuration can consume the details of a service connection and use them to establish a connection to a remote service.
+When doing so, the connection details take precedence over any connection-related configuration properties.
+
+When using Spring Boot’s Docker Compose support, service connections are established to the port mapped by the container.
+
+NOTE: Docker compose is usually used in such a way that the ports inside the container are mapped to ephemeral ports on your computer.
+For example, A Postgres server my run inside the container using port 5432 but be mapped to a totally different port locally.
+The service connection will always discover and use the locally mapped port.
+
+Service connections are established by using the image name of the container.
+The following service connections are currently supported:
+
+
+|===
+| Connection Details | Matched on
+
+| `CassandraConnectionDetails`
+| Containers named "cassandra"
+
+| `ElasticsearchConnectionDetails`
+| Containers named "elasticsearch"
+
+| `JdbcConnectionDetails`
+| Containers named "mariadb", "mysql" or "postgres"
+
+| `MongoConnectionDetails`
+| Containers named "mongo"
+
+| `R2dbcConnectionDetails`
+| Containers named "mariadb", "mssql/server", "mysql" or "postgres"
+
+| `RabbitConnectionDetails`
+| Containers named "rabbitmq"
+
+| `RedisConnectionDetails`
+| Containers named "redis"
+
+| `ZipkinConnectionDetails`
+| Containers named "openzipkin/zipkin".
+|===
+
+
+
+[[features.docker-compose.custom-images]]
+=== Custom Images
+Sometimes you may need to use your own version of an image to provide a service.
+You can use any custom image as long as it behaves in the same way as the standard image.
+Specifically, any environment variables that the standard image supports must also be used in your custom image.
+
+If your image uses a different name, you can use a label in your `compose.yml` file so that Spring Boot can provide a service connection.
+Use a label named `org.springframework.boot.service-connection` to provide the service name.
+
+For example:
+
+[source,yaml,indent=0]
+----
+	services:
+	  redis:
+	    image: 'mycompany/mycustomredis:7.0'
+	    ports:
+	      - '6379'
+	    labels:
+	      org.springframework.boot.service-connection: redis
+----
+
+
+
+[[features.docker-compose.skipping]]
+=== Skipping Specific Containers
+If you have a container image defined in your `compose.yml` that you don’t want connected to your application you can use a label to ignore it.
+Any container with labeled with `org.springframework.boot.ignore` will be ignored by Spring Boot.
+
+For example:
+
+[source,yaml,indent=0]
+----
+	services:
+	  redis:
+	    image: 'redis:7.0'
+	    ports:
+	      - '6379'
+	    labels:
+	      org.springframework.boot.ignore: true
+----
+
+
+
+[[features.docker-compose.specific-file]]
+=== Using a Specific Compose File
+If your compose file is not in the same directory as your application, or if it’s named differently, you can use configprop:spring.docker.compose.file[] in your `application.properties` or `application.yaml` to point to a different file.
+Properties can be defined as an exact path or a path that’s relative to your application.
+
+For example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  docker:
+	    compose:
+	      file: "../my-compose.yml"
+----
+
+
+
+[[features.docker-compose.readiness]]
+=== Waiting for Container Readiness
+Containers started by Docker Compose may take some time to become fully ready.
+The recommended way of checking for readiness is to add a `healthcheck` section under the service definition in your `compose.yml` file.
+
+Since it's not uncommon for `healthcheck` configuration to be omitted from `compose.yml` files, Spring Boot also checks directly for service readiness.
+By default, a container is considered ready when a TCP/IP connection can be established to its mapped port.
+
+You can disable this on a per-container basis by add a `org.springframework.boot.readiness-check.tcp.disable` label in your `compose.yml` file.
+
+For example:
+
+[source,yaml,indent=0]
+----
+	services:
+	  redis:
+	    image: 'redis:7.0'
+	    ports:
+	      - '6379'
+	    labels:
+	      org.springframework.boot.readiness-check.tcp.disable: true
+----
+
+You can also change timeout values in your `application.properties` or `application.yaml` file:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  docker:
+	    compose:
+	      readiness:
+	        tcp:
+	          connect-timeout: 10s
+	          read-timeout: 5s
+----
+
+The overall timeout can be configured using configprop:spring.docker.compose.readiness.timeout[].
+
+TIP: You can also provide your own `ServiceReadinessCheck` implementations and register them in the `spring.factories` file.
+
+
+
+[[features.docker-compose.lifecycle]]
+=== Controlling the Docker Compose Lifecycle
+By default Spring Boot calls `docker compose up` when your application starts and `docker compose down` when it's shutdown.
+If you prefer to have different lifecycle management you can use the configprop:spring.docker.compose.lifecycle-management[] property.
+
+The following values are supported:
+
+* `none` - Do not start or stop Docker Compose
+* `start-only` - Start Docker Compose on application startup and leave it running
+* `start-and-stop` - Start Docker Compose on application startup and stop it on application shutdown
+
+In addition you can use the configprop:spring.docker.compose.startup.command[] property to change if `docker up` or `docker start` is used.
+The configprop:spring.docker.compose.shutdown.command[] allows you to configure if `docker down` or `docker stop` is used.
+
+The following example shows how lifecycle management can be configured:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  docker:
+	    compose:
+	      lifecycle-management: start-and-stop
+	      startup:
+	        command: start
+	      shutdown:
+	        command: stop
+	        timeout: 1m
+----
+
+
+
+[[features.docker-compose.profiles]]
+=== Activating Docker Compose Profiles
+Docker Compose profiles are similar to Spring profiles in that they let you adjust your Docker Compose configuration for specific environments.
+If you want to activate a specific Docker Compose profile you can use the configprop:spring.docker.compose.profiles.active[] property in your `application.properties` or `application.yaml` file:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  docker:
+	    compose:
+	      profiles:
+	        active: "myprofile"
+----

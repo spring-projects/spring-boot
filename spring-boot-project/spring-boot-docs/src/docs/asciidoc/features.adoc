@@ -26,8 +26,12 @@ include::features/task-execution-and-scheduling.adoc[]
 
 include::features/testing.adoc[]
 
+include::features/docker-compose.adoc[]
+
 include::features/developing-auto-configuration.adoc[]
 
 include::features/kotlin.adoc[]
+
+include::features/ssl.adoc[]
 
 include::features/whats-next.adoc[]

@@ -266,8 +266,14 @@ class PaketoBuilderTests {
 					.contains("paketo-buildpacks/ca-certificates", "paketo-buildpacks/bellsoft-liberica",
 							"paketo-buildpacks/apache-tomcat", "paketo-buildpacks/dist-zip",
 							"paketo-buildpacks/spring-boot");
-				metadata.processOfType("web").containsExactly("bash", "catalina.sh", "run");
-				metadata.processOfType("tomcat").containsExactly("bash", "catalina.sh", "run");
+				metadata.processOfType("web")
+					.satisfiesExactly((command) -> assertThat(command).endsWith("sh"),
+							(arg) -> assertThat(arg).endsWith("catalina.sh"),
+							(arg) -> assertThat(arg).isEqualTo("run"));
+				metadata.processOfType("tomcat")
+					.satisfiesExactly((command) -> assertThat(command).endsWith("sh"),
+							(arg) -> assertThat(arg).endsWith("catalina.sh"),
+							(arg) -> assertThat(arg).isEqualTo("run"));
 			});
 			assertImageHasJvmSbomLayer(imageReference, config);
 			assertImageHasDependenciesSbomLayer(imageReference, config, "apache-tomcat");

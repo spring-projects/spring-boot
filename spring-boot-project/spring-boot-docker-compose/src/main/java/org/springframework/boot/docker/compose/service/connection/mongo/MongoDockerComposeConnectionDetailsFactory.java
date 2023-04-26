@@ -18,7 +18,6 @@ package org.springframework.boot.docker.compose.service.connection.mongo;
 
 import com.mongodb.ConnectionString;
 
-import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchConnectionDetails;
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.service.connection.DockerComposeConnectionDetailsFactory;
@@ -47,8 +46,7 @@ class MongoDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 	}
 
 	/**
-	 * {@link ElasticsearchConnectionDetails} backed by a {@code mariadb}
-	 * {@link RunningService}.
+	 * {@link MongoConnectionDetails} backed by a {@code mongo} {@link RunningService}.
 	 */
 	static class MongoDockerComposeConnectionDetails extends DockerComposeConnectionDetails
 			implements MongoConnectionDetails {

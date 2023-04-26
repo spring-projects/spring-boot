@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,6 +109,8 @@ public class MongoProperties {
 	 * Representation to use when converting a UUID to a BSON binary value.
 	 */
 	private UuidRepresentation uuidRepresentation = UuidRepresentation.JAVA_LEGACY;
+
+	private final Ssl ssl = new Ssl();
 
 	/**
 	 * Whether to enable auto-index creation.
@@ -226,6 +228,10 @@ public class MongoProperties {
 		this.additionalHosts = additionalHosts;
 	}
 
+	public Ssl getSsl() {
+		return this.ssl;
+	}
+
 	public static class Gridfs {
 
 		/**
@@ -252,6 +258,37 @@ public class MongoProperties {
 
 		public void setBucket(String bucket) {
 			this.bucket = bucket;
+		}
+
+	}
+
+	public static class Ssl {
+
+		/**
+		 * Whether to enable SSL support. Enabled automatically if "bundle" is provided
+		 * unless specified otherwise.
+		 */
+		private Boolean enabled;
+
+		/**
+		 * SSL bundle name.
+		 */
+		private String bundle;
+
+		public boolean isEnabled() {
+			return (this.enabled != null) ? this.enabled : this.bundle != null;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
+
+		public String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(String bundle) {
+			this.bundle = bundle;
 		}
 
 	}

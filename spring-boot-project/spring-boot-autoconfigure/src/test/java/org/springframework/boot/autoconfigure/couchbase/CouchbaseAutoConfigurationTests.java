@@ -36,6 +36,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration.PropertiesCouchbaseConnectionDetails;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.ssl.NoSuchSslBundleException;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,7 +58,7 @@ import static org.mockito.Mockito.mock;
 class CouchbaseAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class, SslAutoConfiguration.class));
 
 	@Test
 	void connectionStringIsRequired() {
@@ -179,12 +181,45 @@ class CouchbaseAutoConfigurationTests {
 	}
 
 	@Test
-	void enableSslNoEnabledFlag() {
+	void enableSsl() {
+		testClusterEnvironment((env) -> {
+			SecurityConfig securityConfig = env.securityConfig();
+			assertThat(securityConfig.tlsEnabled()).isTrue();
+			assertThat(securityConfig.trustManagerFactory()).isNull();
+		}, "spring.couchbase.env.ssl.enabled=true");
+	}
+
+	@Test
+	void enableSslWithKeyStore() {
 		testClusterEnvironment((env) -> {
 			SecurityConfig securityConfig = env.securityConfig();
 			assertThat(securityConfig.tlsEnabled()).isTrue();
 			assertThat(securityConfig.trustManagerFactory()).isNotNull();
 		}, "spring.couchbase.env.ssl.keyStore=classpath:test.jks", "spring.couchbase.env.ssl.keyStorePassword=secret");
+	}
+
+	@Test
+	void enableSslWithBundle() {
+		testClusterEnvironment((env) -> {
+			SecurityConfig securityConfig = env.securityConfig();
+			assertThat(securityConfig.tlsEnabled()).isTrue();
+			assertThat(securityConfig.trustManagerFactory()).isNotNull();
+		}, "spring.ssl.bundle.jks.test-bundle.keystore.location=classpath:test.jks",
+				"spring.ssl.bundle.jks.test-bundle.keystore.password=secret",
+				"spring.couchbase.env.ssl.bundle=test-bundle");
+	}
+
+	@Test
+	void enableSslWithInvalidBundle() {
+		this.contextRunner
+			.withPropertyValues("spring.couchbase.connection-string=localhost",
+					"spring.couchbase.env.ssl.bundle=test-bundle")
+			.run((context) -> {
+				assertThat(context).hasFailed();
+				assertThat(context.getStartupFailure()).rootCause()
+					.isInstanceOf(NoSuchSslBundleException.class)
+					.hasMessageContaining("test-bundle");
+			});
 	}
 
 	@Test
@@ -195,6 +230,15 @@ class CouchbaseAutoConfigurationTests {
 			assertThat(securityConfig.trustManagerFactory()).isNull();
 		}, "spring.couchbase.env.ssl.enabled=false", "spring.couchbase.env.ssl.keyStore=classpath:test.jks",
 				"spring.couchbase.env.ssl.keyStorePassword=secret");
+	}
+
+	@Test
+	void disableSslEvenWithBundle() {
+		testClusterEnvironment((env) -> {
+			SecurityConfig securityConfig = env.securityConfig();
+			assertThat(securityConfig.tlsEnabled()).isFalse();
+			assertThat(securityConfig.trustManagerFactory()).isNull();
+		}, "spring.couchbase.env.ssl.enabled=false", "spring.couchbase.env.ssl.bundle=test-bundle");
 	}
 
 	private void testClusterEnvironment(Consumer<ClusterEnvironment> environmentConsumer, String... environment) {

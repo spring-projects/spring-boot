@@ -27,6 +27,7 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -57,7 +58,7 @@ class DisabledIfProcessUnavailableCondition implements ExecutionCondition {
 	}
 
 	private Stream<String[]> getAnnotationValue(AnnotatedElement testClass) {
-		return MergedAnnotations.from(testClass)
+		return MergedAnnotations.from(testClass, SearchStrategy.TYPE_HIERARCHY)
 			.stream(DisabledIfProcessUnavailable.class)
 			.map((annotation) -> annotation.getStringArray(MergedAnnotation.VALUE));
 	}

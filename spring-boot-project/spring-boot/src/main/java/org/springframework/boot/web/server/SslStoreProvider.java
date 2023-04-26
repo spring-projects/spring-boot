@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,18 @@ package org.springframework.boot.web.server;
 
 import java.security.KeyStore;
 
+import org.springframework.boot.ssl.SslBundle;
+
 /**
  * Interface to provide SSL key stores for an {@link WebServer} to use. Can be used when
  * file based key stores cannot be used.
  *
  * @author Phillip Webb
  * @since 2.0.0
+ * @deprecated since 3.1.0 for removal in 3.3.0 in favor of registering an
+ * {@link SslBundle}.
  */
+@Deprecated(since = "3.1.0", forRemoval = true)
 public interface SslStoreProvider {
 
 	/**

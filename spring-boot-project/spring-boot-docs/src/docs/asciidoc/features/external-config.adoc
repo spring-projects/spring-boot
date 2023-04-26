@@ -35,7 +35,7 @@ Config data files are considered in the following order:
 . <<features#features.external-config.files.profile-specific,Profile-specific application properties>> outside of your packaged jar (`application-\{profile}.properties` and YAML variants).
 
 NOTE: It is recommended to stick with one format for your entire application.
-If you have configuration files with both `.properties` and `.yml` format in the same location, `.properties` takes precedence.
+If you have configuration files with both `.properties` and YAML format in the same location, `.properties` takes precedence.
 
 To provide a concrete example, suppose you develop a `@Component` that uses a `name` property, as shown in the following example:
 
@@ -220,7 +220,7 @@ You cannot use a wildcard in a `classpath:` location.
 [[features.external-config.files.profile-specific]]
 ==== Profile Specific Files
 As well as `application` property files, Spring Boot will also attempt to load profile-specific files using the naming convention `application-\{profile}`.
-For example, if your application activates a profile named `prod` and uses YAML files, then both `application.yml` and `application-prod.yml` will be considered.
+For example, if your application activates a profile named `prod` and uses YAML files, then both `application.yaml` and `application-prod.yaml` will be considered.
 
 Profile-specific properties are loaded from the same locations as standard `application.properties`, with profile-specific files always overriding the non-specific ones.
 If several profiles are specified, a last-wins strategy applies.
@@ -441,7 +441,7 @@ For example, if a secret named `db.password` is mounted at location `/run/secret
 
 [[features.external-config.files.property-placeholders]]
 ==== Property Placeholders
-The values in `application.properties` and `application.yml` are filtered through the existing `Environment` when they are used, so you can refer back to previously defined values (for example, from System properties or environment variables).
+The values in `application.properties` and `application.yaml` are filtered through the existing `Environment` when they are used, so you can refer back to previously defined values (for example, from System properties or environment variables).
 The standard `$\{name}` property-placeholder syntax can be used anywhere within a value.
 Property placeholders can also specify a default value using a `:` to separate the default value from the property name, for example `${name:default}`.
 
@@ -476,7 +476,7 @@ Spring Boot allows you to split a single physical file into multiple logical doc
 Documents are processed in order, from top to bottom.
 Later documents can override the properties defined in earlier ones.
 
-For `application.yml` files, the standard YAML multi-document syntax is used.
+For `application.yaml` files, the standard YAML multi-document syntax is used.
 Three consecutive hyphens represent the end of one document, and the start of the next.
 
 For example, the following file has two logical documents:
@@ -837,13 +837,13 @@ With the preceding code, the following properties names can all be used:
 | Property | Note
 
 | `my.main-project.person.first-name`
-| Kebab case, which is recommended for use in `.properties` and `.yml` files.
+| Kebab case, which is recommended for use in `.properties` and YAML files.
 
 | `my.main-project.person.firstName`
 | Standard camel case syntax.
 
 | `my.main-project.person.first_name`
-| Underscore notation, which is an alternative format for use in `.properties` and `.yml` files.
+| Underscore notation, which is an alternative format for use in `.properties` and YAML files.
 
 | `MY_MAINPROJECT_PERSON_FIRSTNAME`
 | Upper case format, which is recommended when using system environment variables.

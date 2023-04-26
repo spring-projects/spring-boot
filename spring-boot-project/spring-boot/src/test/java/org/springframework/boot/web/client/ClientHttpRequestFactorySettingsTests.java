@@ -20,7 +20,10 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.ssl.SslBundle;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ClientHttpRequestFactorySettings}.
@@ -37,6 +40,7 @@ class ClientHttpRequestFactorySettingsTests {
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.bufferRequestBody()).isNull();
+		assertThat(settings.sslBundle()).isNull();
 	}
 
 	@Test
@@ -46,6 +50,7 @@ class ClientHttpRequestFactorySettingsTests {
 		assertThat(settings.connectTimeout()).isEqualTo(ONE_SECOND);
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.bufferRequestBody()).isNull();
+		assertThat(settings.sslBundle()).isNull();
 	}
 
 	@Test
@@ -55,6 +60,7 @@ class ClientHttpRequestFactorySettingsTests {
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isEqualTo(ONE_SECOND);
 		assertThat(settings.bufferRequestBody()).isNull();
+		assertThat(settings.sslBundle()).isNull();
 	}
 
 	@Test
@@ -64,6 +70,17 @@ class ClientHttpRequestFactorySettingsTests {
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
 		assertThat(settings.bufferRequestBody()).isTrue();
+		assertThat(settings.sslBundle()).isNull();
+	}
+
+	@Test
+	void withSslBundleReturnsInstanceWithUpdatedSslBundle() {
+		SslBundle sslBundle = mock(SslBundle.class);
+		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS.withSslBundle(sslBundle);
+		assertThat(settings.connectTimeout()).isNull();
+		assertThat(settings.readTimeout()).isNull();
+		assertThat(settings.bufferRequestBody()).isNull();
+		assertThat(settings.sslBundle()).isSameAs(sslBundle);
 	}
 
 }

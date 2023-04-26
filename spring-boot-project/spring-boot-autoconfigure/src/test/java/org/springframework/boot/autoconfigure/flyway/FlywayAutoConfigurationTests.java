@@ -123,16 +123,6 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void createsDataSourceWithNoDataSourceBeanAndJdbcConnectionDetails() {
-		this.contextRunner
-			.withUserConfiguration(JdbcConnectionDetailsConfiguration.class, MockFlywayMigrationStrategy.class)
-			.run((context) -> {
-				assertThat(context).hasSingleBean(Flyway.class);
-				assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource()).isNotNull();
-			});
-	}
-
-	@Test
 	void backsOffWithFlywayUrlAndNoSpringJdbc() {
 		this.contextRunner.withPropertyValues("spring.flyway.url:jdbc:hsqldb:mem:" + UUID.randomUUID())
 			.withClassLoader(new FilteredClassLoader("org.springframework.jdbc"))
@@ -193,7 +183,7 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void jdbcConnectionDetailsAreUsedOverDataSourceProperties() {
+	void shouldUseMainDataSourceWhenThereIsNoFlywaySpecificConfiguration() {
 		this.contextRunner
 			.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JdbcConnectionDetailsConfiguration.class,
 					MockFlywayMigrationStrategy.class)
@@ -201,16 +191,8 @@ class FlywayAutoConfigurationTests {
 					"spring.datasource.password=some-password",
 					"spring.datasource.driver-class-name=org.hsqldb.jdbc.JDBCDriver")
 			.run((context) -> {
-				assertThat(context).hasSingleBean(Flyway.class);
 				Flyway flyway = context.getBean(Flyway.class);
-				DataSource dataSource = flyway.getConfiguration().getDataSource();
-				assertThat(dataSource).isInstanceOf(SimpleDriverDataSource.class);
-				SimpleDriverDataSource simpleDriverDataSource = (SimpleDriverDataSource) dataSource;
-				assertThat(simpleDriverDataSource.getUrl())
-					.isEqualTo("jdbc:postgresql://database.example.com:12345/database-1");
-				assertThat(simpleDriverDataSource.getUsername()).isEqualTo("user-1");
-				assertThat(simpleDriverDataSource.getPassword()).isEqualTo("secret-1");
-				assertThat(simpleDriverDataSource.getDriver()).isInstanceOf(Driver.class);
+				assertThat(flyway.getConfiguration().getDataSource()).isSameAs(context.getBean(DataSource.class));
 			});
 	}
 
@@ -233,7 +215,7 @@ class FlywayAutoConfigurationTests {
 				DataSource dataSource = context.getBean(Flyway.class).getConfiguration().getDataSource();
 				assertThat(dataSource).isNotNull();
 				assertThat(dataSource).hasFieldOrPropertyWithValue("username", null);
-				assertThat(dataSource).hasFieldOrPropertyWithValue("password", "");
+				assertThat(dataSource).hasFieldOrPropertyWithValue("password", null);
 			});
 	}
 

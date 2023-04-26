@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.couchbase;
 import java.time.Duration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
 /**
@@ -148,8 +149,8 @@ public class CouchbaseProperties {
 	public static class Ssl {
 
 		/**
-		 * Whether to enable SSL support. Enabled automatically if a "keyStore" is
-		 * provided unless specified otherwise.
+		 * Whether to enable SSL support. Enabled automatically if a "keyStore" or
+		 * "bundle" is provided unless specified otherwise.
 		 */
 		private Boolean enabled;
 
@@ -163,28 +164,50 @@ public class CouchbaseProperties {
 		 */
 		private String keyStorePassword;
 
+		/**
+		 * SSL bundle name.
+		 */
+		private String bundle;
+
 		public Boolean getEnabled() {
-			return (this.enabled != null) ? this.enabled : StringUtils.hasText(this.keyStore);
+			return (this.enabled != null) ? this.enabled
+					: StringUtils.hasText(this.keyStore) || StringUtils.hasText(this.bundle);
 		}
 
 		public void setEnabled(Boolean enabled) {
 			this.enabled = enabled;
 		}
 
+		@Deprecated(since = "3.1.0", forRemoval = true)
+		@DeprecatedConfigurationProperty(
+				reason = "SSL bundle support with spring.ssl.bundle and spring.couchbase.env.ssl.bundle should be used instead")
 		public String getKeyStore() {
 			return this.keyStore;
 		}
 
+		@Deprecated(since = "3.1.0", forRemoval = true)
 		public void setKeyStore(String keyStore) {
 			this.keyStore = keyStore;
 		}
 
+		@Deprecated(since = "3.1.0", forRemoval = true)
+		@DeprecatedConfigurationProperty(
+				reason = "SSL bundle support with spring.ssl.bundle and spring.couchbase.env.ssl.bundle should be used instead")
 		public String getKeyStorePassword() {
 			return this.keyStorePassword;
 		}
 
+		@Deprecated(since = "3.1.0", forRemoval = true)
 		public void setKeyStorePassword(String keyStorePassword) {
 			this.keyStorePassword = keyStorePassword;
+		}
+
+		public String getBundle() {
+			return this.bundle;
+		}
+
+		public void setBundle(String bundle) {
+			this.bundle = bundle;
 		}
 
 	}

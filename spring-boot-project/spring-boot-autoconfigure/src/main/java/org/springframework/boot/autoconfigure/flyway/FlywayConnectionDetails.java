@@ -28,33 +28,37 @@ import org.springframework.boot.jdbc.DatabaseDriver;
 public interface FlywayConnectionDetails extends ConnectionDetails {
 
 	/**
-	 * Username for the database.
-	 * @return the username for the database
+	 * Username for the database or {@code null} if no Flyway-specific configuration is
+	 * required.
+	 * @return the username for the database or {@code null}
 	 */
 	String getUsername();
 
 	/**
-	 * Password for the database.
-	 * @return the password for the database
+	 * Password for the database or {@code null} if no Flyway-specific configuration is
+	 * required.
+	 * @return the password for the database or {@code null}
 	 */
 	String getPassword();
 
 	/**
-	 * JDBC URL for the database.
-	 * @return the JDBC URL for the database
+	 * JDBC URL for the database or {@code null} if no Flyway-specific configuration is
+	 * required.
+	 * @return the JDBC URL for the database or {@code null}
 	 */
 	String getJdbcUrl();
 
 	/**
 	 * The name of the JDBC driver class. Defaults to the class name of the driver
-	 * specified in the JDBC URL.
-	 * @return the JDBC driver class name
+	 * specified in the JDBC URL or {@code null} when no JDBC URL is configured.
+	 * @return the JDBC driver class name or {@code null}
 	 * @see #getJdbcUrl()
 	 * @see DatabaseDriver#fromJdbcUrl(String)
 	 * @see DatabaseDriver#getDriverClassName()
 	 */
 	default String getDriverClassName() {
-		return DatabaseDriver.fromJdbcUrl(getJdbcUrl()).getDriverClassName();
+		String jdbcUrl = getJdbcUrl();
+		return (jdbcUrl != null) ? DatabaseDriver.fromJdbcUrl(jdbcUrl).getDriverClassName() : null;
 	}
 
 }

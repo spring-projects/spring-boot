@@ -2065,6 +2065,10 @@
       }
     },
     {
+      "name": "management.server.ssl.bundle",
+      "description": "The name of a configured SSL bundle."
+    },
+    {
       "name": "management.server.ssl.certificate",
       "description": "Path to a PEM-encoded SSL certificate file."
     },

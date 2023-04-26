@@ -803,7 +803,7 @@ bom {
 	}
 	library("Liquibase", "4.20.0") {
 		prohibit {
-			versionRange "[4.21.0,4.21.1)"
+			versionRange "[4.21.0,4.21.2)"
 			because "https://github.com/liquibase/liquibase/issues/4135"
 		}
 		group("org.liquibase") {
@@ -823,7 +823,7 @@ bom {
 			]
 		}
 	}
-	library("Logback", "1.4.6") {
+	library("Logback", "1.4.7") {
 		group("ch.qos.logback") {
 			modules = [
 				"logback-access",
@@ -1337,7 +1337,7 @@ bom {
 			]
 		}
 	}
-	library("Selenium HtmlUnit", "4.8.1.1") {
+	library("Selenium HtmlUnit", "4.8.3") {
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"htmlunit-driver"
@@ -1414,7 +1414,7 @@ bom {
 			]
 		}
 	}
-	library("Spring GraphQL", "1.2.0-SNAPSHOT") {
+	library("Spring GraphQL", "1.2.0-RC1") {
 		group("org.springframework.graphql") {
 			modules = [
 					"spring-graphql",
@@ -1429,7 +1429,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Integration", "6.1.0-SNAPSHOT") {
+	library("Spring Integration", "6.1.0-RC1") {
 		group("org.springframework.integration") {
 			imports = [
 				"spring-integration-bom"
