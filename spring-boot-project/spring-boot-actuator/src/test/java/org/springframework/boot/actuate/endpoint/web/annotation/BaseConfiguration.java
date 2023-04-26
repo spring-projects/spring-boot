@@ -70,7 +70,7 @@ class BaseConfiguration {
 	}
 
 	@Bean
-	PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+	static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
 		return new PropertySourcesPlaceholderConfigurer();
 	}
 
