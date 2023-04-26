@@ -45,6 +45,7 @@ import org.springframework.context.annotation.Bean;
  * define an {@link OtlpGrpcSpanExporter} and this auto-configuration will back off.
  *
  * @author Jonatan Ivanov
+ * @author Eddú Meléndez
  * @since 3.1.0
  */
 @AutoConfiguration
@@ -54,17 +55,42 @@ import org.springframework.context.annotation.Bean;
 public class OtlpAutoConfiguration {
 
 	@Bean
+	@ConditionalOnMissingBean(OtlpTracingConnectionDetails.class)
+	OtlpTracingConnectionDetails otlpTracingConnectionDetails(OtlpProperties properties) {
+		return new PropertiesOtlpTracingConnectionDetails(properties);
+	}
+
+	@Bean
 	@ConditionalOnMissingBean(value = OtlpHttpSpanExporter.class,
 			type = "io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter")
-	OtlpHttpSpanExporter otlpHttpSpanExporter(OtlpProperties properties) {
+	OtlpHttpSpanExporter otlpHttpSpanExporter(OtlpProperties properties,
+			OtlpTracingConnectionDetails connectionDetails) {
 		OtlpHttpSpanExporterBuilder builder = OtlpHttpSpanExporter.builder()
-			.setEndpoint(properties.getEndpoint())
+			.setEndpoint(connectionDetails.getEndpoint())
 			.setTimeout(properties.getTimeout())
 			.setCompression(properties.getCompression().name().toLowerCase());
 		for (Entry<String, String> header : properties.getHeaders().entrySet()) {
 			builder.addHeader(header.getKey(), header.getValue());
 		}
 		return builder.build();
+	}
+
+	/**
+	 * Adapts {@link OtlpProperties} to {@link OtlpTracingConnectionDetails}.
+	 */
+	static class PropertiesOtlpTracingConnectionDetails implements OtlpTracingConnectionDetails {
+
+		private final OtlpProperties properties;
+
+		PropertiesOtlpTracingConnectionDetails(OtlpProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public String getEndpoint() {
+			return this.properties.getEndpoint();
+		}
+
 	}
 
 }
