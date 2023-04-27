@@ -57,8 +57,8 @@ class DisabledIfProcessUnavailableCondition implements ExecutionCondition {
 		}
 	}
 
-	private Stream<String[]> getAnnotationValue(AnnotatedElement testClass) {
-		return MergedAnnotations.from(testClass, SearchStrategy.TYPE_HIERARCHY)
+	private Stream<String[]> getAnnotationValue(AnnotatedElement testElement) {
+		return MergedAnnotations.from(testElement, SearchStrategy.TYPE_HIERARCHY)
 			.stream(DisabledIfProcessUnavailable.class)
 			.map((annotation) -> annotation.getStringArray(MergedAnnotation.VALUE));
 	}

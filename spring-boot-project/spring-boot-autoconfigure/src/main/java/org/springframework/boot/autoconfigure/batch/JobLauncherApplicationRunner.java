@@ -59,7 +59,7 @@ import org.springframework.util.StringUtils;
 /**
  * {@link ApplicationRunner} to {@link JobLauncher launch} Spring Batch jobs. If a single
  * job is found in the context, it will be executed by default. If multiple jobs are
- * found, launch a specific job by providing a jobName
+ * found, launch a specific job by providing a jobName.
  *
  * @author Dave Syer
  * @author Jean-Pierre Bergamin
