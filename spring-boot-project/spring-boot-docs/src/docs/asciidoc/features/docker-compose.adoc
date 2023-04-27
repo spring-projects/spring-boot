@@ -44,7 +44,7 @@ The following service connections are currently supported:
 | Containers named "elasticsearch"
 
 | `JdbcConnectionDetails`
-| Containers named "mariadb", "mssql/server", "mysql", or "postgres"
+| Containers named "gvenzl/oracle-xe", "mariadb", "mssql/server", "mysql", or "postgres"
 
 | `MongoConnectionDetails`
 | Containers named "mongo"

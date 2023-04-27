@@ -12,6 +12,7 @@ org.springframework.boot.docker.compose.service.connection.mariadb.MariaDbR2dbcD
 org.springframework.boot.docker.compose.service.connection.mongo.MongoDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.mysql.MySqlJdbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.mysql.MySqlR2dbcDockerComposeConnectionDetailsFactory,\
+org.springframework.boot.docker.compose.service.connection.oracle.OracleJdbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.oracle.OracleR2dbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.postgres.PostgresJdbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.postgres.PostgresR2dbcDockerComposeConnectionDetailsFactory,\
