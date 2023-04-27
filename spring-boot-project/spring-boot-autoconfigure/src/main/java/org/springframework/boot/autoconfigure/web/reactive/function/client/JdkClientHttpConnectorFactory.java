@@ -40,8 +40,8 @@ class JdkClientHttpConnectorFactory implements ClientHttpConnectorFactory<JdkCli
 			SslOptions options = sslBundle.getOptions();
 			builder.sslContext(sslBundle.createSslContext());
 			SSLParameters parameters = new SSLParameters();
-			parameters.setCipherSuites(SslOptions.toArray(options.getCiphers()));
-			parameters.setProtocols(SslOptions.toArray(options.getEnabledProtocols()));
+			parameters.setCipherSuites(options.getCiphers());
+			parameters.setProtocols(options.getEnabledProtocols());
 			builder.sslParameters(parameters);
 		}
 		return new JdkClientHttpConnector(builder.build());

@@ -119,8 +119,8 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 			SslOptions sslOptions = sslBundle.getOptions();
 			SSLParameters sslParameters = new SSLParameters();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(SslOptions.toArray(sslOptions.getCiphers())).to(sslParameters::setCipherSuites);
-			map.from(SslOptions.toArray(sslOptions.getEnabledProtocols())).to(sslParameters::setProtocols);
+			map.from(sslOptions.getCiphers()).to(sslParameters::setCipherSuites);
+			map.from(sslOptions.getEnabledProtocols()).to(sslParameters::setProtocols);
 			sslBuilder.sslParameters(sslParameters);
 		}
 	}

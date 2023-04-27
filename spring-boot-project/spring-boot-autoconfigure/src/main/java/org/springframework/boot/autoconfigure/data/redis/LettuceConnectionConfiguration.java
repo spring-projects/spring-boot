@@ -151,13 +151,12 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			io.lettuce.core.SslOptions.Builder sslOptionsBuilder = io.lettuce.core.SslOptions.builder();
 			sslOptionsBuilder.keyManager(sslBundle.getManagers().getKeyManagerFactory());
 			sslOptionsBuilder.trustManager(sslBundle.getManagers().getTrustManagerFactory());
-			String[] ciphers = SslOptions.toArray(sslBundle.getOptions().getCiphers());
-			if (ciphers != null) {
-				sslOptionsBuilder.cipherSuites(ciphers);
+			SslOptions sslOptions = sslBundle.getOptions();
+			if (sslOptions.getCiphers() != null) {
+				sslOptionsBuilder.cipherSuites(sslOptions.getCiphers());
 			}
-			String[] protocols = SslOptions.toArray(sslBundle.getOptions().getEnabledProtocols());
-			if (protocols != null) {
-				sslOptionsBuilder.protocols(protocols);
+			if (sslOptions.getEnabledProtocols() != null) {
+				sslOptionsBuilder.protocols(sslOptions.getEnabledProtocols());
 			}
 			builder.sslOptions(sslOptionsBuilder.build());
 		}

@@ -46,11 +46,11 @@ class JettyClientHttpConnectorFactory implements ClientHttpConnectorFactory<Jett
 		if (sslBundle != null) {
 			SslOptions options = sslBundle.getOptions();
 			if (options.getCiphers() != null) {
-				sslContextFactory.setIncludeCipherSuites(SslOptions.toArray(options.getCiphers()));
+				sslContextFactory.setIncludeCipherSuites(options.getCiphers());
 				sslContextFactory.setExcludeCipherSuites();
 			}
 			if (options.getEnabledProtocols() != null) {
-				sslContextFactory.setIncludeProtocols(SslOptions.toArray(options.getEnabledProtocols()));
+				sslContextFactory.setIncludeProtocols(options.getEnabledProtocols());
 				sslContextFactory.setExcludeProtocols();
 			}
 			sslContextFactory.setSslContext(sslBundle.createSslContext());

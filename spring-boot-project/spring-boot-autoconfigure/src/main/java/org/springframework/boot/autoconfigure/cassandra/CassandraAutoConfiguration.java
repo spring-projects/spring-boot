@@ -160,8 +160,8 @@ public class CassandraAutoConfiguration {
 	private void configureSsl(CqlSessionBuilder builder, SslBundle sslBundle) {
 		SslOptions options = sslBundle.getOptions();
 		Assert.state(options.getEnabledProtocols() == null, "SSL protocol options cannot be specified with Cassandra");
-		String[] ciphers = SslOptions.toArray(options.getCiphers());
-		builder.withSslEngineFactory(new ProgrammaticSslEngineFactory(sslBundle.createSslContext(), ciphers));
+		builder
+			.withSslEngineFactory(new ProgrammaticSslEngineFactory(sslBundle.createSslContext(), options.getCiphers()));
 	}
 
 	@Bean(destroyMethod = "")

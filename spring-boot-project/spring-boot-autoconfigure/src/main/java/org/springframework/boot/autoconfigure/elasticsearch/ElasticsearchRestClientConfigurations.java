@@ -116,10 +116,8 @@ class ElasticsearchRestClientConfigurations {
 		private void configureSsl(HttpAsyncClientBuilder httpClientBuilder, SslBundle sslBundle) {
 			SSLContext sslcontext = sslBundle.createSslContext();
 			SslOptions sslOptions = sslBundle.getOptions();
-			String[] enabledProtocols = SslOptions.toArray(sslOptions.getEnabledProtocols());
-			String[] ciphers = SslOptions.toArray(sslOptions.getCiphers());
-			httpClientBuilder.setSSLStrategy(
-					new SSLIOSessionStrategy(sslcontext, enabledProtocols, ciphers, (HostnameVerifier) null));
+			httpClientBuilder.setSSLStrategy(new SSLIOSessionStrategy(sslcontext, sslOptions.getEnabledProtocols(),
+					sslOptions.getCiphers(), (HostnameVerifier) null));
 		}
 
 	}

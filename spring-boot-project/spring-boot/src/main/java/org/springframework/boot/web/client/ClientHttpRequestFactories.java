@@ -171,10 +171,8 @@ public final class ClientHttpRequestFactories {
 			}
 			if (sslBundle != null) {
 				SslOptions options = sslBundle.getOptions();
-				String[] enabledProtocols = SslOptions.toArray(options.getEnabledProtocols());
-				String[] ciphers = SslOptions.toArray(options.getCiphers());
 				SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(sslBundle.createSslContext(),
-						enabledProtocols, ciphers, new DefaultHostnameVerifier());
+						options.getEnabledProtocols(), options.getCiphers(), new DefaultHostnameVerifier());
 				connectionManagerBuilder.setSSLSocketFactory(socketFactory);
 			}
 			PoolingHttpClientConnectionManager connectionManager = connectionManagerBuilder.build();

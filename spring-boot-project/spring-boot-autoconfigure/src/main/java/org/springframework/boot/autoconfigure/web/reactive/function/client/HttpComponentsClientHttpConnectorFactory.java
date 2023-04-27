@@ -17,17 +17,13 @@
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
 import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLEngine;
-import javax.net.ssl.SSLException;
 
 import org.apache.hc.client5.http.impl.async.HttpAsyncClientBuilder;
 import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 import org.apache.hc.client5.http.impl.nio.PoolingAsyncClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.nio.AsyncClientConnectionManager;
 import org.apache.hc.core5.http.nio.ssl.BasicClientTlsStrategy;
-import org.apache.hc.core5.net.NamedEndpoint;
 import org.apache.hc.core5.reactor.ssl.SSLSessionVerifier;
-import org.apache.hc.core5.reactor.ssl.TlsDetails;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
@@ -47,19 +43,14 @@ class HttpComponentsClientHttpConnectorFactory
 		if (sslBundle != null) {
 			SslOptions options = sslBundle.getOptions();
 			SSLContext sslContext = sslBundle.createSslContext();
-			SSLSessionVerifier sessionVerifier = new SSLSessionVerifier() {
-
-				@Override
-				public TlsDetails verify(NamedEndpoint endpoint, SSLEngine sslEngine) throws SSLException {
-					if (options.getCiphers() != null) {
-						sslEngine.setEnabledCipherSuites(SslOptions.toArray(options.getCiphers()));
-					}
-					if (options.getEnabledProtocols() != null) {
-						sslEngine.setEnabledProtocols(SslOptions.toArray(options.getEnabledProtocols()));
-					}
-					return null;
+			SSLSessionVerifier sessionVerifier = (endpoint, sslEngine) -> {
+				if (options.getCiphers() != null) {
+					sslEngine.setEnabledCipherSuites(options.getCiphers());
 				}
-
+				if (options.getEnabledProtocols() != null) {
+					sslEngine.setEnabledProtocols(options.getEnabledProtocols());
+				}
+				return null;
 			};
 			BasicClientTlsStrategy tlsStrategy = new BasicClientTlsStrategy(sslContext, sessionVerifier);
 			AsyncClientConnectionManager connectionManager = PoolingAsyncClientConnectionManagerBuilder.create()

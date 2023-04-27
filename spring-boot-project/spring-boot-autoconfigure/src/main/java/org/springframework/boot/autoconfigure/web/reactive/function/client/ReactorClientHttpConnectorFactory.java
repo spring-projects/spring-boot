@@ -86,7 +86,7 @@ class ReactorClientHttpConnectorFactory implements ClientHttpConnectorFactory<Re
 			SslContextBuilder builder = SslContextBuilder.forClient()
 				.keyManager(managers.getKeyManagerFactory())
 				.trustManager(managers.getTrustManagerFactory())
-				.ciphers(options.getCiphers())
+				.ciphers(SslOptions.asSet(options.getCiphers()))
 				.protocols(options.getEnabledProtocols());
 			spec.sslContext(builder.build());
 		}

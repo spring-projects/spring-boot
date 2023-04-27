@@ -59,9 +59,8 @@ public final class PropertiesSslBundle implements SslBundle {
 		return (key != null) ? SslBundleKey.of(key.getPassword(), key.getAlias()) : SslBundleKey.NONE;
 	}
 
-	private static SslOptions asSslOptions(SslBundleProperties.Options properties) {
-		return (properties != null) ? SslOptions.of(properties.getCiphers(), properties.getEnabledProtocols())
-				: SslOptions.NONE;
+	private static SslOptions asSslOptions(SslBundleProperties.Options options) {
+		return (options != null) ? SslOptions.of(options.getCiphers(), options.getEnabledProtocols()) : SslOptions.NONE;
 	}
 
 	@Override
