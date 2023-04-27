@@ -29,6 +29,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
  * Disables test execution if a process is unavailable.
  *
  * @author Phillip Webb
+ * @since 3.1.0
  */
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
