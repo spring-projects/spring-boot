@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -79,7 +80,7 @@ import static org.mockito.Mockito.mock;
 class RedisAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class, SslAutoConfiguration.class));
 
 	@Test
 	void testDefaultRedisConfiguration() {
@@ -143,7 +144,7 @@ class RedisAutoConfigurationTests {
 	void testOverrideUrlRedisConfiguration() {
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.password:xyz",
-					"spring.data.redis.port:1000", "spring.data.redis.ssl:false",
+					"spring.data.redis.port:1000", "spring.data.redis.ssl.enabled:false",
 					"spring.data.redis.url:rediss://user:password@example:33")
 			.run((context) -> {
 				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
@@ -548,6 +549,37 @@ class RedisAutoConfigurationTests {
 			assertThat(configuration.getClusterNodes()).containsExactly(new RedisNode("node-1", 12345),
 					new RedisNode("node-2", 23456));
 		});
+	}
+
+	@Test
+	void testRedisConfigurationWithSslEnabled() {
+		this.contextRunner.withPropertyValues("spring.data.redis.ssl.enabled:true").run((context) -> {
+			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+			assertThat(cf.isUseSsl()).isTrue();
+		});
+	}
+
+	@Test
+	void testRedisConfigurationWithSslBundle() {
+		this.contextRunner
+			.withPropertyValues("spring.data.redis.ssl.bundle:test-bundle",
+					"spring.ssl.bundle.jks.test-bundle.keystore.location:classpath:test.jks",
+					"spring.ssl.bundle.jks.test-bundle.keystore.password:secret",
+					"spring.ssl.bundle.jks.test-bundle.key.password:password")
+			.run((context) -> {
+				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+				assertThat(cf.isUseSsl()).isTrue();
+			});
+	}
+
+	@Test
+	void testRedisConfigurationWithSslDisabledBundle() {
+		this.contextRunner
+			.withPropertyValues("spring.data.redis.ssl.enabled:false", "spring.data.redis.ssl.bundle:test-bundle")
+			.run((context) -> {
+				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+				assertThat(cf.isUseSsl()).isFalse();
+			});
 	}
 
 	private <T extends ClientOptions> ContextConsumer<AssertableApplicationContext> assertClientOptions(

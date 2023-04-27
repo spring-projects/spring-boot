@@ -35,6 +35,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Lettuce.Cluster.Refresh;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
@@ -54,6 +57,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Moritz Halbritter
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisClient.class)
@@ -64,9 +68,9 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
 			ObjectProvider<RedisClusterConfiguration> clusterConfigurationProvider,
-			RedisConnectionDetails connectionDetails) {
+			RedisConnectionDetails connectionDetails, ObjectProvider<SslBundles> sslBundles) {
 		super(properties, connectionDetails, standaloneConfigurationProvider, sentinelConfigurationProvider,
-				clusterConfigurationProvider);
+				clusterConfigurationProvider, sslBundles);
 	}
 
 	@Bean(destroyMethod = "shutdown")
@@ -118,9 +122,8 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		return LettuceClientConfiguration.builder();
 	}
 
-	private LettuceClientConfigurationBuilder applyProperties(
-			LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
-		if (getConnectionDetails() instanceof PropertiesRedisConnectionDetails && getProperties().isSsl()) {
+	private void applyProperties(LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {
+		if (isSslEnabled()) {
 			builder.useSsl();
 		}
 		if (getProperties().getTimeout() != null) {
@@ -135,7 +138,6 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		if (StringUtils.hasText(getProperties().getClientName())) {
 			builder.clientName(getProperties().getClientName());
 		}
-		return builder;
 	}
 
 	private ClientOptions createClientOptions() {
@@ -143,6 +145,21 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		Duration connectTimeout = getProperties().getConnectTimeout();
 		if (connectTimeout != null) {
 			builder.socketOptions(SocketOptions.builder().connectTimeout(connectTimeout).build());
+		}
+		if (isSslEnabled() && getProperties().getSsl().getBundle() != null) {
+			SslBundle sslBundle = getSslBundles().getBundle(getProperties().getSsl().getBundle());
+			io.lettuce.core.SslOptions.Builder sslOptionsBuilder = io.lettuce.core.SslOptions.builder();
+			sslOptionsBuilder.keyManager(sslBundle.getManagers().getKeyManagerFactory());
+			sslOptionsBuilder.trustManager(sslBundle.getManagers().getTrustManagerFactory());
+			String[] ciphers = SslOptions.toArray(sslBundle.getOptions().getCiphers());
+			if (ciphers != null) {
+				sslOptionsBuilder.cipherSuites(ciphers);
+			}
+			String[] protocols = SslOptions.toArray(sslBundle.getOptions().getEnabledProtocols());
+			if (protocols != null) {
+				sslOptionsBuilder.protocols(protocols);
+			}
+			builder.sslOptions(sslOptionsBuilder.build());
 		}
 		return builder.timeoutOptions(TimeoutOptions.enabled()).build();
 	}

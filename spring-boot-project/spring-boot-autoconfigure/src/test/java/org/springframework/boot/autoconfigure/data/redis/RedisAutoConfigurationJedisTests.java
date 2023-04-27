@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.context.annotation.Bean;
@@ -42,12 +43,13 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 @ClassPathExclusions("lettuce-core-*.jar")
 class RedisAutoConfigurationJedisTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-		.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class));
+		.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class, SslAutoConfiguration.class));
 
 	@Test
 	void connectionFactoryDefaultsToJedis() {
@@ -108,7 +110,7 @@ class RedisAutoConfigurationJedisTests {
 	void testOverrideUrlRedisConfiguration() {
 		this.contextRunner
 			.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.password:xyz",
-					"spring.data.redis.port:1000", "spring.data.redis.ssl:false",
+					"spring.data.redis.port:1000", "spring.data.redis.ssl.enabled:false",
 					"spring.data.redis.url:rediss://user:password@example:33")
 			.run((context) -> {
 				JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
@@ -235,6 +237,37 @@ class RedisAutoConfigurationJedisTests {
 			.withUserConfiguration(JedisConnectionFactoryCaptorConfiguration.class)
 			.run((context) -> assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisClusterAware())
 				.isTrue());
+	}
+
+	@Test
+	void testRedisConfigurationWithSslEnabled() {
+		this.contextRunner.withPropertyValues("spring.data.redis.ssl.enabled:true").run((context) -> {
+			JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
+			assertThat(cf.isUseSsl()).isTrue();
+		});
+	}
+
+	@Test
+	void testRedisConfigurationWithSslBundle() {
+		this.contextRunner
+			.withPropertyValues("spring.data.redis.ssl.bundle:test-bundle",
+					"spring.ssl.bundle.jks.test-bundle.keystore.location:classpath:test.jks",
+					"spring.ssl.bundle.jks.test-bundle.keystore.password:secret",
+					"spring.ssl.bundle.jks.test-bundle.key.password:password")
+			.run((context) -> {
+				JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
+				assertThat(cf.isUseSsl()).isTrue();
+			});
+	}
+
+	@Test
+	void testRedisConfigurationWithSslDisabledAndBundle() {
+		this.contextRunner
+			.withPropertyValues("spring.data.redis.ssl.enabled:false", "spring.data.redis.ssl.bundle:test-bundle")
+			.run((context) -> {
+				JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
+				assertThat(cf.isUseSsl()).isFalse();
+			});
 	}
 
 	private String getUserName(JedisConnectionFactory factory) {

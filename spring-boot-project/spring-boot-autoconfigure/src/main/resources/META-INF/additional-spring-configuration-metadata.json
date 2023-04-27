@@ -1105,6 +1105,14 @@
       "defaultValue": true
     },
     {
+      "name": "spring.data.redis.ssl",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "replacement": "spring.data.redis.ssl.enabled",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.data.rest.detection-strategy",
       "defaultValue": "default"
     },

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
+import javax.net.ssl.SSLParameters;
+
 import org.apache.commons.pool2.impl.GenericObjectPool;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPoolConfig;
@@ -25,6 +27,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.SslOptions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
@@ -33,6 +38,7 @@ import org.springframework.data.redis.connection.RedisSentinelConfiguration;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisClientConfigurationBuilder;
+import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisSslClientConfigurationBuilder;
 import org.springframework.data.redis.connection.jedis.JedisConnection;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.util.StringUtils;
@@ -45,6 +51,7 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ GenericObjectPool.class, JedisConnection.class, Jedis.class })
@@ -55,9 +62,10 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 	JedisConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisStandaloneConfiguration> standaloneConfigurationProvider,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfiguration,
-			ObjectProvider<RedisClusterConfiguration> clusterConfiguration, RedisConnectionDetails connectionDetails) {
+			ObjectProvider<RedisClusterConfiguration> clusterConfiguration, RedisConnectionDetails connectionDetails,
+			ObjectProvider<SslBundles> sslBundles) {
 		super(properties, connectionDetails, standaloneConfigurationProvider, sentinelConfiguration,
-				clusterConfiguration);
+				clusterConfiguration, sslBundles);
 	}
 
 	@Bean
@@ -81,6 +89,9 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 	private JedisClientConfiguration getJedisClientConfiguration(
 			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
 		JedisClientConfigurationBuilder builder = applyProperties(JedisClientConfiguration.builder());
+		if (isSslEnabled()) {
+			applySsl(builder);
+		}
 		RedisProperties.Pool pool = getProperties().getJedis().getPool();
 		if (isPoolEnabled(pool)) {
 			applyPooling(pool, builder);
@@ -94,13 +105,24 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private JedisClientConfigurationBuilder applyProperties(JedisClientConfigurationBuilder builder) {
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		boolean ssl = (!(getConnectionDetails() instanceof PropertiesRedisConnectionDetails)) ? false
-				: getProperties().isSsl();
-		map.from(ssl).whenTrue().toCall(builder::useSsl);
 		map.from(getProperties().getTimeout()).to(builder::readTimeout);
 		map.from(getProperties().getConnectTimeout()).to(builder::connectTimeout);
 		map.from(getProperties().getClientName()).whenHasText().to(builder::clientName);
 		return builder;
+	}
+
+	private void applySsl(JedisClientConfigurationBuilder builder) {
+		JedisSslClientConfigurationBuilder sslBuilder = builder.useSsl();
+		if (getProperties().getSsl().getBundle() != null) {
+			SslBundle sslBundle = getSslBundles().getBundle(getProperties().getSsl().getBundle());
+			sslBuilder.sslSocketFactory(sslBundle.createSslContext().getSocketFactory());
+			SslOptions sslOptions = sslBundle.getOptions();
+			SSLParameters sslParameters = new SSLParameters();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(SslOptions.toArray(sslOptions.getCiphers())).to(sslParameters::setCipherSuites);
+			map.from(SslOptions.toArray(sslOptions.getEnabledProtocols())).to(sslParameters::setProtocols);
+			sslBuilder.sslParameters(sslParameters);
+		}
 	}
 
 	private void applyPooling(RedisProperties.Pool pool,

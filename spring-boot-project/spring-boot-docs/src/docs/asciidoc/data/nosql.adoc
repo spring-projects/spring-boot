@@ -62,6 +62,27 @@ If you add your own `@Bean` of any of the auto-configured types, it replaces the
 
 By default, a pooled connection factory is auto-configured if `commons-pool2` is on the classpath.
 
+The auto-configured `RedisConnectionFactory` can be configured to use SSL for communication with the server by setting the properties as shown in this example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  data:
+	    redis:
+	      ssl:
+	        enabled: true
+----
+
+Custom SSL trust material can be configured in an <<features#features.ssl,SSL bundle>> and applied to the `RedisConnectionFactory` as shown in this example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  data:
+	    redis:
+	      ssl:
+	        bundle: "example"
+----
 
 
 [[data.nosql.mongodb]]
