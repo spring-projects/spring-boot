@@ -34,9 +34,11 @@ import io.micrometer.observation.ObservationHandler.AllMatchingCompositeObservat
 import io.micrometer.observation.ObservationHandler.FirstMatchingCompositeObservationHandler;
 import io.micrometer.observation.ObservationPredicate;
 import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.observation.aop.ObservedAspect;
 import io.micrometer.tracing.Tracer;
 import io.micrometer.tracing.handler.TracingAwareMeterObservationHandler;
 import io.micrometer.tracing.handler.TracingObservationHandler;
+import org.aspectj.weaver.Advice;
 import org.junit.jupiter.api.Test;
 import org.mockito.Answers;
 
@@ -58,6 +60,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Moritz Halbritter
  * @author Jonatan Ivanov
+ * @author Vedran Pavic
  */
 class ObservationAutoConfigurationTests {
 
@@ -77,6 +80,7 @@ class ObservationAutoConfigurationTests {
 				assertThat(context).hasSingleBean(MeterRegistry.class);
 				assertThat(context).doesNotHaveBean(ObservationRegistry.class);
 				assertThat(context).doesNotHaveBean(ObservationHandler.class);
+				assertThat(context).doesNotHaveBean(ObservedAspect.class);
 				assertThat(context).doesNotHaveBean(ObservationHandlerGrouping.class);
 			});
 	}
@@ -88,6 +92,7 @@ class ObservationAutoConfigurationTests {
 				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 				Observation.start("test-observation", observationRegistry).stop();
 				assertThat(context).doesNotHaveBean(ObservationHandler.class);
+				assertThat(context).hasSingleBean(ObservedAspect.class);
 				assertThat(context).doesNotHaveBean(ObservationHandlerGrouping.class);
 			});
 	}
@@ -99,6 +104,7 @@ class ObservationAutoConfigurationTests {
 			Observation.start("test-observation", observationRegistry).stop();
 			assertThat(context).hasSingleBean(ObservationHandler.class);
 			assertThat(context).hasSingleBean(DefaultMeterObservationHandler.class);
+			assertThat(context).hasSingleBean(ObservedAspect.class);
 			assertThat(context).hasSingleBean(ObservationHandlerGrouping.class);
 			assertThat(context).hasBean("metricsObservationHandlerGrouping");
 		});
@@ -110,6 +116,7 @@ class ObservationAutoConfigurationTests {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
 			Observation.start("test-observation", observationRegistry).stop();
 			assertThat(context).doesNotHaveBean(ObservationHandler.class);
+			assertThat(context).hasSingleBean(ObservedAspect.class);
 			assertThat(context).hasSingleBean(ObservationHandlerGrouping.class);
 			assertThat(context).hasBean("tracingObservationHandlerGrouping");
 		});
@@ -123,6 +130,7 @@ class ObservationAutoConfigurationTests {
 			// TracingAwareMeterObservationHandler that we don't test here
 			Observation.start("test-observation", observationRegistry);
 			assertThat(context).hasSingleBean(ObservationHandler.class);
+			assertThat(context).hasSingleBean(ObservedAspect.class);
 			assertThat(context).hasSingleBean(TracingAwareMeterObservationHandler.class);
 			assertThat(context).hasSingleBean(ObservationHandlerGrouping.class);
 			assertThat(context).hasBean("metricsAndTracingObservationHandlerGrouping");
@@ -138,6 +146,7 @@ class ObservationAutoConfigurationTests {
 				Observation.start("test-observation", observationRegistry).stop();
 				assertThat(context).hasSingleBean(ObservationHandler.class);
 				assertThat(context).hasSingleBean(DefaultMeterObservationHandler.class);
+				assertThat(context).hasSingleBean(ObservedAspect.class);
 				assertThat(context).hasSingleBean(ObservationHandlerGrouping.class);
 				assertThat(context).hasBean("metricsAndTracingObservationHandlerGrouping");
 			});
@@ -155,6 +164,7 @@ class ObservationAutoConfigurationTests {
 			assertThat(meterRegistry.get("test-observation").timer().count()).isOne();
 			assertThat(context).hasSingleBean(DefaultMeterObservationHandler.class);
 			assertThat(context).hasSingleBean(ObservationHandler.class);
+			assertThat(context).hasSingleBean(ObservedAspect.class);
 		});
 	}
 
@@ -162,6 +172,12 @@ class ObservationAutoConfigurationTests {
 	void allowsDefaultMeterObservationHandlerToBeDisabled() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(MeterRegistry.class))
 			.run((context) -> assertThat(context).doesNotHaveBean(ObservationHandler.class));
+	}
+
+	@Test
+	void allowsObservedAspectToBeDisabled() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(Advice.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(ObservedAspect.class));
 	}
 
 	@Test
