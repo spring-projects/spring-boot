@@ -16,6 +16,8 @@
 
 package org.springframework.boot.docker.compose.service.connection.sqlserver;
 
+import java.time.Duration;
+
 import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import org.junit.jupiter.api.Test;
@@ -50,7 +52,7 @@ class SqlServerR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests
 			.sql(DatabaseDriver.SQLSERVER.getValidationQuery())
 			.map((row, metadata) -> row.get(0))
 			.first()
-			.block();
+			.block(Duration.ofSeconds(30));
 		assertThat(result).isEqualTo(1);
 	}
 

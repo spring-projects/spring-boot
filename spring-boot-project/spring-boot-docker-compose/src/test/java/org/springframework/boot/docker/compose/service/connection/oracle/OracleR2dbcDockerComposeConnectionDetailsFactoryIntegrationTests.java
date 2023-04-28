@@ -16,6 +16,8 @@
 
 package org.springframework.boot.docker.compose.service.connection.oracle;
 
+import java.time.Duration;
+
 import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import org.junit.jupiter.api.Test;
@@ -49,7 +51,7 @@ class OracleR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests extends A
 			.sql(DatabaseDriver.ORACLE.getValidationQuery())
 			.map((row, metadata) -> row.get(0))
 			.first()
-			.block();
+			.block(Duration.ofSeconds(30));
 		assertThat(result).isEqualTo("Hello");
 	}
 

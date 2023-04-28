@@ -16,6 +16,8 @@
 
 package org.springframework.boot.testcontainers.service.connection.r2dbc;
 
+import java.time.Duration;
+
 import io.r2dbc.spi.ConnectionFactory;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.OracleContainer;
@@ -56,7 +58,7 @@ class OracleR2dbcContainerConnectionDetailsFactoryTests {
 			.sql(DatabaseDriver.ORACLE.getValidationQuery())
 			.map((row, metadata) -> row.get(0))
 			.first()
-			.block();
+			.block(Duration.ofSeconds(30));
 		assertThat(result).isEqualTo("Hello");
 	}
 
