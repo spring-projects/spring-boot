@@ -24,8 +24,8 @@ import java.net.SocketTimeoutException;
 import org.springframework.boot.docker.compose.core.RunningService;
 
 /**
- * Default {@link ServiceReadinessCheck} that readiness by connecting to the exposed TCP
- * ports.
+ * Default {@link ServiceReadinessCheck} that checks readiness by connecting to the
+ * exposed TCP ports.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -66,7 +66,7 @@ class TcpConnectServiceReadinessCheck implements ServiceReadinessCheck {
 
 	private void check(RunningService service, int port, Socket socket) throws IOException {
 		try {
-			// -1 is indicates the socket has been closed immediately
+			// -1 indicates the socket has been closed immediately
 			// Other responses or a timeout are considered as success
 			if (socket.getInputStream().read() == -1) {
 				throw new ServiceNotReadyException(service,

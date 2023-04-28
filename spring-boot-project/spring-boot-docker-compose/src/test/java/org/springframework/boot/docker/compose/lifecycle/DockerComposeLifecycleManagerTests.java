@@ -115,7 +115,7 @@ class DockerComposeLifecycleManagerTests {
 
 	@Test
 	void startupWhenInTestDoesNotStart() {
-		given(this.skipCheck.shouldSkip(any(), any(), any())).willReturn(true);
+		given(this.skipCheck.shouldSkip(any(), any())).willReturn(true);
 		EventCapturingListener listener = new EventCapturingListener();
 		this.eventListeners.add(listener);
 		setupRunningServices();

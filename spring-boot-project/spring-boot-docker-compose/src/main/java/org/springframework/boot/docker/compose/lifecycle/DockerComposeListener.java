@@ -26,7 +26,7 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * {@link ApplicationListener} used to setup a {@link DockerComposeLifecycleManager}.
+ * {@link ApplicationListener} used to set up a {@link DockerComposeLifecycleManager}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson

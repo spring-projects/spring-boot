@@ -67,7 +67,7 @@ class ServiceReadinessChecksTests {
 
 	private List<RunningService> runningServices;
 
-	private MockServiceReadinessCheck mockTcpCheck = new MockServiceReadinessCheck();
+	private final MockServiceReadinessCheck mockTcpCheck = new MockServiceReadinessCheck();
 
 	@BeforeEach
 	void setup() {

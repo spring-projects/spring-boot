@@ -28,7 +28,7 @@ import org.springframework.boot.docker.compose.core.RunningService;
  */
 class ConnectionNamePredicate implements Predicate<DockerComposeConnectionSource> {
 
-	private String required;
+	private final String required;
 
 	ConnectionNamePredicate(String required) {
 		this.required = asCanonicalName(required);

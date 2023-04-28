@@ -74,14 +74,13 @@ class DockerComposeServiceConnectionsApplicationListener
 	@SuppressWarnings("unchecked")
 	private <T> void register(BeanDefinitionRegistry registry, RunningService runningService,
 			Class<?> connectionDetailsType, ConnectionDetails connectionDetails) {
-		String beanName = getBeanName(runningService, connectionDetailsType, connectionDetails);
+		String beanName = getBeanName(runningService, connectionDetailsType);
 		Class<T> beanType = (Class<T>) connectionDetails.getClass();
 		Supplier<T> beanSupplier = () -> (T) connectionDetails;
 		registry.registerBeanDefinition(beanName, new RootBeanDefinition(beanType, beanSupplier));
 	}
 
-	private String getBeanName(RunningService runningService, Class<?> connectionDetailsType,
-			ConnectionDetails connectionDetails) {
+	private String getBeanName(RunningService runningService, Class<?> connectionDetailsType) {
 		List<String> parts = new ArrayList<>();
 		parts.add(ClassUtils.getShortNameAsProperty(connectionDetailsType));
 		parts.add("for");

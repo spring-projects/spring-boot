@@ -24,8 +24,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEvent;
 
 /**
- * {@link ApplicationEvent} published when docker compose {@link RunningService} instance
- * are available. This even is published from the {@link ApplicationPreparedEvent} that
+ * {@link ApplicationEvent} published when docker compose {@link RunningService} instances
+ * are available. This event is published from the {@link ApplicationPreparedEvent} that
  * performs the docker compose startup.
  *
  * @author Moritz Halbritter

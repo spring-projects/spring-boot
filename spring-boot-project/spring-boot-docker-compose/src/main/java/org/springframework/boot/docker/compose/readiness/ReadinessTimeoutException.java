@@ -24,7 +24,8 @@ import org.springframework.boot.docker.compose.core.RunningService;
 
 /**
  * Exception thrown if readiness checking has timed out. Related
- * {@link ServiceNotReadyException} are available from {@link #getSuppressed()}.
+ * {@link ServiceNotReadyException ServiceNotReadyExceptions} are available from
+ * {@link #getSuppressed()}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson

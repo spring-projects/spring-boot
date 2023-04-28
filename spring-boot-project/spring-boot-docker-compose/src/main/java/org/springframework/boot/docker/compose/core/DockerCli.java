@@ -130,7 +130,7 @@ class DockerCli {
 		return (line) -> logLevel.log(this.logger, line);
 	}
 
-	private <R> List<String> createCommand(Type type) {
+	private List<String> createCommand(Type type) {
 		return switch (type) {
 			case DOCKER -> new ArrayList<>(this.dockerCommand);
 			case DOCKER_COMPOSE -> {

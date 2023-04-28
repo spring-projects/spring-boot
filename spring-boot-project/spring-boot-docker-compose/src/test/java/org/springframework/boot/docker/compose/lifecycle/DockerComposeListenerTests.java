@@ -56,7 +56,7 @@ class DockerComposeListenerTests {
 		then(listener.getManager()).should().startup();
 	}
 
-	class TestDockerComposeListener extends DockerComposeListener {
+	static class TestDockerComposeListener extends DockerComposeListener {
 
 		private final ConfigurableApplicationContext context;
 

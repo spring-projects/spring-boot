@@ -45,8 +45,8 @@ public interface DockerCompose {
 	void up(LogLevel logLevel);
 
 	/**
-	 * Run {@code docker compose down} to shutdown any running services.
-	 * @param timeout the amount of time to wait or {@link #FORCE_SHUTDOWN} to shutdown
+	 * Run {@code docker compose down} to shut down any running services.
+	 * @param timeout the amount of time to wait or {@link #FORCE_SHUTDOWN} to shut down
 	 * without waiting.
 	 */
 	void down(Duration timeout);
@@ -59,8 +59,8 @@ public interface DockerCompose {
 	void start(LogLevel logLevel);
 
 	/**
-	 * Run {@code docker compose stop} to shutdown any running services.
-	 * @param timeout the amount of time to wait or {@link #FORCE_SHUTDOWN} to shutdown
+	 * Run {@code docker compose stop} to shut down any running services.
+	 * @param timeout the amount of time to wait or {@link #FORCE_SHUTDOWN} to shut down
 	 * without waiting.
 	 */
 	void stop(Duration timeout);

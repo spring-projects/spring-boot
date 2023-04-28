@@ -22,7 +22,7 @@ import java.util.function.BiConsumer;
 import org.springframework.boot.docker.compose.core.DockerCompose;
 
 /**
- * Command used to shutdown docker compose.
+ * Command used to shut down docker compose.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson

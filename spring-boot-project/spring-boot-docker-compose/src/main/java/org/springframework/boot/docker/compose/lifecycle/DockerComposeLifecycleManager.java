@@ -94,7 +94,7 @@ class DockerComposeLifecycleManager {
 			logger.trace("Docker compose support not enabled");
 			return;
 		}
-		if (this.skipCheck.shouldSkip(this.classLoader, logger, this.properties.getSkip())) {
+		if (this.skipCheck.shouldSkip(this.classLoader, this.properties.getSkip())) {
 			logger.trace("Docker compose support skipped");
 			return;
 		}
