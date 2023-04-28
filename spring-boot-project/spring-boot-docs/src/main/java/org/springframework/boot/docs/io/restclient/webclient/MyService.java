@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.io.restclient.webclient;
 
-import org.neo4j.cypherdsl.core.Relationship.Details;
 import reactor.core.publisher.Mono;
 
 import org.springframework.stereotype.Service;

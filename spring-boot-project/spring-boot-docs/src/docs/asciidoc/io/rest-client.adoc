@@ -15,7 +15,6 @@ include::code:MyService[]
 
 `RestTemplateBuilder` includes a number of useful methods that can be used to quickly configure a `RestTemplate`.
 For example, to add BASIC authentication support, you can use `builder.basicAuthentication("user", "password").build()`.
-To add SSL support using an <<features#features.ssl.bundles,SSL bundle>>, you can use `builder.setSslBundle(sslBundle).build()`.
 
 
 
@@ -42,6 +41,14 @@ include::code:MyRestTemplateBuilderConfiguration[]
 
 The most extreme (and rarely used) option is to create your own `RestTemplateBuilder` bean without using a configurer.
 In addition to replacing the auto-configured builder, this also prevents any `RestTemplateCustomizer` beans from being used.
+
+
+
+[[io.rest-client.resttemplate.ssl]]
+==== RestTemplate SSL Support
+If you need custom SSL configuration on the `RestTemplate`, you can apply an <<features#features.ssl.bundles,SSL bundle>> to the `RestTemplateBuilder` as shown in this example:
+
+include::code:MyService[]
 
 
 

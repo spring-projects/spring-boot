@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.io.restclient.webclient.ssl;
+package org.springframework.boot.docs.io.restclient.resttemplate.ssl;
 
-import reactor.core.publisher.Mono;
-
-import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientSsl;
-import org.springframework.boot.docs.io.restclient.webclient.Details;
+import org.springframework.boot.docs.io.restclient.resttemplate.Details;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 public class MyService {
 
-	private final WebClient webClient;
+	private final RestTemplate restTemplate;
 
-	public MyService(WebClient.Builder webClientBuilder, WebClientSsl ssl) {
-		this.webClient = webClientBuilder.baseUrl("https://example.org").apply(ssl.fromBundle("mybundle")).build();
+	public MyService(RestTemplateBuilder restTemplateBuilder, SslBundles sslBundles) {
+		this.restTemplate = restTemplateBuilder.setSslBundle(sslBundles.getBundle("mybundle")).build();
 	}
 
-	public Mono<Details> someRestCall(String name) {
-		return this.webClient.get().uri("/{name}/details", name).retrieve().bodyToMono(Details.class);
+	public Details someRestCall(String name) {
+		return this.restTemplate.getForObject("/{name}/details", Details.class, name);
 	}
 
 }

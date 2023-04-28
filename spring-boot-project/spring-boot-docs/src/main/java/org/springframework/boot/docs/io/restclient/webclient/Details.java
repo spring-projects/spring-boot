@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.io.restclient.resttemplate;
+package org.springframework.boot.docs.io.restclient.webclient;
 
 public class Details {
 

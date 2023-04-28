@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,24 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.springframework.boot.docs.io.restclient.resttemplate.ssl
 
-package org.springframework.boot.docs.io.restclient.resttemplate
-
+import org.springframework.boot.docs.io.restclient.resttemplate.Details
+import org.springframework.boot.ssl.SslBundles
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
 @Service
-class MyService(restTemplateBuilder: RestTemplateBuilder) {
+class MyService(restTemplateBuilder: RestTemplateBuilder, sslBundles: SslBundles) {
 
-	private val restTemplate: RestTemplate
+    private val restTemplate: RestTemplate
 
-	init {
-		restTemplate = restTemplateBuilder.build()
-	}
+    init {
+        restTemplate = restTemplateBuilder.setSslBundle(sslBundles.getBundle("mybundle")).build()
+    }
 
-	fun someRestCall(name: String): Details {
-		return restTemplate.getForObject("/{name}/details", Details::class.java, name)!!
-	}
+    fun someRestCall(name: String): Details {
+        return restTemplate.getForObject("/{name}/details", Details::class.java, name)!!
+    }
 
 }

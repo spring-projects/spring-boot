@@ -13,9 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.springframework.boot.docs.features.ssl.bundles
 
-package org.springframework.boot.docs.io.restclient.resttemplate;
+import org.springframework.boot.ssl.SslBundles
+import org.springframework.stereotype.Component
 
-public class Details {
+@Component
+@Suppress("UNUSED_VARIABLE")
+class MyComponent(sslBundles: SslBundles) {
+
+    init {
+        val sslBundle = sslBundles.getBundle("mybundle")
+        val sslContext = sslBundle.createSslContext()
+        // do something with the created sslContext
+    }
 
 }

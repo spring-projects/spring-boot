@@ -84,14 +84,22 @@ See {spring-boot-autoconfigure-module-code}/ssl/PemSslBundleProperties.java[PemS
 [[features.ssl.applying]]
 === Applying SSL Bundles
 Once configured using properties, SSL bundles can be referred to by name in configuration properties for various types of connections that are auto-configured by Spring Boot.
-See the sections on <<howto#howto.webserver.configure-ssl,embedded web servers>> and <<data#data,data technologies>> for further information.
+See the sections on <<howto#howto.webserver.configure-ssl,embedded web servers>>, <<data#data,data technologies>>, and <<io#io.rest-client,REST clients>> for further information.
 
 
 
 [[features.ssl.bundles]]
 === Using SSL Bundles
 Spring Boot auto-configures a bean of type `SslBundles` that provides access to each of the named bundles configured using the `spring.ssl.bundle` properties.
-An `SslBundle` can be retrieved from the auto-configured `SslBundles` bean and used to create a `javax.net.ssl.SSLContext` or objects of other types from the `java.net.ssl` package that are typically used to configure SSL connectivity in other APIs.
+
+An `SslBundle` can be retrieved from the auto-configured `SslBundles` bean and used to create objects that are used to configure SSL connectivity in client libraries.
+The `SslBundle` provides a layered approach of obtaining these SSL objects:
+
+- `getStores()` provides access to the key store and trust store `java.security.KeyStore` instances as well as any required key store password.
+- `getManagers()` provides access to the `java.net.ssl.KeyManagerFactory` and `java.net.ssl.TrustManagerFactory` instances as well as the `java.net.ssl.KeyManager` and `java.net.ssl.TrustManager` arrays that they create.
+- `createSslContext()` provides a convenient way to obtain a new `java.net.ssl.SSLContext` instance.
+
+In addition, the `SslBundle` provides details about the key being used, the protocol to use and any option that should be applied to the SSL engine.
 
 The following example shows retrieving an `SslBundle` and using it to create an `SSLContext`:
 
