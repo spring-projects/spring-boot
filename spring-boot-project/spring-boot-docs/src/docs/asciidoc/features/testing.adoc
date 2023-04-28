@@ -958,9 +958,6 @@ The following service connection factories are provided in the `spring-boot-test
 | `FlywayConnectionDetails`
 | Containers of type `JdbcDatabaseContainer`
 
-| `InfluxDbConnectionDetails`
-| Containers of type `InfluxDBContainer`
-
 | `JdbcConnectionDetails`
 | Containers of type `JdbcDatabaseContainer`
 
