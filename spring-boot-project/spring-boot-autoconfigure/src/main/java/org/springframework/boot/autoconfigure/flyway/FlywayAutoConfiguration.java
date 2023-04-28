@@ -123,8 +123,7 @@ public class FlywayAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(FlywayConnectionDetails.class)
-		PropertiesFlywayConnectionDetails flywayConnectionDetails(FlywayProperties properties,
-				ObjectProvider<JdbcConnectionDetails> jdbcConnectionDetails) {
+		PropertiesFlywayConnectionDetails flywayConnectionDetails(FlywayProperties properties) {
 			return new PropertiesFlywayConnectionDetails(properties);
 		}
 
@@ -134,14 +133,13 @@ public class FlywayAutoConfiguration {
 				ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers,
 				ObjectProvider<JavaMigration> javaMigrations, ObjectProvider<Callback> callbacks) {
 			return flyway(properties, new PropertiesFlywayConnectionDetails(properties), resourceLoader, dataSource,
-					null, flywayDataSource, fluentConfigurationCustomizers, javaMigrations, callbacks,
+					flywayDataSource, fluentConfigurationCustomizers, javaMigrations, callbacks,
 					new ResourceProviderCustomizer());
 		}
 
 		@Bean
 		Flyway flyway(FlywayProperties properties, FlywayConnectionDetails connectionDetails,
 				ResourceLoader resourceLoader, ObjectProvider<DataSource> dataSource,
-				ObjectProvider<JdbcConnectionDetails> jdbcConnectionDetails,
 				@FlywayDataSource ObjectProvider<DataSource> flywayDataSource,
 				ObjectProvider<FlywayConfigurationCustomizer> fluentConfigurationCustomizers,
 				ObjectProvider<JavaMigration> javaMigrations, ObjectProvider<Callback> callbacks,
