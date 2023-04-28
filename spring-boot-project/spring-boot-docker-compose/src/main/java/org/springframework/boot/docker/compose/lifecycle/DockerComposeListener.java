@@ -41,7 +41,7 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 	}
 
 	DockerComposeListener(SpringApplicationShutdownHandlers shutdownHandlers) {
-		this.shutdownHandlers = SpringApplication.getShutdownHandlers();
+		this.shutdownHandlers = shutdownHandlers;
 	}
 
 	@Override
