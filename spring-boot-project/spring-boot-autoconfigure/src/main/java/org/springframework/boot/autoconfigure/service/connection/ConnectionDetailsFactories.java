@@ -45,7 +45,7 @@ public class ConnectionDetailsFactories {
 
 	private static final Log logger = LogFactory.getLog(ConnectionDetailsFactories.class);
 
-	private List<Registration<?, ?>> registrations = new ArrayList<>();
+	private final List<Registration<?, ?>> registrations = new ArrayList<>();
 
 	public ConnectionDetailsFactories() {
 		this(SpringFactoriesLoader.forDefaultResourceLocation(ConnectionDetailsFactory.class.getClassLoader()));
@@ -65,7 +65,7 @@ public class ConnectionDetailsFactories {
 	 * given source.
 	 * @param <S> the source type
 	 * @param source the source
-	 * @return a list of {@link ConnectionDetails} instances.
+	 * @return a map of {@link ConnectionDetails} instances
 	 */
 	public <S> Map<Class<?>, ConnectionDetails> getConnectionDetails(S source) {
 		List<Registration<S, ?>> registrations = getRegistrations(source);
