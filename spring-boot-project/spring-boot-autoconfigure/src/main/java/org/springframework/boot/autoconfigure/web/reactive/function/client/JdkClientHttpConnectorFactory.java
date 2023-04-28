@@ -24,10 +24,9 @@ import javax.net.ssl.SSLParameters;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.reactive.JdkClientHttpConnector;
-import org.springframework.http.client.reactive.JettyClientHttpConnector;
 
 /**
- * {@link ClientHttpConnectorFactory} for {@link JettyClientHttpConnector}.
+ * {@link ClientHttpConnectorFactory} for {@link JdkClientHttpConnector}.
  *
  * @author Phillip Webb
  */
