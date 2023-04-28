@@ -65,9 +65,12 @@ class DockerComposeServiceConnectionsApplicationListener
 	private void registerConnectionDetails(BeanDefinitionRegistry registry, List<RunningService> runningServices) {
 		for (RunningService runningService : runningServices) {
 			DockerComposeConnectionSource source = new DockerComposeConnectionSource(runningService);
-			this.factories.getConnectionDetails(source, false)
-				.forEach((connectionDetailsType, connectionDetails) -> register(registry, runningService,
-						connectionDetailsType, connectionDetails));
+			this.factories.getConnectionDetails(source, false).forEach((connectionDetailsType, connectionDetails) -> {
+				register(registry, runningService, connectionDetailsType, connectionDetails);
+				this.factories.getConnectionDetails(connectionDetails, false)
+					.forEach((adaptedType, adaptedDetails) -> register(registry, runningService, adaptedType,
+							adaptedDetails));
+			});
 		}
 	}
 
