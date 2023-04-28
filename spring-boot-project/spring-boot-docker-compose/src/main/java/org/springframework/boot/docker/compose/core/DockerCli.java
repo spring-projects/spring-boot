@@ -89,7 +89,7 @@ class DockerCli {
 			DockerCliComposeVersionResponse response = DockerJson.deserialize(
 					processRunner.run("docker", "compose", "version", "--format", "json"),
 					DockerCliComposeVersionResponse.class);
-			this.logger.trace(LogMessage.format("Using docker compose $s", response.version()));
+			this.logger.trace(LogMessage.format("Using docker compose %s", response.version()));
 			return List.of("docker", "compose");
 		}
 		catch (ProcessExitException ex) {
@@ -99,7 +99,7 @@ class DockerCli {
 			DockerCliComposeVersionResponse response = DockerJson.deserialize(
 					processRunner.run("docker-compose", "version", "--format", "json"),
 					DockerCliComposeVersionResponse.class);
-			this.logger.trace(LogMessage.format("Using docker-compose $s", response.version()));
+			this.logger.trace(LogMessage.format("Using docker-compose %s", response.version()));
 			return List.of("docker-compose");
 		}
 		catch (ProcessStartException ex) {
