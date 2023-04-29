@@ -65,10 +65,16 @@ public class ConnectionDetailsFactories {
 	 * given source.
 	 * @param <S> the source type
 	 * @param source the source
+	 * @param required if a connection details result is required
 	 * @return a map of {@link ConnectionDetails} instances
+	 * @throws ConnectionDetailsFactoryNotFoundException if a result is required but no
+	 * connection details factory is registered for the source
+	 * @throws ConnectionDetailsNotFoundException if a result is required but no
+	 * connection details instance was created from a registered factory
 	 */
-	public <S> Map<Class<?>, ConnectionDetails> getConnectionDetails(S source) {
-		List<Registration<S, ?>> registrations = getRegistrations(source);
+	public <S> Map<Class<?>, ConnectionDetails> getConnectionDetails(S source, boolean required)
+			throws ConnectionDetailsFactoryNotFoundException, ConnectionDetailsNotFoundException {
+		List<Registration<S, ?>> registrations = getRegistrations(source, required);
 		Map<Class<?>, ConnectionDetails> result = new LinkedHashMap<>();
 		for (Registration<S, ?> registration : registrations) {
 			ConnectionDetails connectionDetails = registration.factory().getConnectionDetails(source);
@@ -79,11 +85,14 @@ public class ConnectionDetailsFactories {
 					.formatted(connectionDetailsType.getName()));
 			}
 		}
+		if (required && result.isEmpty()) {
+			throw new ConnectionDetailsNotFoundException(source);
+		}
 		return Map.copyOf(result);
 	}
 
 	@SuppressWarnings("unchecked")
-	<S> List<Registration<S, ?>> getRegistrations(S source) {
+	<S> List<Registration<S, ?>> getRegistrations(S source, boolean required) {
 		Class<S> sourceType = (Class<S>) source.getClass();
 		List<Registration<S, ?>> result = new ArrayList<>();
 		for (Registration<?, ?> candidate : this.registrations) {
@@ -91,7 +100,7 @@ public class ConnectionDetailsFactories {
 				result.add((Registration<S, ?>) candidate);
 			}
 		}
-		if (result.isEmpty()) {
+		if (required && result.isEmpty()) {
 			throw new ConnectionDetailsFactoryNotFoundException(source);
 		}
 		result.sort(Comparator.comparing(Registration::factory, AnnotationAwareOrderComparator.INSTANCE));

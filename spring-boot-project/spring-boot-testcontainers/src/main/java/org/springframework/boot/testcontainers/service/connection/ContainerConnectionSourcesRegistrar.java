@@ -19,7 +19,6 @@ package org.springframework.boot.testcontainers.service.connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -32,7 +31,6 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
 import org.springframework.core.log.LogMessage;
-import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -67,16 +65,9 @@ class ContainerConnectionSourcesRegistrar {
 	}
 
 	private void registerBeanDefinition(BeanDefinitionRegistry registry, ContainerConnectionSource<?> source) {
-		getConnectionDetails(source)
+		this.connectionDetailsFactories.getConnectionDetails(source, true)
 			.forEach((connectionDetailsType, connectionDetails) -> registerBeanDefinition(registry, source,
 					connectionDetailsType, connectionDetails));
-	}
-
-	private <S> Map<Class<?>, ConnectionDetails> getConnectionDetails(S source) {
-		Map<Class<?>, ConnectionDetails> connectionDetails = this.connectionDetailsFactories
-			.getConnectionDetails(source);
-		Assert.state(!connectionDetails.isEmpty(), () -> "No connection details created for %s".formatted(source));
-		return connectionDetails;
 	}
 
 	@SuppressWarnings("unchecked")

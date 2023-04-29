@@ -36,7 +36,6 @@ import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.test.context.MergedContextConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -85,7 +84,7 @@ class ServiceConnectionContextCustomizerTests {
 		given(context.getBeanFactory()).willReturn(beanFactory);
 		MergedContextConfiguration mergedConfig = mock(MergedContextConfiguration.class);
 		JdbcConnectionDetails connectionDetails = new TestJdbcConnectionDetails();
-		given(this.factories.getConnectionDetails(this.source))
+		given(this.factories.getConnectionDetails(this.source, true))
 			.willReturn(Map.of(JdbcConnectionDetails.class, connectionDetails));
 		customizer.customizeContext(context, mergedConfig);
 		ArgumentCaptor<BeanDefinition> beanDefinitionCaptor = ArgumentCaptor.forClass(BeanDefinition.class);
@@ -94,18 +93,6 @@ class ServiceConnectionContextCustomizerTests {
 		RootBeanDefinition beanDefinition = (RootBeanDefinition) beanDefinitionCaptor.getValue();
 		assertThat(beanDefinition.getInstanceSupplier().get()).isSameAs(connectionDetails);
 		assertThat(beanDefinition.getBeanClass()).isEqualTo(TestJdbcConnectionDetails.class);
-	}
-
-	@Test
-	void customizeContextWhenFactoriesHasNoConnectionDetailsThrowsException() {
-		ServiceConnectionContextCustomizer customizer = new ServiceConnectionContextCustomizer(List.of(this.source),
-				this.factories);
-		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
-		DefaultListableBeanFactory beanFactory = spy(new DefaultListableBeanFactory());
-		given(context.getBeanFactory()).willReturn(beanFactory);
-		MergedContextConfiguration mergedConfig = mock(MergedContextConfiguration.class);
-		assertThatIllegalStateException().isThrownBy(() -> customizer.customizeContext(context, mergedConfig))
-			.withMessageStartingWith("No connection details created for @ServiceConnection source");
 	}
 
 	/**

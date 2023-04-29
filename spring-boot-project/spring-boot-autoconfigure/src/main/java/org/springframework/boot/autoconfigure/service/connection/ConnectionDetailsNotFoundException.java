@@ -17,7 +17,7 @@
 package org.springframework.boot.autoconfigure.service.connection;
 
 /**
- * {@link RuntimeException} thrown when a {@link ConnectionDetailsFactory} could not be
+ * {@link RuntimeException} thrown when required {@link ConnectionDetails} could not be
  * found.
  *
  * @author Moritz Halbritter
@@ -25,10 +25,10 @@ package org.springframework.boot.autoconfigure.service.connection;
  * @author Phillip Webb
  * @since 3.1.0
  */
-public class ConnectionDetailsFactoryNotFoundException extends RuntimeException {
+public class ConnectionDetailsNotFoundException extends RuntimeException {
 
-	public <S> ConnectionDetailsFactoryNotFoundException(S source) {
-		super("No ConnectionDetailsFactory found for source '%s'".formatted(source));
+	public <S> ConnectionDetailsNotFoundException(S source) {
+		super("No ConnectionDetails found for source '%s'".formatted(source));
 	}
 
 }

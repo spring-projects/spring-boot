@@ -42,19 +42,41 @@ class ConnectionDetailsFactoriesTests {
 	private final MockSpringFactoriesLoader loader = new MockSpringFactoriesLoader();
 
 	@Test
-	void getConnectionDetailsWhenNoFactoryForSourceThrowsException() {
+	void getRequiredConnectionDetailsWhenNoFactoryForSourceThrowsException() {
 		ConnectionDetailsFactories factories = new ConnectionDetailsFactories(this.loader);
 		assertThatExceptionOfType(ConnectionDetailsFactoryNotFoundException.class)
-			.isThrownBy(() -> factories.getConnectionDetails("source"));
+			.isThrownBy(() -> factories.getConnectionDetails("source", true));
+	}
+
+	@Test
+	void getOptionalConnectionDetailsWhenNoFactoryForSourceThrowsException() {
+		ConnectionDetailsFactories factories = new ConnectionDetailsFactories(this.loader);
+		assertThat(factories.getConnectionDetails("source", false)).isEmpty();
 	}
 
 	@Test
 	void getConnectionDetailsWhenSourceHasOneMatchReturnsSingleResult() {
 		this.loader.addInstance(ConnectionDetailsFactory.class, new TestConnectionDetailsFactory());
 		ConnectionDetailsFactories factories = new ConnectionDetailsFactories(this.loader);
-		Map<Class<?>, ConnectionDetails> connectionDetails = factories.getConnectionDetails("source");
+		Map<Class<?>, ConnectionDetails> connectionDetails = factories.getConnectionDetails("source", false);
 		assertThat(connectionDetails).hasSize(1);
 		assertThat(connectionDetails.get(TestConnectionDetails.class)).isInstanceOf(TestConnectionDetailsImpl.class);
+	}
+
+	@Test
+	void getRequiredConnectionDetailsWhenSourceHasNoMatchTheowsException() {
+		this.loader.addInstance(ConnectionDetailsFactory.class, new NullResultTestConnectionDetailsFactory());
+		ConnectionDetailsFactories factories = new ConnectionDetailsFactories(this.loader);
+		assertThatExceptionOfType(ConnectionDetailsNotFoundException.class)
+			.isThrownBy(() -> factories.getConnectionDetails("source", true));
+	}
+
+	@Test
+	void getOptionalConnectionDetailsWhenSourceHasNoMatchReturnsEmptyMap() {
+		this.loader.addInstance(ConnectionDetailsFactory.class, new NullResultTestConnectionDetailsFactory());
+		ConnectionDetailsFactories factories = new ConnectionDetailsFactories(this.loader);
+		Map<Class<?>, ConnectionDetails> connectionDetails = factories.getConnectionDetails("source", false);
+		assertThat(connectionDetails).isEmpty();
 	}
 
 	@Test
@@ -62,7 +84,7 @@ class ConnectionDetailsFactoriesTests {
 		this.loader.addInstance(ConnectionDetailsFactory.class, new TestConnectionDetailsFactory(),
 				new OtherConnectionDetailsFactory());
 		ConnectionDetailsFactories factories = new ConnectionDetailsFactories(this.loader);
-		Map<Class<?>, ConnectionDetails> connectionDetails = factories.getConnectionDetails("source");
+		Map<Class<?>, ConnectionDetails> connectionDetails = factories.getConnectionDetails("source", false);
 		assertThat(connectionDetails).hasSize(2);
 	}
 
@@ -71,7 +93,7 @@ class ConnectionDetailsFactoriesTests {
 		this.loader.addInstance(ConnectionDetailsFactory.class, new TestConnectionDetailsFactory(),
 				new TestConnectionDetailsFactory());
 		ConnectionDetailsFactories factories = new ConnectionDetailsFactories(this.loader);
-		assertThatIllegalStateException().isThrownBy(() -> factories.getConnectionDetails("source"))
+		assertThatIllegalStateException().isThrownBy(() -> factories.getConnectionDetails("source", false))
 			.withMessage("Duplicate connection details supplied for " + TestConnectionDetails.class.getName());
 	}
 
@@ -82,7 +104,7 @@ class ConnectionDetailsFactoriesTests {
 		TestConnectionDetailsFactory orderThree = new TestConnectionDetailsFactory(3);
 		this.loader.addInstance(ConnectionDetailsFactory.class, orderOne, orderThree, orderTwo);
 		ConnectionDetailsFactories factories = new ConnectionDetailsFactories(this.loader);
-		List<Registration<String, ?>> registrations = factories.getRegistrations("source");
+		List<Registration<String, ?>> registrations = factories.getRegistrations("source", false);
 		assertThat(registrations.get(0).factory()).isEqualTo(orderOne);
 		assertThat(registrations.get(1).factory()).isEqualTo(orderTwo);
 		assertThat(registrations.get(2).factory()).isEqualTo(orderThree);
@@ -115,6 +137,16 @@ class ConnectionDetailsFactoriesTests {
 		@Override
 		public int getOrder() {
 			return this.order;
+		}
+
+	}
+
+	private static final class NullResultTestConnectionDetailsFactory
+			implements ConnectionDetailsFactory<String, TestConnectionDetails> {
+
+		@Override
+		public TestConnectionDetails getConnectionDetails(String source) {
+			return null;
 		}
 
 	}
