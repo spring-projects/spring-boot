@@ -16,33 +16,22 @@
 
 package org.springframework.boot.test.context.filter;
 
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.test.context.ContextCustomizer;
-import org.springframework.test.context.MergedContextConfiguration;
 
 /**
- * {@link ContextCustomizer} to add the {@link TestTypeExcludeFilter} to the
- * {@link ApplicationContext}.
+ * {@link ApplicationContextInitializer} to register the {@link TestTypeExcludeFilter} for
+ * when {@link SpringApplication#from} is being used with the test classpath.
  *
  * @author Phillip Webb
  */
-class ExcludeFilterContextCustomizer implements ContextCustomizer {
+class ExcludeFilterApplicationContextInitializer
+		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
 	@Override
-	public void customizeContext(ConfigurableApplicationContext context,
-			MergedContextConfiguration mergedContextConfiguration) {
-		TestTypeExcludeFilter.registerWith(context.getBeanFactory());
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		return (obj != null) && (getClass() == obj.getClass());
-	}
-
-	@Override
-	public int hashCode() {
-		return getClass().hashCode();
+	public void initialize(ConfigurableApplicationContext applicationContext) {
+		TestTypeExcludeFilter.registerWith(applicationContext.getBeanFactory());
 	}
 
 }

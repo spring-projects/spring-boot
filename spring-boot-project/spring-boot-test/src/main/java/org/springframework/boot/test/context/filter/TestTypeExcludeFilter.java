@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.test.context.filter;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.context.TypeExcludeFilter;
 import org.springframework.boot.test.context.TestComponent;
 import org.springframework.core.type.classreading.MetadataReader;
@@ -32,12 +33,16 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
  */
 class TestTypeExcludeFilter extends TypeExcludeFilter {
 
+	private static final String BEAN_NAME = TestTypeExcludeFilter.class.getName();
+
 	private static final String[] CLASS_ANNOTATIONS = { "org.junit.runner.RunWith",
 			"org.junit.jupiter.api.extension.ExtendWith", "org.junit.platform.commons.annotation.Testable",
 			"org.testng.annotations.Test" };
 
 	private static final String[] METHOD_ANNOTATIONS = { "org.junit.Test",
 			"org.junit.platform.commons.annotation.Testable", "org.testng.annotations.Test" };
+
+	private static final TestTypeExcludeFilter INSTANCE = new TestTypeExcludeFilter();
 
 	@Override
 	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
@@ -89,6 +94,12 @@ class TestTypeExcludeFilter extends TypeExcludeFilter {
 			}
 		}
 		return false;
+	}
+
+	static void registerWith(ConfigurableListableBeanFactory beanFactory) {
+		if (!beanFactory.containsSingleton(BEAN_NAME)) {
+			beanFactory.registerSingleton(BEAN_NAME, INSTANCE);
+		}
 	}
 
 }
