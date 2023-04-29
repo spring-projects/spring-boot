@@ -16,6 +16,7 @@
 
 package org.springframework.boot.testcontainers.service.connection.cassandra;
 
+import java.net.InetSocketAddress;
 import java.util.List;
 
 import org.testcontainers.containers.CassandraContainer;
@@ -46,35 +47,32 @@ class CassandraContainerConnectionDetailsFactory
 	/**
 	 * {@link CassandraConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class CassandraContainerConnectionDetails extends ContainerConnectionDetails
-			implements CassandraConnectionDetails {
-
-		private final CassandraContainer<?> container;
+	private static final class CassandraContainerConnectionDetails
+			extends ContainerConnectionDetails<CassandraContainer<?>> implements CassandraConnectionDetails {
 
 		private CassandraContainerConnectionDetails(ContainerConnectionSource<CassandraContainer<?>> source) {
 			super(source);
-			this.container = source.getContainer();
 		}
 
 		@Override
 		public List<Node> getContactPoints() {
-			return List.of(new Node(this.container.getContactPoint().getHostString(),
-					this.container.getContactPoint().getPort()));
+			InetSocketAddress contactPoint = getContainer().getContactPoint();
+			return List.of(new Node(contactPoint.getHostString(), contactPoint.getPort()));
 		}
 
 		@Override
 		public String getUsername() {
-			return this.container.getUsername();
+			return getContainer().getUsername();
 		}
 
 		@Override
 		public String getPassword() {
-			return this.container.getPassword();
+			return getContainer().getPassword();
 		}
 
 		@Override
 		public String getLocalDatacenter() {
-			return this.container.getLocalDatacenter();
+			return getContainer().getLocalDatacenter();
 		}
 
 	}

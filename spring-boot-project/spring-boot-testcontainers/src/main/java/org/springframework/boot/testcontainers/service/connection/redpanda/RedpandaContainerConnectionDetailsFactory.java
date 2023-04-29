@@ -44,19 +44,16 @@ class RedpandaContainerConnectionDetailsFactory
 	/**
 	 * {@link KafkaConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class RedpandaContainerConnectionDetails extends ContainerConnectionDetails
+	private static final class RedpandaContainerConnectionDetails extends ContainerConnectionDetails<RedpandaContainer>
 			implements KafkaConnectionDetails {
-
-		private final RedpandaContainer container;
 
 		private RedpandaContainerConnectionDetails(ContainerConnectionSource<RedpandaContainer> source) {
 			super(source);
-			this.container = source.getContainer();
 		}
 
 		@Override
 		public List<Node> getBootstrapNodes() {
-			URI uri = URI.create(this.container.getBootstrapServers());
+			URI uri = URI.create(getContainer().getBootstrapServers());
 			return List.of(new Node(uri.getHost(), uri.getPort()));
 		}
 

@@ -43,23 +43,23 @@ class SqlServerR2dbcContainerConnectionDetailsFactory
 	@Override
 	public R2dbcConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<MSSQLServerContainer<?>> source) {
-		return new R2dbcDatabaseContainerConnectionDetails(source.getContainer());
+		return new MsSqlServerR2dbcDatabaseContainerConnectionDetails(source);
 	}
 
 	/**
 	 * {@link R2dbcConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class R2dbcDatabaseContainerConnectionDetails implements R2dbcConnectionDetails {
+	private static final class MsSqlServerR2dbcDatabaseContainerConnectionDetails
+			extends ContainerConnectionDetails<MSSQLServerContainer<?>> implements R2dbcConnectionDetails {
 
-		private final MSSQLServerContainer<?> container;
-
-		private R2dbcDatabaseContainerConnectionDetails(MSSQLServerContainer<?> container) {
-			this.container = container;
+		private MsSqlServerR2dbcDatabaseContainerConnectionDetails(
+				ContainerConnectionSource<MSSQLServerContainer<?>> source) {
+			super(source);
 		}
 
 		@Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
-			return MSSQLR2DBCDatabaseContainer.getOptions(this.container);
+			return MSSQLR2DBCDatabaseContainer.getOptions(getContainer());
 		}
 
 	}

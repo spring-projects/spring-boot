@@ -47,19 +47,16 @@ class MongoContainerConnectionDetailsFactory
 	/**
 	 * {@link MongoConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class MongoContainerConnectionDetails extends ContainerConnectionDetails
+	private static final class MongoContainerConnectionDetails extends ContainerConnectionDetails<MongoDBContainer>
 			implements MongoConnectionDetails {
-
-		private final ConnectionString connectionString;
 
 		private MongoContainerConnectionDetails(ContainerConnectionSource<MongoDBContainer> source) {
 			super(source);
-			this.connectionString = new ConnectionString(source.getContainer().getReplicaSetUrl());
 		}
 
 		@Override
 		public ConnectionString getConnectionString() {
-			return this.connectionString;
+			return new ConnectionString(getContainer().getReplicaSetUrl());
 		}
 
 	}

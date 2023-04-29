@@ -43,34 +43,31 @@ class JdbcContainerConnectionDetailsFactory
 	/**
 	 * {@link JdbcConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class JdbcContainerConnectionDetails extends ContainerConnectionDetails
-			implements JdbcConnectionDetails {
-
-		private final JdbcDatabaseContainer<?> container;
+	private static final class JdbcContainerConnectionDetails
+			extends ContainerConnectionDetails<JdbcDatabaseContainer<?>> implements JdbcConnectionDetails {
 
 		private JdbcContainerConnectionDetails(ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
 			super(source);
-			this.container = source.getContainer();
 		}
 
 		@Override
 		public String getUsername() {
-			return this.container.getUsername();
+			return getContainer().getUsername();
 		}
 
 		@Override
 		public String getPassword() {
-			return this.container.getPassword();
+			return getContainer().getPassword();
 		}
 
 		@Override
 		public String getJdbcUrl() {
-			return this.container.getJdbcUrl();
+			return getContainer().getJdbcUrl();
 		}
 
 		@Override
 		public String getDriverClassName() {
-			return this.container.getDriverClassName();
+			return getContainer().getDriverClassName();
 		}
 
 	}

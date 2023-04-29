@@ -45,19 +45,16 @@ class KafkaContainerConnectionDetailsFactory
 	/**
 	 * {@link KafkaConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class KafkaContainerConnectionDetails extends ContainerConnectionDetails
+	private static final class KafkaContainerConnectionDetails extends ContainerConnectionDetails<KafkaContainer>
 			implements KafkaConnectionDetails {
-
-		private final KafkaContainer container;
 
 		private KafkaContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {
 			super(source);
-			this.container = source.getContainer();
 		}
 
 		@Override
 		public List<Node> getBootstrapNodes() {
-			URI uri = URI.create(this.container.getBootstrapServers());
+			URI uri = URI.create(getContainer().getBootstrapServers());
 			return List.of(new Node(uri.getHost(), uri.getPort()));
 		}
 

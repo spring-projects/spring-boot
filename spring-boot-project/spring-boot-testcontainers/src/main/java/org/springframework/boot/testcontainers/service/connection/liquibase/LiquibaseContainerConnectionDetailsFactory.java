@@ -42,34 +42,31 @@ class LiquibaseContainerConnectionDetailsFactory
 	/**
 	 * {@link LiquibaseConnectionDetails} backed by a {@link JdbcDatabaseContainer}.
 	 */
-	private static final class LiquibaseContainerConnectionDetails extends ContainerConnectionDetails
-			implements LiquibaseConnectionDetails {
-
-		private final JdbcDatabaseContainer<?> container;
+	private static final class LiquibaseContainerConnectionDetails
+			extends ContainerConnectionDetails<JdbcDatabaseContainer<?>> implements LiquibaseConnectionDetails {
 
 		private LiquibaseContainerConnectionDetails(ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
 			super(source);
-			this.container = source.getContainer();
 		}
 
 		@Override
 		public String getUsername() {
-			return this.container.getUsername();
+			return getContainer().getUsername();
 		}
 
 		@Override
 		public String getPassword() {
-			return this.container.getPassword();
+			return getContainer().getPassword();
 		}
 
 		@Override
 		public String getJdbcUrl() {
-			return this.container.getJdbcUrl();
+			return getContainer().getJdbcUrl();
 		}
 
 		@Override
 		public String getDriverClassName() {
-			return this.container.getDriverClassName();
+			return getContainer().getDriverClassName();
 		}
 
 	}

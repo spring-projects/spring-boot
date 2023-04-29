@@ -118,11 +118,7 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		return this.origin;
 	}
 
-	/**
-	 * Return the {@link Container} that implements the service being connected to.
-	 * @return the {@link Container} providing the service
-	 */
-	public C getContainer() {
+	C getContainer() {
 		return this.container;
 	}
 

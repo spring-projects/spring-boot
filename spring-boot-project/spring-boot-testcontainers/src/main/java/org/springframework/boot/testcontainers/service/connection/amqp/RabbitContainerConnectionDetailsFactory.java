@@ -47,29 +47,26 @@ class RabbitContainerConnectionDetailsFactory
 	/**
 	 * {@link RabbitConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class RabbitMqContainerConnectionDetails extends ContainerConnectionDetails
+	private static final class RabbitMqContainerConnectionDetails extends ContainerConnectionDetails<RabbitMQContainer>
 			implements RabbitConnectionDetails {
-
-		private final RabbitMQContainer container;
 
 		private RabbitMqContainerConnectionDetails(ContainerConnectionSource<RabbitMQContainer> source) {
 			super(source);
-			this.container = source.getContainer();
 		}
 
 		@Override
 		public String getUsername() {
-			return this.container.getAdminUsername();
+			return getContainer().getAdminUsername();
 		}
 
 		@Override
 		public String getPassword() {
-			return this.container.getAdminPassword();
+			return getContainer().getAdminPassword();
 		}
 
 		@Override
 		public List<Address> getAddresses() {
-			URI uri = URI.create(this.container.getAmqpUrl());
+			URI uri = URI.create(getContainer().getAmqpUrl());
 			return List.of(new Address(uri.getHost(), uri.getPort()));
 		}
 

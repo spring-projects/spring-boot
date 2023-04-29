@@ -50,20 +50,18 @@ class ElasticsearchContainerConnectionDetailsFactory
 	 * {@link ElasticsearchConnectionDetails} backed by a
 	 * {@link ContainerConnectionSource}.
 	 */
-	private static final class ElasticsearchContainerConnectionDetails extends ContainerConnectionDetails
-			implements ElasticsearchConnectionDetails {
-
-		private final List<Node> nodes;
+	private static final class ElasticsearchContainerConnectionDetails
+			extends ContainerConnectionDetails<ElasticsearchContainer> implements ElasticsearchConnectionDetails {
 
 		private ElasticsearchContainerConnectionDetails(ContainerConnectionSource<ElasticsearchContainer> source) {
 			super(source);
-			this.nodes = List.of(new Node(source.getContainer().getHost(),
-					source.getContainer().getMappedPort(DEFAULT_PORT), Protocol.HTTP, null, null));
 		}
 
 		@Override
 		public List<Node> getNodes() {
-			return this.nodes;
+			String host = getContainer().getHost();
+			Integer port = getContainer().getMappedPort(DEFAULT_PORT);
+			return List.of(new Node(host, port, Protocol.HTTP, null, null));
 		}
 
 	}

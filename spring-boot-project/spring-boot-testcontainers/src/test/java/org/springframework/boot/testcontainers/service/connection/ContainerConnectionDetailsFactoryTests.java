@@ -46,7 +46,7 @@ class ContainerConnectionDetailsFactoryTests {
 
 	private Origin origin;
 
-	private JdbcDatabaseContainer<?> container;
+	private PostgreSQLContainer<?> container;
 
 	private MergedAnnotation<ServiceConnection> annotation;
 
@@ -127,10 +127,10 @@ class ContainerConnectionDetailsFactoryTests {
 			return new TestContainerConnectionDetails(source);
 		}
 
-		static class TestContainerConnectionDetails extends ContainerConnectionDetails
-				implements JdbcConnectionDetails {
+		private static final class TestContainerConnectionDetails
+				extends ContainerConnectionDetails<JdbcDatabaseContainer<?>> implements JdbcConnectionDetails {
 
-			TestContainerConnectionDetails(ContainerConnectionSource<?> source) {
+			private TestContainerConnectionDetails(ContainerConnectionSource<JdbcDatabaseContainer<?>> source) {
 				super(source);
 			}
 

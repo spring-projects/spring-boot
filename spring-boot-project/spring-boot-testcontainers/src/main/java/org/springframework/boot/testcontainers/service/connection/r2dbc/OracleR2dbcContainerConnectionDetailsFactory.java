@@ -46,19 +46,16 @@ class OracleR2dbcContainerConnectionDetailsFactory
 	/**
 	 * {@link R2dbcConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class R2dbcDatabaseContainerConnectionDetails extends ContainerConnectionDetails
-			implements R2dbcConnectionDetails {
-
-		private final OracleContainer container;
+	private static final class R2dbcDatabaseContainerConnectionDetails
+			extends ContainerConnectionDetails<OracleContainer> implements R2dbcConnectionDetails {
 
 		private R2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<OracleContainer> source) {
 			super(source);
-			this.container = source.getContainer();
 		}
 
 		@Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
-			return OracleR2DBCDatabaseContainer.getOptions(this.container);
+			return OracleR2DBCDatabaseContainer.getOptions(getContainer());
 		}
 
 	}

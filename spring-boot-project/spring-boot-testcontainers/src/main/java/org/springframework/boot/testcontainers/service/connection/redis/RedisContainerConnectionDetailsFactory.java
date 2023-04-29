@@ -48,20 +48,16 @@ class RedisContainerConnectionDetailsFactory
 	/**
 	 * {@link RedisConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class RedisContainerConnectionDetails extends ContainerConnectionDetails
+	private static final class RedisContainerConnectionDetails extends ContainerConnectionDetails<Container<?>>
 			implements RedisConnectionDetails {
-
-		private final Standalone standalone;
 
 		private RedisContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 			super(source);
-			this.standalone = Standalone.of(source.getContainer().getHost(),
-					source.getContainer().getFirstMappedPort());
 		}
 
 		@Override
 		public Standalone getStandalone() {
-			return this.standalone;
+			return Standalone.of(getContainer().getHost(), getContainer().getFirstMappedPort());
 		}
 
 	}

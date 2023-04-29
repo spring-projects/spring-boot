@@ -34,7 +34,7 @@ import org.springframework.util.ObjectUtils;
  * {@link ConnectionDetails} from a {@link ContainerConnectionSource}.
  *
  * @param <D> the connection details type
- * @param <C> the generic container type
+ * @param <C> the container type
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
@@ -110,23 +110,30 @@ public abstract class ContainerConnectionDetailsFactory<D extends ConnectionDeta
 	/**
 	 * Convenient base class for {@link ConnectionDetails} results that are backed by a
 	 * {@link ContainerConnectionSource}.
+	 *
+	 * @param <C> the container type
 	 */
-	protected static class ContainerConnectionDetails implements ConnectionDetails, OriginProvider {
+	protected static class ContainerConnectionDetails<C extends Container<?>>
+			implements ConnectionDetails, OriginProvider {
 
-		private final Origin origin;
+		private final ContainerConnectionSource<C> source;
 
 		/**
 		 * Create a new {@link ContainerConnectionDetails} instance.
 		 * @param source the source {@link ContainerConnectionSource}
 		 */
-		protected ContainerConnectionDetails(ContainerConnectionSource<?> source) {
+		protected ContainerConnectionDetails(ContainerConnectionSource<C> source) {
 			Assert.notNull(source, "Source must not be null");
-			this.origin = source.getOrigin();
+			this.source = source;
+		}
+
+		protected final C getContainer() {
+			return this.source.getContainer();
 		}
 
 		@Override
 		public Origin getOrigin() {
-			return this.origin;
+			return this.source.getOrigin();
 		}
 
 	}

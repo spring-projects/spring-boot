@@ -43,23 +43,22 @@ class PostgresR2dbcContainerConnectionDetailsFactory
 	@Override
 	public R2dbcConnectionDetails getContainerConnectionDetails(
 			ContainerConnectionSource<PostgreSQLContainer<?>> source) {
-		return new R2dbcDatabaseContainerConnectionDetails(source.getContainer());
+		return new PostgresR2dbcDatabaseContainerConnectionDetails(source);
 	}
 
 	/**
 	 * {@link R2dbcConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static final class R2dbcDatabaseContainerConnectionDetails implements R2dbcConnectionDetails {
+	private static final class PostgresR2dbcDatabaseContainerConnectionDetails
+			extends ContainerConnectionDetails<PostgreSQLContainer<?>> implements R2dbcConnectionDetails {
 
-		private final PostgreSQLContainer<?> container;
-
-		private R2dbcDatabaseContainerConnectionDetails(PostgreSQLContainer<?> container) {
-			this.container = container;
+		PostgresR2dbcDatabaseContainerConnectionDetails(ContainerConnectionSource<PostgreSQLContainer<?>> source) {
+			super(source);
 		}
 
 		@Override
 		public ConnectionFactoryOptions getConnectionFactoryOptions() {
-			return PostgreSQLR2DBCDatabaseContainer.getOptions(this.container);
+			return PostgreSQLR2DBCDatabaseContainer.getOptions(getContainer());
 		}
 
 	}
