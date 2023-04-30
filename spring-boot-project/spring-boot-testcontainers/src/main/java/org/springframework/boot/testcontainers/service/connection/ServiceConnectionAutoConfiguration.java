@@ -16,24 +16,12 @@
 
 package org.springframework.boot.testcontainers.service.connection;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import org.testcontainers.containers.Container;
 
-import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
-import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
-import org.springframework.boot.origin.Origin;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.Ordered;
-import org.springframework.core.type.AnnotationMetadata;
 
 /**
  * {@link org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -45,53 +33,10 @@ import org.springframework.core.type.AnnotationMetadata;
  */
 @AutoConfiguration
 @AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)
-@Import(ServiceConnectionAutoConfiguration.Registrar.class)
+@Import(ServiceConnectionAutoConfigurationRegistrar.class)
 public class ServiceConnectionAutoConfiguration {
 
 	ServiceConnectionAutoConfiguration() {
-	}
-
-	static class Registrar implements ImportBeanDefinitionRegistrar {
-
-		private final BeanFactory beanFactory;
-
-		Registrar(BeanFactory beanFactory) {
-			this.beanFactory = beanFactory;
-		}
-
-		@Override
-		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-				BeanDefinitionRegistry registry) {
-			if (this.beanFactory instanceof ConfigurableListableBeanFactory listableBeanFactory) {
-				ConnectionDetailsFactories connectionDetailsFactories = new ConnectionDetailsFactories();
-				List<ContainerConnectionSource<?>> sources = getSources(listableBeanFactory);
-				new ContainerConnectionSourcesRegistrar(listableBeanFactory, connectionDetailsFactories, sources)
-					.registerBeanDefinitions(registry);
-			}
-		}
-
-		private List<ContainerConnectionSource<?>> getSources(ConfigurableListableBeanFactory beanFactory) {
-			List<ContainerConnectionSource<?>> sources = new ArrayList<>();
-			for (String candidate : beanFactory.getBeanNamesForType(Container.class)) {
-				Set<ServiceConnection> annotations = beanFactory.findAllAnnotationsOnBean(candidate,
-						ServiceConnection.class, false);
-				if (!annotations.isEmpty()) {
-					addSources(sources, beanFactory, candidate, annotations);
-				}
-			}
-			return sources;
-		}
-
-		private void addSources(List<ContainerConnectionSource<?>> sources, ConfigurableListableBeanFactory beanFactory,
-				String beanName, Set<ServiceConnection> annotations) {
-			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-			Origin origin = new BeanOrigin(beanName, beanDefinition);
-			Container<?> container = beanFactory.getBean(beanName, Container.class);
-			for (ServiceConnection annotation : annotations) {
-				sources.add(new ContainerConnectionSource<>(beanName, origin, container, annotation));
-			}
-		}
-
 	}
 
 }

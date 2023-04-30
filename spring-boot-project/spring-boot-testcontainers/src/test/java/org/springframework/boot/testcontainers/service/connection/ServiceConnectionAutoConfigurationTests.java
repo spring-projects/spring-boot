@@ -33,7 +33,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ServiceConnectionAutoConfiguration}.
+ * Tests for {@link ServiceConnectionAutoConfiguration} and
+ * {@link ServiceConnectionAutoConfigurationRegistrar}.
  *
  * @author Phillip Webb
  */

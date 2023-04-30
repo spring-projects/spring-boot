@@ -27,8 +27,16 @@ package org.springframework.boot.autoconfigure.service.connection;
  */
 public class ConnectionDetailsNotFoundException extends RuntimeException {
 
-	public <S> ConnectionDetailsNotFoundException(S source) {
-		super("No ConnectionDetails found for source '%s'".formatted(source));
+	<S> ConnectionDetailsNotFoundException(S source) {
+		this("No ConnectionDetails found for source '%s'".formatted(source));
+	}
+
+	public ConnectionDetailsNotFoundException(String message) {
+		super(message);
+	}
+
+	public ConnectionDetailsNotFoundException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 }

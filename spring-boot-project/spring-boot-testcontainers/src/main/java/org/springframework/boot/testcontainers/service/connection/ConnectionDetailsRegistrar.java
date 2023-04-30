@@ -18,6 +18,7 @@ package org.springframework.boot.testcontainers.service.connection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -36,35 +37,31 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * Class used to register bean definitions from a list of
+ * Class used to register {@link ConnectionDetails} bean definitions from
  * {@link ContainerConnectionSource} instances.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class ContainerConnectionSourcesRegistrar {
+class ConnectionDetailsRegistrar {
 
-	private static final Log logger = LogFactory.getLog(ContainerConnectionSourcesRegistrar.class);
+	private static final Log logger = LogFactory.getLog(ConnectionDetailsRegistrar.class);
 
 	private final ListableBeanFactory beanFactory;
 
 	private final ConnectionDetailsFactories connectionDetailsFactories;
 
-	private final List<ContainerConnectionSource<?>> sources;
-
-	ContainerConnectionSourcesRegistrar(ListableBeanFactory beanFactory,
-			ConnectionDetailsFactories connectionDetailsFactories, List<ContainerConnectionSource<?>> sources) {
+	ConnectionDetailsRegistrar(ListableBeanFactory beanFactory, ConnectionDetailsFactories connectionDetailsFactories) {
 		this.beanFactory = beanFactory;
 		this.connectionDetailsFactories = connectionDetailsFactories;
-		this.sources = sources;
 	}
 
-	void registerBeanDefinitions(BeanDefinitionRegistry registry) {
-		this.sources.forEach((source) -> registerBeanDefinition(registry, source));
+	void registerBeanDefinitions(BeanDefinitionRegistry registry, Collection<ContainerConnectionSource<?>> sources) {
+		sources.forEach((source) -> registerBeanDefinitions(registry, source));
 	}
 
-	private void registerBeanDefinition(BeanDefinitionRegistry registry, ContainerConnectionSource<?> source) {
+	private void registerBeanDefinitions(BeanDefinitionRegistry registry, ContainerConnectionSource<?> source) {
 		this.connectionDetailsFactories.getConnectionDetails(source, true)
 			.forEach((connectionDetailsType, connectionDetails) -> registerBeanDefinition(registry, source,
 					connectionDetailsType, connectionDetails));
