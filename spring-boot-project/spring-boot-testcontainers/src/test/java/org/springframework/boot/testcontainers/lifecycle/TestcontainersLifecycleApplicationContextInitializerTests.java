@@ -17,43 +17,90 @@
 package org.springframework.boot.testcontainers.lifecycle;
 
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.lifecycle.Startable;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 
 /**
- * Tests for {@link TestcontainersLifecycleApplicationContextInitializer}.
+ * Tests for {@link TestcontainersLifecycleApplicationContextInitializer} and
+ * {@link TestcontainersLifecycleBeanPostProcessor} and
+ * {@link TestcontainersLifecycleBeanFactoryPostProcessor}.
  *
  * @author Stephane Nicoll
+ * @author Phillip Webb
  */
 class TestcontainersLifecycleApplicationContextInitializerTests {
 
 	@Test
 	void whenStartableBeanInvokesStartOnRefresh() {
 		Startable container = mock(Startable.class);
-		try (AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext()) {
-			applicationContext.registerBean("container", Startable.class, () -> container);
-			new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
-			then(container).shouldHaveNoInteractions();
-			applicationContext.refresh();
-			then(container).should().start();
-		}
+		AnnotationConfigApplicationContext applicationContext = createApplicationContext(container);
+		then(container).shouldHaveNoInteractions();
+		applicationContext.refresh();
+		then(container).should().start();
+		applicationContext.close();
 	}
 
 	@Test
-	void whenStartableBeanInvokesDestroyOnShutdown() {
-		Startable mock = mock(Startable.class);
-		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		applicationContext.registerBean("container", Startable.class, () -> mock);
-		new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
+	void whenStartableBeanInvokesCloseOnShutdown() {
+		Startable container = mock(Startable.class);
+		AnnotationConfigApplicationContext applicationContext = createApplicationContext(container);
 		applicationContext.refresh();
-		then(mock).should(never()).close();
+		then(container).should(never()).close();
 		applicationContext.close();
-		then(mock).should().close();
+		then(container).should(times(1)).close();
+	}
+
+	@Test
+	void whenReusableContainerBeanInvokesStartButNotClose() {
+		GenericContainer<?> container = mock(GenericContainer.class);
+		given(container.isShouldBeReused()).willReturn(true);
+		AnnotationConfigApplicationContext applicationContext = createApplicationContext(container);
+		then(container).shouldHaveNoInteractions();
+		applicationContext.refresh();
+		then(container).should().start();
+		applicationContext.close();
+		then(container).should(never()).close();
+	}
+
+	@Test
+	void whenReusableContainerBeanFromConfigurationInvokesStartButNotClose() {
+		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+		new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
+		applicationContext.register(ReusableContainerConfiguration.class);
+		applicationContext.refresh();
+		GenericContainer<?> container = applicationContext.getBean(GenericContainer.class);
+		then(container).should().start();
+		applicationContext.close();
+		then(container).should(never()).close();
+	}
+
+	private AnnotationConfigApplicationContext createApplicationContext(Startable container) {
+		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+		new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
+		applicationContext.registerBean("container", Startable.class, () -> container);
+		return applicationContext;
+	}
+
+	@Configuration
+	static class ReusableContainerConfiguration {
+
+		@Bean
+		GenericContainer<?> container() {
+			GenericContainer<?> container = mock(GenericContainer.class);
+			given(container.isShouldBeReused()).willReturn(true);
+			return container;
+		}
+
 	}
 
 }

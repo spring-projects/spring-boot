@@ -16,10 +16,17 @@
 
 package org.springframework.boot.testcontainers.lifecycle;
 
+import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.lifecycle.Startable;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 
 /**
  * {@link BeanPostProcessor} to manage the lifecycle of {@link Startable startable
@@ -29,7 +36,14 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
  * @author Stephane Nicoll
  * @see TestcontainersLifecycleApplicationContextInitializer
  */
-class TestcontainersLifecycleBeanPostProcessor implements BeanPostProcessor {
+@Order(Ordered.LOWEST_PRECEDENCE)
+class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPostProcessor {
+
+	private final ConfigurableListableBeanFactory beanFactory;
+
+	TestcontainersLifecycleBeanPostProcessor(ConfigurableListableBeanFactory beanFactory) {
+		this.beanFactory = beanFactory;
+	}
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
@@ -37,6 +51,33 @@ class TestcontainersLifecycleBeanPostProcessor implements BeanPostProcessor {
 			startable.start();
 		}
 		return bean;
+	}
+
+	@Override
+	public boolean requiresDestruction(Object bean) {
+		return bean instanceof Startable;
+	}
+
+	@Override
+	public void postProcessBeforeDestruction(Object bean, String beanName) throws BeansException {
+		if (bean instanceof Startable startable && !isDestroyedByFramework(beanName) && !isReusedContainer(bean)) {
+			startable.close();
+		}
+	}
+
+	private boolean isDestroyedByFramework(String beanName) {
+		try {
+			BeanDefinition beanDefinition = this.beanFactory.getBeanDefinition(beanName);
+			String destroyMethodName = beanDefinition.getDestroyMethodName();
+			return !"".equals(destroyMethodName);
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			return false;
+		}
+	}
+
+	private boolean isReusedContainer(Object bean) {
+		return (bean instanceof GenericContainer<?> container) && container.isShouldBeReused();
 	}
 
 }

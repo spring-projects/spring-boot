@@ -18,6 +18,7 @@ package org.springframework.boot.testcontainers.lifecycle;
 
 import org.testcontainers.lifecycle.Startable;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 
@@ -33,7 +34,9 @@ public class TestcontainersLifecycleApplicationContextInitializer
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		applicationContext.getBeanFactory().addBeanPostProcessor(new TestcontainersLifecycleBeanPostProcessor());
+		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
+		applicationContext.addBeanFactoryPostProcessor(new TestcontainersLifecycleBeanFactoryPostProcessor());
+		beanFactory.addBeanPostProcessor(new TestcontainersLifecycleBeanPostProcessor(beanFactory));
 	}
 
 }
