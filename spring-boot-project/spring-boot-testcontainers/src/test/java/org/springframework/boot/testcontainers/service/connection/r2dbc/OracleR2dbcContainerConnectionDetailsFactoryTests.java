@@ -47,7 +47,8 @@ class OracleR2dbcContainerConnectionDetailsFactoryTests {
 
 	@Container
 	@ServiceConnection
-	static final OracleContainer oracle = new OracleContainer(DockerImageNames.oracleXe());
+	static final OracleContainer oracle = new OracleContainer(DockerImageNames.oracleXe())
+		.withStartupTimeout(Duration.ofMinutes(2));
 
 	@Autowired
 	ConnectionFactory connectionFactory;
