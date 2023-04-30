@@ -16,6 +16,14 @@
 
 package org.springframework.boot.testcontainers.lifecycle;
 
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.testcontainers.containers.ContainerState;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.lifecycle.Startable;
 
@@ -27,10 +35,16 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.log.LogMessage;
 
 /**
  * {@link BeanPostProcessor} to manage the lifecycle of {@link Startable startable
  * containers}.
+ * <p>
+ * As well as starting containers, this {@link BeanPostProcessor} will also ensure that
+ * all containers are started as early as possible in the
+ * {@link ConfigurableListableBeanFactory#preInstantiateSingletons() pre-instantiate
+ * singletons} phase.
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
@@ -39,7 +53,11 @@ import org.springframework.core.annotation.Order;
 @Order(Ordered.LOWEST_PRECEDENCE)
 class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPostProcessor {
 
-	private final ConfigurableListableBeanFactory beanFactory;
+	private static final Log logger = LogFactory.getLog(TestcontainersLifecycleBeanPostProcessor.class);
+
+	private ConfigurableListableBeanFactory beanFactory;
+
+	private AtomicBoolean initializedContainers = new AtomicBoolean();
 
 	TestcontainersLifecycleBeanPostProcessor(ConfigurableListableBeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
@@ -50,7 +68,22 @@ class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPo
 		if (bean instanceof Startable startable) {
 			startable.start();
 		}
+		if (this.beanFactory.isConfigurationFrozen()) {
+			initializeContainers();
+		}
 		return bean;
+	}
+
+	private void initializeContainers() {
+		if (this.initializedContainers.compareAndSet(false, true)) {
+			Set<String> beanNames = new LinkedHashSet<>();
+			beanNames.addAll(List.of(this.beanFactory.getBeanNamesForType(ContainerState.class, false, false)));
+			beanNames.addAll(List.of(this.beanFactory.getBeanNamesForType(Startable.class, false, false)));
+			for (String beanName : beanNames) {
+				logger.debug(LogMessage.format("Initializing container bean '%s'", beanName));
+				this.beanFactory.getBean(beanName);
+			}
+		}
 	}
 
 	@Override
