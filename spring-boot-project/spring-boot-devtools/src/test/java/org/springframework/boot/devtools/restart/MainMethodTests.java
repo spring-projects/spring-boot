@@ -56,6 +56,14 @@ class MainMethodTests {
 		assertThat(method.getDeclaringClassName()).isEqualTo(this.actualMain.getDeclaringClass().getName());
 	}
 
+	@Test // gh-35214
+	void nestedMainMethod() throws Exception {
+		MainMethod method = new TestThread(Nested::main).test();
+		Method nestedMain = Nested.class.getMethod("main", String[].class);
+		assertThat(method.getMethod()).isEqualTo(nestedMain);
+		assertThat(method.getDeclaringClassName()).isEqualTo(nestedMain.getDeclaringClass().getName());
+	}
+
 	@Test
 	void missingArgsMainMethod() {
 		assertThatIllegalStateException().isThrownBy(() -> new TestThread(MissingArgs::main).test())
@@ -110,6 +118,15 @@ class MainMethodTests {
 
 		private static void someOtherMethod() {
 			mainMethod.set(new MainMethod());
+		}
+
+	}
+
+	public static class Nested {
+
+		public static void main(String... args) {
+			mainMethod.set(new MainMethod());
+			Valid.main(args);
 		}
 
 	}
