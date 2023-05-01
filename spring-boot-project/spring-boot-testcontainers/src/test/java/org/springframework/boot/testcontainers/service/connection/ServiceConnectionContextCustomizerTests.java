@@ -22,7 +22,6 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -51,11 +50,9 @@ import static org.mockito.Mockito.spy;
  */
 class ServiceConnectionContextCustomizerTests {
 
-	private String beanNameSuffix;
-
 	private Origin origin;
 
-	private JdbcDatabaseContainer<?> container;
+	private PostgreSQLContainer<?> container;
 
 	private MergedAnnotation<ServiceConnection> annotation;
 
@@ -65,13 +62,12 @@ class ServiceConnectionContextCustomizerTests {
 
 	@BeforeEach
 	void setup() {
-		this.beanNameSuffix = "MyBean";
 		this.origin = mock(Origin.class);
 		this.container = mock(PostgreSQLContainer.class);
 		this.annotation = MergedAnnotation.of(ServiceConnection.class,
 				Map.of("name", "myname", "type", new Class<?>[0]));
-		this.source = new ContainerConnectionSource<>(this.beanNameSuffix, this.origin, this.container,
-				this.annotation);
+		this.source = new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class,
+				this.container.getDockerImageName(), this.annotation, () -> this.container);
 		this.factories = mock(ConnectionDetailsFactories.class);
 	}
 
@@ -89,7 +85,7 @@ class ServiceConnectionContextCustomizerTests {
 		customizer.customizeContext(context, mergedConfig);
 		ArgumentCaptor<BeanDefinition> beanDefinitionCaptor = ArgumentCaptor.forClass(BeanDefinition.class);
 		then(beanFactory).should()
-			.registerBeanDefinition(eq("testJdbcConnectionDetailsForMyBean"), beanDefinitionCaptor.capture());
+			.registerBeanDefinition(eq("testJdbcConnectionDetailsForTest"), beanDefinitionCaptor.capture());
 		RootBeanDefinition beanDefinition = (RootBeanDefinition) beanDefinitionCaptor.getValue();
 		assertThat(beanDefinition.getInstanceSupplier().get()).isSameAs(connectionDetails);
 		assertThat(beanDefinition.getBeanClass()).isEqualTo(TestJdbcConnectionDetails.class);

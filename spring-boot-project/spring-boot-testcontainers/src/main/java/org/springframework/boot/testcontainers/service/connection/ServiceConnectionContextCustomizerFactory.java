@@ -31,9 +31,7 @@ import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
 import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * Spring Test {@link ContextCustomizerFactory} to support
@@ -65,17 +63,19 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 		}
 	}
 
-	private ContainerConnectionSource<?> createSource(Field field, MergedAnnotation<ServiceConnection> annotation) {
+	@SuppressWarnings("unchecked")
+	private <C extends Container<?>> ContainerConnectionSource<?> createSource(Field field,
+			MergedAnnotation<ServiceConnection> annotation) {
 		Assert.state(Modifier.isStatic(field.getModifiers()),
 				() -> "@ServiceConnection field '%s' must be static".formatted(field.getName()));
-		String beanNameSuffix = StringUtils.capitalize(ClassUtils.getShortNameAsProperty(field.getDeclaringClass()))
-				+ StringUtils.capitalize(field.getName());
 		Origin origin = new FieldOrigin(field);
 		Object fieldValue = getFieldValue(field);
 		Assert.state(fieldValue instanceof Container, () -> "Field '%s' in %s must be a %s".formatted(field.getName(),
 				field.getDeclaringClass().getName(), Container.class.getName()));
-		Container<?> container = (Container<?>) fieldValue;
-		return new ContainerConnectionSource<>(beanNameSuffix, origin, container, annotation);
+		Class<C> containerType = (Class<C>) fieldValue.getClass();
+		C container = (C) fieldValue;
+		return new ContainerConnectionSource<>("test", origin, containerType, container.getDockerImageName(),
+				annotation, () -> container);
 	}
 
 	private Object getFieldValue(Field field) {

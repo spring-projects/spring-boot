@@ -80,7 +80,7 @@ class ServiceConnectionContextCustomizerFactoryTests {
 		ServiceConnectionContextCustomizer customizer = (ServiceConnectionContextCustomizer) this.factory
 			.createContextCustomizer(SingleServiceConnection.class, null);
 		ContainerConnectionSource<?> source = customizer.getSources().get(0);
-		assertThat(source.getBeanNameSuffix()).isEqualTo("SingleServiceConnectionService1");
+		assertThat(source.getBeanNameSuffix()).isEqualTo("test");
 	}
 
 	@Test

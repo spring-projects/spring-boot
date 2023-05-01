@@ -31,6 +31,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactoryNotFoundException;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
@@ -61,10 +62,21 @@ class ConnectionDetailsRegistrar {
 		sources.forEach((source) -> registerBeanDefinitions(registry, source));
 	}
 
-	private void registerBeanDefinitions(BeanDefinitionRegistry registry, ContainerConnectionSource<?> source) {
-		this.connectionDetailsFactories.getConnectionDetails(source, true)
-			.forEach((connectionDetailsType, connectionDetails) -> registerBeanDefinition(registry, source,
-					connectionDetailsType, connectionDetails));
+	void registerBeanDefinitions(BeanDefinitionRegistry registry, ContainerConnectionSource<?> source) {
+		try {
+			this.connectionDetailsFactories.getConnectionDetails(source, true)
+				.forEach((connectionDetailsType, connectionDetails) -> registerBeanDefinition(registry, source,
+						connectionDetailsType, connectionDetails));
+		}
+		catch (ConnectionDetailsFactoryNotFoundException ex) {
+			if (!StringUtils.hasText(source.getConnectionName())) {
+				StringBuilder message = new StringBuilder(ex.getMessage());
+				message.append((!message.toString().endsWith(".")) ? "." : "");
+				message.append(" You may need to add a 'name' to your @ServiceConnection annotation");
+				throw new ConnectionDetailsFactoryNotFoundException(message.toString(), ex.getCause());
+			}
+			throw ex;
+		}
 	}
 
 	@SuppressWarnings("unchecked")

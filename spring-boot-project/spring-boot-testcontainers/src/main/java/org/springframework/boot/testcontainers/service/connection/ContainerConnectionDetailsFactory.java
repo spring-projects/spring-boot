@@ -20,6 +20,7 @@ import java.util.Arrays;
 
 import org.testcontainers.containers.Container;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactory;
 import org.springframework.boot.origin.Origin;
@@ -108,15 +109,17 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 	protected abstract D getContainerConnectionDetails(ContainerConnectionSource<C> source);
 
 	/**
-	 * Convenient base class for {@link ConnectionDetails} results that are backed by a
+	 * Base class for {@link ConnectionDetails} results that are backed by a
 	 * {@link ContainerConnectionSource}.
 	 *
 	 * @param <C> the container type
 	 */
 	protected static class ContainerConnectionDetails<C extends Container<?>>
-			implements ConnectionDetails, OriginProvider {
+			implements ConnectionDetails, OriginProvider, InitializingBean {
 
 		private final ContainerConnectionSource<C> source;
+
+		private volatile C container;
 
 		/**
 		 * Create a new {@link ContainerConnectionDetails} instance.
@@ -127,8 +130,20 @@ public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, 
 			this.source = source;
 		}
 
+		@Override
+		public void afterPropertiesSet() throws Exception {
+			this.container = this.source.getContainerSupplier().get();
+		}
+
+		/**
+		 * Return the container that back this connection details instance. This method
+		 * can only be called once the connection details bean has been initialized.
+		 * @return the container instance
+		 */
 		protected final C getContainer() {
-			return this.source.getContainer();
+			Assert.state(this.container != null,
+					"Container cannot be obtained before the connection details bean has been initialized");
+			return this.container;
 		}
 
 		@Override

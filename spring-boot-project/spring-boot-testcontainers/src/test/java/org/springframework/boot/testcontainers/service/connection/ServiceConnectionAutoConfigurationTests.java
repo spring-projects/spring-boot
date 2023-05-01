@@ -94,7 +94,7 @@ class ServiceConnectionAutoConfigurationTests {
 	static class ContainerConfiguration {
 
 		@Bean
-		@ServiceConnection
+		@ServiceConnection("redis")
 		RedisContainer redisContainer() {
 			return new RedisContainer();
 		}
