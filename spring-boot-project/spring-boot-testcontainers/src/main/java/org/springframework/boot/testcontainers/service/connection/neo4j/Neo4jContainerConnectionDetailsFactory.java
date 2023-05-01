@@ -36,7 +36,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class Neo4jContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<Neo4jConnectionDetails, Neo4jContainer<?>> {
+		extends ContainerConnectionDetailsFactory<Neo4jContainer<?>, Neo4jConnectionDetails> {
 
 	Neo4jContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "org.neo4j.driver.AuthToken");

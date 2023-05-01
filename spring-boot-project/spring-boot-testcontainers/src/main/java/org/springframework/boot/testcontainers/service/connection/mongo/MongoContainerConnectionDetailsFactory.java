@@ -33,7 +33,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class MongoContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<MongoConnectionDetails, MongoDBContainer> {
+		extends ContainerConnectionDetailsFactory<MongoDBContainer, MongoConnectionDetails> {
 
 	MongoContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "com.mongodb.ConnectionString");

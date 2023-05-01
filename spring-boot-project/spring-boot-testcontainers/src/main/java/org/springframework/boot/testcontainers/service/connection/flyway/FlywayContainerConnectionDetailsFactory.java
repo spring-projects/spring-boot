@@ -31,7 +31,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Andy Wilkinson
  */
 class FlywayContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<FlywayConnectionDetails, JdbcDatabaseContainer<?>> {
+		extends ContainerConnectionDetailsFactory<JdbcDatabaseContainer<?>, FlywayConnectionDetails> {
 
 	@Override
 	protected FlywayConnectionDetails getContainerConnectionDetails(

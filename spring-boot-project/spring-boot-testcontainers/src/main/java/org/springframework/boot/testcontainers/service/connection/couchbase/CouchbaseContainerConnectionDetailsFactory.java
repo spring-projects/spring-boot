@@ -33,7 +33,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class CouchbaseContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<CouchbaseConnectionDetails, CouchbaseContainer> {
+		extends ContainerConnectionDetailsFactory<CouchbaseContainer, CouchbaseConnectionDetails> {
 
 	@Override
 	protected CouchbaseConnectionDetails getContainerConnectionDetails(

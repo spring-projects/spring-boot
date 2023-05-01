@@ -36,7 +36,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class RabbitContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<RabbitConnectionDetails, RabbitMQContainer> {
+		extends ContainerConnectionDetailsFactory<RabbitMQContainer, RabbitConnectionDetails> {
 
 	@Override
 	protected RabbitConnectionDetails getContainerConnectionDetails(

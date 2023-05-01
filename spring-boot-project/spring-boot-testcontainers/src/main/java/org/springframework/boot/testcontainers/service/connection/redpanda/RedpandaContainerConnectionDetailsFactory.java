@@ -33,7 +33,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Eddú Meléndez
  */
 class RedpandaContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<KafkaConnectionDetails, RedpandaContainer> {
+		extends ContainerConnectionDetailsFactory<RedpandaContainer, KafkaConnectionDetails> {
 
 	@Override
 	protected KafkaConnectionDetails getContainerConnectionDetails(

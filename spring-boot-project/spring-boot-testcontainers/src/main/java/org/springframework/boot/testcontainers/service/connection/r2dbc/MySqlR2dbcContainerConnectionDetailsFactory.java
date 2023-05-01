@@ -34,7 +34,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class MySqlR2dbcContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<R2dbcConnectionDetails, MySQLContainer<?>> {
+		extends ContainerConnectionDetailsFactory<MySQLContainer<?>, R2dbcConnectionDetails> {
 
 	MySqlR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");

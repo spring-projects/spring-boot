@@ -34,7 +34,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class RedisContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<RedisConnectionDetails, Container<?>> {
+		extends ContainerConnectionDetailsFactory<Container<?>, RedisConnectionDetails> {
 
 	RedisContainerConnectionDetailsFactory() {
 		super("redis");

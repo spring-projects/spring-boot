@@ -32,7 +32,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Eddú Meléndez
  */
 class OracleR2dbcContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<R2dbcConnectionDetails, OracleContainer> {
+		extends ContainerConnectionDetailsFactory<OracleContainer, R2dbcConnectionDetails> {
 
 	OracleR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");

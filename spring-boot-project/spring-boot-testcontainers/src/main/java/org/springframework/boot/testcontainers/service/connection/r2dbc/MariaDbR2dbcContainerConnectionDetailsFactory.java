@@ -34,7 +34,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class MariaDbR2dbcContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<R2dbcConnectionDetails, MariaDBContainer<?>> {
+		extends ContainerConnectionDetailsFactory<MariaDBContainer<?>, R2dbcConnectionDetails> {
 
 	MariaDbR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");

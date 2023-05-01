@@ -111,7 +111,7 @@ class ContainerConnectionDetailsFactoryTests {
 	 * Test {@link ContainerConnectionDetailsFactory}.
 	 */
 	static class TestContainerConnectionDetailsFactory
-			extends ContainerConnectionDetailsFactory<JdbcConnectionDetails, JdbcDatabaseContainer<?>> {
+			extends ContainerConnectionDetailsFactory<JdbcDatabaseContainer<?>, JdbcConnectionDetails> {
 
 		TestContainerConnectionDetailsFactory() {
 			this(ANY_CONNECTION_NAME);

@@ -31,7 +31,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Andy Wilkinson
  */
 class LiquibaseContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<LiquibaseConnectionDetails, JdbcDatabaseContainer<?>> {
+		extends ContainerConnectionDetailsFactory<JdbcDatabaseContainer<?>, LiquibaseConnectionDetails> {
 
 	@Override
 	protected LiquibaseConnectionDetails getContainerConnectionDetails(

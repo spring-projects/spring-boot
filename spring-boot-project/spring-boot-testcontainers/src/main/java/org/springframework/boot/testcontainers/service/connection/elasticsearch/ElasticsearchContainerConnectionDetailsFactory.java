@@ -36,7 +36,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class ElasticsearchContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<ElasticsearchConnectionDetails, ElasticsearchContainer> {
+		extends ContainerConnectionDetailsFactory<ElasticsearchContainer, ElasticsearchConnectionDetails> {
 
 	private static final int DEFAULT_PORT = 9200;
 

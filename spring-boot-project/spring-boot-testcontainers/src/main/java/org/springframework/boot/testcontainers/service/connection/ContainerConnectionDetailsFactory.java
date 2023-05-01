@@ -40,7 +40,7 @@ import org.springframework.util.ObjectUtils;
  * @author Phillip Webb
  * @since 3.1.0
  */
-public abstract class ContainerConnectionDetailsFactory<D extends ConnectionDetails, C extends Container<?>>
+public abstract class ContainerConnectionDetailsFactory<C extends Container<?>, D extends ConnectionDetails>
 		implements ConnectionDetailsFactory<ContainerConnectionSource<C>, D> {
 
 	/**
@@ -78,9 +78,9 @@ public abstract class ContainerConnectionDetailsFactory<D extends ConnectionDeta
 		}
 		try {
 			Class<?>[] generics = resolveGenerics();
-			Class<?> connectionDetailsType = generics[0];
-			Class<?> containerType = generics[1];
-			if (source.accepts(this.connectionName, connectionDetailsType, containerType)) {
+			Class<?> containerType = generics[0];
+			Class<?> connectionDetailsType = generics[1];
+			if (source.accepts(this.connectionName, containerType, connectionDetailsType)) {
 				return getContainerConnectionDetails(source);
 			}
 		}

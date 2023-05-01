@@ -35,7 +35,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class KafkaContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<KafkaConnectionDetails, KafkaContainer> {
+		extends ContainerConnectionDetailsFactory<KafkaContainer, KafkaConnectionDetails> {
 
 	@Override
 	protected KafkaConnectionDetails getContainerConnectionDetails(ContainerConnectionSource<KafkaContainer> source) {

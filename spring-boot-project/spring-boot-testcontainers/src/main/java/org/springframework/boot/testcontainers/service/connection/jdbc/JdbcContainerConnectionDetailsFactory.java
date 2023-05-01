@@ -32,7 +32,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class JdbcContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<JdbcConnectionDetails, JdbcDatabaseContainer<?>> {
+		extends ContainerConnectionDetailsFactory<JdbcDatabaseContainer<?>, JdbcConnectionDetails> {
 
 	@Override
 	protected JdbcConnectionDetails getContainerConnectionDetails(

@@ -36,7 +36,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class CassandraContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<CassandraConnectionDetails, CassandraContainer<?>> {
+		extends ContainerConnectionDetailsFactory<CassandraContainer<?>, CassandraConnectionDetails> {
 
 	@Override
 	protected CassandraConnectionDetails getContainerConnectionDetails(

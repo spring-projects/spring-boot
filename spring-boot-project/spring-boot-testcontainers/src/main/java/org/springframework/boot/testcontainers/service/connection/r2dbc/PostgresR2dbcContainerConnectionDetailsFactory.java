@@ -34,7 +34,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Phillip Webb
  */
 class PostgresR2dbcContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<R2dbcConnectionDetails, PostgreSQLContainer<?>> {
+		extends ContainerConnectionDetailsFactory<PostgreSQLContainer<?>, R2dbcConnectionDetails> {
 
 	PostgresR2dbcContainerConnectionDetailsFactory() {
 		super(ANY_CONNECTION_NAME, "io.r2dbc.spi.ConnectionFactoryOptions");
