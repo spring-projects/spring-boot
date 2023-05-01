@@ -8,6 +8,7 @@ org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFacto
 org.springframework.boot.docker.compose.service.connection.cassandra.CassandraDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.elasticsearch.ElasticsearchDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.flyway.JdbcAdaptingFlywayConnectionDetailsFactory,\
+org.springframework.boot.docker.compose.service.connection.liquibase.JdbcAdaptingLiquibaseConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.mariadb.MariaDbJdbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.mariadb.MariaDbR2dbcDockerComposeConnectionDetailsFactory,\
 org.springframework.boot.docker.compose.service.connection.mongo.MongoDockerComposeConnectionDetailsFactory,\
