@@ -16,8 +16,8 @@
 
 package smoketest.data.mongo;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 
-interface ExampleRepository extends MongoRepository<ExampleDocument, String> {
+interface SampleReactiveRepository extends ReactiveMongoRepository<SampleDocument, String> {
 
 }

@@ -16,20 +16,9 @@
 
 package smoketest.data.mongo;
 
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.stereotype.Service;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@Service
-public class ExampleService {
-
-	private final MongoTemplate mongoTemplate;
-
-	public ExampleService(MongoTemplate mongoTemplate) {
-		this.mongoTemplate = mongoTemplate;
-	}
-
-	public boolean hasCollection(String collectionName) {
-		return this.mongoTemplate.collectionExists(collectionName);
-	}
+@SpringBootApplication
+public class SampleMongoApplication {
 
 }

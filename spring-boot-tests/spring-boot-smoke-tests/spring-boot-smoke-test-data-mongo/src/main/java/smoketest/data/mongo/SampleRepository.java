@@ -16,9 +16,8 @@
 
 package smoketest.data.mongo;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-@SpringBootApplication
-public class ExampleMongoApplication {
+interface SampleRepository extends MongoRepository<SampleDocument, String> {
 
 }

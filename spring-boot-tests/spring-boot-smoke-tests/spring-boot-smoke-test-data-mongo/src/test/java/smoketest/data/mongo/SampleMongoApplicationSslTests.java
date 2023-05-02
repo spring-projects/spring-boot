@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 		"spring.ssl.bundle.pem.client.keystore.private-key=classpath:ssl/test-client.key",
 		"spring.ssl.bundle.pem.client.truststore.certificate=classpath:ssl/test-ca.crt" })
 @ImportAutoConfiguration(SslAutoConfiguration.class)
-class DataMongoTestSslIntegrationTests {
+class SampleMongoApplicationSslTests {
 
 	@Container
 	@ServiceConnection
@@ -51,11 +51,11 @@ class DataMongoTestSslIntegrationTests {
 	private MongoTemplate mongoTemplate;
 
 	@Autowired
-	private ExampleRepository exampleRepository;
+	private SampleRepository exampleRepository;
 
 	@Test
 	void testRepository() {
-		ExampleDocument exampleDocument = new ExampleDocument();
+		SampleDocument exampleDocument = new SampleDocument();
 		exampleDocument.setText("Look, new @DataMongoTest!");
 		exampleDocument = this.exampleRepository.save(exampleDocument);
 		assertThat(exampleDocument.getId()).isNotNull();

@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 		"spring.ssl.bundle.pem.client.keystore.certificate=classpath:ssl/test-client.crt",
 		"spring.ssl.bundle.pem.client.keystore.private-key=classpath:ssl/test-client.key",
 		"spring.ssl.bundle.pem.client.truststore.certificate=classpath:ssl/test-ca.crt" })
-class DataMongoTestReactiveSslIntegrationTests {
+class SampleMongoApplicationReactiveSslTests {
 
 	@Container
 	@ServiceConnection
@@ -50,11 +50,11 @@ class DataMongoTestReactiveSslIntegrationTests {
 	private ReactiveMongoTemplate mongoTemplate;
 
 	@Autowired
-	private ExampleReactiveRepository exampleRepository;
+	private SampleReactiveRepository exampleRepository;
 
 	@Test
 	void testRepository() {
-		ExampleDocument exampleDocument = new ExampleDocument();
+		SampleDocument exampleDocument = new SampleDocument();
 		exampleDocument.setText("Look, new @DataMongoTest!");
 		exampleDocument = this.exampleRepository.save(exampleDocument).block(Duration.ofSeconds(30));
 		assertThat(exampleDocument.getId()).isNotNull();

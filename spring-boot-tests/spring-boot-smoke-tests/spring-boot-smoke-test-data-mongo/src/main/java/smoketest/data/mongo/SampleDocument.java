@@ -19,7 +19,7 @@ package smoketest.data.mongo;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "exampleDocuments")
-public class ExampleDocument {
+public class SampleDocument {
 
 	private String id;
 
