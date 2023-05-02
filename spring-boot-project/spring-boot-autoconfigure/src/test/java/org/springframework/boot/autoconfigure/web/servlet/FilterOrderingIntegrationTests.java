@@ -80,7 +80,7 @@ class FilterOrderingIntegrationTests {
 			.extracting("beanName")
 			.isEqualTo("formContentFilter");
 		assertThat(registeredFilters.get(4).getFilter()).isInstanceOf(OrderedRequestContextFilter.class);
-		assertThat(registeredFilters.get(6).getFilter()).isInstanceOf(FilterChainProxy.class);
+		assertThat(registeredFilters.get(5).getFilter()).isInstanceOf(FilterChainProxy.class);
 	}
 
 	private void load() {
