@@ -25,6 +25,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
@@ -113,6 +114,17 @@ class NativeImagePluginActionIntegrationTests {
 		BuildResult result = this.gradleBuild.build("checkTestNativeImageClasspath");
 		assertThat(result.getOutput()).contains(projectPath("build/classes/java/aotTest"),
 				projectPath("build/resources/aotTest"), projectPath("build/generated/aotTestClasses"));
+	}
+
+	@TestTemplate
+	void nativeEntryIsAddedToManifest() throws IOException {
+		writeDummySpringApplicationAotProcessorMainClass();
+		BuildResult result = this.gradleBuild.build("bootJar");
+		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
+		JarFile jarFile = new JarFile(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar"));
+		Manifest manifest = jarFile.getManifest();
+		assertThat(manifest.getMainAttributes().getValue("Spring-Boot-Native-Processed")).isEqualTo("true");
 	}
 
 	private String projectPath(String path) {
