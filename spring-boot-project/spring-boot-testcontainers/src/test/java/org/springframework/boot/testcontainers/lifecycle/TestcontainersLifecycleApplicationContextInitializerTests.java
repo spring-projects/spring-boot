@@ -24,6 +24,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -82,6 +83,16 @@ class TestcontainersLifecycleApplicationContextInitializerTests {
 		then(container).should().start();
 		applicationContext.close();
 		then(container).should(never()).close();
+	}
+
+	@Test
+	void doesNotInitializeSameContextMoreThanOnce() {
+		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+		int initialNumberOfPostProcessors = applicationContext.getBeanFactoryPostProcessors().size();
+		for (int i = 0; i < 10; i++) {
+			new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
+		}
+		assertThat(applicationContext.getBeanFactoryPostProcessors()).hasSize(initialNumberOfPostProcessors + 1);
 	}
 
 	private AnnotationConfigApplicationContext createApplicationContext(Startable container) {

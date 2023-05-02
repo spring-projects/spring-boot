@@ -16,6 +16,8 @@
 
 package org.springframework.boot.testcontainers.lifecycle;
 
+import java.util.WeakHashMap;
+
 import org.testcontainers.lifecycle.Startable;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -32,8 +34,15 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class TestcontainersLifecycleApplicationContextInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
+	private static WeakHashMap<ConfigurableApplicationContext, Boolean> applied = new WeakHashMap<>();
+
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
+		synchronized (applied) {
+			if (applied.put(applicationContext, Boolean.TRUE) == Boolean.TRUE) {
+				return;
+			}
+		}
 		ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 		applicationContext.addBeanFactoryPostProcessor(new TestcontainersLifecycleBeanFactoryPostProcessor());
 		beanFactory.addBeanPostProcessor(new TestcontainersLifecycleBeanPostProcessor(beanFactory));

@@ -49,7 +49,7 @@ class ServiceConnectionContextCustomizerFactory implements ContextCustomizerFact
 			List<ContextConfigurationAttributes> configAttributes) {
 		List<ContainerConnectionSource<?>> sources = new ArrayList<>();
 		findSources(testClass, sources);
-		return (sources.isEmpty()) ? null : new ServiceConnectionContextCustomizer(sources);
+		return new ServiceConnectionContextCustomizer(sources);
 	}
 
 	private void findSources(Class<?> clazz, List<ContainerConnectionSource<?>> sources) {

@@ -24,8 +24,13 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.test.context.ContextCustomizer;
+import org.springframework.test.context.MergedContextConfiguration;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ServiceConnectionContextCustomizerFactory}.
@@ -39,8 +44,14 @@ class ServiceConnectionContextCustomizerFactoryTests {
 	private final ServiceConnectionContextCustomizerFactory factory = new ServiceConnectionContextCustomizerFactory();
 
 	@Test
-	void createContextCustomizerWhenNoServiceConnectionsReturnsNull() {
-		assertThat(this.factory.createContextCustomizer(NoServiceConnections.class, null)).isNull();
+	void createContextCustomizerWhenNoServiceConnectionsReturnsCustomizerToApplyInitializer() {
+		ContextCustomizer customizer = this.factory.createContextCustomizer(NoServiceConnections.class, null);
+		assertThat(customizer).isNotNull();
+		GenericApplicationContext context = new GenericApplicationContext();
+		int initialNumberOfPostProcessors = context.getBeanFactoryPostProcessors().size();
+		MergedContextConfiguration mergedConfig = mock(MergedContextConfiguration.class);
+		customizer.customizeContext(context, mergedConfig);
+		assertThat(context.getBeanFactoryPostProcessors()).hasSize(initialNumberOfPostProcessors + 1);
 	}
 
 	@Test
