@@ -19,6 +19,7 @@ package org.springframework.boot.test.autoconfigure.data.couchbase;
 import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.OS;
 import org.testcontainers.couchbase.BucketDefinition;
 import org.testcontainers.couchbase.CouchbaseContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -27,6 +28,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testsupport.junit.DisabledOnOs;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
@@ -44,6 +46,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 @DataCouchbaseTest(
 		properties = { "spring.couchbase.env.timeouts.connect=2m", "spring.data.couchbase.bucket-name=cbbucket" })
+@DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
+		disabledReason = "The Couchbase image has no ARM support")
 @Testcontainers(disabledWithoutDocker = true)
 class DataCouchbaseTestIntegrationTests {
 
