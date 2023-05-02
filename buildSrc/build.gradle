@@ -24,23 +24,26 @@ ext {
 
 dependencies {
 	checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}"
+
 	implementation(platform("org.springframework:spring-framework-bom:5.3.15"))
 	implementation("com.diffplug.gradle:goomph:3.37.2")
 	implementation("com.fasterxml.jackson.core:jackson-databind:2.11.4")
 	implementation("com.gradle:gradle-enterprise-gradle-plugin:3.12.1")
 	implementation("com.tngtech.archunit:archunit:1.0.0")
 	implementation("commons-codec:commons-codec:1.13")
+	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:${javaFormatVersion}")
 	implementation("org.apache.maven:maven-embedder:3.6.2")
 	implementation("org.asciidoctor:asciidoctor-gradle-jvm:3.3.2")
 	implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlinVersion}")
 	implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:${kotlinVersion}")
+	implementation("org.springframework:spring-context")
 	implementation("org.springframework:spring-core")
 	implementation("org.springframework:spring-web")
-	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:${javaFormatVersion}")
+
 	testImplementation("org.assertj:assertj-core:3.11.1")
 	testImplementation("org.apache.logging.log4j:log4j-core:2.17.1")
 	testImplementation("org.junit.jupiter:junit-jupiter:5.6.0")
-	implementation("org.springframework:spring-context")
+
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
