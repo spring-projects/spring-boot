@@ -18,13 +18,14 @@ ext {
 		def properties = new Properties()
 		properties.load(it)
 		set("kotlinVersion", properties["kotlinVersion"])
+		set("springFrameworkVersion", properties["springFrameworkVersion"])
 	}
 }
 
 dependencies {
 	checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}"
 
-	implementation(platform("org.springframework:spring-framework-bom:5.3.15"))
+	implementation(platform("org.springframework:spring-framework-bom:${springFrameworkVersion}"))
 	implementation("com.fasterxml.jackson.core:jackson-databind:2.11.4")
 	implementation("com.gradle:gradle-enterprise-gradle-plugin:3.12.1")
 	implementation("com.tngtech.archunit:archunit:1.0.0")
