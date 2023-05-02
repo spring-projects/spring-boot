@@ -19,6 +19,7 @@ package org.springframework.boot.test.autoconfigure.data.neo4j;
 import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.OS;
 import org.neo4j.driver.Driver;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -29,6 +30,7 @@ import reactor.test.StepVerifier;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.testsupport.junit.DisabledOnOs;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -52,6 +54,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @DataNeo4jTest
 @Transactional(propagation = Propagation.NOT_SUPPORTED)
 @Testcontainers(disabledWithoutDocker = true)
+@DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
+		disabledReason = "The Neo4j image has no ARM support")
 class DataNeo4jTestReactiveIntegrationTests {
 
 	@Container
