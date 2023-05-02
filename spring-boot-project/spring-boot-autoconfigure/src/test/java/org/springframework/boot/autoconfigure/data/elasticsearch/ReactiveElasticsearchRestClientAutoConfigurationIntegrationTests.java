@@ -45,6 +45,7 @@ class ReactiveElasticsearchRestClientAutoConfigurationIntegrationTests {
 
 	@Container
 	static ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())
+		.withEnv("ES_JAVA_OPTS", "-Xmx1g")
 		.withStartupAttempts(5)
 		.withStartupTimeout(Duration.ofMinutes(10));
 
