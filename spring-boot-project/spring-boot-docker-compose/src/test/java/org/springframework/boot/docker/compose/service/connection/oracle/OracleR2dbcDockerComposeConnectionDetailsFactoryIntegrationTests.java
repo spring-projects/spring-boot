@@ -21,10 +21,12 @@ import java.time.Duration;
 import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
 import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.boot.testsupport.junit.DisabledOnOs;
 import org.springframework.r2dbc.core.DatabaseClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,6 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
+@DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
+		disabledReason = "The Oracle image has no ARM support")
 class OracleR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	OracleR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests() {

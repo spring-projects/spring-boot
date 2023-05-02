@@ -19,10 +19,12 @@ package org.springframework.boot.docker.compose.service.connection.oracle;
 import java.sql.Driver;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
 import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.boot.testsupport.junit.DisabledOnOs;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.util.ClassUtils;
@@ -34,6 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
+@DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
+		disabledReason = "The Oracle image has no ARM support")
 class OracleJdbcDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	OracleJdbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
