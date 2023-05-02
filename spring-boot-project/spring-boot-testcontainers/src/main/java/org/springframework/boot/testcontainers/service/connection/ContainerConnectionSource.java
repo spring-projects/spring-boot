@@ -136,6 +136,10 @@ public final class ContainerConnectionSource<C extends Container<?>> implements 
 		return this.containerSupplier;
 	}
 
+	Set<Class<?>> getConnectionDetailsTypes() {
+		return this.connectionDetailsTypes;
+	}
+
 	@Override
 	public String toString() {
 		return "@ServiceConnection source for %s".formatted(this.origin);

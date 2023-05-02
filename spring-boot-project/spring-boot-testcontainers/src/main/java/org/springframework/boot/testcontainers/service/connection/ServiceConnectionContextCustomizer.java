@@ -17,6 +17,10 @@
 package org.springframework.boot.testcontainers.service.connection;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.testcontainers.containers.Container;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -37,6 +41,8 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 
 	private final List<ContainerConnectionSource<?>> sources;
 
+	private final Set<CacheKey> keys;
+
 	private final ConnectionDetailsFactories connectionDetailsFactories;
 
 	ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?>> sources) {
@@ -46,6 +52,7 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 	ServiceConnectionContextCustomizer(List<ContainerConnectionSource<?>> sources,
 			ConnectionDetailsFactories connectionDetailsFactories) {
 		this.sources = sources;
+		this.keys = sources.stream().map(CacheKey::new).collect(Collectors.toUnmodifiableSet());
 		this.connectionDetailsFactories = connectionDetailsFactories;
 	}
 
@@ -58,8 +65,37 @@ class ServiceConnectionContextCustomizer implements ContextCustomizer {
 		}
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		return this.keys.equals(((ServiceConnectionContextCustomizer) obj).keys);
+	}
+
+	@Override
+	public int hashCode() {
+		return this.keys.hashCode();
+	}
+
 	List<ContainerConnectionSource<?>> getSources() {
 		return this.sources;
+	}
+
+	/**
+	 * Relevant details from {@link ContainerConnectionSource} used as a
+	 * MergedContextConfiguration cache key.
+	 */
+	private static record CacheKey(String connectionName, Set<Class<?>> connectionDetailsTypes,
+			Container<?> container) {
+
+		CacheKey(ContainerConnectionSource<?> source) {
+			this(source.getConnectionName(), source.getConnectionDetailsTypes(), source.getContainerSupplier().get());
+		}
+
 	}
 
 }

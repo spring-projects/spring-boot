@@ -91,6 +91,54 @@ class ServiceConnectionContextCustomizerTests {
 		assertThat(beanDefinition.getBeanClass()).isEqualTo(TestJdbcConnectionDetails.class);
 	}
 
+	@Test
+	void equalsAndHashCode() {
+		PostgreSQLContainer<?> container1 = mock(PostgreSQLContainer.class);
+		PostgreSQLContainer<?> container2 = mock(PostgreSQLContainer.class);
+		MergedAnnotation<ServiceConnection> annotation1 = MergedAnnotation.of(ServiceConnection.class,
+				Map.of("name", "", "type", new Class<?>[0]));
+		MergedAnnotation<ServiceConnection> annotation2 = MergedAnnotation.of(ServiceConnection.class,
+				Map.of("name", "", "type", new Class<?>[0]));
+		MergedAnnotation<ServiceConnection> annotation3 = MergedAnnotation.of(ServiceConnection.class,
+				Map.of("name", "", "type", new Class<?>[] { JdbcConnectionDetails.class }));
+		// Connection Names
+		ServiceConnectionContextCustomizer n1 = new ServiceConnectionContextCustomizer(
+				List.of(new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, "name",
+						annotation1, () -> container1)));
+		ServiceConnectionContextCustomizer n2 = new ServiceConnectionContextCustomizer(
+				List.of(new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, "name",
+						annotation1, () -> container1)));
+		ServiceConnectionContextCustomizer n3 = new ServiceConnectionContextCustomizer(
+				List.of(new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, "namex",
+						annotation1, () -> container1)));
+		assertThat(n1.hashCode()).isEqualTo(n2.hashCode());
+		assertThat(n1).isEqualTo(n2).isNotEqualTo(n3);
+		// Connection Details Types
+		ServiceConnectionContextCustomizer t1 = new ServiceConnectionContextCustomizer(
+				List.of(new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, "name",
+						annotation1, () -> container1)));
+		ServiceConnectionContextCustomizer t2 = new ServiceConnectionContextCustomizer(
+				List.of(new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, "name",
+						annotation2, () -> container1)));
+		ServiceConnectionContextCustomizer t3 = new ServiceConnectionContextCustomizer(
+				List.of(new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, "name",
+						annotation3, () -> container1)));
+		assertThat(t1.hashCode()).isEqualTo(t2.hashCode());
+		assertThat(t1).isEqualTo(t2).isNotEqualTo(t3);
+		// Container
+		ServiceConnectionContextCustomizer c1 = new ServiceConnectionContextCustomizer(
+				List.of(new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, "name",
+						annotation1, () -> container1)));
+		ServiceConnectionContextCustomizer c2 = new ServiceConnectionContextCustomizer(
+				List.of(new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, "name",
+						annotation1, () -> container1)));
+		ServiceConnectionContextCustomizer c3 = new ServiceConnectionContextCustomizer(
+				List.of(new ContainerConnectionSource<>("test", this.origin, PostgreSQLContainer.class, "name",
+						annotation1, () -> container2)));
+		assertThat(c1.hashCode()).isEqualTo(c2.hashCode());
+		assertThat(c1).isEqualTo(c2).isNotEqualTo(c3);
+	}
+
 	/**
 	 * Test {@link JdbcConnectionDetails}.
 	 */
