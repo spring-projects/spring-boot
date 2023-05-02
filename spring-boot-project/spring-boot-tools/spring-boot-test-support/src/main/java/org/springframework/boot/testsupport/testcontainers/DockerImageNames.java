@@ -47,7 +47,7 @@ public final class DockerImageNames {
 
 	private static final String RABBIT_VERSION = "3.11-alpine";
 
-	private static final String REDIS_VERSION = "4.0.14";
+	private static final String REDIS_VERSION = "7.0.11";
 
 	private static final String REDPANDA_VERSION = "v23.1.2";
 

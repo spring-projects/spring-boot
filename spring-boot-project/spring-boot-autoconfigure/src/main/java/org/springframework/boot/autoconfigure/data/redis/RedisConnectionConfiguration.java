@@ -151,8 +151,7 @@ abstract class RedisConnectionConfiguration {
 	}
 
 	protected boolean isSslEnabled() {
-		return getConnectionDetails() instanceof PropertiesRedisConnectionDetails
-				&& getProperties().getSsl().isEnabled();
+		return getProperties().getSsl().isEnabled();
 	}
 
 	protected boolean isPoolEnabled(Pool pool) {
