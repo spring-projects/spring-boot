@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Bean;
 public class TestSampleSessionRedisApplication {
 
 	@Bean
-	@ServiceConnection
+	@ServiceConnection("redis")
 	RedisContainer redisContainer() {
 		return new RedisContainer();
 	}
