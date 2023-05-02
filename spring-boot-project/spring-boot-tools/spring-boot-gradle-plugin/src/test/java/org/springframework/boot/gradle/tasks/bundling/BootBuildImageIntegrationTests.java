@@ -36,7 +36,6 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
-import org.junit.jupiter.api.condition.DisabledOnOs;
 import org.junit.jupiter.api.condition.OS;
 
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
@@ -47,6 +46,7 @@ import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
 import org.springframework.boot.buildpack.platform.io.FilePermissions;
 import org.springframework.boot.gradle.junit.GradleCompatibility;
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
+import org.springframework.boot.testsupport.junit.DisabledOnOs;
 import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,7 +60,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @GradleCompatibility(configurationCache = true)
 @DisabledIfDockerUnavailable
-@org.springframework.boot.testsupport.junit.DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
+@DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
 		disabledReason = "The builder image has no ARM support")
 class BootBuildImageIntegrationTests {
 
