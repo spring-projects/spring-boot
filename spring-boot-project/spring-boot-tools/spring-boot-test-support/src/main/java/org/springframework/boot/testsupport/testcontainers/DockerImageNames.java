@@ -37,8 +37,6 @@ public final class DockerImageNames {
 
 	private static final String KAFKA_VERSION = "5.4.3";
 
-	private static final String INFLUX_DB_VERSION = "2.6.1";
-
 	private static final String MONGO_VERSION = "4.0.23";
 
 	private static final String NEO4J_VERSION = "4.4.11";
@@ -91,14 +89,6 @@ public final class DockerImageNames {
 	}
 
 	/**
-	 * Return a {@link DockerImageName} suitable for running InfluxDB.
-	 * @return a docker image name for running Kafka
-	 */
-	public static DockerImageName influxDb() {
-		return DockerImageName.parse("influxdb").withTag(INFLUX_DB_VERSION);
-	}
-
-	/**
 	 * Return a {@link DockerImageName} suitable for running Kafka.
 	 * @return a docker image name for running Kafka
 	 */
@@ -122,6 +112,10 @@ public final class DockerImageNames {
 		return DockerImageName.parse("neo4j").withTag(NEO4J_VERSION);
 	}
 
+	/**
+	 * Return a {@link DockerImageName} suitable for running the Oracle database.
+	 * @return a docker image name for running the Oracle database
+	 */
 	public static DockerImageName oracleXe() {
 		return DockerImageName.parse("gvenzl/oracle-xe").withTag(ORACLE_XE_VERSION);
 	}
