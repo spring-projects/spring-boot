@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinAutoC
 import org.springframework.boot.actuate.autoconfigure.tracing.zipkin.ZipkinConnectionDetails;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
@@ -35,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ZipkinContainerConnectionDetailsFactory}.
  *
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
  */
 @SpringJUnitConfig
 @Testcontainers(disabledWithoutDocker = true)
@@ -42,16 +44,16 @@ class ZipkinContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
 	@ServiceConnection
-	static final GenericContainer<?> container = new GenericContainer<>("openzipkin/zipkin:2.23.2")
-		.withExposedPorts(9411);
+	static final GenericContainer<?> zipkin = new GenericContainer<>(DockerImageNames.zipkin()).withExposedPorts(9411);
 
-	@Autowired
+	@Autowired(required = false)
 	private ZipkinConnectionDetails connectionDetails;
 
 	@Test
-	void connectionCanBeMadeToRabbitContainer() {
+	void connectionCanBeMadeToZipkinContainer() {
+		assertThat(this.connectionDetails).isNotNull();
 		assertThat(this.connectionDetails.getSpanEndpoint())
-			.startsWith("http://" + container.getHost() + ":" + container.getMappedPort(9411));
+			.startsWith("http://" + zipkin.getHost() + ":" + zipkin.getMappedPort(9411));
 	}
 
 	@Configuration(proxyBeanMethods = false)

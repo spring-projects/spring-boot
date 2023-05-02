@@ -30,9 +30,10 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * using the {@code "openzipkin/zipkin"} image.
  *
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
  */
 class ZipkinContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<ZipkinConnectionDetails, Container<?>> {
+		extends ContainerConnectionDetailsFactory<Container<?>, ZipkinConnectionDetails> {
 
 	private static final int ZIPKIN_PORT = 9411;
 
@@ -49,20 +50,17 @@ class ZipkinContainerConnectionDetailsFactory
 	/**
 	 * {@link ZipkinConnectionDetails} backed by a {@link ContainerConnectionSource}.
 	 */
-	private static class ZipkinContainerConnectionDetails extends ContainerConnectionDetails
+	private static class ZipkinContainerConnectionDetails extends ContainerConnectionDetails<Container<?>>
 			implements ZipkinConnectionDetails {
-
-		private final String endpoint;
 
 		ZipkinContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 			super(source);
-			this.endpoint = "http://" + source.getContainer().getHost() + ":"
-					+ source.getContainer().getMappedPort(ZIPKIN_PORT) + "/api/v2/spans";
 		}
 
 		@Override
 		public String getSpanEndpoint() {
-			return this.endpoint;
+			return "http://" + getContainer().getHost() + ":" + getContainer().getMappedPort(ZIPKIN_PORT)
+					+ "/api/v2/spans";
 		}
 
 	}
