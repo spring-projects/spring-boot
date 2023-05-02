@@ -19,14 +19,12 @@ package org.springframework.boot.test.autoconfigure.data.couchbase;
 import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.OS;
 import org.testcontainers.couchbase.BucketDefinition;
 import org.testcontainers.couchbase.CouchbaseContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.testsupport.junit.DisabledOnOs;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.stereotype.Service;
@@ -43,8 +41,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DataCouchbaseTest(includeFilters = @Filter(Service.class))
 @Testcontainers(disabledWithoutDocker = true)
-@DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
-		disabledReason = "The Couchbase image has no ARM support")
 class DataCouchbaseTestWithIncludeFilterIntegrationTests {
 
 	private static final String BUCKET_NAME = "cbbucket";
