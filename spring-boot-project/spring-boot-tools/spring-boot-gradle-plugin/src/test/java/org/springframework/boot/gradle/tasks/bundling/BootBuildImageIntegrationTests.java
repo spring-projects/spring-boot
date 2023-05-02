@@ -62,6 +62,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @GradleCompatibility(configurationCache = true)
 @DisabledIfDockerUnavailable
+@org.springframework.boot.testsupport.junit.DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
+		disabledReason = "The builder image has no ARM support")
 class BootBuildImageIntegrationTests {
 
 	GradleBuild gradleBuild;
