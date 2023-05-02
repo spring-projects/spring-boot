@@ -27,6 +27,7 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactoryNotFoundException;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsNotFoundException;
 import org.springframework.boot.origin.Origin;
 import org.springframework.core.annotation.MergedAnnotation;
 
@@ -69,6 +70,17 @@ class ConnectionDetailsRegistrarTests {
 		given(this.factories.getConnectionDetails(this.source, true))
 			.willThrow(new ConnectionDetailsFactoryNotFoundException("fail"));
 		assertThatExceptionOfType(ConnectionDetailsFactoryNotFoundException.class)
+			.isThrownBy(() -> registrar.registerBeanDefinitions(beanFactory, this.source))
+			.withMessage("fail. You may need to add a 'name' to your @ServiceConnection annotation");
+	}
+
+	@Test
+	void registerBeanDefinitionsWhenConnectionDetailsNotFoundExceptionAndNoConnectionNameThrowsExceptionWithBetterMessage() {
+		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
+		ConnectionDetailsRegistrar registrar = new ConnectionDetailsRegistrar(beanFactory, this.factories);
+		given(this.factories.getConnectionDetails(this.source, true))
+			.willThrow(new ConnectionDetailsNotFoundException("fail"));
+		assertThatExceptionOfType(ConnectionDetailsNotFoundException.class)
 			.isThrownBy(() -> registrar.registerBeanDefinitions(beanFactory, this.source))
 			.withMessage("fail. You may need to add a 'name' to your @ServiceConnection annotation");
 	}

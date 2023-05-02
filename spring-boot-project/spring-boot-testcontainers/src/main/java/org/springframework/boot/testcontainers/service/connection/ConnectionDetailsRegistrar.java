@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetails;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactoryNotFoundException;
+import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsNotFoundException;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
@@ -69,14 +71,22 @@ class ConnectionDetailsRegistrar {
 						connectionDetailsType, connectionDetails));
 		}
 		catch (ConnectionDetailsFactoryNotFoundException ex) {
-			if (!StringUtils.hasText(source.getConnectionName())) {
-				StringBuilder message = new StringBuilder(ex.getMessage());
-				message.append((!message.toString().endsWith(".")) ? "." : "");
-				message.append(" You may need to add a 'name' to your @ServiceConnection annotation");
-				throw new ConnectionDetailsFactoryNotFoundException(message.toString(), ex.getCause());
-			}
-			throw ex;
+			rethrowConnectionDetails(source, ex, ConnectionDetailsFactoryNotFoundException::new);
 		}
+		catch (ConnectionDetailsNotFoundException ex) {
+			rethrowConnectionDetails(source, ex, ConnectionDetailsNotFoundException::new);
+		}
+	}
+
+	private void rethrowConnectionDetails(ContainerConnectionSource<?> source, RuntimeException ex,
+			BiFunction<String, Throwable, RuntimeException> exceptionFactory) {
+		if (!StringUtils.hasText(source.getConnectionName())) {
+			StringBuilder message = new StringBuilder(ex.getMessage());
+			message.append((!message.toString().endsWith(".")) ? "." : "");
+			message.append(" You may need to add a 'name' to your @ServiceConnection annotation");
+			throw exceptionFactory.apply(message.toString(), ex.getCause());
+		}
+		throw ex;
 	}
 
 	@SuppressWarnings("unchecked")
