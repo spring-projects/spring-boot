@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.AbstractFilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -48,6 +48,7 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.session.web.http.HeaderHttpSessionIdResolver;
 import org.springframework.session.web.http.HttpSessionIdResolver;
 import org.springframework.session.web.http.SessionRepositoryFilter;
+import org.springframework.web.filter.DelegatingFilterProxy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -98,8 +99,16 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 	@Test
 	void filterIsRegisteredWithAsyncErrorAndRequestDispatcherTypes() {
 		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class).run((context) -> {
-			FilterRegistrationBean<?> registration = context.getBean(FilterRegistrationBean.class);
-			assertThat(registration.getFilter()).isSameAs(context.getBean(SessionRepositoryFilter.class));
+			AbstractFilterRegistrationBean<?> registration = context.getBean(AbstractFilterRegistrationBean.class);
+			DelegatingFilterProxy delegatingFilterProxy = (DelegatingFilterProxy) registration.getFilter();
+			try {
+				// Trigger actual initialization
+				delegatingFilterProxy.doFilter(null, null, null);
+			}
+			catch (Exception ex) {
+			}
+			assertThat(delegatingFilterProxy).extracting("delegate")
+				.isSameAs(context.getBean(SessionRepositoryFilter.class));
 			assertThat(registration)
 				.extracting("dispatcherTypes", InstanceOfAssertFactories.iterable(DispatcherType.class))
 				.containsOnly(DispatcherType.ASYNC, DispatcherType.ERROR, DispatcherType.REQUEST);
@@ -111,7 +120,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
 			.withPropertyValues("spring.session.servlet.filter-order=123")
 			.run((context) -> {
-				FilterRegistrationBean<?> registration = context.getBean(FilterRegistrationBean.class);
+				AbstractFilterRegistrationBean<?> registration = context.getBean(AbstractFilterRegistrationBean.class);
 				assertThat(registration.getOrder()).isEqualTo(123);
 			});
 	}
@@ -121,7 +130,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
 			.withPropertyValues("spring.session.servlet.filter-dispatcher-types=error, request")
 			.run((context) -> {
-				FilterRegistrationBean<?> registration = context.getBean(FilterRegistrationBean.class);
+				AbstractFilterRegistrationBean<?> registration = context.getBean(AbstractFilterRegistrationBean.class);
 				assertThat(registration)
 					.extracting("dispatcherTypes", InstanceOfAssertFactories.iterable(DispatcherType.class))
 					.containsOnly(DispatcherType.ERROR, DispatcherType.REQUEST);
@@ -133,7 +142,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class)
 			.withPropertyValues("spring.session.servlet.filter-dispatcher-types=")
 			.run((context) -> {
-				FilterRegistrationBean<?> registration = context.getBean(FilterRegistrationBean.class);
+				AbstractFilterRegistrationBean<?> registration = context.getBean(AbstractFilterRegistrationBean.class);
 				assertThat(registration)
 					.extracting("dispatcherTypes", InstanceOfAssertFactories.iterable(DispatcherType.class))
 					.isEmpty();
