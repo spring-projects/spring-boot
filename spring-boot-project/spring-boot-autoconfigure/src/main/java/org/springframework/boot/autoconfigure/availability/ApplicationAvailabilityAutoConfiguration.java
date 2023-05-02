@@ -34,8 +34,8 @@ import org.springframework.context.annotation.Bean;
 public class ApplicationAvailabilityAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
-	public ApplicationAvailability applicationAvailability() {
+	@ConditionalOnMissingBean(ApplicationAvailability.class)
+	public ApplicationAvailabilityBean applicationAvailability() {
 		return new ApplicationAvailabilityBean();
 	}
 
