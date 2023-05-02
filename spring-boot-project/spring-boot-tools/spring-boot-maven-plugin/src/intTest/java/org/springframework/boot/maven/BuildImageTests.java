@@ -25,6 +25,7 @@ import java.util.Random;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
@@ -45,6 +46,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @ExtendWith(MavenBuildExtension.class)
 @DisabledIfDockerUnavailable
+@org.springframework.boot.testsupport.junit.DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
+		disabledReason = "The builder image has no ARM support")
 class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
