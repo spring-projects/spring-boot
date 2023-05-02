@@ -34,48 +34,38 @@ public interface KafkaConnectionDetails extends ConnectionDetails {
 	 * Returns the list of bootstrap nodes.
 	 * @return the list of bootstrap nodes
 	 */
-	List<Node> getBootstrapNodes();
+	List<String> getBootstrapServers();
 
 	/**
 	 * Returns the list of bootstrap nodes used for consumers.
 	 * @return the list of bootstrap nodes used for consumers
 	 */
-	default List<Node> getConsumerBootstrapNodes() {
-		return getBootstrapNodes();
+	default List<String> getConsumerBootstrapServers() {
+		return getBootstrapServers();
 	}
 
 	/**
 	 * Returns the list of bootstrap nodes used for producers.
 	 * @return the list of bootstrap nodes used for producers
 	 */
-	default List<Node> getProducerBootstrapNodes() {
-		return getBootstrapNodes();
+	default List<String> getProducerBootstrapServers() {
+		return getBootstrapServers();
 	}
 
 	/**
 	 * Returns the list of bootstrap nodes used for the admin.
 	 * @return the list of bootstrap nodes used for the admin
 	 */
-	default List<Node> getAdminBootstrapNodes() {
-		return getBootstrapNodes();
+	default List<String> getAdminBootstrapNodes() {
+		return getBootstrapServers();
 	}
 
 	/**
 	 * Returns the list of bootstrap nodes used for Kafka Streams.
 	 * @return the list of bootstrap nodes used for Kafka Streams
 	 */
-	default List<Node> getStreamsBootstrapNodes() {
-		return getBootstrapNodes();
-	}
-
-	/**
-	 * A Kafka node.
-	 *
-	 * @param host the hostname
-	 * @param port the port
-	 */
-	record Node(String host, int port) {
-
+	default List<String> getStreamsBootstrapServers() {
+		return getBootstrapServers();
 	}
 
 }

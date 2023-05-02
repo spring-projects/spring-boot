@@ -839,8 +839,8 @@ class KafkaAutoConfigurationTests {
 		return new KafkaConnectionDetails() {
 
 			@Override
-			public List<Node> getBootstrapNodes() {
-				return List.of(new Node("kafka.example.com", 12345));
+			public List<String> getBootstrapServers() {
+				return List.of("kafka.example.com:12345");
 			}
 
 		};

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.testcontainers.service.connection.redpanda;
 
-import java.net.URI;
 import java.util.List;
 
 import org.testcontainers.redpanda.RedpandaContainer;
@@ -52,9 +51,8 @@ class RedpandaContainerConnectionDetailsFactory
 		}
 
 		@Override
-		public List<Node> getBootstrapNodes() {
-			URI uri = URI.create(getContainer().getBootstrapServers());
-			return List.of(new Node(uri.getHost(), uri.getPort()));
+		public List<String> getBootstrapServers() {
+			return List.of(getContainer().getBootstrapServers());
 		}
 
 	}

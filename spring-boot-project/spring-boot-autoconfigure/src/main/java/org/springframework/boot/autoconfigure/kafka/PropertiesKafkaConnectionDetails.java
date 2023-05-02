@@ -27,8 +27,6 @@ import java.util.List;
  */
 class PropertiesKafkaConnectionDetails implements KafkaConnectionDetails {
 
-	private final int DEFAULT_PORT = 9092;
-
 	private final KafkaProperties properties;
 
 	PropertiesKafkaConnectionDetails(KafkaProperties properties) {
@@ -36,40 +34,27 @@ class PropertiesKafkaConnectionDetails implements KafkaConnectionDetails {
 	}
 
 	@Override
-	public List<Node> getBootstrapNodes() {
-		return asNodes(this.properties.getBootstrapServers());
+	public List<String> getBootstrapServers() {
+		return this.properties.getBootstrapServers();
 	}
 
 	@Override
-	public List<Node> getConsumerBootstrapNodes() {
-		return bootstrapNodes(this.properties.getConsumer().getBootstrapServers());
+	public List<String> getConsumerBootstrapServers() {
+		return getServers(this.properties.getConsumer().getBootstrapServers());
 	}
 
 	@Override
-	public List<Node> getProducerBootstrapNodes() {
-		return bootstrapNodes(this.properties.getProducer().getBootstrapServers());
+	public List<String> getProducerBootstrapServers() {
+		return getServers(this.properties.getProducer().getBootstrapServers());
 	}
 
 	@Override
-	public List<Node> getStreamsBootstrapNodes() {
-		return bootstrapNodes(this.properties.getStreams().getBootstrapServers());
+	public List<String> getStreamsBootstrapServers() {
+		return getServers(this.properties.getStreams().getBootstrapServers());
 	}
 
-	private List<Node> bootstrapNodes(List<String> bootstrapServers) {
-		return (bootstrapServers != null) ? asNodes(bootstrapServers) : getBootstrapNodes();
-	}
-
-	private List<Node> asNodes(List<String> bootstrapServers) {
-		return bootstrapServers.stream().map(this::asNode).toList();
-	}
-
-	private Node asNode(String bootstrapNode) {
-		int separatorIndex = bootstrapNode.indexOf(':');
-		if (separatorIndex == -1) {
-			return new Node(bootstrapNode, this.DEFAULT_PORT);
-		}
-		return new Node(bootstrapNode.substring(0, separatorIndex),
-				Integer.parseInt(bootstrapNode.substring(separatorIndex + 1)));
+	private List<String> getServers(List<String> servers) {
+		return (servers != null) ? servers : getBootstrapServers();
 	}
 
 }
