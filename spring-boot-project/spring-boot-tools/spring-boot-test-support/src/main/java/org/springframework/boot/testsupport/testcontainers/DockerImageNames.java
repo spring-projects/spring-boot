@@ -37,7 +37,7 @@ public final class DockerImageNames {
 
 	private static final String KAFKA_VERSION = "5.4.3";
 
-	private static final String MONGO_VERSION = "4.0.23";
+	private static final String MONGO_VERSION = "5.0.17";
 
 	private static final String NEO4J_VERSION = "4.4.11";
 
