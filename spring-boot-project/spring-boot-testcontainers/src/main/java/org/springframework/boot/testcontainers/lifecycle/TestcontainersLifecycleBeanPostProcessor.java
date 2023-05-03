@@ -19,7 +19,6 @@ package org.springframework.boot.testcontainers.lifecycle;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,6 +27,8 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.lifecycle.Startable;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -57,7 +58,7 @@ class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPo
 
 	private ConfigurableListableBeanFactory beanFactory;
 
-	private AtomicBoolean initializedContainers = new AtomicBoolean();
+	private volatile boolean containersInitialized = false;
 
 	TestcontainersLifecycleBeanPostProcessor(ConfigurableListableBeanFactory beanFactory) {
 		this.beanFactory = beanFactory;
@@ -75,14 +76,27 @@ class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPo
 	}
 
 	private void initializeContainers() {
-		if (this.initializedContainers.compareAndSet(false, true)) {
-			Set<String> beanNames = new LinkedHashSet<>();
-			beanNames.addAll(List.of(this.beanFactory.getBeanNamesForType(ContainerState.class, false, false)));
-			beanNames.addAll(List.of(this.beanFactory.getBeanNamesForType(Startable.class, false, false)));
-			for (String beanName : beanNames) {
-				logger.debug(LogMessage.format("Initializing container bean '%s'", beanName));
+		if (this.containersInitialized) {
+			return;
+		}
+		this.containersInitialized = true;
+		Set<String> beanNames = new LinkedHashSet<>();
+		beanNames.addAll(List.of(this.beanFactory.getBeanNamesForType(ContainerState.class, false, false)));
+		beanNames.addAll(List.of(this.beanFactory.getBeanNamesForType(Startable.class, false, false)));
+		for (String beanName : beanNames) {
+			try {
 				this.beanFactory.getBean(beanName);
 			}
+			catch (BeanCreationException ex) {
+				if (ex.contains(BeanCurrentlyInCreationException.class)) {
+					this.containersInitialized = false;
+					return;
+				}
+				throw ex;
+			}
+		}
+		if (!beanNames.isEmpty()) {
+			logger.debug(LogMessage.format("Initialized container beans '%s'", beanNames));
 		}
 	}
 

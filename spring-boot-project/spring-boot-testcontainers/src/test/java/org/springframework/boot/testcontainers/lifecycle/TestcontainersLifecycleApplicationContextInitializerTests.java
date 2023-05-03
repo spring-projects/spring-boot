@@ -95,6 +95,15 @@ class TestcontainersLifecycleApplicationContextInitializerTests {
 		assertThat(applicationContext.getBeanFactoryPostProcessors()).hasSize(initialNumberOfPostProcessors + 1);
 	}
 
+	@Test
+	void dealsWithBeanCurrentlyInCreationException() {
+		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+		new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
+		applicationContext.register(BeanCurrentlyInCreationExceptionConfiguration2.class,
+				BeanCurrentlyInCreationExceptionConfiguration1.class);
+		applicationContext.refresh();
+	}
+
 	private AnnotationConfigApplicationContext createApplicationContext(Startable container) {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
@@ -111,6 +120,35 @@ class TestcontainersLifecycleApplicationContextInitializerTests {
 			given(container.isShouldBeReused()).willReturn(true);
 			return container;
 		}
+
+	}
+
+	@Configuration
+	static class BeanCurrentlyInCreationExceptionConfiguration1 {
+
+		@Bean
+		TestBean testBean() {
+			return new TestBean();
+		}
+
+	}
+
+	@Configuration
+	static class BeanCurrentlyInCreationExceptionConfiguration2 {
+
+		BeanCurrentlyInCreationExceptionConfiguration2(TestBean testBean) {
+		}
+
+		@Bean
+		GenericContainer<?> container(TestBean testBean) {
+			GenericContainer<?> container = mock(GenericContainer.class);
+			given(container.isShouldBeReused()).willReturn(true);
+			return container;
+		}
+
+	}
+
+	static class TestBean {
 
 	}
 
