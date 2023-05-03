@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,10 +82,19 @@ public class SpringBootPlugin implements Plugin<Project> {
 	public static final String PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME = "productionRuntimeClasspath";
 
 	/**
-	 * The name of the {@link ResolveMainClassName} task.
+	 * The name of the {@link ResolveMainClassName} task used to resolve a main class from
+	 * the output of the {@code main} source set.
 	 * @since 3.0.0
 	 */
 	public static final String RESOLVE_MAIN_CLASS_NAME_TASK_NAME = "resolveMainClassName";
+
+	/**
+	 * The name of the {@link ResolveMainClassName} task used to resolve a main class from
+	 * the output of the {@code test} source set then, if needed, the output of the
+	 * {@code main} source set.
+	 * @since 3.1.0
+	 */
+	public static final String RESOLVE_TEST_MAIN_CLASS_NAME_TASK_NAME = "resolveTestMainClassName";
 
 	/**
 	 * The coordinates {@code (group:name:version)} of the

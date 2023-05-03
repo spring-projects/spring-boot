@@ -189,6 +189,10 @@ public class GradleBuild {
 		return this;
 	}
 
+	public boolean gradleVersionIsAtLeast(String version) {
+		return GradleVersion.version(this.gradleVersion).compareTo(GradleVersion.version(version)) >= 0;
+	}
+
 	public BuildResult build(String... arguments) {
 		try {
 			BuildResult result = prepareRunner(arguments).build();

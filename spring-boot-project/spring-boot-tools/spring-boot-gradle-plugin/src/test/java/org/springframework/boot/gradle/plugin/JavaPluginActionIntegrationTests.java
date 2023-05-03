@@ -61,8 +61,18 @@ class JavaPluginActionIntegrationTests {
 	}
 
 	@TestTemplate
+	void noBootTestRunTaskWithoutJavaPluginApplied() {
+		assertThat(this.gradleBuild.build("tasks").getOutput()).doesNotContain("bootTestRun");
+	}
+
+	@TestTemplate
 	void applyingJavaPluginCreatesBootRunTask() {
 		assertThat(this.gradleBuild.build("tasks").getOutput()).contains("bootRun");
+	}
+
+	@TestTemplate
+	void applyingJavaPluginCreatesBootTestRunTask() {
+		assertThat(this.gradleBuild.build("tasks").getOutput()).contains("bootTestRun");
 	}
 
 	@TestTemplate

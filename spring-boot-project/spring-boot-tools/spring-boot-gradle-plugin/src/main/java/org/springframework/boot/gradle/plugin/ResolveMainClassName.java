@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
@@ -149,16 +150,29 @@ public class ResolveMainClassName extends DefaultTask {
 	}
 
 	Provider<String> readMainClassName() {
-		return this.outputFile.map(new ClassNameReader());
+		String classpath = getClasspath().filter(File::isDirectory)
+			.getFiles()
+			.stream()
+			.map((directory) -> getProject().getProjectDir().toPath().relativize(directory.toPath()))
+			.map(Path::toString)
+			.collect(Collectors.joining(","));
+		return this.outputFile.map(new ClassNameReader(classpath));
 	}
 
 	private static final class ClassNameReader implements Transformer<String, RegularFile> {
+
+		private final String classpath;
+
+		private ClassNameReader(String classpath) {
+			this.classpath = classpath;
+		}
 
 		@Override
 		public String transform(RegularFile file) {
 			if (file.getAsFile().length() == 0) {
 				throw new InvalidUserDataException(
-						"Main class name has not been configured and it could not be resolved");
+						"Main class name has not been configured and it could not be resolved from classpath "
+								+ this.classpath);
 			}
 			Path output = file.getAsFile().toPath();
 			try {

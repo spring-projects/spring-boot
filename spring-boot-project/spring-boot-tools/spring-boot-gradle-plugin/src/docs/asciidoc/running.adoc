@@ -141,3 +141,12 @@ include::../gradle/running/boot-run-source-resources.gradle.kts[tags=source-reso
 ----
 
 This makes them reloadable in the live application which can be helpful at development time.
+
+
+
+[[running-your-application.using-a-test-main-class]]
+== Using a Test Main Class
+In addition to `bootRun` a `bootTestRun` task is also registered.
+Like `bootRun`, `bootTestRun` is an instance of `BootRun` but it's configured to use a main class found in the output of the test source set rather than the main source set.
+It also uses the test source set's runtime classpath rather than the main source set's runtime classpath.
+As `bootTestRun` is an instance of `BootRun`, all of the configuration options described above for `bootRun` can also be used with `bootTestRun`.
