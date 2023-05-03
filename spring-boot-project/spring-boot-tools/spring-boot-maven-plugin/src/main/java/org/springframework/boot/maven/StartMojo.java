@@ -85,6 +85,12 @@ public class StartMojo extends AbstractRunMojo {
 
 	private final Object lock = new Object();
 
+	/**
+	 * Flag to include the test classpath when running.
+	 */
+	@Parameter(property = "spring-boot.run.useTestClasspath", defaultValue = "false")
+	private Boolean useTestClasspath;
+
 	@Override
 	protected void run(JavaProcessExecutor processExecutor, File workingDirectory, List<String> args,
 			Map<String, String> environmentVariables) throws MojoExecutionException, MojoFailureException {
@@ -186,6 +192,11 @@ public class StartMojo extends AbstractRunMojo {
 		}
 		throw new MojoExecutionException(
 				"Spring application did not start before the configured timeout (" + (wait * maxAttempts) + "ms");
+	}
+
+	@Override
+	protected boolean isUseTestClasspath() {
+		return this.useTestClasspath;
 	}
 
 	private class CreateJmxConnector implements Callable<JMXConnector> {

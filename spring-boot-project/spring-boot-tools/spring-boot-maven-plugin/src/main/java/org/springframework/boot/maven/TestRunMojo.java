@@ -17,6 +17,7 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,32 +32,50 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.springframework.boot.loader.tools.RunProcess;
 
 /**
- * Run an application in place.
+ * Run an application in place using the test runtime classpath. The main class that will
+ * be used to launch the application is determined as follows:
+ *
+ * <ol>
+ * <li>The configured main class, if any</li>
+ * <li>The main class found in the test classes directory, if any</li>
+ * <li>The main class found in the classes directory, if any</li>
+ * </ol>
  *
  * @author Phillip Webb
  * @author Dmytro Nosan
  * @author Stephane Nicoll
  * @author Andy Wilkinson
- * @since 1.0.0
+ * @since 3.1.0
  */
-@Mojo(name = "run", requiresProject = true, defaultPhase = LifecyclePhase.VALIDATE,
+@Mojo(name = "test-run", requiresProject = true, defaultPhase = LifecyclePhase.VALIDATE,
 		requiresDependencyResolution = ResolutionScope.TEST)
 @Execute(phase = LifecyclePhase.TEST_COMPILE)
-public class RunMojo extends AbstractRunMojo {
+public class TestRunMojo extends AbstractRunMojo {
 
 	/**
 	 * Whether the JVM's launch should be optimized.
-	 * @since 2.2.0
 	 */
-	@Parameter(property = "spring-boot.run.optimizedLaunch", defaultValue = "true")
+	@Parameter(property = "spring-boot.test-run.optimizedLaunch", defaultValue = "true")
 	private boolean optimizedLaunch;
 
 	/**
-	 * Flag to include the test classpath when running.
-	 * @since 1.3.0
+	 * Directory containing the test classes and resource files that should be used to run
+	 * the application.
 	 */
-	@Parameter(property = "spring-boot.run.useTestClasspath", defaultValue = "false")
-	private Boolean useTestClasspath;
+	@Parameter(defaultValue = "${project.build.testOutputDirectory}", required = true)
+	private File testClassesDirectory;
+
+	@Override
+	protected List<File> getClassesDirectories() {
+		ArrayList<File> classesDirectories = new ArrayList<>(super.getClassesDirectories());
+		classesDirectories.add(0, this.testClassesDirectory);
+		return classesDirectories;
+	}
+
+	@Override
+	protected boolean isUseTestClasspath() {
+		return true;
+	}
 
 	@Override
 	protected RunArguments resolveJvmArguments() {
@@ -74,11 +93,6 @@ public class RunMojo extends AbstractRunMojo {
 			.withRunProcessCustomizer(
 					(runProcess) -> Runtime.getRuntime().addShutdownHook(new Thread(new RunProcessKiller(runProcess))))
 			.run(workingDirectory, args, environmentVariables);
-	}
-
-	@Override
-	protected boolean isUseTestClasspath() {
-		return this.useTestClasspath;
 	}
 
 	private static final class RunProcessKiller implements Runnable {
