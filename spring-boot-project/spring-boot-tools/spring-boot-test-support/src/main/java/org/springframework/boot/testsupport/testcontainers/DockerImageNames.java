@@ -23,6 +23,7 @@ import org.testcontainers.utility.DockerImageName;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Moritz Halbritter
  * @since 2.3.6
  */
 public final class DockerImageNames {
@@ -52,6 +53,8 @@ public final class DockerImageNames {
 	private static final String REDPANDA_VERSION = "v23.1.2";
 
 	private static final String REGISTRY_VERSION = "2.7.1";
+
+	private static final String ZIPKIN_VERSION = "2.24.1";
 
 	private DockerImageNames() {
 	}
@@ -161,6 +164,15 @@ public final class DockerImageNames {
 	 */
 	public static DockerImageName registry() {
 		return DockerImageName.parse("registry").withTag(REGISTRY_VERSION);
+	}
+
+	/**
+	 * Return a {@link DockerImageName} suitable for running Zipkin.
+	 * @return a docker image name for running Zipkin
+	 * @since 3.1.0
+	 */
+	public static DockerImageName zipkin() {
+		return DockerImageName.parse("openzipkin/zipkin").withTag(ZIPKIN_VERSION);
 	}
 
 }
