@@ -75,4 +75,6 @@
 	<suppress files="spring-boot-configuration-processor[\\/]src[\\/]test[\\/]java[\\/]org[\\/]springframework[\\/]boot[\\/]configurationsample[\\/]" checks="SpringDeprecatedCheck"/>
 	<suppress files="WebEndpointTest\.java" checks="SpringTestFileName" />
 	<suppress files="ConversionServiceTest\.java" checks="SpringTestFileName" />
+	<suppress files="ImportTestcontainersTests\.java" checks="InterfaceIsType" />
+	<suppress files="MyContainers\.java" checks="InterfaceIsType" />
 </suppressions>

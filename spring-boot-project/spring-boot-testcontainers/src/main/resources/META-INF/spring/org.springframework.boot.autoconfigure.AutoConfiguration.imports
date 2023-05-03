@@ -1,2 +1,2 @@
-org.springframework.boot.testcontainers.properties.DynamicProperySourceAutoConfiguration
+org.springframework.boot.testcontainers.properties.TestcontainersPropertySourceAutoConfiguration
 org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration

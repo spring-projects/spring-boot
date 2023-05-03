@@ -1062,6 +1062,26 @@ NOTE: Using a `@ServiceConnection` is recommended whenever possible, however, dy
 
 
 
+[[features.testing.testcontainers.at-development-time.importing-container-declarations]]
+===== Importing Testcontainer Declaration Classes
+A common pattern when using Testcontainers is to declare `Container` instances as static fields.
+Often these fields are defined directly on the test class.
+They can also be declared on a parent class or on an interface that the test implements.
+
+For example, the following `MyContainers` interface declares `mongo` and `neo4j` containers:
+
+include::code:MyContainers[]
+
+If you already have containers defined in this way, or you just prefer this style, you can import these declaration classes rather than defining you containers as `@Bean` methods.
+To do so, add the `@ImportTestcontainers` annotation to your test configuration class:
+
+include::code:MyContainersConfiguration[]
+
+TIP: You can use the `@ServiceConnection` annotation on `Container` fields to establish service connections.
+You can also add <<features#features.testing.testcontainers.dynamic-properties,`@DynamicPropertySource` annotated methods>> to your declaration class.
+
+
+
 [[features.testing.utilities]]
 === Test Utilities
 A few test utility classes that are generally useful when testing your application are packaged as part of `spring-boot`.

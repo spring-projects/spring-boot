@@ -16,18 +16,29 @@
 
 package org.springframework.boot.testcontainers.service.connection;
 
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.BeanNameGenerator;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisConnectionDetails;
+import org.springframework.boot.testcontainers.beans.TestcontainerBeanDefinition;
 import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleApplicationContextInitializer;
 import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.type.AnnotationMetadata;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -78,6 +89,18 @@ class ServiceConnectionAutoConfigurationTests {
 		}
 	}
 
+	@Test
+	void whenHasTestcontainersBeanDefinition() {
+		try (AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext()) {
+			applicationContext.register(WithNoExtraAutoConfiguration.class,
+					TestcontainerBeanDefinitionConfiguration.class);
+			new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
+			applicationContext.refresh();
+			RedisConnectionDetails connectionDetails = applicationContext.getBean(RedisConnectionDetails.class);
+			assertThat(connectionDetails.getClass().getName()).isEqualTo(REDIS_CONTAINER_CONNECTION_DETAILS);
+		}
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ImportAutoConfiguration(ServiceConnectionAutoConfiguration.class)
 	static class WithNoExtraAutoConfiguration {
@@ -107,6 +130,44 @@ class ServiceConnectionAutoConfigurationTests {
 		@Bean
 		RedisConnectionDetails redisConnectionDetails() {
 			return mock(RedisConnectionDetails.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(TestcontainerBeanDefinitionRegistrar.class)
+	static class TestcontainerBeanDefinitionConfiguration {
+
+	}
+
+	static class TestcontainerBeanDefinitionRegistrar implements ImportBeanDefinitionRegistrar {
+
+		@Override
+		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry,
+				BeanNameGenerator importBeanNameGenerator) {
+			registry.registerBeanDefinition("redisContainer", new TestcontainersRootBeanDefinition());
+		}
+
+	}
+
+	static class TestcontainersRootBeanDefinition extends RootBeanDefinition implements TestcontainerBeanDefinition {
+
+		private final RedisContainer container = new RedisContainer();
+
+		TestcontainersRootBeanDefinition() {
+			setBeanClass(RedisContainer.class);
+			setInstanceSupplier(() -> this.container);
+		}
+
+		@Override
+		public String getContainerImageName() {
+			return this.container.getDockerImageName();
+		}
+
+		@Override
+		public MergedAnnotations getAnnotations() {
+			MergedAnnotation<ServiceConnection> annotation = MergedAnnotation.of(ServiceConnection.class);
+			return MergedAnnotations.of(Set.of(annotation));
 		}
 
 	}

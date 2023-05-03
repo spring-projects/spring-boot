@@ -16,6 +16,7 @@
 
 package org.springframework.boot.testcontainers.service.connection;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.testcontainers.containers.Container;
@@ -27,7 +28,9 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.service.connection.ConnectionDetailsFactories;
 import org.springframework.boot.origin.Origin;
+import org.springframework.boot.testcontainers.beans.TestcontainerBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.type.AnnotationMetadata;
 
 /**
@@ -56,15 +59,24 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 				new ConnectionDetailsFactories());
 		for (String beanName : beanFactory.getBeanNamesForType(Container.class)) {
 			BeanDefinition beanDefinition = getBeanDefinition(beanFactory, beanName);
-			for (ServiceConnection annotation : getAnnotations(beanFactory, beanName)) {
+			for (ServiceConnection annotation : getAnnotations(beanFactory, beanName, beanDefinition)) {
 				ContainerConnectionSource<?> source = createSource(beanFactory, beanName, beanDefinition, annotation);
 				registrar.registerBeanDefinitions(registry, source);
 			}
 		}
 	}
 
-	private Set<ServiceConnection> getAnnotations(ConfigurableListableBeanFactory beanFactory, String beanName) {
-		return beanFactory.findAllAnnotationsOnBean(beanName, ServiceConnection.class, false);
+	private Set<ServiceConnection> getAnnotations(ConfigurableListableBeanFactory beanFactory, String beanName,
+			BeanDefinition beanDefinition) {
+		Set<ServiceConnection> annoations = new LinkedHashSet<>();
+		annoations.addAll(beanFactory.findAllAnnotationsOnBean(beanName, ServiceConnection.class, false));
+		if (beanDefinition instanceof TestcontainerBeanDefinition testcontainerBeanDefinition) {
+			testcontainerBeanDefinition.getAnnotations()
+				.stream(ServiceConnection.class)
+				.map(MergedAnnotation::synthesize)
+				.forEach(annoations::add);
+		}
+		return annoations;
 	}
 
 	private BeanDefinition getBeanDefinition(ConfigurableListableBeanFactory beanFactory, String beanName) {
@@ -82,7 +94,9 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 			ServiceConnection annotation) {
 		Origin origin = new BeanOrigin(beanName, beanDefinition);
 		Class<C> containerType = (Class<C>) beanFactory.getType(beanName, false);
-		return new ContainerConnectionSource<>(beanName, origin, containerType, null, annotation,
+		String containerImageName = (beanDefinition instanceof TestcontainerBeanDefinition testcontainerBeanDefinition)
+				? testcontainerBeanDefinition.getContainerImageName() : null;
+		return new ContainerConnectionSource<>(beanName, origin, containerType, containerImageName, annotation,
 				() -> beanFactory.getBean(beanName, containerType));
 	}
 
