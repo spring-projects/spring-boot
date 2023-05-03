@@ -14,27 +14,23 @@
  * limitations under the License.
  */
 
-package smoketest.session.redis;
+package org.springframework.boot.docs.features.testing.testcontainers.atdevelopmenttime.dynamicproperties;
 
-import org.springframework.boot.SpringApplication;
+import org.testcontainers.containers.MongoDBContainer;
+
 import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.DynamicPropertyRegistry;
 
 @TestConfiguration(proxyBeanMethods = false)
-public class TestSampleSessionRedisApplication {
+public class MyContainersConfiguration {
 
 	@Bean
-	@ServiceConnection("redis")
-	RedisContainer redisContainer() {
-		return new RedisContainer();
-	}
-
-	public static void main(String[] args) {
-		SpringApplication.from(SampleSessionRedisApplication::main)
-			.with(TestSampleSessionRedisApplication.class)
-			.run(args);
+	public MongoDBContainer monogDbContainer(DynamicPropertyRegistry properties) {
+		MongoDBContainer container = new MongoDBContainer("mongo:5.0");
+		properties.add("spring.data.mongodb.host", container::getHost);
+		properties.add("spring.data.mongodb.port", container::getFirstMappedPort);
+		return container;
 	}
 
 }

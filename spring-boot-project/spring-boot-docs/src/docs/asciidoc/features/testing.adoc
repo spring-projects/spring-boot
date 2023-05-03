@@ -1047,6 +1047,21 @@ You can now launch `TestMyApplication` as you would any regular Java `main` meth
 
 
 
+
+[[features.testing.testcontainers.at-development-time.dynamic-properties]]
+===== Contributing Dynamic Properties at Development Time
+If you want to contribute dynamic properties at development time from your `Container` `@Bean` methods, you can do so by injecting a `DynamicPropertyRegistry`.
+This works in a similar way to the <<features#features.testing.testcontainers.dynamic-properties,`@DynamicPropertySource` annotation>> that you can use in your tests.
+It allows you to add properties that will become available once your container has started.
+
+A typical configuration would look like this:
+
+include::code:MyContainersConfiguration[]
+
+NOTE: Using a `@ServiceConnection` is recommended whenever possible, however, dynamic properties can be a useful fallback for technologies that don't yet have `@ServiceConnection` support.
+
+
+
 [[features.testing.utilities]]
 === Test Utilities
 A few test utility classes that are generally useful when testing your application are packaged as part of `spring-boot`.

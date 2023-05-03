@@ -163,6 +163,7 @@ dependencies {
 	implementation("org.springframework.ws:spring-ws-test")
 	implementation("org.testcontainers:junit-jupiter")
 	implementation("org.testcontainers:neo4j")
+	implementation("org.testcontainers:mongodb")
 	implementation("org.junit.jupiter:junit-jupiter")
 	implementation("org.yaml:snakeyaml")
 
