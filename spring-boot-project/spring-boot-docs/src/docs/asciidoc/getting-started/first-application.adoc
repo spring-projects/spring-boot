@@ -67,7 +67,7 @@ If you want to use Gradle, ensure that you have Gradle installed:
 
 
 [[getting-started.first-application.pom]]
-=== Maven
+=== Setting up the project with Maven
 We need to start by creating a Maven `pom.xml` file.
 The `pom.xml` is the recipe that is used to build your project.
 Open your favorite text editor and add the following:
@@ -125,7 +125,7 @@ NOTE: At this point, you could import the project into an IDE (most modern Java 
 For simplicity, we continue to use a plain text editor for this example.
 
 [[getting-started.first-application.gradle]]
-=== Gradle
+=== Setting up the project with Gradle
 
 We need to start by creating a Gradle `build.gradle` file.
 The `build.gradle` is the build script that is used to build your project.
