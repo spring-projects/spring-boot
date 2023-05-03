@@ -1,6 +1,7 @@
 [[getting-started.first-application]]
 == Developing Your First Spring Boot Application
 This section describes how to develop a small "`Hello World!`" web application that highlights some of Spring Boot's key features.
+You can choose between Maven or Gradle as the build system.
 
 [TIP]
 ====
