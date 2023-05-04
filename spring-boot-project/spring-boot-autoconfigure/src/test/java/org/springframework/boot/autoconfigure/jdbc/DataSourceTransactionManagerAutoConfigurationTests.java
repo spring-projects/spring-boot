@@ -40,6 +40,7 @@ import static org.mockito.Mockito.mock;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
+ * @author davin111
  */
 class DataSourceTransactionManagerAutoConfigurationTests {
 
@@ -90,9 +91,10 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 			.withBean("myReactiveTransactionManager", ReactiveTransactionManager.class,
 					() -> mock(ReactiveTransactionManager.class))
-			.run((context) -> assertThat(context)
-					.hasSingleBean(ReactiveTransactionManager.class).hasBean("myReactiveTransactionManager")
-					.hasSingleBean(PlatformTransactionManager.class).hasBean("transactionManager"));
+			.run((context) -> assertThat(context).hasSingleBean(ReactiveTransactionManager.class)
+				.hasBean("myReactiveTransactionManager")
+				.hasSingleBean(PlatformTransactionManager.class)
+				.hasBean("transactionManager"));
 	}
 
 	@Test // gh-24321
