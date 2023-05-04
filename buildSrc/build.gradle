@@ -14,12 +14,14 @@ sourceCompatibility = 17
 targetCompatibility = 17
 
 ext {
-	def propertiesFile = new File(new File("$projectDir").parentFile, "gradle.properties")
-	propertiesFile.withInputStream {
+	new File("$projectDir/../gradle.properties").withInputStream {
 		def properties = new Properties()
 		properties.load(it)
-		set("kotlinVersion", properties["kotlinVersion"])
-		set("springFrameworkVersion", properties["springFrameworkVersion"])
+		properties.each {
+			if (!has(it.key)) {
+				set(it.key, it.value)
+			}
+		}
 	}
 }
 
