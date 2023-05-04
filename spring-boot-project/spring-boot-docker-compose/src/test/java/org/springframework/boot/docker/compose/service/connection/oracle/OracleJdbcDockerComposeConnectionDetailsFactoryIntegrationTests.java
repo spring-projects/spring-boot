@@ -17,7 +17,9 @@
 package org.springframework.boot.docker.compose.service.connection.oracle;
 
 import java.sql.Driver;
+import java.time.Duration;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.OS;
 
@@ -57,9 +59,11 @@ class OracleJdbcDockerComposeConnectionDetailsFactoryIntegrationTests extends Ab
 		dataSource.setPassword(connectionDetails.getPassword());
 		dataSource.setDriverClass((Class<? extends Driver>) ClassUtils.forName(connectionDetails.getDriverClassName(),
 				getClass().getClassLoader()));
-		JdbcTemplate template = new JdbcTemplate(dataSource);
-		assertThat(template.queryForObject(DatabaseDriver.ORACLE.getValidationQuery(), String.class))
-			.isEqualTo("Hello");
+		Awaitility.await().atMost(Duration.ofMinutes(1)).ignoreExceptions().untilAsserted(() -> {
+			JdbcTemplate template = new JdbcTemplate(dataSource);
+			assertThat(template.queryForObject(DatabaseDriver.ORACLE.getValidationQuery(), String.class))
+				.isEqualTo("Hello");
+		});
 	}
 
 }
