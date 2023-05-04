@@ -43,6 +43,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.tracing.BraveAutoConfigurationTests.SpanHandlerConfiguration.AdditionalSpanHandler;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.context.properties.IncompatibleConfigurationException;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -50,12 +51,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link BraveAutoConfiguration}.
  *
  * @author Moritz Halbritter
+ * @author Jonatan Ivanov
  */
 class BraveAutoConfigurationTests {
 
@@ -216,15 +219,43 @@ class BraveAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldNotSupportJoinedSpans() {
+	void shouldNotSupportJoinedSpansByDefault() {
 		this.contextRunner.run((context) -> {
 			Tracing tracing = context.getBean(Tracing.class);
 			Span parentSpan = tracing.tracer().nextSpan();
 			Span childSpan = tracing.tracer().joinSpan(parentSpan.context());
-			assertThat(parentSpan.context().traceIdString()).isEqualTo(childSpan.context().traceIdString());
-			assertThat(parentSpan.context().spanIdString()).isEqualTo(childSpan.context().parentIdString());
-			assertThat(parentSpan.context().spanIdString()).isNotEqualTo(childSpan.context().spanIdString());
+			assertThat(childSpan.context().traceIdString()).isEqualTo(parentSpan.context().traceIdString());
+			assertThat(childSpan.context().spanIdString()).isNotEqualTo(parentSpan.context().spanIdString());
+			assertThat(childSpan.context().parentIdString()).isEqualTo(parentSpan.context().spanIdString());
+			assertThat(parentSpan.context().parentIdString()).isNull();
 		});
+	}
+
+	@Test
+	void shouldSupportJoinedSpansIfB3UsedAndBackendSupportsIt() {
+		this.contextRunner
+			.withPropertyValues("management.tracing.propagation.type=B3",
+					"management.tracing.brave.span-joining-supported=true")
+			.run((context) -> {
+				Tracing tracing = context.getBean(Tracing.class);
+				Span parentSpan = tracing.tracer().nextSpan();
+				Span childSpan = tracing.tracer().joinSpan(parentSpan.context());
+				assertThat(childSpan.context().traceIdString()).isEqualTo(parentSpan.context().traceIdString());
+				assertThat(childSpan.context().spanIdString()).isEqualTo(parentSpan.context().spanIdString());
+				assertThat(childSpan.context().parentIdString()).isNull();
+				assertThat(parentSpan.context().parentIdString()).isNull();
+			});
+	}
+
+	@Test
+	void shouldFailIfSupportJoinedSpansIsEnabledAndW3cIsChosen() {
+		this.contextRunner
+			.withPropertyValues("management.tracing.propagation.type=W3C",
+					"management.tracing.brave.span-joining-supported=true")
+			.run((context) -> assertThatThrownBy(() -> context.getBean(Tracing.class)).rootCause()
+				.isExactlyInstanceOf(IncompatibleConfigurationException.class)
+				.hasMessage(
+						"The following configuration properties have incompatible values: [management.tracing.propagation.type, management.tracing.brave.span-joining-supported]"));
 	}
 
 	@Test

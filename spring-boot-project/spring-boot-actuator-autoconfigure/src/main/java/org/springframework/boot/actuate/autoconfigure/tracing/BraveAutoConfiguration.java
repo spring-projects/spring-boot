@@ -54,12 +54,14 @@ import io.micrometer.tracing.exporter.SpanFilter;
 import io.micrometer.tracing.exporter.SpanReporter;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.autoconfigure.tracing.TracingProperties.Propagation.PropagationType;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.IncompatibleConfigurationException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -71,6 +73,7 @@ import org.springframework.core.env.Environment;
  *
  * @author Moritz Halbritter
  * @author Marcin Grzejszczak
+ * @author Jonatan Ivanov
  * @since 3.0.0
  */
 @AutoConfiguration(before = MicrometerTracingAutoConfiguration.class)
@@ -97,14 +100,19 @@ public class BraveAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public Tracing braveTracing(Environment environment, List<SpanHandler> spanHandlers,
+	public Tracing braveTracing(Environment environment, TracingProperties properties, List<SpanHandler> spanHandlers,
 			List<TracingCustomizer> tracingCustomizers, CurrentTraceContext currentTraceContext,
 			Factory propagationFactory, Sampler sampler) {
+		if (properties.getPropagation().getType() == PropagationType.W3C
+				&& properties.getBrave().isSpanJoiningSupported()) {
+			throw new IncompatibleConfigurationException("management.tracing.propagation.type",
+					"management.tracing.brave.span-joining-supported");
+		}
 		String applicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
 		Builder builder = Tracing.newBuilder()
 			.currentTraceContext(currentTraceContext)
 			.traceId128Bit(true)
-			.supportsJoin(false)
+			.supportsJoin(properties.getBrave().isSpanJoiningSupported())
 			.propagationFactory(propagationFactory)
 			.sampler(sampler)
 			.localServiceName(applicationName);

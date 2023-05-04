@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Configuration properties for tracing.
  *
  * @author Moritz Halbritter
+ * @author Jonatan Ivanov
  * @since 3.0.0
  */
 @ConfigurationProperties("management.tracing")
@@ -50,6 +51,11 @@ public class TracingProperties {
 	 */
 	private final Propagation propagation = new Propagation();
 
+	/**
+	 * Brave configuration.
+	 */
+	private final Brave brave = new Brave();
+
 	public boolean isEnabled() {
 		return this.enabled;
 	}
@@ -68,6 +74,10 @@ public class TracingProperties {
 
 	public Propagation getPropagation() {
 		return this.propagation;
+	}
+
+	public Brave getBrave() {
+		return this.brave;
 	}
 
 	public static class Sampling {
@@ -190,6 +200,25 @@ public class TracingProperties {
 			 */
 			W3C
 
+		}
+
+	}
+
+	public static class Brave {
+
+		/**
+		 * Whether the propagation type and tracing backend support sharing the span ID
+		 * between client and server spans. Requires B3 propagation and a compatible
+		 * backend.
+		 */
+		private boolean spanJoiningSupported = false;
+
+		public boolean isSpanJoiningSupported() {
+			return this.spanJoiningSupported;
+		}
+
+		public void setSpanJoiningSupported(boolean spanJoiningSupported) {
+			this.spanJoiningSupported = spanJoiningSupported;
 		}
 
 	}
