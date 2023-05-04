@@ -235,6 +235,9 @@ do as they were designed before this was clarified.
 | https://github.com/structurizr/java[Structurizr]
 | https://github.com/Catalysts/structurizr-extensions
 
+| https://www.torproject.org/[Tor]
+| https://github.com/theborakompanioni/tor-spring-boot-starter
+
 | https://vaadin.com/[Vaadin]
 | https://github.com/vaadin/platform/tree/master/vaadin-spring-boot-starter
 
