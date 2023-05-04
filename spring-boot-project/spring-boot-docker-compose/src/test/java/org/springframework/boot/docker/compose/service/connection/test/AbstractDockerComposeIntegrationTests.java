@@ -43,7 +43,7 @@ public abstract class AbstractDockerComposeIntegrationTests {
 	private final Resource composeResource;
 
 	@AfterAll
-	static void shutdown() {
+	static void shutDown() {
 		SpringApplicationShutdownHandlers shutdownHandlers = SpringApplication.getShutdownHandlers();
 		((Runnable) shutdownHandlers).run();
 	}

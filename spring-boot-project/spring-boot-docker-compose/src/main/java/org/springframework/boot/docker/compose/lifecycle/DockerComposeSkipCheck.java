@@ -24,7 +24,7 @@ import org.springframework.boot.SpringApplicationAotProcessor;
 import org.springframework.util.ClassUtils;
 
 /**
- * Checks if docker compose support should be skipped.
+ * Checks if Docker Compose support should be skipped.
  *
  * @author Phillip Webb
  */

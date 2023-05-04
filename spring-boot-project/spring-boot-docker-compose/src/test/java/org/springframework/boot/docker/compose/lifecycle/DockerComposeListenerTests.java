@@ -53,7 +53,7 @@ class DockerComposeListenerTests {
 		ApplicationPreparedEvent event = new ApplicationPreparedEvent(application, new String[0], context);
 		listener.onApplicationEvent(event);
 		assertThat(listener.getManager()).isNotNull();
-		then(listener.getManager()).should().startup();
+		then(listener.getManager()).should().start();
 	}
 
 	static class TestDockerComposeListener extends DockerComposeListener {

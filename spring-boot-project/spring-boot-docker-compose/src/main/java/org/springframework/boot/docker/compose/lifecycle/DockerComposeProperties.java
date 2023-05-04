@@ -26,7 +26,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.logging.LogLevel;
 
 /**
- * Configuration properties for the 'docker compose'.
+ * Configuration properties for Docker Compose.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -61,12 +61,12 @@ public class DockerComposeProperties {
 	/**
 	 * Start configuration.
 	 */
-	private final Startup startup = new Startup();
+	private final Start start = new Start();
 
 	/**
 	 * Stop configuration.
 	 */
-	private final Shutdown shutdown = new Shutdown();
+	private final Stop stop = new Stop();
 
 	/**
 	 * Profiles configuration.
@@ -107,12 +107,12 @@ public class DockerComposeProperties {
 		this.host = host;
 	}
 
-	public Startup getStartup() {
-		return this.startup;
+	public Start getStart() {
+		return this.start;
 	}
 
-	public Shutdown getShutdown() {
-		return this.shutdown;
+	public Stop getStop() {
+		return this.stop;
 	}
 
 	public Profiles getProfiles() {
@@ -128,25 +128,25 @@ public class DockerComposeProperties {
 	}
 
 	/**
-	 * Startup properties.
+	 * Start properties.
 	 */
-	public static class Startup {
+	public static class Start {
 
 		/**
 		 * Command used to start docker compose.
 		 */
-		private StartupCommand command = StartupCommand.UP;
+		private StartCommand command = StartCommand.UP;
 
 		/**
 		 * Log level for output.
 		 */
 		private LogLevel logLevel = LogLevel.INFO;
 
-		public StartupCommand getCommand() {
+		public StartCommand getCommand() {
 			return this.command;
 		}
 
-		public void setCommand(StartupCommand command) {
+		public void setCommand(StartCommand command) {
 			this.command = command;
 		}
 
@@ -161,25 +161,25 @@ public class DockerComposeProperties {
 	}
 
 	/**
-	 * Shutdown properties.
+	 * Stop properties.
 	 */
-	public static class Shutdown {
+	public static class Stop {
 
 		/**
 		 * Command used to stop docker compose.
 		 */
-		private ShutdownCommand command = ShutdownCommand.DOWN;
+		private StopCommand command = StopCommand.STOP;
 
 		/**
-		 * Timeout for stopping docker compose. Use '0' for forced stop.
+		 * Timeout for stopping Docker Compose. Use '0' for forced stop.
 		 */
 		private Duration timeout = Duration.ofSeconds(10);
 
-		public ShutdownCommand getCommand() {
+		public StopCommand getCommand() {
 			return this.command;
 		}
 
-		public void setCommand(ShutdownCommand command) {
+		public void setCommand(StopCommand command) {
 			this.command = command;
 		}
 

@@ -169,17 +169,17 @@ TIP: You can also provide your own `ServiceReadinessCheck` implementations and r
 
 [[features.docker-compose.lifecycle]]
 === Controlling the Docker Compose Lifecycle
-By default Spring Boot calls `docker compose up` when your application starts and `docker compose down` when it's shutdown.
+By default Spring Boot calls `docker compose up` when your application starts and `docker compose stop` when it's shut down.
 If you prefer to have different lifecycle management you can use the configprop:spring.docker.compose.lifecycle-management[] property.
 
 The following values are supported:
 
 * `none` - Do not start or stop Docker Compose
-* `start-only` - Start Docker Compose on application startup and leave it running
-* `start-and-stop` - Start Docker Compose on application startup and stop it on application shutdown
+* `start-only` - Start Docker Compose when the application starts and leave it running
+* `start-and-stop` - Start Docker Compose whe the application starts and stop it when the JVM exits
 
-In addition you can use the configprop:spring.docker.compose.startup.command[] property to change if `docker up` or `docker start` is used.
-The configprop:spring.docker.compose.shutdown.command[] allows you to configure if `docker down` or `docker stop` is used.
+In addition you can use the configprop:spring.docker.compose.start.command[] property to change whether `docker compose up` or `docker compose start` is used.
+The configprop:spring.docker.compose.stop.command[] allows you to configure if `docker compose down` or `docker compose stop` is used.
 
 The following example shows how lifecycle management can be configured:
 
@@ -189,10 +189,10 @@ The following example shows how lifecycle management can be configured:
 	  docker:
 	    compose:
 	      lifecycle-management: start-and-stop
-	      startup:
+	      start:
 	        command: start
-	      shutdown:
-	        command: stop
+	      stop:
+	        command: down
 	        timeout: 1m
 ----
 

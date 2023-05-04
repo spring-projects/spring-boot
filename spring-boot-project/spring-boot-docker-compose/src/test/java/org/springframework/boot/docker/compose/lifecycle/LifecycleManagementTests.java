@@ -31,32 +31,32 @@ class LifecycleManagementTests {
 
 	@Test
 	void shouldStartupWhenNone() {
-		assertThat(LifecycleManagement.NONE.shouldStartup()).isFalse();
+		assertThat(LifecycleManagement.NONE.shouldStart()).isFalse();
 	}
 
 	@Test
 	void shouldShutdownWhenNone() {
-		assertThat(LifecycleManagement.NONE.shouldShutdown()).isFalse();
+		assertThat(LifecycleManagement.NONE.shouldStop()).isFalse();
 	}
 
 	@Test
 	void shouldStartupWhenStartOnly() {
-		assertThat(LifecycleManagement.START_ONLY.shouldStartup()).isTrue();
+		assertThat(LifecycleManagement.START_ONLY.shouldStart()).isTrue();
 	}
 
 	@Test
 	void shouldShutdownWhenStartOnly() {
-		assertThat(LifecycleManagement.START_ONLY.shouldShutdown()).isFalse();
+		assertThat(LifecycleManagement.START_ONLY.shouldStop()).isFalse();
 	}
 
 	@Test
 	void shouldStartupWhenStartAndStop() {
-		assertThat(LifecycleManagement.START_AND_STOP.shouldStartup()).isTrue();
+		assertThat(LifecycleManagement.START_AND_STOP.shouldStart()).isTrue();
 	}
 
 	@Test
 	void shouldShutdownWhenStartAndStop() {
-		assertThat(LifecycleManagement.START_AND_STOP.shouldShutdown()).isTrue();
+		assertThat(LifecycleManagement.START_AND_STOP.shouldStop()).isTrue();
 	}
 
 }
