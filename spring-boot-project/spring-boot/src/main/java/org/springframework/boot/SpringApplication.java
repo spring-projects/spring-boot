@@ -1453,14 +1453,35 @@ public class SpringApplication {
 		/**
 		 * Run the application using the given args.
 		 * @param args the main method args
+		 * @return the running {@link ApplicationContext}
 		 */
-		public void run(String... args) {
-			withHook(this::getRunListener, () -> this.main.accept(args));
+		public ConfigurableApplicationContext run(String... args) {
+			ContextLoaderHook hook = new ContextLoaderHook(this.sources);
+			withHook(hook, () -> this.main.accept(args));
+			return hook.applicationContext;
 		}
 
-		private SpringApplicationRunListener getRunListener(SpringApplication springApplication) {
-			springApplication.addPrimarySources(this.sources);
-			return null;
+		private static class ContextLoaderHook implements SpringApplicationHook {
+
+			private final Set<Class<?>> sources;
+
+			private ConfigurableApplicationContext applicationContext;
+
+			ContextLoaderHook(Set<Class<?>> sources) {
+				this.sources = sources;
+			}
+
+			@Override
+			public SpringApplicationRunListener getRunListener(SpringApplication springApplication) {
+				springApplication.addPrimarySources(this.sources);
+				return new SpringApplicationRunListener() {
+					@Override
+					public void contextPrepared(ConfigurableApplicationContext context) {
+						ContextLoaderHook.this.applicationContext = context;
+					}
+				};
+			}
+
 		}
 
 	}

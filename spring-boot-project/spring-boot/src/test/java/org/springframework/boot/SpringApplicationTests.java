@@ -1368,6 +1368,14 @@ class SpringApplicationTests {
 		ExampleAdditionalConfig.local.set(null);
 	}
 
+	@Test
+	void fromReturnsApplicationContext() {
+		ConfigurableApplicationContext context = SpringApplication.from(ExampleFromMainMethod::main)
+			.with(ExampleAdditionalConfig.class)
+			.run();
+		assertThat(context).isNotNull();
+	}
+
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
 			S state) {
 		return (argument) -> (argument instanceof AvailabilityChangeEvent<?>)
