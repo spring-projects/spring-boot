@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
- * @author davin111
+ * @author Davin Byeon
  */
 class DataSourceTransactionManagerAutoConfigurationTests {
 

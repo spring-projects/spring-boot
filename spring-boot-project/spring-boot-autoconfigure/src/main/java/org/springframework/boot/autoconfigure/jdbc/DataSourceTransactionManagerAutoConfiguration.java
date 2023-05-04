@@ -45,7 +45,7 @@ import org.springframework.transaction.TransactionManager;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
- * @author davin111
+ * @author Davin Byeon
  * @since 1.0.0
  */
 @AutoConfiguration(before = TransactionAutoConfiguration.class)
