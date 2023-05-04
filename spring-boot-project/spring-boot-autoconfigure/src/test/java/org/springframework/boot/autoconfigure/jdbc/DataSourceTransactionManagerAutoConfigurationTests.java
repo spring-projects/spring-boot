@@ -27,6 +27,8 @@ import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfigu
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.support.JdbcTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.TransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -76,10 +78,21 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 
 	@Test
 	void transactionManagerWithExistingTransactionManagerIsNotOverridden() {
-		this.contextRunner
-			.withBean("myTransactionManager", TransactionManager.class, () -> mock(TransactionManager.class))
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+			.withBean("myTransactionManager", PlatformTransactionManager.class,
+					() -> mock(PlatformTransactionManager.class))
 			.run((context) -> assertThat(context).hasSingleBean(TransactionManager.class)
 				.hasBean("myTransactionManager"));
+	}
+
+	@Test
+	void transactionManagerWithExistingReactiveTransactionManagerIsConfigured() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+			.withBean("myReactiveTransactionManager", ReactiveTransactionManager.class,
+					() -> mock(ReactiveTransactionManager.class))
+			.run((context) -> assertThat(context)
+					.hasSingleBean(ReactiveTransactionManager.class).hasBean("myReactiveTransactionManager")
+					.hasSingleBean(PlatformTransactionManager.class).hasBean("transactionManager"));
 	}
 
 	@Test // gh-24321
