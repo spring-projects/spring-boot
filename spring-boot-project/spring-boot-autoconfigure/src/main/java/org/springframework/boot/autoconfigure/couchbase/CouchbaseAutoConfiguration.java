@@ -120,8 +120,7 @@ public class CouchbaseAutoConfiguration {
 		builder.ioConfig((config) -> config.maxHttpConnections(io.getMaxEndpoints())
 			.numKvConnections(io.getMinEndpoints())
 			.idleHttpConnectionTimeout(io.getIdleHttpConnectionTimeout()));
-		if ((connectionDetails instanceof PropertiesCouchbaseConnectionDetails)
-				&& this.properties.getEnv().getSsl().getEnabled()) {
+		if (this.properties.getEnv().getSsl().getEnabled()) {
 			configureSsl(builder, sslBundles);
 		}
 		return builder;
