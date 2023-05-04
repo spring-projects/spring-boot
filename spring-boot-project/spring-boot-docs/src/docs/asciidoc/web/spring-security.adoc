@@ -223,7 +223,22 @@ Again, the same properties are applicable for both servlet and reactive applicat
 
 Alternatively, you can define your own `OpaqueTokenIntrospector` bean for servlet applications or a `ReactiveOpaqueTokenIntrospector` for reactive applications.
 
+To enable audience validation, set the `configprop:spring.security.oauth2.resourceserver.jwt.audiences[]` property in your Spring Boot application
+configuration file. This property specifies the expected value(s) of the aud claim in JWTs.
 
+For example, to expect the JWTs to contain an aud claim with the value `my-audience`, you can add the following line to your 
+application.properties file:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  security:
+	    oauth2:
+	      resourceserver:
+	        jwt:
+	          audiences:
+	            - "my-audience"
+----
 
 [[web.security.oauth2.authorization-server]]
 ==== Authorization Server
