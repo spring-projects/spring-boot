@@ -236,9 +236,7 @@ For example, to expect the JWTs to contain an aud claim with the value my-audien
 application.properties file:
 
 [source,properties]
----
 	spring.security.oauth2.resourceserver.jwt.audience=my-audience
----
 
 When the resource server receives a JWT, it will now validate that the aud claim is present and contains the expected value(s).
 If the validation fails, the request will be rejected with an HTTP 401 Unauthorized response.
@@ -246,12 +244,10 @@ If the validation fails, the request will be rejected with an HTTP 401 Unauthori
 The following code changes have been made to add audience validation support:
 
 [source,java]
----
 	JwtClaimValidator<List<String>> validator = new JwtClaimValidator<List<String>>(JwtClaimNames.AUD,
 	(aud) -> aud != null && aud.contains(audience));
 	validators.add(validator);
 	nimbusrJwtDecoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(validators));
----
 
 These changes add a new JwtClaimValidator that checks the aud claim of the JWT against the expected audience value(s). 
 If the aud claim is present and contains any of the expected values, the validation succeeds. Otherwise, it fails.
