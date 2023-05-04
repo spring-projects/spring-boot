@@ -35,6 +35,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.support.JdbcTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionManager;
 
 /**
@@ -57,7 +58,7 @@ public class DataSourceTransactionManagerAutoConfiguration {
 	static class JdbcTransactionManagerConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(TransactionManager.class)
+		@ConditionalOnMissingBean(PlatformTransactionManager.class)
 		DataSourceTransactionManager transactionManager(Environment environment, DataSource dataSource,
 				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 			DataSourceTransactionManager transactionManager = createTransactionManager(environment, dataSource);
