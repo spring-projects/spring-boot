@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.observation.graphql;
 
 import io.micrometer.observation.ObservationRegistry;
 import io.micrometer.observation.tck.TestObservationRegistry;
-import io.micrometer.tracing.propagation.Propagator;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -28,7 +27,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.graphql.observation.DefaultDataFetcherObservationConvention;
 import org.springframework.graphql.observation.DefaultExecutionRequestObservationConvention;
 import org.springframework.graphql.observation.GraphQlObservationInstrumentation;
-import org.springframework.graphql.observation.PropagationWebGraphQlInterceptor;
 import org.springframework.graphql.server.WebGraphQlHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -76,24 +74,6 @@ class GraphQlObservationAutoConfigurationTests {
 		});
 	}
 
-	@Test
-	void propagationInterceptorNotContributedWhenPropagatorIsMissing() {
-		this.contextRunner.withUserConfiguration(WebGraphQlConfiguration.class)
-			.run((context) -> assertThat(context).doesNotHaveBean(PropagationWebGraphQlInterceptor.class));
-	}
-
-	@Test
-	void propagationInterceptorNotContributedWhenNotWebApplication() {
-		this.contextRunner.withUserConfiguration(TracingConfiguration.class)
-			.run((context) -> assertThat(context).doesNotHaveBean(PropagationWebGraphQlInterceptor.class));
-	}
-
-	@Test
-	void propagationInterceptorContributed() {
-		this.contextRunner.withUserConfiguration(WebGraphQlConfiguration.class, TracingConfiguration.class)
-			.run((context) -> assertThat(context).hasSingleBean(PropagationWebGraphQlInterceptor.class));
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	static class InstrumentationConfiguration {
 
@@ -133,16 +113,6 @@ class GraphQlObservationAutoConfigurationTests {
 		@Bean
 		WebGraphQlHandler webGraphQlHandler() {
 			return mock(WebGraphQlHandler.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TracingConfiguration {
-
-		@Bean
-		Propagator propagator() {
-			return mock(Propagator.class);
 		}
 
 	}
