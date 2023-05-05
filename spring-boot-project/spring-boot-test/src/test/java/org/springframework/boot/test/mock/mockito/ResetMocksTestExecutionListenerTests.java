@@ -53,6 +53,7 @@ class ResetMocksTestExecutionListenerTests {
 		given(getMock("before").greeting()).willReturn("before");
 		given(getMock("after").greeting()).willReturn("after");
 		given(getMock("fromFactoryBean").greeting()).willReturn("fromFactoryBean");
+		assertThat(this.context.getBean(NonSingletonFactoryBean.class).getObjectInvocations).isEqualTo(0);
 	}
 
 	@Test
@@ -61,6 +62,7 @@ class ResetMocksTestExecutionListenerTests {
 		assertThat(getMock("before").greeting()).isNull();
 		assertThat(getMock("after").greeting()).isNull();
 		assertThat(getMock("fromFactoryBean").greeting()).isNull();
+		assertThat(this.context.getBean(NonSingletonFactoryBean.class).getObjectInvocations).isEqualTo(0);
 	}
 
 	ExampleService getMock(String name) {
@@ -109,6 +111,11 @@ class ResetMocksTestExecutionListenerTests {
 			return new WorkingFactoryBean();
 		}
 
+		@Bean
+		NonSingletonFactoryBean nonSingletonFactoryBean() {
+			return new NonSingletonFactoryBean();
+		}
+
 	}
 
 	static class BrokenFactoryBean implements FactoryBean<String> {
@@ -132,9 +139,11 @@ class ResetMocksTestExecutionListenerTests {
 
 	static class WorkingFactoryBean implements FactoryBean<ExampleService> {
 
+		private final ExampleService service = mock(ExampleService.class, MockReset.before());
+
 		@Override
 		public ExampleService getObject() {
-			return mock(ExampleService.class, MockReset.before());
+			return this.service;
 		}
 
 		@Override
@@ -145,6 +154,28 @@ class ResetMocksTestExecutionListenerTests {
 		@Override
 		public boolean isSingleton() {
 			return true;
+		}
+
+	}
+
+	static class NonSingletonFactoryBean implements FactoryBean<ExampleService> {
+
+		private int getObjectInvocations = 0;
+
+		@Override
+		public ExampleService getObject() {
+			this.getObjectInvocations++;
+			return mock(ExampleService.class, MockReset.before());
+		}
+
+		@Override
+		public Class<?> getObjectType() {
+			return ExampleService.class;
+		}
+
+		@Override
+		public boolean isSingleton() {
+			return false;
 		}
 
 	}
