@@ -12,7 +12,7 @@ To help with this workflow, the `spring-boot-docker-compose` module can be used.
 * Search for a `compose.yml` and other common compose filenames in your application directory
 * Call `docker compose up` with the discovered `compose.yml`
 * Create service connection beans for each supported container
-* Call `docker compose down` when the application is shutdown
+* Call `docker compose stop` when the application is shutdown
 
 NOTE: The `docker compose` or `docker-compose` CLI application needs to be on your path in order for Spring Boot’s support to work correctly.
 
