@@ -144,6 +144,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 			.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
 		Configuration productionRuntimeClasspath = project.getConfigurations()
 			.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+		Configuration runtimeClasspath = project.getConfigurations()
+			.getByName(mainSourceSet.getRuntimeClasspathConfigurationName());
 		Callable<FileCollection> classpath = () -> mainSourceSet.getRuntimeClasspath()
 			.minus((developmentOnly.minus(productionRuntimeClasspath)))
 			.filter(new JarTypeFileSpec());
@@ -159,6 +161,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 						? manifestStartClass : resolveMainClassName.get().readMainClassName()));
 			bootJar.getTargetJavaVersion()
 				.set(project.provider(() -> javaPluginExtension(project).getTargetCompatibility()));
+			bootJar.resolvedArtifacts(runtimeClasspath.getIncoming().getArtifacts().getResolvedArtifacts());
 		});
 	}
 
