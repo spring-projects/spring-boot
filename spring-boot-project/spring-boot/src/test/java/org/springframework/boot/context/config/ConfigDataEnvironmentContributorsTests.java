@@ -46,6 +46,7 @@ import org.springframework.mock.env.MockPropertySource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -78,9 +79,6 @@ class ConfigDataEnvironmentContributorsTests {
 
 	@Captor
 	private ArgumentCaptor<ConfigDataLocationResolverContext> locationResolverContext;
-
-	@Captor
-	private ArgumentCaptor<ConfigDataLoaderContext> loaderContext;
 
 	@BeforeEach
 	void setup() {
@@ -187,9 +185,11 @@ class ConfigDataEnvironmentContributorsTests {
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapContext, Arrays.asList(existingContributor, contributor));
 		contributors.withProcessedImports(this.importer, this.activationContext);
-		then(this.importer).should().resolveAndLoad(any(), this.locationResolverContext.capture(), any(), any());
-		ConfigDataLocationResolverContext context = this.locationResolverContext.getValue();
-		assertThat(context.getBinder().bind("test", String.class).get()).isEqualTo("springboot");
+		then(this.importer).should()
+			.resolveAndLoad(any(),
+					assertArg((context) -> assertThat(context.getBinder().bind("test", String.class).get())
+						.isEqualTo("springboot")),
+					any(), any());
 	}
 
 	@Test
@@ -238,9 +238,10 @@ class ConfigDataEnvironmentContributorsTests {
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapContext, Arrays.asList(existingContributor, contributor));
 		contributors.withProcessedImports(this.importer, this.activationContext);
-		then(this.importer).should().resolveAndLoad(any(), this.locationResolverContext.capture(), any(), any());
-		ConfigDataLocationResolverContext context = this.locationResolverContext.getValue();
-		assertThat(context.getBootstrapContext()).isSameAs(this.bootstrapContext);
+		then(this.importer).should()
+			.resolveAndLoad(any(),
+					assertArg((context) -> assertThat(context.getBootstrapContext()).isSameAs(this.bootstrapContext)),
+					any(), any());
 	}
 
 	@Test
@@ -261,9 +262,10 @@ class ConfigDataEnvironmentContributorsTests {
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapContext, Arrays.asList(existingContributor, contributor));
 		contributors.withProcessedImports(this.importer, this.activationContext);
-		then(this.importer).should().resolveAndLoad(any(), any(), this.loaderContext.capture(), any());
-		ConfigDataLoaderContext context = this.loaderContext.getValue();
-		assertThat(context.getBootstrapContext()).isSameAs(this.bootstrapContext);
+		then(this.importer).should()
+			.resolveAndLoad(any(), any(),
+					assertArg((context) -> assertThat(context.getBootstrapContext()).isSameAs(this.bootstrapContext)),
+					any());
 	}
 
 	@Test

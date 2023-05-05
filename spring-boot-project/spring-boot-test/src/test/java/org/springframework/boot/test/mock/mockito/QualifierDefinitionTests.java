@@ -22,19 +22,17 @@ import java.lang.reflect.Field;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.ReflectionUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.then;
 
@@ -48,9 +46,6 @@ class QualifierDefinitionTests {
 
 	@Mock
 	private ConfigurableListableBeanFactory beanFactory;
-
-	@Captor
-	private ArgumentCaptor<DependencyDescriptor> descriptorCaptor;
 
 	@Test
 	void forElementFieldIsNullShouldReturnNull() {
@@ -81,8 +76,9 @@ class QualifierDefinitionTests {
 		Field field = ReflectionUtils.findField(ConfigA.class, "directQualifier");
 		QualifierDefinition qualifierDefinition = QualifierDefinition.forElement(field);
 		qualifierDefinition.matches(this.beanFactory, "bean");
-		then(this.beanFactory).should().isAutowireCandidate(eq("bean"), this.descriptorCaptor.capture());
-		assertThat(this.descriptorCaptor.getValue().getAnnotatedElement()).isEqualTo(field);
+		then(this.beanFactory).should()
+			.isAutowireCandidate(eq("bean"), assertArg(
+					(dependencyDescriptor) -> assertThat(dependencyDescriptor.getAnnotatedElement()).isEqualTo(field)));
 	}
 
 	@Test

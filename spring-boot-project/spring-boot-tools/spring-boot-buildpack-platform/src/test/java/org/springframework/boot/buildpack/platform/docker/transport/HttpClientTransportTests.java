@@ -47,6 +47,7 @@ import org.springframework.util.StreamUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -78,9 +79,6 @@ class HttpClientTransportTests {
 	private InputStream content;
 
 	@Captor
-	private ArgumentCaptor<HttpHost> hostCaptor;
-
-	@Captor
 	private ArgumentCaptor<HttpUriRequest> requestCaptor;
 
 	private HttpClientTransport http;
@@ -99,12 +97,18 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.get(this.uri);
-		then(this.client).should().executeOpen(this.hostCaptor.capture(), this.requestCaptor.capture(), isNull());
-		HttpUriRequest request = this.requestCaptor.getValue();
-		assertThat(request).isInstanceOf(HttpGet.class);
-		assertThat(request.getUri()).isEqualTo(this.uri);
-		assertThat(request.getFirstHeader(HttpHeaders.CONTENT_TYPE)).isNull();
-		assertThat(response.getContent()).isSameAs(this.content);
+		then(this.client).should().executeOpen(any(HttpHost.class), assertArg((request) -> {
+			try {
+				assertThat(request).isInstanceOf(HttpGet.class);
+				assertThat(request.getUri()).isEqualTo(this.uri);
+				assertThat(request.getFirstHeader(HttpHeaders.CONTENT_TYPE)).isNull();
+				assertThat(response.getContent()).isSameAs(this.content);
+			}
+			catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+		}), isNull());
+
 	}
 
 	@Test
@@ -113,7 +117,7 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.post(this.uri);
-		then(this.client).should().executeOpen(this.hostCaptor.capture(), this.requestCaptor.capture(), isNull());
+		then(this.client).should().executeOpen(any(HttpHost.class), this.requestCaptor.capture(), isNull());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		assertThat(request).isInstanceOf(HttpPost.class);
 		assertThat(request.getUri()).isEqualTo(this.uri);
@@ -128,7 +132,7 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.post(this.uri, "auth token");
-		then(this.client).should().executeOpen(this.hostCaptor.capture(), this.requestCaptor.capture(), isNull());
+		then(this.client).should().executeOpen(any(HttpHost.class), this.requestCaptor.capture(), isNull());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		assertThat(request).isInstanceOf(HttpPost.class);
 		assertThat(request.getUri()).isEqualTo(this.uri);
@@ -143,7 +147,7 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.post(this.uri, "");
-		then(this.client).should().executeOpen(this.hostCaptor.capture(), this.requestCaptor.capture(), isNull());
+		then(this.client).should().executeOpen(any(HttpHost.class), this.requestCaptor.capture(), isNull());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		assertThat(request).isInstanceOf(HttpPost.class);
 		assertThat(request.getUri()).isEqualTo(this.uri);
@@ -160,7 +164,7 @@ class HttpClientTransportTests {
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.post(this.uri, APPLICATION_JSON,
 				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
-		then(this.client).should().executeOpen(this.hostCaptor.capture(), this.requestCaptor.capture(), isNull());
+		then(this.client).should().executeOpen(any(HttpHost.class), this.requestCaptor.capture(), isNull());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		HttpEntity entity = request.getEntity();
 		assertThat(request).isInstanceOf(HttpPost.class);
@@ -182,7 +186,7 @@ class HttpClientTransportTests {
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.post(this.uri, APPLICATION_X_TAR,
 				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
-		then(this.client).should().executeOpen(this.hostCaptor.capture(), this.requestCaptor.capture(), isNull());
+		then(this.client).should().executeOpen(any(HttpHost.class), this.requestCaptor.capture(), isNull());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		HttpEntity entity = request.getEntity();
 		assertThat(request).isInstanceOf(HttpPost.class);
@@ -204,7 +208,7 @@ class HttpClientTransportTests {
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.put(this.uri, APPLICATION_JSON,
 				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
-		then(this.client).should().executeOpen(this.hostCaptor.capture(), this.requestCaptor.capture(), isNull());
+		then(this.client).should().executeOpen(any(HttpHost.class), this.requestCaptor.capture(), isNull());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		HttpEntity entity = request.getEntity();
 		assertThat(request).isInstanceOf(HttpPut.class);
@@ -226,7 +230,7 @@ class HttpClientTransportTests {
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.put(this.uri, APPLICATION_X_TAR,
 				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
-		then(this.client).should().executeOpen(this.hostCaptor.capture(), this.requestCaptor.capture(), isNull());
+		then(this.client).should().executeOpen(any(HttpHost.class), this.requestCaptor.capture(), isNull());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		HttpEntity entity = request.getEntity();
 		assertThat(request).isInstanceOf(HttpPut.class);
@@ -246,7 +250,7 @@ class HttpClientTransportTests {
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.response.getCode()).willReturn(200);
 		Response response = this.http.delete(this.uri);
-		then(this.client).should().executeOpen(this.hostCaptor.capture(), this.requestCaptor.capture(), isNull());
+		then(this.client).should().executeOpen(any(HttpHost.class), this.requestCaptor.capture(), isNull());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		assertThat(request).isInstanceOf(HttpDelete.class);
 		assertThat(request.getUri()).isEqualTo(this.uri);
