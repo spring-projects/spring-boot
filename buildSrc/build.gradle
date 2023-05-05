@@ -10,18 +10,21 @@ repositories {
 	gradlePluginPortal()
 }
 
-sourceCompatibility = 17
-targetCompatibility = 17
-
-ext {
-	def propertiesFile = new File(new File("$projectDir").parentFile, "gradle.properties")
-	propertiesFile.withInputStream {
-		def properties = new Properties()
-		properties.load(it)
-		set("kotlinVersion", properties["kotlinVersion"])
-		set("springFrameworkVersion", properties["springFrameworkVersion"])
+new File(new File("$projectDir").parentFile, "gradle.properties").withInputStream {
+	def properties = new Properties()
+	properties.load(it)
+	ext.set("kotlinVersion", properties["kotlinVersion"])
+	ext.set("springFrameworkVersion", properties["springFrameworkVersion"])
+	if (properties["springFrameworkVersion"].contains("-")) {
+		repositories {
+			maven { url "https://repo.spring.io/milestone" }
+			maven { url "https://repo.spring.io/snapshot" }
+		}
 	}
 }
+
+sourceCompatibility = 17
+targetCompatibility = 17
 
 dependencies {
 	checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}"
