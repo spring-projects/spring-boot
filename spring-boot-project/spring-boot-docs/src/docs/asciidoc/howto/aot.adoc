@@ -1,0 +1,53 @@
+[[howto.aot]]
+== Ahead-of-time processing
+
+A number of questions often arise when people use the ahead-of-time processing of Spring Boot applications.
+This section addresses those questions.
+
+[[howto.aot.conditions]]
+=== Conditions
+
+Ahead-of-time processing optimizes the application and evaluates {spring-framework-api}/context/annotation/Conditional.html[conditions] based on the environment at build time.
+<<features#features.profiles,Profiles>> are implemented through conditions and are therefore affected, too.
+
+If you want beans that are created based on a condition in an ahead-of-time optimized application, you have to set up the environment when building the application.
+The beans which are created while ahead-of-time processing at build time are then always created when running the application and can't be switched off.
+To do this, you can set the profiles which should be used when building the application.
+
+For Maven, this works by setting the `profiles` configuration of the `spring-boot-maven-plugin:process-aot` execution:
+
+[source,xml,indent=0,subs="verbatim"]
+----
+    <profile>
+        <id>native</id>
+        <build>
+            <pluginManagement>
+                <plugins>
+                    <plugin>
+                        <groupId>org.springframework.boot</groupId>
+                        <artifactId>spring-boot-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>process-aot</id>
+                                <configuration>
+                                    <profiles>profile-a,profile-b</profiles>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </pluginManagement>
+        </build>
+    </profile>
+----
+
+For Gradle, you need to configure the `ProcessAot` task:
+
+[source,gradle,indent=0,subs="verbatim"]
+----
+    tasks.withType(org.springframework.boot.gradle.tasks.aot.ProcessAot).configureEach {
+        args('--spring.profiles.active=profile-a,profile-b')
+    }
+----
+
+Profiles which only change configuration properties that don't influence conditions are supported without limitations when running ahead-of-time optimized applications.
