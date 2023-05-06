@@ -23,7 +23,7 @@ import org.testcontainers.junit.jupiter.Container;
 public interface MyContainers {
 
 	@Container
-	MongoDBContainer monogContainer = new MongoDBContainer("mongo:5.0");
+	MongoDBContainer mongoContainer = new MongoDBContainer("mongo:5.0");
 
 	@Container
 	Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:5");
