@@ -20,12 +20,16 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+
 public interface MyContainers {
 
 	@Container
-	MongoDBContainer monogContainer = new MongoDBContainer("mongo:5.0");
+	@ServiceConnection
+	MongoDBContainer mongoContainer = new MongoDBContainer("mongo:5.0");
 
 	@Container
+	@ServiceConnection
 	Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:5");
 
 }
