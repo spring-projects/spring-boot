@@ -117,7 +117,7 @@ public class CassandraAutoConfiguration {
 			ObjectProvider<CqlSessionBuilderCustomizer> builderCustomizers, ObjectProvider<SslBundles> sslBundles) {
 		CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(driverConfigLoader);
 		configureAuthentication(builder, connectionDetails);
-		configureSsl(builder, connectionDetails, sslBundles.getIfAvailable());
+		configureSsl(builder, sslBundles.getIfAvailable());
 		builder.withKeyspace(this.properties.getKeyspaceName());
 		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
@@ -130,11 +130,7 @@ public class CassandraAutoConfiguration {
 		}
 	}
 
-	private void configureSsl(CqlSessionBuilder builder, CassandraConnectionDetails connectionDetails,
-			SslBundles sslBundles) {
-		if (!(connectionDetails instanceof PropertiesCassandraConnectionDetails)) {
-			return;
-		}
+	private void configureSsl(CqlSessionBuilder builder, SslBundles sslBundles) {
 		Ssl properties = this.properties.getSsl();
 		if (properties == null || !properties.isEnabled()) {
 			return;

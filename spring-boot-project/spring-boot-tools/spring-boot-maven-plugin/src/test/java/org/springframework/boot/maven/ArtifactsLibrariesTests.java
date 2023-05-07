@@ -41,6 +41,7 @@ import org.springframework.boot.loader.tools.LibraryCallback;
 import org.springframework.boot.loader.tools.LibraryScope;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -85,11 +86,11 @@ class ArtifactsLibrariesTests {
 		given(this.artifact.getArtifactHandler()).willReturn(this.artifactHandler);
 		given(this.artifact.getScope()).willReturn("compile");
 		this.libs.doWithLibraries(this.callback);
-		then(this.callback).should().library(this.libraryCaptor.capture());
-		Library library = this.libraryCaptor.getValue();
-		assertThat(library.getFile()).isEqualTo(this.file);
-		assertThat(library.getScope()).isEqualTo(LibraryScope.COMPILE);
-		assertThat(library.isUnpackRequired()).isFalse();
+		then(this.callback).should().library(assertArg((library) -> {
+			assertThat(library.getFile()).isEqualTo(this.file);
+			assertThat(library.getScope()).isEqualTo(LibraryScope.COMPILE);
+			assertThat(library.isUnpackRequired()).isFalse();
+		}));
 	}
 
 	@Test
@@ -105,8 +106,7 @@ class ArtifactsLibrariesTests {
 		this.libs = new ArtifactsLibraries(this.artifacts, Collections.emptyList(), Collections.singleton(unpack),
 				mock(Log.class));
 		this.libs.doWithLibraries(this.callback);
-		then(this.callback).should().library(this.libraryCaptor.capture());
-		assertThat(this.libraryCaptor.getValue().isUnpackRequired()).isTrue();
+		then(this.callback).should().library(assertArg((library) -> assertThat(library.isUnpackRequired()).isTrue()));
 	}
 
 	@Test

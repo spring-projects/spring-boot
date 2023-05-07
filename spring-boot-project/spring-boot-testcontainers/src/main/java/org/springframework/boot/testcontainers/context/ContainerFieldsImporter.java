@@ -22,9 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.testcontainers.containers.Container;
+import org.testcontainers.lifecycle.Startable;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 
@@ -35,12 +35,14 @@ import org.springframework.util.ReflectionUtils;
  */
 class ContainerFieldsImporter {
 
-	void registerBeanDefinitions(BeanDefinitionRegistry registry, BeanNameGenerator importBeanNameGenerator,
-			Class<?> definitionClass) {
+	void registerBeanDefinitions(BeanDefinitionRegistry registry, Class<?> definitionClass) {
 		for (Field field : getContainerFields(definitionClass)) {
 			assertValid(field);
 			Container<?> container = getContainer(field);
-			registerBeanDefinition(registry, importBeanNameGenerator, field, container);
+			if (container instanceof Startable startable) {
+				startable.start();
+			}
+			registerBeanDefinition(registry, field, container);
 		}
 	}
 
@@ -66,11 +68,14 @@ class ContainerFieldsImporter {
 		return container;
 	}
 
-	private void registerBeanDefinition(BeanDefinitionRegistry registry, BeanNameGenerator importBeanNameGenerator,
-			Field field, Container<?> container) {
+	private void registerBeanDefinition(BeanDefinitionRegistry registry, Field field, Container<?> container) {
 		TestcontainerFieldBeanDefinition beanDefinition = new TestcontainerFieldBeanDefinition(field, container);
-		String beanName = importBeanNameGenerator.generateBeanName(beanDefinition, registry);
+		String beanName = generateBeanName(field);
 		registry.registerBeanDefinition(beanName, beanDefinition);
+	}
+
+	private String generateBeanName(Field field) {
+		return "importTestContainer.%s.%s".formatted(field.getDeclaringClass().getName(), field.getName());
 	}
 
 }

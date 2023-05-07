@@ -28,6 +28,7 @@ import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycle
 import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleOrderIntegrationTests.ContainerConfig;
 import org.springframework.boot.testcontainers.lifecycle.TestcontainersLifecycleOrderIntegrationTests.TestConfig;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,6 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(AssertingSpringExtension.class)
 @ContextConfiguration(classes = { TestConfig.class, ContainerConfig.class })
 @DirtiesContext
+@DisabledIfDockerUnavailable
 public class TestcontainersLifecycleOrderIntegrationTests {
 
 	static List<String> events = Collections.synchronizedList(new ArrayList<>());

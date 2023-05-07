@@ -25,7 +25,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatchers;
 
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.docker.compose.core.RunningService;
@@ -85,12 +85,12 @@ class ServiceReadinessChecksTests {
 	void loadCanResolveArguments() {
 		this.loader = spy(MockSpringFactoriesLoader.class);
 		createChecks();
-		ArgumentCaptor<ArgumentResolver> captor = ArgumentCaptor.forClass(ArgumentResolver.class);
-		then(this.loader).should().load(eq(ServiceReadinessCheck.class), captor.capture());
-		ArgumentResolver argumentResolver = captor.getValue();
-		assertThat(argumentResolver.resolve(ClassLoader.class)).isEqualTo(this.classLoader);
-		assertThat(argumentResolver.resolve(Environment.class)).isEqualTo(this.environment);
-		assertThat(argumentResolver.resolve(Binder.class)).isEqualTo(this.binder);
+		then(this.loader).should()
+			.load(eq(ServiceReadinessCheck.class), ArgumentMatchers.<ArgumentResolver>assertArg((argumentResolver) -> {
+				assertThat(argumentResolver.resolve(ClassLoader.class)).isEqualTo(this.classLoader);
+				assertThat(argumentResolver.resolve(Environment.class)).isEqualTo(this.environment);
+				assertThat(argumentResolver.resolve(Binder.class)).isEqualTo(this.binder);
+			}));
 	}
 
 	@Test

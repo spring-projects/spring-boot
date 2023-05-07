@@ -17,7 +17,6 @@
 package org.springframework.boot.testcontainers.context;
 
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.env.Environment;
@@ -48,8 +47,7 @@ class ImportTestcontainersRegistrar implements ImportBeanDefinitionRegistrar {
 	}
 
 	@Override
-	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry,
-			BeanNameGenerator importBeanNameGenerator) {
+	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		MergedAnnotation<ImportTestcontainers> annotation = importingClassMetadata.getAnnotations()
 			.get(ImportTestcontainers.class);
 		Class<?>[] definitionClasses = annotation.getClassArray(MergedAnnotation.VALUE);
@@ -57,13 +55,12 @@ class ImportTestcontainersRegistrar implements ImportBeanDefinitionRegistrar {
 			Class<?> importingClass = ClassUtils.resolveClassName(importingClassMetadata.getClassName(), null);
 			definitionClasses = new Class<?>[] { importingClass };
 		}
-		registerBeanDefinitions(registry, importBeanNameGenerator, definitionClasses);
+		registerBeanDefinitions(registry, definitionClasses);
 	}
 
-	private void registerBeanDefinitions(BeanDefinitionRegistry registry, BeanNameGenerator importBeanNameGenerator,
-			Class<?>[] definitionClasses) {
+	private void registerBeanDefinitions(BeanDefinitionRegistry registry, Class<?>[] definitionClasses) {
 		for (Class<?> definitionClass : definitionClasses) {
-			this.containerFieldsImporter.registerBeanDefinitions(registry, importBeanNameGenerator, definitionClass);
+			this.containerFieldsImporter.registerBeanDefinitions(registry, definitionClass);
 			if (this.dynamicPropertySourceMethodsImporter != null) {
 				this.dynamicPropertySourceMethodsImporter.registerDynamicPropertySources(definitionClass);
 			}

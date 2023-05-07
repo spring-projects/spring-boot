@@ -32,7 +32,7 @@ public final class DockerImageNames {
 
 	private static final String CASSANDRA_VERSION = "3.11.10";
 
-	private static final String COUCHBASE_VERSION = "6.5.1";
+	private static final String COUCHBASE_VERSION = "7.1.4";
 
 	private static final String ELASTICSEARCH_VERSION = "7.17.5";
 

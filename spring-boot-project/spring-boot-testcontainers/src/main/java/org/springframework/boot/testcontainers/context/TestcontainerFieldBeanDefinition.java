@@ -40,6 +40,7 @@ class TestcontainerFieldBeanDefinition extends RootBeanDefinition implements Tes
 		this.annotations = MergedAnnotations.from(field);
 		this.setBeanClass(container.getClass());
 		setInstanceSupplier(() -> container);
+		setRole(ROLE_INFRASTRUCTURE);
 	}
 
 	@Override

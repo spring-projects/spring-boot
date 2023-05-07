@@ -31,7 +31,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.jmx.EndpointObjectNameFactory;
-import org.springframework.boot.actuate.endpoint.jmx.ExposableJmxEndpoint;
 import org.springframework.boot.actuate.endpoint.jmx.JmxEndpointExporter;
 import org.springframework.boot.actuate.endpoint.jmx.annotation.JmxEndpointDiscoverer;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -42,6 +41,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -86,13 +86,9 @@ class JmxEndpointAutoConfigurationTests {
 			.withPropertyValues("spring.jmx.enabled=true", "management.endpoints.jmx.exposure.include=test")
 			.with(mockMBeanServer())
 			.withBean(EndpointObjectNameFactory.class, () -> factory)
-			.run((context) -> {
-				ArgumentCaptor<ExposableJmxEndpoint> argumentCaptor = ArgumentCaptor
-					.forClass(ExposableJmxEndpoint.class);
-				then(factory).should().getObjectName(argumentCaptor.capture());
-				ExposableJmxEndpoint jmxEndpoint = argumentCaptor.getValue();
-				assertThat(jmxEndpoint.getEndpointId().toLowerCaseString()).isEqualTo("test");
-			});
+			.run((context) -> then(factory).should()
+				.getObjectName(assertArg((jmxEndpoint) -> assertThat(jmxEndpoint.getEndpointId().toLowerCaseString())
+					.isEqualTo("test"))));
 	}
 
 	@Test

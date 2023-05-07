@@ -16,39 +16,39 @@
 
 package org.springframework.boot.docker.compose.lifecycle;
 
-import java.time.Duration;
 import java.util.function.BiConsumer;
 
 import org.springframework.boot.docker.compose.core.DockerCompose;
+import org.springframework.boot.logging.LogLevel;
 
 /**
- * Command used to shut down docker compose.
+ * Command used to start Docker Compose.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @since 3.1.0
  */
-public enum ShutdownCommand {
+public enum StartCommand {
 
 	/**
-	 * Shutdown using {@code docker compose down}.
+	 * Start using {@code docker compose up}.
 	 */
-	DOWN(DockerCompose::down),
+	UP(DockerCompose::up),
 
 	/**
-	 * Shutdown using {@code docker compose stop}.
+	 * Start using {@code docker compose start}.
 	 */
-	STOP(DockerCompose::stop);
+	START(DockerCompose::start);
 
-	private final BiConsumer<DockerCompose, Duration> action;
+	private final BiConsumer<DockerCompose, LogLevel> action;
 
-	ShutdownCommand(BiConsumer<DockerCompose, Duration> action) {
+	StartCommand(BiConsumer<DockerCompose, LogLevel> action) {
 		this.action = action;
 	}
 
-	void applyTo(DockerCompose dockerCompose, Duration timeout) {
-		this.action.accept(dockerCompose, timeout);
+	void applyTo(DockerCompose dockerCompose, LogLevel logLevel) {
+		this.action.accept(dockerCompose, logLevel);
 	}
 
 }

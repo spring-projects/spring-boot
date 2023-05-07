@@ -50,7 +50,7 @@ class DockerComposeListener implements ApplicationListener<ApplicationPreparedEv
 		Binder binder = Binder.get(applicationContext.getEnvironment());
 		DockerComposeProperties properties = DockerComposeProperties.get(binder);
 		Set<ApplicationListener<?>> eventListeners = event.getSpringApplication().getListeners();
-		createDockerComposeLifecycleManager(applicationContext, binder, properties, eventListeners).startup();
+		createDockerComposeLifecycleManager(applicationContext, binder, properties, eventListeners).start();
 	}
 
 	protected DockerComposeLifecycleManager createDockerComposeLifecycleManager(

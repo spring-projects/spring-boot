@@ -20,6 +20,7 @@ import java.time.Duration;
 
 import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactoryOptions;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.OS;
 
@@ -51,12 +52,14 @@ class OracleR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests extends A
 		assertThat(connectionFactoryOptions.toString()).contains("database=xepdb1", "driver=oracle",
 				"password=REDACTED", "user=system");
 		assertThat(connectionFactoryOptions.getRequiredValue(ConnectionFactoryOptions.PASSWORD)).isEqualTo("secret");
-		Object result = DatabaseClient.create(ConnectionFactories.get(connectionFactoryOptions))
-			.sql(DatabaseDriver.ORACLE.getValidationQuery())
-			.map((row, metadata) -> row.get(0))
-			.first()
-			.block(Duration.ofSeconds(30));
-		assertThat(result).isEqualTo("Hello");
+		Awaitility.await().atMost(Duration.ofMinutes(1)).ignoreExceptions().untilAsserted(() -> {
+			Object result = DatabaseClient.create(ConnectionFactories.get(connectionFactoryOptions))
+				.sql(DatabaseDriver.ORACLE.getValidationQuery())
+				.map((row, metadata) -> row.get(0))
+				.first()
+				.block(Duration.ofSeconds(30));
+			assertThat(result).isEqualTo("Hello");
+		});
 	}
 
 }

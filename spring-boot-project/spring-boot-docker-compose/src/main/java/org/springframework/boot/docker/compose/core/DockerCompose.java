@@ -33,35 +33,35 @@ import org.springframework.boot.logging.LogLevel;
 public interface DockerCompose {
 
 	/**
-	 * Timeout duration used to request a forced shutdown.
+	 * Timeout duration used to request a forced stop.
 	 */
-	Duration FORCE_SHUTDOWN = Duration.ZERO;
+	Duration FORCE_STOP = Duration.ZERO;
 
 	/**
-	 * Run {@code docker compose up} to startup services. Waits until all contains are
-	 * started and healthy.
+	 * Run {@code docker compose up} to create and start services. Waits until all
+	 * contains are started and healthy.
 	 * @param logLevel the log level used to report progress
 	 */
 	void up(LogLevel logLevel);
 
 	/**
-	 * Run {@code docker compose down} to shut down any running services.
-	 * @param timeout the amount of time to wait or {@link #FORCE_SHUTDOWN} to shut down
-	 * without waiting.
+	 * Run {@code docker compose down} to stop and remove any running services.
+	 * @param timeout the amount of time to wait or {@link #FORCE_STOP} to stop without
+	 * waiting.
 	 */
 	void down(Duration timeout);
 
 	/**
-	 * Run {@code docker compose start} to startup services. Waits until all contains are
+	 * Run {@code docker compose start} to start services. Waits until all containers are
 	 * started and healthy.
 	 * @param logLevel the log level used to report progress
 	 */
 	void start(LogLevel logLevel);
 
 	/**
-	 * Run {@code docker compose stop} to shut down any running services.
-	 * @param timeout the amount of time to wait or {@link #FORCE_SHUTDOWN} to shut down
-	 * without waiting.
+	 * Run {@code docker compose stop} to stop any running services.
+	 * @param timeout the amount of time to wait or {@link #FORCE_STOP} to stop without
+	 * waiting.
 	 */
 	void stop(Duration timeout);
 

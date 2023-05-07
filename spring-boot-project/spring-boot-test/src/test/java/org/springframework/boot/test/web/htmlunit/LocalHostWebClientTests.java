@@ -22,12 +22,9 @@ import java.net.URL;
 import com.gargoylesoftware.htmlunit.StringWebResponse;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebConnection;
-import com.gargoylesoftware.htmlunit.WebRequest;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.mock.env.MockEnvironment;
@@ -35,6 +32,7 @@ import org.springframework.mock.env.MockEnvironment;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.assertArg;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
@@ -47,9 +45,6 @@ import static org.mockito.Mockito.mock;
 @SuppressWarnings("resource")
 @ExtendWith(MockitoExtension.class)
 class LocalHostWebClientTests {
-
-	@Captor
-	private ArgumentCaptor<WebRequest> requestCaptor;
 
 	@Test
 	void createWhenEnvironmentIsNullWillThrowException() {
@@ -64,8 +59,9 @@ class LocalHostWebClientTests {
 		WebConnection connection = mockConnection();
 		client.setWebConnection(connection);
 		client.getPage("/test");
-		then(connection).should().getResponse(this.requestCaptor.capture());
-		assertThat(this.requestCaptor.getValue().getUrl()).isEqualTo(new URL("http://localhost:8080/test"));
+		URL expectedUrl = new URL("http://localhost:8080/test");
+		then(connection).should()
+			.getResponse(assertArg((request) -> assertThat(request.getUrl()).isEqualTo(expectedUrl)));
 	}
 
 	@Test
@@ -76,8 +72,9 @@ class LocalHostWebClientTests {
 		WebConnection connection = mockConnection();
 		client.setWebConnection(connection);
 		client.getPage("/test");
-		then(connection).should().getResponse(this.requestCaptor.capture());
-		assertThat(this.requestCaptor.getValue().getUrl()).isEqualTo(new URL("http://localhost:8181/test"));
+		URL expectedUrl = new URL("http://localhost:8181/test");
+		then(connection).should()
+			.getResponse(assertArg((request) -> assertThat(request.getUrl()).isEqualTo(expectedUrl)));
 	}
 
 	private WebConnection mockConnection() throws IOException {
