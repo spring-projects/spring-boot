@@ -17,6 +17,7 @@
 package smoketest.oauth2.server;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -31,6 +32,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
@@ -116,6 +118,51 @@ class SampleOAuth2AuthorizationServerApplicationTests {
 		assertThat(tokenResponse.get(OAuth2ParameterNames.SCOPE)).isEqualTo("message.read message.write");
 		assertThat(tokenResponse.get(OAuth2ParameterNames.TOKEN_TYPE))
 			.isEqualTo(OAuth2AccessToken.TokenType.BEARER.getValue());
+	}
+
+	@Test
+	void anonymousTokenRequestShouldReturnUnauthorized() {
+		HttpHeaders headers = new HttpHeaders();
+		HttpEntity<Object> request = new HttpEntity<>(headers);
+		String requestUri = UriComponentsBuilder.fromUriString("/token")
+			.queryParam(OAuth2ParameterNames.CLIENT_ID, "messaging-client")
+			.queryParam(OAuth2ParameterNames.GRANT_TYPE, AuthorizationGrantType.CLIENT_CREDENTIALS.getValue())
+			.queryParam(OAuth2ParameterNames.SCOPE, "message.read+message.write")
+			.toUriString();
+		ResponseEntity<Map<String, Object>> entity = this.restTemplate.exchange(requestUri, HttpMethod.POST, request,
+				MAP_TYPE_REFERENCE);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+	}
+
+	@Test
+	void anonymousTokenRequestWithAcceptHeaderAllShouldReturnUnauthorized() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(List.of(MediaType.ALL));
+		HttpEntity<Object> request = new HttpEntity<>(headers);
+		String requestUri = UriComponentsBuilder.fromUriString("/token")
+			.queryParam(OAuth2ParameterNames.CLIENT_ID, "messaging-client")
+			.queryParam(OAuth2ParameterNames.GRANT_TYPE, AuthorizationGrantType.CLIENT_CREDENTIALS.getValue())
+			.queryParam(OAuth2ParameterNames.SCOPE, "message.read+message.write")
+			.toUriString();
+		ResponseEntity<Map<String, Object>> entity = this.restTemplate.exchange(requestUri, HttpMethod.POST, request,
+				MAP_TYPE_REFERENCE);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+	}
+
+	@Test
+	void anonymousTokenRequestWithAcceptHeaderTextHtmlShouldRedirectToLogin() {
+		HttpHeaders headers = new HttpHeaders();
+		headers.setAccept(List.of(MediaType.TEXT_HTML));
+		HttpEntity<Object> request = new HttpEntity<>(headers);
+		String requestUri = UriComponentsBuilder.fromUriString("/token")
+			.queryParam(OAuth2ParameterNames.CLIENT_ID, "messaging-client")
+			.queryParam(OAuth2ParameterNames.GRANT_TYPE, AuthorizationGrantType.CLIENT_CREDENTIALS.getValue())
+			.queryParam(OAuth2ParameterNames.SCOPE, "message.read+message.write")
+			.toUriString();
+		ResponseEntity<Map<String, Object>> entity = this.restTemplate.exchange(requestUri, HttpMethod.POST, request,
+				MAP_TYPE_REFERENCE);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+		assertThat(entity.getHeaders().getLocation()).isEqualTo(URI.create("http://localhost:" + this.port + "/login"));
 	}
 
 }
