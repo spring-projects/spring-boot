@@ -223,13 +223,10 @@ Again, the same properties are applicable for both servlet and reactive applicat
 
 Alternatively, you can define your own `OpaqueTokenIntrospector` bean for servlet applications or a `ReactiveOpaqueTokenIntrospector` for reactive applications.
 
-
-=== Audience Validation Support in OAuth2 Resource Server
-
 The OAuth2 resource server now supports validating audience (aud) claims in JSON Web Tokens (JWTs) issued by an authorization server. 
 This feature is added to complement the existing validation of issuer (iss) claims.
 
-To enable audience validation, set the spring.security.oauth2.resourceserver.jwt.audience property in your Spring Boot application 
+To enable audience validation, set the `spring.security.oauth2.resourceserver.jwt.audience` property in your Spring Boot application 
 configuration file. This property specifies the expected value(s) of the aud claim in JWTs.
 
 For example, to expect the JWTs to contain an aud claim with the value my-audience, you can add the following line to your 
@@ -238,23 +235,12 @@ application.properties file:
 [source,properties]
 	spring.security.oauth2.resourceserver.jwt.audience=my-audience
 
-When the resource server receives a JWT, it will now validate that the aud claim is present and contains the expected value(s).
-If the validation fails, the request will be rejected with an HTTP 401 Unauthorized response.
+The configuration property should be referenced using the configprop: syntax:
 
-The following code changes have been made to add audience validation support:
-
-[source,java]
-	JwtClaimValidator<List<String>> validator = new JwtClaimValidator<List<String>>(JwtClaimNames.AUD,
-	(aud) -> aud != null && aud.contains(audience));
-	validators.add(validator);
-	nimbusrJwtDecoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(validators));
-
-These changes add a new JwtClaimValidator that checks the aud claim of the JWT against the expected audience value(s). 
-If the aud claim is present and contains any of the expected values, the validation succeeds. Otherwise, it fails.
-
-In summary, the addition of audience validation support allows OAuth2 resource server to verify that the JWTs it receives 
-were intended for consumption by itself or its specified audience.
-
+[source,properties]
+	configprop:spring.security.oauth2.resourceserver.jwt.audiences[]
+	
+This will ensure that it's a valid configuration property.
 
 [[web.security.oauth2.authorization-server]]
 ==== Authorization Server
