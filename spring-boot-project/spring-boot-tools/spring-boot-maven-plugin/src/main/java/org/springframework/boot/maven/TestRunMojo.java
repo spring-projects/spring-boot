@@ -33,13 +33,9 @@ import org.springframework.boot.loader.tools.RunProcess;
 
 /**
  * Run an application in place using the test runtime classpath. The main class that will
- * be used to launch the application is determined as follows:
- *
- * <ol>
- * <li>The configured main class, if any</li>
- * <li>The main class found in the test classes directory, if any</li>
- * <li>The main class found in the classes directory, if any</li>
- * </ol>
+ * be used to launch the application is determined as follows: The configured main class,
+ * if any. Then the main class found in the test classes directory, if any. Then the main
+ * class found in the classes directory, if any.
  *
  * @author Phillip Webb
  * @author Dmytro Nosan
