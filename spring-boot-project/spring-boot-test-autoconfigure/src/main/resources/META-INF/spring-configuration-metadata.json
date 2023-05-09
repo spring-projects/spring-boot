@@ -11,6 +11,12 @@
       "type": "org.springframework.boot.test.autoconfigure.web.servlet.MockMvcPrint",
       "description": "MVC Print option.",
       "defaultValue": "default"
+    },
+    {
+      "name": "spring.test.observability.auto-configure",
+      "type": "java.lang.Boolean",
+      "description": "Whether observability should be auto-configured in tests.",
+      "defaultValue": "false"
     }
   ]
 }

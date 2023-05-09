@@ -29,6 +29,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.ContextCustomizer;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -135,10 +136,66 @@ class ObservabilityContextCustomizerFactoryTests {
 	}
 
 	@Test
-	void hashCodeAndEquals() {
+	void notEquals() {
 		ContextCustomizer customizer1 = createContextCustomizer(OnlyMetrics.class);
 		ContextCustomizer customizer2 = createContextCustomizer(OnlyTracing.class);
 		assertThat(customizer1).isNotEqualTo(customizer2);
+	}
+
+	@Test
+	void equals() {
+		ContextCustomizer customizer1 = createContextCustomizer(OnlyMetrics.class);
+		ContextCustomizer customizer2 = createContextCustomizer(OnlyMetrics.class);
+		assertThat(customizer1).isEqualTo(customizer2);
+		assertThat(customizer1).hasSameHashCodeAs(customizer2);
+	}
+
+	@Test
+	void metricsAndTracingCanBeEnabledViaProperty() {
+		ContextCustomizer customizer = createContextCustomizer(NoAnnotation.class);
+		ConfigurableApplicationContext context = new GenericApplicationContext();
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.test.observability.auto-configure", "true");
+		context.setEnvironment(environment);
+		applyCustomizerToContext(customizer, context);
+		assertThatMetricsAreEnabled(context);
+		assertThatTracingIsEnabled(context);
+	}
+
+	@Test
+	void metricsAndTracingCanBeDisabledViaProperty() {
+		ContextCustomizer customizer = createContextCustomizer(NoAnnotation.class);
+		ConfigurableApplicationContext context = new GenericApplicationContext();
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.test.observability.auto-configure", "false");
+		context.setEnvironment(environment);
+		applyCustomizerToContext(customizer, context);
+		assertThatMetricsAreDisabled(context);
+		assertThatTracingIsDisabled(context);
+	}
+
+	@Test
+	void annotationTakesPrecedenceOverDisabledProperty() {
+		ContextCustomizer customizer = createContextCustomizer(WithAnnotation.class);
+		ConfigurableApplicationContext context = new GenericApplicationContext();
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.test.observability.auto-configure", "false");
+		context.setEnvironment(environment);
+		applyCustomizerToContext(customizer, context);
+		assertThatMetricsAreEnabled(context);
+		assertThatTracingIsEnabled(context);
+	}
+
+	@Test
+	void annotationTakesPrecedenceOverEnabledProperty() {
+		ContextCustomizer customizer = createContextCustomizer(WithDisabledAnnotation.class);
+		ConfigurableApplicationContext context = new GenericApplicationContext();
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.test.observability.auto-configure", "true");
+		context.setEnvironment(environment);
+		applyCustomizerToContext(customizer, context);
+		assertThatMetricsAreDisabled(context);
+		assertThatTracingIsDisabled(context);
 	}
 
 	private void applyCustomizerToContext(ContextCustomizer customizer, ConfigurableApplicationContext context) {
@@ -191,6 +248,11 @@ class ObservabilityContextCustomizerFactoryTests {
 
 	@AutoConfigureObservability
 	static class WithAnnotation {
+
+	}
+
+	@AutoConfigureObservability(metrics = false, tracing = false)
+	static class WithDisabledAnnotation {
 
 	}
 
