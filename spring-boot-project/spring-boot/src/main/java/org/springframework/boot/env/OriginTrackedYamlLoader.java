@@ -67,6 +67,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		loaderOptions.setAllowDuplicateKeys(false);
 		loaderOptions.setMaxAliasesForCollections(Integer.MAX_VALUE);
 		loaderOptions.setAllowRecursiveKeys(true);
+		loaderOptions.setCodePointLimit(Integer.MAX_VALUE);
 		return createYaml(loaderOptions);
 	}
 

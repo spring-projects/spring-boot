@@ -182,6 +182,18 @@ class OriginTrackedYamlLoaderTests {
 		assertThat(loaded.get("some.anotherpath.config.key")).hasToString("value");
 	}
 
+	@Test
+	void canLoadFilesBiggerThan3Mb() {
+		StringBuilder yaml = new StringBuilder();
+		while (yaml.length() < 4_194_304) {
+			yaml.append("- some list entry\n");
+		}
+		Resource resource = new ByteArrayResource(yaml.toString().getBytes(StandardCharsets.UTF_8));
+		this.loader = new OriginTrackedYamlLoader(resource);
+		Map<String, Object> loaded = this.loader.load().get(0);
+		assertThat(loaded).isNotEmpty();
+	}
+
 	private OriginTrackedValue getValue(String name) {
 		if (this.result == null) {
 			this.result = this.loader.load();
