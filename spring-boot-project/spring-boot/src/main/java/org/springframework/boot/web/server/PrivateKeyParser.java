@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,11 @@ import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
@@ -41,6 +44,7 @@ import org.springframework.util.ResourceUtils;
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Moritz Halbritter
  */
 final class PrivateKeyParser {
 
@@ -61,9 +65,12 @@ final class PrivateKeyParser {
 	private static final List<PemParser> PEM_PARSERS;
 	static {
 		List<PemParser> parsers = new ArrayList<>();
-		parsers.add(new PemParser(PKCS1_HEADER, PKCS1_FOOTER, "RSA", PrivateKeyParser::createKeySpecForPkcs1));
-		parsers.add(new PemParser(EC_HEADER, EC_FOOTER, "EC", PrivateKeyParser::createKeySpecForEc));
-		parsers.add(new PemParser(PKCS8_HEADER, PKCS8_FOOTER, "RSA", PKCS8EncodedKeySpec::new));
+		parsers.add(new PemParser(PKCS1_HEADER, PKCS1_FOOTER, Collections.singleton("RSA"),
+				PrivateKeyParser::createKeySpecForPkcs1));
+		parsers.add(
+				new PemParser(EC_HEADER, EC_FOOTER, Collections.singleton("EC"), PrivateKeyParser::createKeySpecForEc));
+		parsers.add(
+				new PemParser(PKCS8_HEADER, PKCS8_FOOTER, Arrays.asList("RSA", "EC", "DSA"), PKCS8EncodedKeySpec::new));
 		PEM_PARSERS = Collections.unmodifiableList(parsers);
 	}
 
@@ -145,14 +152,14 @@ final class PrivateKeyParser {
 
 		private final Pattern pattern;
 
-		private final String algorithm;
+		private final Collection<String> algorithms;
 
 		private final Function<byte[], PKCS8EncodedKeySpec> keySpecFactory;
 
-		PemParser(String header, String footer, String algorithm,
+		PemParser(String header, String footer, Collection<String> algorithms,
 				Function<byte[], PKCS8EncodedKeySpec> keySpecFactory) {
 			this.pattern = Pattern.compile(header + BASE64_TEXT + footer, Pattern.CASE_INSENSITIVE);
-			this.algorithm = algorithm;
+			this.algorithms = algorithms;
 			this.keySpecFactory = keySpecFactory;
 		}
 
@@ -169,8 +176,15 @@ final class PrivateKeyParser {
 		private PrivateKey parse(byte[] bytes) {
 			try {
 				PKCS8EncodedKeySpec keySpec = this.keySpecFactory.apply(bytes);
-				KeyFactory keyFactory = KeyFactory.getInstance(this.algorithm);
-				return keyFactory.generatePrivate(keySpec);
+				for (String algorithm : this.algorithms) {
+					KeyFactory keyFactory = KeyFactory.getInstance(algorithm);
+					try {
+						return keyFactory.generatePrivate(keySpec);
+					}
+					catch (InvalidKeySpecException ignored) {
+					}
+				}
+				return null;
 			}
 			catch (GeneralSecurityException ex) {
 				throw new IllegalArgumentException("Unexpected key format", ex);
