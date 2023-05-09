@@ -79,7 +79,8 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 	void transactionManagerWithExistingTransactionManagerIsNotOverridden() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 			.withBean("myTransactionManager", TransactionManager.class, () -> mock(TransactionManager.class))
-			.run((context) -> assertThat(context).hasSingleBean(TransactionManager.class)
+			.run((context) -> assertThat(context).hasSingleBean(DataSource.class)
+				.hasSingleBean(TransactionManager.class)
 				.hasBean("myTransactionManager"));
 	}
 
