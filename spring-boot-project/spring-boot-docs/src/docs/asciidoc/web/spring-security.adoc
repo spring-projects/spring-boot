@@ -229,18 +229,13 @@ This feature is added to complement the existing validation of issuer (iss) clai
 To enable audience validation, set the `spring.security.oauth2.resourceserver.jwt.audience` property in your Spring Boot application 
 configuration file. This property specifies the expected value(s) of the aud claim in JWTs.
 
-For example, to expect the JWTs to contain an aud claim with the value my-audience, you can add the following line to your 
+For example, to expect the JWTs to contain an aud claim with the value `my-audience`, you can add the following line to your 
 application.properties file:
 
-[source,properties]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
 	spring.security.oauth2.resourceserver.jwt.audience=my-audience
-
-The configuration property should be referenced using the configprop: syntax:
-
-[source,properties]
-	configprop:spring.security.oauth2.resourceserver.jwt.audiences[]
-	
-This will ensure that it's a valid configuration property.
+----
 
 [[web.security.oauth2.authorization-server]]
 ==== Authorization Server
