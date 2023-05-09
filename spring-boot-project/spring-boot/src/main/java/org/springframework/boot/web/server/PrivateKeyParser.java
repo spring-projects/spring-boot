@@ -27,8 +27,8 @@ import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -70,8 +70,8 @@ final class PrivateKeyParser {
 				PrivateKeyParser::createKeySpecForPkcs1));
 		parsers.add(
 				new PemParser(EC_HEADER, EC_FOOTER, Collections.singleton("EC"), PrivateKeyParser::createKeySpecForEc));
-		parsers.add(
-				new PemParser(PKCS8_HEADER, PKCS8_FOOTER, Arrays.asList("RSA", "EC", "DSA"), PKCS8EncodedKeySpec::new));
+		parsers.add(new PemParser(PKCS8_HEADER, PKCS8_FOOTER, Arrays.asList("RSA", "EC", "DSA", "Ed25519"),
+				PKCS8EncodedKeySpec::new));
 		PEM_PARSERS = Collections.unmodifiableList(parsers);
 	}
 

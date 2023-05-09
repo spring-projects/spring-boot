@@ -60,6 +60,14 @@ class PrivateKeyParserTests {
 	}
 
 	@Test
+	void parsePkcs8Ed25519KeyFile() {
+		PrivateKey privateKey = PrivateKeyParser.parse("classpath:ssl/pkcs8/key-ec-ed25519.pem");
+		assertThat(privateKey).isNotNull();
+		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
+		assertThat(privateKey.getAlgorithm()).isEqualTo("EdDSA");
+	}
+
+	@Test
 	void parsePkcs8KeyFileWithEcdsa() {
 		PrivateKey privateKey = PrivateKeyParser.parse("classpath:test-ec-key.pem");
 		assertThat(privateKey).isNotNull();
