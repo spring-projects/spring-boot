@@ -34,7 +34,7 @@ import org.springframework.security.oauth2.server.authorization.settings.OAuth2T
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 
 /**
- * Maps {@OAuth2AuthorizationServerProperties} to Authorization Server types.
+ * Maps {@link OAuth2AuthorizationServerProperties} to Authorization Server types.
  *
  * @author Steve Riesenberg
  */
