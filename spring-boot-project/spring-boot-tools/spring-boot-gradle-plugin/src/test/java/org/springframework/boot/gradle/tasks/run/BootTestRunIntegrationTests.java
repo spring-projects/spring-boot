@@ -113,7 +113,7 @@ class BootTestRunIntegrationTests {
 		else {
 			assertThat(result.getOutput())
 				.contains("Main class name has not been configured and it could not be resolved from classpath "
-						+ "build/classes/java/test");
+						+ String.join(File.separator, "build", "classes", "java", "test"));
 		}
 	}
 
