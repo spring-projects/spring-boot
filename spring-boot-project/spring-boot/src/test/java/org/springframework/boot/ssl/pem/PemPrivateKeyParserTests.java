@@ -21,6 +21,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.PrivateKey;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.core.io.ClassPathResource;
 
@@ -31,15 +33,42 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * Tests for {@link PemPrivateKeyParser}.
  *
  * @author Scott Frederick
+ * @author Moritz Halbritter
  */
 class PemPrivateKeyParserTests {
 
 	@Test
-	void parsePkcs8KeyFile() throws Exception {
-		PrivateKey privateKey = PemPrivateKeyParser.parse(read("test-key.pem"));
+	void parsePkcs8RsaKeyFile() throws Exception {
+		PrivateKey privateKey = PemPrivateKeyParser.parse(read("ssl/pkcs8/key-rsa.pem"));
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
 		assertThat(privateKey.getAlgorithm()).isEqualTo("RSA");
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = { "key-ec-nist-p256.pem", "key-ec-nist-p384.pem", "key-ec-prime256v1.pem",
+			"key-ec-secp256r1.pem" })
+	void parsePkcs8EcKeyFile(String fileName) throws Exception {
+		PrivateKey privateKey = PemPrivateKeyParser.parse(read("ssl/pkcs8/" + fileName));
+		assertThat(privateKey).isNotNull();
+		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
+		assertThat(privateKey.getAlgorithm()).isEqualTo("EC");
+	}
+
+	@Test
+	void parsePkcs8DsaKeyFile() throws Exception {
+		PrivateKey privateKey = PemPrivateKeyParser.parse(read("ssl/pkcs8/key-dsa.pem"));
+		assertThat(privateKey).isNotNull();
+		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
+		assertThat(privateKey.getAlgorithm()).isEqualTo("DSA");
+	}
+
+	@Test
+	void parsePkcs8Ed25519KeyFile() throws Exception {
+		PrivateKey privateKey = PemPrivateKeyParser.parse(read("ssl/pkcs8/key-ec-ed25519.pem"));
+		assertThat(privateKey).isNotNull();
+		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
+		assertThat(privateKey.getAlgorithm()).isEqualTo("EdDSA");
 	}
 
 	@Test
