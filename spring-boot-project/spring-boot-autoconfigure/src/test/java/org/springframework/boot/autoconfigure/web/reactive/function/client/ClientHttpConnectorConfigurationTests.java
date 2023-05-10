@@ -24,8 +24,10 @@ import org.eclipse.jetty.util.thread.Scheduler;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.client.reactive.HttpComponentsClientHttpConnector;
 import org.springframework.http.client.reactive.JettyClientHttpConnector;
 import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -38,6 +40,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Brian Clozel
+ * @author Moritz Halbritter
  */
 class ClientHttpConnectorConfigurationTests {
 
@@ -81,6 +84,14 @@ class ClientHttpConnectorConfigurationTests {
 				context.getBean("reactorClientHttpConnector");
 				assertThat(CustomHttpClientMapper.called).isTrue();
 			});
+	}
+
+	@Test
+	void shouldNotConfigureReactiveHttpClient5WhenHttpCore5ReactiveJarIsMissing() {
+		new ReactiveWebApplicationContextRunner()
+			.withClassLoader(new FilteredClassLoader("org.apache.hc.core5.reactive"))
+			.withConfiguration(AutoConfigurations.of(ClientHttpConnectorConfiguration.HttpClient5.class))
+			.run((context) -> assertThat(context).doesNotHaveBean(HttpComponentsClientHttpConnector.class));
 	}
 
 	static class CustomHttpClientMapper {

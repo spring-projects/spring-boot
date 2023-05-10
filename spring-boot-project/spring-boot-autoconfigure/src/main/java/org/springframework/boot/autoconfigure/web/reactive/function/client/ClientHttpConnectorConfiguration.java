@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
 import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
 import org.apache.hc.core5.http.nio.AsyncRequestProducer;
+import org.apache.hc.core5.reactive.ReactiveResponseConsumer;
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
@@ -87,7 +88,7 @@ class ClientHttpConnectorConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ HttpAsyncClients.class, AsyncRequestProducer.class })
+	@ConditionalOnClass({ HttpAsyncClients.class, AsyncRequestProducer.class, ReactiveResponseConsumer.class })
 	@ConditionalOnMissingBean(ClientHttpConnector.class)
 	static class HttpClient5 {
 

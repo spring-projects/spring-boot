@@ -73,6 +73,7 @@ dependencies {
 		exclude group: "commons-logging", module: "commons-logging"
 	}
 	optional("org.apache.httpcomponents.client5:httpclient5")
+	optional("org.apache.httpcomponents.core5:httpcore5-reactive")
 	optional("org.apache.kafka:kafka-streams")
 	optional("org.apache.solr:solr-solrj") {
 		exclude group: "org.slf4j", module: "jcl-over-slf4j"
