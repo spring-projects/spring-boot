@@ -97,6 +97,10 @@ public abstract class AbstractAotMojo extends AbstractDependencyFilterMojo {
 
 	@Override
 	public void execute() throws MojoExecutionException, MojoFailureException {
+		if (this.project.getPackaging().equals("pom")) {
+			getLog().debug("process-*aot goals could not be applied to pom project.");
+			return;
+		}
 		if (this.skip) {
 			getLog().debug("Skipping AOT execution as per configuration");
 			return;
