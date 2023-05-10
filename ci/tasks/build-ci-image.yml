@@ -5,10 +5,8 @@ image_resource:
   source:
     repository: concourse/oci-build-task
     tag: 0.10.0
-    registry_mirror:
-      host: ((docker-hub-mirror))
-      username: ((docker-hub-mirror-username))
-      password: ((docker-hub-mirror-password))
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
 inputs:
 - name: ci-images-git-repo
 outputs:

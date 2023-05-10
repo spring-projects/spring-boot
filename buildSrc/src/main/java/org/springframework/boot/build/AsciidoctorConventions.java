@@ -30,7 +30,7 @@ import org.gradle.api.Project;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.Sync;
 
-import org.springframework.boot.build.artifactory.ArtifactoryRepository;
+import org.springframework.boot.build.artifacts.ArtifactRelease;
 import org.springframework.util.StringUtils;
 
 /**
@@ -66,6 +66,7 @@ import org.springframework.util.StringUtils;
  * </ul>
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 class AsciidoctorConventions {
 
@@ -128,10 +129,12 @@ class AsciidoctorConventions {
 	}
 
 	private void configureCommonAttributes(Project project, AbstractAsciidoctorTask asciidoctorTask) {
+		ArtifactRelease artifacts = ArtifactRelease.forProject(project);
 		Map<String, Object> attributes = new HashMap<>();
 		attributes.put("attribute-missing", "warn");
 		attributes.put("github-tag", determineGitHubTag(project));
-		attributes.put("spring-boot-artifactory-repo", ArtifactoryRepository.forProject(project));
+		attributes.put("artifact-release-type", artifacts.getType());
+		attributes.put("artifact-download-repo", artifacts.getDownloadRepo());
 		attributes.put("revnumber", null);
 		asciidoctorTask.attributes(attributes);
 	}

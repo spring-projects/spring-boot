@@ -11,7 +11,7 @@
 :docinfo: shared,private
 :attribute-missing: warn
 :chomp: default headers packages
-:spring-boot-artifactory-repo: snapshot
+:artifact-release-type: snapshot
 :github-tag: main
 :spring-boot-version: current
 :github-repo: spring-projects/spring-boot
