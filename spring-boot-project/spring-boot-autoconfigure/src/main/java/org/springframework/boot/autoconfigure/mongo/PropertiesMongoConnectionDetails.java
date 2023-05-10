@@ -66,7 +66,7 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 			}
 			if (this.properties.getReplicaSetName() != null) {
 				builder.append("?");
-				builder.append("repliceSet=");
+				builder.append("replicaSet=");
 				builder.append(this.properties.getReplicaSetName());
 			}
 		}
