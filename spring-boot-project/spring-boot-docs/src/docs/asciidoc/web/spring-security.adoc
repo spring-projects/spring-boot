@@ -226,12 +226,21 @@ Alternatively, you can define your own `OpaqueTokenIntrospector` bean for servle
 To enable audience validation, set the `spring.security.oauth2.resourceserver.jwt.audiences` property in your Spring Boot application 
 configuration file. This property specifies the expected value(s) of the aud claim in JWTs.
 
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  security:
+	    oauth2:
+	      resourceserver:
+	        jwt:
+	          audiences[]
+----
+
 For example, to expect the JWTs to contain an aud claim with the value `my-audience`, you can add the following line to your 
 application.properties file:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
-configprop:spring.security.oauth2.resourceserver.jwt.audiences[]
 	spring:
 	  security:
 	    oauth2:
