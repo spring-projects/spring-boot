@@ -103,6 +103,8 @@ abstract class ConnectionFactoryConfigurations {
 				map.from(pool.getMaxSize()).to(builder::maxSize);
 				map.from(pool.getValidationQuery()).whenHasText().to(builder::validationQuery);
 				map.from(pool.getValidationDepth()).to(builder::validationDepth);
+				map.from(pool.getMinIdle()).to(builder::minIdle);
+				map.from(pool.getMaxValidationTime()).to(builder::maxValidationTime);
 				return new ConnectionPool(builder.build());
 			}
 
