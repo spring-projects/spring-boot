@@ -209,7 +209,7 @@ bom {
 			]
 		}
 	}
-	library("Couchbase Client", "3.4.5") {
+	library("Couchbase Client", "3.4.6") {
 		group("com.couchbase.client") {
 			modules = [
 				"java-client"
@@ -327,7 +327,7 @@ bom {
 			]
 		}
 	}
-	library("Groovy", "4.0.11") {
+	library("Groovy", "4.0.12") {
 		group("org.apache.groovy") {
 			imports = [
 				"groovy-bom"
@@ -972,7 +972,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.11.0-SNAPSHOT") {
+	library("Micrometer", "1.11.0") {
 		group("io.micrometer") {
 			modules = [
 				"micrometer-registry-stackdriver" {
@@ -984,7 +984,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer Tracing", "1.1.0-SNAPSHOT") {
+	library("Micrometer Tracing", "1.1.0") {
 		group("io.micrometer") {
 			imports = [
 				"micrometer-tracing-bom"
@@ -1044,7 +1044,7 @@ bom {
 			]
 		}
 	}
-	library("Neo4j Java Driver", "5.7.0") {
+	library("Neo4j Java Driver", "5.8.0") {
 		group("org.neo4j.driver") {
 			modules = [
 				"neo4j-java-driver"
@@ -1202,7 +1202,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "2022.0.6") {
+	library("Reactor Bom", "2022.0.7") {
 		group("io.projectreactor") {
 			imports = [
 				"reactor-bom"
@@ -1400,7 +1400,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Batch", "5.0.1") {
+	library("Spring Batch", "5.0.2-SNAPSHOT") {
 		group("org.springframework.batch") {
 			imports = [
 				"spring-batch-bom"
@@ -1443,7 +1443,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Kafka", "3.0.6") {
+	library("Spring Kafka", "3.0.7-SNAPSHOT") {
 		group("org.springframework.kafka") {
 			modules = [
 				"spring-kafka",
@@ -1493,7 +1493,7 @@ bom {
 			]
 		}
 	}
-	library("Spring WS", "4.0.3") {
+	library("Spring WS", "4.0.4-SNAPSHOT") {
 		group("org.springframework.ws") {
 			imports = [
 				"spring-ws-bom"

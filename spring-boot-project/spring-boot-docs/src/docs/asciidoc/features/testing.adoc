@@ -1048,8 +1048,7 @@ include::code:test/TestMyApplication[]
 
 You can now launch `TestMyApplication` as you would any regular Java `main` method application to start your application and the containers that it needs to run.
 
-
-
+TIP: You can use the Maven goal `spring-boot:test-run` or the Gradle task `bootTestRun` to do this from the command line.
 
 [[features.testing.testcontainers.at-development-time.dynamic-properties]]
 ===== Contributing Dynamic Properties at Development Time
@@ -1084,6 +1083,17 @@ TIP: You can use the `@ServiceConnection` annotation on `Container` fields to es
 You can also add <<features#features.testing.testcontainers.dynamic-properties,`@DynamicPropertySource` annotated methods>> to your declaration class.
 
 
+[[features.testing.testcontainers.at-development-time.devtools]]
+===== Using DevTools with Testcontainers at Development Time
+
+When using devtools, you can annotate beans and bean methods with `@RestartScope`.
+Such beans won't be recreated when the devtools restart the application.
+This is especially useful for Testcontainer `Container` beans, as they keep their state despite the application restart.
+
+include::code:MyContainersConfiguration[]
+
+WARNING: If you're using Gradle and want to use this feature, you need to change the configuration of the `spring-boot-devtools` dependency from `developmentOnly` to `testImplementation`.
+With the default scope of `developmentOnly`, the `bootTestRun` task will not pick up changes in your code, as the devtools are not active.
 
 [[features.testing.utilities]]
 === Test Utilities

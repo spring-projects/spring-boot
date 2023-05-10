@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.springframework.boot.docs.features.testing.testcontainers.atdevelopmenttime.devtools
 
-package org.springframework.boot.docs.features.testing.testcontainers.atdevelopmenttime.importingcontainerdeclarations;
+import org.springframework.boot.devtools.restart.RestartScope
+import org.springframework.boot.test.context.TestConfiguration
+import org.springframework.context.annotation.Bean
+import org.testcontainers.containers.MongoDBContainer
 
-import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.containers.Neo4jContainer;
-import org.testcontainers.junit.jupiter.Container;
+@TestConfiguration(proxyBeanMethods = false)
+class MyContainersConfiguration {
 
-public interface MyContainers {
-
-	@Container
-	MongoDBContainer mongoContainer = new MongoDBContainer("mongo:5.0");
-
-	@Container
-	Neo4jContainer<?> neo4jContainer = new Neo4jContainer<>("neo4j:5");
+	@Bean
+	@RestartScope
+	fun monogDbContainer(): MongoDBContainer {
+		return MongoDBContainer("mongo:5.0")
+	}
 
 }
