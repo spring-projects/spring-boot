@@ -18,6 +18,7 @@ package org.springframework.boot.docker.compose.lifecycle;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -42,6 +43,7 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -54,6 +56,7 @@ import static org.mockito.Mockito.never;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class DockerComposeLifecycleManagerTests {
 
@@ -111,6 +114,24 @@ class DockerComposeLifecycleManagerTests {
 		this.lifecycleManager.start();
 		assertThat(listener.getEvent()).isNull();
 		then(this.dockerCompose).should(never()).hasDefinedServices();
+	}
+
+	@Test
+	void startWhenComposeFileNotFoundThrowsException() {
+		DockerComposeLifecycleManager manager = new DockerComposeLifecycleManager(new File("."),
+				this.applicationContext, null, this.shutdownHandlers, this.properties, this.eventListeners,
+				this.skipCheck, this.serviceReadinessChecks);
+		assertThatIllegalStateException().isThrownBy(manager::start)
+			.withMessageContaining(Paths.get(".").toAbsolutePath().toString());
+	}
+
+	@Test
+	void startWhenComposeFileNotFoundAndWorkingDirectoryNullThrowsException() {
+		DockerComposeLifecycleManager manager = new DockerComposeLifecycleManager(null, this.applicationContext, null,
+				this.shutdownHandlers, this.properties, this.eventListeners, this.skipCheck,
+				this.serviceReadinessChecks);
+		assertThatIllegalStateException().isThrownBy(manager::start)
+			.withMessageContaining(Paths.get(".").toAbsolutePath().toString());
 	}
 
 	@Test

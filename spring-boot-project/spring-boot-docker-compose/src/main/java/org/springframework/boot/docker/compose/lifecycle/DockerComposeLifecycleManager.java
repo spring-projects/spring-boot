@@ -43,6 +43,7 @@ import org.springframework.core.log.LogMessage;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  * @see DockerComposeListener
  */
 class DockerComposeLifecycleManager {
@@ -124,7 +125,12 @@ class DockerComposeLifecycleManager {
 	protected DockerComposeFile getComposeFile() {
 		DockerComposeFile composeFile = (this.properties.getFile() != null)
 				? DockerComposeFile.of(this.properties.getFile()) : DockerComposeFile.find(this.workingDirectory);
-		logger.info(LogMessage.format("Found Docker Compose file '%s'", composeFile));
+		if (composeFile == null) {
+			File dir = (this.workingDirectory != null) ? this.workingDirectory : new File(".");
+			throw new IllegalStateException("No Docker Compose file found in directory '%s'"
+				.formatted(dir.toPath().toAbsolutePath().toString()));
+		}
+		logger.info(LogMessage.format("Using Docker Compose file '%s'", composeFile));
 		return composeFile;
 	}
 
