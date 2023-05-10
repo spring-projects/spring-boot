@@ -1364,8 +1364,8 @@ public class SpringApplication {
 	 * writing a test harness that needs to start an application with additional
 	 * configuration.
 	 * @param main the main method entry point that runs the {@link SpringApplication}
-	 * @return an {@link SpringApplication.Augmented} instance that can be used to add
-	 * configuration and run the application.
+	 * @return a {@link SpringApplication.Augmented} instance that can be used to add
+	 * configuration and run the application
 	 * @since 3.1.0
 	 * @see #withHook(SpringApplicationHook, Runnable)
 	 */

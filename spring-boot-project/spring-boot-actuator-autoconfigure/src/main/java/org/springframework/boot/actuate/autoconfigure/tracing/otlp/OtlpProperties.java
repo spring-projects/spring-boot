@@ -45,7 +45,7 @@ public class OtlpProperties {
 	private Duration timeout = Duration.ofSeconds(10);
 
 	/**
-	 * The method used to compress the payload.
+	 * Method used to compress the payload.
 	 */
 	private Compression compression = Compression.NONE;
 

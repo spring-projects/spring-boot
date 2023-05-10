@@ -67,7 +67,7 @@ class OtlpAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	void httpSpanExporterShouldUseProtoBufAndNoCompressionByDefault() {
+	void httpSpanExporterShouldUseProtobufAndNoCompressionByDefault() {
 		this.mockWebServer.enqueue(new MockResponse());
 		this.contextRunner
 			.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:%d/v1/traces"
@@ -105,9 +105,9 @@ class OtlpAutoConfigurationIntegrationTests {
 				assertThat(request.getHeader("Content-Type")).isEqualTo("application/x-protobuf");
 				assertThat(request.getHeader("Content-Encoding")).isEqualTo("gzip");
 				assertThat(request.getBodySize()).isPositive();
-				try (Buffer unCompressed = new Buffer(); Buffer body = request.getBody()) {
-					unCompressed.writeAll(new GzipSource(body));
-					assertThat(unCompressed.readString(StandardCharsets.UTF_8)).contains("org.springframework.boot");
+				try (Buffer uncompressed = new Buffer(); Buffer body = request.getBody()) {
+					uncompressed.writeAll(new GzipSource(body));
+					assertThat(uncompressed.readString(StandardCharsets.UTF_8)).contains("org.springframework.boot");
 				}
 			});
 	}

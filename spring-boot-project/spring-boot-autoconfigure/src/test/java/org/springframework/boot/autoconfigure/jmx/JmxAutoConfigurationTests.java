@@ -97,7 +97,6 @@ class JmxAutoConfigurationTests {
 						"namingStrategy");
 				assertThat(naming).hasFieldOrPropertyWithValue("defaultDomain", "my-test-domain");
 				assertThat(naming).hasFieldOrPropertyWithValue("ensureUniqueRuntimeObjectNames", true);
-
 			});
 	}
 
