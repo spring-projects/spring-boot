@@ -3,11 +3,32 @@
 Docker Compose is a popular technology that can be used to define and manage multiple containers for services that your application needs.
 A `compose.yml` file is typically created next to your application which defines and configures service containers.
 
-A typical workflow with Docker Compose is to run `docker compose up`.
-Work on your application with it connecting to started services.
-Then run `docker compose down` when you are finished.
+A typical workflow with Docker Compose is to run `docker compose up`, work on your application with it connecting to started services, then run `docker compose down` when you are finished.
 
-To help with this workflow, the `spring-boot-docker-compose` module can be used. When this modules is included as a dependency Spring Boot will do the following:
+The `spring-boot-docker-compose` module can be included in a project to provide support for working with containers using Docker Compose.
+Add the module dependency to your build, as shown in the following listings for Maven and Gradle:
+
+.Maven
+[source,xml,indent=0,subs="verbatim"]
+----
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-docker-compose</artifactId>
+			<optional>true</optional>
+		</dependency>
+	</dependencies>
+----
+
+.Gradle
+[source,gradle,indent=0,subs="verbatim"]
+----
+	dependencies {
+		developmentOnly("org.springframework.boot:spring-boot-docker-compose")
+	}
+----
+
+When this module is included as a dependency Spring Boot will do the following:
 
 * Search for a `compose.yml` and other common compose filenames in your application directory
 * Call `docker compose up` with the discovered `compose.yml`
