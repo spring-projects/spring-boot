@@ -235,6 +235,14 @@ class BindableRuntimeHintsRegistrarTests {
 			.accepts(runtimeHints);
 	}
 
+	@Test
+	void registerHintsWhenHasPackagePrivateGettersAndSetters() {
+		RuntimeHints runtimeHints = registerHints(PackagePrivateGettersAndSetters.class);
+		assertThat(runtimeHints.reflection().typeHints()).singleElement()
+			.satisfies(javaBeanBinding(PackagePrivateGettersAndSetters.class, "getAlpha", "setAlpha", "getBravo",
+					"setBravo"));
+	}
+
 	private Consumer<TypeHint> javaBeanBinding(Class<?> type, String... expectedMethods) {
 		return javaBeanBinding(type, type.getDeclaredConstructors()[0], expectedMethods);
 	}
@@ -454,6 +462,30 @@ class BindableRuntimeHintsRegistrarTests {
 
 		static class Nested {
 
+		}
+
+	}
+
+	public static class PackagePrivateGettersAndSetters {
+
+		private String alpha;
+
+		private Map<String, String> bravo;
+
+		String getAlpha() {
+			return this.alpha;
+		}
+
+		void setAlpha(String alpha) {
+			this.alpha = alpha;
+		}
+
+		Map<String, String> getBravo() {
+			return this.bravo;
+		}
+
+		void setBravo(Map<String, String> bravo) {
+			this.bravo = bravo;
 		}
 
 	}

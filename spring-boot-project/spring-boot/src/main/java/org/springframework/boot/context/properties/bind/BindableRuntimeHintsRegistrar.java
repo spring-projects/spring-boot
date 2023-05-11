@@ -16,7 +16,6 @@
 
 package org.springframework.boot.context.properties.bind;
 
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -35,8 +34,9 @@ import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.ReflectionHints;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
-import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.context.properties.bind.JavaBeanBinder.BeanProperties;
+import org.springframework.boot.context.properties.bind.JavaBeanBinder.BeanProperty;
 import org.springframework.core.KotlinDetector;
 import org.springframework.core.KotlinReflectionParameterNameDiscoverer;
 import org.springframework.core.ParameterNameDiscoverer;
@@ -45,7 +45,6 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.StandardReflectionParameterNameDiscoverer;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.Assert;
-import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 
 /**
@@ -131,7 +130,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 
 		private final Constructor<?> bindConstructor;
 
-		private final PropertyDescriptor[] propertyDescriptors;
+		private final BeanProperties bean;
 
 		private final Set<Class<?>> seen;
 
@@ -145,7 +144,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 				Set<Class<?>> compiledWithoutParameters) {
 			this.type = type;
 			this.bindConstructor = BindConstructorProvider.DEFAULT.getBindConstructor(Bindable.of(type), nestedType);
-			this.propertyDescriptors = BeanUtils.getPropertyDescriptors(type);
+			this.bean = JavaBeanBinder.BeanProperties.of(Bindable.of(type));
 			this.seen = seen;
 			this.compiledWithoutParameters = compiledWithoutParameters;
 		}
@@ -159,7 +158,7 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 			if (this.bindConstructor != null) {
 				handleValueObjectProperties(hints);
 			}
-			else if (!ObjectUtils.isEmpty(this.propertyDescriptors)) {
+			else if (this.bean != null && !this.bean.getProperties().isEmpty()) {
 				handleJavaBeanProperties(hints);
 			}
 		}
@@ -201,33 +200,18 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		}
 
 		private void handleJavaBeanProperties(ReflectionHints hints) {
-			for (PropertyDescriptor propertyDescriptor : this.propertyDescriptors) {
-				Method writeMethod = propertyDescriptor.getWriteMethod();
-				if (writeMethod != null) {
-					hints.registerMethod(writeMethod, ExecutableMode.INVOKE);
+			Map<String, BeanProperty> properties = this.bean.getProperties();
+			properties.forEach((name, property) -> {
+				Method getter = property.getGetter();
+				if (getter != null) {
+					hints.registerMethod(getter, ExecutableMode.INVOKE);
 				}
-				Method readMethod = propertyDescriptor.getReadMethod();
-				if (readMethod != null) {
-					ResolvableType propertyType = ResolvableType.forMethodReturnType(readMethod, this.type);
-					String propertyName = propertyDescriptor.getName();
-					if (isSetterMandatory(propertyName, propertyType) && writeMethod == null) {
-						continue;
-					}
-					handleProperty(hints, propertyName, propertyType);
-					hints.registerMethod(readMethod, ExecutableMode.INVOKE);
+				Method setter = property.getSetter();
+				if (setter != null) {
+					hints.registerMethod(setter, ExecutableMode.INVOKE);
 				}
-			}
-		}
-
-		private boolean isSetterMandatory(String propertyName, ResolvableType propertyType) {
-			Class<?> propertyClass = propertyType.resolve();
-			if (propertyClass == null) {
-				return true;
-			}
-			if (isContainer(propertyType)) {
-				return false;
-			}
-			return !isNestedType(propertyName, propertyClass);
+				handleProperty(hints, name, property.getType());
+			});
 		}
 
 		private void handleProperty(ReflectionHints hints, String propertyName, ResolvableType propertyType) {
