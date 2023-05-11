@@ -91,8 +91,6 @@
     <requirement
         name="org.eclipse.wst.web_ui.feature.feature.group"/>
     <requirement
-        name="org.sonatype.m2e.buildhelper.feature.feature.group"/>
-    <requirement
         name="org.springframework.boot.ide.main.feature.feature.group"/>
     <requirement
         name="org.springframework.ide.eclipse.boot.dash.feature.feature.group"/>
@@ -105,7 +103,7 @@
     <repository
         url="https://repo.spring.io/javaformat-eclipse-update-site/"/>
     <repository
-        url="https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201405280027/"/>
+        url="https://repo.maven.apache.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201405280027/"/>
     <repository
         url="https://download.springsource.com/release/TOOLS/sts4/update/latest/"/>
     <repository
@@ -139,7 +137,7 @@
             pattern="spring-boot.*"/>
         <operand
             xsi:type="workingsets:ExclusionPredicate"
-            excludedWorkingSet="//@setupTasks.8/@workingSets[name='spring-boot-smoke-tests']"/>
+            excludedWorkingSet="//@setupTasks.8/@workingSets[name='spring-boot-smoke-tests'] //@setupTasks.8/@workingSets[name='spring-boot-starters'] //@setupTasks.8/@workingSets[name='spring-boot-tests'] //@setupTasks.8/@workingSets[name='spring-boot-tools']"/>
       </predicate>
     </workingSet>
     <workingSet

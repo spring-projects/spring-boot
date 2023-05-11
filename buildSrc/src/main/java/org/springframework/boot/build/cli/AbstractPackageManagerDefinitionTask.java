@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.InputFile;
@@ -31,13 +32,14 @@ import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskExecutionException;
 
-import org.springframework.boot.build.artifactory.ArtifactoryRepository;
+import org.springframework.boot.build.artifacts.ArtifactRelease;
 
 /**
  * Base class for generating a package manager definition file such as a Scoop manifest or
  * a Homebrew formula.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 public abstract class AbstractPackageManagerDefinitionTask extends DefaultTask {
 
@@ -84,12 +86,17 @@ public abstract class AbstractPackageManagerDefinitionTask extends DefaultTask {
 		getProject().copy((copy) -> {
 			copy.from(this.template);
 			copy.into(this.outputDir);
-			Map<String, Object> properties = new HashMap<>(additionalProperties);
-			properties.put("hash", sha256(this.archive.get().getAsFile()));
-			properties.put("repo", ArtifactoryRepository.forProject(getProject()));
-			properties.put("project", getProject());
-			copy.expand(properties);
+			copy.expand(getProperties(additionalProperties));
 		});
+	}
+
+	private Map<String, Object> getProperties(Map<String, Object> additionalProperties) {
+		Map<String, Object> properties = new HashMap<>(additionalProperties);
+		Project project = getProject();
+		properties.put("hash", sha256(this.archive.get().getAsFile()));
+		properties.put("repo", ArtifactRelease.forProject(project).getDownloadRepo());
+		properties.put("project", project);
+		return properties;
 	}
 
 	private String sha256(File file) {
