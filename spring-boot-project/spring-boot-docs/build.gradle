@@ -163,6 +163,8 @@ dependencies {
 	implementation("org.springframework.graphql:spring-graphql-test")
 	implementation("org.springframework.kafka:spring-kafka")
 	implementation("org.springframework.kafka:spring-kafka-test")
+	implementation("org.springframework.pulsar:spring-pulsar")
+	implementation("org.springframework.pulsar:spring-pulsar-reactive")
 	implementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 	implementation("org.springframework.restdocs:spring-restdocs-restassured")
 	implementation("org.springframework.restdocs:spring-restdocs-webtestclient")
@@ -336,6 +338,7 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					"spring-graphql-version": versionConstraints["org.springframework.graphql:spring-graphql"],
 					"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
 					"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
+					"spring-pulsar-version": versionConstraints["org.springframework.pulsar:spring-pulsar"],
 					"spring-security-version": securityVersion,
 					"spring-authorization-server-version": versionConstraints["org.springframework.security:spring-security-oauth2-authorization-server"],
 					"spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"],

@@ -1111,6 +1111,24 @@ bom {
 			]
 		}
 	}
+	library("Pulsar", "3.0.0") {
+		group("org.apache.pulsar") {
+			modules = [
+					"pulsar-client",
+					"pulsar-client-admin",
+					"pulsar-client-all"
+			]
+		}
+	}
+	library("Pulsar Reactive", "0.3.0") {
+		group("org.apache.pulsar") {
+			modules = [
+					"pulsar-client-reactive-adapter",
+					"pulsar-client-reactive-producer-cache-caffeine",
+					"pulsar-client-reactive-producer-cache-caffeine-shaded"
+			]
+		}
+	}
 	library("Quartz", "2.3.2") {
 		group("org.quartz-scheduler") {
 			modules = [
@@ -1441,6 +1459,14 @@ bom {
 				"spring-ldap-ldif-core",
 				"spring-ldap-odm",
 				"spring-ldap-test"
+			]
+		}
+	}
+	library("Spring Pulsar", "1.0.0-SNAPSHOT") {
+		group("org.springframework.pulsar") {
+			modules = [
+				"spring-pulsar",
+				"spring-pulsar-reactive"
 			]
 		}
 	}

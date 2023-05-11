@@ -1,0 +1,21 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Starter for using Spring for Apache Pulsar"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	api("org.springframework.pulsar:spring-pulsar")
+}
+
+checkRuntimeClasspathForConflicts {
+	// pulsar bouncycastle ext includes duplicate bouncycastle classes
+	ignore { name -> name.startsWith("org/bouncycastle/") }
+
+	// pulsar-client-all/pulsar-client-api/pulsar-client-admin-api/pulsar-package-core libs have common package name and include package-info
+	ignore { name -> name.matches("^org\\/apache\\/pulsar\\/.*\\/package-info.class\$") }
+
+	// pulsar-client-all/pulsar-client-api/pulsar-package-core libs all have a findbugsExclude.xml
+	ignore { name -> name.equals("findbugsExclude.xml") }
+}

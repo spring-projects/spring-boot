@@ -2004,6 +2004,64 @@
       "defaultValue": "bolt://localhost:7687"
     },
     {
+      "name": "spring.pulsar.consumer.dead-letter-policy.dead-letter-topic",
+      "type": "java.lang.String",
+      "description": "Name of the dead topic where the failing messages will be sent."
+    },
+    {
+      "name": "spring.pulsar.consumer.dead-letter-policy.initial-subscription-name",
+      "type": "java.lang.String",
+      "description": "Name of the initial subscription name of the dead letter topic - must be set for the initial subscription for the dead letter topic to be created."
+    },
+    {
+      "name": "spring.pulsar.consumer.dead-letter-policy.max-redeliver-count",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of times that a message will be redelivered before being sent to the dead letter queue."
+    },
+    {
+      "name": "spring.pulsar.consumer.dead-letter-policy.retry-letter-topic",
+      "type": "java.lang.String",
+      "description": "Name of the retry topic where the failing messages will be sent."
+    },
+    {
+      "name": "spring.pulsar.function.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable function support.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.pulsar.producer.cache.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable caching in the PulsarProducerFactory.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.pulsar.reactive.consumer.dead-letter-policy.dead-letter-topic",
+      "type": "java.lang.String",
+      "description": "Name of the dead topic where the failing messages will be sent."
+    },
+    {
+      "name": "spring.pulsar.reactive.consumer.dead-letter-policy.initial-subscription-name",
+      "type": "java.lang.String",
+      "description": "Name of the initial subscription name of the dead letter topic - must be set for the initial subscription for the dead letter topic to be created."
+    },
+    {
+      "name": "spring.pulsar.reactive.consumer.dead-letter-policy.max-redeliver-count",
+      "type": "java.lang.Integer",
+      "description": "Maximum number of times that a message will be redelivered before being sent to the dead letter queue."
+    },
+    {
+      "name": "spring.pulsar.reactive.consumer.dead-letter-policy.retry-letter-topic",
+      "type": "java.lang.String",
+      "description": "Name of the retry topic where the failing messages will be sent."
+    },
+    {
+      "name": "spring.pulsar.reactive.sender.cache.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable caching in the ReactivePulsarSenderFactory.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.quartz.jdbc.comment-prefix",
       "defaultValue": [
         "#",
