@@ -75,7 +75,7 @@ public final class ErrorAttributeOptions {
 	 */
 	public ErrorAttributeOptions excluding(Include... excludes) {
 		EnumSet<Include> updated = copyIncludes();
-		updated.removeAll(Arrays.asList(excludes));
+		Arrays.stream(excludes).forEach(updated::remove);
 		return new ErrorAttributeOptions(Collections.unmodifiableSet(updated));
 	}
 
