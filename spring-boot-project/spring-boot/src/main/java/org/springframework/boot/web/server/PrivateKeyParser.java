@@ -27,8 +27,6 @@ import java.security.PrivateKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
@@ -65,12 +63,9 @@ final class PrivateKeyParser {
 	private static final List<PemParser> PEM_PARSERS;
 	static {
 		List<PemParser> parsers = new ArrayList<>();
-		parsers.add(new PemParser(PKCS1_HEADER, PKCS1_FOOTER, Collections.singleton("RSA"),
-				PrivateKeyParser::createKeySpecForPkcs1));
-		parsers.add(
-				new PemParser(EC_HEADER, EC_FOOTER, Collections.singleton("EC"), PrivateKeyParser::createKeySpecForEc));
-		parsers.add(
-				new PemParser(PKCS8_HEADER, PKCS8_FOOTER, Arrays.asList("RSA", "EC", "DSA"), PKCS8EncodedKeySpec::new));
+		parsers.add(new PemParser(PKCS1_HEADER, PKCS1_FOOTER, PrivateKeyParser::createKeySpecForPkcs1, "RSA"));
+		parsers.add(new PemParser(EC_HEADER, EC_FOOTER, PrivateKeyParser::createKeySpecForEc, "EC"));
+		parsers.add(new PemParser(PKCS8_HEADER, PKCS8_FOOTER, PKCS8EncodedKeySpec::new, "RSA", "EC", "DSA"));
 		PEM_PARSERS = Collections.unmodifiableList(parsers);
 	}
 
@@ -152,12 +147,12 @@ final class PrivateKeyParser {
 
 		private final Pattern pattern;
 
-		private final Collection<String> algorithms;
-
 		private final Function<byte[], PKCS8EncodedKeySpec> keySpecFactory;
 
-		PemParser(String header, String footer, Collection<String> algorithms,
-				Function<byte[], PKCS8EncodedKeySpec> keySpecFactory) {
+		private final String[] algorithms;
+
+		PemParser(String header, String footer, Function<byte[], PKCS8EncodedKeySpec> keySpecFactory,
+				String... algorithms) {
 			this.pattern = Pattern.compile(header + BASE64_TEXT + footer, Pattern.CASE_INSENSITIVE);
 			this.algorithms = algorithms;
 			this.keySpecFactory = keySpecFactory;
@@ -181,7 +176,7 @@ final class PrivateKeyParser {
 					try {
 						return keyFactory.generatePrivate(keySpec);
 					}
-					catch (InvalidKeySpecException ignored) {
+					catch (InvalidKeySpecException ex) {
 					}
 				}
 				return null;
