@@ -147,7 +147,7 @@ public final class ConditionEvaluationReport {
 	 */
 	public Set<String> getUnconditionalClasses() {
 		Set<String> filtered = new HashSet<>(this.unconditionalClasses);
-		filtered.removeAll(this.exclusions);
+		this.exclusions.forEach(filtered::remove);
 		return Collections.unmodifiableSet(filtered);
 	}
 
@@ -166,7 +166,7 @@ public final class ConditionEvaluationReport {
 	 * @return the {@link ConditionEvaluationReport} or {@code null}
 	 */
 	public static ConditionEvaluationReport find(BeanFactory beanFactory) {
-		if (beanFactory != null && beanFactory instanceof ConfigurableListableBeanFactory) {
+		if (beanFactory instanceof ConfigurableListableBeanFactory) {
 			return ConditionEvaluationReport.get((ConfigurableListableBeanFactory) beanFactory);
 		}
 		return null;

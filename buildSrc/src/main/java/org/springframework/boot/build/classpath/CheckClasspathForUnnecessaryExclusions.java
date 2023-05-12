@@ -18,7 +18,6 @@ package org.springframework.boot.build.classpath;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -107,14 +106,13 @@ public class CheckClasspathForUnnecessaryExclusions extends DefaultTask {
 		this.exclusionsByDependencyId.forEach((dependencyId, exclusions) -> {
 			if (!exclusions.isEmpty()) {
 				Dependency toCheck = this.dependencyById.get(dependencyId);
-				List<String> dependencies = this.configurations.detachedConfiguration(toCheck, this.platform)
+				this.configurations.detachedConfiguration(toCheck, this.platform)
 					.getIncoming()
 					.getArtifacts()
 					.getArtifacts()
 					.stream()
 					.map(this::getId)
-					.toList();
-				exclusions.removeAll(dependencies);
+					.forEach(exclusions::remove);
 				removeProfileExclusions(dependencyId, exclusions);
 				if (!exclusions.isEmpty()) {
 					unnecessaryExclusions.put(dependencyId, exclusions);
