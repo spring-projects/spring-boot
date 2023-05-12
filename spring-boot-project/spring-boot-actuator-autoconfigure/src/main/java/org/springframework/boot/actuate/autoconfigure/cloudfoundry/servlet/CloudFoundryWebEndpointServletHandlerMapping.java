@@ -94,7 +94,7 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 		@ResponseBody
 		public Map<String, Map<String, Link>> links(HttpServletRequest request, HttpServletResponse response) {
 			SecurityResponse securityResponse = CloudFoundryWebEndpointServletHandlerMapping.this.securityInterceptor
-				.preHandle(request, null);
+					.preHandle(request, null);
 			if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
 				sendFailureResponse(response, securityResponse);
 			}
@@ -104,11 +104,10 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 				return Collections.singletonMap("_links", filteredLinks);
 			}
 			Map<String, Link> links = CloudFoundryWebEndpointServletHandlerMapping.this.linksResolver
-				.resolveLinks(request.getRequestURL().toString());
-			filteredLinks = links.entrySet()
-				.stream()
-				.filter((e) -> e.getKey().equals("self") || accessLevel.isAccessAllowed(e.getKey()))
-				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+					.resolveLinks(request.getRequestURL().toString());
+			filteredLinks = links.entrySet().stream()
+					.filter((e) -> e.getKey().equals("self") || accessLevel.isAccessAllowed(e.getKey()))
+					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 			return Collections.singletonMap("_links", filteredLinks);
 		}
 
