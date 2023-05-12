@@ -138,8 +138,6 @@ public class R2dbcProperties {
 
 		/**
 		 * Minimal number of idle connections.
-		 *
-		 * @since 2.7.12
 		 */
 		private int minIdle = 0;
 
@@ -163,8 +161,6 @@ public class R2dbcProperties {
 		/**
 		 * Maximum time to validate a connection from the pool. By default, wait
 		 * indefinitely.
-		 *
-		 * @since 2.7.12
 		 */
 		private Duration maxValidationTime;
 

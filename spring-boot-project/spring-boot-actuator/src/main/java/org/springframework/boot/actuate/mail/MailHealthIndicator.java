@@ -39,8 +39,8 @@ public class MailHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Builder builder) throws Exception {
 		int port = this.mailSender.getPort();
-		builder.withDetail("location", (port == JavaMailSenderImpl.DEFAULT_PORT) ? this.mailSender.getHost()
-				: this.mailSender.getHost() + ":" + this.mailSender.getPort());
+		builder.withDetail("location", (port != JavaMailSenderImpl.DEFAULT_PORT)
+				? this.mailSender.getHost() + ":" + this.mailSender.getPort() : this.mailSender.getHost());
 		this.mailSender.testConnection();
 		builder.up();
 	}
