@@ -77,6 +77,8 @@ class CloudFoundryActuatorAutoConfigurationTests {
 					ServletManagementContextAutoConfiguration.class, EndpointAutoConfiguration.class,
 					WebEndpointAutoConfiguration.class, CloudFoundryActuatorAutoConfiguration.class));
 
+	private static String BASE_PATH = "/cloudfoundryapplication";
+
 	@Test
 	void cloudFoundryPlatformActive() {
 		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
@@ -160,18 +162,29 @@ class CloudFoundryActuatorAutoConfigurationTests {
 
 	@Test
 	void cloudFoundryPathsIgnoredBySpringSecurity() {
-		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id")
+		this.contextRunner.withBean(TestEndpoint.class, TestEndpoint::new)
+				.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id")
 				.run((context) -> {
 					FilterChainProxy securityFilterChain = (FilterChainProxy) context
 							.getBean(BeanIds.SPRING_SECURITY_FILTER_CHAIN);
 					SecurityFilterChain chain = securityFilterChain.getFilterChains().get(0);
-					MockHttpServletRequest request = new MockHttpServletRequest();
-					request.setServletPath("/cloudfoundryapplication/my-path");
 					assertThat(chain.getFilters()).isEmpty();
-					assertThat(chain.matches(request)).isTrue();
+					MockHttpServletRequest request = new MockHttpServletRequest();
+					testCloudFoundrySecurity(request, BASE_PATH, chain);
+					testCloudFoundrySecurity(request, BASE_PATH + "/", chain);
+					testCloudFoundrySecurity(request, BASE_PATH + "/test", chain);
+					testCloudFoundrySecurity(request, BASE_PATH + "/test/a", chain);
+					request.setServletPath(BASE_PATH + "/other-path");
+					assertThat(chain.matches(request)).isFalse();
 					request.setServletPath("/some-other-path");
 					assertThat(chain.matches(request)).isFalse();
 				});
+	}
+
+	private static void testCloudFoundrySecurity(MockHttpServletRequest request, String basePath,
+			SecurityFilterChain chain) {
+		request.setServletPath(basePath);
+		assertThat(chain.matches(request)).isTrue();
 	}
 
 	@Test

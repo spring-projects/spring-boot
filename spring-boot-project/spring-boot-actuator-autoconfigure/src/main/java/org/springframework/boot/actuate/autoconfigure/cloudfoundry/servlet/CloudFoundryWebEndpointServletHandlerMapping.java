@@ -31,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.SecurityResponse;
 import org.springframework.boot.actuate.endpoint.EndpointId;
+import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -38,7 +39,6 @@ import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.Link;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
 import org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -61,14 +61,16 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 
 	private final EndpointLinksResolver linksResolver;
 
+	private final Collection<ExposableEndpoint<?>> allEndpoints;
+
 	CloudFoundryWebEndpointServletHandlerMapping(EndpointMapping endpointMapping,
 			Collection<ExposableWebEndpoint> endpoints, EndpointMediaTypes endpointMediaTypes,
 			CorsConfiguration corsConfiguration, CloudFoundrySecurityInterceptor securityInterceptor,
-			EndpointLinksResolver linksResolver) {
-		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration, true,
-				WebMvcAutoConfiguration.pathPatternParser);
+			Collection<ExposableEndpoint<?>> allEndpoints) {
+		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration, true);
 		this.securityInterceptor = securityInterceptor;
-		this.linksResolver = linksResolver;
+		this.linksResolver = new EndpointLinksResolver(allEndpoints);
+		this.allEndpoints = allEndpoints;
 	}
 
 	@Override
@@ -82,13 +84,17 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 		return new CloudFoundryLinksHandler();
 	}
 
+	Collection<ExposableEndpoint<?>> getAllEndpoints() {
+		return this.allEndpoints;
+	}
+
 	class CloudFoundryLinksHandler implements LinksHandler {
 
 		@Override
 		@ResponseBody
 		public Map<String, Map<String, Link>> links(HttpServletRequest request, HttpServletResponse response) {
 			SecurityResponse securityResponse = CloudFoundryWebEndpointServletHandlerMapping.this.securityInterceptor
-					.preHandle(request, null);
+				.preHandle(request, null);
 			if (!securityResponse.getStatus().equals(HttpStatus.OK)) {
 				sendFailureResponse(response, securityResponse);
 			}
@@ -98,10 +104,11 @@ class CloudFoundryWebEndpointServletHandlerMapping extends AbstractWebMvcEndpoin
 				return Collections.singletonMap("_links", filteredLinks);
 			}
 			Map<String, Link> links = CloudFoundryWebEndpointServletHandlerMapping.this.linksResolver
-					.resolveLinks(request.getRequestURL().toString());
-			filteredLinks = links.entrySet().stream()
-					.filter((e) -> e.getKey().equals("self") || accessLevel.isAccessAllowed(e.getKey()))
-					.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+				.resolveLinks(request.getRequestURL().toString());
+			filteredLinks = links.entrySet()
+				.stream()
+				.filter((e) -> e.getKey().equals("self") || accessLevel.isAccessAllowed(e.getKey()))
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 			return Collections.singletonMap("_links", filteredLinks);
 		}
 
