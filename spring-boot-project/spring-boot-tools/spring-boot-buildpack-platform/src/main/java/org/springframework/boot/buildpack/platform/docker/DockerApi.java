@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
@@ -121,16 +122,16 @@ public class DockerApi {
 		return this.jsonStream;
 	}
 
-	private URI buildUrl(String path, Collection<String> params) {
-		return buildUrl(path, StringUtils.toStringArray(params));
+	private URI buildUrl(String path, Collection<?> params) {
+		return buildUrl(path, (params != null) ? params.toArray() : null);
 	}
 
-	private URI buildUrl(String path, String... params) {
+	private URI buildUrl(String path, Object... params) {
 		try {
 			URIBuilder builder = new URIBuilder("/" + API_VERSION + path);
 			int param = 0;
 			while (param < params.length) {
-				builder.addParameter(params[param++], params[param++]);
+				builder.addParameter(Objects.toString(params[param++]), Objects.toString(params[param++]));
 			}
 			return builder.build();
 		}
@@ -190,7 +191,7 @@ public class DockerApi {
 				throws IOException {
 			Assert.notNull(reference, "Reference must not be null");
 			Assert.notNull(listener, "Listener must not be null");
-			URI createUri = buildUrl("/images/create", "fromImage", reference.toString());
+			URI createUri = buildUrl("/images/create", "fromImage", reference);
 			DigestCaptureUpdateListener digestCapture = new DigestCaptureUpdateListener();
 			listener.onStart();
 			try {
@@ -348,14 +349,9 @@ public class DockerApi {
 			Assert.notNull(sourceReference, "SourceReference must not be null");
 			Assert.notNull(targetReference, "TargetReference must not be null");
 			String tag = targetReference.getTag();
-			URI uri;
-			if (tag == null) {
-				uri = buildUrl("/images/" + sourceReference + "/tag", "repo", targetReference.toString());
-			}
-			else {
-				uri = buildUrl("/images/" + sourceReference + "/tag", "repo",
-						targetReference.inTaglessForm().toString(), "tag", tag);
-			}
+			String path = "/images/" + sourceReference + "/tag";
+			URI uri = (tag != null) ? buildUrl(path, "repo", targetReference.inTaglessForm(), "tag", tag)
+					: buildUrl(path, "repo", targetReference);
 			http().post(uri).close();
 		}
 
@@ -437,7 +433,7 @@ public class DockerApi {
 		public void logs(ContainerReference reference, UpdateListener<LogUpdateEvent> listener) throws IOException {
 			Assert.notNull(reference, "Reference must not be null");
 			Assert.notNull(listener, "Listener must not be null");
-			String[] params = { "stdout", "1", "stderr", "1", "follow", "1" };
+			Object[] params = { "stdout", "1", "stderr", "1", "follow", "1" };
 			URI uri = buildUrl("/containers/" + reference + "/logs", params);
 			listener.onStart();
 			try {
