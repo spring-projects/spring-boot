@@ -33,7 +33,7 @@ import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.util.function.ThrowingConsumer;
 
 /**
- * {@link ClientHttpConnectorFactory} for {@link ReactorClientHttpConnectorFactory}.
+ * {@link ClientHttpConnectorFactory} for {@link ReactorClientHttpConnector}.
  *
  * @author Phillip Webb
  */

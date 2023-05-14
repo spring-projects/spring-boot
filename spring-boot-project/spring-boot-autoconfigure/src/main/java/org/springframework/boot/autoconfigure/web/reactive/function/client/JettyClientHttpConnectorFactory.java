@@ -23,12 +23,11 @@ import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslOptions;
-import org.springframework.http.client.reactive.JdkClientHttpConnector;
 import org.springframework.http.client.reactive.JettyClientHttpConnector;
 import org.springframework.http.client.reactive.JettyResourceFactory;
 
 /**
- * {@link ClientHttpConnectorFactory} for {@link JdkClientHttpConnector}.
+ * {@link ClientHttpConnectorFactory} for {@link JettyClientHttpConnector}.
  *
  * @author Phillip Webb
  */
