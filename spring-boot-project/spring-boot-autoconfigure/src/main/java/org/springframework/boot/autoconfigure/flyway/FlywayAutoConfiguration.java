@@ -84,7 +84,7 @@ import org.springframework.util.StringUtils;
  * @author Dominic Gunn
  * @author Dan Zheng
  * @author András Deák
- * @author Semyon Danilo
+ * @author Semyon Danilov
  * @author Chris Bono
  * @author Moritz Halbritter
  * @author Andy Wilkinson
