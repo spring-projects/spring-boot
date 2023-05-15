@@ -64,6 +64,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.IncompatibleConfigurationException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.Environment;
@@ -130,15 +131,22 @@ public class BraveAutoConfiguration {
 	}
 
 	@Bean
+	@Scope("prototype")
 	@ConditionalOnMissingBean
-	public CurrentTraceContext braveCurrentTraceContext(List<CurrentTraceContext.ScopeDecorator> scopeDecorators,
+	public CurrentTraceContext.Builder braveCurrentTraceContextBuilder() {
+		return ThreadLocalCurrentTraceContext.newBuilder();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public CurrentTraceContext braveCurrentTraceContext(CurrentTraceContext.Builder currentTraceContextBuilder,
+			List<CurrentTraceContext.ScopeDecorator> scopeDecorators,
 			List<CurrentTraceContextCustomizer> currentTraceContextCustomizers) {
-		ThreadLocalCurrentTraceContext.Builder builder = ThreadLocalCurrentTraceContext.newBuilder();
-		scopeDecorators.forEach(builder::addScopeDecorator);
+		scopeDecorators.forEach(currentTraceContextBuilder::addScopeDecorator);
 		for (CurrentTraceContextCustomizer currentTraceContextCustomizer : currentTraceContextCustomizers) {
-			currentTraceContextCustomizer.customize(builder);
+			currentTraceContextCustomizer.customize(currentTraceContextBuilder);
 		}
-		return builder.build();
+		return currentTraceContextBuilder.build();
 	}
 
 	@Bean
