@@ -29,6 +29,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +58,16 @@ class WelcomePageIntegrationTests {
 			.build();
 		ResponseEntity<String> content = this.template.exchange(entity, String.class);
 		assertThat(content.getBody()).contains("/custom-");
+		assertThat(content.getStatusCode()).isEqualTo(HttpStatus.OK);
+	}
+
+	@Test
+	void notAcceptableWelcomePage() throws Exception {
+		RequestEntity<?> entity = RequestEntity.get(new URI("http://localhost:" + this.port + "/"))
+			.header("Accept", "spring/boot")
+			.build();
+		ResponseEntity<String> content = this.template.exchange(entity, String.class);
+		assertThat(content.getStatusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE);
 	}
 
 	@Configuration

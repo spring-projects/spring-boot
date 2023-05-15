@@ -169,7 +169,7 @@ class WebMvcAutoConfigurationTests {
 
 	@Test
 	void handlerMappingsCreated() {
-		this.contextRunner.run((context) -> assertThat(context).getBeans(HandlerMapping.class).hasSize(5));
+		this.contextRunner.run((context) -> assertThat(context).getBeans(HandlerMapping.class).hasSize(6));
 	}
 
 	@Test
@@ -687,8 +687,8 @@ class WebMvcAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.web.resources.static-locations:classpath:/welcome-page/")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(WelcomePageHandlerMapping.class);
-				WelcomePageHandlerMapping bean = context.getBean(WelcomePageHandlerMapping.class);
-				assertThat(bean.getRootHandler()).isNotNull();
+				assertThat(context.getBean(WelcomePageHandlerMapping.class).getRootHandler()).isNotNull();
+				assertThat(context.getBean(WelcomePageNotAcceptableHandlerMapping.class).getRootHandler()).isNotNull();
 			});
 	}
 
