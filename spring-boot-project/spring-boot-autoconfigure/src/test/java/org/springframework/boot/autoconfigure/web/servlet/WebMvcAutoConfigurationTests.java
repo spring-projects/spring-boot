@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -171,7 +171,7 @@ class WebMvcAutoConfigurationTests {
 
 	@Test
 	void handlerMappingsCreated() {
-		this.contextRunner.run((context) -> assertThat(context).getBeans(HandlerMapping.class).hasSize(5));
+		this.contextRunner.run((context) -> assertThat(context).getBeans(HandlerMapping.class).hasSize(6));
 	}
 
 	@Test
@@ -685,8 +685,8 @@ class WebMvcAutoConfigurationTests {
 	void welcomePageHandlerMappingIsAutoConfigured(String prefix) {
 		this.contextRunner.withPropertyValues(prefix + "static-locations:classpath:/welcome-page/").run((context) -> {
 			assertThat(context).hasSingleBean(WelcomePageHandlerMapping.class);
-			WelcomePageHandlerMapping bean = context.getBean(WelcomePageHandlerMapping.class);
-			assertThat(bean.getRootHandler()).isNotNull();
+			assertThat(context.getBean(WelcomePageHandlerMapping.class).getRootHandler()).isNotNull();
+			assertThat(context.getBean(WelcomePageNotAcceptableHandlerMapping.class).getRootHandler()).isNotNull();
 		});
 	}
 
