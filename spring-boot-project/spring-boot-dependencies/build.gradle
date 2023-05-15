@@ -1309,7 +1309,7 @@ bom {
 			]
 		}
 	}
-	library("SAAJ Impl", "3.0.1") {
+	library("SAAJ Impl", "3.0.2") {
 		group("com.sun.xml.messaging.saaj") {
 			modules = [
 				"saaj-impl"
