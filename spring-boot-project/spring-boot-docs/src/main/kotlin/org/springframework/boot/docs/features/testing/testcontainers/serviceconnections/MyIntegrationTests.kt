@@ -26,7 +26,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
 
 @SpringBootTest
 @Testcontainers
-internal class MyIntegrationTests {
+class MyIntegrationTests {
 
 	@Test
 	fun myTest() {
@@ -37,7 +37,7 @@ internal class MyIntegrationTests {
 
 		@Container
 		@ServiceConnection
-		var neo4j: Neo4jContainer<*> = Neo4jContainer<Nothing>("neo4j:5")
+		val neo4j = Neo4jContainer("neo4j:5")
 
 	}
 
