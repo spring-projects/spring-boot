@@ -92,6 +92,7 @@ class FlywayPropertiesTests {
 		assertThat(properties.getPlaceholderSeparator()).isEqualTo(configuration.getPlaceholderSeparator());
 		assertThat(properties.getScriptPlaceholderPrefix()).isEqualTo(configuration.getScriptPlaceholderPrefix());
 		assertThat(properties.getScriptPlaceholderSuffix()).isEqualTo(configuration.getScriptPlaceholderSuffix());
+		assertThat(properties.isExecuteInTransaction()).isEqualTo(configuration.isExecuteInTransaction());
 	}
 
 	@Test
