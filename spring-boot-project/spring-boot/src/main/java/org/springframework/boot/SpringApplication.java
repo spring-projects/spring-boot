@@ -1455,34 +1455,58 @@ public class SpringApplication {
 		 * @param args the main method args
 		 * @return the running {@link ApplicationContext}
 		 */
-		public ConfigurableApplicationContext run(String... args) {
-			ContextLoaderHook hook = new ContextLoaderHook(this.sources);
+		public SpringApplication.Running run(String... args) {
+			RunListener runListener = new RunListener();
+			SpringApplicationHook hook = (springApplication) -> {
+				springApplication.addPrimarySources(this.sources);
+				return runListener;
+			};
 			withHook(hook, () -> this.main.accept(args));
-			return hook.applicationContext;
+			return runListener;
 		}
 
-		private static class ContextLoaderHook implements SpringApplicationHook {
+		/**
+		 * {@link SpringApplicationRunListener} to capture {@link Running} application
+		 * details.
+		 */
+		private static class RunListener implements SpringApplicationRunListener, Running {
 
-			private final Set<Class<?>> sources;
+			private final List<ConfigurableApplicationContext> contexts = Collections
+				.synchronizedList(new ArrayList<>());
 
-			private ConfigurableApplicationContext applicationContext;
-
-			ContextLoaderHook(Set<Class<?>> sources) {
-				this.sources = sources;
+			@Override
+			public void contextLoaded(ConfigurableApplicationContext context) {
+				this.contexts.add(context);
 			}
 
 			@Override
-			public SpringApplicationRunListener getRunListener(SpringApplication springApplication) {
-				springApplication.addPrimarySources(this.sources);
-				return new SpringApplicationRunListener() {
-					@Override
-					public void contextPrepared(ConfigurableApplicationContext context) {
-						ContextLoaderHook.this.applicationContext = context;
-					}
-				};
+			public ConfigurableApplicationContext getApplicationContext() {
+				List<ConfigurableApplicationContext> rootContexts = this.contexts.stream()
+					.filter((context) -> context.getParent() == null)
+					.toList();
+				Assert.state(!rootContexts.isEmpty(), "No root application context located");
+				Assert.state(rootContexts.size() == 1, "No unique root application context located");
+				return rootContexts.get(0);
 			}
 
 		}
+
+	}
+
+	/**
+	 * Provides access to details of a {@link SpringApplication} run using
+	 * {@link Augmented#run(String...)}.
+	 *
+	 * @since 3.1.0
+	 */
+	public interface Running {
+
+		/**
+		 * Return the root {@link ConfigurableApplicationContext} of the running
+		 * application.
+		 * @return the root application context
+		 */
+		ConfigurableApplicationContext getApplicationContext();
 
 	}
 

@@ -1372,7 +1372,8 @@ class SpringApplicationTests {
 	void fromReturnsApplicationContext() {
 		ConfigurableApplicationContext context = SpringApplication.from(ExampleFromMainMethod::main)
 			.with(ExampleAdditionalConfig.class)
-			.run();
+			.run()
+			.getApplicationContext();
 		assertThat(context).isNotNull();
 	}
 
