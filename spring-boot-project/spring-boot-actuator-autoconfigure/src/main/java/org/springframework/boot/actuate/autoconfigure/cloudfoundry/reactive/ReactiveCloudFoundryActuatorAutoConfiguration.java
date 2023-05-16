@@ -167,7 +167,7 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 
 	private static class WebFilterChainPostProcessor implements BeanPostProcessor {
 
-		private Supplier<PathMappedEndpoints> pathMappedEndpoints;
+		private final Supplier<PathMappedEndpoints> pathMappedEndpoints;
 
 		WebFilterChainPostProcessor(ObjectProvider<CloudFoundryWebFluxEndpointHandlerMapping> handlerMapping) {
 			this.pathMappedEndpoints = SingletonSupplier
