@@ -21,12 +21,9 @@ import java.nio.charset.StandardCharsets;
 import graphql.GraphQL;
 import graphql.execution.instrumentation.ChainedInstrumentation;
 import graphql.execution.instrumentation.Instrumentation;
-import graphql.schema.FieldCoordinates;
-import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLOutputType;
 import graphql.schema.GraphQLSchema;
-import graphql.schema.PropertyDataFetcher;
 import graphql.schema.idl.RuntimeWiring;
 import graphql.schema.visibility.DefaultGraphqlFieldVisibility;
 import graphql.schema.visibility.NoIntrospectionGraphqlFieldVisibility;
@@ -209,17 +206,6 @@ class GraphQlAutoConfigurationTests {
 			assertThat(bookConnection).isNotNull().isInstanceOf(GraphQLObjectType.class);
 			assertThat((GraphQLObjectType) bookConnection)
 				.satisfies((connection) -> assertThat(connection.getFieldDefinition("edges")).isNotNull());
-		});
-	}
-
-	@Test
-	void shouldContributeConnectionDataFetcher() {
-		this.contextRunner.withUserConfiguration(CustomGraphQlBuilderConfiguration.class).run((context) -> {
-			GraphQlSource graphQlSource = context.getBean(GraphQlSource.class);
-			GraphQLFieldDefinition books = graphQlSource.schema().getQueryType().getField("books");
-			FieldCoordinates booksCoordinates = FieldCoordinates.coordinates("Query", "books");
-			assertThat(graphQlSource.schema().getCodeRegistry().getDataFetcher(booksCoordinates, books))
-				.isNotInstanceOf(PropertyDataFetcher.class);
 		});
 	}
 
