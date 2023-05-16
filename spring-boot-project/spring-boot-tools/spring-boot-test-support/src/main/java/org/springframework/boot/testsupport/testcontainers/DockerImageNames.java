@@ -36,7 +36,7 @@ public final class DockerImageNames {
 
 	private static final String ELASTICSEARCH_VERSION = "7.17.5";
 
-	private static final String KAFKA_VERSION = "7.4.0";
+	private static final String KAFKA_VERSION = "5.4.0";
 
 	private static final String MONGO_VERSION = "5.0.17";
 
