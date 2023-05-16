@@ -22,7 +22,6 @@ import java.util.List;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.OS;
 import org.testcontainers.containers.KafkaContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -31,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.boot.testsupport.junit.DisabledOnOs;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,8 +51,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers(disabledWithoutDocker = true)
 @TestPropertySource(properties = { "spring.kafka.consumer.group-id=test-group",
 		"spring.kafka.consumer.auto-offset-reset=earliest" })
-@DisabledOnOs(os = { OS.LINUX, OS.MAC }, architecture = "aarch64",
-		disabledReason = "The Kafka image has no ARM support")
 class KafkaContainerConnectionDetailsFactoryIntegrationTests {
 
 	@Container
