@@ -365,7 +365,7 @@ public class FlywayProperties {
 	/**
 	 * Whether Flyway should execute SQL within a transaction.
 	 */
-	private boolean executeInTransaction;
+	private boolean executeInTransaction = true;
 
 	public boolean isEnabled() {
 		return this.enabled;
