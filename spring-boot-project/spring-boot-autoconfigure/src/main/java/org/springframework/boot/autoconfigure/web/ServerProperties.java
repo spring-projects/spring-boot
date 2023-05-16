@@ -473,6 +473,7 @@ public class ServerProperties {
 		/**
 		 * Whether to reject requests with illegal header names or values.
 		 */
+		@Deprecated
 		private boolean rejectIllegalHeader = true;
 
 		/**
@@ -626,6 +627,7 @@ public class ServerProperties {
 			this.connectionTimeout = connectionTimeout;
 		}
 
+		@DeprecatedConfigurationProperty(reason = "The setting has been deprecated in Tomcat")
 		public boolean isRejectIllegalHeader() {
 			return this.rejectIllegalHeader;
 		}
