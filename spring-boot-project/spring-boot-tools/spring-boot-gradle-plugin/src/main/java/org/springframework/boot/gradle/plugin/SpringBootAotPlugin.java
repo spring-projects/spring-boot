@@ -16,6 +16,9 @@
 
 package org.springframework.boot.gradle.plugin;
 
+import java.util.Set;
+import java.util.stream.Stream;
+
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -155,7 +158,7 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 			classpath.setCanBeConsumed(false);
 			classpath.setCanBeResolved(true);
 			classpath.setDescription("Classpath of the " + taskName + " task.");
-			base.getExtendsFrom().forEach(classpath::extendsFrom);
+			removeDevelopmentOnly(base.getExtendsFrom()).forEach(classpath::extendsFrom);
 			classpath.attributes((attributes) -> {
 				AttributeContainer baseAttributes = base.getAttributes();
 				for (Attribute<?> attribute : baseAttributes.keySet()) {
@@ -164,6 +167,14 @@ public class SpringBootAotPlugin implements Plugin<Project> {
 			});
 		});
 		return aotClasspath;
+	}
+
+	private Stream<Configuration> removeDevelopmentOnly(Set<Configuration> configurations) {
+		return configurations.stream().filter(this::isNotDevelopmentOnly);
+	}
+
+	private boolean isNotDevelopmentOnly(Configuration configuration) {
+		return !SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME.equals(configuration.getName());
 	}
 
 	private void configureDependsOn(Project project, SourceSet aotSourceSet,
