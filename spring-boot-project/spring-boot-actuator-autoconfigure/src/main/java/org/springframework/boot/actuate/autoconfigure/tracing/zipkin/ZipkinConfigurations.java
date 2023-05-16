@@ -129,7 +129,7 @@ class ZipkinConfigurations {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnBean(Sender.class)
-		Reporter<Span> spanReporter(Sender sender, BytesEncoder<Span> encoder) {
+		AsyncReporter<Span> spanReporter(Sender sender, BytesEncoder<Span> encoder) {
 			return AsyncReporter.builder(sender).build(encoder);
 		}
 
