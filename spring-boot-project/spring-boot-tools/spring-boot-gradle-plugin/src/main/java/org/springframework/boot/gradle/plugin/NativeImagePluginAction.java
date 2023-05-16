@@ -28,6 +28,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.java.archives.Manifest;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -122,8 +123,15 @@ class NativeImagePluginAction implements PluginApplicationAction {
 	private void configureJarManifestNativeAttribute(Project project) {
 		project.getTasks()
 			.named(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class)
-			.configure((bootJar) -> bootJar
-				.manifest(((manifest) -> manifest.getAttributes().put("Spring-Boot-Native-Processed", true))));
+			.configure(this::addNativeProcessedAttribute);
+	}
+
+	private void addNativeProcessedAttribute(BootJar bootJar) {
+		bootJar.manifest(this::addNativeProcessedAttribute);
+	}
+
+	private void addNativeProcessedAttribute(Manifest manifest) {
+		manifest.getAttributes().put("Spring-Boot-Native-Processed", true);
 	}
 
 }

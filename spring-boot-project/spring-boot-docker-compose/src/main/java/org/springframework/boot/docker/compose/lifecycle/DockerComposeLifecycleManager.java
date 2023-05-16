@@ -36,6 +36,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
 import org.springframework.core.log.LogMessage;
+import org.springframework.util.Assert;
 
 /**
  * Manages the lifecycle for docker compose services.
@@ -125,11 +126,8 @@ class DockerComposeLifecycleManager {
 	protected DockerComposeFile getComposeFile() {
 		DockerComposeFile composeFile = (this.properties.getFile() != null)
 				? DockerComposeFile.of(this.properties.getFile()) : DockerComposeFile.find(this.workingDirectory);
-		if (composeFile == null) {
-			File dir = (this.workingDirectory != null) ? this.workingDirectory : new File(".");
-			throw new IllegalStateException("No Docker Compose file found in directory '%s'"
-				.formatted(dir.toPath().toAbsolutePath().toString()));
-		}
+		Assert.state(composeFile != null, () -> "No Docker Compose file found in directory '%s'".formatted(
+				((this.workingDirectory != null) ? this.workingDirectory : new File(".")).toPath().toAbsolutePath()));
 		logger.info(LogMessage.format("Using Docker Compose file '%s'", composeFile));
 		return composeFile;
 	}

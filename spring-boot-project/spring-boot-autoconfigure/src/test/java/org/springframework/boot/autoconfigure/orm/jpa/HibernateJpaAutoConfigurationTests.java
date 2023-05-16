@@ -487,10 +487,11 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	void registersHintsForJtaClasses() {
 		RuntimeHints hints = new RuntimeHints();
 		new HibernateRuntimeHints().registerHints(hints, getClass().getClassLoader());
-		for (String clazz : Arrays.asList("org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform",
+		for (String noJtaPlatformClass : Arrays.asList(
+				"org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform",
 				"org.hibernate.service.jta.platform.internal.NoJtaPlatform")) {
 			assertThat(RuntimeHintsPredicates.reflection()
-				.onType(TypeReference.of(clazz))
+				.onType(TypeReference.of(noJtaPlatformClass))
 				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(hints);
 		}
 	}
@@ -499,10 +500,10 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	void registersHintsForNamingClasses() {
 		RuntimeHints hints = new RuntimeHints();
 		new HibernateRuntimeHints().registerHints(hints, getClass().getClassLoader());
-		for (Class<?> clazz : Arrays.asList(SpringImplicitNamingStrategy.class,
+		for (Class<?> noJtaPlatformClass : Arrays.asList(SpringImplicitNamingStrategy.class,
 				CamelCaseToUnderscoresNamingStrategy.class)) {
 			assertThat(RuntimeHintsPredicates.reflection()
-				.onType(clazz)
+				.onType(noJtaPlatformClass)
 				.withMemberCategories(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS)).accepts(hints);
 		}
 	}

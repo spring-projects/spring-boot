@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import javax.sql.DataSource;
@@ -37,6 +38,7 @@ import org.springframework.aot.hint.MemberCategory;
 import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.RuntimeHintsRegistrar;
 import org.springframework.aot.hint.TypeHint;
+import org.springframework.aot.hint.TypeHint.Builder;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -250,19 +252,16 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 
 	static class HibernateRuntimeHints implements RuntimeHintsRegistrar {
 
+		private static final Consumer<Builder> INVOKE_DECLARED_CONSTRUCTORS = TypeHint
+			.builtWith(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS);
+
 		@Override
 		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
-			for (String clazz : NO_JTA_PLATFORM_CLASSES) {
-				hints.reflection()
-					.registerType(TypeReference.of(clazz),
-							TypeHint.builtWith(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS));
+			for (String noJtaPlatformClass : NO_JTA_PLATFORM_CLASSES) {
+				hints.reflection().registerType(TypeReference.of(noJtaPlatformClass), INVOKE_DECLARED_CONSTRUCTORS);
 			}
-			hints.reflection()
-				.registerType(SpringImplicitNamingStrategy.class,
-						TypeHint.builtWith(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS));
-			hints.reflection()
-				.registerType(CamelCaseToUnderscoresNamingStrategy.class,
-						TypeHint.builtWith(MemberCategory.INVOKE_DECLARED_CONSTRUCTORS));
+			hints.reflection().registerType(SpringImplicitNamingStrategy.class, INVOKE_DECLARED_CONSTRUCTORS);
+			hints.reflection().registerType(CamelCaseToUnderscoresNamingStrategy.class, INVOKE_DECLARED_CONSTRUCTORS);
 		}
 
 	}

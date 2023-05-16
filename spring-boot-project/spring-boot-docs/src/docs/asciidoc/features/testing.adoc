@@ -1083,9 +1083,9 @@ TIP: You can use the `@ServiceConnection` annotation on `Container` fields to es
 You can also add <<features#features.testing.testcontainers.dynamic-properties,`@DynamicPropertySource` annotated methods>> to your declaration class.
 
 
+
 [[features.testing.testcontainers.at-development-time.devtools]]
 ===== Using DevTools with Testcontainers at Development Time
-
 When using devtools, you can annotate beans and bean methods with `@RestartScope`.
 Such beans won't be recreated when the devtools restart the application.
 This is especially useful for Testcontainer `Container` beans, as they keep their state despite the application restart.
@@ -1094,6 +1094,8 @@ include::code:MyContainersConfiguration[]
 
 WARNING: If you're using Gradle and want to use this feature, you need to change the configuration of the `spring-boot-devtools` dependency from `developmentOnly` to `testImplementation`.
 With the default scope of `developmentOnly`, the `bootTestRun` task will not pick up changes in your code, as the devtools are not active.
+
+
 
 [[features.testing.utilities]]
 === Test Utilities

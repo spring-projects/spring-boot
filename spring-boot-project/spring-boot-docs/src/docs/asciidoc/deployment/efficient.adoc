@@ -1,6 +1,8 @@
 [[deployment.efficient]]
 == Efficient deployments
 
+
+
 [[deployment.efficient.unpacking]]
 === Unpacking the Executable JAR
 If you are running your application from a container, you can use an executable jar, but it is also often an advantage to explode it and run it in a different way.
@@ -27,6 +29,8 @@ Once you have unpacked the jar file, you can also get an extra boost to startup 
 
 NOTE: Using the `JarLauncher` over the application's main method has the added benefit of a predictable classpath order.
 The jar contains a `classpath.idx` file which is used by the `JarLauncher` when constructing the classpath.
+
+
 
 [[deployment.efficient.aot]]
 === Using Ahead-of-time Processing With the JVM
