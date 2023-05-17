@@ -540,7 +540,7 @@ bom {
 			]
 		}
 	}
-	library("Jackson Bom", "2.12.6.20220326") {
+	library("Jackson Bom", "2.12.7.20221012") {
 		group("com.fasterxml.jackson") {
 			imports = [
 				"jackson-bom"
