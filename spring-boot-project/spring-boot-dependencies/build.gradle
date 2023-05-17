@@ -1690,7 +1690,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "2.4.8") {
+	library("Spring AMQP", "2.4.12") {
 		group("org.springframework.amqp") {
 			modules = [
 				"spring-amqp",
