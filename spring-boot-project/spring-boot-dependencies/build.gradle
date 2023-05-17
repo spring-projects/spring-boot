@@ -1844,7 +1844,7 @@ bom {
 			]
 		}
 	}
-	library("Thymeleaf Extras SpringSecurity", "3.0.4.RELEASE") {
+	library("Thymeleaf Extras SpringSecurity", "3.0.5.RELEASE") {
 		group("org.thymeleaf.extras") {
 			modules = [
 				"thymeleaf-extras-springsecurity5"
