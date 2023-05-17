@@ -329,7 +329,7 @@ bom {
 			]
 		}
 	}
-	library("FreeMarker", "2.3.31") {
+	library("FreeMarker", "2.3.32") {
 		group("org.freemarker") {
 			modules = [
 				"freemarker"
