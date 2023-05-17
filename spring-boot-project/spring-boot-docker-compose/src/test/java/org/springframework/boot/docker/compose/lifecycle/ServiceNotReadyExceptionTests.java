@@ -14,34 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.readiness;
+package org.springframework.boot.docker.compose.lifecycle;
 
-import org.springframework.boot.context.properties.bind.Binder;
+import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.docker.compose.core.RunningService;
-import org.springframework.core.env.Environment;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
- * Strategy used to check if a {@link RunningService} is ready. Implementations may be
- * registered in {@code spring.factories}. The following constructor arguments types are
- * supported:
- * <ul>
- * <li>{@link ClassLoader}</li>
- * <li>{@link Environment}</li>
- * <li>{@link Binder}</li>
- * </ul>
+ * Tests for {@link ServiceNotReadyException}.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 3.1.0
  */
-public interface ServiceReadinessCheck {
+class ServiceNotReadyExceptionTests {
 
-	/**
-	 * Checks whether the given {@code service} is ready.
-	 * @param service service to check
-	 * @throws ServiceNotReadyException if the service is not ready
-	 */
-	void check(RunningService service) throws ServiceNotReadyException;
+	@Test
+	void getServiceReturnsService() {
+		RunningService service = mock(RunningService.class);
+		ServiceNotReadyException exception = new ServiceNotReadyException(service, "fail");
+		assertThat(exception.getService()).isEqualTo(service);
+	}
 
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.readiness;
+package org.springframework.boot.docker.compose.lifecycle;
 
 import java.time.Duration;
 import java.util.List;
@@ -23,9 +23,7 @@ import java.util.Objects;
 import org.springframework.boot.docker.compose.core.RunningService;
 
 /**
- * Exception thrown if readiness checking has timed out. Related
- * {@link ServiceNotReadyException ServiceNotReadyExceptions} are available from
- * {@link #getSuppressed()}.
+ * Exception thrown if readiness checking has timed out.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson

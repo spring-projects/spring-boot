@@ -14,29 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.readiness;
-
-import org.junit.jupiter.api.Test;
+package org.springframework.boot.docker.compose.lifecycle;
 
 import org.springframework.boot.docker.compose.core.RunningService;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-
 /**
- * Tests for {@link ServiceNotReadyException}.
+ * Exception thrown when a single {@link RunningService} is not ready.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class ServiceNotReadyExceptionTests {
+class ServiceNotReadyException extends RuntimeException {
 
-	@Test
-	void getServiceReturnsService() {
-		RunningService service = mock(RunningService.class);
-		ServiceNotReadyException exception = new ServiceNotReadyException(service, "fail");
-		assertThat(exception.getService()).isEqualTo(service);
+	private final RunningService service;
+
+	ServiceNotReadyException(RunningService service, String message) {
+		this(service, message, null);
+	}
+
+	ServiceNotReadyException(RunningService service, String message, Throwable cause) {
+		super(message, cause);
+		this.service = service;
+	}
+
+	RunningService getService() {
+		return this.service;
 	}
 
 }

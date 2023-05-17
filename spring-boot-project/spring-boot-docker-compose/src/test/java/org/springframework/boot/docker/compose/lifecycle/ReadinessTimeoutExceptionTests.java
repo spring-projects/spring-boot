@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.readiness;
+package org.springframework.boot.docker.compose.lifecycle;
 
 import java.time.Duration;
 import java.util.List;

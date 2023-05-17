@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.readiness;
+package org.springframework.boot.docker.compose.lifecycle;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -50,7 +50,7 @@ class TcpConnectServiceReadinessCheckTests {
 
 	@BeforeEach
 	void setup() {
-		ReadinessProperties.Tcp tcpProperties = new ReadinessProperties.Tcp();
+		DockerComposeProperties.Readiness.Tcp tcpProperties = new DockerComposeProperties.Readiness.Tcp();
 		tcpProperties.setConnectTimeout(Duration.ofMillis(100));
 		tcpProperties.setReadTimeout(Duration.ofMillis(100));
 		this.readinessCheck = new TcpConnectServiceReadinessCheck(tcpProperties);

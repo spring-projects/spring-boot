@@ -31,7 +31,6 @@ import org.springframework.boot.docker.compose.core.DockerComposeFile;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Start;
 import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Stop;
-import org.springframework.boot.docker.compose.readiness.ServiceReadinessChecks;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.SimpleApplicationEventMulticaster;
@@ -88,7 +87,7 @@ class DockerComposeLifecycleManager {
 		this.eventListeners = eventListeners;
 		this.skipCheck = skipCheck;
 		this.serviceReadinessChecks = (serviceReadinessChecks != null) ? serviceReadinessChecks
-				: new ServiceReadinessChecks(this.classLoader, applicationContext.getEnvironment(), binder);
+				: new ServiceReadinessChecks(properties.getReadiness());
 	}
 
 	void start() {
