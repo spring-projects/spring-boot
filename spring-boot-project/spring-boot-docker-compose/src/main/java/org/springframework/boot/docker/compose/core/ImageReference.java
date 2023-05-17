@@ -26,7 +26,7 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Phillip Webb
  * @author Scott Frederick
- * @since 2.3.0
+ * @since 3.1.0
  */
 public final class ImageReference {
 
