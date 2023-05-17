@@ -24,14 +24,13 @@ import java.net.SocketTimeoutException;
 import org.springframework.boot.docker.compose.core.RunningService;
 
 /**
- * Default {@link ServiceReadinessCheck} that checks readiness by connecting to the
- * exposed TCP ports.
+ * Checks readiness by connecting to the exposed TCP ports.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-class TcpConnectServiceReadinessCheck implements ServiceReadinessCheck {
+class TcpConnectServiceReadinessCheck {
 
 	private static final String DISABLE_LABEL = "org.springframework.boot.readiness-check.tcp.disable";
 
@@ -41,8 +40,7 @@ class TcpConnectServiceReadinessCheck implements ServiceReadinessCheck {
 		this.properties = properties;
 	}
 
-	@Override
-	public void check(RunningService service) {
+	void check(RunningService service) {
 		if (service.labels().containsKey(DISABLE_LABEL)) {
 			return;
 		}

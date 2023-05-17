@@ -24,10 +24,8 @@ import org.springframework.boot.docker.compose.core.RunningService;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 3.1.0
- * @see ServiceReadinessCheck
  */
-public class ServiceNotReadyException extends RuntimeException {
+class ServiceNotReadyException extends RuntimeException {
 
 	private final RunningService service;
 
@@ -40,11 +38,7 @@ public class ServiceNotReadyException extends RuntimeException {
 		this.service = service;
 	}
 
-	/**
-	 * Return the service that was not ready.
-	 * @return the non-ready service
-	 */
-	public RunningService getService() {
+	RunningService getService() {
 		return this.service;
 	}
 

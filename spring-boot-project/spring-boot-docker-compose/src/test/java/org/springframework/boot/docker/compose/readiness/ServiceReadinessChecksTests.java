@@ -25,22 +25,16 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.docker.compose.core.RunningService;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
 import org.springframework.core.test.io.support.MockSpringFactoriesLoader;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 
 /**
  * Tests for {@link ServiceReadinessChecks}.
@@ -67,8 +61,6 @@ class ServiceReadinessChecksTests {
 
 	private List<RunningService> runningServices;
 
-	private final MockServiceReadinessCheck mockTcpCheck = new MockServiceReadinessCheck();
-
 	@BeforeEach
 	void setup() {
 		this.clock = mock(Clock.class);
@@ -82,41 +74,24 @@ class ServiceReadinessChecksTests {
 	}
 
 	@Test
-	void loadCanResolveArguments() {
-		this.loader = spy(MockSpringFactoriesLoader.class);
-		createChecks();
-		then(this.loader).should()
-			.load(eq(ServiceReadinessCheck.class), ArgumentMatchers.<ArgumentResolver>assertArg((argumentResolver) -> {
-				assertThat(argumentResolver.resolve(ClassLoader.class)).isEqualTo(this.classLoader);
-				assertThat(argumentResolver.resolve(Environment.class)).isEqualTo(this.environment);
-				assertThat(argumentResolver.resolve(Binder.class)).isEqualTo(this.binder);
-			}));
-	}
-
-	@Test
 	void waitUntilReadyWhenImmediatelyReady() {
 		MockServiceReadinessCheck check = new MockServiceReadinessCheck();
-		this.loader.addInstance(ServiceReadinessCheck.class, check);
-		createChecks().waitUntilReady(this.runningServices);
+		createChecks(check).waitUntilReady(this.runningServices);
 		assertThat(check.getChecked()).contains(this.runningService);
-		assertThat(this.mockTcpCheck.getChecked()).contains(this.runningService);
 	}
 
 	@Test
 	void waitUntilReadyWhenTakesTimeToBeReady() {
 		MockServiceReadinessCheck check = new MockServiceReadinessCheck(2);
-		this.loader.addInstance(ServiceReadinessCheck.class, check);
-		createChecks().waitUntilReady(this.runningServices);
+		createChecks(check).waitUntilReady(this.runningServices);
 		assertThat(check.getChecked()).hasSize(2).contains(this.runningService);
-		assertThat(this.mockTcpCheck.getChecked()).contains(this.runningService);
 	}
 
 	@Test
 	void waitUntilReadyWhenTimeout() {
 		MockServiceReadinessCheck check = new MockServiceReadinessCheck(Integer.MAX_VALUE);
-		this.loader.addInstance(ServiceReadinessCheck.class, check);
 		assertThatExceptionOfType(ReadinessTimeoutException.class)
-			.isThrownBy(() -> createChecks().waitUntilReady(this.runningServices))
+			.isThrownBy(() -> createChecks(check).waitUntilReady(this.runningServices))
 			.satisfies((ex) -> assertThat(ex.getSuppressed()).hasSize(1));
 		assertThat(check.getChecked()).hasSizeGreaterThan(10);
 	}
@@ -125,25 +100,23 @@ class ServiceReadinessChecksTests {
 	void waitForWhenServiceHasDisableLabelDoesNotCheck() {
 		given(this.runningService.labels()).willReturn(Map.of("org.springframework.boot.readiness-check.disable", ""));
 		MockServiceReadinessCheck check = new MockServiceReadinessCheck();
-		this.loader.addInstance(ServiceReadinessCheck.class, check);
-		createChecks().waitUntilReady(this.runningServices);
+		createChecks(check).waitUntilReady(this.runningServices);
 		assertThat(check.getChecked()).isEmpty();
-		assertThat(this.mockTcpCheck.getChecked()).isEmpty();
 	}
 
 	void sleep(Duration duration) {
 		this.now = this.now.plus(duration);
 	}
 
-	private ServiceReadinessChecks createChecks() {
+	private ServiceReadinessChecks createChecks(TcpConnectServiceReadinessCheck check) {
 		return new ServiceReadinessChecks(this.clock, this::sleep, this.loader, this.classLoader, this.environment,
-				this.binder, (properties) -> this.mockTcpCheck);
+				this.binder, (properties) -> check);
 	}
 
 	/**
-	 * Mock {@link ServiceReadinessCheck}.
+	 * Mock {@link TcpConnectServiceReadinessCheck}.
 	 */
-	static class MockServiceReadinessCheck implements ServiceReadinessCheck {
+	static class MockServiceReadinessCheck extends TcpConnectServiceReadinessCheck {
 
 		private final Integer failUntil;
 
@@ -154,6 +127,7 @@ class ServiceReadinessChecksTests {
 		}
 
 		MockServiceReadinessCheck(Integer failUntil) {
+			super(null);
 			this.failUntil = failUntil;
 		}
 

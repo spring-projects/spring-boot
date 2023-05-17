@@ -184,8 +184,6 @@ You can also change timeout values in your `application.properties` or `applicat
 
 The overall timeout can be configured using configprop:spring.docker.compose.readiness.timeout[].
 
-TIP: You can also provide your own `ServiceReadinessCheck` implementations and register them in the `spring.factories` file.
-
 
 
 [[features.docker-compose.lifecycle]]

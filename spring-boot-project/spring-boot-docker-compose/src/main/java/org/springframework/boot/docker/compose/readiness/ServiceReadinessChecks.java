@@ -32,12 +32,10 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.docker.compose.core.RunningService;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.SpringFactoriesLoader;
-import org.springframework.core.io.support.SpringFactoriesLoader.ArgumentResolver;
 import org.springframework.core.log.LogMessage;
 
 /**
- * A collection of {@link ServiceReadinessCheck} instances that can be used to
- * {@link #wait() wait} for {@link RunningService services} to be ready.
+ * Utility used to {@link #wait() wait} for {@link RunningService services} to be ready.
  *
  * @author Moritz Halbritter
  * @author Andy Wilkinson
@@ -58,7 +56,7 @@ public class ServiceReadinessChecks {
 
 	private final ReadinessProperties properties;
 
-	private final List<ServiceReadinessCheck> checks;
+	private final TcpConnectServiceReadinessCheck check;
 
 	public ServiceReadinessChecks(ClassLoader classLoader, Environment environment, Binder binder) {
 		this(Clock.systemUTC(), ServiceReadinessChecks::sleep,
@@ -68,15 +66,11 @@ public class ServiceReadinessChecks {
 
 	ServiceReadinessChecks(Clock clock, Consumer<Duration> sleep, SpringFactoriesLoader loader, ClassLoader classLoader,
 			Environment environment, Binder binder,
-			Function<ReadinessProperties.Tcp, ServiceReadinessCheck> tcpCheckFactory) {
-		ArgumentResolver argumentResolver = ArgumentResolver.of(ClassLoader.class, classLoader)
-			.and(Environment.class, environment)
-			.and(Binder.class, binder);
+			Function<ReadinessProperties.Tcp, TcpConnectServiceReadinessCheck> tcpCheckFactory) {
 		this.clock = clock;
 		this.sleep = sleep;
 		this.properties = ReadinessProperties.get(binder);
-		this.checks = new ArrayList<>(loader.load(ServiceReadinessCheck.class, argumentResolver));
-		this.checks.add(tcpCheckFactory.apply(this.properties.getTcp()));
+		this.check = tcpCheckFactory.apply(this.properties.getTcp());
 	}
 
 	/**
@@ -106,16 +100,14 @@ public class ServiceReadinessChecks {
 				continue;
 			}
 			logger.trace(LogMessage.format("Checking readiness of service '%s'", service));
-			for (ServiceReadinessCheck check : this.checks) {
-				try {
-					check.check(service);
-					logger.trace(LogMessage.format("Service '%s' is ready", service));
-				}
-				catch (ServiceNotReadyException ex) {
-					logger.trace(LogMessage.format("Service '%s' is not ready", service), ex);
-					exceptions = (exceptions != null) ? exceptions : new ArrayList<>();
-					exceptions.add(ex);
-				}
+			try {
+				this.check.check(service);
+				logger.trace(LogMessage.format("Service '%s' is ready", service));
+			}
+			catch (ServiceNotReadyException ex) {
+				logger.trace(LogMessage.format("Service '%s' is not ready", service), ex);
+				exceptions = (exceptions != null) ? exceptions : new ArrayList<>();
+				exceptions.add(ex);
 			}
 		}
 		return (exceptions != null) ? exceptions : Collections.emptyList();
