@@ -245,6 +245,11 @@ public class DockerComposeProperties {
 	public static class Readiness {
 
 		/**
+		 * Wait strategy to use.
+		 */
+		private Wait wait = Wait.ALWAYS;
+
+		/**
 		 * Timeout of the readiness checks.
 		 */
 		private Duration timeout = Duration.ofMinutes(2);
@@ -253,6 +258,14 @@ public class DockerComposeProperties {
 		 * TCP properties.
 		 */
 		private final Tcp tcp = new Tcp();
+
+		public Wait getWait() {
+			return this.wait;
+		}
+
+		public void setWait(Wait wait) {
+			this.wait = wait;
+		}
 
 		public Duration getTimeout() {
 			return this.timeout;
@@ -264,6 +277,29 @@ public class DockerComposeProperties {
 
 		public Tcp getTcp() {
 			return this.tcp;
+		}
+
+		/**
+		 * Readiness wait strategies.
+		 */
+		public enum Wait {
+
+			/**
+			 * Always perform readiness checks.
+			 */
+			ALWAYS,
+
+			/**
+			 * Always perform readiness checks.
+			 */
+			NEVER,
+
+			/**
+			 * Only perform readiness checks if docker was started with lifecycle
+			 * management.
+			 */
+			ONLY_IF_STARTED
+
 		}
 
 		/**

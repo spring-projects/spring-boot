@@ -29,6 +29,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.docker.compose.core.DockerCompose;
 import org.springframework.boot.docker.compose.core.DockerComposeFile;
 import org.springframework.boot.docker.compose.core.RunningService;
+import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Readiness.Wait;
 import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Start;
 import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Stop;
 import org.springframework.context.ApplicationContext;
@@ -110,15 +111,19 @@ class DockerComposeLifecycleManager {
 		LifecycleManagement lifecycleManagement = this.properties.getLifecycleManagement();
 		Start start = this.properties.getStart();
 		Stop stop = this.properties.getStop();
+		Wait wait = this.properties.getReadiness().getWait();
 		if (lifecycleManagement.shouldStart() && !dockerCompose.hasRunningServices()) {
 			start.getCommand().applyTo(dockerCompose, start.getLogLevel());
+			wait = (wait != Wait.ONLY_IF_STARTED) ? wait : Wait.ALWAYS;
 			if (lifecycleManagement.shouldStop()) {
 				this.shutdownHandlers.add(() -> stop.getCommand().applyTo(dockerCompose, stop.getTimeout()));
 			}
 		}
 		List<RunningService> runningServices = new ArrayList<>(dockerCompose.getRunningServices());
 		runningServices.removeIf(this::isIgnored);
-		this.serviceReadinessChecks.waitUntilReady(runningServices);
+		if (wait == Wait.ALWAYS || wait == null) {
+			this.serviceReadinessChecks.waitUntilReady(runningServices);
+		}
 		publishEvent(new DockerComposeServicesReadyEvent(this.applicationContext, runningServices));
 	}
 

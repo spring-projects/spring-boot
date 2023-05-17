@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.boot.docker.compose.lifecycle.DockerComposeProperties.Readiness.Wait;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,6 +49,7 @@ class DockerComposePropertiesTests {
 		assertThat(properties.getStop().getCommand()).isEqualTo(StopCommand.STOP);
 		assertThat(properties.getStop().getTimeout()).isEqualTo(Duration.ofSeconds(10));
 		assertThat(properties.getProfiles().getActive()).isEmpty();
+		assertThat(properties.getReadiness().getWait()).isEqualTo(Wait.ALWAYS);
 		assertThat(properties.getReadiness().getTimeout()).isEqualTo(Duration.ofMinutes(2));
 		assertThat(properties.getReadiness().getTcp().getConnectTimeout()).isEqualTo(Duration.ofMillis(200));
 		assertThat(properties.getReadiness().getTcp().getReadTimeout()).isEqualTo(Duration.ofMillis(200));
@@ -63,6 +65,7 @@ class DockerComposePropertiesTests {
 		source.put("spring.docker.compose.stop.command", "down");
 		source.put("spring.docker.compose.stop.timeout", "5s");
 		source.put("spring.docker.compose.profiles.active", "myprofile");
+		source.put("spring.docker.compose.readiness.wait", "only-if-started");
 		source.put("spring.docker.compose.readiness.timeout", "10s");
 		source.put("spring.docker.compose.readiness.tcp.connect-timeout", "400ms");
 		source.put("spring.docker.compose.readiness.tcp.read-timeout", "500ms");
@@ -75,6 +78,7 @@ class DockerComposePropertiesTests {
 		assertThat(properties.getStop().getCommand()).isEqualTo(StopCommand.DOWN);
 		assertThat(properties.getStop().getTimeout()).isEqualTo(Duration.ofSeconds(5));
 		assertThat(properties.getProfiles().getActive()).containsExactly("myprofile");
+		assertThat(properties.getReadiness().getWait()).isEqualTo(Wait.ONLY_IF_STARTED);
 		assertThat(properties.getReadiness().getTimeout()).isEqualTo(Duration.ofSeconds(10));
 		assertThat(properties.getReadiness().getTcp().getConnectTimeout()).isEqualTo(Duration.ofMillis(400));
 		assertThat(properties.getReadiness().getTcp().getReadTimeout()).isEqualTo(Duration.ofMillis(500));
