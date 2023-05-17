@@ -96,6 +96,12 @@ class FlywayPropertiesTests {
 	}
 
 	@Test
+	void loggersIsOverriddenToSlf4j() {
+		assertThat(new FluentConfiguration().getLoggers()).containsExactly("auto");
+		assertThat(new FlywayProperties().getLoggers()).containsExactly("slf4j");
+	}
+
+	@Test
 	void expectedPropertiesAreManaged() {
 		Map<String, PropertyDescriptor> properties = indexProperties(
 				PropertyAccessorFactory.forBeanPropertyAccess(new FlywayProperties()));
@@ -109,8 +115,8 @@ class FlywayPropertiesTests {
 		ignoreProperties(configuration, "callbacks", "classLoader", "dataSource", "javaMigrations",
 				"javaMigrationClassProvider", "pluginRegister", "resourceProvider", "resolvers");
 		// Properties we don't want to expose
-		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "loggers", "driver",
-				"modernConfig", "currentResolvedEnvironment", "reportFilename");
+		ignoreProperties(configuration, "resolversAsClassNames", "callbacksAsClassNames", "driver", "modernConfig",
+				"currentResolvedEnvironment", "reportFilename");
 		// Handled by the conversion service
 		ignoreProperties(configuration, "baselineVersionAsString", "encodingAsString", "locationsAsStrings",
 				"targetAsString");
