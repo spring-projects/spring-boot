@@ -351,7 +351,6 @@ class DockerComposeLifecycleManagerTests {
 	@SuppressWarnings("unchecked")
 	private void setUpRunningServices(boolean started, Map<String, String> labels) {
 		given(this.dockerCompose.hasDefinedServices()).willReturn(true);
-		given(this.dockerCompose.hasRunningServices()).willReturn(true);
 		RunningService runningService = mock(RunningService.class);
 		given(runningService.labels()).willReturn(labels);
 		this.runningServices = List.of(runningService);

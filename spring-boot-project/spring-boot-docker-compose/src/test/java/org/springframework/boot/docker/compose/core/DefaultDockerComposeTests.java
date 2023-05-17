@@ -97,26 +97,6 @@ class DefaultDockerComposeTests {
 	}
 
 	@Test
-	void hasRunningServicesWhenPsListsRunningServiceReturnsTrue() {
-		willReturn(List.of(new DockerCliComposePsResponse("id", "name", "image", "exited"),
-				new DockerCliComposePsResponse("id", "name", "image", "running")))
-			.given(this.cli)
-			.run(new DockerCliCommand.ComposePs());
-		DefaultDockerCompose compose = new DefaultDockerCompose(this.cli, HOST);
-		assertThat(compose.hasRunningServices()).isTrue();
-	}
-
-	@Test
-	void hasRunningServicesWhenPsListReturnsAllExitedReturnsFalse() {
-		willReturn(List.of(new DockerCliComposePsResponse("id", "name", "image", "exited"),
-				new DockerCliComposePsResponse("id", "name", "image", "running")))
-			.given(this.cli)
-			.run(new DockerCliCommand.ComposePs());
-		DefaultDockerCompose compose = new DefaultDockerCompose(this.cli, HOST);
-		assertThat(compose.hasRunningServices()).isTrue();
-	}
-
-	@Test
 	void getRunningServicesReturnsServices() {
 		String id = "123";
 		DockerCliComposePsResponse psResponse = new DockerCliComposePsResponse(id, "name", "redis", "running");

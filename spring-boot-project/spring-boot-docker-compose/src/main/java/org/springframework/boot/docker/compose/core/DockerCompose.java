@@ -74,15 +74,6 @@ public interface DockerCompose {
 	boolean hasDefinedServices();
 
 	/**
-	 * Return if services defined in the {@link DockerComposeFile} for the active profile
-	 * are running.
-	 * @return {@code true} if services are running
-	 * @see #hasDefinedServices()
-	 * @see #getRunningServices()
-	 */
-	boolean hasRunningServices();
-
-	/**
 	 * Return the running services for the active profile, or an empty list if no services
 	 * are running.
 	 * @return the list of running services
