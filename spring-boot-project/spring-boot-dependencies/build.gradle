@@ -1699,7 +1699,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Batch", "4.3.6") {
+	library("Spring Batch", "4.3.8") {
 		group("org.springframework.batch") {
 			modules = [
 				"spring-batch-core",
