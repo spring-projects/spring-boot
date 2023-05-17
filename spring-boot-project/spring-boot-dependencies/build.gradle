@@ -14,7 +14,7 @@ bom {
 			issueLabels = ["type: dependency-upgrade"]
 		}
 	}
-	library("ActiveMQ", "5.16.5") {
+	library("ActiveMQ", "5.16.6") {
 		group("org.apache.activemq") {
 			modules = [
 				"activemq-amqp",
