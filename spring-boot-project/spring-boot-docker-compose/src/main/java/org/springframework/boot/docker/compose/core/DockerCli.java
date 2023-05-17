@@ -39,7 +39,7 @@ import org.springframework.core.log.LogMessage;
  */
 class DockerCli {
 
-	private final Log logger = LogFactory.getLog(DockerCli.class);
+	private static final Log logger = LogFactory.getLog(DockerCli.class);
 
 	private final ProcessRunner processRunner;
 
@@ -68,7 +68,7 @@ class DockerCli {
 	private List<String> getDockerCommand(ProcessRunner processRunner) {
 		try {
 			String version = processRunner.run("docker", "version", "--format", "{{.Client.Version}}");
-			this.logger.trace(LogMessage.format("Using docker %s", version));
+			logger.trace(LogMessage.format("Using docker %s", version));
 			return List.of("docker");
 		}
 		catch (ProcessStartException ex) {
@@ -89,7 +89,7 @@ class DockerCli {
 			DockerCliComposeVersionResponse response = DockerJson.deserialize(
 					processRunner.run("docker", "compose", "version", "--format", "json"),
 					DockerCliComposeVersionResponse.class);
-			this.logger.trace(LogMessage.format("Using docker compose %s", response.version()));
+			logger.trace(LogMessage.format("Using docker compose %s", response.version()));
 			return List.of("docker", "compose");
 		}
 		catch (ProcessExitException ex) {
@@ -99,7 +99,7 @@ class DockerCli {
 			DockerCliComposeVersionResponse response = DockerJson.deserialize(
 					processRunner.run("docker-compose", "version", "--format", "json"),
 					DockerCliComposeVersionResponse.class);
-			this.logger.trace(LogMessage.format("Using docker-compose %s", response.version()));
+			logger.trace(LogMessage.format("Using docker-compose %s", response.version()));
 			return List.of("docker-compose");
 		}
 		catch (ProcessStartException ex) {
@@ -127,7 +127,7 @@ class DockerCli {
 		if (logLevel == null || logLevel == LogLevel.OFF) {
 			return null;
 		}
-		return (line) -> logLevel.log(this.logger, line);
+		return (line) -> logLevel.log(logger, line);
 	}
 
 	private List<String> createCommand(Type type) {
