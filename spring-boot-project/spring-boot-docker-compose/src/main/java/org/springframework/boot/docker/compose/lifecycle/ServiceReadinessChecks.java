@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.readiness;
+package org.springframework.boot.docker.compose.lifecycle;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -23,15 +23,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.docker.compose.core.RunningService;
-import org.springframework.core.env.Environment;
-import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.log.LogMessage;
 
 /**
@@ -40,9 +36,8 @@ import org.springframework.core.log.LogMessage;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
- * @since 3.1.0
  */
-public class ServiceReadinessChecks {
+class ServiceReadinessChecks {
 
 	private static final Log logger = LogFactory.getLog(ServiceReadinessChecks.class);
 
@@ -54,30 +49,28 @@ public class ServiceReadinessChecks {
 
 	private final Consumer<Duration> sleep;
 
-	private final ReadinessProperties properties;
+	private final DockerComposeProperties.Readiness properties;
 
 	private final TcpConnectServiceReadinessCheck check;
 
-	public ServiceReadinessChecks(ClassLoader classLoader, Environment environment, Binder binder) {
-		this(Clock.systemUTC(), ServiceReadinessChecks::sleep,
-				SpringFactoriesLoader.forDefaultResourceLocation(classLoader), classLoader, environment, binder,
-				TcpConnectServiceReadinessCheck::new);
+	ServiceReadinessChecks(DockerComposeProperties.Readiness properties) {
+		this(properties, Clock.systemUTC(), ServiceReadinessChecks::sleep,
+				new TcpConnectServiceReadinessCheck(properties.getTcp()));
 	}
 
-	ServiceReadinessChecks(Clock clock, Consumer<Duration> sleep, SpringFactoriesLoader loader, ClassLoader classLoader,
-			Environment environment, Binder binder,
-			Function<ReadinessProperties.Tcp, TcpConnectServiceReadinessCheck> tcpCheckFactory) {
+	ServiceReadinessChecks(DockerComposeProperties.Readiness properties, Clock clock, Consumer<Duration> sleep,
+			TcpConnectServiceReadinessCheck check) {
 		this.clock = clock;
 		this.sleep = sleep;
-		this.properties = ReadinessProperties.get(binder);
-		this.check = tcpCheckFactory.apply(this.properties.getTcp());
+		this.properties = properties;
+		this.check = check;
 	}
 
 	/**
 	 * Wait for the given services to be ready.
 	 * @param runningServices the services to wait for
 	 */
-	public void waitUntilReady(List<RunningService> runningServices) {
+	void waitUntilReady(List<RunningService> runningServices) {
 		Duration timeout = this.properties.getTimeout();
 		Instant start = this.clock.instant();
 		while (true) {

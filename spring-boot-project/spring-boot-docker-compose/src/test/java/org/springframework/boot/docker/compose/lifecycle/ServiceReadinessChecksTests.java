@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.readiness;
+package org.springframework.boot.docker.compose.lifecycle;
 
 import java.time.Clock;
 import java.time.Duration;
@@ -26,10 +26,7 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.docker.compose.core.RunningService;
-import org.springframework.core.test.io.support.MockSpringFactoriesLoader;
-import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -49,14 +46,6 @@ class ServiceReadinessChecksTests {
 
 	Instant now = Instant.now();
 
-	private MockSpringFactoriesLoader loader;
-
-	private ClassLoader classLoader;
-
-	private MockEnvironment environment;
-
-	private Binder binder;
-
 	private RunningService runningService;
 
 	private List<RunningService> runningServices;
@@ -65,10 +54,6 @@ class ServiceReadinessChecksTests {
 	void setup() {
 		this.clock = mock(Clock.class);
 		given(this.clock.instant()).willAnswer((args) -> this.now);
-		this.loader = new MockSpringFactoriesLoader();
-		this.classLoader = getClass().getClassLoader();
-		this.environment = new MockEnvironment();
-		this.binder = Binder.get(this.environment);
 		this.runningService = mock(RunningService.class);
 		this.runningServices = List.of(this.runningService);
 	}
@@ -109,8 +94,8 @@ class ServiceReadinessChecksTests {
 	}
 
 	private ServiceReadinessChecks createChecks(TcpConnectServiceReadinessCheck check) {
-		return new ServiceReadinessChecks(this.clock, this::sleep, this.loader, this.classLoader, this.environment,
-				this.binder, (properties) -> check);
+		DockerComposeProperties properties = new DockerComposeProperties();
+		return new ServiceReadinessChecks(properties.getReadiness(), this.clock, this::sleep, check);
 	}
 
 	/**

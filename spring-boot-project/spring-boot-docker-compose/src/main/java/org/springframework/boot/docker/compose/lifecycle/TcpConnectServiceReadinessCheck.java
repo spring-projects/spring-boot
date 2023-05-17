@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docker.compose.readiness;
+package org.springframework.boot.docker.compose.lifecycle;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -34,9 +34,9 @@ class TcpConnectServiceReadinessCheck {
 
 	private static final String DISABLE_LABEL = "org.springframework.boot.readiness-check.tcp.disable";
 
-	private final ReadinessProperties.Tcp properties;
+	private final DockerComposeProperties.Readiness.Tcp properties;
 
-	TcpConnectServiceReadinessCheck(ReadinessProperties.Tcp properties) {
+	TcpConnectServiceReadinessCheck(DockerComposeProperties.Readiness.Tcp properties) {
 		this.properties = properties;
 	}
 
