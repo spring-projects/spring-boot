@@ -70,11 +70,6 @@ class DefaultDockerCompose implements DockerCompose {
 	}
 
 	@Override
-	public boolean hasRunningServices() {
-		return runComposePs().stream().anyMatch(this::isRunning);
-	}
-
-	@Override
 	public List<RunningService> getRunningServices() {
 		List<DockerCliComposePsResponse> runningPsResponses = runComposePs().stream().filter(this::isRunning).toList();
 		if (runningPsResponses.isEmpty()) {
