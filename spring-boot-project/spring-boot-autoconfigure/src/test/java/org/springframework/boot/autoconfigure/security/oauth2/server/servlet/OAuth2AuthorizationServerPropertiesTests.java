@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.security.oauth2.server.servlet;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
+import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -73,9 +75,53 @@ class OAuth2AuthorizationServerPropertiesTests {
 	}
 
 	@Test
-	void defaultDeviceCodeTimeToLiveMatchesBuilderDefault() {
-		assertThat(new OAuth2AuthorizationServerProperties.Client().getToken().getDeviceCodeTimeToLive())
-			.isEqualTo(TokenSettings.builder().build().getDeviceCodeTimeToLive());
+	void defaultEndpointPropertiesMatchBuilderDefaults() {
+		OAuth2AuthorizationServerProperties.Endpoint endpoint = new OAuth2AuthorizationServerProperties.Endpoint();
+		AuthorizationServerSettings authorizationServerSettings = AuthorizationServerSettings.builder().build();
+		assertThat(endpoint.getAuthorizationUri()).isEqualTo(authorizationServerSettings.getAuthorizationEndpoint());
+		assertThat(endpoint.getDeviceAuthorizationUri())
+			.isEqualTo(authorizationServerSettings.getDeviceAuthorizationEndpoint());
+		assertThat(endpoint.getDeviceVerificationUri())
+			.isEqualTo(authorizationServerSettings.getDeviceVerificationEndpoint());
+		assertThat(endpoint.getTokenUri()).isEqualTo(authorizationServerSettings.getTokenEndpoint());
+		assertThat(endpoint.getJwkSetUri()).isEqualTo(authorizationServerSettings.getJwkSetEndpoint());
+		assertThat(endpoint.getTokenRevocationUri())
+			.isEqualTo(authorizationServerSettings.getTokenRevocationEndpoint());
+		assertThat(endpoint.getTokenIntrospectionUri())
+			.isEqualTo(authorizationServerSettings.getTokenIntrospectionEndpoint());
+
+		OAuth2AuthorizationServerProperties.OidcEndpoint oidc = endpoint.getOidc();
+		assertThat(oidc.getLogoutUri()).isEqualTo(authorizationServerSettings.getOidcLogoutEndpoint());
+		assertThat(oidc.getClientRegistrationUri())
+			.isEqualTo(authorizationServerSettings.getOidcClientRegistrationEndpoint());
+		assertThat(oidc.getUserInfoUri()).isEqualTo(authorizationServerSettings.getOidcUserInfoEndpoint());
+	}
+
+	@Test
+	void defaultClientPropertiesMatchBuilderDefaults() {
+		OAuth2AuthorizationServerProperties.Client client = new OAuth2AuthorizationServerProperties.Client();
+		ClientSettings clientSettings = ClientSettings.builder().build();
+		assertThat(client.isRequireProofKey()).isEqualTo(clientSettings.isRequireProofKey());
+		assertThat(client.isRequireAuthorizationConsent()).isEqualTo(clientSettings.isRequireAuthorizationConsent());
+		assertThat(client.getJwkSetUri()).isEqualTo(clientSettings.getJwkSetUrl());
+		if (clientSettings.getTokenEndpointAuthenticationSigningAlgorithm() != null) {
+			assertThat(client.getTokenEndpointAuthenticationSigningAlgorithm())
+				.isEqualTo(clientSettings.getTokenEndpointAuthenticationSigningAlgorithm().getName());
+		}
+	}
+
+	@Test
+	void defaultTokenPropertiesMatchBuilderDefaults() {
+		OAuth2AuthorizationServerProperties.Token token = new OAuth2AuthorizationServerProperties.Token();
+		TokenSettings tokenSettings = TokenSettings.builder().build();
+		assertThat(token.getAuthorizationCodeTimeToLive()).isEqualTo(tokenSettings.getAuthorizationCodeTimeToLive());
+		assertThat(token.getAccessTokenTimeToLive()).isEqualTo(tokenSettings.getAccessTokenTimeToLive());
+		assertThat(token.getAccessTokenFormat()).isEqualTo(tokenSettings.getAccessTokenFormat().getValue());
+		assertThat(token.getDeviceCodeTimeToLive()).isEqualTo(tokenSettings.getDeviceCodeTimeToLive());
+		assertThat(token.isReuseRefreshTokens()).isEqualTo(tokenSettings.isReuseRefreshTokens());
+		assertThat(token.getRefreshTokenTimeToLive()).isEqualTo(tokenSettings.getRefreshTokenTimeToLive());
+		assertThat(token.getIdTokenSignatureAlgorithm())
+			.isEqualTo(tokenSettings.getIdTokenSignatureAlgorithm().getName());
 	}
 
 }
