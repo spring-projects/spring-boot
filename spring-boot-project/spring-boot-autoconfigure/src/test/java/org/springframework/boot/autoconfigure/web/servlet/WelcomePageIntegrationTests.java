@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -56,6 +57,15 @@ class WelcomePageIntegrationTests {
 				.header("Accept", MediaType.ALL.toString()).build();
 		ResponseEntity<String> content = this.template.exchange(entity, String.class);
 		assertThat(content.getBody()).contains("/custom-");
+		assertThat(content.getStatusCode()).isEqualTo(HttpStatus.OK);
+	}
+
+	@Test
+	void notAcceptableWelcomePage() throws Exception {
+		RequestEntity<?> entity = RequestEntity.get(new URI("http://localhost:" + this.port + "/"))
+				.header("Accept", "spring/boot").build();
+		ResponseEntity<String> content = this.template.exchange(entity, String.class);
+		assertThat(content.getStatusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE);
 	}
 
 	@Configuration
