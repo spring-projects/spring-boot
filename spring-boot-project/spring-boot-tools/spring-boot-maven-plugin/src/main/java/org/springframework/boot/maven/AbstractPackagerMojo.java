@@ -198,18 +198,10 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	private ArtifactsFilter[] getAdditionalFilters() {
 		List<ArtifactsFilter> filters = new ArrayList<>();
 		if (this.excludeDevtools) {
-			Exclude exclude = new Exclude();
-			exclude.setGroupId("org.springframework.boot");
-			exclude.setArtifactId("spring-boot-devtools");
-			ExcludeFilter filter = new ExcludeFilter(exclude);
-			filters.add(filter);
+			filters.add(DEVTOOLS_EXCLUDE_FILTER);
 		}
 		if (this.excludeDockerCompose) {
-			Exclude exclude = new Exclude();
-			exclude.setGroupId("org.springframework.boot");
-			exclude.setArtifactId("spring-boot-docker-compose");
-			ExcludeFilter filter = new ExcludeFilter(exclude);
-			filters.add(filter);
+			filters.add(DOCKER_COMPOSE_EXCLUDE_FILTER);
 		}
 		if (!this.includeSystemScope) {
 			filters.add(new ScopeFilter(null, Artifact.SCOPE_SYSTEM));

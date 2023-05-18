@@ -176,6 +176,15 @@ class AotTests {
 		});
 	}
 
+	@TestTemplate
+	void whenAotWithDevelopmentOnlyExclusions(MavenBuild mavenBuild) {
+		mavenBuild.project("aot-development-only-exclusions").goals("package").execute((project) -> {
+			Path aotDirectory = project.toPath().resolve("target/spring-aot/main");
+			assertThat(collectRelativePaths(aotDirectory.resolve("sources")))
+				.contains(Path.of("org", "test", "SampleApplication__ApplicationContextInitializer.java"));
+		});
+	}
+
 	List<Path> collectRelativePaths(Path sourceDirectory) {
 		try (Stream<Path> pathStream = Files.walk(sourceDirectory)) {
 			return pathStream.filter(Files::isRegularFile)
