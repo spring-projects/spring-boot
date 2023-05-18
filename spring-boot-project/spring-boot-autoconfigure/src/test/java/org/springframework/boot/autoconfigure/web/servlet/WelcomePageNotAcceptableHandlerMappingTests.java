@@ -16,55 +16,50 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
-import java.util.Collections;
-import java.util.Map;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.servlet.ViewResolver;
-import org.springframework.web.servlet.view.AbstractView;
-import org.springframework.web.servlet.view.InternalResourceView;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
- * Tests for {@link WelcomePageHandlerMapping}.
+ * Tests for {@link WelcomePageNotAcceptableHandlerMapping}.
  *
- * @author Andy Wilkinson
+ * @author Phillip Webb
  */
-class WelcomePageHandlerMappingTests {
+class WelcomePageNotAcceptableHandlerMappingTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withUserConfiguration(HandlerMappingConfiguration.class)
 		.withConfiguration(AutoConfigurations.of(PropertyPlaceholderAutoConfiguration.class));
 
 	@Test
-	void isOrderedAtLowPriority() {
+	void isOrderedAtLowPriorityButAboveResourceHandlerRegistry() {
 		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class).run((context) -> {
-			WelcomePageHandlerMapping handler = context.getBean(WelcomePageHandlerMapping.class);
-			assertThat(handler.getOrder()).isEqualTo(2);
+			WelcomePageNotAcceptableHandlerMapping handler = context
+				.getBean(WelcomePageNotAcceptableHandlerMapping.class);
+			ResourceHandlerRegistry registry = new ResourceHandlerRegistry(context, null);
+			Integer resourceOrder = (Integer) ReflectionTestUtils.getField(registry, "order");
+			assertThat(handler.getOrder()).isEqualTo(Ordered.LOWEST_PRECEDENCE - 10);
+			assertThat(handler.getOrder()).isLessThan(resourceOrder);
 		});
 	}
 
@@ -74,27 +69,16 @@ class WelcomePageHandlerMappingTests {
 			.run((context) -> MockMvcBuilders.webAppContextSetup(context)
 				.build()
 				.perform(get("/").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk())
-				.andExpect(forwardedUrl("index.html")));
+				.andExpect(status().isNotAcceptable()));
 	}
 
 	@Test
-	void handlesRequestForStaticPageThatAcceptsAll() {
-		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class)
-			.run((context) -> MockMvcBuilders.webAppContextSetup(context)
-				.build()
-				.perform(get("/").accept(MediaType.ALL))
-				.andExpect(status().isOk())
-				.andExpect(forwardedUrl("index.html")));
-	}
-
-	@Test
-	void doesNotHandleRequestThatDoesNotAcceptTextHtml() {
+	void handlesRequestForStaticPagetThatDoesNotAcceptTextHtml() {
 		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class)
 			.run((context) -> MockMvcBuilders.webAppContextSetup(context)
 				.build()
 				.perform(get("/").accept(MediaType.APPLICATION_JSON))
-				.andExpect(status().isNotFound()));
+				.andExpect(status().isNotAcceptable()));
 	}
 
 	@Test
@@ -103,8 +87,7 @@ class WelcomePageHandlerMappingTests {
 			.run((context) -> MockMvcBuilders.webAppContextSetup(context)
 				.build()
 				.perform(get("/"))
-				.andExpect(status().isOk())
-				.andExpect(forwardedUrl("index.html")));
+				.andExpect(status().isNotAcceptable()));
 	}
 
 	@Test
@@ -113,15 +96,15 @@ class WelcomePageHandlerMappingTests {
 			.run((context) -> MockMvcBuilders.webAppContextSetup(context)
 				.build()
 				.perform(get("/").header(HttpHeaders.ACCEPT, ""))
-				.andExpect(status().isOk())
-				.andExpect(forwardedUrl("index.html")));
+				.andExpect(status().isNotAcceptable()));
 	}
 
 	@Test
 	void rootHandlerIsNotRegisteredWhenStaticPathPatternIsNotSlashStarStar() {
 		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class)
 			.withPropertyValues("static-path-pattern=/foo/**")
-			.run((context) -> assertThat(context.getBean(WelcomePageHandlerMapping.class).getRootHandler()).isNull());
+			.run((context) -> assertThat(context.getBean(WelcomePageNotAcceptableHandlerMapping.class).getRootHandler())
+				.isNull());
 	}
 
 	@Test
@@ -132,46 +115,15 @@ class WelcomePageHandlerMappingTests {
 			.andExpect(status().isNotFound()));
 	}
 
-	@Test
-	void handlesRequestForTemplateThatAcceptsTextHtml() {
-		this.contextRunner.withUserConfiguration(TemplateConfiguration.class).run((context) -> {
-			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
-			mockMvc.perform(get("/").accept(MediaType.TEXT_HTML))
-				.andExpect(status().isOk())
-				.andExpect(content().string("index template"));
-		});
-	}
-
-	@Test
-	void handlesRequestForTemplateThatAcceptsAll() {
-		this.contextRunner.withUserConfiguration(TemplateConfiguration.class).run((context) -> {
-			MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
-			mockMvc.perform(get("/").accept(MediaType.ALL))
-				.andExpect(status().isOk())
-				.andExpect(content().string("index template"));
-		});
-	}
-
-	@Test
-	void prefersAStaticResourceToATemplate() {
-		this.contextRunner.withUserConfiguration(StaticResourceConfiguration.class, TemplateConfiguration.class)
-			.run((context) -> {
-				MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
-				mockMvc.perform(get("/").accept(MediaType.ALL))
-					.andExpect(status().isOk())
-					.andExpect(forwardedUrl("index.html"));
-			});
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	static class HandlerMappingConfiguration {
 
 		@Bean
-		WelcomePageHandlerMapping handlerMapping(ApplicationContext applicationContext,
+		WelcomePageNotAcceptableHandlerMapping handlerMapping(ApplicationContext applicationContext,
 				ObjectProvider<TemplateAvailabilityProviders> templateAvailabilityProviders,
 				ObjectProvider<Resource> staticIndexPage,
 				@Value("${static-path-pattern:/**}") String staticPathPattern) {
-			return new WelcomePageHandlerMapping(
+			return new WelcomePageNotAcceptableHandlerMapping(
 					templateAvailabilityProviders
 						.getIfAvailable(() -> new TemplateAvailabilityProviders(applicationContext)),
 					applicationContext, staticIndexPage.getIfAvailable(), staticPathPattern);
@@ -185,43 +137,6 @@ class WelcomePageHandlerMappingTests {
 		@Bean
 		Resource staticIndexPage() {
 			return new FileSystemResource("src/test/resources/welcome-page/index.html");
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TemplateConfiguration {
-
-		@Bean
-		TemplateAvailabilityProviders templateAvailabilityProviders() {
-			return new TestTemplateAvailabilityProviders(
-					(view, environment, classLoader, resourceLoader) -> view.equals("index"));
-		}
-
-		@Bean
-		ViewResolver viewResolver() {
-			return (name, locale) -> {
-				if (name.startsWith("forward:")) {
-					return new InternalResourceView(name.substring("forward:".length()));
-				}
-				return new AbstractView() {
-
-					@Override
-					protected void renderMergedOutputModel(Map<String, Object> model, HttpServletRequest request,
-							HttpServletResponse response) throws Exception {
-						response.getWriter().print(name + " template");
-					}
-
-				};
-			};
-		}
-
-	}
-
-	static class TestTemplateAvailabilityProviders extends TemplateAvailabilityProviders {
-
-		TestTemplateAvailabilityProviders(TemplateAvailabilityProvider provider) {
-			super(Collections.singletonList(provider));
 		}
 
 	}
