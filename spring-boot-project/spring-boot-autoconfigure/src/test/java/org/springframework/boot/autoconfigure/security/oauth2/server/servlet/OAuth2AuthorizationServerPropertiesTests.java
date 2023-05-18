@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.security.oauth2.server.servlet;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.security.oauth2.server.authorization.settings.AuthorizationServerSettings;
+import org.springframework.security.oauth2.server.authorization.settings.ClientSettings;
 import org.springframework.security.oauth2.server.authorization.settings.TokenSettings;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -73,9 +75,46 @@ class OAuth2AuthorizationServerPropertiesTests {
 	}
 
 	@Test
-	void defaultDeviceCodeTimeToLiveMatchesBuilderDefault() {
-		assertThat(new OAuth2AuthorizationServerProperties.Client().getToken().getDeviceCodeTimeToLive())
-			.isEqualTo(TokenSettings.builder().build().getDeviceCodeTimeToLive());
+	void defaultEndpointPropertiesMatchBuilderDefaults() {
+		OAuth2AuthorizationServerProperties.Endpoint properties = new OAuth2AuthorizationServerProperties.Endpoint();
+		AuthorizationServerSettings defaults = AuthorizationServerSettings.builder().build();
+		assertThat(properties.getAuthorizationUri()).isEqualTo(defaults.getAuthorizationEndpoint());
+		assertThat(properties.getDeviceAuthorizationUri()).isEqualTo(defaults.getDeviceAuthorizationEndpoint());
+		assertThat(properties.getDeviceVerificationUri()).isEqualTo(defaults.getDeviceVerificationEndpoint());
+		assertThat(properties.getTokenUri()).isEqualTo(defaults.getTokenEndpoint());
+		assertThat(properties.getJwkSetUri()).isEqualTo(defaults.getJwkSetEndpoint());
+		assertThat(properties.getTokenRevocationUri()).isEqualTo(defaults.getTokenRevocationEndpoint());
+		assertThat(properties.getTokenIntrospectionUri()).isEqualTo(defaults.getTokenIntrospectionEndpoint());
+		OAuth2AuthorizationServerProperties.OidcEndpoint oidc = properties.getOidc();
+		assertThat(oidc.getLogoutUri()).isEqualTo(defaults.getOidcLogoutEndpoint());
+		assertThat(oidc.getClientRegistrationUri()).isEqualTo(defaults.getOidcClientRegistrationEndpoint());
+		assertThat(oidc.getUserInfoUri()).isEqualTo(defaults.getOidcUserInfoEndpoint());
+	}
+
+	@Test
+	void defaultClientPropertiesMatchBuilderDefaults() {
+		OAuth2AuthorizationServerProperties.Client properties = new OAuth2AuthorizationServerProperties.Client();
+		ClientSettings defaults = ClientSettings.builder().build();
+		assertThat(properties.isRequireProofKey()).isEqualTo(defaults.isRequireProofKey());
+		assertThat(properties.isRequireAuthorizationConsent()).isEqualTo(defaults.isRequireAuthorizationConsent());
+		assertThat(properties.getJwkSetUri()).isEqualTo(defaults.getJwkSetUrl());
+		assertThat(properties.getTokenEndpointAuthenticationSigningAlgorithm())
+			.isEqualTo((defaults.getTokenEndpointAuthenticationSigningAlgorithm() != null)
+					? defaults.getTokenEndpointAuthenticationSigningAlgorithm().getName() : null);
+	}
+
+	@Test
+	void defaultTokenPropertiesMatchBuilderDefaults() {
+		OAuth2AuthorizationServerProperties.Token properties = new OAuth2AuthorizationServerProperties.Token();
+		TokenSettings defaults = TokenSettings.builder().build();
+		assertThat(properties.getAuthorizationCodeTimeToLive()).isEqualTo(defaults.getAuthorizationCodeTimeToLive());
+		assertThat(properties.getAccessTokenTimeToLive()).isEqualTo(defaults.getAccessTokenTimeToLive());
+		assertThat(properties.getAccessTokenFormat()).isEqualTo(defaults.getAccessTokenFormat().getValue());
+		assertThat(properties.getDeviceCodeTimeToLive()).isEqualTo(defaults.getDeviceCodeTimeToLive());
+		assertThat(properties.isReuseRefreshTokens()).isEqualTo(defaults.isReuseRefreshTokens());
+		assertThat(properties.getRefreshTokenTimeToLive()).isEqualTo(defaults.getRefreshTokenTimeToLive());
+		assertThat(properties.getIdTokenSignatureAlgorithm())
+			.isEqualTo(defaults.getIdTokenSignatureAlgorithm().getName());
 	}
 
 }
