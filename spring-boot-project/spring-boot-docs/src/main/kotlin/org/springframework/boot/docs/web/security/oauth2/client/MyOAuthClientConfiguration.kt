@@ -19,15 +19,26 @@ package org.springframework.boot.docs.web.security.oauth2.client
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
+import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.web.SecurityFilterChain
 
 @Configuration(proxyBeanMethods = false)
-class MyOAuthClientConfiguration {
+@EnableWebSecurity
+open class MyOAuthClientConfiguration {
 
 	@Bean
-	fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-		http.authorizeHttpRequests { requests -> requests.anyRequest().authenticated() }
-		http.oauth2Login { login -> login.redirectionEndpoint { redirectionEndpoint -> redirectionEndpoint.baseUri("custom-callback") } }
+	open fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+		http {
+			authorizeHttpRequests {
+				authorize(anyRequest, authenticated)
+			}
+			oauth2Login {
+				redirectionEndpoint {
+					baseUri = "/login/oauth2/callback/*"
+				}
+			}
+		}
 		return http.build()
 	}
 
