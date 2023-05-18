@@ -764,6 +764,21 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	void loggers() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.run((context) -> assertThat(context.getBean(Flyway.class).getConfiguration().getLoggers())
+				.containsExactly("slf4j"));
+	}
+
+	@Test
+	void overrideLoggers() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.loggers=log4j2")
+			.run((context) -> assertThat(context.getBean(Flyway.class).getConfiguration().getLoggers())
+				.containsExactly("log4j2"));
+	}
+
+	@Test
 	void shouldRegisterResourceHints() {
 		RuntimeHints runtimeHints = new RuntimeHints();
 		new FlywayAutoConfigurationRuntimeHints().registerHints(runtimeHints, getClass().getClassLoader());

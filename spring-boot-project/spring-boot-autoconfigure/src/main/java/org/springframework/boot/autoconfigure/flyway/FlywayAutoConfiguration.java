@@ -245,6 +245,8 @@ public class FlywayAutoConfiguration {
 				.to((prefix) -> configuration.scriptPlaceholderPrefix(prefix));
 			map.from(properties.getScriptPlaceholderSuffix())
 				.to((suffix) -> configuration.scriptPlaceholderSuffix(suffix));
+			map.from(properties.isExecuteInTransaction()).to(configuration::executeInTransaction);
+			map.from(properties::getLoggers).to(configuration::loggers);
 			// Flyway Teams properties
 			map.from(properties.getBatch()).to(configuration::batch);
 			map.from(properties.getDryRunOutput()).to(configuration::dryRunOutput);
@@ -269,7 +271,6 @@ public class FlywayAutoConfiguration {
 				.as((patterns) -> patterns.toArray(new String[0]))
 				.to(configuration::ignoreMigrationPatterns);
 			map.from(properties.getDetectEncoding()).to(configuration::detectEncoding);
-			map.from(properties.isExecuteInTransaction()).to(configuration::executeInTransaction);
 		}
 
 		private void configureSqlServerKerberosLoginFile(FluentConfiguration configuration,

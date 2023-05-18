@@ -367,6 +367,11 @@ public class FlywayProperties {
 	 */
 	private boolean executeInTransaction = true;
 
+	/**
+	 * Loggers Flyway should use.
+	 */
+	private String[] loggers = { "slf4j" };
+
 	public boolean isEnabled() {
 		return this.enabled;
 	}
@@ -853,6 +858,14 @@ public class FlywayProperties {
 
 	public void setExecuteInTransaction(boolean executeInTransaction) {
 		this.executeInTransaction = executeInTransaction;
+	}
+
+	public String[] getLoggers() {
+		return this.loggers;
+	}
+
+	public void setLoggers(String[] loggers) {
+		this.loggers = loggers;
 	}
 
 }
