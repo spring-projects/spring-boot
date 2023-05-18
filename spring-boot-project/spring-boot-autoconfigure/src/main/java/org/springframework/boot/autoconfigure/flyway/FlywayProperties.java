@@ -254,6 +254,26 @@ public class FlywayProperties {
 	private boolean validateOnMigrate = true;
 
 	/**
+	 * Prefix of placeholders in migration scripts.
+	 */
+	private String scriptPlaceholderPrefix = "FP__";
+
+	/**
+	 * Suffix of placeholders in migration scripts.
+	 */
+	private String scriptPlaceholderSuffix = "__";
+
+	/**
+	 * Whether Flyway should execute SQL within a transaction.
+	 */
+	private boolean executeInTransaction = true;
+
+	/**
+	 * Loggers Flyway should use.
+	 */
+	private String[] loggers = { "slf4j" };
+
+	/**
 	 * Whether to batch SQL statements when executing them. Requires Flyway Teams.
 	 */
 	private Boolean batch;
@@ -351,26 +371,6 @@ public class FlywayProperties {
 	 * Flyway Teams.
 	 */
 	private Boolean detectEncoding;
-
-	/**
-	 * Prefix of placeholders in migration scripts.
-	 */
-	private String scriptPlaceholderPrefix = "FP__";
-
-	/**
-	 * Suffix of placeholders in migration scripts.
-	 */
-	private String scriptPlaceholderSuffix = "__";
-
-	/**
-	 * Whether Flyway should execute SQL within a transaction.
-	 */
-	private boolean executeInTransaction = true;
-
-	/**
-	 * Loggers Flyway should use.
-	 */
-	private String[] loggers = { "slf4j" };
 
 	public boolean isEnabled() {
 		return this.enabled;
@@ -692,6 +692,38 @@ public class FlywayProperties {
 		this.validateOnMigrate = validateOnMigrate;
 	}
 
+	public String getScriptPlaceholderPrefix() {
+		return this.scriptPlaceholderPrefix;
+	}
+
+	public void setScriptPlaceholderPrefix(String scriptPlaceholderPrefix) {
+		this.scriptPlaceholderPrefix = scriptPlaceholderPrefix;
+	}
+
+	public String getScriptPlaceholderSuffix() {
+		return this.scriptPlaceholderSuffix;
+	}
+
+	public void setScriptPlaceholderSuffix(String scriptPlaceholderSuffix) {
+		this.scriptPlaceholderSuffix = scriptPlaceholderSuffix;
+	}
+
+	public boolean isExecuteInTransaction() {
+		return this.executeInTransaction;
+	}
+
+	public void setExecuteInTransaction(boolean executeInTransaction) {
+		this.executeInTransaction = executeInTransaction;
+	}
+
+	public String[] getLoggers() {
+		return this.loggers;
+	}
+
+	public void setLoggers(String[] loggers) {
+		this.loggers = loggers;
+	}
+
 	public Boolean getBatch() {
 		return this.batch;
 	}
@@ -834,38 +866,6 @@ public class FlywayProperties {
 
 	public void setDetectEncoding(final Boolean detectEncoding) {
 		this.detectEncoding = detectEncoding;
-	}
-
-	public String getScriptPlaceholderPrefix() {
-		return this.scriptPlaceholderPrefix;
-	}
-
-	public void setScriptPlaceholderPrefix(String scriptPlaceholderPrefix) {
-		this.scriptPlaceholderPrefix = scriptPlaceholderPrefix;
-	}
-
-	public String getScriptPlaceholderSuffix() {
-		return this.scriptPlaceholderSuffix;
-	}
-
-	public void setScriptPlaceholderSuffix(String scriptPlaceholderSuffix) {
-		this.scriptPlaceholderSuffix = scriptPlaceholderSuffix;
-	}
-
-	public boolean isExecuteInTransaction() {
-		return this.executeInTransaction;
-	}
-
-	public void setExecuteInTransaction(boolean executeInTransaction) {
-		this.executeInTransaction = executeInTransaction;
-	}
-
-	public String[] getLoggers() {
-		return this.loggers;
-	}
-
-	public void setLoggers(String[] loggers) {
-		this.loggers = loggers;
 	}
 
 }
