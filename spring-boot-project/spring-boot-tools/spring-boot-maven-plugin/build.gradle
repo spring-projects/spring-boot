@@ -46,6 +46,8 @@ dependencies {
 
 	mavenRepository(project(path: ":spring-boot-project:spring-boot", configuration: "mavenRepository"))
 	mavenRepository(project(path: ":spring-boot-project:spring-boot-test", configuration: "mavenRepository"))
+	mavenRepository(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "mavenRepository"))
+	mavenRepository(project(path: ":spring-boot-project:spring-boot-docker-compose", configuration: "mavenRepository"))
 
 	runtimeOnly("org.sonatype.plexus:plexus-build-api")
 
