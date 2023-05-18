@@ -126,6 +126,7 @@ public class OpenTelemetryAutoConfiguration {
 	}
 
 	@Bean
+	@ConditionalOnMissingBean
 	SpanProcessor otelSpanProcessor(ObjectProvider<SpanExporter> spanExporters,
 			ObjectProvider<SpanExportingPredicate> spanExportingPredicates, ObjectProvider<SpanReporter> spanReporters,
 			ObjectProvider<SpanFilter> spanFilters) {
