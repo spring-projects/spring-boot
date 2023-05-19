@@ -18,22 +18,26 @@ package org.springframework.boot.context.properties;
 
 import java.util.stream.Stream;
 
+import org.assertj.core.api.AbstractAssert;
+import org.assertj.core.api.AssertProvider;
+import org.assertj.core.error.BasicErrorMessageFactory;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.aot.generate.GenerationContext;
 import org.springframework.aot.hint.TypeHint;
 import org.springframework.aot.hint.TypeReference;
 import org.springframework.aot.test.generate.TestGenerationContext;
 import org.springframework.beans.factory.aot.AotServices;
 import org.springframework.beans.factory.aot.BeanFactoryInitializationAotProcessor;
-import org.springframework.beans.factory.aot.BeanFactoryInitializationCode;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBeanFactoryInitializationAotProcessor.ConfigurationPropertiesReflectionHintsContribution;
+import org.springframework.boot.context.properties.bind.BindMethod;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ConfigurationPropertiesBeanFactoryInitializationAotProcessor}.
@@ -41,6 +45,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Moritz Halbritter
  * @author Sebastien Deleuze
+ * @author Andy Wilkinson
  */
 class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 
@@ -58,43 +63,191 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessorTests {
 	}
 
 	@Test
-	void processManuallyRegisteredSingleton() {
+	void manuallyRegisteredSingletonBindsAsJavaBean() {
 		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 		beanFactory.registerSingleton("test", new SampleProperties());
 		ConfigurationPropertiesReflectionHintsContribution contribution = process(beanFactory);
-		assertThat(contribution.getTypes()).containsExactly(SampleProperties.class);
+		assertThat(singleBindable(contribution)).hasBindMethod(BindMethod.JAVA_BEAN).hasType(SampleProperties.class);
 		assertThat(typeHints(contribution).map(TypeHint::getType))
 			.containsExactly(TypeReference.of(SampleProperties.class));
 	}
 
 	@Test
-	void processDefinedBean() {
-		ConfigurationPropertiesReflectionHintsContribution contribution = process(SampleProperties.class);
-		assertThat(contribution.getTypes()).containsExactly(SampleProperties.class);
+	void javaBeanConfigurationPropertiesBindAsJavaBean() {
+		ConfigurationPropertiesReflectionHintsContribution contribution = process(EnableJavaBeanProperties.class);
+		assertThat(singleBindable(contribution)).hasBindMethod(BindMethod.JAVA_BEAN).hasType(JavaBeanProperties.class);
 		assertThat(typeHints(contribution).map(TypeHint::getType))
-			.containsExactly(TypeReference.of(SampleProperties.class));
+			.containsExactly(TypeReference.of(JavaBeanProperties.class));
 	}
 
-	Stream<TypeHint> typeHints(ConfigurationPropertiesReflectionHintsContribution contribution) {
-		GenerationContext generationContext = new TestGenerationContext();
-		contribution.applyTo(generationContext, mock(BeanFactoryInitializationCode.class));
+	@Test
+	void constructorBindingConfigurationPropertiesBindAsValueObject() {
+		ConfigurationPropertiesReflectionHintsContribution contribution = process(
+				EnableConstructorBindingProperties.class);
+		assertThat(singleBindable(contribution)).hasBindMethod(BindMethod.VALUE_OBJECT)
+			.hasType(ConstructorBindingProperties.class);
+		assertThat(typeHints(contribution).map(TypeHint::getType))
+			.containsExactly(TypeReference.of(ConstructorBindingProperties.class));
+	}
+
+	@Test
+	void possibleConstructorBindingPropertiesDefinedThroughBeanMethodBindAsJavaBean() {
+		ConfigurationPropertiesReflectionHintsContribution contribution = process(
+				PossibleConstructorBindingPropertiesBeanMethodConfiguration.class);
+		assertThat(singleBindable(contribution)).hasBindMethod(BindMethod.JAVA_BEAN)
+			.hasType(PossibleConstructorBindingProperties.class);
+		assertThat(typeHints(contribution).map(TypeHint::getType))
+			.containsExactly(TypeReference.of(PossibleConstructorBindingProperties.class));
+	}
+
+	@Test
+	void possibleConstructorBindingPropertiesDefinedThroughEnabledAnnotationBindAsValueObject() {
+		ConfigurationPropertiesReflectionHintsContribution contribution = process(
+				EnablePossibleConstructorBindingProperties.class);
+		assertThat(singleBindable(contribution)).hasBindMethod(BindMethod.VALUE_OBJECT)
+			.hasType(PossibleConstructorBindingProperties.class);
+		assertThat(typeHints(contribution).map(TypeHint::getType))
+			.containsExactly(TypeReference.of(PossibleConstructorBindingProperties.class));
+	}
+
+	private Stream<TypeHint> typeHints(ConfigurationPropertiesReflectionHintsContribution contribution) {
+		TestGenerationContext generationContext = new TestGenerationContext();
+		contribution.applyTo(generationContext, null);
 		return generationContext.getRuntimeHints().reflection().typeHints();
 	}
 
-	private ConfigurationPropertiesReflectionHintsContribution process(Class<?>... types) {
-		DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-		for (Class<?> type : types) {
-			beanFactory.registerBeanDefinition(type.getName(), new RootBeanDefinition(type));
+	private ConfigurationPropertiesReflectionHintsContribution process(Class<?> config) {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(config)) {
+			return process(context.getBeanFactory());
 		}
-		return process(beanFactory);
 	}
 
 	private ConfigurationPropertiesReflectionHintsContribution process(ConfigurableListableBeanFactory beanFactory) {
 		return this.processor.processAheadOfTime(beanFactory);
 	}
 
+	private BindableAssertProvider singleBindable(ConfigurationPropertiesReflectionHintsContribution contribution) {
+		assertThat(contribution.getBindables()).hasSize(1);
+		return new BindableAssertProvider(contribution.getBindables().iterator().next());
+	}
+
 	@ConfigurationProperties("test")
 	static class SampleProperties {
+
+	}
+
+	@EnableConfigurationProperties(JavaBeanProperties.class)
+	static class EnableJavaBeanProperties {
+
+	}
+
+	@ConfigurationProperties("java-bean")
+	static class JavaBeanProperties {
+
+		private String value;
+
+		String getValue() {
+			return this.value;
+		}
+
+		void setValue(String value) {
+			this.value = value;
+		}
+
+	}
+
+	@EnableConfigurationProperties(ConstructorBindingProperties.class)
+	static class EnableConstructorBindingProperties {
+
+	}
+
+	@ConfigurationProperties("constructor-binding")
+	static class ConstructorBindingProperties {
+
+		private final String value;
+
+		ConstructorBindingProperties(String value) {
+			this.value = value;
+		}
+
+		String getValue() {
+			return this.value;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class PossibleConstructorBindingPropertiesBeanMethodConfiguration {
+
+		@Bean
+		@ConfigurationProperties(prefix = "bean-method")
+		PossibleConstructorBindingProperties possibleConstructorBindingProperties() {
+			return new PossibleConstructorBindingProperties("alpha");
+		}
+
+	}
+
+	@EnableConfigurationProperties(PossibleConstructorBindingProperties.class)
+	static class EnablePossibleConstructorBindingProperties {
+
+	}
+
+	@ConfigurationProperties("possible-constructor-binding")
+	static class PossibleConstructorBindingProperties {
+
+		private String value;
+
+		PossibleConstructorBindingProperties(String arg) {
+
+		}
+
+		String getValue() {
+			return this.value;
+		}
+
+		void setValue(String value) {
+			this.value = value;
+		}
+
+	}
+
+	static class BindableAssertProvider implements AssertProvider<BindableAssert> {
+
+		private final Bindable<?> bindable;
+
+		BindableAssertProvider(Bindable<?> bindable) {
+			this.bindable = bindable;
+		}
+
+		@Override
+		public BindableAssert assertThat() {
+			return new BindableAssert(this.bindable);
+		}
+
+	}
+
+	static class BindableAssert extends AbstractAssert<BindableAssert, Bindable<?>> {
+
+		BindableAssert(Bindable<?> bindable) {
+			super(bindable, BindableAssert.class);
+		}
+
+		BindableAssert hasBindMethod(BindMethod bindMethod) {
+			if (this.actual.getBindMethod() != bindMethod) {
+				throwAssertionError(
+						new BasicErrorMessageFactory("Expected %s to have bind method %s but bind method was %s",
+								this.actual, bindMethod, this.actual.getBindMethod()));
+			}
+			return this;
+		}
+
+		BindableAssert hasType(Class<?> type) {
+			if (!type.equals(this.actual.getType().resolve())) {
+				throwAssertionError(new BasicErrorMessageFactory("Expected %s to have type %s but type was %s",
+						this.actual, type, this.actual.getType().resolve()));
+			}
+			return this;
+		}
 
 	}
 
