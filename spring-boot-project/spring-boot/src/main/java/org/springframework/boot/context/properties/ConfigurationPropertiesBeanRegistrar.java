@@ -22,7 +22,7 @@ import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod;
+import org.springframework.boot.context.properties.bind.BindMethod;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
@@ -90,7 +90,7 @@ final class ConfigurationPropertiesBeanRegistrar {
 	}
 
 	private BeanDefinition createBeanDefinition(String beanName, Class<?> type) {
-		BindMethod bindMethod = BindMethod.get(type);
+		BindMethod bindMethod = ConfigurationPropertiesBean.deduceBindMethod(type);
 		RootBeanDefinition definition = new RootBeanDefinition(type);
 		BindMethodAttribute.set(definition, bindMethod);
 		if (bindMethod == BindMethod.VALUE_OBJECT) {

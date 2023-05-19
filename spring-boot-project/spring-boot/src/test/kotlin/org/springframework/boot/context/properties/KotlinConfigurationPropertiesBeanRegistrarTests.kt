@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.support.DefaultListableBeanFactory
 import org.springframework.beans.factory.support.RootBeanDefinition
+import org.springframework.boot.context.properties.bind.BindMethod
 
 /**
  * Tests for `ConfigurationPropertiesBeanRegistrar`.
@@ -30,9 +31,8 @@ class KotlinConfigurationPropertiesBeanRegistrarTests {
 		this.registrar.register(BarProperties::class.java)
 		val beanDefinition = this.beanFactory.getBeanDefinition(
 				"bar-org.springframework.boot.context.properties.KotlinConfigurationPropertiesBeanRegistrarTests\$BarProperties")
-		assertThat(beanDefinition.hasAttribute(ConfigurationPropertiesBean.BindMethod::class.java.name)).isTrue()
-		assertThat(beanDefinition.getAttribute(ConfigurationPropertiesBean.BindMethod::class.java.name))
-				.isEqualTo(ConfigurationPropertiesBean.BindMethod.VALUE_OBJECT)
+		assertThat(beanDefinition.hasAttribute(BindMethod::class.java.name)).isTrue()
+		assertThat(beanDefinition.getAttribute(BindMethod::class.java.name)).isEqualTo(BindMethod.VALUE_OBJECT)
 	}
 
 	@Test
