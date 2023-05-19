@@ -290,7 +290,7 @@ public class DockerComposeProperties {
 			ALWAYS,
 
 			/**
-			 * Always perform readiness checks.
+			 * Never perform readiness checks.
 			 */
 			NEVER,
 
