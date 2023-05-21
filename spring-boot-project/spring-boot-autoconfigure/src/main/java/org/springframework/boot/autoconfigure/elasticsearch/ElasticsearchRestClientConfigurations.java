@@ -69,8 +69,7 @@ class ElasticsearchRestClientConfigurations {
 
 		private final ElasticsearchProperties properties;
 
-		RestClientBuilderConfiguration(ElasticsearchProperties properties,
-				ObjectProvider<ElasticsearchConnectionDetails> connectionDetails) {
+		RestClientBuilderConfiguration(ElasticsearchProperties properties) {
 			this.properties = properties;
 		}
 
