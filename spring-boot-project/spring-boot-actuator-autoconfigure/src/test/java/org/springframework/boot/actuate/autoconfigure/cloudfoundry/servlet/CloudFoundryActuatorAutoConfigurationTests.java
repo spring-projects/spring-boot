@@ -69,6 +69,8 @@ class CloudFoundryActuatorAutoConfigurationTests {
 
 	private static final String V3_JSON = ApiVersion.V3.getProducedMimeType().toString();
 
+	private static final String BASE_PATH = "/cloudfoundryapplication";
+
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(SecurityAutoConfiguration.class, WebMvcAutoConfiguration.class,
 				JacksonAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
@@ -76,8 +78,6 @@ class CloudFoundryActuatorAutoConfigurationTests {
 				RestTemplateAutoConfiguration.class, ManagementContextAutoConfiguration.class,
 				ServletManagementContextAutoConfiguration.class, EndpointAutoConfiguration.class,
 				WebEndpointAutoConfiguration.class, CloudFoundryActuatorAutoConfiguration.class));
-
-	private static String BASE_PATH = "/cloudfoundryapplication";
 
 	@Test
 	void cloudFoundryPlatformActive() {
@@ -189,9 +189,9 @@ class CloudFoundryActuatorAutoConfigurationTests {
 			});
 	}
 
-	private static void testCloudFoundrySecurity(MockHttpServletRequest request, String basePath,
+	private static void testCloudFoundrySecurity(MockHttpServletRequest request, String servletPath,
 			SecurityFilterChain chain) {
-		request.setServletPath(basePath);
+		request.setServletPath(servletPath);
 		assertThat(chain.matches(request)).isTrue();
 	}
 
