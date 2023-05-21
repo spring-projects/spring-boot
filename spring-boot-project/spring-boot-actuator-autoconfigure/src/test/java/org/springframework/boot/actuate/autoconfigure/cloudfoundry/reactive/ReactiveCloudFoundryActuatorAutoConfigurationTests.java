@@ -205,10 +205,9 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	private static Boolean getMatches(List<SecurityWebFilterChain> filters, String urlTemplate) {
-		Boolean cfBaseRequestMatches = filters.get(0)
+		return filters.get(0)
 			.matches(MockServerWebExchange.from(MockServerHttpRequest.get(urlTemplate).build()))
 			.block(Duration.ofSeconds(30));
-		return cfBaseRequestMatches;
 	}
 
 	@Test
