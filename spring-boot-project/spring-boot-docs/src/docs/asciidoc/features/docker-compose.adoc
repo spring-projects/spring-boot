@@ -76,6 +76,9 @@ The following service connections are currently supported:
 | `MongoConnectionDetails`
 | Containers named "mongo"
 
+| `PulsarConnectionDetails`
+| Containers named "apachepulsar/pulsar"
+
 | `R2dbcConnectionDetails`
 | Containers named "gvenzl/oracle-xe", "mariadb", "mssql/server", "mysql", or "postgres"
 

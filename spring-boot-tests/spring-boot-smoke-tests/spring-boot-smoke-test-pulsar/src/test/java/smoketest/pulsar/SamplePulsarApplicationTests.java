@@ -32,10 +32,9 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -44,14 +43,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SamplePulsarApplicationTests {
 
 	@Container
+	@ServiceConnection
+	@SuppressWarnings("unused")
 	static final PulsarContainer container = new PulsarContainer(DockerImageNames.pulsar()).withStartupAttempts(2)
 		.withStartupTimeout(Duration.ofMinutes(3));
-
-	@DynamicPropertySource
-	static void pulsarProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.pulsar.client.service-url", container::getPulsarBrokerUrl);
-		registry.add("spring.pulsar.admin.service-url", container::getHttpServiceUrl);
-	}
 
 	abstract class PulsarApplication {
 

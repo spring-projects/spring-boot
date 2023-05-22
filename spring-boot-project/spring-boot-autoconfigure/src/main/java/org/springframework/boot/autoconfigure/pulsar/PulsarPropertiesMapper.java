@@ -53,6 +53,7 @@ final class PulsarPropertiesMapper {
 		PulsarProperties.Client properties = this.properties.getClient();
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getServiceUrl).to(clientBuilder::serviceUrl);
+
 		map.from(properties::getConnectionTimeout).to(timeoutProperty(clientBuilder::connectionTimeout));
 		map.from(properties::getOperationTimeout).to(timeoutProperty(clientBuilder::operationTimeout));
 		map.from(properties::getLookupTimeout).to(timeoutProperty(clientBuilder::lookupTimeout));
