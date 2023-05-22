@@ -16,10 +16,18 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.web;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Tests for {@link WebEndpointProperties}.
@@ -27,6 +35,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Madhura Bhave
  */
 class WebEndpointPropertiesTests {
+
+	private static final String BLANK_ERR_MSG = "Base path must start with '/' or be empty";
 
 	@Test
 	void defaultBasePathShouldBeApplication() {
@@ -38,7 +48,7 @@ class WebEndpointPropertiesTests {
 	void basePathShouldBeCleaned() {
 		WebEndpointProperties properties = new WebEndpointProperties();
 		properties.setBasePath("/");
-		assertThat(properties.getBasePath()).isEmpty();
+		assertThat(properties.getBasePath()).isNotEmpty();
 		properties.setBasePath("/actuator/");
 		assertThat(properties.getBasePath()).isEqualTo("/actuator");
 	}
@@ -57,4 +67,60 @@ class WebEndpointPropertiesTests {
 		assertThat(properties.getBasePath()).isEmpty();
 	}
 
+	@ParameterizedTest
+	@MethodSource("notToBeCleanedArguments")
+	void basePathShouldNotBeCleaned(String path, String expected) {
+		WebEndpointProperties properties = new WebEndpointProperties();
+		properties.setBasePath(path);
+		assertThat(properties.getBasePath()).isNotEmpty();
+		assertEquals(properties.getBasePath(), expected);
+	}
+
+	private static Stream<Arguments> notToBeCleanedArguments() {
+		return Stream.of(
+				Arguments.of("/path", "/path"),
+				Arguments.of("/path/", "/path"),
+				Arguments.of("/", "/"),
+				Arguments.of("/path/path2", "/path/path2"),
+				Arguments.of("/path/path2/", "/path/path2"));
+	}
+
+	@ParameterizedTest
+	@MethodSource("notEmptyPaths")
+	void basePathShouldNotBeEmpty(String path) {
+		WebEndpointProperties properties = new WebEndpointProperties();
+		properties.setBasePath(path);
+		assertThat(properties.getBasePath()).isNotEmpty();
+	}
+
+	private static Stream<Arguments> notEmptyPaths() {
+		return Stream.of(Arguments.of("/path"), Arguments.of("/path/"));
+	}
+
+	@ParameterizedTest
+	@ValueSource(strings = {""})
+	void basePathShouldBeEmpty(String path) {
+		WebEndpointProperties properties = new WebEndpointProperties();
+		properties.setBasePath(path);
+		assertThat(properties.getBasePath()).isEmpty();
+	}
+
+	@ParameterizedTest
+	@MethodSource("argumentsForExceptions")
+	void foo(String input, Class<Exception> expectedEx, String expectedExMsg) {
+		Assertions.assertThrows(
+				expectedEx, () -> new WebEndpointProperties().setBasePath(input), expectedExMsg);
+	}
+
+	private static Stream<Arguments> argumentsForExceptions() {
+		return Stream.of(
+				Arguments.of(
+						"invalidpath",
+						IllegalArgumentException.class,
+						BLANK_ERR_MSG),
+				Arguments.of(
+						"  ", IllegalArgumentException.class, BLANK_ERR_MSG),
+				Arguments.of(
+						"null", IllegalArgumentException.class, BLANK_ERR_MSG));
+	}
 }

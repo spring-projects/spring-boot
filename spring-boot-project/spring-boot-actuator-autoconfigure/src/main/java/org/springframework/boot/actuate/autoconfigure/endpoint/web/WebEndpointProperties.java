@@ -67,7 +67,7 @@ public class WebEndpointProperties {
 	}
 
 	private String cleanBasePath(String basePath) {
-		if (StringUtils.hasText(basePath) && basePath.endsWith("/")) {
+		if (StringUtils.hasText(basePath) && basePath.endsWith("/") && StringUtils.cleanPath(basePath).length() != 1) {
 			return basePath.substring(0, basePath.length() - 1);
 		}
 		return basePath;
