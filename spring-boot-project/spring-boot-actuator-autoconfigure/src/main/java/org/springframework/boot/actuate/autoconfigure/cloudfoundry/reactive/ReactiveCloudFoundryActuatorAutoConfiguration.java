@@ -175,13 +175,13 @@ public class ReactiveCloudFoundryActuatorAutoConfiguration {
 		@Override
 		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
 			if (bean instanceof WebFilterChainProxy webFilterChainProxy) {
-				return postProcess(webFilterChainProxy, this.pathMappedEndpoints.get());
+				return postProcess(webFilterChainProxy);
 			}
 			return bean;
 		}
 
-		private WebFilterChainProxy postProcess(WebFilterChainProxy existing, PathMappedEndpoints pathMappedEndpoints) {
-			List<String> paths = getPaths(pathMappedEndpoints);
+		private WebFilterChainProxy postProcess(WebFilterChainProxy existing) {
+			List<String> paths = getPaths(this.pathMappedEndpoints.get());
 			ServerWebExchangeMatcher cloudFoundryRequestMatcher = ServerWebExchangeMatchers
 				.pathMatchers(paths.toArray(new String[] {}));
 			WebFilter noOpFilter = (exchange, chain) -> chain.filter(exchange);
