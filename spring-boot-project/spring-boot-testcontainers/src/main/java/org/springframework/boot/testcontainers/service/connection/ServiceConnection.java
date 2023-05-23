@@ -62,7 +62,6 @@ public @interface ServiceConnection {
 	String value() default "";
 
 	/**
-	 * The name of the service being connected to. If not specified, the image name will
 	 * The name of the service being connected to. Container names are used to determine
 	 * the connection details that should be created when a technology-specific
 	 * {@link Container} subclass is not available.
