@@ -17,15 +17,14 @@
 package org.springframework.boot.docs.features.testing.testcontainers.serviceconnections
 
 import org.junit.jupiter.api.Test
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection
 import org.testcontainers.containers.Neo4jContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-
-@SpringBootTest
 @Testcontainers
+@SpringBootTest
 class MyIntegrationTests {
 
 	@Test

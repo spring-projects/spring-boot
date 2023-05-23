@@ -23,8 +23,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
 @Testcontainers
+@SpringBootTest
 class MyIntegrationTests {
 
 	@Container

@@ -22,8 +22,8 @@ import org.testcontainers.containers.Neo4jContainer
 import org.testcontainers.junit.jupiter.Container
 import org.testcontainers.junit.jupiter.Testcontainers
 
-@SpringBootTest
 @Testcontainers
+@SpringBootTest
 class MyIntegrationTests {
 
 	@Test
