@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -166,29 +166,91 @@ public class TracingProperties {
 	public static class Propagation {
 
 		/**
-		 * Tracing context propagation type.
+		 * Tracing context propagation types produced and consumed by the application.
+		 * Setting this property overrides the more fine-grained propagation type
+		 * properties.
 		 */
-		private PropagationType type = PropagationType.W3C;
+		private List<PropagationType> type;
 
-		public PropagationType getType() {
-			return this.type;
-		}
+		/**
+		 * Tracing context propagation types produced by the application.
+		 */
+		private List<PropagationType> produce = List.of(PropagationType.W3C);
 
-		public void setType(PropagationType type) {
+		/**
+		 * Tracing context propagation types consumed by the application.
+		 */
+		private List<PropagationType> consume = List.of(PropagationType.values());
+
+		public void setType(List<PropagationType> type) {
 			this.type = type;
 		}
 
+		public void setProduce(List<PropagationType> produce) {
+			this.produce = produce;
+		}
+
+		public void setConsume(List<PropagationType> consume) {
+			this.consume = consume;
+		}
+
+		public List<PropagationType> getType() {
+			return this.type;
+		}
+
+		public List<PropagationType> getProduce() {
+			return this.produce;
+		}
+
+		public List<PropagationType> getConsume() {
+			return this.consume;
+		}
+
+		/**
+		 * Returns the effective context propagation types produced by the application.
+		 * This will be {@link #getType()} if set or {@link #getProduce()} otherwise.
+		 * @return the effective context propagation types produced by the application
+		 */
+		List<PropagationType> getEffectiveProducedTypes() {
+			if (this.type != null) {
+				return this.type;
+			}
+			return this.produce;
+		}
+
+		/**
+		 * Returns the effective context propagation types consumed by the application.
+		 * This will be {@link #getType()} if set or {@link #getConsume()} otherwise.
+		 * @return the effective context propagation types consumed by the application
+		 */
+		List<PropagationType> getEffectiveConsumedTypes() {
+			if (this.type != null) {
+				return this.type;
+			}
+			return this.consume;
+		}
+
+		/**
+		 * Supported propagation types. The declared order of the values matter.
+		 */
 		enum PropagationType {
 
 			/**
-			 * B3 propagation type.
+			 * <a href="https://www.w3.org/TR/trace-context/">W3C</a> propagation.
+			 */
+			W3C,
+
+			/**
+			 * <a href="https://github.com/openzipkin/b3-propagation#single-header">B3
+			 * single header</a> propagation.
 			 */
 			B3,
 
 			/**
-			 * W3C propagation type.
+			 * <a href="https://github.com/openzipkin/b3-propagation#multiple-headers">B3
+			 * multiple headers</a> propagation.
 			 */
-			W3C
+			B3_MULTI;
 
 		}
 
