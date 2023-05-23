@@ -21,10 +21,10 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 
 /**
- * Package an application into an OCI image using a buildpack, but without forking
- * the lifecycle to make sure that {@code package} ran. This goal should be used
- * when configuring a mojo {@code execution} in your build. To invoke the goal on
- * the command-line, use {@code build-image} instead.
+ * Package an application into an OCI image using a buildpack, but without forking the
+ * lifecycle to make sure that {@code package} ran. This goal should be used when
+ * configuring a mojo {@code execution} in your build. To invoke the goal on the
+ * command-line, use {@code build-image} instead.
  *
  * @author Stephane Nicoll
  * @since 3.0.0
