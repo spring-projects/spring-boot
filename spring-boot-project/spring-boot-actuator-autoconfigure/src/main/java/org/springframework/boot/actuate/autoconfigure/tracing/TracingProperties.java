@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -166,29 +166,39 @@ public class TracingProperties {
 	public static class Propagation {
 
 		/**
-		 * Tracing context propagation type.
+		 * Tracing context propagation types produced by the application.
 		 */
-		private PropagationType type = PropagationType.W3C;
+		private List<PropagationType> type = List.of(PropagationType.W3C);
 
-		public PropagationType getType() {
+		public List<PropagationType> getType() {
 			return this.type;
 		}
 
-		public void setType(PropagationType type) {
+		public void setType(List<PropagationType> type) {
 			this.type = type;
 		}
 
+		/**
+		 * Supported propagation types. The declared order of the values matter.
+		 */
 		enum PropagationType {
 
 			/**
-			 * B3 propagation type.
+			 * <a href="https://www.w3.org/TR/trace-context/">W3C propagation.</a>
+			 */
+			W3C,
+
+			/**
+			 * <a href="https://github.com/openzipkin/b3-propagation#single-header">B3
+			 * single header</a> propagation.
 			 */
 			B3,
 
 			/**
-			 * W3C propagation type.
+			 * <a href="https://github.com/openzipkin/b3-propagation#multiple-headers">B3
+			 * multiple headers</a> propagation.
 			 */
-			W3C
+			B3_MULTI;
 
 		}
 

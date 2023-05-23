@@ -32,14 +32,11 @@ import io.micrometer.tracing.otel.bridge.Slf4JBaggageEventListener;
 import io.micrometer.tracing.otel.bridge.Slf4JEventListener;
 import io.micrometer.tracing.otel.propagation.BaggageTextMapPropagator;
 import io.opentelemetry.api.OpenTelemetry;
-import io.opentelemetry.api.baggage.propagation.W3CBaggagePropagator;
 import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.Tracer;
-import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.ContextStorage;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.context.propagation.TextMapPropagator;
-import io.opentelemetry.extension.trace.propagation.B3Propagator;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
@@ -66,6 +63,7 @@ import org.springframework.core.env.Environment;
  * {@link EnableAutoConfiguration Auto-configuration} for OpenTelemetry.
  *
  * @author Moritz Halbritter
+ * @author Marcin Grzejszczak
  * @since 3.0.0
  */
 @AutoConfiguration(before = MicrometerTracingAutoConfiguration.class)
@@ -185,22 +183,12 @@ public class OpenTelemetryAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnProperty(prefix = "management.tracing.propagation", name = "type", havingValue = "W3C",
-				matchIfMissing = true)
-		TextMapPropagator w3cTextMapPropagatorWithBaggage(OtelCurrentTraceContext otelCurrentTraceContext) {
+		TextMapPropagator textMapPropagatorWithBaggage(OtelCurrentTraceContext otelCurrentTraceContext) {
 			List<String> remoteFields = this.tracingProperties.getBaggage().getRemoteFields();
-			return TextMapPropagator.composite(W3CTraceContextPropagator.getInstance(),
-					W3CBaggagePropagator.getInstance(), new BaggageTextMapPropagator(remoteFields,
-							new OtelBaggageManager(otelCurrentTraceContext, remoteFields, Collections.emptyList())));
-		}
-
-		@Bean
-		@ConditionalOnProperty(prefix = "management.tracing.propagation", name = "type", havingValue = "B3")
-		TextMapPropagator b3BaggageTextMapPropagator(OtelCurrentTraceContext otelCurrentTraceContext) {
-			List<String> remoteFields = this.tracingProperties.getBaggage().getRemoteFields();
-			return TextMapPropagator.composite(B3Propagator.injectingSingleHeader(),
-					new BaggageTextMapPropagator(remoteFields,
-							new OtelBaggageManager(otelCurrentTraceContext, remoteFields, Collections.emptyList())));
+			BaggageTextMapPropagator baggagePropagator = new BaggageTextMapPropagator(remoteFields,
+					new OtelBaggageManager(otelCurrentTraceContext, remoteFields, Collections.emptyList()));
+			return CompositeTextMapPropagator.create(baggagePropagator,
+					this.tracingProperties.getPropagation().getType());
 		}
 
 		@Bean
@@ -218,18 +206,8 @@ public class OpenTelemetryAutoConfiguration {
 	static class NoBaggageConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "management.tracing.propagation", name = "type", havingValue = "B3")
-		B3Propagator b3TextMapPropagator() {
-			return B3Propagator.injectingSingleHeader();
-		}
-
-		@Bean
-		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "management.tracing.propagation", name = "type", havingValue = "W3C",
-				matchIfMissing = true)
-		W3CTraceContextPropagator w3cTextMapPropagatorWithoutBaggage() {
-			return W3CTraceContextPropagator.getInstance();
+		TextMapPropagator textMapPropagator(TracingProperties properties) {
+			return CompositeTextMapPropagator.create(properties.getPropagation().getType());
 		}
 
 	}
