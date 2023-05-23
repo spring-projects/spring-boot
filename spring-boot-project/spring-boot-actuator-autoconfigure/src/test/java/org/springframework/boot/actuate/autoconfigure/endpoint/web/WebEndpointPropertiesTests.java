@@ -107,7 +107,7 @@ class WebEndpointPropertiesTests {
 
 	@ParameterizedTest
 	@MethodSource("argumentsForExceptions")
-	void foo(String input, Class<Exception> expectedEx, String expectedExMsg) {
+	void basePathShouldThrowException(String input, Class<Exception> expectedEx, String expectedExMsg) {
 		Assertions.assertThrows(
 				expectedEx, () -> new WebEndpointProperties().setBasePath(input), expectedExMsg);
 	}
