@@ -127,10 +127,10 @@ class PrometheusMetricsExportAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresExemplarSamplerIfSpanContextSupplierIsPresent() {
-		this.contextRunner.withUserConfiguration(ExemplarsConfiguration.class)
-			.run((context) -> assertThat(context).hasSingleBean(SpanContextSupplier.class)
-				.hasSingleBean(ExemplarSampler.class)
-				.hasSingleBean(PrometheusMeterRegistry.class));
+		this.contextRunner.withUserConfiguration(SpanConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(SpanContextSupplier.class)
+						.hasSingleBean(ExemplarSampler.class)
+						.hasSingleBean(PrometheusMeterRegistry.class));
 	}
 
 	@Test
@@ -295,7 +295,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
-	static class ExemplarsConfiguration {
+	static class SpanConfiguration {
 
 		@Bean
 		SpanContextSupplier spanContextSupplier() {
@@ -319,10 +319,17 @@ class PrometheusMetricsExportAutoConfigurationTests {
 			};
 		}
 
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(BaseConfiguration.class)
+	static class ExemplarsConfiguration {
+
 		@Bean
 		ExemplarSampler exemplarSampler2() {
 			return mock(ExemplarSampler.class);
 		}
+
 	}
 
 }
