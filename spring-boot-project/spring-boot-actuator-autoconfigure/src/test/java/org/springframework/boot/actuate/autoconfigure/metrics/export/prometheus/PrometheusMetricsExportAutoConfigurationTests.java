@@ -128,9 +128,9 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	@Test
 	void autoConfiguresExemplarSamplerIfSpanContextSupplierIsPresent() {
 		this.contextRunner.withUserConfiguration(SpanConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(SpanContextSupplier.class)
-						.hasSingleBean(ExemplarSampler.class)
-						.hasSingleBean(PrometheusMeterRegistry.class));
+			.run((context) -> assertThat(context).hasSingleBean(SpanContextSupplier.class)
+				.hasSingleBean(ExemplarSampler.class)
+				.hasSingleBean(PrometheusMeterRegistry.class));
 	}
 
 	@Test
