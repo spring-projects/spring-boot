@@ -69,7 +69,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	@Test
 	void backsOfWhenExemplarSamplerIsPresent() {
 		this.contextRunner.withUserConfiguration(ExemplarsConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(DefaultExemplarSampler.class));
+			.run((context) -> assertThat(context).doesNotHaveBean(DefaultExemplarSampler.class));
 	}
 
 	@Test
