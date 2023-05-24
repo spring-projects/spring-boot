@@ -174,9 +174,7 @@ dependencies {
 	testImplementation("org.springframework:spring-orm")
 	testImplementation("org.springframework.data:spring-data-rest-webmvc")
 	testImplementation("org.springframework.integration:spring-integration-jmx")
-	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc") {
-		exclude group: "javax.servlet", module: "javax.servlet-api"
-	}
+	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 	testImplementation("org.springframework.restdocs:spring-restdocs-webtestclient")
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.yaml:snakeyaml")

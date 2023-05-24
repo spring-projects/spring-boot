@@ -24,8 +24,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 
-@SpringBootTest
 @Testcontainers
+@SpringBootTest
 class MyIntegrationTests {
 
 	@Container

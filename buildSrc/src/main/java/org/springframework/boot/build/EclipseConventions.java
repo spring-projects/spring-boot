@@ -58,7 +58,7 @@ class EclipseConventions {
 	}
 
 	private boolean isKotlinPluginContributedBuildDirectory(String path) {
-		return path.contains("/main") && path.contains("/build/classes/") || path.contains("/build/resources/");
+		return path.contains("/main") && (path.contains("/build/classes/") || path.contains("/build/resources/"));
 	}
 
 	private boolean isTest(Library library) {
