@@ -20,6 +20,8 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.exemplars.DefaultExemplarSampler;
+import io.prometheus.client.exemplars.Exemplar;
 import io.prometheus.client.exemplars.ExemplarSampler;
 import io.prometheus.client.exemplars.tracer.common.SpanContextSupplier;
 import io.prometheus.client.exporter.BasicAuthHttpConnectionFactory;
@@ -62,6 +64,12 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	@Test
 	void backsOffWithoutAClock() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(PrometheusMeterRegistry.class));
+	}
+
+	@Test
+	void backsOfWhenExemplarSamplerIsPresent() {
+		this.contextRunner.withUserConfiguration(CustomExemplarSamplerConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(DefaultExemplarSampler.class));
 	}
 
 	@Test
@@ -119,7 +127,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresExemplarSamplerIfSpanContextSupplierIsPresent() {
-		this.contextRunner.withUserConfiguration(ExemplarsConfiguration.class)
+		this.contextRunner.withUserConfiguration(DefaultExemplarSamplerConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(SpanContextSupplier.class)
 				.hasSingleBean(ExemplarSampler.class)
 				.hasSingleBean(PrometheusMeterRegistry.class));
@@ -287,7 +295,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
-	static class ExemplarsConfiguration {
+	static class DefaultExemplarSamplerConfiguration {
 
 		@Bean
 		SpanContextSupplier spanContextSupplier() {
@@ -308,6 +316,28 @@ class PrometheusMetricsExportAutoConfigurationTests {
 					return false;
 				}
 
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(BaseConfiguration.class)
+	static class CustomExemplarSamplerConfiguration {
+
+		@Bean
+		ExemplarSampler exemplarSampler() {
+			return new ExemplarSampler() {
+
+				@Override
+				public Exemplar sample(double value, double bucketFrom, double bucketTo, Exemplar previous) {
+					return null;
+				}
+
+				@Override
+				public Exemplar sample(double increment, Exemplar previous) {
+					return null;
+				}
 			};
 		}
 
