@@ -326,7 +326,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	static class ExemplarsConfiguration {
 
 		@Bean
-		ExemplarSampler exemplarSampler2() {
+		ExemplarSampler exemplarSampler() {
 			return mock(ExemplarSampler.class);
 		}
 
