@@ -41,6 +41,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
@@ -293,6 +294,37 @@ class DataSourceAutoConfigurationTests {
 				.isEqualTo(DatabaseDriver.POSTGRESQL.getDriverClassName());
 			assertThat(source.getUrl()).isEqualTo("jdbc:customdb://customdb.example.com:12345/database-1");
 		});
+	}
+
+	@Test
+	void testUsernameCustomizer() {
+		ApplicationContextRunner runner = new ApplicationContextRunner()
+				.withPropertyValues("spring.datasource.type=" + TestDataSource.class.getName())
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withBean(JdbcConnectionDetails.class, TestJdbcConnectionDetails::new)
+				.withUserConfiguration(CustomUsernameConfiguration.class);
+
+		runner.run((context) -> {
+			assertThat(context).hasSingleBean(DataSource.class);
+			TestDataSource dataSource = (TestDataSource) context.getBean(DataSource.class);
+			assertThat(dataSource.getUsername()).isEqualTo("my-custom-username");
+			assertThat(dataSource.getPassword()).isEqualTo("password-1");
+		});
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomUsernameConfiguration {
+
+		@Bean
+		DataSourceBuilderCustomizer usernameCustomizer() {
+			return new DataSourceBuilderCustomizer() {
+				@Override
+				public <T extends DataSource> void customize(DataSourceBuilder<T> builder) {
+					builder.username("my-custom-username");
+				}
+			};
+		}
+
 	}
 
 	private static Function<ApplicationContextRunner, ApplicationContextRunner> hideConnectionPools() {

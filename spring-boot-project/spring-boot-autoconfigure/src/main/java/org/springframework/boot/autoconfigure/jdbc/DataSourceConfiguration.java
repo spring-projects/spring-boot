@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -49,14 +50,15 @@ abstract class DataSourceConfiguration {
 
 	@SuppressWarnings("unchecked")
 	private static <T> T createDataSource(JdbcConnectionDetails connectionDetails, Class<? extends DataSource> type,
-			ClassLoader classLoader) {
-		return (T) DataSourceBuilder.create(classLoader)
+										  ClassLoader classLoader, List<DataSourceBuilderCustomizer> dataSourceBuilderCustomizers) {
+		DataSourceBuilder<?> builder = DataSourceBuilder.create(classLoader)
 			.type(type)
 			.driverClassName(connectionDetails.getDriverClassName())
 			.url(connectionDetails.getJdbcUrl())
 			.username(connectionDetails.getUsername())
-			.password(connectionDetails.getPassword())
-			.build();
+			.password(connectionDetails.getPassword());
+		dataSourceBuilderCustomizers.forEach(dataSourceBuilderCustomizer -> dataSourceBuilderCustomizer.customize(builder));
+		return (T) builder.build();
 	}
 
 	/**
@@ -79,10 +81,10 @@ abstract class DataSourceConfiguration {
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.tomcat")
 		org.apache.tomcat.jdbc.pool.DataSource dataSource(DataSourceProperties properties,
-				JdbcConnectionDetails connectionDetails) {
+				JdbcConnectionDetails connectionDetails, List<DataSourceBuilderCustomizer> dataSourceBuilderCustomizers) {
 			Class<? extends DataSource> dataSourceType = org.apache.tomcat.jdbc.pool.DataSource.class;
 			org.apache.tomcat.jdbc.pool.DataSource dataSource = createDataSource(connectionDetails, dataSourceType,
-					properties.getClassLoader());
+					properties.getClassLoader(), dataSourceBuilderCustomizers);
 			String validationQuery;
 			DatabaseDriver databaseDriver = DatabaseDriver.fromJdbcUrl(connectionDetails.getJdbcUrl());
 			validationQuery = databaseDriver.getValidationQuery();
@@ -113,9 +115,9 @@ abstract class DataSourceConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.hikari")
-		HikariDataSource dataSource(DataSourceProperties properties, JdbcConnectionDetails connectionDetails) {
+		HikariDataSource dataSource(DataSourceProperties properties, JdbcConnectionDetails connectionDetails, List<DataSourceBuilderCustomizer> dataSourceBuilderCustomizers) {
 			HikariDataSource dataSource = createDataSource(connectionDetails, HikariDataSource.class,
-					properties.getClassLoader());
+					properties.getClassLoader(), dataSourceBuilderCustomizers);
 			if (StringUtils.hasText(properties.getName())) {
 				dataSource.setPoolName(properties.getName());
 			}
@@ -143,9 +145,9 @@ abstract class DataSourceConfiguration {
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.dbcp2")
 		org.apache.commons.dbcp2.BasicDataSource dataSource(DataSourceProperties properties,
-				JdbcConnectionDetails connectionDetails) {
+				JdbcConnectionDetails connectionDetails, List<DataSourceBuilderCustomizer> dataSourceBuilderCustomizers) {
 			Class<? extends DataSource> dataSourceType = org.apache.commons.dbcp2.BasicDataSource.class;
-			return createDataSource(connectionDetails, dataSourceType, properties.getClassLoader());
+			return createDataSource(connectionDetails, dataSourceType, properties.getClassLoader(), dataSourceBuilderCustomizers);
 		}
 
 	}
@@ -168,10 +170,10 @@ abstract class DataSourceConfiguration {
 
 		@Bean
 		@ConfigurationProperties(prefix = "spring.datasource.oracleucp")
-		PoolDataSourceImpl dataSource(DataSourceProperties properties, JdbcConnectionDetails connectionDetails)
+		PoolDataSourceImpl dataSource(DataSourceProperties properties, JdbcConnectionDetails connectionDetails, List<DataSourceBuilderCustomizer> dataSourceBuilderCustomizers)
 				throws SQLException {
 			PoolDataSourceImpl dataSource = createDataSource(connectionDetails, PoolDataSourceImpl.class,
-					properties.getClassLoader());
+					properties.getClassLoader(), dataSourceBuilderCustomizers);
 			dataSource.setValidateConnectionOnBorrow(true);
 			if (StringUtils.hasText(properties.getName())) {
 				dataSource.setConnectionPoolName(properties.getName());
@@ -190,8 +192,8 @@ abstract class DataSourceConfiguration {
 	static class Generic {
 
 		@Bean
-		DataSource dataSource(DataSourceProperties properties, JdbcConnectionDetails connectionDetails) {
-			return createDataSource(connectionDetails, properties.getType(), properties.getClassLoader());
+		DataSource dataSource(DataSourceProperties properties, JdbcConnectionDetails connectionDetails, List<DataSourceBuilderCustomizer> dataSourceBuilderCustomizers) {
+			return createDataSource(connectionDetails, properties.getType(), properties.getClassLoader(), dataSourceBuilderCustomizers);
 		}
 
 	}
