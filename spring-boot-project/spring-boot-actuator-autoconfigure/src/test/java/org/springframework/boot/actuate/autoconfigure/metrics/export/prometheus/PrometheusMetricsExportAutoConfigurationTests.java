@@ -20,6 +20,7 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.exemplars.DefaultExemplarSampler;
 import io.prometheus.client.exemplars.ExemplarSampler;
 import io.prometheus.client.exemplars.tracer.common.SpanContextSupplier;
 import io.prometheus.client.exporter.BasicAuthHttpConnectionFactory;
@@ -45,6 +46,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link PrometheusMetricsExportAutoConfiguration}.
@@ -62,6 +64,12 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	@Test
 	void backsOffWithoutAClock() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(PrometheusMeterRegistry.class));
+	}
+
+	@Test
+	void backsOfWhenExemplarSamplerIsPresent() {
+		this.contextRunner.withUserConfiguration(ExemplarsConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(DefaultExemplarSampler.class));
 	}
 
 	@Test
@@ -311,6 +319,10 @@ class PrometheusMetricsExportAutoConfigurationTests {
 			};
 		}
 
+		@Bean
+		ExemplarSampler exemplarSampler2() {
+			return mock(ExemplarSampler.class);
+		}
 	}
 
 }
