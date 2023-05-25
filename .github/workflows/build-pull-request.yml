@@ -16,6 +16,12 @@ jobs:
           java-version: '8'
           distribution: 'liberica'
 
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Validate Gradle wrapper
+        uses: gradle/wrapper-validation-action@v1
+
       - name: Set up Gradle
         uses: gradle/gradle-build-action@749f47bda3e44aa060e82d7b3ef7e40d953bd629
 
