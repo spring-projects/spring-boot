@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.docker.compose.core.DockerCliInspectResponse.Config;
 import org.springframework.boot.docker.compose.core.DockerCliInspectResponse.HostConfig;
