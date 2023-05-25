@@ -47,9 +47,16 @@ class DefaultConnectionPorts implements ConnectionPorts {
 		this.mappings = !isHostNetworkMode(inspectResponse)
 				? buildMappingsForNetworkSettings(inspectResponse.networkSettings())
 				: buildMappingsForHostNetworking(inspectResponse.config());
-		Map<Integer, Integer> portMappings = new HashMap<>();
-		this.mappings.forEach((containerPort, hostPort) -> portMappings.put(containerPort.number(), hostPort));
-		this.portMappings = Collections.unmodifiableMap(portMappings);
+		
+		this.portMappings = Collections.unmodifiableMap(
+			this.mappings.entrySet().stream()
+				.collect(Collectors.toMap(
+						entry -> entry.getKey().number(),
+						entry -> entry.getValue()
+					)
+				)
+		);
+		
 	}
 
 	private static boolean isHostNetworkMode(DockerCliInspectResponse inspectResponse) {
