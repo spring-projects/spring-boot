@@ -107,12 +107,6 @@ resource_types:
     <<: *registry-image-resource-source
     repository: springio/artifactory-resource
     tag: 0.0.18
-- name: pull-request
-  type: registry-image
-  source:
-    <<: *registry-image-resource-source
-    repository: teliaoss/github-pr-resource
-    tag: v0.23.0
 - name: github-status-resource
   type: registry-image
   source:
@@ -145,14 +139,6 @@ resources:
     git_config:
     - name: core.autocrlf
       value: true
-- name: git-pull-request
-  type: pull-request
-  icon: source-pull
-  source:
-    access_token: ((github-ci-pull-request-token))
-    repository: ((github-repo-name))
-    base_branch: ((branch))
-    ignore_paths: ["ci/*"]
 - name: github-pre-release
   type: github-release
   icon: briefcase-download-outline
@@ -408,34 +394,6 @@ jobs:
   - put: slack-alert
     params:
       <<: *slack-success-params
-- name: build-pull-requests
-  serial: true
-  public: true
-  plan:
-  - get: ci-image
-  - get: git-repo
-    resource: git-pull-request
-    trigger: true
-    version: every
-  - do:
-    - put: git-pull-request
-      params:
-        path: git-repo
-        status: pending
-    - task: build-project
-      image: ci-image
-      file: git-repo/ci/tasks/build-pr-project.yml
-      timeout: ((task-timeout))
-    on_success:
-      put: git-pull-request
-      params:
-        path: git-repo
-        status: success
-    on_failure:
-      put: git-pull-request
-      params:
-        path: git-repo
-        status: failure
 - name: jdk11-build
   serial: true
   public: true
@@ -881,5 +839,4 @@ groups:
   jobs: ["run-system-tests", "jdk11-run-system-tests", "jdk17-run-system-tests", "jdk19-run-system-tests"]
 - name: "ci-images"
   jobs: ["build-ci-images", "detect-docker-updates", "detect-jdk-updates", "detect-ubuntu-image-updates"]
-- name: "pull-requests"
-  jobs: ["build-pull-requests"]
+
