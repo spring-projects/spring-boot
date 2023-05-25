@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
+import org.springframework.data.mongodb.core.SimpleReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.gridfs.ReactiveGridFsTemplate;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -42,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class MongoReactiveDataAutoConfigurationTests {
 
@@ -88,6 +90,64 @@ class MongoReactiveDataAutoConfigurationTests {
 		ApplicationContextRunner runner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
 			.of(PropertyPlaceholderAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class));
 		runner.run((context) -> assertThat(context).doesNotHaveBean(MongoReactiveDataAutoConfiguration.class));
+	}
+
+	@Test
+	void databaseHasDefault() {
+		this.contextRunner.run((context) -> {
+			ReactiveMongoDatabaseFactory factory = context.getBean(ReactiveMongoDatabaseFactory.class);
+			assertThat(factory).isInstanceOf(SimpleReactiveMongoDatabaseFactory.class);
+			assertThat(factory.getMongoDatabase().block().getName()).isEqualTo("test");
+		});
+	}
+
+	@Test
+	void databasePropertyIsUsed() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.database=mydb").run((context) -> {
+			ReactiveMongoDatabaseFactory factory = context.getBean(ReactiveMongoDatabaseFactory.class);
+			assertThat(factory).isInstanceOf(SimpleReactiveMongoDatabaseFactory.class);
+			assertThat(factory.getMongoDatabase().block().getName()).isEqualTo("mydb");
+		});
+	}
+
+	@Test
+	void databaseInUriPropertyIsUsed() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.uri=mongodb://mongo.example.com/mydb")
+			.run((context) -> {
+				ReactiveMongoDatabaseFactory factory = context.getBean(ReactiveMongoDatabaseFactory.class);
+				assertThat(factory).isInstanceOf(SimpleReactiveMongoDatabaseFactory.class);
+				assertThat(factory.getMongoDatabase().block().getName()).isEqualTo("mydb");
+			});
+	}
+
+	@Test
+	void databasePropertyOverridesUriProperty() {
+		this.contextRunner
+			.withPropertyValues("spring.data.mongodb.uri=mongodb://mongo.example.com/notused",
+					"spring.data.mongodb.database=mydb")
+			.run((context) -> {
+				ReactiveMongoDatabaseFactory factory = context.getBean(ReactiveMongoDatabaseFactory.class);
+				assertThat(factory).isInstanceOf(SimpleReactiveMongoDatabaseFactory.class);
+				assertThat(factory.getMongoDatabase().block().getName()).isEqualTo("mydb");
+			});
+	}
+
+	@Test
+	void databasePropertyIsUsedWhenNoDatabaseInUri() {
+		this.contextRunner
+			.withPropertyValues("spring.data.mongodb.uri=mongodb://mongo.example.com/",
+					"spring.data.mongodb.database=mydb")
+			.run((context) -> {
+				ReactiveMongoDatabaseFactory factory = context.getBean(ReactiveMongoDatabaseFactory.class);
+				assertThat(factory).isInstanceOf(SimpleReactiveMongoDatabaseFactory.class);
+				assertThat(factory.getMongoDatabase().block().getName()).isEqualTo("mydb");
+			});
+	}
+
+	@Test
+	void contextFailsWhenDatabaseNotSet() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.uri=mongodb://mongo.example.com/")
+			.run((context) -> assertThat(context).getFailure().hasMessageContaining("Database name must not be empty"));
 	}
 
 	private String grisFsTemplateDatabaseName(AssertableApplicationContext context) {

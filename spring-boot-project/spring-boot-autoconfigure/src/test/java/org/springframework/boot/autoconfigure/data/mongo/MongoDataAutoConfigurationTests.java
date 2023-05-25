@@ -64,6 +64,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class MongoDataAutoConfigurationTests {
 
@@ -224,6 +225,64 @@ class MongoDataAutoConfigurationTests {
 	void autoConfiguresIfUserProvidesMongoDatabaseFactoryButNoClient() {
 		this.contextRunner.withUserConfiguration(MongoDatabaseFactoryConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(MongoTemplate.class));
+	}
+
+	@Test
+	void databaseHasDefault() {
+		this.contextRunner.run((context) -> {
+			MongoDatabaseFactory factory = context.getBean(MongoDatabaseFactory.class);
+			assertThat(factory).isInstanceOf(SimpleMongoClientDatabaseFactory.class);
+			assertThat(factory.getMongoDatabase().getName()).isEqualTo("test");
+		});
+	}
+
+	@Test
+	void databasePropertyIsUsed() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.database=mydb").run((context) -> {
+			MongoDatabaseFactory factory = context.getBean(MongoDatabaseFactory.class);
+			assertThat(factory).isInstanceOf(SimpleMongoClientDatabaseFactory.class);
+			assertThat(factory.getMongoDatabase().getName()).isEqualTo("mydb");
+		});
+	}
+
+	@Test
+	void databaseInUriPropertyIsUsed() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.uri=mongodb://mongo.example.com/mydb")
+			.run((context) -> {
+				MongoDatabaseFactory factory = context.getBean(MongoDatabaseFactory.class);
+				assertThat(factory).isInstanceOf(SimpleMongoClientDatabaseFactory.class);
+				assertThat(factory.getMongoDatabase().getName()).isEqualTo("mydb");
+			});
+	}
+
+	@Test
+	void databasePropertyOverridesUriProperty() {
+		this.contextRunner
+			.withPropertyValues("spring.data.mongodb.uri=mongodb://mongo.example.com/notused",
+					"spring.data.mongodb.database=mydb")
+			.run((context) -> {
+				MongoDatabaseFactory factory = context.getBean(MongoDatabaseFactory.class);
+				assertThat(factory).isInstanceOf(SimpleMongoClientDatabaseFactory.class);
+				assertThat(factory.getMongoDatabase().getName()).isEqualTo("mydb");
+			});
+	}
+
+	@Test
+	void databasePropertyIsUsedWhenNoDatabaseInUri() {
+		this.contextRunner
+			.withPropertyValues("spring.data.mongodb.uri=mongodb://mongo.example.com/",
+					"spring.data.mongodb.database=mydb")
+			.run((context) -> {
+				MongoDatabaseFactory factory = context.getBean(MongoDatabaseFactory.class);
+				assertThat(factory).isInstanceOf(SimpleMongoClientDatabaseFactory.class);
+				assertThat(factory.getMongoDatabase().getName()).isEqualTo("mydb");
+			});
+	}
+
+	@Test
+	void contextFailsWhenDatabaseNotSet() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.uri=mongodb://mongo.example.com/")
+			.run((context) -> assertThat(context).getFailure().hasMessageContaining("Database name must not be empty"));
 	}
 
 	@Test

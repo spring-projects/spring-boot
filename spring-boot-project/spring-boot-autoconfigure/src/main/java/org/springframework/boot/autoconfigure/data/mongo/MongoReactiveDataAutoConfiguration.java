@@ -67,6 +67,7 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.0.0
  */
 @AutoConfiguration(after = MongoReactiveAutoConfiguration.class)
@@ -84,9 +85,13 @@ public class MongoReactiveDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ReactiveMongoDatabaseFactory.class)
-	public SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(MongoClient mongo) {
-		return new SimpleReactiveMongoDatabaseFactory(mongo,
-				this.connectionDetails.getConnectionString().getDatabase());
+	public SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(MongoClient mongo,
+			MongoProperties properties) {
+		String database = properties.getDatabase();
+		if (database == null) {
+			database = this.connectionDetails.getConnectionString().getDatabase();
+		}
+		return new SimpleReactiveMongoDatabaseFactory(mongo, database);
 	}
 
 	@Bean
