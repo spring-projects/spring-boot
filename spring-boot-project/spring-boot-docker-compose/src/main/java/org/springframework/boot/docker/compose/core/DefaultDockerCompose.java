@@ -76,13 +76,11 @@ class DefaultDockerCompose implements DockerCompose {
 			return Collections.emptyList();
 		}
 		DockerComposeFile dockerComposeFile = this.cli.getDockerComposeFile();
-		List<RunningService> result = new ArrayList<>();
 		Map<String, DockerCliInspectResponse> inspected = inspect(runningPsResponses);
-		for (DockerCliComposePsResponse psResponse : runningPsResponses) {
-			DockerCliInspectResponse inspectResponse = inspected.get(psResponse.id());
-			result.add(new DefaultRunningService(this.hostname, dockerComposeFile, psResponse, inspectResponse));
-		}
-		return Collections.unmodifiableList(result);
+		return runningPsResponses.stream()
+			.map(psResponse -> new DefaultRunningService(this.hostname, dockerComposeFile, psResponse,
+				inspected.get(psResponse.id())))
+			.toList()
 	}
 
 	private Map<String, DockerCliInspectResponse> inspect(List<DockerCliComposePsResponse> runningPsResponses) {
