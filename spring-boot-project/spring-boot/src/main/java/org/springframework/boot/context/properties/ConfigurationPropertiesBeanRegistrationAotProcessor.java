@@ -56,15 +56,11 @@ class ConfigurationPropertiesBeanRegistrationAotProcessor implements BeanRegistr
 	}
 
 	private boolean isImmutableConfigurationPropertiesBeanDefinition(BeanDefinition beanDefinition) {
-		return beanDefinition.hasAttribute(BindMethod.class.getName())
-				&& BindMethod.VALUE_OBJECT.equals(beanDefinition.getAttribute(BindMethod.class.getName()));
+		return BindMethod.VALUE_OBJECT.equals(BindMethodAttribute.get(beanDefinition));
 	}
 
 	private static class ConfigurationPropertiesBeanRegistrationCodeFragments
 			extends BeanRegistrationCodeFragmentsDecorator {
-
-		private static final Predicate<String> INCLUDE_BIND_METHOD_ATTRIBUTE_FILTER = (name) -> name
-			.equals(BindMethod.class.getName());
 
 		private static final String REGISTERED_BEAN_PARAMETER_NAME = "registeredBean";
 
@@ -81,7 +77,7 @@ class ConfigurationPropertiesBeanRegistrationAotProcessor implements BeanRegistr
 				BeanRegistrationCode beanRegistrationCode, RootBeanDefinition beanDefinition,
 				Predicate<String> attributeFilter) {
 			return super.generateSetBeanDefinitionPropertiesCode(generationContext, beanRegistrationCode,
-					beanDefinition, INCLUDE_BIND_METHOD_ATTRIBUTE_FILTER.or(attributeFilter));
+					beanDefinition, attributeFilter.or(BindMethodAttribute.NAME::equals));
 		}
 
 		@Override

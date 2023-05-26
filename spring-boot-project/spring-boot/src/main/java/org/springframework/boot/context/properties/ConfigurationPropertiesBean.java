@@ -163,7 +163,7 @@ public final class ConfigurationPropertiesBean {
 			if (isConfigurationPropertiesBean(beanFactory, beanName)) {
 				try {
 					Object bean = beanFactory.getBean(beanName);
-					BindMethod bindMethod = getBindMethod(beanFactory, beanName);
+					BindMethod bindMethod = BindMethodAttribute.get(beanFactory, beanName);
 					ConfigurationPropertiesBean propertiesBean = get(applicationContext, bean, beanName, bindMethod);
 					if (propertiesBean != null) {
 						propertiesBeans.put(beanName, propertiesBean);
@@ -174,16 +174,6 @@ public final class ConfigurationPropertiesBean {
 			}
 		}
 		return propertiesBeans;
-	}
-
-	private static BindMethod getBindMethod(ConfigurableListableBeanFactory beanFactory, String beanName) {
-		try {
-			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-			return (BindMethod) beanDefinition.getAttribute(BindMethod.class.getName());
-		}
-		catch (NoSuchBeanDefinitionException ex) {
-			return null;
-		}
 	}
 
 	private static boolean isConfigurationPropertiesBean(ConfigurableListableBeanFactory beanFactory, String beanName) {
