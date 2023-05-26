@@ -75,7 +75,7 @@ class BindableRuntimeHintsRegistrarTests {
 	@Test
 	void registerHintsWhenNoClasses() {
 		RuntimeHints runtimeHints = new RuntimeHints();
-		BindableRuntimeHintsRegistrar registrar = new BindableRuntimeHintsRegistrar();
+		BindableRuntimeHintsRegistrar registrar = new BindableRuntimeHintsRegistrar(new Class<?>[0]);
 		registrar.registerHints(runtimeHints);
 		assertThat(runtimeHints.reflection().typeHints()).isEmpty();
 	}
