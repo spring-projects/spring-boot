@@ -40,7 +40,8 @@ import org.springframework.util.CollectionUtils;
 class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements BeanFactoryInitializationAotProcessor {
 
 	@Override
-	public BeanFactoryInitializationAotContribution processAheadOfTime(ConfigurableListableBeanFactory beanFactory) {
+	public ConfigurationPropertiesReflectionHintsContribution processAheadOfTime(
+			ConfigurableListableBeanFactory beanFactory) {
 		String[] beanNames = beanFactory.getBeanNamesForAnnotation(ConfigurationProperties.class);
 		List<Class<?>> types = new ArrayList<>();
 		for (String beanName : beanNames) {
@@ -55,7 +56,7 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements Be
 		return null;
 	}
 
-	private static final class ConfigurationPropertiesReflectionHintsContribution
+	static final class ConfigurationPropertiesReflectionHintsContribution
 			implements BeanFactoryInitializationAotContribution {
 
 		private final Iterable<Class<?>> types;
@@ -68,6 +69,10 @@ class ConfigurationPropertiesBeanFactoryInitializationAotProcessor implements Be
 		public void applyTo(GenerationContext generationContext,
 				BeanFactoryInitializationCode beanFactoryInitializationCode) {
 			BindableRuntimeHintsRegistrar.forTypes(this.types).registerHints(generationContext.getRuntimeHints());
+		}
+
+		Iterable<Class<?>> getTypes() {
+			return this.types;
 		}
 
 	}
