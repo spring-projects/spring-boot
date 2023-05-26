@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod;
+import org.springframework.boot.context.properties.bind.BindMethod;
 import org.springframework.boot.context.properties.scan.combined.c.CombinedConfiguration;
 import org.springframework.boot.context.properties.scan.combined.d.OtherCombinedConfiguration;
 import org.springframework.boot.context.properties.scan.valid.ConfigurationPropertiesScanConfiguration;
