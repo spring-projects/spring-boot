@@ -37,6 +37,11 @@ Config data files are considered in the following order:
 NOTE: It is recommended to stick with one format for your entire application.
 If you have configuration files with both `.properties` and YAML format in the same location, `.properties` takes precedence.
 
+NOTE: If you use environment variables rather than system properties, most operating systems disallow period-separated key names, but you can use underscores instead (for example, configprop:spring.config.name[format=envvar] instead of configprop:spring.config.name[]).
+See <<features#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables>> for details.
+
+NOTE: If your application runs in a servlet container or application server, then JNDI properties (in `java:comp/env`) or servlet context initialization parameters can be used instead of, or as well as, environment variables or system properties.
+
 To provide a concrete example, suppose you develop a `@Component` that uses a `name` property, as shown in the following example:
 
 include::code:MyBean[]
@@ -172,11 +177,6 @@ For example, if `spring.config.additional-location` is configured with the value
 This search ordering lets you specify default values in one configuration file and then selectively override those values in another.
 You can provide default values for your application in `application.properties` (or whatever other basename you choose with `spring.config.name`) in one of the default locations.
 These default values can then be overridden at runtime with a different file located in one of the custom locations.
-
-NOTE: If you use environment variables rather than system properties, most operating systems disallow period-separated key names, but you can use underscores instead (for example, configprop:spring.config.name[format=envvar] instead of configprop:spring.config.name[]).
-See <<features#features.external-config.typesafe-configuration-properties.relaxed-binding.environment-variables>> for details.
-
-NOTE: If your application runs in a servlet container or application server, then JNDI properties (in `java:comp/env`) or servlet context initialization parameters can be used instead of, or as well as, environment variables or system properties.
 
 
 
