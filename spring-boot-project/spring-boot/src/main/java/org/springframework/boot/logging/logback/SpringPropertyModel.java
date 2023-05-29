@@ -58,4 +58,11 @@ class SpringPropertyModel extends NamedModel {
 		this.source = source;
 	}
 
+	String getSourceOrDefaultValue() {
+		if (this.source == null) {
+			return this.defaultValue;
+		}
+		return this.source;
+	}
+	
 }

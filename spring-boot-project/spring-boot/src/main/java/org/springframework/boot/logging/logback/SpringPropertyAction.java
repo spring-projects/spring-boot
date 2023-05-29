@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.logback;
 
+import ch.qos.logback.core.joran.action.ActionUtil;
 import ch.qos.logback.core.joran.action.BaseModelAction;
 import ch.qos.logback.core.joran.spi.SaxEventInterpretationContext;
 import ch.qos.logback.core.model.Model;
@@ -46,6 +47,10 @@ class SpringPropertyAction extends BaseModelAction {
 		model.setSource(attributes.getValue(SOURCE_ATTRIBUTE));
 		model.setScope(attributes.getValue(SCOPE_ATTRIBUTE));
 		model.setDefaultValue(attributes.getValue(DEFAULT_VALUE_ATTRIBUTE));
+
+		if (ActionUtil.stringToScope(model.getScope()) == ActionUtil.Scope.CONTEXT) {
+			interpretationContext.getContext().putProperty(model.getName(), model.getSourceOrDefaultValue());
+		}
 		return model;
 	}
 
