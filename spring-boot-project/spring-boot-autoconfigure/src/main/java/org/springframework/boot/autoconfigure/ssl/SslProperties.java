@@ -20,7 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
  * Properties for centralized SSL trust material configuration.
@@ -48,13 +47,11 @@ public class SslProperties {
 		/**
 		 * PEM-encoded SSL trust material.
 		 */
-		@NestedConfigurationProperty
 		private final Map<String, PemSslBundleProperties> pem = new LinkedHashMap<>();
 
 		/**
 		 * Java keystore SSL trust material.
 		 */
-		@NestedConfigurationProperty
 		private final Map<String, JksSslBundleProperties> jks = new LinkedHashMap<>();
 
 		public Map<String, PemSslBundleProperties> getPem() {
