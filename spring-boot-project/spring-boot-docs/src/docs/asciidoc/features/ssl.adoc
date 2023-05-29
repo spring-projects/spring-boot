@@ -64,7 +64,7 @@ When used to secure an embedded web server, a `keystore` is typically configured
                 private-key: "classpath:application.key"
 ----
 
-When used to secure an embedded web server, a `truststore` is typically configured with the server certificate as shown in this example:
+When used to secure a client-side connection, a `truststore` is typically configured with the server certificate as shown in this example:
 
 [source,yaml,indent=0,subs="verbatim",configblocks]
 ----
