@@ -21,6 +21,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import org.springframework.aot.test.generate.TestGenerationContext;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -36,11 +37,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.context.aot.ApplicationContextAotGenerator;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.type.AnnotationMetadata;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -98,6 +101,17 @@ class ServiceConnectionAutoConfigurationTests {
 			applicationContext.refresh();
 			RedisConnectionDetails connectionDetails = applicationContext.getBean(RedisConnectionDetails.class);
 			assertThat(connectionDetails.getClass().getName()).isEqualTo(REDIS_CONTAINER_CONNECTION_DETAILS);
+		}
+	}
+
+	@Test
+	void serviceConnectionBeansDoNotCauseAotProcessingToFail() {
+		try (AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext()) {
+			applicationContext.register(WithNoExtraAutoConfiguration.class, ContainerConfiguration.class);
+			new TestcontainersLifecycleApplicationContextInitializer().initialize(applicationContext);
+			TestGenerationContext generationContext = new TestGenerationContext();
+			assertThatNoException().isThrownBy(() -> new ApplicationContextAotGenerator()
+				.processAheadOfTime(applicationContext, generationContext));
 		}
 	}
 
