@@ -59,12 +59,12 @@ public class MongoProperties {
 	private Integer port = null;
 
 	/**
-	 * Mongo database URI. Overrides host, port, username, password, and database.
+	 * Mongo database URI. Overrides host, port, username, and password.
 	 */
 	private String uri;
 
 	/**
-	 * Database name.
+	 * Database name. Overrides database in URI.
 	 */
 	private String database;
 
