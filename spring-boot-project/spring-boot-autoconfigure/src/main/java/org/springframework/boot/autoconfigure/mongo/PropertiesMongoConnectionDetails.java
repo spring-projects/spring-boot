@@ -37,6 +37,7 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 	@Override
 	public ConnectionString getConnectionString() {
 		// mongodb://[username:password@]host1[:port1][,host2[:port2],...[,hostN[:portN]]][/[database.collection][?options]]
+		String separator = "?";
 		if (this.properties.getUri() != null) {
 			return new ConnectionString(this.properties.getUri());
 		}
@@ -60,12 +61,17 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 			builder.append("/");
 			if (this.properties.getMongoClientDatabase() != null) {
 				builder.append(this.properties.getMongoClientDatabase());
-			}
-			else if (this.properties.getAuthenticationDatabase() != null) {
+				if (this.properties.getAuthenticationDatabase() != null) {
+					builder.append(separator);
+					separator = "&";
+					builder.append("authSource=");
+					builder.append(this.properties.getAuthenticationDatabase());
+				}
+			} else if (this.properties.getAuthenticationDatabase() != null) {
 				builder.append(this.properties.getAuthenticationDatabase());
 			}
 			if (this.properties.getReplicaSetName() != null) {
-				builder.append("?");
+				builder.append(separator);
 				builder.append("replicaSet=");
 				builder.append(this.properties.getReplicaSetName());
 			}

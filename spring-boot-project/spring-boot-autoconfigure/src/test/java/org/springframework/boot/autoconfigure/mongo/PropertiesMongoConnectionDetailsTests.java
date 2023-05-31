@@ -31,6 +31,16 @@ class PropertiesMongoConnectionDetailsTests {
 	private final MongoProperties properties = new MongoProperties();
 
 	@Test
+	void setsAuthSourceOptionForConnection() {
+		this.properties.setReplicaSetName(null);
+		this.properties.setDatabase("testDatabase");
+		this.properties.setAuthenticationDatabase("testAuthenticationDatabase");
+		ConnectionString connectionString = getConnectionString();
+		assertThat(connectionString.getDatabase()).isEqualTo("testDatabase");
+		assertThat(connectionString.toString()).isEqualTo("mongodb://localhost/testDatabase?authSource=testAuthenticationDatabase");
+	}
+
+	@Test
 	void replicaSetCanBeConfigured() {
 		this.properties.setReplicaSetName("test");
 		ConnectionString connectionString = getConnectionString();
