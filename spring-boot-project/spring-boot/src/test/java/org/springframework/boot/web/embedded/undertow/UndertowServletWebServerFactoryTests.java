@@ -40,6 +40,7 @@ import org.apache.hc.core5.http.HttpResponse;
 import org.apache.jasper.servlet.JspServlet;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
@@ -209,6 +210,20 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 		assertThat(rejectedResult).isInstanceOf(HttpResponse.class);
 		assertThat(((HttpResponse) rejectedResult).getCode()).isEqualTo(HttpStatus.SERVICE_UNAVAILABLE.value());
 		this.webServer.stop();
+	}
+
+	@Test
+	@Override
+	@Disabled("Restart after stop is not supported with Undertow")
+	protected void restartAfterStop() {
+
+	}
+
+	@Test
+	@Override
+	@Disabled("Undertow's architecture prevents separating stop and destroy")
+	protected void servletContextListenerContextDestroyedIsNotCalledWhenContainerIsStopped() {
+
 	}
 
 	private void testAccessLog(String prefix, String suffix, String expectedFile)

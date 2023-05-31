@@ -209,6 +209,7 @@ public class TomcatWebServer implements WebServer {
 			if (this.started) {
 				return;
 			}
+
 			try {
 				addPreviouslyRemovedConnectors();
 				Connector connector = this.tomcat.getConnector();
@@ -324,16 +325,10 @@ public class TomcatWebServer implements WebServer {
 			boolean wasStarted = this.started;
 			try {
 				this.started = false;
-				try {
-					if (this.gracefulShutdown != null) {
-						this.gracefulShutdown.abort();
-					}
-					stopTomcat();
-					this.tomcat.destroy();
+				if (this.gracefulShutdown != null) {
+					this.gracefulShutdown.abort();
 				}
-				catch (LifecycleException ex) {
-					// swallow and continue
-				}
+				removeServiceConnectors();
 			}
 			catch (Exception ex) {
 				throw new WebServerException("Unable to stop embedded Tomcat", ex);
@@ -343,6 +338,19 @@ public class TomcatWebServer implements WebServer {
 					containerCounter.decrementAndGet();
 				}
 			}
+		}
+	}
+
+	public void destroy() throws WebServerException {
+		try {
+			stopTomcat();
+			this.tomcat.destroy();
+		}
+		catch (LifecycleException ex) {
+			// Swallow and continue
+		}
+		catch (Exception ex) {
+			throw new WebServerException("Unable to destroy embedded Tomcat", ex);
 		}
 	}
 

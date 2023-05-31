@@ -84,6 +84,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.atMost;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.withSettings;
 
 /**
@@ -156,12 +157,35 @@ class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	void stopOnClose() {
+	void stopOnStop() {
+		addWebServerFactoryBean();
+		this.context.refresh();
+		MockServletWebServerFactory factory = getWebServerFactory();
+		then(factory.getWebServer()).should().start();
+		this.context.stop();
+		then(factory.getWebServer()).should().stop();
+	}
+
+	@Test
+	void startOnStartAfterStop() {
+		addWebServerFactoryBean();
+		this.context.refresh();
+		MockServletWebServerFactory factory = getWebServerFactory();
+		then(factory.getWebServer()).should().start();
+		this.context.stop();
+		then(factory.getWebServer()).should().stop();
+		this.context.start();
+		then(factory.getWebServer()).should(times(2)).start();
+	}
+
+	@Test
+	void stopAndDestroyOnClose() {
 		addWebServerFactoryBean();
 		this.context.refresh();
 		MockServletWebServerFactory factory = getWebServerFactory();
 		this.context.close();
-		then(factory.getWebServer()).should().stop();
+		then(factory.getWebServer()).should(times(2)).stop();
+		then(factory.getWebServer()).should().destroy();
 	}
 
 	@Test

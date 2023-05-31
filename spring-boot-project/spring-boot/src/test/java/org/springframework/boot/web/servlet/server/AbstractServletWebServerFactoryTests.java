@@ -167,6 +167,7 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 /**
  * Base for testing classes that extends {@link AbstractServletWebServerFactory}.
@@ -197,6 +198,12 @@ public abstract class AbstractServletWebServerFactoryTests {
 		if (this.webServer != null) {
 			try {
 				this.webServer.stop();
+				try {
+					this.webServer.destroy();
+				}
+				catch (Exception ex) {
+					// Ignore
+				}
 			}
 			catch (Exception ex) {
 				// Ignore
@@ -231,6 +238,19 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer.start();
 		this.webServer.stop();
 		this.webServer.stop();
+	}
+
+	@Test
+	protected void restartAfterStop() throws IOException, URISyntaxException {
+		AbstractServletWebServerFactory factory = getFactory();
+		this.webServer = factory.getWebServer(exampleServletRegistration());
+		this.webServer.start();
+		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
+		int port = this.webServer.getPort();
+		this.webServer.stop();
+		assertThatIOException().isThrownBy(() -> getResponse(getLocalUrl(port, "/hello")));
+		this.webServer.start();
+		assertThat(getResponse(getLocalUrl("/hello"))).isEqualTo("Hello World");
 	}
 
 	@Test
@@ -295,7 +315,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
 		assertThat(this.webServer.getPort()).isGreaterThan(0);
-		this.webServer.stop();
+		this.webServer.destroy();
 		assertThat(this.webServer.getPort()).isEqualTo(-1);
 	}
 
@@ -814,7 +834,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer.start();
 		String s1 = getResponse(getLocalUrl("/session"));
 		String s2 = getResponse(getLocalUrl("/session"));
-		this.webServer.stop();
+		this.webServer.destroy();
 		this.webServer = factory.getWebServer(sessionServletRegistration());
 		this.webServer.start();
 		String s3 = getResponse(getLocalUrl("/session"));
@@ -833,7 +853,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 		this.webServer = factory.getWebServer(sessionServletRegistration());
 		this.webServer.start();
 		getResponse(getLocalUrl("/session"));
-		this.webServer.stop();
+		this.webServer.destroy();
 		File[] dirContents = sessionStoreDir.listFiles((dir, name) -> !(".".equals(name) || "..".equals(name)));
 		assertThat(dirContents).isNotEmpty();
 	}
@@ -1158,11 +1178,20 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	void servletContextListenerContextDestroyedIsCalledWhenContainerIsStopped() throws Exception {
+	protected void servletContextListenerContextDestroyedIsNotCalledWhenContainerIsStopped() throws Exception {
 		ServletContextListener listener = mock(ServletContextListener.class);
 		this.webServer = getFactory().getWebServer((servletContext) -> servletContext.addListener(listener));
 		this.webServer.start();
 		this.webServer.stop();
+		then(listener).should(times(0)).contextDestroyed(any(ServletContextEvent.class));
+	}
+
+	@Test
+	void servletContextListenerContextDestroyedIsCalledWhenContainerIsDestroyed() throws Exception {
+		ServletContextListener listener = mock(ServletContextListener.class);
+		this.webServer = getFactory().getWebServer((servletContext) -> servletContext.addListener(listener));
+		this.webServer.start();
+		this.webServer.destroy();
 		then(listener).should().contextDestroyed(any(ServletContextEvent.class));
 	}
 

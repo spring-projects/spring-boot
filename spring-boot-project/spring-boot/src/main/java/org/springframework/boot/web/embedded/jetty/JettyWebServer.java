@@ -238,13 +238,27 @@ public class JettyWebServer implements WebServer {
 				this.gracefulShutdown.abort();
 			}
 			try {
-				this.server.stop();
+				for (Connector connector : this.server.getConnectors()) {
+					connector.stop();
+				}
 			}
 			catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();
 			}
 			catch (Exception ex) {
 				throw new WebServerException("Unable to stop embedded Jetty server", ex);
+			}
+		}
+	}
+
+	@Override
+	public void destroy() {
+		synchronized (this.monitor) {
+			try {
+				this.server.stop();
+			}
+			catch (Exception ex) {
+				throw new WebServerException("Unable to destroy embedded Jetty server", ex);
 			}
 		}
 	}

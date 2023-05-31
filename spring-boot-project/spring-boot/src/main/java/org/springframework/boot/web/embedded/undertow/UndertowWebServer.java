@@ -132,13 +132,13 @@ public class UndertowWebServer implements WebServer {
 					throw new WebServerException("Unable to start embedded Undertow", ex);
 				}
 				finally {
-					stopSilently();
+					destroySilently();
 				}
 			}
 		}
 	}
 
-	private void stopSilently() {
+	private void destroySilently() {
 		try {
 			if (this.undertow != null) {
 				this.undertow.stop();
@@ -274,7 +274,7 @@ public class UndertowWebServer implements WebServer {
 				}
 			}
 			catch (Exception ex) {
-				throw new WebServerException("Unable to stop undertow", ex);
+				throw new WebServerException("Unable to stop Undertow", ex);
 			}
 		}
 	}

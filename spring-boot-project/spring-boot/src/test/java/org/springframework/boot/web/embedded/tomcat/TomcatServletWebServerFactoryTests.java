@@ -340,10 +340,10 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 	}
 
 	@Test
-	void stopCalledWithoutStart() {
+	void destroyCalledWithoutStart() {
 		TomcatServletWebServerFactory factory = getFactory();
 		this.webServer = factory.getWebServer(exampleServletRegistration());
-		this.webServer.stop();
+		this.webServer.destroy();
 		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
 		assertThat(tomcat.getServer().getState()).isSameAs(LifecycleState.DESTROYED);
 	}
