@@ -166,7 +166,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 
 	@SuppressWarnings("deprecation")
 	private SourceSetContainer sourceSets(Project project) {
-		return project.getConvention().getPlugin(org.gradle.api.plugins.JavaPluginConvention.class).getSourceSets();
+		return project.getConvention().getPlugin(org.gradle.api.plugins.JavaPluginExtension.class).getSourceSets();
 	}
 
 	private void configureUtf8Encoding(Project evaluatedProject) {
