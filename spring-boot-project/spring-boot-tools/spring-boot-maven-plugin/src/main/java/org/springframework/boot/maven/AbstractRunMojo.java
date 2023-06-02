@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -48,6 +50,7 @@ import org.springframework.boot.loader.tools.FileUtils;
  * @author David Liu
  * @author Daniel Young
  * @author Dmytro Nosan
+ * @author Rafael Carvalho
  * @since 1.3.0
  * @see RunMojo
  * @see StartMojo
@@ -334,6 +337,12 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 				}
 				classpath.append(new File(ele.toURI()));
 			}
+			for (Path ele : getAdditionalClasspathElements()) {
+				if (classpath.length() > 0) {
+					classpath.append(File.pathSeparator);
+				}
+				classpath.append(ele);
+			}
 			if (getLog().isDebugEnabled()) {
 				getLog().debug("Classpath for forked process: " + classpath);
 			}
@@ -348,7 +357,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	protected URL[] getClassPathUrls() throws MojoExecutionException {
 		try {
 			List<URL> urls = new ArrayList<>();
-			addAdditionalClasspathElements(urls);
 			addResources(urls);
 			addProjectClasses(urls);
 			addDependencies(urls);
@@ -359,12 +367,19 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void addAdditionalClasspathElements(List<URL> urls) throws MalformedURLException {
+	private List<Path> getAdditionalClasspathElements() {
+		List<Path> paths = new ArrayList<>();
 		if (this.additionalClasspathElements != null) {
 			for (String element : this.additionalClasspathElements) {
-				urls.add(new File(element).toURI().toURL());
+				Path path = Paths.get(element);
+				if (path.isAbsolute()) {
+					paths.add(path);
+				} else {
+					paths.add(this.project.getBasedir().toPath().resolve(path));
+				}
 			}
 		}
+		return paths;
 	}
 
 	private void addResources(List<URL> urls) throws IOException {
