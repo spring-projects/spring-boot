@@ -17,7 +17,6 @@
 package org.springframework.boot.gradle.plugin;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -201,16 +200,10 @@ final class JavaPluginAction implements PluginApplicationAction {
 			.findByName(SourceSet.MAIN_SOURCE_SET_NAME)
 			.getRuntimeClasspath()
 			.filter(new JarTypeFileSpec());
-		project.getTasks().register("bootRun", BootRun.class, (run) -> {
+		project.getTasks().register(SpringBootPlugin.BOOT_RUN_TASK_NAME, BootRun.class, (run) -> {
 			run.setDescription("Runs this project as a Spring Boot application.");
 			run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
 			run.classpath(classpath);
-			run.getConventionMapping().map("jvmArgs", () -> {
-				if (project.hasProperty("applicationDefaultJvmArgs")) {
-					return project.property("applicationDefaultJvmArgs");
-				}
-				return Collections.emptyList();
-			});
 			run.getMainClass().convention(resolveMainClassName.flatMap(ResolveMainClassName::readMainClassName));
 			configureToolchainConvention(project, run);
 		});
@@ -225,12 +218,6 @@ final class JavaPluginAction implements PluginApplicationAction {
 			run.setDescription("Runs this project as a Spring Boot application using the test runtime classpath.");
 			run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
 			run.classpath(classpath);
-			run.getConventionMapping().map("jvmArgs", () -> {
-				if (project.hasProperty("applicationDefaultJvmArgs")) {
-					return project.property("applicationDefaultJvmArgs");
-				}
-				return Collections.emptyList();
-			});
 			run.getMainClass().convention(resolveMainClassName.flatMap(ResolveMainClassName::readMainClassName));
 			configureToolchainConvention(project, run);
 		});

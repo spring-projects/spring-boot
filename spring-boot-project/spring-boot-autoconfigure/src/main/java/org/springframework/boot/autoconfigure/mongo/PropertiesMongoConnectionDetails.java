@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mongodb.ConnectionString;
 
 /**
@@ -24,6 +27,7 @@ import com.mongodb.ConnectionString;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 3.1.0
  */
 public class PropertiesMongoConnectionDetails implements MongoConnectionDetails {
@@ -44,7 +48,9 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 		if (this.properties.getUsername() != null) {
 			builder.append(this.properties.getUsername());
 			builder.append(":");
-			builder.append(this.properties.getPassword());
+			if (this.properties.getPassword() != null) {
+				builder.append(this.properties.getPassword());
+			}
 			builder.append("@");
 		}
 		builder.append((this.properties.getHost() != null) ? this.properties.getHost() : "localhost");
@@ -55,20 +61,12 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 		if (this.properties.getAdditionalHosts() != null) {
 			builder.append(String.join(",", this.properties.getAdditionalHosts()));
 		}
-		if (this.properties.getMongoClientDatabase() != null || this.properties.getReplicaSetName() != null
-				|| this.properties.getAuthenticationDatabase() != null) {
-			builder.append("/");
-			if (this.properties.getMongoClientDatabase() != null) {
-				builder.append(this.properties.getMongoClientDatabase());
-			}
-			else if (this.properties.getAuthenticationDatabase() != null) {
-				builder.append(this.properties.getAuthenticationDatabase());
-			}
-			if (this.properties.getReplicaSetName() != null) {
-				builder.append("?");
-				builder.append("replicaSet=");
-				builder.append(this.properties.getReplicaSetName());
-			}
+		builder.append("/");
+		builder.append(this.properties.getMongoClientDatabase());
+		List<String> options = getOptions();
+		if (!options.isEmpty()) {
+			builder.append("?");
+			builder.append(String.join("&", options));
 		}
 		return new ConnectionString(builder.toString());
 	}
@@ -77,6 +75,17 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 	public GridFs getGridFs() {
 		return GridFs.of(PropertiesMongoConnectionDetails.this.properties.getGridfs().getDatabase(),
 				PropertiesMongoConnectionDetails.this.properties.getGridfs().getBucket());
+	}
+
+	private List<String> getOptions() {
+		List<String> options = new ArrayList<>();
+		if (this.properties.getReplicaSetName() != null) {
+			options.add("replicaSet=" + this.properties.getReplicaSetName());
+		}
+		if (this.properties.getUsername() != null && this.properties.getAuthenticationDatabase() != null) {
+			options.add("authSource=" + this.properties.getAuthenticationDatabase());
+		}
+		return options;
 	}
 
 }
