@@ -32,6 +32,7 @@ import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.JavaApplication;
+import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.jvm.application.scripts.TemplateBasedScriptGenerator;
 import org.gradle.jvm.application.tasks.CreateStartScripts;
@@ -58,8 +59,17 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
 		binCopySpec.setFileMode(0755);
 		distribution.getContents().with(binCopySpec);
-		project.getTasks()
-			.named(SpringBootPlugin.BOOT_RUN_TASK_NAME, BootRun.class)
+		applyApplicationDefaultJvmArgsToRunTasks(project.getTasks(), javaApplication);
+	}
+
+	private void applyApplicationDefaultJvmArgsToRunTasks(TaskContainer tasks, JavaApplication javaApplication) {
+		applyApplicationDefaultJvmArgsToRunTask(tasks, javaApplication, SpringBootPlugin.BOOT_RUN_TASK_NAME);
+		applyApplicationDefaultJvmArgsToRunTask(tasks, javaApplication, SpringBootPlugin.BOOT_TEST_RUN_TASK_NAME);
+	}
+
+	private void applyApplicationDefaultJvmArgsToRunTask(TaskContainer tasks, JavaApplication javaApplication,
+			String taskName) {
+		tasks.named(taskName, BootRun.class)
 			.configure((bootRun) -> bootRun.getConventionMapping()
 				.map("jvmArgs", javaApplication::getApplicationDefaultJvmArgs));
 	}

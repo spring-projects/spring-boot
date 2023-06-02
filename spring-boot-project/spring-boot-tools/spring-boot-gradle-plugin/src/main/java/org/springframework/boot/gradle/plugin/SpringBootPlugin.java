@@ -72,6 +72,8 @@ public class SpringBootPlugin implements Plugin<Project> {
 
 	static final String BOOT_RUN_TASK_NAME = "bootRun";
 
+	static final String BOOT_TEST_RUN_TASK_NAME = "bootTestRun";
+
 	/**
 	 * The name of the {@code developmentOnly} configuration.
 	 * @since 2.3.0

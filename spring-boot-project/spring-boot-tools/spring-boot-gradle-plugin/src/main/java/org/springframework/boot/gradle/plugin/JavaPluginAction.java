@@ -218,12 +218,6 @@ final class JavaPluginAction implements PluginApplicationAction {
 			run.setDescription("Runs this project as a Spring Boot application using the test runtime classpath.");
 			run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
 			run.classpath(classpath);
-			run.getConventionMapping().map("jvmArgs", () -> {
-				if (project.hasProperty("applicationDefaultJvmArgs")) {
-					return project.property("applicationDefaultJvmArgs");
-				}
-				return Collections.emptyList();
-			});
 			run.getMainClass().convention(resolveMainClassName.flatMap(ResolveMainClassName::readMainClassName));
 			configureToolchainConvention(project, run);
 		});
