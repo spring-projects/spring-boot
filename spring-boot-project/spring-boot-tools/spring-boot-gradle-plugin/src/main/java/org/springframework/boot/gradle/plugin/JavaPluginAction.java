@@ -17,7 +17,6 @@
 package org.springframework.boot.gradle.plugin;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -45,6 +44,7 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.jvm.toolchain.JavaToolchainSpec;
+import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
@@ -141,18 +141,12 @@ final class JavaPluginAction implements PluginApplicationAction {
 		Callable<FileCollection> classpath = () -> sourceSets(project).findByName(SourceSet.MAIN_SOURCE_SET_NAME)
 			.getRuntimeClasspath()
 			.filter(new JarTypeFileSpec());
-		TaskProvider<ResolveMainClassName> resolveProvider = ResolveMainClassName.registerForTask("bootRun", project,
-				classpath);
-		project.getTasks().register("bootRun", BootRun.class, (run) -> {
+		TaskProvider<ResolveMainClassName> resolveProvider = ResolveMainClassName
+			.registerForTask(SpringBootPlugin.BOOT_RUN_TASK_NAME, project, classpath);
+		project.getTasks().register(SpringBootPlugin.BOOT_RUN_TASK_NAME, BootRun.class, (run) -> {
 			run.setDescription("Runs this project as a Spring Boot application.");
 			run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
 			run.classpath(classpath);
-			run.getConventionMapping().map("jvmArgs", () -> {
-				if (project.hasProperty("applicationDefaultJvmArgs")) {
-					return project.property("applicationDefaultJvmArgs");
-				}
-				return Collections.emptyList();
-			});
 			run.getMainClass().convention(resolveProvider.flatMap(ResolveMainClassName::readMainClassName));
 			configureToolchainConvention(project, run);
 		});
@@ -166,7 +160,10 @@ final class JavaPluginAction implements PluginApplicationAction {
 
 	@SuppressWarnings("deprecation")
 	private SourceSetContainer sourceSets(Project project) {
-		return project.getConvention().getPlugin(org.gradle.api.plugins.JavaPluginConvention.class).getSourceSets();
+		if (GradleVersion.current().compareTo(GradleVersion.version("7.1")) < 0) {
+			return project.getConvention().getPlugin(org.gradle.api.plugins.JavaPluginConvention.class).getSourceSets();
+		}
+		return project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets();
 	}
 
 	private void configureUtf8Encoding(Project evaluatedProject) {

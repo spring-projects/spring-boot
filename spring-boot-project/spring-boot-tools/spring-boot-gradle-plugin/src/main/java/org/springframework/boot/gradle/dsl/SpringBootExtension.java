@@ -22,12 +22,14 @@ import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.jvm.tasks.Jar;
+import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.tasks.buildinfo.BuildInfo;
 import org.springframework.boot.gradle.tasks.buildinfo.BuildInfoProperties;
@@ -117,7 +119,10 @@ public class SpringBootExtension {
 
 	@SuppressWarnings("deprecation")
 	private SourceSetContainer sourceSets(Project project) {
-		return project.getConvention().getPlugin(org.gradle.api.plugins.JavaPluginConvention.class).getSourceSets();
+		if (GradleVersion.current().compareTo(GradleVersion.version("7.1")) < 0) {
+			return project.getConvention().getPlugin(org.gradle.api.plugins.JavaPluginConvention.class).getSourceSets();
+		}
+		return project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets();
 	}
 
 	private String determineArtifactBaseName() {

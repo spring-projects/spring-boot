@@ -25,12 +25,14 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.BasePlugin;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.War;
+import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
@@ -99,7 +101,10 @@ class WarPluginAction implements PluginApplicationAction {
 
 	@SuppressWarnings("deprecation")
 	private SourceSetContainer sourceSets(Project project) {
-		return project.getConvention().getPlugin(org.gradle.api.plugins.JavaPluginConvention.class).getSourceSets();
+		if (GradleVersion.current().compareTo(GradleVersion.version("7.1")) < 0) {
+			return project.getConvention().getPlugin(org.gradle.api.plugins.JavaPluginConvention.class).getSourceSets();
+		}
+		return project.getExtensions().getByType(JavaPluginExtension.class).getSourceSets();
 	}
 
 	private FileCollection providedRuntimeConfiguration(Project project) {
