@@ -165,12 +165,12 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	private String mainClass;
 
 	/**
-	 * Additional directories besides the classes directory that should be added to the
+	 * Additional elements besides the classes directory that should be added to the
 	 * classpath.
 	 * @since 1.0.0
 	 */
-	@Parameter(property = "spring-boot.run.directories")
-	private String[] directories;
+	@Parameter(property = "spring-boot.run.additionalClasspathElements")
+	private String[] additionalClasspathElements;
 
 	/**
 	 * Directory containing the classes and resource files that should be used to run the
@@ -348,7 +348,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	protected URL[] getClassPathUrls() throws MojoExecutionException {
 		try {
 			List<URL> urls = new ArrayList<>();
-			addUserDefinedDirectories(urls);
+			addAdditionalClasspathElements(urls);
 			addResources(urls);
 			addProjectClasses(urls);
 			addDependencies(urls);
@@ -359,10 +359,10 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void addUserDefinedDirectories(List<URL> urls) throws MalformedURLException {
-		if (this.directories != null) {
-			for (String directory : this.directories) {
-				urls.add(new File(directory).toURI().toURL());
+	private void addAdditionalClasspathElements(List<URL> urls) throws MalformedURLException {
+		if (this.additionalClasspathElements != null) {
+			for (String element : this.additionalClasspathElements) {
+				urls.add(new File(element).toURI().toURL());
 			}
 		}
 	}
