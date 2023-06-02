@@ -70,6 +70,8 @@ public class SpringBootPlugin implements Plugin<Project> {
 	 */
 	public static final String BOOT_BUILD_IMAGE_TASK_NAME = "bootBuildImage";
 
+	static final String BOOT_RUN_TASK_NAME = "bootRun";
+
 	/**
 	 * The name of the {@code developmentOnly} configuration.
 	 * @since 2.3.0

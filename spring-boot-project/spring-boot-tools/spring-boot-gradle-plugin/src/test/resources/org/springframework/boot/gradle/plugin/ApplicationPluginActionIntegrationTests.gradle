@@ -4,7 +4,9 @@ plugins {
 
 if (project.hasProperty('applyApplicationPlugin')) {
 	apply plugin: 'application'
-	applicationDefaultJvmArgs = ['-Dcom.example.a=alpha', '-Dcom.example.b=bravo']
+	application {
+		applicationDefaultJvmArgs = ['-Dcom.example.a=alpha', '-Dcom.example.b=bravo']
+	}
 }
 
 task('taskExists') {
