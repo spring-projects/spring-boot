@@ -36,6 +36,8 @@ import org.gradle.api.tasks.TaskProvider;
 import org.gradle.jvm.application.scripts.TemplateBasedScriptGenerator;
 import org.gradle.jvm.application.tasks.CreateStartScripts;
 
+import org.springframework.boot.gradle.tasks.run.BootRun;
+
 /**
  * Action that is executed in response to the {@link ApplicationPlugin} being applied.
  *
@@ -56,6 +58,10 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 		CopySpec binCopySpec = project.copySpec().into("bin").from(bootStartScripts);
 		binCopySpec.setFileMode(0755);
 		distribution.getContents().with(binCopySpec);
+		project.getTasks()
+			.named(SpringBootPlugin.BOOT_RUN_TASK_NAME, BootRun.class)
+			.configure((bootRun) -> bootRun.getConventionMapping()
+				.map("jvmArgs", javaApplication::getApplicationDefaultJvmArgs));
 	}
 
 	private void configureCreateStartScripts(Project project, JavaApplication javaApplication,

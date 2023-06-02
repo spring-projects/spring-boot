@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,6 +69,8 @@ public class SpringBootPlugin implements Plugin<Project> {
 	 * @since 2.3.0
 	 */
 	public static final String BOOT_BUILD_IMAGE_TASK_NAME = "bootBuildImage";
+
+	static final String BOOT_RUN_TASK_NAME = "bootRun";
 
 	/**
 	 * The name of the {@code developmentOnly} configuration.
