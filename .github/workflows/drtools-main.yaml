@@ -1,0 +1,23 @@
+name: DR-Tools Analyze
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  dr-tools-analyze:
+    runs-on: ubuntu-latest
+    name: DR-Tools Analyze
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Execute analysis
+        uses: lucasheim/dr-tools-analyzer@main
+        id: action
+        with:
+          projectPath: "./spring-boot-project/spring-boot/src/"
+      - name: Extract data
+        id: extraction
+        uses: lucasheim/dr-tools-data-extractor@main
+        with:
+          basePath: "./spring-boot-project/spring-boot/.drtools"

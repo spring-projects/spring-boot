@@ -1,0 +1,15 @@
+[
+  {
+    "granularity": "NAMESPACE",
+    "limits": {
+      "Too Large Package/Subsystem": 11
+    }
+  },
+  {
+    "granularity": "TYPE",
+    "limits": {
+      "Insufficient Modularization": 0,
+      "Multifaceted Abstraction": 52
+    }
+  }
+]

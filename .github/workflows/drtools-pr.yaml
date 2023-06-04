@@ -1,0 +1,41 @@
+name: DR-Tools Analyze Pull Request
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  dr-tools-analyze-pr:
+    runs-on: ubuntu-latest
+    name: DR-Tools Analyze
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Execute analysis
+        uses: lucasheim/dr-tools-analyzer@main
+        id: action
+        with:
+          projectPath: "./spring-boot-project/spring-boot/src/"
+      - name: Extract data
+        id: extraction
+        uses: lucasheim/dr-tools-data-extractor@main
+        with:
+          basePath: "./spring-boot-project/spring-boot/.drtools"
+      - name: Delete old comments
+        if: success() || failure()
+        uses: izhangzhihao/delete-comment@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          delete_user_name: github-actions[bot]
+          issue_number: ${{ github.event.number }}
+      - name: PR Comment
+        if: success() || failure()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `${{ steps.extraction.outputs.prtext }}`
+            })
