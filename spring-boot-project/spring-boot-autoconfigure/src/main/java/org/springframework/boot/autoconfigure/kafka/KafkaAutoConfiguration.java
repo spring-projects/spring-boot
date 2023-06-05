@@ -204,7 +204,7 @@ public class KafkaAutoConfiguration {
 
 	private void applyKafkaConnectionDetailsForAdmin(Map<String, Object> properties,
 			KafkaConnectionDetails connectionDetails) {
-		properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, connectionDetails.getAdminBootstrapNodes());
+		properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, connectionDetails.getAdminBootstrapServers());
 		if (!(connectionDetails instanceof PropertiesKafkaConnectionDetails)) {
 			properties.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "PLAINTEXT");
 		}
