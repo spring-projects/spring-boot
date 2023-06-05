@@ -31,38 +31,38 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
 public interface KafkaConnectionDetails extends ConnectionDetails {
 
 	/**
-	 * Returns the list of bootstrap nodes.
-	 * @return the list of bootstrap nodes
+	 * Returns the list of bootstrap servers.
+	 * @return the list of bootstrap servers
 	 */
 	List<String> getBootstrapServers();
 
 	/**
-	 * Returns the list of bootstrap nodes used for consumers.
-	 * @return the list of bootstrap nodes used for consumers
+	 * Returns the list of bootstrap servers used for consumers.
+	 * @return the list of bootstrap servers used for consumers
 	 */
 	default List<String> getConsumerBootstrapServers() {
 		return getBootstrapServers();
 	}
 
 	/**
-	 * Returns the list of bootstrap nodes used for producers.
-	 * @return the list of bootstrap nodes used for producers
+	 * Returns the list of bootstrap servers used for producers.
+	 * @return the list of bootstrap servers used for producers
 	 */
 	default List<String> getProducerBootstrapServers() {
 		return getBootstrapServers();
 	}
 
 	/**
-	 * Returns the list of bootstrap nodes used for the admin.
-	 * @return the list of bootstrap nodes used for the admin
+	 * Returns the list of bootstrap servers used for the admin.
+	 * @return the list of bootstrap servers used for the admin
 	 */
-	default List<String> getAdminBootstrapNodes() {
+	default List<String> getAdminBootstrapServers() {
 		return getBootstrapServers();
 	}
 
 	/**
-	 * Returns the list of bootstrap nodes used for Kafka Streams.
-	 * @return the list of bootstrap nodes used for Kafka Streams
+	 * Returns the list of bootstrap servers used for Kafka Streams.
+	 * @return the list of bootstrap servers used for Kafka Streams
 	 */
 	default List<String> getStreamsBootstrapServers() {
 		return getBootstrapServers();
