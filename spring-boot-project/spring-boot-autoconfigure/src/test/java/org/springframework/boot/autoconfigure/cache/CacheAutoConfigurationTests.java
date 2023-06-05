@@ -770,7 +770,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 	}
 
 	private RedisCacheConfiguration getDefaultRedisCacheConfiguration(RedisCacheManager cacheManager) {
-		return (RedisCacheConfiguration) ReflectionTestUtils.getField(cacheManager, "defaultCacheConfig");
+		return (RedisCacheConfiguration) ReflectionTestUtils.getField(cacheManager, "defaultCacheConfiguration");
 	}
 
 	@Configuration(proxyBeanMethods = false)
