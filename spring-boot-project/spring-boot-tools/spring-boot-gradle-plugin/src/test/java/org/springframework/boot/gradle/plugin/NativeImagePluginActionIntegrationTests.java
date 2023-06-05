@@ -123,7 +123,7 @@ class NativeImagePluginActionIntegrationTests {
 	@TestTemplate
 	void nativeEntryIsAddedToManifest() throws IOException {
 		writeDummySpringApplicationAotProcessorMainClass();
-		BuildResult result = this.gradleBuild.build("bootJar");
+		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("8.2-rc-1").build("bootJar");
 		assertThat(result.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
 		JarFile jarFile = new JarFile(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".jar"));
