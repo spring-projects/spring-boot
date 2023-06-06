@@ -21,6 +21,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.SortedSet;
 import java.util.concurrent.Future;
 
 import org.springframework.util.ClassUtils;
@@ -53,7 +54,12 @@ public enum JavaVersion {
 	/**
 	 * Java 20.
 	 */
-	TWENTY("20", Class.class, "accessFlags");
+	TWENTY("20", Class.class, "accessFlags"),
+
+	/**
+	 * Java 21.
+	 */
+	TWENTY_ONE("21", SortedSet.class, "getFirst");
 
 	private final String name;
 
