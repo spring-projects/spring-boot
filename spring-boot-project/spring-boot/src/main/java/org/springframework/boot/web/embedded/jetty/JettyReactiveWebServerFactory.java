@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
+import org.eclipse.jetty.server.ConnectionLimit;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -55,6 +56,7 @@ import org.springframework.util.StringUtils;
  * {@link ReactiveWebServerFactory} that can be used to create {@link JettyWebServer}s.
  *
  * @author Brian Clozel
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
 public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFactory
@@ -79,6 +81,8 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	private JettyResourceFactory resourceFactory;
 
 	private ThreadPool threadPool;
+
+	private int maxConnections = -1;
 
 	/**
 	 * Create a new {@link JettyServletWebServerFactory} instance.
@@ -116,6 +120,11 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	public void addServerCustomizers(JettyServerCustomizer... customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
 		this.jettyServerCustomizers.addAll(Arrays.asList(customizers));
+	}
+
+	@Override
+	public void setMaxConnections(int maxConnections) {
+		this.maxConnections = maxConnections;
 	}
 
 	/**
@@ -180,6 +189,9 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		contextHandler.addServlet(servletHolder, "/");
 		server.setHandler(addHandlerWrappers(contextHandler));
 		JettyReactiveWebServerFactory.logger.info("Server initialized with port: " + port);
+		if (this.maxConnections > -1) {
+			server.addBean(new ConnectionLimit(this.maxConnections, server));
+		}
 		if (Ssl.isEnabled(getSsl())) {
 			customizeSsl(server, address);
 		}

@@ -81,6 +81,7 @@ public class JettyWebServerFactoryCustomizer
 		ServerProperties.Jetty.Threads threadProperties = properties.getThreads();
 		factory.setThreadPool(determineThreadPool(properties.getThreads()));
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(properties::getMaxConnections).to(factory::setMaxConnections);
 		map.from(threadProperties::getAcceptors).to(factory::setAcceptors);
 		map.from(threadProperties::getSelectors).to(factory::setSelectors);
 		map.from(this.serverProperties::getMaxHttpRequestHeaderSize)

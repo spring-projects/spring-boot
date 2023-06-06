@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.util.Arrays;
 
 import org.awaitility.Awaitility;
+import org.eclipse.jetty.server.ConnectionLimit;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -47,6 +48,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  * @author Madhura Bhave
+ * @author Moritz Halbritter
  */
 @Servlet5ClassPathOverrides
 class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
@@ -146,6 +148,17 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 			}
 		});
 		this.webServer.stop();
+	}
+
+	@Test
+	void shouldApplyMaxConnections() {
+		JettyReactiveWebServerFactory factory = getFactory();
+		factory.setMaxConnections(1);
+		this.webServer = factory.getWebServer(new EchoHandler());
+		Server server = ((JettyWebServer) this.webServer).getServer();
+		ConnectionLimit connectionLimit = server.getBean(ConnectionLimit.class);
+		assertThat(connectionLimit).isNotNull();
+		assertThat(connectionLimit.getMaxConnections()).isOne();
 	}
 
 }
