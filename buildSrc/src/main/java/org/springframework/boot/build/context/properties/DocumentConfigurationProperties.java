@@ -104,6 +104,7 @@ public class DocumentConfigurationProperties extends DefaultTask {
 		config.accept("spring.profiles");
 		config.accept("spring.quartz");
 		config.accept("spring.reactor");
+		config.accept("spring.ssl");
 		config.accept("spring.task");
 		config.accept("spring.mandatory-file-encoding");
 		config.accept("info");
