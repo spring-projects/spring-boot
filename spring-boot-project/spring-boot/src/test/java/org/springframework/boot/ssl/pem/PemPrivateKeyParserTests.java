@@ -84,6 +84,47 @@ class PemPrivateKeyParserTests {
 		assertThatIllegalStateException().isThrownBy(() -> PemPrivateKeyParser.parse(read("test-banner.txt")));
 	}
 
+	@Test
+	void parsePkcs8EncryptedRsaKeyFile() throws Exception {
+		// created with:
+		// openssl genpkey -aes-256-cbc -algorithm RSA \
+		// -pkeyopt rsa_keygen_bits:4096 -out key-rsa-encrypted.key
+		PrivateKey privateKey = PemPrivateKeyParser.parse(read("ssl/pkcs8/key-rsa-encrypted.pem"), "test");
+		assertThat(privateKey).isNotNull();
+		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
+		assertThat(privateKey.getAlgorithm()).isEqualTo("RSA");
+	}
+
+	@Test
+	void parsePkcs8EncryptedEcKeyFile() throws Exception {
+		// created with:
+		// openssl genpkey -aes-256-cbc -algorithm EC \
+		// -pkeyopt ec_paramgen_curve:prime256v1 -out key-ec-encrypted.key
+		PrivateKey privateKey = PemPrivateKeyParser.parse(read("ssl/pkcs8/key-ec-encrypted.pem"), "test");
+		assertThat(privateKey).isNotNull();
+		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
+		assertThat(privateKey.getAlgorithm()).isEqualTo("EC");
+	}
+
+	@Test
+	void failParsingPkcs1EncryptedKeyFile() throws Exception {
+		// created with:
+		// openssl genrsa -aes-256-cbc -out key-rsa-encrypted.pem
+		assertThatIllegalStateException()
+			.isThrownBy(() -> PemPrivateKeyParser.parse(read("ssl/pkcs1/key-rsa-encrypted.pem"), "test"))
+			.withMessageContaining("Unrecognized private key format");
+	}
+
+	@Test
+	void failParsingEcEncryptedKeyFile() throws Exception {
+		// created with:
+		// openssl ecparam -genkey -name prime256v1 | openssl ec -aes-128-cbc -out
+		// key-ec-prime256v1-encrypted.pem
+		assertThatIllegalStateException()
+			.isThrownBy(() -> PemPrivateKeyParser.parse(read("ssl/ec/key-ec-prime256v1-encrypted.pem"), "test"))
+			.withMessageContaining("Unrecognized private key format");
+	}
+
 	private String read(String path) throws IOException {
 		return new ClassPathResource(path).getContentAsString(StandardCharsets.UTF_8);
 	}

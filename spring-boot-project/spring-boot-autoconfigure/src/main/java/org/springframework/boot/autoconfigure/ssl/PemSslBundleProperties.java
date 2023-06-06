@@ -66,6 +66,11 @@ public class PemSslBundleProperties extends SslBundleProperties {
 		 */
 		String privateKey;
 
+		/**
+		 * Password used to decrypt an encrypted private key.
+		 */
+		String privateKeyPassword;
+
 		public String getType() {
 			return this.type;
 		}
@@ -88,6 +93,14 @@ public class PemSslBundleProperties extends SslBundleProperties {
 
 		public void setPrivateKey(String privateKey) {
 			this.privateKey = privateKey;
+		}
+
+		public String getPrivateKeyPassword() {
+			return this.privateKeyPassword;
+		}
+
+		public void setPrivateKeyPassword(String privateKeyPassword) {
+			this.privateKeyPassword = privateKeyPassword;
 		}
 
 	}

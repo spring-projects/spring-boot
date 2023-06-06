@@ -113,7 +113,8 @@ public final class PropertiesSslBundle implements SslBundle {
 	}
 
 	private static PemSslStoreDetails asStoreDetails(PemSslBundleProperties.Store properties) {
-		return new PemSslStoreDetails(properties.getType(), properties.getCertificate(), properties.getPrivateKey());
+		return new PemSslStoreDetails(properties.getType(), properties.getCertificate(), properties.getPrivateKey(),
+				properties.getPrivateKeyPassword());
 	}
 
 	private static SslStoreBundle asSslStoreBundle(JksSslBundleProperties properties) {

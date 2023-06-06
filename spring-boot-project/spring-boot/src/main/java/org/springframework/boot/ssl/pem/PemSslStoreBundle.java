@@ -84,14 +84,14 @@ public class PemSslStoreBundle implements SslStoreBundle {
 			return null;
 		}
 		try {
-			Assert.notNull(details.certificate(), "CertificateContent must not be null");
+			Assert.notNull(details.certificate(), "Certificate content must not be null");
 			String type = (!StringUtils.hasText(details.type())) ? KeyStore.getDefaultType() : details.type();
 			KeyStore store = KeyStore.getInstance(type);
 			store.load(null);
 			String certificateContent = PemContent.load(details.certificate());
 			String privateKeyContent = PemContent.load(details.privateKey());
 			X509Certificate[] certificates = PemCertificateParser.parse(certificateContent);
-			PrivateKey privateKey = PemPrivateKeyParser.parse(privateKeyContent);
+			PrivateKey privateKey = PemPrivateKeyParser.parse(privateKeyContent, details.privateKeyPassword());
 			addCertificates(store, certificates, privateKey);
 			return store;
 		}
