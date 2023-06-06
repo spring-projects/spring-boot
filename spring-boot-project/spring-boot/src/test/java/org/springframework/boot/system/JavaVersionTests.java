@@ -158,12 +158,22 @@ class JavaVersionTests {
 		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.TWENTY);
 	}
 
+	@Test
+	@EnabledIf("java21")
+	void currentJavaVersionTwentyOne() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.TWENTY_ONE);
+	}
+
 	static boolean java19() {
 		return "19".equals(System.getProperty("java.version"));
 	}
 
 	static boolean java20() {
 		return System.getProperty("java.version").startsWith("20");
+	}
+
+	static boolean java21() {
+		return System.getProperty("java.version").startsWith("21");
 	}
 
 }

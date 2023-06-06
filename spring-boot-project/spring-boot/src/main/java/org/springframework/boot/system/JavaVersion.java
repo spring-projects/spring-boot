@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.SortedSet;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
@@ -114,7 +115,13 @@ public enum JavaVersion {
 	 * Java 20.
 	 * @since 2.7.13
 	 */
-	TWENTY("20", Class.class, "accessFlags");
+	TWENTY("20", Class.class, "accessFlags"),
+
+	/**
+	 * Java 21.
+	 * @since 2.7.16
+	 */
+	TWENTY_ONE("21", SortedSet.class, "getFirst");
 
 	private final String name;
 
