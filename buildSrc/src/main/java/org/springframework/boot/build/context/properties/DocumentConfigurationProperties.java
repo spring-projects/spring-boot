@@ -106,6 +106,7 @@ public class DocumentConfigurationProperties extends DefaultTask {
 		config.accept("spring.reactor");
 		config.accept("spring.ssl");
 		config.accept("spring.task");
+		config.accept("spring.threads");
 		config.accept("spring.mandatory-file-encoding");
 		config.accept("info");
 		config.accept("spring.output.ansi.enabled");

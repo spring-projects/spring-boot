@@ -2826,6 +2826,12 @@
       "defaultValue": "embedded"
     },
     {
+      "name": "spring.threads.virtual.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use virtual threads.",
+      "defaultValue": false
+    },
+    {
       "name": "spring.thymeleaf.prefix",
       "defaultValue": "classpath:/templates/"
     },
