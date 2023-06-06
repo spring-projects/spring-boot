@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.util.ClassUtils;
  *
  * @author Oliver Gierke
  * @author Phillip Webb
+ * @author Moritz Halbritter
  * @since 2.0.0
  */
 public enum JavaVersion {
@@ -95,7 +96,12 @@ public enum JavaVersion {
 	/**
 	 * Java 19.
 	 */
-	NINETEEN("19", Future.class, "state");
+	NINETEEN("19", Future.class, "state"),
+
+	/**
+	 * Java 20.
+	 */
+	TWENTY("20", Class.class, "accessFlags");
 
 	private final String name;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -152,8 +152,18 @@ class JavaVersionTests {
 		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.NINETEEN);
 	}
 
+	@Test
+	@EnabledIf("java20")
+	void currentJavaVersionTwenty() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.TWENTY);
+	}
+
 	static boolean java19() {
 		return "19".equals(System.getProperty("java.version"));
+	}
+
+	static boolean java20() {
+		return System.getProperty("java.version").startsWith("20");
 	}
 
 }
