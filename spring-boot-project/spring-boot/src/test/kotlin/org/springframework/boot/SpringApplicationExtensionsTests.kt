@@ -16,9 +16,11 @@
 package org.springframework.boot
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatIllegalStateException
 import org.junit.jupiter.api.Test
 
 import org.springframework.beans.factory.getBean
+import org.springframework.boot.kotlinsample.TestKotlinApplication
 import org.springframework.boot.web.servlet.server.MockServletWebServerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -65,6 +67,18 @@ class SpringApplicationExtensionsTests {
 		assertThat(args.nonOptionArgs.toTypedArray()).containsExactly("spring", "boot")
 		assertThat(args.containsOption("debug")).isEqualTo(true)
 		assertThat(environment).isEqualTo(context.environment)
+	}
+
+	@Test
+	fun `Kotlin fromApplication() top level function`() {
+		val context = fromApplication<TestKotlinApplication>().with(ExampleWebConfig::class).run().applicationContext
+		assertThat(context.getBean<MockServletWebServerFactory>()).isNotNull
+	}
+
+	@Test
+	fun `Kotlin fromApplication() top level function when no main`() {
+		assertThatIllegalStateException().isThrownBy { fromApplication<ExampleWebConfig>().run() }
+			.withMessage("Unable to use 'fromApplication' with org.springframework.boot.SpringApplicationExtensionsTests.ExampleWebConfig")
 	}
 
 	@Configuration(proxyBeanMethods = false)

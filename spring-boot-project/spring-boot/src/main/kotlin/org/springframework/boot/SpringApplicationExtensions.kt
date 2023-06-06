@@ -17,6 +17,11 @@
 package org.springframework.boot
 
 import org.springframework.context.ConfigurableApplicationContext
+import org.springframework.util.Assert
+import org.springframework.util.ClassUtils
+import org.springframework.util.ReflectionUtils
+import kotlin.reflect.KClass
+import kotlin.reflect.KType
 
 /**
  * Top-level function acting as a Kotlin shortcut allowing to write
@@ -40,3 +45,34 @@ inline fun <reified T : Any> runApplication(vararg args: String): ConfigurableAp
  */
 inline fun <reified T : Any> runApplication(vararg args: String, init: SpringApplication.() -> Unit): ConfigurableApplicationContext =
 		SpringApplication(T::class.java).apply(init).run(*args)
+
+/**
+ * Top-level function acting as a Kotlin shortcut allowing to write
+ * `fromApplication<MyApplication>().with(...)`. This method assumes that
+ * the `main` function is declared in the same file as `T`.
+ *
+ * @author Phillip Webb
+ * @since 3.1.1
+ */
+inline fun <reified T : Any> fromApplication(): SpringApplication.Augmented {
+	val type = T::class
+	val ktClassName = type.qualifiedName + "Kt"
+	try {
+		val ktClass = ClassUtils.resolveClassName(ktClassName, type.java.classLoader)
+		val mainMethod = ReflectionUtils.findMethod(ktClass, "main", Array<String>::class.java)
+		Assert.notNull(mainMethod, "Unable to find main method")
+		return SpringApplication.from { ReflectionUtils.invokeMethod(mainMethod!!, null, it) }
+	} catch (ex: Exception) {
+		throw IllegalStateException("Unable to use 'fromApplication' with " + type.qualifiedName)
+	}
+}
+
+/**
+ * Extension function that allows `SpringApplication.Augmented.with` to work with Kotlin classes.
+ *
+ * @author Phillip Webb
+ * @since 3.1.1
+ */
+fun SpringApplication.Augmented.with(type: KClass<*>): SpringApplication.Augmented {
+	return this.with(type.java)!!
+}
