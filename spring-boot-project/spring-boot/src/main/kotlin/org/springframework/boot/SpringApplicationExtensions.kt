@@ -19,9 +19,9 @@ package org.springframework.boot
 import org.springframework.context.ConfigurableApplicationContext
 
 /**
- * Top level function acting as a Kotlin shortcut allowing to write
- * `runApplication<FooApplication>(arg1, arg2)` instead of
- * `SpringApplication.run(FooApplication::class.java, arg1, arg2)`.
+ * Top-level function acting as a Kotlin shortcut allowing to write
+ * `runApplication<MyApplication>(arg1, arg2)` instead of
+ * `SpringApplication.run(MyApplication::class.java, arg1, arg2)`.
  *
  * @author Sebastien Deleuze
  * @since 2.0.0
@@ -30,8 +30,8 @@ inline fun <reified T : Any> runApplication(vararg args: String): ConfigurableAp
 		SpringApplication.run(T::class.java, *args)
 
 /**
- * Top level function acting as a Kotlin shortcut allowing to write
- * `runApplication<FooApplication>(arg1, arg2) { // SpringApplication customization ... }`
+ * Top-level function acting as a Kotlin shortcut allowing to write
+ * `runApplication<MyApplication>(arg1, arg2) { // SpringApplication customization ... }`
  * instead of instantiating `SpringApplication` class, customize it and then invoking
  * `run(arg1, arg2)`.
  *
