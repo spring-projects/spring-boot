@@ -84,6 +84,13 @@ public class EmbeddedWebServerFactoryCustomizerAutoConfiguration {
 			return new JettyWebServerFactoryCustomizer(environment, serverProperties);
 		}
 
+		@Bean
+		@ConditionalOnVirtualThreads
+		JettyVirtualThreadsWebServerFactoryCustomizer jettyVirtualThreadsWebServerFactoryCustomizer(
+				ServerProperties serverProperties) {
+			return new JettyVirtualThreadsWebServerFactoryCustomizer(serverProperties);
+		}
+
 	}
 
 	/**

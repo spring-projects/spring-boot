@@ -18,8 +18,6 @@ package org.springframework.boot.autoconfigure.web.embedded;
 
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.SynchronousQueue;
 
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
@@ -31,9 +29,6 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
-import org.eclipse.jetty.util.BlockingArrayQueue;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.eclipse.jetty.util.thread.ThreadPool;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
@@ -60,6 +55,8 @@ import org.springframework.util.unit.DataSize;
 public class JettyWebServerFactoryCustomizer
 		implements WebServerFactoryCustomizer<ConfigurableJettyWebServerFactory>, Ordered {
 
+	static final int ORDER = 0;
+
 	private final Environment environment;
 
 	private final ServerProperties serverProperties;
@@ -71,7 +68,7 @@ public class JettyWebServerFactoryCustomizer
 
 	@Override
 	public int getOrder() {
-		return 0;
+		return ORDER;
 	}
 
 	@Override
@@ -79,7 +76,7 @@ public class JettyWebServerFactoryCustomizer
 		ServerProperties.Jetty properties = this.serverProperties.getJetty();
 		factory.setUseForwardHeaders(getOrDeduceUseForwardHeaders());
 		ServerProperties.Jetty.Threads threadProperties = properties.getThreads();
-		factory.setThreadPool(determineThreadPool(properties.getThreads()));
+		factory.setThreadPool(JettyThreadPool.create(properties.getThreads()));
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		map.from(properties::getMaxConnections).to(factory::setMaxConnections);
 		map.from(threadProperties::getAcceptors).to(factory::setAcceptors);
@@ -149,27 +146,6 @@ public class JettyWebServerFactoryCustomizer
 			}
 
 		});
-	}
-
-	private ThreadPool determineThreadPool(ServerProperties.Jetty.Threads properties) {
-		BlockingQueue<Runnable> queue = determineBlockingQueue(properties.getMaxQueueCapacity());
-		int maxThreadCount = (properties.getMax() > 0) ? properties.getMax() : 200;
-		int minThreadCount = (properties.getMin() > 0) ? properties.getMin() : 8;
-		int threadIdleTimeout = (properties.getIdleTimeout() != null) ? (int) properties.getIdleTimeout().toMillis()
-				: 60000;
-		return new QueuedThreadPool(maxThreadCount, minThreadCount, threadIdleTimeout, queue);
-	}
-
-	private BlockingQueue<Runnable> determineBlockingQueue(Integer maxQueueCapacity) {
-		if (maxQueueCapacity == null) {
-			return null;
-		}
-		if (maxQueueCapacity == 0) {
-			return new SynchronousQueue<>();
-		}
-		else {
-			return new BlockingArrayQueue<>(maxQueueCapacity);
-		}
 	}
 
 	private void customizeAccessLog(ConfigurableJettyWebServerFactory factory,
