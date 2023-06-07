@@ -36,7 +36,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class TestcontainersLifecycleApplicationContextInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
-	private static Set<ConfigurableApplicationContext> applied = Collections.newSetFromMap(new WeakHashMap<>());
+	private static final Set<ConfigurableApplicationContext> applied = Collections.newSetFromMap(new WeakHashMap<>());
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
