@@ -87,14 +87,24 @@ You can register multiple OAuth2 clients and providers under the `spring.securit
 	    oauth2:
 	      client:
 	        registration:
+	          my-login-client:
+	            client-id: "abcd"
+	            client-secret: "password"
+	            client-name: "Client for OpenID Connect"
+	            provider: "my-oauth-provider"
+	            scope: "openid,profile,email,phone,address"
+	            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+	            client-authentication-method: "client_secret_basic"
+	            authorization-grant-type: "authorization_code"
+
 	          my-client-1:
 	            client-id: "abcd"
 	            client-secret: "password"
 	            client-name: "Client for user scope"
 	            provider: "my-oauth-provider"
 	            scope: "user"
-	            redirect-uri: "https://my-redirect-uri.com"
-	            client-authentication-method: "basic"
+	            redirect-uri: "{baseUrl}/authorized/user"
+	            client-authentication-method: "client_secret_basic"
 	            authorization-grant-type: "authorization_code"
 
 	          my-client-2:
@@ -103,17 +113,17 @@ You can register multiple OAuth2 clients and providers under the `spring.securit
 	            client-name: "Client for email scope"
 	            provider: "my-oauth-provider"
 	            scope: "email"
-	            redirect-uri: "https://my-redirect-uri.com"
-	            client-authentication-method: "basic"
+	            redirect-uri: "{baseUrl}/authorized/email"
+	            client-authentication-method: "client_secret_basic"
 	            authorization-grant-type: "authorization_code"
 
 	        provider:
 	          my-oauth-provider:
-	            authorization-uri: "https://my-auth-server/oauth/authorize"
-	            token-uri: "https://my-auth-server/oauth/token"
-	            user-info-uri: "https://my-auth-server/userinfo"
+	            authorization-uri: "https://my-auth-server.com/oauth2/authorize"
+	            token-uri: "https://my-auth-server.com/oauth2/token"
+	            user-info-uri: "https://my-auth-server.com/userinfo"
 	            user-info-authentication-method: "header"
-	            jwk-set-uri: "https://my-auth-server/token_keys"
+	            jwk-set-uri: "https://my-auth-server.com/oauth2/jwks"
 	            user-name-attribute: "name"
 ----
 
