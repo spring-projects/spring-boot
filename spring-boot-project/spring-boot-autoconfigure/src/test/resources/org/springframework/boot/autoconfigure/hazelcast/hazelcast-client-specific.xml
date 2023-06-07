@@ -5,5 +5,10 @@
 	<client-labels>
 		<label>explicit-xml</label>
 	</client-labels>
+	<connection-strategy>
+		<connection-retry>
+			<cluster-connect-timeout-millis>60000</cluster-connect-timeout-millis>
+		</connection-retry>
+	</connection-strategy>
 
 </hazelcast-client>
