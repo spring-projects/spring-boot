@@ -188,7 +188,8 @@ public class OpenTelemetryAutoConfiguration {
 			BaggageTextMapPropagator baggagePropagator = new BaggageTextMapPropagator(remoteFields,
 					new OtelBaggageManager(otelCurrentTraceContext, remoteFields, Collections.emptyList()));
 			return CompositeTextMapPropagator.create(baggagePropagator,
-					this.tracingProperties.getPropagation().getType());
+					this.tracingProperties.getPropagation().getType(),
+					this.tracingProperties.getPropagation().getConsumeTypes());
 		}
 
 		@Bean
@@ -207,7 +208,8 @@ public class OpenTelemetryAutoConfiguration {
 
 		@Bean
 		TextMapPropagator textMapPropagator(TracingProperties properties) {
-			return CompositeTextMapPropagator.create(properties.getPropagation().getType());
+			return CompositeTextMapPropagator.create(properties.getPropagation().getType(),
+					properties.getPropagation().getConsumeTypes());
 		}
 
 	}

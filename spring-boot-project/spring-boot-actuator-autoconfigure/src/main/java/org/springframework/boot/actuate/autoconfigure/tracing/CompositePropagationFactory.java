@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -134,17 +133,19 @@ class CompositePropagationFactory extends Propagation.Factory implements Propaga
 
 	/**
 	 * Creates a new {@link CompositePropagationFactory}, which uses the given
-	 * {@code injectionTypes} for injection and all supported types for extraction.
+	 * {@code injectionTypes} for injection and {@code extractionTypes} for extraction.
 	 * @param baggageManager the baggage manager to use, or {@code null}
 	 * @param injectionTypes the propagation types for injection
+	 * @param extractionTypes the propagation types for extraction
 	 * @return the {@link CompositePropagationFactory}
 	 */
 	static CompositePropagationFactory create(BaggageManager baggageManager,
-			Collection<TracingProperties.Propagation.PropagationType> injectionTypes) {
+			Collection<TracingProperties.Propagation.PropagationType> injectionTypes,
+			Collection<TracingProperties.Propagation.PropagationType> extractionTypes) {
 		List<Factory> injectors = injectionTypes.stream()
 			.map((injection) -> factoryForType(baggageManager, injection))
 			.toList();
-		List<Factory> extractors = Arrays.stream(TracingProperties.Propagation.PropagationType.values())
+		List<Factory> extractors = extractionTypes.stream()
 			.map((extraction) -> factoryForType(baggageManager, extraction))
 			.toList();
 		return new CompositePropagationFactory(injectors, extractors);
@@ -152,13 +153,14 @@ class CompositePropagationFactory extends Propagation.Factory implements Propaga
 
 	/**
 	 * Creates a new {@link CompositePropagationFactory}, which uses the given
-	 * {@code injectionTypes} for injection and all supported types for extraction.
+	 * {@code injectionTypes} for injection and {@code extractionTypes} for extraction.
 	 * @param injectionTypes the propagation types for injection
+	 * @param extractionTypes the propagation types for extraction
 	 * @return the {@link CompositePropagationFactory}
 	 */
-	static CompositePropagationFactory create(
-			Collection<TracingProperties.Propagation.PropagationType> injectionTypes) {
-		return create(null, injectionTypes);
+	static CompositePropagationFactory create(Collection<TracingProperties.Propagation.PropagationType> injectionTypes,
+			Collection<TracingProperties.Propagation.PropagationType> extractionTypes) {
+		return create(null, injectionTypes, extractionTypes);
 	}
 
 	private static Factory factoryForType(BaggageManager baggageManager,

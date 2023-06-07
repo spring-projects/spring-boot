@@ -170,12 +170,25 @@ public class TracingProperties {
 		 */
 		private List<PropagationType> type = List.of(PropagationType.W3C);
 
+		/**
+		 * Tracing context propagation types consumed by the application.
+		 */
+		private List<PropagationType> consumeTypes = List.of(PropagationType.values());
+
 		public List<PropagationType> getType() {
 			return this.type;
 		}
 
 		public void setType(List<PropagationType> type) {
 			this.type = type;
+		}
+
+		void setConsumeTypes(List<PropagationType> consumeTypes) {
+			this.consumeTypes = consumeTypes;
+		}
+
+		List<PropagationType> getConsumeTypes() {
+			return this.consumeTypes;
 		}
 
 		/**

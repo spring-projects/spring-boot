@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -113,30 +112,34 @@ class CompositeTextMapPropagator implements TextMapPropagator {
 
 	/**
 	 * Creates a new {@link CompositeTextMapPropagator}, which uses the given
-	 * {@code injectionTypes} for injection and all supported types for extraction.
+	 * {@code injectionTypes} for injection and {@code extractionTypes} for extraction.
 	 * @param injectionTypes the propagation types for injection
+	 * @param extractionTypes the propagation types for extraction
 	 * @return the {@link CompositeTextMapPropagator}
 	 */
-	static TextMapPropagator create(Collection<TracingProperties.Propagation.PropagationType> injectionTypes) {
-		return create(null, injectionTypes);
+	static TextMapPropagator create(Collection<TracingProperties.Propagation.PropagationType> injectionTypes,
+			Collection<TracingProperties.Propagation.PropagationType> extractionTypes) {
+		return create(null, injectionTypes, extractionTypes);
 	}
 
 	/**
 	 * Creates a new {@link CompositeTextMapPropagator}, which uses the given
-	 * {@code injectionTypes} for injection and all supported types for extraction.
+	 * {@code injectionTypes} for injection and {@code extractionTypes} for extraction.
 	 * @param baggagePropagator the baggage propagator to use, or {@code null}
 	 * @param injectionTypes the propagation types for injection
+	 * @param extractionTypes the propagation types for extraction
 	 * @return the {@link CompositeTextMapPropagator}
 	 */
 	static CompositeTextMapPropagator create(TextMapPropagator baggagePropagator,
-			Collection<TracingProperties.Propagation.PropagationType> injectionTypes) {
+			Collection<TracingProperties.Propagation.PropagationType> injectionTypes,
+			Collection<TracingProperties.Propagation.PropagationType> extractionTypes) {
 		List<TextMapPropagator> injectors = injectionTypes.stream()
 			.map((injection) -> forType(injection, baggagePropagator != null))
 			.collect(Collectors.toCollection(ArrayList::new));
 		if (baggagePropagator != null) {
 			injectors.add(baggagePropagator);
 		}
-		List<TextMapPropagator> extractors = Arrays.stream(TracingProperties.Propagation.PropagationType.values())
+		List<TextMapPropagator> extractors = extractionTypes.stream()
 			.map((extraction) -> forType(extraction, baggagePropagator != null))
 			.toList();
 		return new CompositeTextMapPropagator(injectors, extractors,
