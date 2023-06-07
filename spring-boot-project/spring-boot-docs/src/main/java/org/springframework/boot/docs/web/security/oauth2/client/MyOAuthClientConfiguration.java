@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2023 the original author or authors.
+ * Copyright 2012-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,26 @@ package org.springframework.boot.docs.web.security.oauth2.client;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration(proxyBeanMethods = false)
+@EnableWebSecurity
 public class MyOAuthClientConfiguration {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
-		http.oauth2Login((login) -> login.redirectionEndpoint((endpoint) -> endpoint.baseUri("custom-callback")));
+		// @formatter:off
+		http
+			.authorizeHttpRequests((requests) -> requests
+				.anyRequest().authenticated()
+			)
+			.oauth2Login((login) -> login
+				.redirectionEndpoint((endpoint) -> endpoint
+					.baseUri("/login/oauth2/callback/*")
+				)
+			);
+		// @formatter:on
 		return http.build();
 	}
 
