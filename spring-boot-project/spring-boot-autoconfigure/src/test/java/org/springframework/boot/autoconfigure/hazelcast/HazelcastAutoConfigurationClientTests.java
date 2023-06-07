@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.hazelcast;
 
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
+import com.hazelcast.client.config.ClientConnectionStrategyConfig;
+import com.hazelcast.client.config.ConnectionRetryConfig;
 import com.hazelcast.client.impl.clientside.HazelcastClientProxy;
 import com.hazelcast.config.Config;
 import com.hazelcast.core.Hazelcast;
@@ -201,7 +203,8 @@ class HazelcastAutoConfigurationClientTests {
 
 		@Bean
 		ClientConfig clientConfig() {
-			return new ClientConfig();
+			return new ClientConfig().setConnectionStrategyConfig(new ClientConnectionStrategyConfig()
+				.setConnectionRetryConfig(new ConnectionRetryConfig().setClusterConnectTimeoutMillis(60000)));
 		}
 
 	}
