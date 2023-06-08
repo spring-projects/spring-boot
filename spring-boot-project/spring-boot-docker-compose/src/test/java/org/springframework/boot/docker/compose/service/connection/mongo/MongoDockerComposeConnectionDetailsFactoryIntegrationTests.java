@@ -16,6 +16,7 @@
 
 package org.springframework.boot.docker.compose.service.connection.mongo;
 
+import com.mongodb.ConnectionString;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
@@ -29,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class MongoDockerComposeConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
@@ -39,8 +41,11 @@ class MongoDockerComposeConnectionDetailsFactoryIntegrationTests extends Abstrac
 	@Test
 	void runCreatesConnectionDetails() {
 		MongoConnectionDetails connectionDetails = run(MongoConnectionDetails.class);
-		assertThat(connectionDetails.getConnectionString().toString()).startsWith("mongodb://root:secret@")
-			.endsWith("/mydatabase");
+		ConnectionString connectionString = connectionDetails.getConnectionString();
+		assertThat(connectionString.getCredential().getUserName()).isEqualTo("root");
+		assertThat(connectionString.getCredential().getPassword()).isEqualTo("secret".toCharArray());
+		assertThat(connectionString.getCredential().getSource()).isEqualTo("admin");
+		assertThat(connectionString.getDatabase()).isEqualTo("mydatabase");
 		assertThat(connectionDetails.getGridFs()).isNull();
 	}
 
