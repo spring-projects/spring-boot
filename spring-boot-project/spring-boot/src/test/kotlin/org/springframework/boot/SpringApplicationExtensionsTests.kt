@@ -37,7 +37,7 @@ class SpringApplicationExtensionsTests {
 	@Test
 	fun `Kotlin runApplication() top level function`() {
 		val context = runApplication<ExampleWebConfig>()
-		assertThat(context).isNotNull
+		assertThat(context).isNotNull()
 	}
 
 	@Test
@@ -46,7 +46,7 @@ class SpringApplicationExtensionsTests {
 		val context = runApplication<ExampleWebConfig> {
 			setEnvironment(environment)
 		}
-		assertThat(context).isNotNull
+		assertThat(context).isNotNull()
 		assertThat(environment).isEqualTo(context.environment)
 	}
 
@@ -55,7 +55,7 @@ class SpringApplicationExtensionsTests {
 		val context = runApplication<ExampleWebConfig>("--debug", "spring", "boot")
 		val args = context.getBean<ApplicationArguments>()
 		assertThat(args.nonOptionArgs.toTypedArray()).containsExactly("spring", "boot")
-		assertThat(args.containsOption("debug")).isEqualTo(true)
+		assertThat(args.containsOption("debug")).isTrue()
 	}
 
 	@Test
@@ -66,21 +66,21 @@ class SpringApplicationExtensionsTests {
 		}
 		val args = context.getBean<ApplicationArguments>()
 		assertThat(args.nonOptionArgs.toTypedArray()).containsExactly("spring", "boot")
-		assertThat(args.containsOption("debug")).isEqualTo(true)
+		assertThat(args.containsOption("debug")).isTrue()
 		assertThat(environment).isEqualTo(context.environment)
 	}
 
 	@Test
 	fun `Kotlin fromApplication() top level function`() {
 		val context = fromApplication<TestKotlinApplication>().with(ExampleWebConfig::class).run().applicationContext
-		assertThat(context.getBean<MockServletWebServerFactory>()).isNotNull
+		assertThat(context.getBean<MockServletWebServerFactory>()).isNotNull()
 	}
 
 	@Test
 	fun `Kotlin fromApplication() top level function with multiple sources`() {
 		val context = fromApplication<TestKotlinApplication>().with(ExampleWebConfig::class, ExampleFilterConfig::class).run().applicationContext
-		assertThat(context.getBean<MockServletWebServerFactory>()).isNotNull
-		assertThat(context.getBean<MockFilter>()).isNotNull
+		assertThat(context.getBean<MockServletWebServerFactory>()).isNotNull()
+		assertThat(context.getBean<MockFilter>()).isNotNull()
 	}
 
 	@Test
