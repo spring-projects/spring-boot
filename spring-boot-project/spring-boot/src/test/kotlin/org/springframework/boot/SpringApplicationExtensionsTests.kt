@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2022 the original author or authors.
+ * Copyright 2002-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test
 
 import org.springframework.beans.factory.getBean
 import org.springframework.boot.kotlinsample.TestKotlinApplication
+import org.springframework.boot.web.servlet.mock.MockFilter
 import org.springframework.boot.web.servlet.server.MockServletWebServerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -76,6 +77,13 @@ class SpringApplicationExtensionsTests {
 	}
 
 	@Test
+	fun `Kotlin fromApplication() top level function with multiple sources`() {
+		val context = fromApplication<TestKotlinApplication>().with(ExampleWebConfig::class, ExampleFilterConfig::class).run().applicationContext
+		assertThat(context.getBean<MockServletWebServerFactory>()).isNotNull
+		assertThat(context.getBean<MockFilter>()).isNotNull
+	}
+
+	@Test
 	fun `Kotlin fromApplication() top level function when no main`() {
 		assertThatIllegalStateException().isThrownBy { fromApplication<ExampleWebConfig>().run() }
 			.withMessage("Unable to use 'fromApplication' with org.springframework.boot.SpringApplicationExtensionsTests.ExampleWebConfig")
@@ -87,6 +95,16 @@ class SpringApplicationExtensionsTests {
 		@Bean
 		open fun webServer(): MockServletWebServerFactory {
 			return MockServletWebServerFactory()
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	internal open class ExampleFilterConfig {
+
+		@Bean
+		open fun filter(): MockFilter {
+			return MockFilter()
 		}
 
 	}
