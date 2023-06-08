@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,11 +68,12 @@ inline fun <reified T : Any> fromApplication(): SpringApplication.Augmented {
 }
 
 /**
- * Extension function that allows `SpringApplication.Augmented.with` to work with Kotlin classes.
+ * Extension function that allows [SpringApplication.Augmented.with] to work with Kotlin classes.
  *
  * @author Phillip Webb
+ * @author Sebastien Deleuze
  * @since 3.1.1
  */
-fun SpringApplication.Augmented.with(type: KClass<*>): SpringApplication.Augmented {
-	return this.with(type.java)!!
+fun SpringApplication.Augmented.with(vararg types: KClass<*>): SpringApplication.Augmented {
+	return this.with(*types.map(KClass<*>::java).toTypedArray())!!
 }
