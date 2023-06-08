@@ -24,7 +24,6 @@ import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Supplier;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -83,8 +82,8 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 				.jwsAlgorithms(this::jwsAlgorithms)
 				.build();
 			String issuerUri = this.properties.getIssuerUri();
-			Supplier<OAuth2TokenValidator<Jwt>> defaultValidator = (issuerUri != null)
-					? () -> JwtValidators.createDefaultWithIssuer(issuerUri) : JwtValidators::createDefault;
+			OAuth2TokenValidator<Jwt> defaultValidator = (issuerUri != null)
+					? JwtValidators.createDefaultWithIssuer(issuerUri) : JwtValidators.createDefault();
 			nimbusReactiveJwtDecoder.setJwtValidator(getValidators(defaultValidator));
 			return nimbusReactiveJwtDecoder;
 		}
@@ -95,14 +94,13 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 			}
 		}
 
-		private OAuth2TokenValidator<Jwt> getValidators(Supplier<OAuth2TokenValidator<Jwt>> defaultValidator) {
-			OAuth2TokenValidator<Jwt> defaultValidators = defaultValidator.get();
+		private OAuth2TokenValidator<Jwt> getValidators(OAuth2TokenValidator<Jwt> defaultValidator) {
 			List<String> audiences = this.properties.getAudiences();
 			if (CollectionUtils.isEmpty(audiences)) {
-				return defaultValidators;
+				return defaultValidator;
 			}
 			List<OAuth2TokenValidator<Jwt>> validators = new ArrayList<>();
-			validators.add(defaultValidators);
+			validators.add(defaultValidator);
 			validators.add(new JwtClaimValidator<List<String>>(JwtClaimNames.AUD,
 					(aud) -> aud != null && !Collections.disjoint(aud, audiences)));
 			return new DelegatingOAuth2TokenValidator<>(validators);
@@ -116,7 +114,7 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 			NimbusReactiveJwtDecoder jwtDecoder = NimbusReactiveJwtDecoder.withPublicKey(publicKey)
 				.signatureAlgorithm(SignatureAlgorithm.from(exactlyOneAlgorithm()))
 				.build();
-			jwtDecoder.setJwtValidator(getValidators(JwtValidators::createDefault));
+			jwtDecoder.setJwtValidator(getValidators(JwtValidators.createDefault()));
 			return jwtDecoder;
 		}
 
@@ -143,7 +141,7 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 				NimbusReactiveJwtDecoder jwtDecoder = (NimbusReactiveJwtDecoder) ReactiveJwtDecoders
 					.fromIssuerLocation(this.properties.getIssuerUri());
 				jwtDecoder.setJwtValidator(
-						getValidators(() -> JwtValidators.createDefaultWithIssuer(this.properties.getIssuerUri())));
+						getValidators(JwtValidators.createDefaultWithIssuer(this.properties.getIssuerUri())));
 				return jwtDecoder;
 			});
 		}
