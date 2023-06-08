@@ -30,6 +30,7 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class MongoDockerComposeConnectionDetailsFactory extends DockerComposeConnectionDetailsFactory<MongoConnectionDetails> {
 
@@ -73,6 +74,9 @@ class MongoDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 			builder.append(service.ports().get(MONGODB_PORT));
 			builder.append("/");
 			builder.append((environment.getDatabase() != null) ? environment.getDatabase() : "test");
+			if (environment.getUsername() != null) {
+				builder.append("?authSource=admin");
+			}
 			return new ConnectionString(builder.toString());
 		}
 
