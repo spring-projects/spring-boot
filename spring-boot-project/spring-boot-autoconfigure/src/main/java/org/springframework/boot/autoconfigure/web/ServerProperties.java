@@ -473,7 +473,7 @@ public class ServerProperties {
 		/**
 		 * Whether to reject requests with illegal header names or values.
 		 */
-		@Deprecated
+		@Deprecated(since = "2.7.12", forRemoval = true)
 		private boolean rejectIllegalHeader = true;
 
 		/**
