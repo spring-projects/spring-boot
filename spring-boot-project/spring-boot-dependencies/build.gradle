@@ -609,7 +609,7 @@ bom {
 			]
 		}
 	}
-	library("JBoss Logging", "3.5.0.Final") {
+	library("JBoss Logging", "3.5.1.Final") {
 		group("org.jboss.logging") {
 			modules = [
 				"jboss-logging"
