@@ -64,6 +64,17 @@ class PemSslStoreBundleTests {
 	}
 
 	@Test
+	void whenHasKeyStoreDetailsCertAndEncryptedKey() {
+		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
+			.withPrivateKey("classpath:ssl/pkcs8/key-rsa-encrypted.pem")
+			.withPrivateKeyPassword("test");
+		PemSslStoreDetails trustStoreDetails = null;
+		PemSslStoreBundle bundle = new PemSslStoreBundle(keyStoreDetails, trustStoreDetails);
+		assertThat(bundle.getKeyStore()).satisfies(storeContainingCertAndKey("ssl"));
+		assertThat(bundle.getTrustStore()).isNull();
+	}
+
+	@Test
 	void whenHasKeyStoreDetailsAndTrustStoreDetailsWithoutKey() {
 		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
 			.withPrivateKey("classpath:test-key.pem");

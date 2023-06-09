@@ -30,11 +30,16 @@ import org.springframework.util.StringUtils;
  * that can be loaded by {@link ResourceUtils#getURL})
  * @param privateKey the private key content (either the PEM content itself or something
  * that can be loaded by {@link ResourceUtils#getURL})
+ * @param privateKeyPassword a password used to decrypt an encrypted private key
  * @author Scott Frederick
  * @author Phillip Webb
  * @since 3.1.0
  */
-public record PemSslStoreDetails(String type, String certificate, String privateKey) {
+public record PemSslStoreDetails(String type, String certificate, String privateKey, String privateKeyPassword) {
+
+	public PemSslStoreDetails(String type, String certificate, String privateKey) {
+		this(type, certificate, privateKey, null);
+	}
 
 	/**
 	 * Return a new {@link PemSslStoreDetails} instance with a new private key.
@@ -42,7 +47,16 @@ public record PemSslStoreDetails(String type, String certificate, String private
 	 * @return a new {@link PemSslStoreDetails} instance
 	 */
 	public PemSslStoreDetails withPrivateKey(String privateKey) {
-		return new PemSslStoreDetails(this.type, this.certificate, privateKey);
+		return new PemSslStoreDetails(this.type, this.certificate, privateKey, this.privateKeyPassword);
+	}
+
+	/**
+	 * Return a new {@link PemSslStoreDetails} instance with a new private key password.
+	 * @param password the new private key password
+	 * @return a new {@link PemSslStoreDetails} instance
+	 */
+	public PemSslStoreDetails withPrivateKeyPassword(String password) {
+		return new PemSslStoreDetails(this.type, this.certificate, this.privateKey, password);
 	}
 
 	boolean isEmpty() {
