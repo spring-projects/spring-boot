@@ -437,6 +437,7 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	@Deprecated(since = "2.7.12", forRemoval = true)
 	void testCustomizeRejectIllegalHeader() {
 		bind("server.tomcat.reject-illegal-header=false");
 		customizeAndRunServer((server) -> assertThat(
