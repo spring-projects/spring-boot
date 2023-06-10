@@ -78,6 +78,7 @@ import org.springframework.util.StringUtils;
  */
 @AutoConfiguration
 @ConditionalOnClass(CqlSession.class)
+@ConditionalOnProperty("spring.cassandra.keyspace-name")
 @EnableConfigurationProperties(CassandraProperties.class)
 public class CassandraAutoConfiguration {
 
