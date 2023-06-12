@@ -166,28 +166,67 @@ public class TracingProperties {
 	public static class Propagation {
 
 		/**
+		 * Tracing context propagation types produced and consumed by the application.
+		 * Setting this property overrides the more fine-grained propagation type
+		 * properties.
+		 */
+		private List<PropagationType> type;
+
+		/**
 		 * Tracing context propagation types produced by the application.
 		 */
-		private List<PropagationType> type = List.of(PropagationType.W3C);
+		private List<PropagationType> produceTypes = List.of(PropagationType.W3C);
 
 		/**
 		 * Tracing context propagation types consumed by the application.
 		 */
 		private List<PropagationType> consumeTypes = List.of(PropagationType.values());
 
-		public List<PropagationType> getType() {
-			return this.type;
-		}
-
 		public void setType(List<PropagationType> type) {
 			this.type = type;
 		}
 
-		void setConsumeTypes(List<PropagationType> consumeTypes) {
+		public void setProduceTypes(List<PropagationType> produceTypes) {
+			this.produceTypes = produceTypes;
+		}
+
+		public void setConsumeTypes(List<PropagationType> consumeTypes) {
 			this.consumeTypes = consumeTypes;
 		}
 
-		List<PropagationType> getConsumeTypes() {
+		public List<PropagationType> getType() {
+			return this.type;
+		}
+
+		public List<PropagationType> getProduceTypes() {
+			return this.produceTypes;
+		}
+
+		public List<PropagationType> getConsumeTypes() {
+			return this.consumeTypes;
+		}
+
+		/**
+		 * Returns the effective context propagation types produced by the application.
+		 * This will be {@link #getType()} if set or {@link #getProduceTypes()} otherwise.
+		 * @return the effective context propagation types produced by the application
+		 */
+		List<PropagationType> getEffectiveProduceTypes() {
+			if (this.type != null) {
+				return this.type;
+			}
+			return this.produceTypes;
+		}
+
+		/**
+		 * Returns the effective context propagation types consumed by the application.
+		 * This will be {@link #getType()} if set or {@link #getConsumeTypes()} otherwise.
+		 * @return the effective context propagation types consumed by the application
+		 */
+		List<PropagationType> getEffectiveConsumeTypes() {
+			if (this.type != null) {
+				return this.type;
+			}
 			return this.consumeTypes;
 		}
 
@@ -197,7 +236,7 @@ public class TracingProperties {
 		enum PropagationType {
 
 			/**
-			 * <a href="https://www.w3.org/TR/trace-context/">W3C propagation.</a>
+			 * <a href="https://www.w3.org/TR/trace-context/">W3C</a> propagation.
 			 */
 			W3C,
 
