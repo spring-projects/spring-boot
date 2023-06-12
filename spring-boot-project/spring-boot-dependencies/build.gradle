@@ -495,7 +495,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Json", "2.1.1") {
+	library("Jakarta Json", "2.1.2") {
 		group("jakarta.json") {
 			modules = [
 				"jakarta.json-api"
