@@ -36,6 +36,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.PropertyMapper;
+import org.springframework.boot.context.properties.source.MismatchConfigurationPropertyException;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.core.io.Resource;
@@ -158,6 +159,7 @@ public class KafkaProperties {
 	}
 
 	private Map<String, Object> buildCommonProperties() {
+		validate();
 		Map<String, Object> properties = new HashMap<>();
 		if (this.bootstrapServers != null) {
 			properties.put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, this.bootstrapServers);
@@ -171,6 +173,17 @@ public class KafkaProperties {
 			properties.putAll(this.properties);
 		}
 		return properties;
+	}
+
+	private void validate() {
+		MismatchConfigurationPropertyException.throwIfMismatch(
+				this.properties.get(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG), "spring.kafka.bootstrap-servers",
+				"spring.kafka.properties." + CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG
+		);
+		MismatchConfigurationPropertyException.throwIfMismatch(
+				this.properties.get(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG), "spring.kafka.client-id",
+				"spring.kafka.properties." + CommonClientConfigs.CLIENT_ID_CONFIG
+		);
 	}
 
 	/**
@@ -427,6 +440,7 @@ public class KafkaProperties {
 		}
 
 		public Map<String, Object> buildProperties() {
+			validate();
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getAutoCommitInterval)
@@ -452,6 +466,61 @@ public class KafkaProperties {
 			map.from(this::getValueDeserializer).to(properties.in(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG));
 			map.from(this::getMaxPollRecords).to(properties.in(ConsumerConfig.MAX_POLL_RECORDS_CONFIG));
 			return properties.with(this.ssl, this.security, this.properties);
+		}
+
+		private void validate() {
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG), "spring.kafka.consumer.auto-commit-interval",
+					"spring.kafka.consumer.properties." + ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG), "spring.kafka.consumer.auto-offset-reset",
+					"spring.kafka.consumer.properties." + ConsumerConfig.AUTO_OFFSET_RESET_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG), "spring.kafka.consumer.bootstrap-servers",
+					"spring.kafka.consumer.properties." + ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ConsumerConfig.CLIENT_ID_CONFIG), "spring.kafka.consumer.client-id",
+					"spring.kafka.consumer.properties." + ConsumerConfig.CLIENT_ID_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG), "spring.kafka.consumer.enable-auto-commit",
+					"spring.kafka.consumer.properties." + ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG), "spring.kafka.consumer.fetch-max-wait",
+					"spring.kafka.consumer.properties." + ConsumerConfig.FETCH_MAX_WAIT_MS_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ConsumerConfig.FETCH_MIN_BYTES_CONFIG), "spring.kafka.consumer.fetch-min-size",
+					"spring.kafka.consumer.properties." + ConsumerConfig.FETCH_MIN_BYTES_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ConsumerConfig.GROUP_ID_CONFIG), "spring.kafka.consumer.group-id",
+					"spring.kafka.consumer.properties." + ConsumerConfig.GROUP_ID_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG), "spring.kafka.consumer.heartbeat-interval",
+					"spring.kafka.consumer.properties." + ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ConsumerConfig.ISOLATION_LEVEL_CONFIG), "spring.kafka.consumer.isolation-level",
+					"spring.kafka.consumer.properties." + ConsumerConfig.ISOLATION_LEVEL_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG), "spring.kafka.consumer.key-deserializer",
+					"spring.kafka.consumer.properties." + ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG), "spring.kafka.consumer.value-deserializer",
+					"spring.kafka.consumer.properties." + ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ConsumerConfig.MAX_POLL_RECORDS_CONFIG), "spring.kafka.consumer.max-poll-records",
+					"spring.kafka.consumer.properties." + ConsumerConfig.MAX_POLL_RECORDS_CONFIG
+			);
 		}
 
 	}
@@ -614,6 +683,7 @@ public class KafkaProperties {
 		}
 
 		public Map<String, Object> buildProperties() {
+			validate();
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getAcks).to(properties.in(ProducerConfig.ACKS_CONFIG));
@@ -628,6 +698,45 @@ public class KafkaProperties {
 			map.from(this::getRetries).to(properties.in(ProducerConfig.RETRIES_CONFIG));
 			map.from(this::getValueSerializer).to(properties.in(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG));
 			return properties.with(this.ssl, this.security, this.properties);
+		}
+
+		private void validate() {
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ProducerConfig.ACKS_CONFIG), "spring.kafka.producer.acks",
+					"spring.kafka.producer.properties." + ProducerConfig.ACKS_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ProducerConfig.BATCH_SIZE_CONFIG), "spring.kafka.producer.batch-size",
+					"spring.kafka.producer.properties." + ProducerConfig.BATCH_SIZE_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG), "spring.kafka.bootstrap-servers",
+					"spring.kafka.producer.properties." + ProducerConfig.BOOTSTRAP_SERVERS_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ProducerConfig.BUFFER_MEMORY_CONFIG), "spring.kafka.producer.buffer-memory",
+					"spring.kafka.producer.properties." + ProducerConfig.BUFFER_MEMORY_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ProducerConfig.CLIENT_ID_CONFIG), "spring.kafka.producer.client-id",
+					"spring.kafka.producer.properties." + ProducerConfig.CLIENT_ID_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ProducerConfig.COMPRESSION_TYPE_CONFIG), "spring.kafka.producer.compression-type",
+					"spring.kafka.producer.properties." + ProducerConfig.COMPRESSION_TYPE_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG), "spring.kafka.producer.key-serializer",
+					"spring.kafka.producer.properties." + ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ProducerConfig.RETRIES_CONFIG), "spring.kafka.producer.retries",
+					"spring.kafka.producer.properties." + ProducerConfig.RETRIES_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG), "spring.kafka.producer.value-serializer",
+					"spring.kafka.producer.properties." + ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG
+			);
 		}
 
 	}
@@ -735,10 +844,18 @@ public class KafkaProperties {
 		}
 
 		public Map<String, Object> buildProperties() {
+			validate();
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getClientId).to(properties.in(ProducerConfig.CLIENT_ID_CONFIG));
 			return properties.with(this.ssl, this.security, this.properties);
+		}
+
+		private void validate() {
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(ProducerConfig.CLIENT_ID_CONFIG), "spring.kafka.admin.client-id",
+					"spring.kafka.admin.properties." + ProducerConfig.CLIENT_ID_CONFIG
+			);
 		}
 
 	}
@@ -885,6 +1002,7 @@ public class KafkaProperties {
 		}
 
 		public Map<String, Object> buildProperties() {
+			validate();
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getApplicationId).to(properties.in("application.id"));
@@ -899,6 +1017,37 @@ public class KafkaProperties {
 			map.from(this::getReplicationFactor).to(properties.in("replication.factor"));
 			map.from(this::getStateDir).to(properties.in("state.dir"));
 			return properties.with(this.ssl, this.security, this.properties);
+		}
+
+		private void validate() {
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get("application.id"), "spring.kafka.streams.application-id",
+					"spring.kafka.streams.properties.application.id"
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get("bootstrap.servers"), "spring.kafka.bootstrap-servers",
+					"spring.kafka.streams.properties.bootstrap.servers"
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get("cache.max.bytes.buffering"), "spring.kafka.streams.cache-max-size-buffering",
+					"spring.kafka.streams.properties.cache.max.bytes.buffering"
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get("statestore.cache.max.bytes"), "spring.kafka.streams.state-store-cache-max-size",
+					"spring.kafka.streams.properties.statestore.cache.max.bytes"
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get(CommonClientConfigs.CLIENT_ID_CONFIG), "spring.kafka.streams.client-id",
+					"spring.kafka.streams.properties" + CommonClientConfigs.CLIENT_ID_CONFIG
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get("replication.factor"), "spring.kafka.streams.replication-factor",
+					"spring.kafka.streams.properties.replication.factor"
+			);
+			MismatchConfigurationPropertyException.throwIfMismatch(
+					this.properties.get("state.dir"), "spring.kafka.streams.state-dir",
+					"spring.kafka.streams.properties.state.dir"
+			);
 		}
 
 	}

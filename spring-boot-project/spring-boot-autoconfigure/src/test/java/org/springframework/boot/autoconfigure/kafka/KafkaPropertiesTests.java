@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.kafka;
 import java.util.Collections;
 import java.util.Map;
 
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.common.config.SslConfigs;
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +27,7 @@ import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Admin;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Cleanup;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.IsolationLevel;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Listener;
+import org.springframework.boot.context.properties.source.MismatchConfigurationPropertyException;
 import org.springframework.boot.context.properties.source.MutuallyExclusiveConfigurationPropertiesException;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.kafka.core.CleanupConfig;
@@ -106,6 +108,14 @@ class KafkaPropertiesTests {
 		Cleanup cleanup = new KafkaProperties().getStreams().getCleanup();
 		assertThat(cleanup.isOnStartup()).isEqualTo(cleanupConfig.cleanupOnStart());
 		assertThat(cleanup.isOnShutdown()).isEqualTo(cleanupConfig.cleanupOnStop());
+	}
+	
+	@Test
+	void additionalPropertiesWhenConfiguredExistShouldThrowException() {
+		KafkaProperties properties = new KafkaProperties();
+		properties.getProperties().put(CommonClientConfigs.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+		assertThatExceptionOfType(MismatchConfigurationPropertyException.class)
+			.isThrownBy(properties::buildConsumerProperties);
 	}
 
 }
