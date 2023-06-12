@@ -123,7 +123,7 @@ bom {
 			]
 		}
 	}
-	library("Byte Buddy", "1.14.4") {
+	library("Byte Buddy", "1.14.5") {
 		group("net.bytebuddy") {
 			modules = [
 				"byte-buddy",
@@ -242,7 +242,7 @@ bom {
 			]
 		}
 	}
-	library("Dropwizard Metrics", "4.2.18") {
+	library("Dropwizard Metrics", "4.2.19") {
 		group("io.dropwizard.metrics") {
 			imports = [
 				"metrics-bom"
@@ -299,14 +299,14 @@ bom {
 			]
 		}
 	}
-	library("Git Commit ID Maven Plugin", "5.0.0") {
+	library("Git Commit ID Maven Plugin", "5.0.1") {
 		group("io.github.git-commit-id") {
 			plugins = [
 				"git-commit-id-maven-plugin"
 			]
 		}
 	}
-	library("Glassfish JAXB", "4.0.2") {
+	library("Glassfish JAXB", "4.0.3") {
 		group("org.glassfish.jaxb") {
 			imports = [
 				"jaxb-bom"
@@ -365,7 +365,7 @@ bom {
 			]
 		}
 	}
-	library("Hibernate", "6.2.2.Final") {
+	library("Hibernate", "6.2.4.Final") {
 		group("org.hibernate.orm") {
 			modules = [
 				"hibernate-agroal",
@@ -401,7 +401,7 @@ bom {
 			]
 		}
 	}
-	library("HSQLDB", "2.7.1") {
+	library("HSQLDB", "2.7.2") {
 		group("org.hsqldb") {
 			modules = [
 				"hsqldb"
@@ -453,7 +453,7 @@ bom {
 			]
 		}
 	}
-	library("Infinispan", "14.0.9.Final") {
+	library("Infinispan", "14.0.10.Final") {
 		group("org.infinispan") {
 			imports = [
 				"infinispan-bom"
@@ -467,7 +467,7 @@ bom {
 			]
 		}
 	}
-	library("Jackson Bom", "2.15.0") {
+	library("Jackson Bom", "2.15.2") {
 		group("com.fasterxml.jackson") {
 			imports = [
 				"jackson-bom"
@@ -495,7 +495,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Json", "2.1.1") {
+	library("Jakarta Json", "2.1.2") {
 		group("jakarta.json") {
 			modules = [
 				"jakarta.json-api"
@@ -509,7 +509,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Mail", "2.1.1") {
+	library("Jakarta Mail", "2.1.2") {
 		group("jakarta.mail") {
 			modules = [
 				"jakarta.mail-api"
@@ -624,14 +624,14 @@ bom {
 			]
 		}
 	}
-	library("Jaybird", "5.0.1.java11") {
+	library("Jaybird", "5.0.2.java11") {
 		group("org.firebirdsql.jdbc") {
 			modules = [
 				"jaybird"
 			]
 		}
 	}
-	library("JBoss Logging", "3.5.0.Final") {
+	library("JBoss Logging", "3.5.1.Final") {
 		group("org.jboss.logging") {
 			modules = [
 				"jboss-logging"
@@ -652,7 +652,7 @@ bom {
 			]
 		}
 	}
-	library("Jersey", "3.1.1") {
+	library("Jersey", "3.1.2") {
 		group("org.glassfish.jersey") {
 			imports = [
 				"jersey-bom"
@@ -701,7 +701,7 @@ bom {
 			]
 		}
 	}
-	library("Json-smart", "2.4.10") {
+	library("Json-smart", "2.4.11") {
 		group("net.minidev") {
 			modules = [
 				"json-smart"
@@ -736,7 +736,7 @@ bom {
 			]
 		}
 	}
-	library("Kafka", "3.4.0") {
+	library("Kafka", "3.4.1") {
 		group("org.apache.kafka") {
 			modules = [
 				"connect",
@@ -832,7 +832,7 @@ bom {
 			]
 		}
 	}
-	library("Lombok", "1.18.26") {
+	library("Lombok", "1.18.28") {
 		group("org.projectlombok") {
 			modules = [
 				"lombok"
@@ -1051,7 +1051,7 @@ bom {
 			]
 		}
 	}
-	library("Netty", "4.1.92.Final") {
+	library("Netty", "4.1.93.Final") {
 		group("io.netty") {
 			imports = [
 				"netty-bom"
@@ -1139,14 +1139,14 @@ bom {
 			]
 		}
 	}
-	library("R2DBC MSSQL", "1.0.0.RELEASE") {
+	library("R2DBC MSSQL", "1.0.1.RELEASE") {
 		group ("io.r2dbc") {
 			modules = [
 				"r2dbc-mssql"
 			]
 		}
 	}
-	library("R2DBC MySQL", "1.0.1") {
+	library("R2DBC MySQL", "1.0.2") {
 		group("io.asyncer") {
 			modules = [
 				"r2dbc-mysql"
@@ -1167,7 +1167,7 @@ bom {
 			]
 		}
 	}
-	library("R2DBC Proxy", "1.1.0.RELEASE") {
+	library("R2DBC Proxy", "1.1.1.RELEASE") {
 		group("io.r2dbc") {
 			modules = [
 				"r2dbc-proxy"
@@ -1500,14 +1500,14 @@ bom {
 			]
 		}
 	}
-	library("SQLite JDBC", "3.41.2.1") {
+	library("SQLite JDBC", "3.41.2.2") {
 		group("org.xerial") {
 			modules = [
 				"sqlite-jdbc"
 			]
 		}
 	}
-	library("Testcontainers", "1.18.2") {
+	library("Testcontainers", "1.18.3") {
 		group("org.testcontainers") {
 			imports = [
 				"testcontainers-bom"
@@ -1560,14 +1560,14 @@ bom {
 			]
 		}
 	}
-	library("UnboundID LDAPSDK", "6.0.8") {
+	library("UnboundID LDAPSDK", "6.0.9") {
 		group("com.unboundid") {
 			modules = [
 				"unboundid-ldapsdk"
 			]
 		}
 	}
-	library("Undertow", "2.3.6.Final") {
+	library("Undertow", "2.3.7.Final") {
 		group("io.undertow") {
 			modules = [
 				"undertow-core",
