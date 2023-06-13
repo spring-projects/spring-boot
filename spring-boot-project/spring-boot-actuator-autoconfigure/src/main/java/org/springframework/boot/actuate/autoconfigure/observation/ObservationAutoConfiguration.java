@@ -40,7 +40,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -79,14 +78,8 @@ public class ObservationAutoConfiguration {
 
 	@Bean
 	@Order(0)
-	PropertiesObservationFilter propertiesObservationFilter(ObservationProperties properties) {
-		return new PropertiesObservationFilter(properties);
-	}
-
-	@Bean
-	@ConditionalOnProperty(name = "management.observations.spring-security.enabled", havingValue = "false")
-	ObservationPredicate springSecurityObservationsDisabler() {
-		return (name, context) -> !name.startsWith("spring.security.");
+	PropertiesObservationFilterPredicate propertiesObservationFilter(ObservationProperties properties) {
+		return new PropertiesObservationFilterPredicate(properties);
 	}
 
 	@Configuration(proxyBeanMethods = false)

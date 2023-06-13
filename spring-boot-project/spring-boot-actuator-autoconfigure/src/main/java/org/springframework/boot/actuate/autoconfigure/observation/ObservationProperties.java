@@ -27,6 +27,7 @@ import org.springframework.core.Ordered;
  * observations.
  *
  * @author Brian Clozel
+ * @author Moritz Halbritter
  * @since 3.0.0
  */
 @ConfigurationProperties("management.observations")
@@ -38,6 +39,20 @@ public class ObservationProperties {
 	 * Common key-values that are applied to every observation.
 	 */
 	private Map<String, String> keyValues = new LinkedHashMap<>();
+
+	/**
+	 * Whether observations starting with the specified name should be enabled. The
+	 * longest match wins, the key 'all' can also be used to configure all observations.
+	 */
+	private Map<String, Boolean> enable = new LinkedHashMap<>();
+
+	public Map<String, Boolean> getEnable() {
+		return this.enable;
+	}
+
+	public void setEnable(Map<String, Boolean> enable) {
+		this.enable = enable;
+	}
 
 	public Http getHttp() {
 		return this.http;

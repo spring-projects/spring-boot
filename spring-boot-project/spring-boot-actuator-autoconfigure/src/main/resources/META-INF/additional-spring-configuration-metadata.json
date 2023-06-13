@@ -2039,12 +2039,6 @@
       }
     },
     {
-      "name": "management.observations.spring-security.enabled",
-      "description": "Whether to enable observations for Spring Security",
-      "type": "java.lang.Boolean",
-      "defaultValue": true
-    },
-    {
       "name": "management.otlp.tracing.compression",
       "defaultValue": "none"
     },

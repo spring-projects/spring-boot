@@ -26,7 +26,7 @@ class MyObservationPredicate implements ObservationPredicate {
 
 	@Override
 	public boolean test(String name, Context context) {
-		return !name.startsWith("denied.prefix.");
+		return !name.contains("denied");
 	}
 
 }

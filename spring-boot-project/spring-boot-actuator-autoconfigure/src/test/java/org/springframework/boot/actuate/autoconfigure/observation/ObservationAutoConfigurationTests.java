@@ -191,7 +191,8 @@ class ObservationAutoConfigurationTests {
 
 	@Test
 	void shouldSupplyPropertiesObservationFilterBean() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PropertiesObservationFilter.class));
+		this.contextRunner
+			.run((context) -> assertThat(context).hasSingleBean(PropertiesObservationFilterPredicate.class));
 	}
 
 	@Test
@@ -303,14 +304,13 @@ class ObservationAutoConfigurationTests {
 
 	@Test
 	void shouldDisableSpringSecurityObservationsIfPropertyIsSet() {
-		this.contextRunner.withPropertyValues("management.observations.spring-security.enabled=false")
-			.run((context) -> {
-				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
-				Observation.start("spring.security.filterchains", observationRegistry).stop();
-				MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
-				assertThatThrownBy(() -> meterRegistry.get("spring.security.filterchains").timer())
-					.isInstanceOf(MeterNotFoundException.class);
-			});
+		this.contextRunner.withPropertyValues("management.observations.enable.spring.security=false").run((context) -> {
+			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
+			Observation.start("spring.security.filterchains", observationRegistry).stop();
+			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+			assertThatThrownBy(() -> meterRegistry.get("spring.security.filterchains").timer())
+				.isInstanceOf(MeterNotFoundException.class);
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)

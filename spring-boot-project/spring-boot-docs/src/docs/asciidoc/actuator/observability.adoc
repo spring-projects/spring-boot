@@ -40,13 +40,29 @@ The preceding example adds `region` and `stack` key-values to all observations w
 [[actuator.observability.preventing-observations]]
 === Preventing Observations
 
-If you'd like to prevent some observations from being reported, you can register beans of type `ObservationPredicate`.
+If you'd like to prevent some observations from being reported, you can use the configprop:management.observations.enable[] properties:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	management:
+	  observations:
+	    enable:
+	      denied:
+            prefix: false
+	      another:
+            denied:
+              prefix: false
+----
+
+The preceding example will prevent all observations with a name starting with `denied.prefix` or `another.denied.prefix`.
+
+TIP: If you want to prevent Spring Security from reporting observations, set the property configprop:management.observations.enable.spring.security[] to `false`.
+
+If you need greater control over the prevention of observations, you can register beans of type `ObservationPredicate`.
 Observations are only reported if all the `ObservationPredicate` beans return `true` for that observation.
 
 include::code:MyObservationPredicate[]
 
-The preceding example will prevent all observations with a name starting with "denied.prefix.".
-
-TIP: If you want to prevent Spring Security from reporting observations, set the property configprop:management.observations.spring-security.enabled[] to `false`.
+The preceding example will prevent all observations whose name contains "denied".
 
 The next sections will provide more details about logging, metrics and traces.
