@@ -16,6 +16,7 @@
 
 package org.springframework.boot.build.bom.bomr.version;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.maven.artifact.versioning.ArtifactVersion;
@@ -79,7 +80,8 @@ class ArtifactVersionDependencyVersion extends AbstractDependencyVersion {
 	public int compareTo(DependencyVersion other) {
 		if (other instanceof ArtifactVersionDependencyVersion otherArtifactDependencyVersion) {
 			ArtifactVersion otherArtifactVersion = otherArtifactDependencyVersion.artifactVersion;
-			if ("snapshot".equalsIgnoreCase(otherArtifactVersion.getQualifier())
+			if ((!Objects.equals(this.artifactVersion.getQualifier(), otherArtifactVersion.getQualifier()))
+					&& "snapshot".equalsIgnoreCase(otherArtifactVersion.getQualifier())
 					&& otherArtifactVersion.getMajorVersion() == this.artifactVersion.getMajorVersion()
 					&& otherArtifactVersion.getMinorVersion() == this.artifactVersion.getMinorVersion()
 					&& otherArtifactVersion.getIncrementalVersion() == this.artifactVersion.getIncrementalVersion()) {

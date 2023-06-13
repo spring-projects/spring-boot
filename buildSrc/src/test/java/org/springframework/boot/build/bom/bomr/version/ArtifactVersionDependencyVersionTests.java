@@ -98,6 +98,11 @@ class ArtifactVersionDependencyVersionTests {
 	}
 
 	@Test
+	void isSameMinorAndNewerThanWhenSameSnapshotsShouldReturnFalse() {
+		assertThat(version("3.1.2-SNAPSHOT").isSameMinorAndNewerThan(version("3.1.2-SNAPSHOT"))).isFalse();
+	}
+
+	@Test
 	void isSameMinorAndNewerThanWhenPatchIsNewerShouldReturnFalse() {
 		assertThat(version("2.1.2").isSameMinorAndNewerThan(version("2.1.3"))).isFalse();
 	}
