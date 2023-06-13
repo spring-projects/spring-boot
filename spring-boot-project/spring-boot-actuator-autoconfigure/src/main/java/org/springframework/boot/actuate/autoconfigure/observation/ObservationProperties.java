@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.observation;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -30,8 +33,21 @@ public class ObservationProperties {
 
 	private final Http http = new Http();
 
+	/**
+	 * Common key-values that are applied to every observation.
+	 */
+	private Map<String, String> keyValues = new LinkedHashMap<>();
+
 	public Http getHttp() {
 		return this.http;
+	}
+
+	public Map<String, String> getKeyValues() {
+		return this.keyValues;
+	}
+
+	public void setKeyValues(Map<String, String> keyValues) {
+		this.keyValues = keyValues;
 	}
 
 	public static class Http {

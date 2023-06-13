@@ -190,6 +190,21 @@ class ObservationAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldSupplyPropertiesObservationFilterBean() {
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PropertiesObservationFilter.class));
+	}
+
+	@Test
+	void shouldApplyCommonKeyValuesToObservations() {
+		this.contextRunner.withPropertyValues("management.observations.key-values.a=alpha").run((context) -> {
+			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
+			Observation.start("keyvalues", observationRegistry).stop();
+			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+			assertThat(meterRegistry.get("keyvalues").tag("a", "alpha").timer().count()).isOne();
+		});
+	}
+
+	@Test
 	void autoConfiguresGlobalObservationConventions() {
 		this.contextRunner.withUserConfiguration(CustomGlobalObservationConvention.class).run((context) -> {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);

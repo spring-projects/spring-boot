@@ -79,6 +79,7 @@ public class MetricsProperties {
 		return this.enable;
 	}
 
+	@DeprecatedConfigurationProperty(replacement = "management.observations.key-values")
 	public Map<String, String> getTags() {
 		return this.tags;
 	}
