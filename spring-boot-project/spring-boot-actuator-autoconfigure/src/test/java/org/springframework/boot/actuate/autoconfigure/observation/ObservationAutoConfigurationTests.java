@@ -291,6 +291,28 @@ class ObservationAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void shouldNotDisableSpringSecurityObservationsByDefault() {
+		this.contextRunner.run((context) -> {
+			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
+			Observation.start("spring.security.filterchains", observationRegistry).stop();
+			MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+			assertThat(meterRegistry.get("spring.security.filterchains").timer().count()).isOne();
+		});
+	}
+
+	@Test
+	void shouldDisableSpringSecurityObservationsIfPropertyIsSet() {
+		this.contextRunner.withPropertyValues("management.observations.spring-security.enabled=false")
+			.run((context) -> {
+				ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
+				Observation.start("spring.security.filterchains", observationRegistry).stop();
+				MeterRegistry meterRegistry = context.getBean(MeterRegistry.class);
+				assertThatThrownBy(() -> meterRegistry.get("spring.security.filterchains").timer())
+					.isInstanceOf(MeterNotFoundException.class);
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class ObservationPredicates {
 
