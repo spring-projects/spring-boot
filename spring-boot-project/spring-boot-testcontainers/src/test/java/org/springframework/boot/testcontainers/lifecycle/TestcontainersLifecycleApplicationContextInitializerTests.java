@@ -32,8 +32,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 
 /**
- * Tests for {@link TestcontainersLifecycleApplicationContextInitializer} and
- * {@link TestcontainersLifecycleBeanPostProcessor} and
+ * Tests for {@link TestcontainersLifecycleApplicationContextInitializer},
+ * {@link TestcontainersLifecycleBeanPostProcessor}, and
  * {@link TestcontainersLifecycleBeanFactoryPostProcessor}.
  *
  * @author Stephane Nicoll
