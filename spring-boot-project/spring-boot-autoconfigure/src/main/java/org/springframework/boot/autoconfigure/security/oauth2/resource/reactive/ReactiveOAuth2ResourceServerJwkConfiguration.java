@@ -61,6 +61,7 @@ import org.springframework.util.CollectionUtils;
  * @author HaiTao Zhang
  * @author Anastasiia Losieva
  * @author Mushtaq Ahmed
+ * @author Roman Golovin
  */
 @Configuration(proxyBeanMethods = false)
 class ReactiveOAuth2ResourceServerJwkConfiguration {
@@ -71,8 +72,12 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 
 		private final OAuth2ResourceServerProperties.Jwt properties;
 
-		JwtConfiguration(OAuth2ResourceServerProperties properties) {
+		private final List<OAuth2TokenValidator<Jwt>> customOAuth2TokenValidators;
+
+		JwtConfiguration(OAuth2ResourceServerProperties properties,
+				List<OAuth2TokenValidator<Jwt>> customOAuth2TokenValidators) {
 			this.properties = properties.getJwt();
+			this.customOAuth2TokenValidators = customOAuth2TokenValidators;
 		}
 
 		@Bean
@@ -97,14 +102,14 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		}
 
 		private OAuth2TokenValidator<Jwt> getValidators(OAuth2TokenValidator<Jwt> defaultValidator) {
-			List<String> audiences = this.properties.getAudiences();
-			if (CollectionUtils.isEmpty(audiences)) {
-				return defaultValidator;
-			}
 			List<OAuth2TokenValidator<Jwt>> validators = new ArrayList<>();
 			validators.add(defaultValidator);
-			validators.add(new JwtClaimValidator<List<String>>(JwtClaimNames.AUD,
-					(aud) -> aud != null && !Collections.disjoint(aud, audiences)));
+			validators.addAll(this.customOAuth2TokenValidators);
+			List<String> audiences = this.properties.getAudiences();
+			if (!CollectionUtils.isEmpty(audiences)) {
+				validators.add(new JwtClaimValidator<List<String>>(JwtClaimNames.AUD,
+						(aud) -> aud != null && !Collections.disjoint(aud, audiences)));
+			}
 			return new DelegatingOAuth2TokenValidator<>(validators);
 		}
 
