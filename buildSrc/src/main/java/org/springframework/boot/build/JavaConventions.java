@@ -70,7 +70,8 @@ import org.springframework.util.StringUtils;
  * <li>with a max heap of 1024M
  * <li>to run after any Checkstyle and format checking tasks
  * <li>to enable retries with a maximum of three attempts when running on CI
- * <li>to use predictive test selection when running locally
+ * <li>to use predictive test selection when the value of the
+ * {@code ENABLE_PREDICTIVE_TEST_SELECTION} environment variable is {@code true}
  * </ul>
  * <li>A {@code testRuntimeOnly} dependency upon
  * {@code org.junit.platform:junit-platform-launcher} is added to projects with the
@@ -181,8 +182,12 @@ class JavaConventions {
 		testRetry.getMaxRetries().set(isCi() ? 3 : 0);
 	}
 
+	private boolean isCi() {
+		return Boolean.parseBoolean(System.getenv("CI"));
+	}
+
 	private void configurePredictiveTestSelection(Test test) {
-		if (!isCi()) {
+		if (isPredictiveTestSelectionEnabled()) {
 			PredictiveTestSelectionExtension predictiveTestSelection = test.getExtensions()
 				.getByType(PredictiveTestSelectionExtension.class);
 			predictiveTestSelection.getEnabled().set(true);
@@ -191,8 +196,8 @@ class JavaConventions {
 		}
 	}
 
-	private boolean isCi() {
-		return Boolean.parseBoolean(System.getenv("CI"));
+	private boolean isPredictiveTestSelectionEnabled() {
+		return Boolean.parseBoolean(System.getenv("ENABLE_PREDICTIVE_TEST_SELECTION"));
 	}
 
 	private void configureJavadocConventions(Project project) {
