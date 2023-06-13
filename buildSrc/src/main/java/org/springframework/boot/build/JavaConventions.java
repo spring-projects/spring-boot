@@ -25,6 +25,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import com.gradle.enterprise.gradleplugin.testretry.TestRetryExtension;
+import com.gradle.enterprise.gradleplugin.testselection.PredictiveTestSelectionExtension;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import io.spring.javaformat.gradle.tasks.CheckFormat;
 import io.spring.javaformat.gradle.tasks.Format;
@@ -69,6 +70,8 @@ import org.springframework.util.StringUtils;
  * <li>to use JUnit Platform
  * <li>with a max heap of 1024M
  * <li>to run after any Checkstyle and format checking tasks
+ * <li>to enable retries with a maximum of three attempts when running on CI
+ * <li>to use predictive test selection when running locally
  * </ul>
  * <li>A {@code testRuntimeOnly} dependency upon
  * {@code org.junit.platform:junit-platform-launcher} is added to projects with the
@@ -165,13 +168,26 @@ class JavaConventions {
 			test.setMaxHeapSize("1024M");
 			project.getTasks().withType(Checkstyle.class, test::mustRunAfter);
 			project.getTasks().withType(CheckFormat.class, test::mustRunAfter);
-			TestRetryExtension testRetry = test.getExtensions().getByType(TestRetryExtension.class);
-			testRetry.getFailOnPassedAfterRetry().set(true);
-			testRetry.getMaxRetries().set(isCi() ? 3 : 0);
+			configureTestRetries(test);
+			configurePredictiveTestSelection(test);
 		});
 		project.getPlugins()
 			.withType(JavaPlugin.class, (javaPlugin) -> project.getDependencies()
 				.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, "org.junit.platform:junit-platform-launcher"));
+	}
+
+	private void configureTestRetries(Test test) {
+		TestRetryExtension testRetry = test.getExtensions().getByType(TestRetryExtension.class);
+		testRetry.getFailOnPassedAfterRetry().set(true);
+		testRetry.getMaxRetries().set(isCi() ? 3 : 0);
+	}
+
+	private void configurePredictiveTestSelection(Test test) {
+		if (!isCi()) {
+			PredictiveTestSelectionExtension predictiveTestSelection = test.getExtensions()
+				.getByType(PredictiveTestSelectionExtension.class);
+			predictiveTestSelection.getEnabled().set(true);
+		}
 	}
 
 	private boolean isCi() {
