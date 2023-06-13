@@ -68,6 +68,7 @@
 	<suppress files="DeprecatedElasticsearchRestClientProperties\.java" checks="SpringMethodVisibility" />
 	<suppress files="DeprecatedElasticsearchRestClientProperties\.java" checks="SpringMethodVisibility" />
 	<suppress files="DeprecatedReactiveElasticsearchRestClientProperties\.java" checks="SpringMethodVisibility" />
+	<suppress files="DevToolsTestApplication\.java" checks="SpringMethodVisibility" />
 	<suppress files="DevToolsR2dbcAutoConfigurationTests" checks="HideUtilityClassConstructor" />
 	<suppress files="AbstractLaunchScriptIntegrationTests" checks="IllegalImport" />
 	<suppress files="FailureAnalyzers\.java" checks="RedundantModifier" />
