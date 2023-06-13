@@ -29,7 +29,7 @@ import org.springframework.core.annotation.Order;
 
 /**
  * {@link BeanFactoryPostProcessor} to prevent {@link AutoCloseable} destruction calls so
- * that {@link TestcontainersLifecycleBeanFactoryPostProcessor} can be smarter about which
+ * that {@link TestcontainersLifecycleBeanPostProcessor} can be smarter about which
  * containers to close.
  *
  * @author Phillip Webb

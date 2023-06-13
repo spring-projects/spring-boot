@@ -56,7 +56,7 @@ class TestcontainersLifecycleBeanPostProcessor implements DestructionAwareBeanPo
 
 	private static final Log logger = LogFactory.getLog(TestcontainersLifecycleBeanPostProcessor.class);
 
-	private ConfigurableListableBeanFactory beanFactory;
+	private final ConfigurableListableBeanFactory beanFactory;
 
 	private volatile boolean containersInitialized = false;
 

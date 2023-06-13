@@ -211,7 +211,7 @@ For JWT configuration, a JWK Set URI or OIDC Issuer URI needs to be specified, a
 NOTE: If the authorization server does not support a JWK Set URI, you can configure the resource server with the Public Key used for verifying the signature of the JWT.
 This can be done using the configprop:spring.security.oauth2.resourceserver.jwt.public-key-location[] property, where the value needs to point to a file containing the public key in the PEM-encoded x509 format.
 
-The configprop:spring.security.oauth2.resourceserver.jwt.audiences[] property can be used to specifify the expected values of the aud claim in JWTs.
+The configprop:spring.security.oauth2.resourceserver.jwt.audiences[] property can be used to specify the expected values of the aud claim in JWTs.
 For example, to require JWTs to contain an aud claim with the value `my-audience`:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
