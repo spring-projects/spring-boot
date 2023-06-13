@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 
@@ -45,6 +46,7 @@ import org.springframework.context.annotation.Bean;
  * define an {@link OtlpGrpcSpanExporter} and this auto-configuration will back off.
  *
  * @author Jonatan Ivanov
+ * @author Moritz Halbritter
  * @since 3.1.0
  */
 @AutoConfiguration
@@ -56,6 +58,7 @@ public class OtlpAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean(value = OtlpHttpSpanExporter.class,
 			type = "io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter")
+	@ConditionalOnProperty(prefix = "management.otlp.tracing", name = "endpoint")
 	OtlpHttpSpanExporter otlpHttpSpanExporter(OtlpProperties properties) {
 		OtlpHttpSpanExporterBuilder builder = OtlpHttpSpanExporter.builder()
 			.setEndpoint(properties.getEndpoint())
