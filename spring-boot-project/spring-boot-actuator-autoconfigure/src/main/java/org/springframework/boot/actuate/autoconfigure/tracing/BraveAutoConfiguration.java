@@ -167,8 +167,8 @@ public class BraveAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		Factory propagationFactory(TracingProperties properties) {
-			return CompositePropagationFactory.create(properties.getPropagation().getEffectiveProduceTypes(),
-					properties.getPropagation().getEffectiveConsumeTypes());
+			return CompositePropagationFactory.create(properties.getPropagation().getEffectiveProducedTypes(),
+					properties.getPropagation().getEffectiveConsumedTypes());
 		}
 
 	}
@@ -188,8 +188,8 @@ public class BraveAutoConfiguration {
 		BaggagePropagation.FactoryBuilder propagationFactoryBuilder(
 				ObjectProvider<BaggagePropagationCustomizer> baggagePropagationCustomizers) {
 			Factory delegate = CompositePropagationFactory.create(BRAVE_BAGGAGE_MANAGER,
-					this.tracingProperties.getPropagation().getEffectiveProduceTypes(),
-					this.tracingProperties.getPropagation().getEffectiveConsumeTypes());
+					this.tracingProperties.getPropagation().getEffectiveProducedTypes(),
+					this.tracingProperties.getPropagation().getEffectiveConsumedTypes());
 			FactoryBuilder builder = BaggagePropagation.newFactoryBuilder(delegate);
 			baggagePropagationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;

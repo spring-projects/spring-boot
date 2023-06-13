@@ -32,34 +32,34 @@ class TracingPropertiesTests {
 	@Test
 	void propagationTypeShouldOverrideProduceTypes() {
 		TracingProperties.Propagation propagation = new TracingProperties.Propagation();
-		propagation.setProduceTypes(List.of(TracingProperties.Propagation.PropagationType.W3C));
+		propagation.setProduce(List.of(TracingProperties.Propagation.PropagationType.W3C));
 		propagation.setType(List.of(TracingProperties.Propagation.PropagationType.B3));
-		assertThat(propagation.getEffectiveProduceTypes())
+		assertThat(propagation.getEffectiveProducedTypes())
 			.containsExactly(TracingProperties.Propagation.PropagationType.B3);
 	}
 
 	@Test
 	void propagationTypeShouldOverrideConsumeTypes() {
 		TracingProperties.Propagation propagation = new TracingProperties.Propagation();
-		propagation.setConsumeTypes(List.of(TracingProperties.Propagation.PropagationType.W3C));
+		propagation.setConsume(List.of(TracingProperties.Propagation.PropagationType.W3C));
 		propagation.setType(List.of(TracingProperties.Propagation.PropagationType.B3));
-		assertThat(propagation.getEffectiveConsumeTypes())
+		assertThat(propagation.getEffectiveConsumedTypes())
 			.containsExactly(TracingProperties.Propagation.PropagationType.B3);
 	}
 
 	@Test
 	void getEffectiveConsumeTypes() {
 		TracingProperties.Propagation propagation = new TracingProperties.Propagation();
-		propagation.setConsumeTypes(List.of(TracingProperties.Propagation.PropagationType.W3C));
-		assertThat(propagation.getEffectiveConsumeTypes())
+		propagation.setConsume(List.of(TracingProperties.Propagation.PropagationType.W3C));
+		assertThat(propagation.getEffectiveConsumedTypes())
 			.containsExactly(TracingProperties.Propagation.PropagationType.W3C);
 	}
 
 	@Test
 	void getEffectiveProduceTypes() {
 		TracingProperties.Propagation propagation = new TracingProperties.Propagation();
-		propagation.setProduceTypes(List.of(TracingProperties.Propagation.PropagationType.W3C));
-		assertThat(propagation.getEffectiveProduceTypes())
+		propagation.setProduce(List.of(TracingProperties.Propagation.PropagationType.W3C));
+		assertThat(propagation.getEffectiveProducedTypes())
 			.containsExactly(TracingProperties.Propagation.PropagationType.W3C);
 	}
 

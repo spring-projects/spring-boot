@@ -2166,7 +2166,7 @@
       }
     },
     {
-      "name": "management.tracing.propagation.consume-types",
+      "name": "management.tracing.propagation.consume",
       "defaultValue": [
         "W3C",
         "B3",
@@ -2174,7 +2174,7 @@
       ]
     },
     {
-      "name": "management.tracing.propagation.produce-types",
+      "name": "management.tracing.propagation.produce",
       "defaultValue": [
         "W3C"
       ]

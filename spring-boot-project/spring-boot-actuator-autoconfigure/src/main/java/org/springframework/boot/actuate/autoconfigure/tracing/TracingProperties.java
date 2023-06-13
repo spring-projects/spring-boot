@@ -175,59 +175,59 @@ public class TracingProperties {
 		/**
 		 * Tracing context propagation types produced by the application.
 		 */
-		private List<PropagationType> produceTypes = List.of(PropagationType.W3C);
+		private List<PropagationType> produce = List.of(PropagationType.W3C);
 
 		/**
 		 * Tracing context propagation types consumed by the application.
 		 */
-		private List<PropagationType> consumeTypes = List.of(PropagationType.values());
+		private List<PropagationType> consume = List.of(PropagationType.values());
 
 		public void setType(List<PropagationType> type) {
 			this.type = type;
 		}
 
-		public void setProduceTypes(List<PropagationType> produceTypes) {
-			this.produceTypes = produceTypes;
+		public void setProduce(List<PropagationType> produce) {
+			this.produce = produce;
 		}
 
-		public void setConsumeTypes(List<PropagationType> consumeTypes) {
-			this.consumeTypes = consumeTypes;
+		public void setConsume(List<PropagationType> consume) {
+			this.consume = consume;
 		}
 
 		public List<PropagationType> getType() {
 			return this.type;
 		}
 
-		public List<PropagationType> getProduceTypes() {
-			return this.produceTypes;
+		public List<PropagationType> getProduce() {
+			return this.produce;
 		}
 
-		public List<PropagationType> getConsumeTypes() {
-			return this.consumeTypes;
+		public List<PropagationType> getConsume() {
+			return this.consume;
 		}
 
 		/**
 		 * Returns the effective context propagation types produced by the application.
-		 * This will be {@link #getType()} if set or {@link #getProduceTypes()} otherwise.
+		 * This will be {@link #getType()} if set or {@link #getProduce()} otherwise.
 		 * @return the effective context propagation types produced by the application
 		 */
-		List<PropagationType> getEffectiveProduceTypes() {
+		List<PropagationType> getEffectiveProducedTypes() {
 			if (this.type != null) {
 				return this.type;
 			}
-			return this.produceTypes;
+			return this.produce;
 		}
 
 		/**
 		 * Returns the effective context propagation types consumed by the application.
-		 * This will be {@link #getType()} if set or {@link #getConsumeTypes()} otherwise.
+		 * This will be {@link #getType()} if set or {@link #getConsume()} otherwise.
 		 * @return the effective context propagation types consumed by the application
 		 */
-		List<PropagationType> getEffectiveConsumeTypes() {
+		List<PropagationType> getEffectiveConsumedTypes() {
 			if (this.type != null) {
 				return this.type;
 			}
-			return this.consumeTypes;
+			return this.consume;
 		}
 
 		/**
