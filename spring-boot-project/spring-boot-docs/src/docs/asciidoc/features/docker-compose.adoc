@@ -195,7 +195,7 @@ The following values are supported:
 
 * `none` - Do not start or stop Docker Compose
 * `start-only` - Start Docker Compose when the application starts and leave it running
-* `start-and-stop` - Start Docker Compose whe the application starts and stop it when the JVM exits
+* `start-and-stop` - Start Docker Compose when the application starts and stop it when the JVM exits
 
 In addition you can use the configprop:spring.docker.compose.start.command[] property to change whether `docker compose up` or `docker compose start` is used.
 The configprop:spring.docker.compose.stop.command[] allows you to configure if `docker compose down` or `docker compose stop` is used.
