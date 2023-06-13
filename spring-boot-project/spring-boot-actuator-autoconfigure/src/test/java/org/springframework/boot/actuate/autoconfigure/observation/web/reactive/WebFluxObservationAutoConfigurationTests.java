@@ -57,6 +57,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Brian Clozel
  * @author Dmytro Nosan
  * @author Madhura Bhave
+ * @author Moritz Halbritter
  */
 @ExtendWith(OutputCaptureExtension.class)
 @SuppressWarnings("removal")
@@ -166,6 +167,15 @@ class WebFluxObservationAutoConfigurationTests {
 				MeterRegistry registry = getInitializedMeterRegistry(context);
 				assertThat(registry.get("http.server.requests").meters()).hasSize(3);
 				assertThat(output).doesNotContain("Reached the maximum number of URI tags for 'http.server.requests'");
+			});
+	}
+
+	@Test
+	void shouldUsePropertyForServerHttpObservationFilterOrder() {
+		this.contextRunner.withPropertyValues("management.observations.http.server.filter.order=1000")
+			.run((context) -> {
+				OrderedServerHttpObservationFilter bean = context.getBean(OrderedServerHttpObservationFilter.class);
+				assertThat(bean.getOrder()).isEqualTo(1000);
 			});
 	}
 

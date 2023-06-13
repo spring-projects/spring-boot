@@ -20,6 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.Ordered;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring Micrometer
@@ -96,8 +97,14 @@ public class ObservationProperties {
 
 			private final ServerRequests requests = new ServerRequests();
 
+			private final Filter filter = new Filter();
+
 			public ServerRequests getRequests() {
 				return this.requests;
+			}
+
+			public Filter getFilter() {
+				return this.filter;
 			}
 
 			public static class ServerRequests {
@@ -114,6 +121,23 @@ public class ObservationProperties {
 
 				public void setName(String name) {
 					this.name = name;
+				}
+
+			}
+
+			public static class Filter {
+
+				/**
+				 * Order of the filter that creates the observations.
+				 */
+				private int order = Ordered.HIGHEST_PRECEDENCE + 1;
+
+				public int getOrder() {
+					return this.order;
+				}
+
+				public void setOrder(int order) {
+					this.order = order;
 				}
 
 			}
