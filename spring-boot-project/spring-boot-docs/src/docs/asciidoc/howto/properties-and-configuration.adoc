@@ -76,6 +76,15 @@ You can automatically expand properties from the Gradle project by configuring t
 	}
 ----
 
+For newer Gradle versions (`8.1.x`) use:
+
+[source,gradle,indent=0,subs="verbatim"]
+----
+	tasks.processResources {
+		expand(project.properties)
+	}
+----
+
 You can then refer to your Gradle project's properties by using placeholders, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configblocks]
