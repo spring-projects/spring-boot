@@ -797,7 +797,7 @@ bom {
 			]
 		}
 	}
-	library("Logback", "1.4.7") {
+	library("Logback", "1.4.8") {
 		group("ch.qos.logback") {
 			modules = [
 				"logback-access",
