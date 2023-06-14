@@ -196,24 +196,8 @@ dependencies {
 	testRuntimeOnly("org.springframework.security:spring-security-saml2-service-provider")
 }
 
-test {
-	outputs.dir("${buildDir}/generated-snippets")
-}
-
 task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
 	enforcedPlatform(":spring-boot-project:spring-boot-dependencies")
-}
-
-tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
-	dependsOn dependencyVersions
-	doFirst {
-		def versionConstraints = dependencyVersions.versionConstraints
-		def integrationVersion = versionConstraints["org.springframework.integration:spring-integration-core"]
-		def integrationDocs = String.format("https://docs.spring.io/spring-integration/docs/%s/reference/html/", integrationVersion)
-		attributes "spring-integration-docs": integrationDocs
-	}
-	dependsOn test
-	inputs.dir("${buildDir}/generated-snippets").withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("generatedSnippets")
 }
 
 asciidoctor {
@@ -242,4 +226,32 @@ task zip(type: Zip) {
 
 artifacts {
 	documentation zip
+}
+
+tasks.named("test") {
+	filter {
+		excludeTestsMatching("org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.*")
+	}
+}
+
+def documentationTest = tasks.register("documentationTest", Test) {
+	filter {
+		includeTestsMatching("org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.*")
+	}
+	outputs.dir("${buildDir}/generated-snippets")
+	predictiveSelection {
+		enabled = false
+	}
+}
+
+tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
+	dependsOn dependencyVersions
+	doFirst {
+		def versionConstraints = dependencyVersions.versionConstraints
+		def integrationVersion = versionConstraints["org.springframework.integration:spring-integration-core"]
+		def integrationDocs = String.format("https://docs.spring.io/spring-integration/docs/%s/reference/html/", integrationVersion)
+		attributes "spring-integration-docs": integrationDocs
+	}
+	dependsOn documentationTest
+	inputs.dir("${buildDir}/generated-snippets").withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("generatedSnippets")
 }

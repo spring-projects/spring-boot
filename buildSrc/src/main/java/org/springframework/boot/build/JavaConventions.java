@@ -190,9 +190,7 @@ class JavaConventions {
 		if (isPredictiveTestSelectionEnabled()) {
 			PredictiveTestSelectionExtension predictiveTestSelection = test.getExtensions()
 				.getByType(PredictiveTestSelectionExtension.class);
-			predictiveTestSelection.getEnabled().set(true);
-			predictiveTestSelection.mustRun((mustRun) -> mustRun.getIncludeClasses()
-				.add("org.springframework.boot.actuate.autoconfigure.endpoint.web.documentation.*"));
+			predictiveTestSelection.getEnabled().convention(true);
 		}
 	}
 
