@@ -67,6 +67,8 @@ import org.springframework.util.unit.DataSize;
 public class TomcatWebServerFactoryCustomizer
 		implements WebServerFactoryCustomizer<ConfigurableTomcatWebServerFactory>, Ordered {
 
+	static final int order = 0;
+
 	private final Environment environment;
 
 	private final ServerProperties serverProperties;
@@ -78,7 +80,7 @@ public class TomcatWebServerFactoryCustomizer
 
 	@Override
 	public int getOrder() {
-		return 0;
+		return order;
 	}
 
 	@Override

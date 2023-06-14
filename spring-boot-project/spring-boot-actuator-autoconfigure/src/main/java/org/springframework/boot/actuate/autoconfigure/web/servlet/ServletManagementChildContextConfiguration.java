@@ -40,6 +40,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.embedded.JettyWebServerFactoryCustomizer;
+import org.springframework.boot.autoconfigure.web.embedded.TomcatVirtualThreadsWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.web.embedded.TomcatWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.web.embedded.UndertowWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryCustomizer;
@@ -122,8 +123,9 @@ class ServletManagementChildContextConfiguration {
 
 		ServletManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory) {
 			super(beanFactory, ServletWebServerFactoryCustomizer.class, TomcatServletWebServerFactoryCustomizer.class,
-					TomcatWebServerFactoryCustomizer.class, JettyWebServerFactoryCustomizer.class,
-					UndertowServletWebServerFactoryCustomizer.class, UndertowWebServerFactoryCustomizer.class);
+					TomcatWebServerFactoryCustomizer.class, TomcatVirtualThreadsWebServerFactoryCustomizer.class,
+					JettyWebServerFactoryCustomizer.class, UndertowServletWebServerFactoryCustomizer.class,
+					UndertowWebServerFactoryCustomizer.class);
 		}
 
 		@Override
