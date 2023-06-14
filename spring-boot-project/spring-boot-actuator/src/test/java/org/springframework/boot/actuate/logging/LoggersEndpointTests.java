@@ -30,6 +30,7 @@ import org.springframework.boot.actuate.logging.LoggersEndpoint.LoggerLevels;
 import org.springframework.boot.actuate.logging.LoggersEndpoint.SingleLoggerLevels;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
+import org.springframework.boot.logging.LoggerConfiguration.LevelConfiguration;
 import org.springframework.boot.logging.LoggerGroups;
 import org.springframework.boot.logging.LoggingSystem;
 
@@ -107,6 +108,16 @@ class LoggersEndpointTests {
 			.loggerLevels("ROOT");
 		assertThat(levels.getConfiguredLevel()).isNull();
 		assertThat(levels.getEffectiveLevel()).isEqualTo("DEBUG");
+	}
+
+	@Test // gh-35227
+	void loggerLevelsWhenCustomLevelShouldReturnLevels() {
+		given(this.loggingSystem.getLoggerConfiguration("ROOT"))
+			.willReturn(new LoggerConfiguration("ROOT", null, LevelConfiguration.ofCustom("FINEST")));
+		SingleLoggerLevels levels = (SingleLoggerLevels) new LoggersEndpoint(this.loggingSystem, this.loggerGroups)
+			.loggerLevels("ROOT");
+		assertThat(levels.getConfiguredLevel()).isNull();
+		assertThat(levels.getEffectiveLevel()).isEqualTo("FINEST");
 	}
 
 	@Test

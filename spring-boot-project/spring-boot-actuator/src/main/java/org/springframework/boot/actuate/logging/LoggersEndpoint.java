@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
+import org.springframework.boot.logging.LoggerConfiguration.ConfigurationScope;
+import org.springframework.boot.logging.LoggerConfiguration.LevelConfiguration;
 import org.springframework.boot.logging.LoggerGroup;
 import org.springframework.boot.logging.LoggerGroups;
 import org.springframework.boot.logging.LoggingSystem;
@@ -124,10 +126,14 @@ public class LoggersEndpoint {
 	 */
 	public static class LoggerLevels {
 
-		private String configuredLevel;
+		private final String configuredLevel;
 
 		public LoggerLevels(LogLevel configuredLevel) {
-			this.configuredLevel = getName(configuredLevel);
+			this.configuredLevel = (configuredLevel != null) ? configuredLevel.name() : null;
+		}
+
+		LoggerLevels(LevelConfiguration directConfiguration) {
+			this.configuredLevel = (directConfiguration != null) ? directConfiguration.getName() : null;
 		}
 
 		protected final String getName(LogLevel level) {
@@ -140,6 +146,9 @@ public class LoggersEndpoint {
 
 	}
 
+	/**
+	 * Levels configured for given logger group exposed in a JSON friendly way.
+	 */
 	public static class GroupLoggerLevels extends LoggerLevels {
 
 		private List<String> members;
@@ -155,13 +164,16 @@ public class LoggersEndpoint {
 
 	}
 
+	/**
+	 * Levels configured for single logger group exposed in a JSON friendly way.
+	 */
 	public static class SingleLoggerLevels extends LoggerLevels {
 
-		private String effectiveLevel;
+		private final String effectiveLevel;
 
 		public SingleLoggerLevels(LoggerConfiguration configuration) {
-			super(configuration.getConfiguredLevel());
-			this.effectiveLevel = getName(configuration.getEffectiveLevel());
+			super(configuration.getLevelConfiguration(ConfigurationScope.DIRECT));
+			this.effectiveLevel = configuration.getLevelConfiguration().getName();
 		}
 
 		public String getEffectiveLevel() {

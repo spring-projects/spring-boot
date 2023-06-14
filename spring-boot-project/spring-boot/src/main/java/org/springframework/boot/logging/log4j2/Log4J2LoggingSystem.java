@@ -50,6 +50,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
+import org.springframework.boot.logging.LoggerConfiguration.LevelConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemFactory;
@@ -362,13 +363,18 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		if (loggerConfig == null) {
 			return null;
 		}
-		LogLevel level = LEVELS.convertNativeToSystem(loggerConfig.getLevel());
+		LevelConfiguration effectiveLevelConfiguration = getLevelConfiguration(loggerConfig.getLevel());
 		if (!StringUtils.hasLength(name) || LogManager.ROOT_LOGGER_NAME.equals(name)) {
 			name = ROOT_LOGGER_NAME;
 		}
-		boolean isLoggerConfigured = loggerConfig.getName().equals(name);
-		LogLevel configuredLevel = (isLoggerConfigured) ? level : null;
-		return new LoggerConfiguration(name, configuredLevel, level);
+		boolean isAssigned = loggerConfig.getName().equals(name);
+		LevelConfiguration assignedLevelConfiguration = (!isAssigned) ? null : effectiveLevelConfiguration;
+		return new LoggerConfiguration(name, assignedLevelConfiguration, effectiveLevelConfiguration);
+	}
+
+	private LevelConfiguration getLevelConfiguration(Level level) {
+		LogLevel logLevel = LEVELS.convertNativeToSystem(level);
+		return (logLevel != null) ? LevelConfiguration.of(logLevel) : LevelConfiguration.ofCustom(level.name());
 	}
 
 	@Override
