@@ -209,7 +209,7 @@ bom {
 			]
 		}
 	}
-	library("Couchbase Client", "3.4.6") {
+	library("Couchbase Client", "3.4.7") {
 		group("com.couchbase.client") {
 			modules = [
 				"java-client"
@@ -357,7 +357,7 @@ bom {
 			]
 		}
 	}
-	library("Hazelcast", "5.2.3") {
+	library("Hazelcast", "5.2.4") {
 		group("com.hazelcast") {
 			modules = [
 				"hazelcast",
@@ -823,7 +823,7 @@ bom {
 			]
 		}
 	}
-	library("Logback", "1.4.7") {
+	library("Logback", "1.4.8") {
 		group("ch.qos.logback") {
 			modules = [
 				"logback-access",
@@ -972,7 +972,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.11.1-SNAPSHOT") {
+	library("Micrometer", "1.11.1") {
 		group("io.micrometer") {
 			modules = [
 				"micrometer-registry-stackdriver" {
@@ -984,7 +984,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer Tracing", "1.1.2-SNAPSHOT") {
+	library("Micrometer Tracing", "1.1.2") {
 		group("io.micrometer") {
 			imports = [
 				"micrometer-tracing-bom"
@@ -1202,7 +1202,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "2022.0.8-SNAPSHOT") {
+	library("Reactor Bom", "2022.0.8") {
 		group("io.projectreactor") {
 			imports = [
 				"reactor-bom"
