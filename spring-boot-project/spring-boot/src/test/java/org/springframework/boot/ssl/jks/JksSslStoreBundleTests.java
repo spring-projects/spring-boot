@@ -16,12 +16,16 @@
 
 package org.springframework.boot.ssl.jks;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.security.KeyStore;
 import java.util.function.Consumer;
 
+import org.apache.hc.client5.http.utils.Base64;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.embedded.test.MockPkcs11Security;
+import org.springframework.util.ResourceUtils;
 import org.springframework.util.function.ThrowingConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -118,6 +122,15 @@ class JksSslStoreBundleTests {
 		JksSslStoreBundle bundle = new JksSslStoreBundle(keyStoreDetails, trustStoreDetails);
 		assertThatIllegalStateException().isThrownBy(bundle::getTrustStore)
 			.withMessageContaining("com.example.KeyStoreProvider");
+	}
+
+	@Test
+	void whenLocationIsBase64EncodedP12() throws IOException {
+		byte[] locationBytes = Files.readAllBytes(ResourceUtils.getFile("classpath:test.p12").toPath());
+		JksSslStoreDetails keyStoreDetails = JksSslStoreDetails.forLocation(Base64.encodeBase64String(locationBytes))
+			.withPassword("secret");
+		JksSslStoreBundle bundle = new JksSslStoreBundle(keyStoreDetails, null);
+		assertThat(bundle.getKeyStore()).satisfies(storeContainingCertAndKey("test-alias", "secret"));
 	}
 
 	private Consumer<KeyStore> storeContainingCertAndKey(String keyAlias, String keyPassword) {

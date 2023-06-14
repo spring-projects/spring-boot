@@ -16,6 +16,7 @@
 
 package org.springframework.boot.ssl.jks;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -24,6 +25,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
+import java.util.Base64;
 
 import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.util.Assert;
@@ -109,14 +111,29 @@ public class JksSslStoreBundle implements SslStoreBundle {
 	private void loadKeyStore(KeyStore store, String location, char[] password) {
 		Assert.state(StringUtils.hasText(location), () -> "Location must not be empty or null");
 		try {
-			URL url = ResourceUtils.getURL(location);
-			try (InputStream stream = url.openStream()) {
-				store.load(stream, password);
+			if (isBase64(location.getBytes())) {
+				store.load(new ByteArrayInputStream(Base64.getDecoder().decode(location)), password);
+			}
+			else {
+				URL url = ResourceUtils.getURL(location);
+				try (InputStream stream = url.openStream()) {
+					store.load(stream, password);
+				}
 			}
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not load store from '" + location + "'", ex);
 		}
+	}
+
+	private boolean isBase64(byte[] bytes) {
+		try {
+			Base64.getDecoder().decode(bytes);
+		}
+		catch (final IllegalArgumentException ex) {
+			return false;
+		}
+		return true;
 	}
 
 }
