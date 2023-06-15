@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 
 import io.micrometer.tracing.SpanCustomizer;
@@ -27,6 +27,7 @@ import io.micrometer.tracing.otel.bridge.OtelTracer;
 import io.micrometer.tracing.otel.bridge.OtelTracer.EventPublisher;
 import io.micrometer.tracing.otel.bridge.Slf4JBaggageEventListener;
 import io.micrometer.tracing.otel.bridge.Slf4JEventListener;
+import io.micrometer.tracing.otel.propagation.BaggageTextMapPropagator;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
@@ -49,6 +50,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -174,8 +176,10 @@ class OpenTelemetryAutoConfigurationTests {
 	@Test
 	void shouldSupplyB3PropagationIfPropagationPropertySet() {
 		this.contextRunner.withPropertyValues("management.tracing.propagation.type=B3").run((context) -> {
-			assertThat(context).hasBean("b3BaggageTextMapPropagator");
-			assertThat(context).doesNotHaveBean(W3CTraceContextPropagator.class);
+			TextMapPropagator propagator = context.getBean(TextMapPropagator.class);
+			List<TextMapPropagator> injectors = getInjectors(propagator);
+			assertThat(injectors).extracting(TextMapPropagator::getClass)
+				.containsExactly(B3Propagator.class, BaggageTextMapPropagator.class);
 		});
 	}
 
@@ -184,26 +188,42 @@ class OpenTelemetryAutoConfigurationTests {
 		this.contextRunner
 			.withPropertyValues("management.tracing.propagation.type=B3", "management.tracing.baggage.enabled=false")
 			.run((context) -> {
-				assertThat(context).hasSingleBean(B3Propagator.class);
-				assertThat(context).hasBean("b3TextMapPropagator");
-				assertThat(context).doesNotHaveBean(W3CTraceContextPropagator.class);
+				TextMapPropagator propagator = context.getBean(TextMapPropagator.class);
+				List<TextMapPropagator> injectors = getInjectors(propagator);
+				assertThat(injectors).extracting(TextMapPropagator::getClass).containsExactly(B3Propagator.class);
 			});
 	}
 
 	@Test
 	void shouldSupplyW3CPropagationWithBaggageByDefault() {
 		this.contextRunner.withPropertyValues("management.tracing.baggage.remote-fields=foo").run((context) -> {
-			assertThat(context).hasBean("w3cTextMapPropagatorWithBaggage");
-			Collection<String> allFields = context.getBean("w3cTextMapPropagatorWithBaggage", TextMapPropagator.class)
-				.fields();
-			assertThat(allFields).containsExactly("traceparent", "tracestate", "baggage", "foo");
+			TextMapPropagator propagator = context.getBean(TextMapPropagator.class);
+			List<TextMapPropagator> injectors = getInjectors(propagator);
+			List<String> fields = new ArrayList<>();
+			for (TextMapPropagator injector : injectors) {
+				fields.addAll(injector.fields());
+			}
+			assertThat(fields).containsExactly("traceparent", "tracestate", "baggage", "foo");
 		});
 	}
 
 	@Test
 	void shouldSupplyW3CPropagationWithoutBaggageWhenDisabled() {
-		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false")
-			.run((context) -> assertThat(context).hasBean("w3cTextMapPropagatorWithoutBaggage"));
+		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false").run((context) -> {
+			TextMapPropagator propagator = context.getBean(TextMapPropagator.class);
+			List<TextMapPropagator> injectors = getInjectors(propagator);
+			assertThat(injectors).extracting(TextMapPropagator::getClass)
+				.containsExactly(W3CTraceContextPropagator.class);
+		});
+	}
+
+	private List<TextMapPropagator> getInjectors(TextMapPropagator propagator) {
+		assertThat(propagator).as("propagator").isNotNull();
+		if (propagator instanceof CompositeTextMapPropagator compositePropagator) {
+			return compositePropagator.getInjectors().stream().toList();
+		}
+		fail("Expected CompositeTextMapPropagator, found %s".formatted(propagator.getClass()));
+		throw new AssertionError("Unreachable");
 	}
 
 	@Test

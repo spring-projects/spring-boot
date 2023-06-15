@@ -16,7 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
-import java.util.Collections;
 import java.util.List;
 
 import brave.CurrentSpanCustomizer;
@@ -35,7 +34,6 @@ import brave.baggage.CorrelationScopeCustomizer;
 import brave.baggage.CorrelationScopeDecorator;
 import brave.context.slf4j.MDCScopeDecorator;
 import brave.handler.SpanHandler;
-import brave.propagation.B3Propagation;
 import brave.propagation.CurrentTraceContext;
 import brave.propagation.CurrentTraceContext.ScopeDecorator;
 import brave.propagation.CurrentTraceContextCustomizer;
@@ -48,7 +46,6 @@ import io.micrometer.tracing.brave.bridge.BravePropagator;
 import io.micrometer.tracing.brave.bridge.BraveSpanCustomizer;
 import io.micrometer.tracing.brave.bridge.BraveTracer;
 import io.micrometer.tracing.brave.bridge.CompositeSpanHandler;
-import io.micrometer.tracing.brave.bridge.W3CPropagation;
 import io.micrometer.tracing.exporter.SpanExportingPredicate;
 import io.micrometer.tracing.exporter.SpanFilter;
 import io.micrometer.tracing.exporter.SpanReporter;
@@ -103,10 +100,22 @@ public class BraveAutoConfiguration {
 	public Tracing braveTracing(Environment environment, TracingProperties properties, List<SpanHandler> spanHandlers,
 			List<TracingCustomizer> tracingCustomizers, CurrentTraceContext currentTraceContext,
 			Factory propagationFactory, Sampler sampler) {
-		if (properties.getPropagation().getType() == PropagationType.W3C
-				&& properties.getBrave().isSpanJoiningSupported()) {
-			throw new IncompatibleConfigurationException("management.tracing.propagation.type",
-					"management.tracing.brave.span-joining-supported");
+		if (properties.getBrave().isSpanJoiningSupported()) {
+			if (properties.getPropagation().getType() != null
+					&& properties.getPropagation().getType().contains(PropagationType.W3C)) {
+				throw new IncompatibleConfigurationException("management.tracing.propagation.type",
+						"management.tracing.brave.span-joining-supported");
+			}
+			if (properties.getPropagation().getType() == null
+					&& properties.getPropagation().getProduce().contains(PropagationType.W3C)) {
+				throw new IncompatibleConfigurationException("management.tracing.propagation.produce",
+						"management.tracing.brave.span-joining-supported");
+			}
+			if (properties.getPropagation().getType() == null
+					&& properties.getPropagation().getConsume().contains(PropagationType.W3C)) {
+				throw new IncompatibleConfigurationException("management.tracing.propagation.consume",
+						"management.tracing.brave.span-joining-supported");
+			}
 		}
 		String applicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
 		Builder builder = Tracing.newBuilder()
@@ -177,12 +186,9 @@ public class BraveAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		Factory propagationFactory(TracingProperties tracing) {
-			return switch (tracing.getPropagation().getType()) {
-				case B3 ->
-					B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build();
-				case W3C -> new W3CPropagation();
-			};
+		Factory propagationFactory(TracingProperties properties) {
+			return CompositePropagationFactory.create(properties.getPropagation().getEffectiveProducedTypes(),
+					properties.getPropagation().getEffectiveConsumedTypes());
 		}
 
 	}
@@ -201,11 +207,9 @@ public class BraveAutoConfiguration {
 		@ConditionalOnMissingBean
 		BaggagePropagation.FactoryBuilder propagationFactoryBuilder(
 				ObjectProvider<BaggagePropagationCustomizer> baggagePropagationCustomizers) {
-			Factory delegate = switch (this.tracingProperties.getPropagation().getType()) {
-				case B3 ->
-					B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build();
-				case W3C -> new W3CPropagation(BRAVE_BAGGAGE_MANAGER, Collections.emptyList());
-			};
+			Factory delegate = CompositePropagationFactory.create(BRAVE_BAGGAGE_MANAGER,
+					this.tracingProperties.getPropagation().getEffectiveProducedTypes(),
+					this.tracingProperties.getPropagation().getEffectiveConsumedTypes());
 			FactoryBuilder builder = BaggagePropagation.newFactoryBuilder(delegate);
 			baggagePropagationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;

@@ -2180,8 +2180,18 @@
       }
     },
     {
-      "name": "management.tracing.propagation.type",
-      "defaultValue": "W3C"
+      "name": "management.tracing.propagation.consume",
+      "defaultValue": [
+        "W3C",
+        "B3",
+        "B3_MULTI"
+      ]
+    },
+    {
+      "name": "management.tracing.propagation.produce",
+      "defaultValue": [
+        "W3C"
+      ]
     }
   ],
   "hints": [

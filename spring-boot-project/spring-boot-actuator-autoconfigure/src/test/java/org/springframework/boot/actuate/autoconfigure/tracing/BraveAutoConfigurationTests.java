@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.Collections;
+import java.util.List;
 
 import brave.Span;
 import brave.SpanCustomizer;
@@ -38,6 +39,7 @@ import io.micrometer.tracing.brave.bridge.W3CPropagation;
 import io.micrometer.tracing.exporter.SpanExportingPredicate;
 import io.micrometer.tracing.exporter.SpanFilter;
 import io.micrometer.tracing.exporter.SpanReporter;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
@@ -131,7 +133,9 @@ class BraveAutoConfigurationTests {
 	void shouldSupplyW3CPropagationFactoryByDefault() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasBean("propagationFactory");
-			assertThat(context).hasSingleBean(W3CPropagation.class);
+			Factory factory = context.getBean(Factory.class);
+			List<Factory> injectors = getInjectors(factory);
+			assertThat(injectors).extracting(Factory::getClass).containsExactly(W3CPropagation.class);
 			assertThat(context).hasSingleBean(BaggagePropagation.FactoryBuilder.class);
 		});
 	}
@@ -140,7 +144,9 @@ class BraveAutoConfigurationTests {
 	void shouldSupplyB3PropagationFactoryViaProperty() {
 		this.contextRunner.withPropertyValues("management.tracing.propagation.type=B3").run((context) -> {
 			assertThat(context).hasBean("propagationFactory");
-			assertThat(context.getBean(Factory.class)).hasToString("B3Propagation");
+			Factory factory = context.getBean(Factory.class);
+			List<Factory> injectors = getInjectors(factory);
+			assertThat(injectors).extracting(Factory::toString).containsExactly("B3Propagation");
 			assertThat(context).hasSingleBean(BaggagePropagation.FactoryBuilder.class);
 		});
 	}
@@ -161,7 +167,9 @@ class BraveAutoConfigurationTests {
 	void shouldSupplyW3CWithoutBaggageByDefaultIfBaggageDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false").run((context) -> {
 			assertThat(context).hasBean("propagationFactory");
-			assertThat(context).hasSingleBean(W3CPropagation.class);
+			Factory factory = context.getBean(Factory.class);
+			List<Factory> injectors = getInjectors(factory);
+			assertThat(injectors).extracting(Factory::getClass).containsExactly(W3CPropagation.class);
 			assertThat(context).doesNotHaveBean(BaggagePropagation.FactoryBuilder.class);
 		});
 	}
@@ -172,7 +180,9 @@ class BraveAutoConfigurationTests {
 			.withPropertyValues("management.tracing.baggage.enabled=false", "management.tracing.propagation.type=B3")
 			.run((context) -> {
 				assertThat(context).hasBean("propagationFactory");
-				assertThat(context.getBean(Factory.class)).hasToString("B3Propagation");
+				Factory factory = context.getBean(Factory.class);
+				List<Factory> injectors = getInjectors(factory);
+				assertThat(injectors).extracting(Factory::toString).containsExactly("B3Propagation");
 				assertThat(context).doesNotHaveBean(BaggagePropagation.FactoryBuilder.class);
 			});
 	}
@@ -248,7 +258,7 @@ class BraveAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldFailIfSupportJoinedSpansIsEnabledAndW3cIsChosen() {
+	void shouldFailIfSupportJoinedSpansIsEnabledAndW3cIsChosenAsType() {
 		this.contextRunner
 			.withPropertyValues("management.tracing.propagation.type=W3C",
 					"management.tracing.brave.span-joining-supported=true")
@@ -256,6 +266,26 @@ class BraveAutoConfigurationTests {
 				.isExactlyInstanceOf(IncompatibleConfigurationException.class)
 				.hasMessage(
 						"The following configuration properties have incompatible values: [management.tracing.propagation.type, management.tracing.brave.span-joining-supported]"));
+	}
+
+	@Test
+	void shouldFailIfSupportJoinedSpansIsEnabledAndW3cIsChosenAsConsume() {
+		this.contextRunner.withPropertyValues("management.tracing.propagation.produce=B3",
+				"management.tracing.propagation.consume=W3C", "management.tracing.brave.span-joining-supported=true")
+			.run((context) -> assertThatThrownBy(() -> context.getBean(Tracing.class)).rootCause()
+				.isExactlyInstanceOf(IncompatibleConfigurationException.class)
+				.hasMessage(
+						"The following configuration properties have incompatible values: [management.tracing.propagation.consume, management.tracing.brave.span-joining-supported]"));
+	}
+
+	@Test
+	void shouldFailIfSupportJoinedSpansIsEnabledAndW3cIsChosenAsProduce() {
+		this.contextRunner.withPropertyValues("management.tracing.propagation.consume=B3",
+				"management.tracing.propagation.produce=W3C", "management.tracing.brave.span-joining-supported=true")
+			.run((context) -> assertThatThrownBy(() -> context.getBean(Tracing.class)).rootCause()
+				.isExactlyInstanceOf(IncompatibleConfigurationException.class)
+				.hasMessage(
+						"The following configuration properties have incompatible values: [management.tracing.propagation.produce, management.tracing.brave.span-joining-supported]"));
 	}
 
 	@Test
@@ -286,6 +316,15 @@ class BraveAutoConfigurationTests {
 				.asList()
 				.containsExactly(components.reporter1, components.reporter3, components.reporter2);
 		});
+	}
+
+	private List<Factory> getInjectors(Factory factory) {
+		assertThat(factory).as("factory").isNotNull();
+		if (factory instanceof CompositePropagationFactory compositePropagationFactory) {
+			return compositePropagationFactory.getInjectorFactories().stream().toList();
+		}
+		Assertions.fail("Expected CompositePropagationFactory, found %s".formatted(factory.getClass()));
+		throw new AssertionError("Unreachable");
 	}
 
 	@Configuration(proxyBeanMethods = false)
