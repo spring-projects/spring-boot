@@ -223,14 +223,13 @@ class ObservationAutoConfigurationTests {
 			Observation.start("test-observation", observationRegistry).stop();
 			assertThat(context).doesNotHaveBean(DefaultMeterObservationHandler.class);
 			assertThat(handlers).hasSize(2);
-			// Regular handlers are registered first
-			assertThat(handlers.get(0)).isInstanceOf(CustomObservationHandler.class);
 			// Multiple MeterObservationHandler are wrapped in
-			// FirstMatchingCompositeObservationHandler, which calls only the first
-			// one
-			assertThat(handlers.get(1)).isInstanceOf(CustomMeterObservationHandler.class);
-			assertThat(((CustomMeterObservationHandler) handlers.get(1)).getName())
+			// FirstMatchingCompositeObservationHandler, which calls only the first one
+			assertThat(handlers.get(0)).isInstanceOf(CustomMeterObservationHandler.class);
+			assertThat(((CustomMeterObservationHandler) handlers.get(0)).getName())
 				.isEqualTo("customMeterObservationHandler1");
+			// Regular handlers are registered last
+			assertThat(handlers.get(1)).isInstanceOf(CustomObservationHandler.class);
 			assertThat(context).doesNotHaveBean(DefaultMeterObservationHandler.class);
 			assertThat(context).doesNotHaveBean(TracingAwareMeterObservationHandler.class);
 		});
@@ -273,20 +272,18 @@ class ObservationAutoConfigurationTests {
 			List<ObservationHandler<?>> handlers = context.getBean(CalledHandlers.class).getCalledHandlers();
 			Observation.start("test-observation", observationRegistry).stop();
 			assertThat(handlers).hasSize(3);
-			// Regular handlers are registered first
-			assertThat(handlers.get(0)).isInstanceOf(CustomObservationHandler.class);
 			// Multiple TracingObservationHandler are wrapped in
-			// FirstMatchingCompositeObservationHandler, which calls only the first
-			// one
-			assertThat(handlers.get(1)).isInstanceOf(CustomTracingObservationHandler.class);
-			assertThat(((CustomTracingObservationHandler) handlers.get(1)).getName())
+			// FirstMatchingCompositeObservationHandler, which calls only the first one
+			assertThat(handlers.get(0)).isInstanceOf(CustomTracingObservationHandler.class);
+			assertThat(((CustomTracingObservationHandler) handlers.get(0)).getName())
 				.isEqualTo("customTracingHandler1");
 			// Multiple MeterObservationHandler are wrapped in
-			// FirstMatchingCompositeObservationHandler, which calls only the first
-			// one
-			assertThat(handlers.get(2)).isInstanceOf(CustomMeterObservationHandler.class);
-			assertThat(((CustomMeterObservationHandler) handlers.get(2)).getName())
+			// FirstMatchingCompositeObservationHandler, which calls only the first one
+			assertThat(handlers.get(1)).isInstanceOf(CustomMeterObservationHandler.class);
+			assertThat(((CustomMeterObservationHandler) handlers.get(1)).getName())
 				.isEqualTo("customMeterObservationHandler1");
+			// Regular handlers are registered last
+			assertThat(handlers.get(2)).isInstanceOf(CustomObservationHandler.class);
 			assertThat(context).doesNotHaveBean(TracingAwareMeterObservationHandler.class);
 			assertThat(context).doesNotHaveBean(DefaultMeterObservationHandler.class);
 		});
