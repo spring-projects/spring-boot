@@ -59,10 +59,9 @@ class ReactorClientHttpConnectorFactory implements ClientHttpConnectorFactory<Re
 			.reduce((before, after) -> (client) -> after.configure(before.configure(client)))
 			.orElse((client) -> client);
 		if (sslBundle != null) {
-			mapper = new SslConfigurer(sslBundle)::configure;
+			mapper = (client) -> new SslConfigurer(sslBundle).configure(mapper.configure(client));
 		}
 		return new ReactorClientHttpConnector(this.reactorResourceFactory, mapper::configure);
-
 	}
 
 	/**
