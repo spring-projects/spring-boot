@@ -76,10 +76,14 @@ class Saml2RelyingPartyRegistrationConfiguration {
 
 	private RelyingPartyRegistration asRegistration(String id, Registration properties) {
 		boolean usingMetadata = StringUtils.hasText(properties.getAssertingparty().getMetadataUri());
-		Builder builder = (usingMetadata)
-				? RelyingPartyRegistrations.fromMetadataLocation(properties.getAssertingparty().getMetadataUri())
-					.registrationId(id)
-				: RelyingPartyRegistration.withRegistrationId(id);
+		Builder builder = (usingMetadata) ? RelyingPartyRegistrations
+			.collectionFromMetadataLocation(properties.getAssertingparty().getMetadataUri())
+			.stream()
+			.filter(b -> entityIdsMatch(properties, b))
+			.findFirst()
+			.orElseThrow(() -> new IllegalStateException(
+					"No relying party with entity-id " + properties.getEntityId() + " found."))
+			.registrationId(id) : RelyingPartyRegistration.withRegistrationId(id);
 		builder.assertionConsumerServiceLocation(properties.getAcs().getLocation());
 		builder.assertionConsumerServiceBinding(properties.getAcs().getBinding());
 		builder.assertingPartyDetails(mapAssertingParty(properties.getAssertingparty(), usingMetadata));
@@ -108,6 +112,19 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		boolean signRequest = registration.getAssertingPartyDetails().getWantAuthnRequestsSigned();
 		validateSigningCredentials(properties, signRequest);
 		return registration;
+	}
+
+	/**
+	 * Tests if the builder would have the correct entity-id. If no entity-id is given in
+	 * properties, any builder passes the test.
+	 * @param properties the properties
+	 * @param b the builder
+	 * @return true if the builder passes the test
+	 */
+	private boolean entityIdsMatch(Registration properties, Builder b) {
+		RelyingPartyRegistration rpr = b.build();
+		return properties.getAssertingparty().getEntityId() == null
+				|| properties.getAssertingparty().getEntityId().equals(rpr.getAssertingPartyDetails().getEntityId());
 	}
 
 	private Consumer<AssertingPartyDetails.Builder> mapAssertingParty(AssertingParty assertingParty,

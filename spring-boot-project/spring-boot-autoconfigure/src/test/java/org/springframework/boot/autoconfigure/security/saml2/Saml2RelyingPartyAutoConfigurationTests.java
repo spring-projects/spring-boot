@@ -230,6 +230,43 @@ class Saml2RelyingPartyAutoConfigurationTests {
 		this.contextRunner.withPropertyValues(getPropertyValues())
 			.run((context) -> assertThat(hasFilter(context, Saml2LogoutRequestFilter.class)).isTrue());
 	}
+	
+	@Test
+	void autoconfigurationShouldWorkWithMultipleProvidersWithNoEntityId() throws Exception {
+		try (MockWebServer server = new MockWebServer()) {
+			server.start();
+			String metadataUrl = server.url("").toString();
+			setupMockResponse(server, new ClassPathResource("saml/idp-metadata-with-multiple-providers"));
+			this.contextRunner.withPropertyValues(PREFIX + ".foo.assertingparty.metadata-uri=" + metadataUrl)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(RelyingPartyRegistrationRepository.class);
+					assertThat(server.getRequestCount()).isOne();
+					RelyingPartyRegistrationRepository repository = context.getBean(RelyingPartyRegistrationRepository.class);
+					RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
+					assertThat(registration.getAssertingPartyDetails().getEntityId())
+						.isEqualTo("https://idp.example.com/idp/shibboleth");
+				});
+		}
+	}
+	
+	@Test
+	void autoconfigurationShouldWorkWithMultipleProviders() throws Exception {
+		try (MockWebServer server = new MockWebServer()) {
+			server.start();
+			String metadataUrl = server.url("").toString();
+			setupMockResponse(server, new ClassPathResource("saml/idp-metadata-with-multiple-providers"));
+			this.contextRunner.withPropertyValues(PREFIX + ".foo.assertingparty.metadata-uri=" + metadataUrl,
+					PREFIX + ".foo.assertingparty.entity-id=https://idp2.example.com/idp/shibboleth")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(RelyingPartyRegistrationRepository.class);
+					assertThat(server.getRequestCount()).isOne();
+					RelyingPartyRegistrationRepository repository = context.getBean(RelyingPartyRegistrationRepository.class);
+					RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
+					assertThat(registration.getAssertingPartyDetails().getEntityId())
+						.isEqualTo("https://idp2.example.com/idp/shibboleth");
+				});
+		}
+	}
 
 	private String[] getPropertyValuesWithoutSigningCredentials(boolean signRequests) {
 		return new String[] { PREFIX
