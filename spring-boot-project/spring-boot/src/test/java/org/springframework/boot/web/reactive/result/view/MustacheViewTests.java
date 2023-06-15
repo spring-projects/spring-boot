@@ -55,7 +55,7 @@ class MustacheViewTests {
 			.block(Duration.ofSeconds(30));
 		StepVerifier.create(exchange.getResponse().getBodyAsString())
 			.assertNext((body) -> assertThat(body).isEqualToIgnoringWhitespace("Hello Spring"))
-			.verifyComplete();
+			.expectComplete().verify(Duration.ofSeconds(5));
 	}
 
 }

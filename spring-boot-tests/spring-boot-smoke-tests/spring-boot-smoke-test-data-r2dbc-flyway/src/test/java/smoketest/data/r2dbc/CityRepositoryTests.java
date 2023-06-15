@@ -28,6 +28,8 @@ import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
+import java.time.Duration;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -60,7 +62,7 @@ class CityRepositoryTests {
 	void databaseHasBeenInitialized() {
 		StepVerifier.create(this.repository.findByState("DC").filter((city) -> city.getName().equals("Washington")))
 			.consumeNextWith((city) -> assertThat(city.getId()).isNotNull())
-			.verifyComplete();
+			.expectComplete().verify(Duration.ofSeconds(5));
 	}
 
 	private static String r2dbcUrl() {

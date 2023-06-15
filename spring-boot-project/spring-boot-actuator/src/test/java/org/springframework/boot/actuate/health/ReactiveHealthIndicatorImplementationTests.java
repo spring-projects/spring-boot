@@ -25,6 +25,8 @@ import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 
+import java.time.Duration;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -40,7 +42,7 @@ class ReactiveHealthIndicatorImplementationTests {
 	void healthUp(CapturedOutput output) {
 		StepVerifier.create(new SimpleReactiveHealthIndicator().health())
 			.consumeNextWith((health) -> assertThat(health).isEqualTo(Health.up().build()))
-			.verifyComplete();
+			.expectComplete().verify(Duration.ofSeconds(5));
 		assertThat(output).doesNotContain("Health check failed for simple");
 	}
 
@@ -49,7 +51,7 @@ class ReactiveHealthIndicatorImplementationTests {
 		StepVerifier.create(new CustomErrorMessageReactiveHealthIndicator().health())
 			.consumeNextWith(
 					(health) -> assertThat(health).isEqualTo(Health.down(new UnsupportedOperationException()).build()))
-			.verifyComplete();
+			.expectComplete().verify(Duration.ofSeconds(5));
 		assertThat(output).contains("Health check failed for custom");
 	}
 
@@ -57,7 +59,7 @@ class ReactiveHealthIndicatorImplementationTests {
 	void healthDownWithCustomErrorMessageFunction(CapturedOutput output) {
 		StepVerifier.create(new CustomErrorMessageFunctionReactiveHealthIndicator().health())
 			.consumeNextWith((health) -> assertThat(health).isEqualTo(Health.down(new RuntimeException()).build()))
-			.verifyComplete();
+			.expectComplete().verify(Duration.ofSeconds(5));
 		assertThat(output).contains("Health check failed with RuntimeException");
 	}
 

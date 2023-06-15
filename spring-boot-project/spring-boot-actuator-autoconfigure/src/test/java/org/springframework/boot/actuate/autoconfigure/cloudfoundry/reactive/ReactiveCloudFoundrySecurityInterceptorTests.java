@@ -33,6 +33,8 @@ import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.util.Base64Utils;
 
+import java.time.Duration;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -66,7 +68,7 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 			.build());
 		StepVerifier.create(this.interceptor.preHandle(request, "/a"))
 			.consumeNextWith((response) -> assertThat(response.getStatus()).isEqualTo(HttpStatus.OK))
-			.verifyComplete();
+			.expectComplete().verify(Duration.ofSeconds(5));
 	}
 
 	@Test
@@ -75,7 +77,7 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 		StepVerifier.create(this.interceptor.preHandle(request, "/a"))
 			.consumeNextWith(
 					(response) -> assertThat(response.getStatus()).isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus()))
-			.verifyComplete();
+			.expectComplete().verify(Duration.ofSeconds(5));
 	}
 
 	@Test
@@ -85,7 +87,7 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 		StepVerifier.create(this.interceptor.preHandle(request, "/a"))
 			.consumeNextWith(
 					(response) -> assertThat(response.getStatus()).isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus()))
-			.verifyComplete();
+			.expectComplete().verify(Duration.ofSeconds(5));
 	}
 
 	@Test
@@ -121,7 +123,7 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 			.build());
 		StepVerifier.create(this.interceptor.preHandle(request, "/a"))
 			.consumeNextWith((response) -> assertThat(response.getStatus()).isEqualTo(Reason.ACCESS_DENIED.getStatus()))
-			.verifyComplete();
+			.expectComplete().verify(Duration.ofSeconds(5));
 	}
 
 	@Test
@@ -135,7 +137,7 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 		StepVerifier.create(this.interceptor.preHandle(exchange, "/a")).consumeNextWith((response) -> {
 			assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
 			assertThat((AccessLevel) exchange.getAttribute("cloudFoundryAccessLevel")).isEqualTo(AccessLevel.FULL);
-		}).verifyComplete();
+		}).expectComplete().verify(Duration.ofSeconds(5));
 	}
 
 	@Test
@@ -151,7 +153,7 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 			assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
 			assertThat((AccessLevel) exchange.getAttribute("cloudFoundryAccessLevel"))
 				.isEqualTo(AccessLevel.RESTRICTED);
-		}).verifyComplete();
+		}).expectComplete().verify(Duration.ofSeconds(5));
 	}
 
 	private String mockAccessToken() {
