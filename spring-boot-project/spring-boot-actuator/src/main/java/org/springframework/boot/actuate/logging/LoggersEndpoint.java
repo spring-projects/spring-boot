@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,8 @@ import org.springframework.boot.actuate.logging.LoggersEndpoint.GroupLoggerLevel
 import org.springframework.boot.actuate.logging.LoggersEndpoint.SingleLoggerLevelsDescriptor;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
+import org.springframework.boot.logging.LoggerConfiguration.ConfigurationScope;
+import org.springframework.boot.logging.LoggerConfiguration.LevelConfiguration;
 import org.springframework.boot.logging.LoggerGroup;
 import org.springframework.boot.logging.LoggerGroups;
 import org.springframework.boot.logging.LoggingSystem;
@@ -164,7 +166,11 @@ public class LoggersEndpoint {
 		private final String configuredLevel;
 
 		public LoggerLevelsDescriptor(LogLevel configuredLevel) {
-			this.configuredLevel = getName(configuredLevel);
+			this.configuredLevel = (configuredLevel != null) ? configuredLevel.name() : null;
+		}
+
+		LoggerLevelsDescriptor(LevelConfiguration directConfiguration) {
+			this.configuredLevel = (directConfiguration != null) ? directConfiguration.getName() : null;
 		}
 
 		protected final String getName(LogLevel level) {
@@ -203,8 +209,8 @@ public class LoggersEndpoint {
 		private final String effectiveLevel;
 
 		public SingleLoggerLevelsDescriptor(LoggerConfiguration configuration) {
-			super(configuration.getConfiguredLevel());
-			this.effectiveLevel = getName(configuration.getEffectiveLevel());
+			super(configuration.getLevelConfiguration(ConfigurationScope.DIRECT));
+			this.effectiveLevel = configuration.getLevelConfiguration().getName();
 		}
 
 		public String getEffectiveLevel() {

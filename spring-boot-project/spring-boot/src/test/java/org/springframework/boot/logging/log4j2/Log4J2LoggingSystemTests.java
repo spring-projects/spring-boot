@@ -224,6 +224,18 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		assertIsPresent("org.springframework.boot.logging.log4j2.Log4J2LoggingSystemTests$Nested", loggers, null);
 	}
 
+	@Test // gh-35227
+	void getLoggingConfigurationsWhenHasCustomLevel() {
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
+		String loggerName = getClass().getName();
+		org.apache.logging.log4j.Level level = org.apache.logging.log4j.Level.forName("CUSTOM_LEVEL", 1000);
+		loggerContext.getConfiguration().addLogger(loggerName, new LoggerConfig(loggerName, level, true));
+		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(loggerName);
+		assertThat(configuration.getLevelConfiguration().getName()).isEqualTo("CUSTOM_LEVEL");
+	}
+
 	private void assertIsPresent(String loggerName, Map<String, LogLevel> loggers, LogLevel logLevel) {
 		assertThat(loggers).containsKey(loggerName);
 		assertThat(loggers).containsEntry(loggerName, logLevel);
