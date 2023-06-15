@@ -2,7 +2,7 @@ plugins {
 	id "org.springframework.boot.starter"
 }
 
-description = "Starter for exposing Spring Data repositories over REST using Spring Data REST"
+description = "Starter for exposing Spring Data repositories over REST using Spring Data REST and Spring MVC"
 
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
