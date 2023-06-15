@@ -732,6 +732,16 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
+	void loadWhenConstructorBoundConfigurationPropertiesIsAlsoValidatorShouldApplyValidator() {
+		assertThatExceptionOfType(Exception.class)
+			.isThrownBy(() -> load(ValidatorConstructorBoundPropertiesConfiguration.class))
+			.satisfies((ex) -> {
+				assertThat(ex).hasCauseInstanceOf(BindException.class);
+				assertThat(ex.getCause()).hasCauseExactlyInstanceOf(BindValidationException.class);
+			});
+	}
+
+	@Test
 	void loadWhenConfigurationPropertiesWithValidDefaultValuesShouldNotFail() {
 		AnnotationConfigApplicationContext context = load(ValidatorPropertiesWithDefaultValues.class);
 		ValidatorPropertiesWithDefaultValues bean = context.getBean(ValidatorPropertiesWithDefaultValues.class);
@@ -2021,6 +2031,37 @@ class ConfigurationPropertiesTests {
 
 		void setFoo(String foo) {
 			this.foo = foo;
+		}
+
+	}
+
+	@EnableConfigurationProperties(ValidatorConstructorBoundProperties.class)
+	static class ValidatorConstructorBoundPropertiesConfiguration {
+
+	}
+
+	@ConstructorBinding
+	@ConfigurationProperties
+	static class ValidatorConstructorBoundProperties implements Validator {
+
+		private final String foo;
+
+		ValidatorConstructorBoundProperties(String foo) {
+			this.foo = foo;
+		}
+
+		@Override
+		public boolean supports(Class<?> type) {
+			return type == ValidatorConstructorBoundProperties.class;
+		}
+
+		@Override
+		public void validate(Object target, Errors errors) {
+			ValidationUtils.rejectIfEmpty(errors, "foo", "TEST1");
+		}
+
+		String getFoo() {
+			return this.foo;
 		}
 
 	}

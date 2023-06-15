@@ -51,6 +51,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.env.PropertySources;
+import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 
@@ -136,6 +137,7 @@ class ConfigurationPropertiesBinder {
 				: new IgnoreTopLevelConverterNotFoundBindHandler();
 	}
 
+	@SuppressWarnings("unchecked")
 	private List<Validator> getValidators(Bindable<?> target) {
 		List<Validator> validators = new ArrayList<>(3);
 		if (this.configurationPropertiesValidator != null) {
@@ -144,8 +146,13 @@ class ConfigurationPropertiesBinder {
 		if (this.jsr303Present && target.getAnnotation(Validated.class) != null) {
 			validators.add(getJsr303Validator());
 		}
-		if (target.getValue() != null && target.getValue().get() instanceof Validator) {
-			validators.add((Validator) target.getValue().get());
+		if (target.getValue() != null) {
+			if (target.getValue().get() instanceof Validator) {
+				validators.add((Validator) target.getValue().get());
+			}
+		}
+		else if (Validator.class.isAssignableFrom(target.getType().resolve())) {
+			validators.add(new SelfValidatingConstructorBoundBindableValidator((Bindable<? extends Validator>) target));
 		}
 		return validators;
 	}
@@ -254,6 +261,30 @@ class ConfigurationPropertiesBinder {
 
 		private boolean isConfigurationProperties(Class<?> target) {
 			return target != null && MergedAnnotations.from(target).isPresent(ConfigurationProperties.class);
+		}
+
+	}
+
+	/**
+	 * A {@code Validator} for a constructor-bound {@code Bindable} where the type being
+	 * bound is itself a {@code Validator} implementation.
+	 */
+	static class SelfValidatingConstructorBoundBindableValidator implements Validator {
+
+		private final Bindable<? extends Validator> bindable;
+
+		SelfValidatingConstructorBoundBindableValidator(Bindable<? extends Validator> bindable) {
+			this.bindable = bindable;
+		}
+
+		@Override
+		public boolean supports(Class<?> clazz) {
+			return clazz.isAssignableFrom(this.bindable.getType().resolve());
+		}
+
+		@Override
+		public void validate(Object target, Errors errors) {
+			((Validator) target).validate(target, errors);
 		}
 
 	}
