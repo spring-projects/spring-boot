@@ -64,6 +64,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Tadaya Tsuyukubo
  * @author Madhura Bhave
  * @author Chanhyeong LEE
+ * @author Moritz Halbritter
  */
 @ExtendWith(OutputCaptureExtension.class)
 @SuppressWarnings("removal")
@@ -115,6 +116,15 @@ class WebMvcObservationAutoConfigurationTests {
 					EnumSet.of(DispatcherType.REQUEST, DispatcherType.ASYNC));
 			assertThat(registration.getOrder()).isEqualTo(Ordered.HIGHEST_PRECEDENCE + 1);
 		});
+	}
+
+	@Test
+	void filterRegistrationOrderCanBeOverridden() {
+		this.contextRunner.withPropertyValues("management.observations.http.server.filter.order=1000")
+			.run((context) -> {
+				FilterRegistrationBean<?> registration = context.getBean(FilterRegistrationBean.class);
+				assertThat(registration.getOrder()).isEqualTo(1000);
+			});
 	}
 
 	@Test

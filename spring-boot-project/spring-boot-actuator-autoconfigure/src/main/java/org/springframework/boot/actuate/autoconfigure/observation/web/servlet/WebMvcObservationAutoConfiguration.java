@@ -44,7 +44,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.server.observation.DefaultServerRequestObservationConvention;
 import org.springframework.http.server.observation.ServerRequestObservationConvention;
@@ -58,6 +57,7 @@ import org.springframework.web.servlet.DispatcherServlet;
  * @author Brian Clozel
  * @author Jon Schneider
  * @author Dmytro Nosan
+ * @author Moritz Halbritter
  * @since 3.0.0
  */
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
@@ -90,7 +90,7 @@ public class WebMvcObservationAutoConfiguration {
 				customTagsProvider.getIfAvailable(), contributorsProvider.orderedStream().toList());
 		ServerHttpObservationFilter filter = new ServerHttpObservationFilter(registry, convention);
 		FilterRegistrationBean<ServerHttpObservationFilter> registration = new FilterRegistrationBean<>(filter);
-		registration.setOrder(Ordered.HIGHEST_PRECEDENCE + 1);
+		registration.setOrder(this.observationProperties.getHttp().getServer().getFilter().getOrder());
 		registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
 		return registration;
 	}
