@@ -55,14 +55,14 @@ class ReactorClientHttpConnectorFactory implements ClientHttpConnectorFactory<Re
 
 	@Override
 	public ReactorClientHttpConnector createClientHttpConnector(SslBundle sslBundle) {
-		ReactorNettyHttpClientMapper mapper = this.mappers.get()
-			.reduce((before, after) -> (client) -> after.configure(before.configure(client)))
-			.orElse((client) -> client);
-		if (sslBundle != null) {
-			mapper = new SslConfigurer(sslBundle)::configure;
-		}
-		return new ReactorClientHttpConnector(this.reactorResourceFactory, mapper::configure);
+		final ReactorNettyHttpClientMapper mapper =
+				Stream.concat(
+					this.mappers.get(),
+					Stream.ofNullable(sslBundle != null ? (ReactorNettyHttpClientMapper) new SslConfigurer(sslBundle)::configure : null))
+				.reduce((before, after) -> (client) -> after.configure(before.configure(client)))
+				.orElse((client) -> client);
 
+		return new ReactorClientHttpConnector(this.reactorResourceFactory, mapper::configure);
 	}
 
 	/**
