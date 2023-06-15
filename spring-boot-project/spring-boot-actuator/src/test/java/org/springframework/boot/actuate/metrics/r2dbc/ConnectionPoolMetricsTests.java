@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.metrics.r2dbc;
 
+import java.time.Duration;
 import java.util.Collections;
 import java.util.UUID;
 
@@ -59,7 +60,7 @@ class ConnectionPoolMetricsTests {
 	@AfterEach
 	void close() {
 		if (this.connectionFactory != null) {
-			StepVerifier.create(this.connectionFactory.close()).verifyComplete();
+			StepVerifier.create(this.connectionFactory.close()).expectComplete().verify(Duration.ofSeconds(5));
 		}
 	}
 
@@ -72,8 +73,8 @@ class ConnectionPoolMetricsTests {
 				Tags.of(testTag, regionTag));
 		metrics.bindTo(registry);
 		// acquire two connections
-		connectionPool.create().as(StepVerifier::create).expectNextCount(1).verifyComplete();
-		connectionPool.create().as(StepVerifier::create).expectNextCount(1).verifyComplete();
+		connectionPool.create().as(StepVerifier::create).expectNextCount(1).expectComplete().verify(Duration.ofSeconds(5));
+		connectionPool.create().as(StepVerifier::create).expectNextCount(1).expectComplete().verify(Duration.ofSeconds(5));
 		assertGauge(registry, "r2dbc.pool.acquired", 2);
 		assertGauge(registry, "r2dbc.pool.allocated", 3);
 		assertGauge(registry, "r2dbc.pool.idle", 1);

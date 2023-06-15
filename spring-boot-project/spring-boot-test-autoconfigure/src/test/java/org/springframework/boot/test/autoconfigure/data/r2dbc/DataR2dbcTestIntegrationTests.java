@@ -24,6 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.r2dbc.core.DatabaseClient;
 
+import java.time.Duration;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -46,7 +48,7 @@ class DataR2dbcTestIntegrationTests {
 
 	@Test
 	void testDatabaseClient() {
-		this.databaseClient.sql("SELECT * FROM example").fetch().all().as(StepVerifier::create).verifyComplete();
+		this.databaseClient.sql("SELECT * FROM example").fetch().all().as(StepVerifier::create).expectComplete().verify(Duration.ofSeconds(5));
 	}
 
 	@Test

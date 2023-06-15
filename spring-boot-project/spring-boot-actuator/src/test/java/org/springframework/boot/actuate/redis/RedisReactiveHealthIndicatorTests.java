@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.redis;
 
+import java.time.Duration;
 import java.util.Properties;
 
 import io.lettuce.core.RedisConnectionException;
@@ -62,7 +63,7 @@ class RedisReactiveHealthIndicatorTests {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
 			assertThat(h.getDetails()).containsOnlyKeys("version");
 			assertThat(h.getDetails().get("version")).isEqualTo("2.8.9");
-		}).verifyComplete();
+		}).expectComplete().verify(Duration.ofSeconds(5));
 		then(redisConnection).should().closeLater();
 	}
 
@@ -76,7 +77,7 @@ class RedisReactiveHealthIndicatorTests {
 			assertThat(h.getDetails().get("cluster_size")).isEqualTo(4L);
 			assertThat(h.getDetails().get("slots_up")).isEqualTo(4L);
 			assertThat(h.getDetails().get("slots_fail")).isEqualTo(0L);
-		}).verifyComplete();
+		}).expectComplete().verify(Duration.ofSeconds(5));
 		then(redisConnectionFactory.getReactiveConnection()).should().closeLater();
 	}
 
@@ -90,7 +91,7 @@ class RedisReactiveHealthIndicatorTests {
 			assertThat(h.getDetails().get("cluster_size")).isEqualTo(4L);
 			assertThat(h.getDetails().get("slots_up")).isEqualTo(4L);
 			assertThat(h.getDetails().get("slots_fail")).isEqualTo(0L);
-		}).verifyComplete();
+		}).expectComplete().verify(Duration.ofSeconds(5));
 	}
 
 	@Test
@@ -102,7 +103,7 @@ class RedisReactiveHealthIndicatorTests {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
 			assertThat(h.getDetails().get("slots_up")).isEqualTo(3L);
 			assertThat(h.getDetails().get("slots_fail")).isEqualTo(1L);
-		}).verifyComplete();
+		}).expectComplete().verify(Duration.ofSeconds(5));
 	}
 
 	@Test
@@ -115,7 +116,7 @@ class RedisReactiveHealthIndicatorTests {
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health)
 			.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
-			.verifyComplete();
+			.expectComplete().verify(Duration.ofSeconds(5));
 		then(redisConnection).should().closeLater();
 	}
 
@@ -128,7 +129,7 @@ class RedisReactiveHealthIndicatorTests {
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health)
 			.consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
-			.verifyComplete();
+			.expectComplete().verify(Duration.ofSeconds(5));
 	}
 
 	private RedisReactiveHealthIndicator createHealthIndicator(ReactiveRedisConnection redisConnection,

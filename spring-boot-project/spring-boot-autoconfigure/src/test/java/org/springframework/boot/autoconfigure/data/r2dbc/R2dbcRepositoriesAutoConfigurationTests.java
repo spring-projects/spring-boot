@@ -39,6 +39,8 @@ import org.springframework.data.repository.Repository;
 import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator;
 import org.springframework.r2dbc.core.DatabaseClient;
 
+import java.time.Duration;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -80,7 +82,7 @@ class R2dbcRepositoriesAutoConfigurationTests {
 					.findById(2000L)
 					.as(StepVerifier::create)
 					.expectNextCount(1)
-					.verifyComplete();
+					.expectComplete().verify(Duration.ofSeconds(5));
 			});
 	}
 
@@ -103,7 +105,7 @@ class R2dbcRepositoriesAutoConfigurationTests {
 					.findById(2000L)
 					.as(StepVerifier::create)
 					.expectNextCount(1)
-					.verifyComplete();
+					.expectComplete().verify(Duration.ofSeconds(5));
 			});
 	}
 

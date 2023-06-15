@@ -33,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.reactive.TransactionSynchronizationManager;
 import org.springframework.transaction.reactive.TransactionalOperator;
 
+import java.time.Duration;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -65,7 +67,7 @@ class R2dbcTransactionManagerAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(SingleConnectionFactoryConfiguration.class, BaseConfiguration.class)
 			.run((context) -> {
 				TransactionalService bean = context.getBean(TransactionalService.class);
-				bean.isTransactionActive().as(StepVerifier::create).expectNext(true).verifyComplete();
+				bean.isTransactionActive().as(StepVerifier::create).expectNext(true).expectComplete().verify(Duration.ofSeconds(5));
 			});
 	}
 

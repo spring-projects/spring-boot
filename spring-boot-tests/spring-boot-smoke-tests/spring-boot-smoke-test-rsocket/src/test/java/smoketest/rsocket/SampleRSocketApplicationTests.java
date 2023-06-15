@@ -30,6 +30,8 @@ import org.springframework.security.rsocket.metadata.SimpleAuthenticationEncoder
 import org.springframework.security.rsocket.metadata.UsernamePasswordMetadata;
 import org.springframework.util.MimeTypeUtils;
 
+import java.time.Duration;
+
 @SpringBootTest(properties = "spring.rsocket.server.port=0")
 class SampleRSocketApplicationTests {
 
@@ -56,7 +58,7 @@ class SampleRSocketApplicationTests {
 		Mono<Project> result = requester.route("find.project.spring-boot").retrieveMono(Project.class);
 		StepVerifier.create(result)
 			.assertNext((project) -> Assertions.assertThat(project.getName()).isEqualTo("spring-boot"))
-			.verifyComplete();
+			.expectComplete().verify(Duration.ofSeconds(5));
 	}
 
 }
