@@ -26,7 +26,8 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author HaiTao Zhang
  * @author Phillip Webb
- * @since 2.2.0 #see {@link LoggerGroup}
+ * @since 2.2.0
+ * @see LoggerGroup
  */
 public final class LoggerGroups implements Iterable<LoggerGroup> {
 
