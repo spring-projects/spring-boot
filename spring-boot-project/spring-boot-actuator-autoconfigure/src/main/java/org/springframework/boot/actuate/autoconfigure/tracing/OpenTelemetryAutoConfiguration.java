@@ -133,14 +133,20 @@ public class OpenTelemetryAutoConfiguration {
 	}
 
 	@Bean
-	BatchSpanProcessor otelSpanProcessor(ObjectProvider<SpanExporter> spanExporters,
+	BatchSpanProcessor otelSpanProcessor(SpanExporters spanExporters,
 			ObjectProvider<SpanExportingPredicate> spanExportingPredicates, ObjectProvider<SpanReporter> spanReporters,
 			ObjectProvider<SpanFilter> spanFilters, ObjectProvider<MeterProvider> meterProvider) {
-		BatchSpanProcessorBuilder builder = BatchSpanProcessor.builder(new CompositeSpanExporter(
-				spanExporters.orderedStream().toList(), spanExportingPredicates.orderedStream().toList(),
-				spanReporters.orderedStream().toList(), spanFilters.orderedStream().toList()));
+		BatchSpanProcessorBuilder builder = BatchSpanProcessor.builder(
+				new CompositeSpanExporter(spanExporters.getList(), spanExportingPredicates.orderedStream().toList(),
+						spanReporters.orderedStream().toList(), spanFilters.orderedStream().toList()));
 		meterProvider.ifAvailable(builder::setMeterProvider);
 		return builder.build();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	SpanExporters spanExporters(ObjectProvider<SpanExporter> spanExporters) {
+		return SpanExporters.of(spanExporters.orderedStream().collect(Collectors.toList()));
 	}
 
 	@Bean

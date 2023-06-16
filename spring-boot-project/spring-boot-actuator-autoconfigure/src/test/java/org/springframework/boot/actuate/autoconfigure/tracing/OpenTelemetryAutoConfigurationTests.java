@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import io.micrometer.tracing.SpanCustomizer;
@@ -35,9 +36,12 @@ import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.context.propagation.TextMapPropagator;
 import io.opentelemetry.extension.trace.propagation.B3Propagator;
+import io.opentelemetry.sdk.common.CompletableResultCode;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SpanLimits;
 import io.opentelemetry.sdk.trace.SpanProcessor;
+import io.opentelemetry.sdk.trace.data.SpanData;
+import io.opentelemetry.sdk.trace.export.SpanExporter;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -88,6 +92,7 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).hasSingleBean(TextMapPropagator.class);
 			assertThat(context).hasSingleBean(OtelSpanCustomizer.class);
 			assertThat(context).hasSingleBean(SpanProcessors.class);
+			assertThat(context).hasSingleBean(SpanExporters.class);
 		});
 	}
 
@@ -119,6 +124,7 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).doesNotHaveBean(TextMapPropagator.class);
 			assertThat(context).doesNotHaveBean(OtelSpanCustomizer.class);
 			assertThat(context).doesNotHaveBean(SpanProcessors.class);
+			assertThat(context).doesNotHaveBean(SpanExporters.class);
 		});
 	}
 
@@ -151,6 +157,8 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).hasSingleBean(SpanCustomizer.class);
 			assertThat(context).hasBean("customSpanProcessors");
 			assertThat(context).hasSingleBean(SpanProcessors.class);
+			assertThat(context).hasBean("customSpanExporters");
+			assertThat(context).hasSingleBean(SpanExporters.class);
 		});
 	}
 
@@ -161,6 +169,17 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).hasBean("customSpanProcessor");
 			SpanProcessors spanProcessors = context.getBean(SpanProcessors.class);
 			assertThat(spanProcessors).hasSize(2);
+		});
+	}
+
+	@Test
+	void shouldAllowMultipleSpanExporters() {
+		this.contextRunner.withUserConfiguration(MultipleSpanExporterConfiguration.class).run((context) -> {
+			assertThat(context.getBeansOfType(SpanExporter.class)).hasSize(2);
+			assertThat(context).hasBean("spanExporter1");
+			assertThat(context).hasBean("spanExporter2");
+			SpanExporters spanExporters = context.getBean(SpanExporters.class);
+			assertThat(spanExporters).hasSize(2);
 		});
 	}
 
@@ -228,15 +247,6 @@ class OpenTelemetryAutoConfigurationTests {
 		});
 	}
 
-	private List<TextMapPropagator> getInjectors(TextMapPropagator propagator) {
-		assertThat(propagator).as("propagator").isNotNull();
-		if (propagator instanceof CompositeTextMapPropagator compositePropagator) {
-			return compositePropagator.getInjectors().stream().toList();
-		}
-		fail("Expected CompositeTextMapPropagator, found %s".formatted(propagator.getClass()));
-		throw new AssertionError("Unreachable");
-	}
-
 	@Test
 	void shouldCustomizeSdkTracerProvider() {
 		this.contextRunner.withUserConfiguration(SdkTracerProviderCustomizationConfiguration.class).run((context) -> {
@@ -253,6 +263,15 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(Mockito.mockingDetails(meterProvider).isMock()).isTrue();
 			then(meterProvider).should().meterBuilder(anyString());
 		});
+	}
+
+	private List<TextMapPropagator> getInjectors(TextMapPropagator propagator) {
+		assertThat(propagator).as("propagator").isNotNull();
+		if (propagator instanceof CompositeTextMapPropagator compositePropagator) {
+			return compositePropagator.getInjectors().stream().toList();
+		}
+		fail("Expected CompositeTextMapPropagator, found %s".formatted(propagator.getClass()));
+		throw new AssertionError("Unreachable");
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -279,11 +298,31 @@ class OpenTelemetryAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	private static class MultipleSpanExporterConfiguration {
+
+		@Bean
+		SpanExporter spanExporter1() {
+			return new DummySpanExporter();
+		}
+
+		@Bean
+		SpanExporter spanExporter2() {
+			return new DummySpanExporter();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	private static class CustomConfiguration {
 
 		@Bean
 		SpanProcessors customSpanProcessors() {
 			return SpanProcessors.of(mock(SpanProcessor.class));
+		}
+
+		@Bean
+		SpanExporters customSpanExporters() {
+			return SpanExporters.of(new DummySpanExporter());
 		}
 
 		@Bean
@@ -377,6 +416,25 @@ class OpenTelemetryAutoConfigurationTests {
 				SpanLimits spanLimits = SpanLimits.builder().setMaxNumberOfEvents(21).build();
 				builder.setSpanLimits(spanLimits).setSampler(Sampler.alwaysOn());
 			};
+		}
+
+	}
+
+	private static class DummySpanExporter implements SpanExporter {
+
+		@Override
+		public CompletableResultCode export(Collection<SpanData> spans) {
+			return CompletableResultCode.ofSuccess();
+		}
+
+		@Override
+		public CompletableResultCode flush() {
+			return CompletableResultCode.ofSuccess();
+		}
+
+		@Override
+		public CompletableResultCode shutdown() {
+			return CompletableResultCode.ofSuccess();
 		}
 
 	}
