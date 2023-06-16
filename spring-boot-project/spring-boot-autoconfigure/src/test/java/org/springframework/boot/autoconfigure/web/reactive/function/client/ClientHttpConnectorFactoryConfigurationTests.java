@@ -24,6 +24,10 @@ import org.eclipse.jetty.util.thread.Scheduler;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.ssl.SslBundle;
+import org.springframework.boot.ssl.SslBundleKey;
+import org.springframework.boot.ssl.jks.JksSslStoreBundle;
+import org.springframework.boot.ssl.jks.JksSslStoreDetails;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -80,11 +84,14 @@ class ClientHttpConnectorFactoryConfigurationTests {
 
 	@Test
 	void shouldApplyHttpClientMapper() {
+		JksSslStoreDetails storeDetails = JksSslStoreDetails.forLocation("classpath:test.jks");
+		JksSslStoreBundle stores = new JksSslStoreBundle(storeDetails, storeDetails);
+		SslBundle sslBundle = SslBundle.of(stores, SslBundleKey.of("password"));
 		new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ClientHttpConnectorFactoryConfiguration.ReactorNetty.class))
 			.withUserConfiguration(CustomHttpClientMapper.class)
 			.run((context) -> {
-				context.getBean(ReactorClientHttpConnectorFactory.class).createClientHttpConnector();
+				context.getBean(ReactorClientHttpConnectorFactory.class).createClientHttpConnector(sslBundle);
 				assertThat(CustomHttpClientMapper.called).isTrue();
 			});
 	}
