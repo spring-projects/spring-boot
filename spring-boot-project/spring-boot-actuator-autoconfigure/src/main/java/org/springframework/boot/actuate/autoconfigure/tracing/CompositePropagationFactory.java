@@ -19,183 +19,206 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import brave.internal.propagation.StringPropagationAdapter;
 import brave.propagation.B3Propagation;
 import brave.propagation.Propagation;
+import brave.propagation.Propagation.Factory;
 import brave.propagation.TraceContext;
 import brave.propagation.TraceContextOrSamplingFlags;
+import graphql.com.google.common.collect.Streams;
 import io.micrometer.tracing.BaggageManager;
 import io.micrometer.tracing.brave.bridge.W3CPropagation;
 
+import org.springframework.boot.actuate.autoconfigure.tracing.TracingProperties.Propagation.PropagationType;
+
 /**
- * {@link Factory} which supports multiple tracing formats. It is able to configure
- * different formats for injecting and for extracting.
+ * {@link brave.propagation.Propagation.Factory Propagation factory} which supports
+ * multiple tracing formats. It is able to configure different formats for injecting and
+ * for extracting.
  *
  * @author Marcin Grzejszczak
  * @author Moritz Halbritter
+ * @author Phillip Webb
  */
-class CompositePropagationFactory extends Propagation.Factory implements Propagation<String> {
+class CompositePropagationFactory extends Propagation.Factory {
 
-	private final Collection<Propagation.Factory> injectorFactories;
+	private final PropagationFactories injectors;
 
-	private final Collection<Propagation.Factory> extractorFactories;
+	private final PropagationFactories extractors;
 
-	private final List<Propagation<String>> injectors;
-
-	private final List<Propagation<String>> extractors;
-
-	private final boolean supportsJoin;
-
-	private final boolean requires128BitTraceId;
-
-	private final List<String> keys;
+	private final CompositePropagation propagation;
 
 	CompositePropagationFactory(Collection<Factory> injectorFactories, Collection<Factory> extractorFactories) {
-		this.injectorFactories = injectorFactories;
-		this.extractorFactories = extractorFactories;
-		this.injectors = this.injectorFactories.stream().map(Factory::get).toList();
-		this.extractors = this.extractorFactories.stream().map(Factory::get).toList();
-		this.supportsJoin = Stream.concat(this.injectorFactories.stream(), this.extractorFactories.stream())
-			.allMatch(Factory::supportsJoin);
-		this.requires128BitTraceId = Stream.concat(this.injectorFactories.stream(), this.extractorFactories.stream())
-			.anyMatch(Factory::requires128BitTraceId);
-		this.keys = Stream.concat(this.injectors.stream(), this.extractors.stream())
-			.flatMap((entry) -> entry.keys().stream())
-			.distinct()
-			.toList();
+		this.injectors = new PropagationFactories(injectorFactories);
+		this.extractors = new PropagationFactories(extractorFactories);
+		this.propagation = new CompositePropagation(this.injectors, this.extractors);
 	}
 
-	Collection<Factory> getInjectorFactories() {
-		return this.injectorFactories;
-	}
-
-	@Override
-	public List<String> keys() {
-		return this.keys;
-	}
-
-	@Override
-	public <R> TraceContext.Injector<R> injector(Setter<R, String> setter) {
-		return (traceContext, request) -> {
-			for (Propagation<String> injector : this.injectors) {
-				injector.injector(setter).inject(traceContext, request);
-			}
-		};
-	}
-
-	@Override
-	public <R> TraceContext.Extractor<R> extractor(Getter<R, String> getter) {
-		return (request) -> {
-			for (Propagation<String> extractor : this.extractors) {
-				TraceContextOrSamplingFlags extract = extractor.extractor(getter).extract(request);
-				if (extract != TraceContextOrSamplingFlags.EMPTY) {
-					return extract;
-				}
-			}
-			return TraceContextOrSamplingFlags.EMPTY;
-		};
-	}
-
-	@Override
-	@SuppressWarnings("deprecation")
-	public <K> Propagation<K> create(KeyFactory<K> keyFactory) {
-		return StringPropagationAdapter.create(this, keyFactory);
+	Stream<Factory> getInjectors() {
+		return this.injectors.stream();
 	}
 
 	@Override
 	public boolean supportsJoin() {
-		return this.supportsJoin;
+		return this.injectors.supportsJoin() && this.extractors.supportsJoin();
 	}
 
 	@Override
 	public boolean requires128BitTraceId() {
-		return this.requires128BitTraceId;
+		return this.injectors.requires128BitTraceId() || this.extractors.requires128BitTraceId();
+	}
+
+	@Override
+	@SuppressWarnings("deprecation")
+	public <K> Propagation<K> create(Propagation.KeyFactory<K> keyFactory) {
+		return StringPropagationAdapter.create(this.propagation, keyFactory);
 	}
 
 	@Override
 	public TraceContext decorate(TraceContext context) {
-		for (Factory injectorFactory : this.injectorFactories) {
-			TraceContext decorated = injectorFactory.decorate(context);
-			if (decorated != context) {
-				return decorated;
-			}
-		}
-		for (Factory extractorFactory : this.extractorFactories) {
-			TraceContext decorated = extractorFactory.decorate(context);
-			if (decorated != context) {
-				return decorated;
-			}
-		}
-		return super.decorate(context);
+		return Streams.concat(this.injectors.stream(), this.extractors.stream())
+			.map((factory) -> factory.decorate(context))
+			.filter((decorated) -> decorated != context)
+			.findFirst()
+			.orElse(context);
 	}
 
 	/**
 	 * Creates a new {@link CompositePropagationFactory}, which uses the given
 	 * {@code injectionTypes} for injection and {@code extractionTypes} for extraction.
+	 * @param properties the propagation properties
 	 * @param baggageManager the baggage manager to use, or {@code null}
-	 * @param injectionTypes the propagation types for injection
-	 * @param extractionTypes the propagation types for extraction
 	 * @return the {@link CompositePropagationFactory}
 	 */
-	static CompositePropagationFactory create(BaggageManager baggageManager,
-			Collection<TracingProperties.Propagation.PropagationType> injectionTypes,
-			Collection<TracingProperties.Propagation.PropagationType> extractionTypes) {
-		List<Factory> injectors = injectionTypes.stream()
-			.map((injection) -> factoryForType(baggageManager, injection))
-			.toList();
-		List<Factory> extractors = extractionTypes.stream()
-			.map((extraction) -> factoryForType(baggageManager, extraction))
-			.toList();
+	static CompositePropagationFactory create(TracingProperties.Propagation properties, BaggageManager baggageManager) {
+		PropagationFactoryMapper mapper = new PropagationFactoryMapper(baggageManager);
+		List<Factory> injectors = properties.getEffectiveProducedTypes().stream().map(mapper::map).toList();
+		List<Factory> extractors = properties.getEffectiveConsumedTypes().stream().map(mapper::map).toList();
 		return new CompositePropagationFactory(injectors, extractors);
 	}
 
 	/**
-	 * Creates a new {@link CompositePropagationFactory}, which uses the given
-	 * {@code injectionTypes} for injection and {@code extractionTypes} for extraction.
-	 * @param injectionTypes the propagation types for injection
-	 * @param extractionTypes the propagation types for extraction
-	 * @return the {@link CompositePropagationFactory}
+	 * Mapper used to create a {@link brave.propagation.Propagation.Factory Propagation
+	 * factory} from a {@link PropagationType}.
 	 */
-	static CompositePropagationFactory create(Collection<TracingProperties.Propagation.PropagationType> injectionTypes,
-			Collection<TracingProperties.Propagation.PropagationType> extractionTypes) {
-		return create(null, injectionTypes, extractionTypes);
-	}
+	private static class PropagationFactoryMapper {
 
-	private static Factory factoryForType(BaggageManager baggageManager,
-			TracingProperties.Propagation.PropagationType type) {
-		return switch (type) {
-			case B3 -> b3Single();
-			case B3_MULTI -> b3Multi();
-			case W3C -> w3c(baggageManager);
-		};
+		private final BaggageManager baggageManager;
+
+		PropagationFactoryMapper(BaggageManager baggageManager) {
+			this.baggageManager = baggageManager;
+		}
+
+		Propagation.Factory map(PropagationType type) {
+			return switch (type) {
+				case B3 -> b3Single();
+				case B3_MULTI -> b3Multi();
+				case W3C -> w3c();
+			};
+		}
+
+		/**
+		 * Creates a new B3 propagation factory using a single B3 header.
+		 * @return the B3 propagation factory
+		 */
+		private Propagation.Factory b3Single() {
+			return B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build();
+		}
+
+		/**
+		 * Creates a new B3 propagation factory using multiple B3 headers.
+		 * @return the B3 propagation factory
+		 */
+		private Propagation.Factory b3Multi() {
+			return B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.MULTI).build();
+		}
+
+		/**
+		 * Creates a new W3C propagation factory.
+		 * @return the W3C propagation factory
+		 */
+		private Propagation.Factory w3c() {
+			return (this.baggageManager != null) ? new W3CPropagation(this.baggageManager, Collections.emptyList())
+					: new W3CPropagation();
+		}
+
 	}
 
 	/**
-	 * Creates a new B3 propagation factory using a single B3 header.
-	 * @return the B3 propagation factory
+	 * A collection of propagation factories.
 	 */
-	private static Factory b3Single() {
-		return B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build();
+	private static class PropagationFactories {
+
+		private final List<Propagation.Factory> factories;
+
+		PropagationFactories(Collection<Factory> factories) {
+			this.factories = List.copyOf(factories);
+		}
+
+		boolean requires128BitTraceId() {
+			return stream().anyMatch(Propagation.Factory::requires128BitTraceId);
+		}
+
+		boolean supportsJoin() {
+			return stream().allMatch(Propagation.Factory::supportsJoin);
+		}
+
+		List<Propagation<String>> get() {
+			return stream().map(Factory::get).toList();
+		}
+
+		Stream<Factory> stream() {
+			return this.factories.stream();
+		}
+
 	}
 
 	/**
-	 * Creates a new B3 propagation factory using multiple B3 headers.
-	 * @return the B3 propagation factory
+	 * A composite {@link Propagation}.
 	 */
-	private static Factory b3Multi() {
-		return B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.MULTI).build();
-	}
+	private static class CompositePropagation implements Propagation<String> {
 
-	/**
-	 * Creates a new W3C propagation factory.
-	 * @param baggageManager baggage manager to use, or {@code null}
-	 * @return the W3C propagation factory
-	 */
-	private static W3CPropagation w3c(BaggageManager baggageManager) {
-		return (baggageManager != null) ? new W3CPropagation(baggageManager, Collections.emptyList())
-				: new W3CPropagation();
+		private final List<Propagation<String>> injectors;
+
+		private final List<Propagation<String>> extractors;
+
+		private final List<String> keys;
+
+		CompositePropagation(PropagationFactories injectorFactories, PropagationFactories extractorFactories) {
+			this.injectors = injectorFactories.get();
+			this.extractors = extractorFactories.get();
+			this.keys = Stream.concat(keys(this.injectors), keys(this.extractors)).distinct().toList();
+		}
+
+		private Stream<String> keys(List<Propagation<String>> propagations) {
+			return propagations.stream().flatMap((propagation) -> propagation.keys().stream());
+		}
+
+		@Override
+		public List<String> keys() {
+			return this.keys;
+		}
+
+		@Override
+		public <R> TraceContext.Injector<R> injector(Setter<R, String> setter) {
+			return (traceContext, request) -> this.injectors.stream()
+				.map((propagation) -> propagation.injector(setter))
+				.forEach((injector) -> injector.inject(traceContext, request));
+		}
+
+		@Override
+		public <R> TraceContext.Extractor<R> extractor(Getter<R, String> getter) {
+			return (request) -> this.extractors.stream()
+				.map((propagation) -> propagation.extractor(getter))
+				.map((extractor) -> extractor.extract(request))
+				.filter(Predicate.not(TraceContextOrSamplingFlags.EMPTY::equals))
+				.findFirst()
+				.orElse(TraceContextOrSamplingFlags.EMPTY);
+		}
+
 	}
 
 }

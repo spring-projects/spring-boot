@@ -222,10 +222,7 @@ public class TracingProperties {
 		 * @return the effective context propagation types produced by the application
 		 */
 		List<PropagationType> getEffectiveProducedTypes() {
-			if (this.type != null) {
-				return this.type;
-			}
-			return this.produce;
+			return (this.type != null) ? this.type : this.produce;
 		}
 
 		/**
@@ -234,10 +231,7 @@ public class TracingProperties {
 		 * @return the effective context propagation types consumed by the application
 		 */
 		List<PropagationType> getEffectiveConsumedTypes() {
-			if (this.type != null) {
-				return this.type;
-			}
-			return this.consume;
+			return (this.type != null) ? this.type : this.consume;
 		}
 
 		/**

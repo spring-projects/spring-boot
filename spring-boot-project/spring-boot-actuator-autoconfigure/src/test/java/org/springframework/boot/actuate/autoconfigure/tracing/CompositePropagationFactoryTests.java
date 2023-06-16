@@ -25,6 +25,7 @@ import brave.internal.propagation.StringPropagationAdapter;
 import brave.propagation.Propagation;
 import brave.propagation.TraceContext;
 import brave.propagation.TraceContextOrSamplingFlags;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
@@ -40,71 +41,79 @@ import static org.mockito.BDDMockito.given;
 class CompositePropagationFactoryTests {
 
 	@Test
-	void returnsAllKeys() {
-		CompositePropagationFactory factory = new CompositePropagationFactory(List.of(field("a")), List.of(field("b")));
-		assertThat(factory.keys()).containsExactly("a", "b");
-	}
-
-	@Test
 	void supportsJoin() {
-		Propagation.Factory supportsJoin = Mockito.mock(Propagation.Factory.class);
-		given(supportsJoin.supportsJoin()).willReturn(true);
-		given(supportsJoin.get()).willReturn(new DummyPropagation("a"));
-		Propagation.Factory doesNotSupportsJoin = Mockito.mock(Propagation.Factory.class);
-		given(doesNotSupportsJoin.supportsJoin()).willReturn(false);
-		given(doesNotSupportsJoin.get()).willReturn(new DummyPropagation("a"));
-		CompositePropagationFactory factory = new CompositePropagationFactory(List.of(supportsJoin),
-				List.of(doesNotSupportsJoin));
+		Propagation.Factory supported = Mockito.mock(Propagation.Factory.class);
+		given(supported.supportsJoin()).willReturn(true);
+		given(supported.get()).willReturn(new DummyPropagation("a"));
+		Propagation.Factory unsupported = Mockito.mock(Propagation.Factory.class);
+		given(unsupported.supportsJoin()).willReturn(false);
+		given(unsupported.get()).willReturn(new DummyPropagation("a"));
+		CompositePropagationFactory factory = new CompositePropagationFactory(List.of(supported), List.of(unsupported));
 		assertThat(factory.supportsJoin()).isFalse();
 	}
 
 	@Test
 	void requires128BitTraceId() {
-		Propagation.Factory requires128BitTraceId = Mockito.mock(Propagation.Factory.class);
-		given(requires128BitTraceId.requires128BitTraceId()).willReturn(true);
-		given(requires128BitTraceId.get()).willReturn(new DummyPropagation("a"));
-		Propagation.Factory doesNotRequire128BitTraceId = Mockito.mock(Propagation.Factory.class);
-		given(doesNotRequire128BitTraceId.requires128BitTraceId()).willReturn(false);
-		given(doesNotRequire128BitTraceId.get()).willReturn(new DummyPropagation("a"));
-		CompositePropagationFactory factory = new CompositePropagationFactory(List.of(requires128BitTraceId),
-				List.of(doesNotRequire128BitTraceId));
+		Propagation.Factory required = Mockito.mock(Propagation.Factory.class);
+		given(required.requires128BitTraceId()).willReturn(true);
+		given(required.get()).willReturn(new DummyPropagation("a"));
+		Propagation.Factory notRequired = Mockito.mock(Propagation.Factory.class);
+		given(notRequired.requires128BitTraceId()).willReturn(false);
+		given(notRequired.get()).willReturn(new DummyPropagation("a"));
+		CompositePropagationFactory factory = new CompositePropagationFactory(List.of(required), List.of(notRequired));
 		assertThat(factory.requires128BitTraceId()).isTrue();
 	}
 
-	@Test
-	void inject() {
-		CompositePropagationFactory factory = new CompositePropagationFactory(List.of(field("a"), field("b")),
-				List.of(field("c")));
-		TraceContext context = context();
-		Map<String, String> request = new HashMap<>();
-		factory.injector(new MapSetter()).inject(context, request);
-		assertThat(request).containsOnly(entry("a", "a-value"), entry("b", "b-value"));
-	}
+	@Nested
+	static class CompostePropagationTests {
 
-	@Test
-	void extractorStopsAfterSuccessfulExtraction() {
-		CompositePropagationFactory factory = new CompositePropagationFactory(Collections.emptyList(),
-				List.of(field("a"), field("b")));
-		Map<String, String> request = Map.of("a", "a-value", "b", "b-value");
-		TraceContextOrSamplingFlags context = factory.extractor(new MapGetter()).extract(request);
-		assertThat(context.context().extra()).containsExactly("a");
-	}
+		@Test
+		void keys() {
+			CompositePropagationFactory factory = new CompositePropagationFactory(List.of(field("a")),
+					List.of(field("b")));
+			Propagation<String> propagation = factory.get();
+			assertThat(propagation.keys()).containsExactly("a", "b");
+		}
 
-	@Test
-	void returnsEmptyContextWhenNoExtractorMatches() {
-		CompositePropagationFactory factory = new CompositePropagationFactory(Collections.emptyList(),
-				Collections.emptyList());
-		Map<String, String> request = Collections.emptyMap();
-		TraceContextOrSamplingFlags context = factory.extractor(new MapGetter()).extract(request);
-		assertThat(context.context()).isNull();
-	}
+		@Test
+		void inject() {
+			CompositePropagationFactory factory = new CompositePropagationFactory(List.of(field("a"), field("b")),
+					List.of(field("c")));
+			Propagation<String> propagation = factory.get();
+			TraceContext context = context();
+			Map<String, String> request = new HashMap<>();
+			propagation.injector(new MapSetter()).inject(context, request);
+			assertThat(request).containsOnly(entry("a", "a-value"), entry("b", "b-value"));
+		}
 
-	private static TraceContext context() {
-		return TraceContext.newBuilder().traceId(1).spanId(2).build();
-	}
+		@Test
+		void extractorWhenDelegateExtractsReturnsExtraction() {
+			CompositePropagationFactory factory = new CompositePropagationFactory(Collections.emptyList(),
+					List.of(field("a"), field("b")));
+			Propagation<String> propagation = factory.get();
+			Map<String, String> request = Map.of("a", "a-value", "b", "b-value");
+			TraceContextOrSamplingFlags context = propagation.extractor(new MapGetter()).extract(request);
+			assertThat(context.context().extra()).containsExactly("a");
+		}
 
-	private static DummyPropagation field(String field) {
-		return new DummyPropagation(field);
+		@Test
+		void extractorWhenWhenNoExtractorMatchesReturnsEmptyContext() {
+			CompositePropagationFactory factory = new CompositePropagationFactory(Collections.emptyList(),
+					Collections.emptyList());
+			Propagation<String> propagation = factory.get();
+			Map<String, String> request = Collections.emptyMap();
+			TraceContextOrSamplingFlags context = propagation.extractor(new MapGetter()).extract(request);
+			assertThat(context.context()).isNull();
+		}
+
+		private static TraceContext context() {
+			return TraceContext.newBuilder().traceId(1).spanId(2).build();
+		}
+
+		private static DummyPropagation field(String field) {
+			return new DummyPropagation(field);
+		}
+
 	}
 
 	private static final class MapSetter implements Propagation.Setter<Map<String, String>, String> {
