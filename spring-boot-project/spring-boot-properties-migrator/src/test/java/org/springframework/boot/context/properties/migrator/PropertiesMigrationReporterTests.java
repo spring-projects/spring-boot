@@ -205,6 +205,14 @@ class PropertiesMigrationReporterTests {
 			.contains("Replacement: custom.the-map-replacement.key");
 	}
 
+	@Test // gh-35919
+	void directCircularReference() {
+		this.environment.getPropertySources()
+			.addFirst(new MapPropertySource("backcompat", Collections.singletonMap("wrong.two", "${test.two}")));
+		createAnalyzer(loadRepository("metadata/sample-metadata.json")).getReport();
+		assertThat(this.environment.getProperty("test.two")).isNull();
+	}
+
 	private List<String> mapToNames(PropertySources sources) {
 		List<String> names = new ArrayList<>();
 		for (PropertySource<?> source : sources) {
