@@ -24,6 +24,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -1363,18 +1364,30 @@ class SpringApplicationTests {
 	@Test
 	void fromRunsWithAdditionalSources() {
 		assertThat(ExampleAdditionalConfig.local.get()).isNull();
-		SpringApplication.from(ExampleFromMainMethod::main).with(ExampleAdditionalConfig.class).run();
+		this.context = SpringApplication.from(ExampleFromMainMethod::main)
+			.with(ExampleAdditionalConfig.class)
+			.run()
+			.getApplicationContext();
 		assertThat(ExampleAdditionalConfig.local.get()).isNotNull();
 		ExampleAdditionalConfig.local.set(null);
 	}
 
 	@Test
 	void fromReturnsApplicationContext() {
-		ConfigurableApplicationContext context = SpringApplication.from(ExampleFromMainMethod::main)
+		this.context = SpringApplication.from(ExampleFromMainMethod::main)
 			.with(ExampleAdditionalConfig.class)
 			.run()
 			.getApplicationContext();
-		assertThat(context).isNotNull();
+		assertThat(this.context).isNotNull();
+	}
+
+	@Test
+	void fromWithMultipleApplicationsOnlyAppliesAdditionalSourcesOnce() {
+		this.context = SpringApplication.from(MultipleApplicationsMainMethod::main)
+			.with(SingleUseAdditionalConfig.class)
+			.run()
+			.getApplicationContext();
+		assertThatNoException().isThrownBy(() -> this.context.getBean(SingleUseAdditionalConfig.class));
 	}
 
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
@@ -1949,6 +1962,31 @@ class SpringApplicationTests {
 
 	}
 
+	static class MultipleApplicationsMainMethod {
+
+		static void main(String[] args) {
+			SpringApplication application = new SpringApplication(ExampleConfig.class);
+			application.setWebApplicationType(WebApplicationType.NONE);
+			application.addListeners(new ApplicationListener<ApplicationEnvironmentPreparedEvent>() {
+
+				@Override
+				public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
+					SpringApplicationBuilder builder = new SpringApplicationBuilder(
+							InnerApplicationConfiguration.class);
+					builder.web(WebApplicationType.NONE);
+					builder.run().close();
+				}
+
+			});
+			application.run(args);
+		}
+
+		static class InnerApplicationConfiguration {
+
+		}
+
+	}
+
 	@Configuration
 	static class ExampleAdditionalConfig {
 
@@ -1956,6 +1994,19 @@ class SpringApplicationTests {
 
 		ExampleAdditionalConfig() {
 			local.set(this);
+		}
+
+	}
+
+	@Configuration
+	static class SingleUseAdditionalConfig {
+
+		private static AtomicBoolean used = new AtomicBoolean(false);
+
+		SingleUseAdditionalConfig() {
+			if (!used.compareAndSet(false, true)) {
+				throw new IllegalStateException("Single-use configuration has already been used");
+			}
 		}
 
 	}
