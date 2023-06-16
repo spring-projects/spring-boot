@@ -129,7 +129,7 @@ public class OpenTelemetryAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	SpanProcessors spanProcessors(ObjectProvider<SpanProcessor> spanProcessors) {
-		return () -> spanProcessors.orderedStream().collect(Collectors.toList());
+		return SpanProcessors.of(spanProcessors.orderedStream().collect(Collectors.toList()));
 	}
 
 	@Bean
