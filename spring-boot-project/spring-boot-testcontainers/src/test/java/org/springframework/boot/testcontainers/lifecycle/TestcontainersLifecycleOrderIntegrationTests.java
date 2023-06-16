@@ -39,8 +39,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link TestcontainersLifecycleApplicationContextInitializer} to
- * ensure create and destroy events happen in the correct order.
+ * Integration tests for {@link TestcontainersLifecycleBeanPostProcessor} to ensure create
+ * and destroy events happen in the correct order.
  *
  * @author Phillip Webb
  */
@@ -48,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ContextConfiguration(classes = { TestConfig.class, ContainerConfig.class })
 @DirtiesContext
 @DisabledIfDockerUnavailable
-public class TestcontainersLifecycleOrderIntegrationTests {
+class TestcontainersLifecycleOrderIntegrationTests {
 
 	static List<String> events = Collections.synchronizedList(new ArrayList<>());
 
