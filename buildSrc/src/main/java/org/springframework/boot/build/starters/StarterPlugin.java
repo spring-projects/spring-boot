@@ -33,6 +33,7 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.springframework.boot.build.ConventionsPlugin;
 import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.classpath.CheckClasspathForConflicts;
+import org.springframework.boot.build.classpath.CheckClasspathForUnconstrainedDirectDependencies;
 import org.springframework.boot.build.classpath.CheckClasspathForUnnecessaryExclusions;
 import org.springframework.util.StringUtils;
 
@@ -63,6 +64,7 @@ public class StarterPlugin implements Plugin<Project> {
 					(artifact) -> artifact.builtBy(starterMetadata));
 		createClasspathConflictsCheck(runtimeClasspath, project);
 		createUnnecessaryExclusionsCheck(runtimeClasspath, project);
+		createUnconstrainedDirectDependenciesCheck(runtimeClasspath, project);
 		configureJarManifest(project);
 	}
 
@@ -80,6 +82,17 @@ public class StarterPlugin implements Plugin<Project> {
 					CheckClasspathForUnnecessaryExclusions.class);
 		checkClasspathForUnnecessaryExclusions.setClasspath(classpath);
 		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForUnnecessaryExclusions);
+	}
+
+	private void createUnconstrainedDirectDependenciesCheck(Configuration classpath, Project project) {
+		CheckClasspathForUnconstrainedDirectDependencies checkClasspathForUnconstrainedDirectDependencies = project
+			.getTasks()
+			.create("check" + StringUtils.capitalize(classpath.getName() + "ForUnconstrainedDirectDependencies"),
+					CheckClasspathForUnconstrainedDirectDependencies.class);
+		checkClasspathForUnconstrainedDirectDependencies.setClasspath(classpath);
+		project.getTasks()
+			.getByName(JavaBasePlugin.CHECK_TASK_NAME)
+			.dependsOn(checkClasspathForUnconstrainedDirectDependencies);
 	}
 
 	private void configureJarManifest(Project project) {
