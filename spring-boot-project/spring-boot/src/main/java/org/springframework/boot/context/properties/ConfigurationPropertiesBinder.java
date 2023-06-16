@@ -137,7 +137,6 @@ class ConfigurationPropertiesBinder {
 				: new IgnoreTopLevelConverterNotFoundBindHandler();
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<Validator> getValidators(Bindable<?> target) {
 		List<Validator> validators = new ArrayList<>(3);
 		if (this.configurationPropertiesValidator != null) {
@@ -146,15 +145,23 @@ class ConfigurationPropertiesBinder {
 		if (this.jsr303Present && target.getAnnotation(Validated.class) != null) {
 			validators.add(getJsr303Validator());
 		}
-		if (target.getValue() != null) {
-			if (target.getValue().get() instanceof Validator) {
-				validators.add((Validator) target.getValue().get());
-			}
-		}
-		else if (Validator.class.isAssignableFrom(target.getType().resolve())) {
-			validators.add(new SelfValidatingConstructorBoundBindableValidator((Bindable<? extends Validator>) target));
+		Validator selfValidator = getSelfValidator(target);
+		if (selfValidator != null) {
+			validators.add(selfValidator);
 		}
 		return validators;
+	}
+
+	private Validator getSelfValidator(Bindable<?> target) {
+		if (target.getValue() != null) {
+			Object value = target.getValue().get();
+			return (value instanceof Validator) ? (Validator) value : null;
+		}
+		Class<?> type = target.getType().resolve();
+		if (Validator.class.isAssignableFrom(type)) {
+			return new SelfValidatingConstructorBoundBindableValidator(type);
+		}
+		return null;
 	}
 
 	private Validator getJsr303Validator() {
@@ -271,15 +278,15 @@ class ConfigurationPropertiesBinder {
 	 */
 	static class SelfValidatingConstructorBoundBindableValidator implements Validator {
 
-		private final Bindable<? extends Validator> bindable;
+		private final Class<?> type;
 
-		SelfValidatingConstructorBoundBindableValidator(Bindable<? extends Validator> bindable) {
-			this.bindable = bindable;
+		SelfValidatingConstructorBoundBindableValidator(Class<?> type) {
+			this.type = type;
 		}
 
 		@Override
-		public boolean supports(Class<?> clazz) {
-			return clazz.isAssignableFrom(this.bindable.getType().resolve());
+		public boolean supports(Class<?> candidate) {
+			return candidate.isAssignableFrom(this.type);
 		}
 
 		@Override
