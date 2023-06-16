@@ -22,7 +22,6 @@ import io.prometheus.client.exemplars.tracer.common.SpanContextSupplier;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus.PrometheusMetricsExportAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
 import org.springframework.boot.actuate.autoconfigure.tracing.MicrometerTracingAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -43,7 +42,6 @@ import org.springframework.util.function.SingletonSupplier;
 		after = MicrometerTracingAutoConfiguration.class)
 @ConditionalOnBean(Tracer.class)
 @ConditionalOnClass({ Tracer.class, SpanContextSupplier.class })
-@ConditionalOnEnabledTracing
 public class PrometheusExemplarsAutoConfiguration {
 
 	@Bean

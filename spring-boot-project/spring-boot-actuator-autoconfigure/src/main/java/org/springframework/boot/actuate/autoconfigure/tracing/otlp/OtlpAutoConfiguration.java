@@ -50,7 +50,6 @@ import org.springframework.context.annotation.Bean;
  * @since 3.1.0
  */
 @AutoConfiguration
-@ConditionalOnEnabledTracing
 @ConditionalOnClass({ OtelTracer.class, SdkTracerProvider.class, OpenTelemetry.class, OtlpHttpSpanExporter.class })
 @EnableConfigurationProperties(OtlpProperties.class)
 public class OtlpAutoConfiguration {
@@ -59,6 +58,7 @@ public class OtlpAutoConfiguration {
 	@ConditionalOnMissingBean(value = OtlpHttpSpanExporter.class,
 			type = "io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter")
 	@ConditionalOnProperty(prefix = "management.otlp.tracing", name = "endpoint")
+	@ConditionalOnEnabledTracing
 	OtlpHttpSpanExporter otlpHttpSpanExporter(OtlpProperties properties) {
 		OtlpHttpSpanExporterBuilder builder = OtlpHttpSpanExporter.builder()
 			.setEndpoint(properties.getEndpoint())

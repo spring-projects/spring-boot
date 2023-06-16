@@ -18,22 +18,15 @@ package org.springframework.boot.test.autoconfigure.actuate.observability;
 
 import java.util.Collections;
 
-import io.micrometer.tracing.Tracer;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.context.annotation.UserConfigurations;
-import org.springframework.boot.test.context.FilteredClassLoader;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.ContextCustomizer;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link AutoConfigureObservability} and
@@ -80,59 +73,6 @@ class ObservabilityContextCustomizerFactoryTests {
 		applyCustomizerToContext(customizer, context);
 		assertThatMetricsAreEnabled(context);
 		assertThatTracingIsEnabled(context);
-	}
-
-	@Test
-	void shouldRegisterNoopTracerIfTracingIsDisabled() {
-		ContextCustomizer customizer = createContextCustomizer(NoAnnotation.class);
-		ConfigurableApplicationContext context = new GenericApplicationContext();
-		applyCustomizerToContext(customizer, context);
-		context.refresh();
-		Tracer tracer = context.getBean(Tracer.class);
-		assertThat(tracer).isNotNull();
-		assertThat(tracer.nextSpan().isNoop()).isTrue();
-	}
-
-	@Test
-	void shouldNotRegisterNoopTracerIfTracingIsEnabled() {
-		ContextCustomizer customizer = createContextCustomizer(WithAnnotation.class);
-		ConfigurableApplicationContext context = new GenericApplicationContext();
-		applyCustomizerToContext(customizer, context);
-		context.refresh();
-		assertThat(context.getBeanProvider(Tracer.class).getIfAvailable()).as("Tracer bean").isNull();
-	}
-
-	@Test
-	void shouldNotRegisterNoopTracerIfMicrometerTracingIsNotPresent() throws Exception {
-		try (FilteredClassLoader filteredClassLoader = new FilteredClassLoader("io.micrometer.tracing")) {
-			ContextCustomizer customizer = createContextCustomizer(NoAnnotation.class);
-			new ApplicationContextRunner().withClassLoader(filteredClassLoader)
-				.withInitializer(applyCustomizer(customizer))
-				.run((context) -> {
-					assertThat(context).doesNotHaveBean(Tracer.class);
-					assertThatMetricsAreDisabled(context);
-					assertThatTracingIsDisabled(context);
-				});
-		}
-	}
-
-	@Test
-	void shouldBackOffOnCustomTracer() {
-		ContextCustomizer customizer = createContextCustomizer(NoAnnotation.class);
-		new ApplicationContextRunner().withConfiguration(UserConfigurations.of(CustomTracer.class))
-			.withInitializer(applyCustomizer(customizer))
-			.run((context) -> {
-				assertThat(context).hasSingleBean(Tracer.class);
-				assertThat(context).hasBean("customTracer");
-			});
-	}
-
-	@Test
-	void shouldNotRunIfAotIsEnabled() {
-		ContextCustomizer customizer = createContextCustomizer(NoAnnotation.class);
-		new ApplicationContextRunner().withSystemProperties("spring.aot.enabled:true")
-			.withInitializer(applyCustomizer(customizer))
-			.run((context) -> assertThat(context).doesNotHaveBean(Tracer.class));
 	}
 
 	@Test
@@ -253,16 +193,6 @@ class ObservabilityContextCustomizerFactoryTests {
 
 	@AutoConfigureObservability(metrics = false, tracing = false)
 	static class WithDisabledAnnotation {
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomTracer {
-
-		@Bean
-		Tracer customTracer() {
-			return mock(Tracer.class);
-		}
 
 	}
 

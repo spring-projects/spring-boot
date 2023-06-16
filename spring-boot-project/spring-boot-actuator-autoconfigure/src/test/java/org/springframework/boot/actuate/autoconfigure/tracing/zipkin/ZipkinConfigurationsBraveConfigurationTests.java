@@ -42,6 +42,9 @@ class ZipkinConfigurationsBraveConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(BraveConfiguration.class));
 
+	private final ApplicationContextRunner tracingDisabledContextRunner = this.contextRunner
+		.withPropertyValues("management.tracing.enabled=false");
+
 	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.withUserConfiguration(ReporterConfiguration.class)
@@ -77,6 +80,12 @@ class ZipkinConfigurationsBraveConfigurationTests {
 				assertThat(context).hasBean("customSpanHandler");
 				assertThat(context).hasSingleBean(ZipkinSpanHandler.class);
 			});
+	}
+
+	@Test
+	void shouldNotSupplyZipkinSpanHandlerIfTracingIsDisabled() {
+		this.tracingDisabledContextRunner.withUserConfiguration(ReporterConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(ZipkinSpanHandler.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

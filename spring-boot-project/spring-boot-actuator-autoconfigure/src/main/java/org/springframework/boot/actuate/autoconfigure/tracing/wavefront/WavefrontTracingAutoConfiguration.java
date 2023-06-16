@@ -52,7 +52,6 @@ import org.springframework.context.annotation.Import;
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
 		WavefrontAutoConfiguration.class })
 @ConditionalOnClass({ WavefrontSender.class, WavefrontSpanHandler.class })
-@ConditionalOnEnabledTracing
 @EnableConfigurationProperties(WavefrontProperties.class)
 @Import(WavefrontSenderConfiguration.class)
 public class WavefrontTracingAutoConfiguration {
@@ -60,6 +59,7 @@ public class WavefrontTracingAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnBean(WavefrontSender.class)
+	@ConditionalOnEnabledTracing
 	WavefrontSpanHandler wavefrontSpanHandler(WavefrontProperties properties, WavefrontSender wavefrontSender,
 			SpanMetrics spanMetrics, ApplicationTags applicationTags) {
 		return new WavefrontSpanHandler(properties.getSender().getMaxQueueSize(), wavefrontSender, spanMetrics,
@@ -96,6 +96,7 @@ public class WavefrontTracingAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
+		@ConditionalOnEnabledTracing
 		WavefrontBraveSpanHandler wavefrontBraveSpanHandler(WavefrontSpanHandler wavefrontSpanHandler) {
 			return new WavefrontBraveSpanHandler(wavefrontSpanHandler);
 		}
@@ -108,6 +109,7 @@ public class WavefrontTracingAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
+		@ConditionalOnEnabledTracing
 		WavefrontOtelSpanExporter wavefrontOtelSpanExporter(WavefrontSpanHandler wavefrontSpanHandler) {
 			return new WavefrontOtelSpanExporter(wavefrontSpanHandler);
 		}

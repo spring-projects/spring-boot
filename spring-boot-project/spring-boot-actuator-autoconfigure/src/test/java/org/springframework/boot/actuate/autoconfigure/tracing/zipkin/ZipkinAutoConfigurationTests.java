@@ -60,12 +60,6 @@ class ZipkinAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldNotSupplyBeansIfTracingIsDisabled() {
-		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
-			.run((context) -> assertThat(context).doesNotHaveBean(BytesEncoder.class));
-	}
-
-	@Test
 	void definesPropertiesBasedConnectionDetailsByDefault() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(PropertiesZipkinConnectionDetails.class));
 	}

@@ -40,6 +40,9 @@ class OtlpAutoConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(OtlpAutoConfiguration.class));
 
+	private final ApplicationContextRunner tracingDisabledContextRunner = this.contextRunner
+		.withPropertyValues("management.tracing.enabled=false");
+
 	@Test
 	void shouldNotSupplyBeansIfPropertyIsNotSet() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(OtlpHttpSpanExporter.class));
@@ -94,6 +97,13 @@ class OtlpAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomGrpcExporterConfiguration.class)
 			.run((context) -> assertThat(context).hasBean("customOtlpGrpcSpanExporter")
 				.hasSingleBean(SpanExporter.class));
+	}
+
+	@Test
+	void shouldNotSupplyOtlpHttpSpanExporterIfTracingIsDisabled() {
+		this.tracingDisabledContextRunner
+			.withPropertyValues("management.otlp.tracing.endpoint=http://localhost:4318/v1/traces")
+			.run((context) -> assertThat(context).doesNotHaveBean(OtlpHttpSpanExporter.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

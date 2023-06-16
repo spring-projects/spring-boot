@@ -39,7 +39,6 @@ import org.springframework.core.annotation.Order;
  */
 @AutoConfiguration
 @ConditionalOnClass(Tracer.class)
-@ConditionalOnEnabledTracing
 public class MicrometerTracingAutoConfiguration {
 
 	/**

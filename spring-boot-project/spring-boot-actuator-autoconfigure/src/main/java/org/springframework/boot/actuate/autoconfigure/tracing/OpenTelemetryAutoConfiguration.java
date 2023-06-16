@@ -75,7 +75,6 @@ import org.springframework.core.env.Environment;
  * @since 3.0.0
  */
 @AutoConfiguration(before = MicrometerTracingAutoConfiguration.class)
-@ConditionalOnEnabledTracing
 @ConditionalOnClass({ OtelTracer.class, SdkTracerProvider.class, OpenTelemetry.class })
 @EnableConfigurationProperties(TracingProperties.class)
 public class OpenTelemetryAutoConfiguration {

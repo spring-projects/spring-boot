@@ -43,6 +43,9 @@ class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(BaseConfiguration.class, OpenTelemetryConfiguration.class));
 
+	private final ApplicationContextRunner tracingDisabledContextRunner = this.contextRunner
+		.withPropertyValues("management.tracing.enabled=false");
+
 	@Test
 	void shouldSupplyBeans() {
 		this.contextRunner.withUserConfiguration(SenderConfiguration.class)
@@ -68,6 +71,12 @@ class ZipkinConfigurationsOpenTelemetryConfigurationTests {
 			assertThat(context).hasBean("customZipkinSpanExporter");
 			assertThat(context).hasSingleBean(ZipkinSpanExporter.class);
 		});
+	}
+
+	@Test
+	void shouldNotSupplyZipkinSpanExporterIfTracingIsDisabled() {
+		this.tracingDisabledContextRunner.withUserConfiguration(SenderConfiguration.class)
+			.run((context) -> assertThat(context).doesNotHaveBean(ZipkinSpanExporter.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

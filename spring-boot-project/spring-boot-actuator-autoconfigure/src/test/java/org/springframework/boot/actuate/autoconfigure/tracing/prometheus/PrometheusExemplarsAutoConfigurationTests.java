@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
 /**
  * Tests for {@link PrometheusExemplarsAutoConfiguration}.
  *
- * * @author Jonatan Ivanov
+ * @author Jonatan Ivanov
  */
 class PrometheusExemplarsAutoConfigurationTests {
 
@@ -51,12 +51,6 @@ class PrometheusExemplarsAutoConfigurationTests {
 		.withConfiguration(
 				AutoConfigurations.of(PrometheusExemplarsAutoConfiguration.class, ObservationAutoConfiguration.class,
 						BraveAutoConfiguration.class, MicrometerTracingAutoConfiguration.class));
-
-	@Test
-	void shouldNotSupplyBeansIfTracingIsDisabled() {
-		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
-			.run((context) -> assertThat(context).doesNotHaveBean(SpanContextSupplier.class));
-	}
 
 	@Test
 	void shouldNotSupplyBeansIfPrometheusSupportIsMissing() {

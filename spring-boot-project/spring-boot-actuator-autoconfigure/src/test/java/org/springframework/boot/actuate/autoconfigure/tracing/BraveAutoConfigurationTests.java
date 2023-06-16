@@ -152,12 +152,6 @@ class BraveAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldNotSupplyBeansIfTracingIsDisabled() {
-		this.contextRunner.withPropertyValues("management.tracing.enabled=false")
-			.run((context) -> assertThat(context).doesNotHaveBean(BraveAutoConfiguration.class));
-	}
-
-	@Test
 	void shouldNotSupplyCorrelationScopeDecoratorIfBaggageDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false")
 			.run((context) -> assertThat(context).doesNotHaveBean("correlationScopeDecorator"));

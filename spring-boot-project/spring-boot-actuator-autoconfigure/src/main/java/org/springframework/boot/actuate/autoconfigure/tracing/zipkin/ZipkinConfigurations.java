@@ -26,6 +26,7 @@ import zipkin2.reporter.brave.ZipkinSpanHandler;
 import zipkin2.reporter.urlconnection.URLConnectionSender;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.autoconfigure.tracing.ConditionalOnEnabledTracing;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -142,6 +143,7 @@ class ZipkinConfigurations {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnBean(Reporter.class)
+		@ConditionalOnEnabledTracing
 		ZipkinSpanHandler zipkinSpanHandler(Reporter<Span> spanReporter) {
 			return (ZipkinSpanHandler) ZipkinSpanHandler.newBuilder(spanReporter).build();
 		}
@@ -155,6 +157,7 @@ class ZipkinConfigurations {
 		@Bean
 		@ConditionalOnMissingBean
 		@ConditionalOnBean(Sender.class)
+		@ConditionalOnEnabledTracing
 		ZipkinSpanExporter zipkinSpanExporter(BytesEncoder<Span> encoder, Sender sender) {
 			return ZipkinSpanExporter.builder().setEncoder(encoder).setSender(sender).build();
 		}
