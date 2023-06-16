@@ -29,6 +29,7 @@ import io.micrometer.tracing.otel.bridge.Slf4JBaggageEventListener;
 import io.micrometer.tracing.otel.bridge.Slf4JEventListener;
 import io.micrometer.tracing.otel.propagation.BaggageTextMapPropagator;
 import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.metrics.MeterProvider;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.propagation.ContextPropagators;
@@ -41,6 +42,7 @@ import io.opentelemetry.sdk.trace.samplers.Sampler;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.mockito.Mockito;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -51,6 +53,9 @@ import org.springframework.core.annotation.Order;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -82,6 +87,7 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).hasSingleBean(OtelPropagator.class);
 			assertThat(context).hasSingleBean(TextMapPropagator.class);
 			assertThat(context).hasSingleBean(OtelSpanCustomizer.class);
+			assertThat(context).hasSingleBean(SpanProcessors.class);
 		});
 	}
 
@@ -112,6 +118,7 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).doesNotHaveBean(OtelPropagator.class);
 			assertThat(context).doesNotHaveBean(TextMapPropagator.class);
 			assertThat(context).doesNotHaveBean(OtelSpanCustomizer.class);
+			assertThat(context).doesNotHaveBean(SpanProcessors.class);
 		});
 	}
 
@@ -142,14 +149,18 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).hasSingleBean(OtelPropagator.class);
 			assertThat(context).hasBean("customSpanCustomizer");
 			assertThat(context).hasSingleBean(SpanCustomizer.class);
+			assertThat(context).hasBean("customSpanProcessors");
+			assertThat(context).hasSingleBean(SpanProcessors.class);
 		});
 	}
 
 	@Test
 	void shouldAllowMultipleSpanProcessors() {
-		this.contextRunner.withUserConfiguration(CustomConfiguration.class).run((context) -> {
+		this.contextRunner.withUserConfiguration(AdditionalSpanProcessorConfiguration.class).run((context) -> {
 			assertThat(context.getBeansOfType(SpanProcessor.class)).hasSize(2);
 			assertThat(context).hasBean("customSpanProcessor");
+			SpanProcessors spanProcessors = context.getBean(SpanProcessors.class);
+			assertThat(spanProcessors).hasSize(2);
 		});
 	}
 
@@ -235,8 +246,45 @@ class OpenTelemetryAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void defaultSpanProcessorShouldUseMeterProviderIfAvailable() {
+		this.contextRunner.withUserConfiguration(MeterProviderConfiguration.class).run((context) -> {
+			MeterProvider meterProvider = context.getBean(MeterProvider.class);
+			assertThat(Mockito.mockingDetails(meterProvider).isMock()).isTrue();
+			then(meterProvider).should().meterBuilder(anyString());
+		});
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static class MeterProviderConfiguration {
+
+		@Bean
+		MeterProvider meterProvider() {
+			MeterProvider mock = mock(MeterProvider.class);
+			given(mock.meterBuilder(anyString()))
+				.willAnswer((invocation) -> MeterProvider.noop().meterBuilder(invocation.getArgument(0, String.class)));
+			return mock;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static class AdditionalSpanProcessorConfiguration {
+
+		@Bean
+		SpanProcessor customSpanProcessor() {
+			return mock(SpanProcessor.class);
+		}
+
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	private static class CustomConfiguration {
+
+		@Bean
+		SpanProcessors customSpanProcessors() {
+			return SpanProcessors.of(mock(SpanProcessor.class));
+		}
 
 		@Bean
 		io.micrometer.tracing.Tracer customMicrometerTracer() {

@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import io.micrometer.tracing.SpanCustomizer;
 import io.micrometer.tracing.exporter.SpanExportingPredicate;
@@ -37,6 +38,7 @@ import io.micrometer.tracing.otel.bridge.Slf4JEventListener;
 import io.micrometer.tracing.otel.propagation.BaggageTextMapPropagator;
 import io.opentelemetry.api.OpenTelemetry;
 import io.opentelemetry.api.common.Attributes;
+import io.opentelemetry.api.metrics.MeterProvider;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.context.ContextStorage;
 import io.opentelemetry.context.propagation.ContextPropagators;
@@ -47,6 +49,7 @@ import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
 import io.opentelemetry.sdk.trace.SpanProcessor;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
+import io.opentelemetry.sdk.trace.export.BatchSpanProcessorBuilder;
 import io.opentelemetry.sdk.trace.export.SpanExporter;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
 import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
@@ -99,13 +102,13 @@ public class OpenTelemetryAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	SdkTracerProvider otelSdkTracerProvider(Environment environment, ObjectProvider<SpanProcessor> spanProcessors,
-			Sampler sampler, ObjectProvider<SdkTracerProviderBuilderCustomizer> customizers) {
+	SdkTracerProvider otelSdkTracerProvider(Environment environment, SpanProcessors spanProcessors, Sampler sampler,
+			ObjectProvider<SdkTracerProviderBuilderCustomizer> customizers) {
 		String applicationName = environment.getProperty("spring.application.name", DEFAULT_APPLICATION_NAME);
 		SdkTracerProviderBuilder builder = SdkTracerProvider.builder()
 			.setSampler(sampler)
 			.setResource(Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, applicationName)));
-		spanProcessors.orderedStream().forEach(builder::addSpanProcessor);
+		spanProcessors.forEach(builder::addSpanProcessor);
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
 	}
@@ -124,14 +127,20 @@ public class OpenTelemetryAutoConfiguration {
 	}
 
 	@Bean
-	SpanProcessor otelSpanProcessor(ObjectProvider<SpanExporter> spanExporters,
+	@ConditionalOnMissingBean
+	SpanProcessors spanProcessors(ObjectProvider<SpanProcessor> spanProcessors) {
+		return () -> spanProcessors.orderedStream().collect(Collectors.toList());
+	}
+
+	@Bean
+	BatchSpanProcessor otelSpanProcessor(ObjectProvider<SpanExporter> spanExporters,
 			ObjectProvider<SpanExportingPredicate> spanExportingPredicates, ObjectProvider<SpanReporter> spanReporters,
-			ObjectProvider<SpanFilter> spanFilters) {
-		return BatchSpanProcessor
-			.builder(new CompositeSpanExporter(spanExporters.orderedStream().toList(),
-					spanExportingPredicates.orderedStream().toList(), spanReporters.orderedStream().toList(),
-					spanFilters.orderedStream().toList()))
-			.build();
+			ObjectProvider<SpanFilter> spanFilters, ObjectProvider<MeterProvider> meterProvider) {
+		BatchSpanProcessorBuilder builder = BatchSpanProcessor.builder(new CompositeSpanExporter(
+				spanExporters.orderedStream().toList(), spanExportingPredicates.orderedStream().toList(),
+				spanReporters.orderedStream().toList(), spanFilters.orderedStream().toList()));
+		meterProvider.ifAvailable(builder::setMeterProvider);
+		return builder.build();
 	}
 
 	@Bean
