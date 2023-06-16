@@ -137,13 +137,6 @@ public class LoggersEndpoint {
 
 		private final Map<String, GroupLoggerLevelsDescriptor> groups;
 
-		/**
-		 * Create a new {@link LoggersDescriptor} instance.
-		 * @param levels the levels
-		 * @param loggers the loggers
-		 * @param groups the groups
-		 */
-		@Deprecated(since = "3.2.0", forRemoval = true)
 		public LoggersDescriptor(NavigableSet<LogLevel> levels, Map<String, LoggerLevelsDescriptor> loggers,
 				Map<String, GroupLoggerLevelsDescriptor> groups) {
 			this.levels = levels;
@@ -172,11 +165,6 @@ public class LoggersEndpoint {
 
 		private final String configuredLevel;
 
-		/**
-		 * Create a new {@link LoggerLevelsDescriptor} instance.
-		 * @param configuredLevel the configured level
-		 */
-		@Deprecated(since = "3.2.0", forRemoval = true)
 		public LoggerLevelsDescriptor(LogLevel configuredLevel) {
 			this.configuredLevel = (configuredLevel != null) ? configuredLevel.name() : null;
 		}
@@ -185,11 +173,6 @@ public class LoggersEndpoint {
 			this.configuredLevel = (directConfiguration != null) ? directConfiguration.getName() : null;
 		}
 
-		/**
-		 * @param level
-		 * @return
-		 */
-		@Deprecated(since = "3.2.0", forRemoval = true)
 		protected final String getName(LogLevel level) {
 			return (level != null) ? level.name() : null;
 		}
@@ -207,11 +190,6 @@ public class LoggersEndpoint {
 
 		private final List<String> members;
 
-		/**
-		 * @param configuredLevel
-		 * @param members
-		 */
-		@Deprecated(since = "3.2.0", forRemoval = true)
 		public GroupLoggerLevelsDescriptor(LogLevel configuredLevel, List<String> members) {
 			super(configuredLevel);
 			this.members = members;
@@ -230,10 +208,6 @@ public class LoggersEndpoint {
 
 		private final String effectiveLevel;
 
-		/**
-		 * @param configuration
-		 */
-		@Deprecated(since = "3.2.0", forRemoval = true)
 		public SingleLoggerLevelsDescriptor(LoggerConfiguration configuration) {
 			super(configuration.getLevelConfiguration(ConfigurationScope.DIRECT));
 			this.effectiveLevel = configuration.getLevelConfiguration().getName();
