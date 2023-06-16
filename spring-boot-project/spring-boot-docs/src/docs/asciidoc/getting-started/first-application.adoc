@@ -141,8 +141,9 @@ Open your favorite text editor and add the following:
 	plugins {
 		id 'java'
 		id 'org.springframework.boot' version '{spring-boot-version}'
-		id 'io.spring.dependency-management' version '1.1.0'
 	}
+
+	apply plugin: 'io.spring.dependency-management'
 
 	group = 'com.example'
 	version = '0.0.1-SNAPSHOT'
@@ -247,7 +248,7 @@ If you run `gradle dependencies` again, you see that there are now a number of a
 [[getting-started.first-application.code]]
 === Writing the Code
 To finish our application, we need to create a single Java file.
-By default, Maven and Gradle compiles sources from `src/main/java`, so you need to create that directory structure and then add a file named `src/main/java/MyApplication.java` to contain the following code:
+By default, Maven and Gradle compile sources from `src/main/java`, so you need to create that directory structure and then add a file named `src/main/java/MyApplication.java` to contain the following code:
 
 include::code:MyApplication[]
 

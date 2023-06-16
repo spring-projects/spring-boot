@@ -649,12 +649,12 @@ public class KafkaProperties {
 		private final Map<String, String> properties = new HashMap<>();
 
 		/**
-		 * The close timeout.
+		 * Close timeout.
 		 */
 		private Duration closeTimeout;
 
 		/**
-		 * The operation timeout.
+		 * Operation timeout.
 		 */
 		private Duration operationTimeout;
 
