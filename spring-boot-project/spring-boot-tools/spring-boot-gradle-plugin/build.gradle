@@ -148,5 +148,5 @@ artifacts {
 }
 
 toolchain {
-	maximumCompatibleJavaVersion = JavaLanguageVersion.of(18)
+	maximumCompatibleJavaVersion = JavaLanguageVersion.of(20)
 }
