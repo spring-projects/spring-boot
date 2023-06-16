@@ -162,7 +162,7 @@ class PropertiesMigrationReporterTests {
 	}
 
 	@Test
-	void mapPropertiesDeprecatedNoReplacement() throws IOException {
+	void mapPropertiesDeprecatedNoReplacement() {
 		this.environment.getPropertySources()
 			.addFirst(
 					new MapPropertySource("first", Collections.singletonMap("custom.map-no-replacement.key", "value")));
@@ -173,7 +173,7 @@ class PropertiesMigrationReporterTests {
 	}
 
 	@Test
-	void mapPropertiesDeprecatedWithReplacement() throws IOException {
+	void mapPropertiesDeprecatedWithReplacement() {
 		this.environment.getPropertySources()
 			.addFirst(new MapPropertySource("first",
 					Collections.singletonMap("custom.map-with-replacement.key", "value")));
