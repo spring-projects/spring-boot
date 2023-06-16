@@ -17,11 +17,14 @@
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
 
 import io.opentelemetry.sdk.trace.SpanProcessor;
+
+import org.springframework.util.Assert;
 
 /**
  * A collection of {@link SpanProcessor span processors}.
@@ -29,6 +32,7 @@ import io.opentelemetry.sdk.trace.SpanProcessor;
  * @author Moritz Halbritter
  * @since 3.2.0
  */
+@FunctionalInterface
 public interface SpanProcessors extends Iterable<SpanProcessor> {
 
 	/**
@@ -48,16 +52,6 @@ public interface SpanProcessors extends Iterable<SpanProcessor> {
 	}
 
 	/**
-	 * Constructs a {@link SpanProcessors} instance with the given list of
-	 * {@link SpanProcessor span processors}.
-	 * @param spanProcessors the list of span processors
-	 * @return the constructed {@link SpanProcessors} instance
-	 */
-	static SpanProcessors of(List<SpanProcessor> spanProcessors) {
-		return () -> spanProcessors;
-	}
-
-	/**
 	 * Constructs a {@link SpanProcessors} instance with the given {@link SpanProcessor
 	 * span processors}.
 	 * @param spanProcessors the span processors
@@ -65,6 +59,18 @@ public interface SpanProcessors extends Iterable<SpanProcessor> {
 	 */
 	static SpanProcessors of(SpanProcessor... spanProcessors) {
 		return of(Arrays.asList(spanProcessors));
+	}
+
+	/**
+	 * Constructs a {@link SpanProcessors} instance with the given list of
+	 * {@link SpanProcessor span processors}.
+	 * @param spanProcessors the list of span processors
+	 * @return the constructed {@link SpanProcessors} instance
+	 */
+	static SpanProcessors of(Collection<? extends SpanProcessor> spanProcessors) {
+		Assert.notNull(spanProcessors, "SpanProcessors must not be null");
+		List<SpanProcessor> copy = List.copyOf(spanProcessors);
+		return () -> copy;
 	}
 
 }

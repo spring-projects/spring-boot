@@ -26,8 +26,9 @@ import org.eclipse.jetty.util.thread.ThreadPool;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 
 /**
- * Creates a {@link ThreadPool} for Jetty, applying the
- * {@link ServerProperties.Jetty.Threads} properties.
+ * Creates a {@link ThreadPool} for Jetty, applying
+ * {@link org.springframework.boot.autoconfigure.web.ServerProperties.Jetty.Threads
+ * ServerProperties.Jetty.Threads Jetty thread properties}.
  *
  * @author Moritz Halbritter
  */
@@ -52,9 +53,7 @@ final class JettyThreadPool {
 		if (maxQueueCapacity == 0) {
 			return new SynchronousQueue<>();
 		}
-		else {
-			return new BlockingArrayQueue<>(maxQueueCapacity);
-		}
+		return new BlockingArrayQueue<>(maxQueueCapacity);
 	}
 
 }

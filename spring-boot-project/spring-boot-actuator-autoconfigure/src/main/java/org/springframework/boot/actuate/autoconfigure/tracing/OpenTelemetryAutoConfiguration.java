@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import io.micrometer.tracing.SpanCustomizer;
 import io.micrometer.tracing.exporter.SpanExportingPredicate;
@@ -128,7 +127,7 @@ public class OpenTelemetryAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	SpanProcessors spanProcessors(ObjectProvider<SpanProcessor> spanProcessors) {
-		return SpanProcessors.of(spanProcessors.orderedStream().collect(Collectors.toList()));
+		return SpanProcessors.of(spanProcessors.orderedStream().toList());
 	}
 
 	@Bean
@@ -145,7 +144,7 @@ public class OpenTelemetryAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	SpanExporters spanExporters(ObjectProvider<SpanExporter> spanExporters) {
-		return SpanExporters.of(spanExporters.orderedStream().collect(Collectors.toList()));
+		return SpanExporters.of(spanExporters.orderedStream().toList());
 	}
 
 	@Bean

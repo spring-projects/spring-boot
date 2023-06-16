@@ -17,11 +17,14 @@
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Spliterator;
 
 import io.opentelemetry.sdk.trace.export.SpanExporter;
+
+import org.springframework.util.Assert;
 
 /**
  * A collection of {@link SpanExporter span exporters}.
@@ -29,6 +32,7 @@ import io.opentelemetry.sdk.trace.export.SpanExporter;
  * @author Moritz Halbritter
  * @since 3.2.0
  */
+@FunctionalInterface
 public interface SpanExporters extends Iterable<SpanExporter> {
 
 	/**
@@ -48,16 +52,6 @@ public interface SpanExporters extends Iterable<SpanExporter> {
 	}
 
 	/**
-	 * Constructs a {@link SpanExporters} instance with the given list of
-	 * {@link SpanExporter span exporters}.
-	 * @param spanExporters the list of span exporters
-	 * @return the constructed {@link SpanExporters} instance
-	 */
-	static SpanExporters of(List<SpanExporter> spanExporters) {
-		return () -> spanExporters;
-	}
-
-	/**
 	 * Constructs a {@link SpanExporters} instance with the given {@link SpanExporter span
 	 * exporters}.
 	 * @param spanExporters the span exporters
@@ -65,6 +59,18 @@ public interface SpanExporters extends Iterable<SpanExporter> {
 	 */
 	static SpanExporters of(SpanExporter... spanExporters) {
 		return of(Arrays.asList(spanExporters));
+	}
+
+	/**
+	 * Constructs a {@link SpanExporters} instance with the given list of
+	 * {@link SpanExporter span exporters}.
+	 * @param spanExporters the list of span exporters
+	 * @return the constructed {@link SpanExporters} instance
+	 */
+	static SpanExporters of(Collection<? extends SpanExporter> spanExporters) {
+		Assert.notNull(spanExporters, "SpanExporters must not be null");
+		List<SpanExporter> copy = List.copyOf(spanExporters);
+		return () -> copy;
 	}
 
 }
