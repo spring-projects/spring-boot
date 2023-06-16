@@ -51,14 +51,14 @@ class CompositeTextMapPropagatorTests {
 	@Test
 	void collectsAllFields() {
 		CompositeTextMapPropagator propagator = new CompositeTextMapPropagator(List.of(field("a")), List.of(field("b")),
-				List.of(field("c")));
+				field("c"));
 		assertThat(propagator.fields()).containsExactly("a", "b", "c");
 	}
 
 	@Test
 	void injectAllFields() {
 		CompositeTextMapPropagator propagator = new CompositeTextMapPropagator(List.of(field("a"), field("b")),
-				Collections.emptyList(), Collections.emptyList());
+				Collections.emptyList(), null);
 		TextMapSetter<Object> setter = setter();
 		Object carrier = carrier();
 		propagator.inject(context(), carrier, setter);
@@ -68,9 +68,9 @@ class CompositeTextMapPropagatorTests {
 	}
 
 	@Test
-	void extractMutuallyExclusive() {
+	void extractWithoutBaggagePropagator() {
 		CompositeTextMapPropagator propagator = new CompositeTextMapPropagator(Collections.emptyList(),
-				List.of(field("a"), field("b")), Collections.emptyList());
+				List.of(field("a"), field("b")), null);
 		Context context = context();
 		Map<String, String> carrier = Map.of("a", "a-value", "b", "b-value");
 		context = propagator.extract(context, carrier, new MapTextMapGetter());
@@ -81,9 +81,9 @@ class CompositeTextMapPropagatorTests {
 	}
 
 	@Test
-	void extractAlwaysRunning() {
+	void extractWithBaggagePropagator() {
 		CompositeTextMapPropagator propagator = new CompositeTextMapPropagator(Collections.emptyList(),
-				List.of(field("a"), field("b")), List.of(field("c")));
+				List.of(field("a"), field("b")), field("c"));
 		Context context = context();
 		Map<String, String> carrier = Map.of("a", "a-value", "b", "b-value", "c", "c-value");
 		context = propagator.extract(context, carrier, new MapTextMapGetter());

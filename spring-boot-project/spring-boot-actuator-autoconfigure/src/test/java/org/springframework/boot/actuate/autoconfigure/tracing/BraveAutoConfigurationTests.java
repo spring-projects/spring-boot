@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import brave.Span;
 import brave.SpanCustomizer;
@@ -131,8 +132,8 @@ class BraveAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasBean("propagationFactory");
 			Factory factory = context.getBean(Factory.class);
-			List<Factory> injectors = getInjectors(factory);
-			assertThat(injectors).extracting(Factory::getClass).containsExactly(W3CPropagation.class);
+			Stream<Class<?>> injectors = getInjectors(factory).stream().map(Object::getClass);
+			assertThat(injectors).containsExactly(W3CPropagation.class);
 			assertThat(context).hasSingleBean(BaggagePropagation.FactoryBuilder.class);
 		});
 	}
@@ -165,8 +166,8 @@ class BraveAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false").run((context) -> {
 			assertThat(context).hasBean("propagationFactory");
 			Factory factory = context.getBean(Factory.class);
-			List<Factory> injectors = getInjectors(factory);
-			assertThat(injectors).extracting(Factory::getClass).containsExactly(W3CPropagation.class);
+			Stream<Class<?>> injectors = getInjectors(factory).stream().map(Object::getClass);
+			assertThat(injectors).containsExactly(W3CPropagation.class);
 			assertThat(context).doesNotHaveBean(BaggagePropagation.FactoryBuilder.class);
 		});
 	}
@@ -270,7 +271,7 @@ class BraveAutoConfigurationTests {
 	private List<Factory> getInjectors(Factory factory) {
 		assertThat(factory).as("factory").isNotNull();
 		if (factory instanceof CompositePropagationFactory compositePropagationFactory) {
-			return compositePropagationFactory.getInjectorFactories().stream().toList();
+			return compositePropagationFactory.getInjectors().toList();
 		}
 		Assertions.fail("Expected CompositePropagationFactory, found %s".formatted(factory.getClass()));
 		throw new AssertionError("Unreachable");

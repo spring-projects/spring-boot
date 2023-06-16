@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 import io.micrometer.tracing.SpanCustomizer;
 import io.micrometer.tracing.otel.bridge.OtelCurrentTraceContext;
@@ -174,9 +175,8 @@ class OpenTelemetryAutoConfigurationTests {
 	void shouldSupplyB3PropagationIfPropagationPropertySet() {
 		this.contextRunner.withPropertyValues("management.tracing.propagation.type=B3").run((context) -> {
 			TextMapPropagator propagator = context.getBean(TextMapPropagator.class);
-			List<TextMapPropagator> injectors = getInjectors(propagator);
-			assertThat(injectors).extracting(TextMapPropagator::getClass)
-				.containsExactly(B3Propagator.class, BaggageTextMapPropagator.class);
+			Stream<Class<?>> injectors = getInjectors(propagator).stream().map(Object::getClass);
+			assertThat(injectors).containsExactly(B3Propagator.class, BaggageTextMapPropagator.class);
 		});
 	}
 
@@ -186,8 +186,8 @@ class OpenTelemetryAutoConfigurationTests {
 			.withPropertyValues("management.tracing.propagation.type=B3", "management.tracing.baggage.enabled=false")
 			.run((context) -> {
 				TextMapPropagator propagator = context.getBean(TextMapPropagator.class);
-				List<TextMapPropagator> injectors = getInjectors(propagator);
-				assertThat(injectors).extracting(TextMapPropagator::getClass).containsExactly(B3Propagator.class);
+				Stream<Class<?>> injectors = getInjectors(propagator).stream().map(Object::getClass);
+				assertThat(injectors).containsExactly(B3Propagator.class);
 			});
 	}
 
@@ -208,9 +208,8 @@ class OpenTelemetryAutoConfigurationTests {
 	void shouldSupplyW3CPropagationWithoutBaggageWhenDisabled() {
 		this.contextRunner.withPropertyValues("management.tracing.baggage.enabled=false").run((context) -> {
 			TextMapPropagator propagator = context.getBean(TextMapPropagator.class);
-			List<TextMapPropagator> injectors = getInjectors(propagator);
-			assertThat(injectors).extracting(TextMapPropagator::getClass)
-				.containsExactly(W3CTraceContextPropagator.class);
+			Stream<Class<?>> injectors = getInjectors(propagator).stream().map(Object::getClass);
+			assertThat(injectors).containsExactly(W3CTraceContextPropagator.class);
 		});
 	}
 
