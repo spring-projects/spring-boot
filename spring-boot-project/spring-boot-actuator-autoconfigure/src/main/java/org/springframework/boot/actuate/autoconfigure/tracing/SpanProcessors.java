@@ -35,16 +35,16 @@ public interface SpanProcessors extends Iterable<SpanProcessor> {
 	 * Returns the list of {@link SpanProcessor span processors}.
 	 * @return the list of span processors
 	 */
-	List<SpanProcessor> getList();
+	List<SpanProcessor> list();
 
 	@Override
 	default Iterator<SpanProcessor> iterator() {
-		return getList().iterator();
+		return list().iterator();
 	}
 
 	@Override
 	default Spliterator<SpanProcessor> spliterator() {
-		return getList().spliterator();
+		return list().spliterator();
 	}
 
 	/**

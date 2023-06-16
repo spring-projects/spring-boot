@@ -37,7 +37,7 @@ class SpanProcessorsTests {
 		SpanProcessor spanProcessor2 = mock(SpanProcessor.class);
 		SpanProcessors spanProcessors = SpanProcessors.of(List.of(spanProcessor1, spanProcessor2));
 		assertThat(spanProcessors).containsExactly(spanProcessor1, spanProcessor2);
-		assertThat(spanProcessors.getList()).containsExactly(spanProcessor1, spanProcessor2);
+		assertThat(spanProcessors.list()).containsExactly(spanProcessor1, spanProcessor2);
 	}
 
 	@Test
@@ -46,7 +46,7 @@ class SpanProcessorsTests {
 		SpanProcessor spanProcessor2 = mock(SpanProcessor.class);
 		SpanProcessors spanProcessors = SpanProcessors.of(spanProcessor1, spanProcessor2);
 		assertThat(spanProcessors).containsExactly(spanProcessor1, spanProcessor2);
-		assertThat(spanProcessors.getList()).containsExactly(spanProcessor1, spanProcessor2);
+		assertThat(spanProcessors.list()).containsExactly(spanProcessor1, spanProcessor2);
 	}
 
 }

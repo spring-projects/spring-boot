@@ -135,9 +135,9 @@ public class OpenTelemetryAutoConfiguration {
 	BatchSpanProcessor otelSpanProcessor(SpanExporters spanExporters,
 			ObjectProvider<SpanExportingPredicate> spanExportingPredicates, ObjectProvider<SpanReporter> spanReporters,
 			ObjectProvider<SpanFilter> spanFilters, ObjectProvider<MeterProvider> meterProvider) {
-		BatchSpanProcessorBuilder builder = BatchSpanProcessor.builder(
-				new CompositeSpanExporter(spanExporters.getList(), spanExportingPredicates.orderedStream().toList(),
-						spanReporters.orderedStream().toList(), spanFilters.orderedStream().toList()));
+		BatchSpanProcessorBuilder builder = BatchSpanProcessor
+			.builder(new CompositeSpanExporter(spanExporters.list(), spanExportingPredicates.orderedStream().toList(),
+					spanReporters.orderedStream().toList(), spanFilters.orderedStream().toList()));
 		meterProvider.ifAvailable(builder::setMeterProvider);
 		return builder.build();
 	}

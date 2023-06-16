@@ -37,7 +37,7 @@ class SpanExportersTests {
 		SpanExporter spanExporter2 = mock(SpanExporter.class);
 		SpanExporters spanExporters = SpanExporters.of(List.of(spanExporter1, spanExporter2));
 		assertThat(spanExporters).containsExactly(spanExporter1, spanExporter2);
-		assertThat(spanExporters.getList()).containsExactly(spanExporter1, spanExporter2);
+		assertThat(spanExporters.list()).containsExactly(spanExporter1, spanExporter2);
 	}
 
 	@Test
@@ -46,7 +46,7 @@ class SpanExportersTests {
 		SpanExporter spanExporter2 = mock(SpanExporter.class);
 		SpanExporters spanExporters = SpanExporters.of(spanExporter1, spanExporter2);
 		assertThat(spanExporters).containsExactly(spanExporter1, spanExporter2);
-		assertThat(spanExporters.getList()).containsExactly(spanExporter1, spanExporter2);
+		assertThat(spanExporters.list()).containsExactly(spanExporter1, spanExporter2);
 	}
 
 }

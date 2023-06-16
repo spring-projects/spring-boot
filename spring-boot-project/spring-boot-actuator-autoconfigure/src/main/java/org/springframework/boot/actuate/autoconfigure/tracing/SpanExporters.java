@@ -35,16 +35,16 @@ public interface SpanExporters extends Iterable<SpanExporter> {
 	 * Returns the list of {@link SpanExporter span exporters}.
 	 * @return the list of span exporters
 	 */
-	List<SpanExporter> getList();
+	List<SpanExporter> list();
 
 	@Override
 	default Iterator<SpanExporter> iterator() {
-		return getList().iterator();
+		return list().iterator();
 	}
 
 	@Override
 	default Spliterator<SpanExporter> spliterator() {
-		return getList().spliterator();
+		return list().spliterator();
 	}
 
 	/**
