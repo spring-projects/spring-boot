@@ -17,9 +17,11 @@
 package org.springframework.boot.context.properties.migrator;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -86,14 +88,26 @@ class PropertiesMigrationReporter {
 		if (renamed.isEmpty()) {
 			return null;
 		}
-		String target = "migrate-" + name;
-		Map<String, OriginTrackedValue> content = new LinkedHashMap<>();
-		for (PropertyMigration candidate : renamed) {
-			OriginTrackedValue value = OriginTrackedValue.of(candidate.getProperty().getValue(),
-					candidate.getProperty().getOrigin());
-			content.put(candidate.getNewPropertyName(), value);
+		NameTrackingPropertySource nameTrackingPropertySource = new NameTrackingPropertySource();
+		this.environment.getPropertySources().addFirst(nameTrackingPropertySource);
+		try {
+			String target = "migrate-" + name;
+			Map<String, OriginTrackedValue> content = new LinkedHashMap<>();
+			for (PropertyMigration candidate : renamed) {
+				String newPropertyName = candidate.getNewPropertyName();
+				Object value = candidate.getProperty().getValue();
+				if (nameTrackingPropertySource.isPlaceholderThatAccessesName(value, newPropertyName)) {
+					continue;
+				}
+				OriginTrackedValue originTrackedValue = OriginTrackedValue.of(value,
+						candidate.getProperty().getOrigin());
+				content.put(newPropertyName, originTrackedValue);
+			}
+			return new OriginTrackedMapPropertySource(target, content);
 		}
-		return new OriginTrackedMapPropertySource(target, content);
+		finally {
+			this.environment.getPropertySources().remove(nameTrackingPropertySource.getName());
+		}
 	}
 
 	private boolean isMapType(ConfigurationMetadataProperty property) {
@@ -170,6 +184,35 @@ class PropertiesMigrationReporter {
 			return ((PropertySource<?>) source.getUnderlyingSource()).getName();
 		}
 		return source.getUnderlyingSource().toString();
+	}
+
+	/**
+	 * {@link PropertySource} used to track accessed properties to protect against
+	 * circular references.
+	 */
+	private class NameTrackingPropertySource extends PropertySource<Object> {
+
+		private final Set<String> accessedNames = new HashSet<>();
+
+		NameTrackingPropertySource() {
+			super(NameTrackingPropertySource.class.getName());
+		}
+
+		boolean isPlaceholderThatAccessesName(Object value, String name) {
+			if (value instanceof String) {
+				this.accessedNames.clear();
+				PropertiesMigrationReporter.this.environment.resolvePlaceholders((String) value);
+				return this.accessedNames.contains(name);
+			}
+			return false;
+		}
+
+		@Override
+		public Object getProperty(String name) {
+			this.accessedNames.add(name);
+			return null;
+		}
+
 	}
 
 }
