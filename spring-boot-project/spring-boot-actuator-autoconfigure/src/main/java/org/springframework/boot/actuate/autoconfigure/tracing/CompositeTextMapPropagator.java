@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.tracing;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -32,6 +33,8 @@ import io.opentelemetry.context.propagation.TextMapPropagator;
 import io.opentelemetry.context.propagation.TextMapSetter;
 import io.opentelemetry.extension.trace.propagation.B3Propagator;
 
+import org.springframework.boot.actuate.autoconfigure.tracing.TracingProperties.Propagation.PropagationType;
+
 /**
  * {@link TextMapPropagator} which supports multiple tracing formats. It is able to
  * configure different formats for injecting and for extracting.
@@ -42,9 +45,9 @@ class CompositeTextMapPropagator implements TextMapPropagator {
 
 	private final Collection<TextMapPropagator> injectors;
 
-	private final Collection<TextMapPropagator> mutuallyExclusiveExtractors;
+	private final Collection<TextMapPropagator> extractors;
 
-	private final Collection<TextMapPropagator> alwaysRunningExtractors;
+	private final TextMapPropagator baggagePropagator;
 
 	private final Set<String> fields;
 
@@ -54,19 +57,24 @@ class CompositeTextMapPropagator implements TextMapPropagator {
 	 * @param mutuallyExclusiveExtractors the mutually exclusive extractors. They are
 	 * applied in order, and as soon as an extractor extracts a context, the other
 	 * extractors after it are no longer invoked
-	 * @param alwaysRunningExtractors the always running extractors. They always run in
-	 * order, regardless of the mutually exclusive extractors or whether the extractor
-	 * before it has already extracted a context
+	 * @param baggagePropagator the baggage propagator to use, or {@code null}
 	 */
 	CompositeTextMapPropagator(Collection<TextMapPropagator> injectors,
-			Collection<TextMapPropagator> mutuallyExclusiveExtractors,
-			Collection<TextMapPropagator> alwaysRunningExtractors) {
+			Collection<TextMapPropagator> mutuallyExclusiveExtractors, TextMapPropagator baggagePropagator) {
 		this.injectors = injectors;
-		this.mutuallyExclusiveExtractors = mutuallyExclusiveExtractors;
-		this.alwaysRunningExtractors = alwaysRunningExtractors;
-		this.fields = concat(this.injectors, this.mutuallyExclusiveExtractors, this.alwaysRunningExtractors)
-			.flatMap((entry) -> entry.fields().stream())
-			.collect(Collectors.toSet());
+		this.extractors = mutuallyExclusiveExtractors;
+		this.baggagePropagator = baggagePropagator;
+		Set<String> fields = new LinkedHashSet<>();
+		fields(this.injectors).forEach(fields::add);
+		fields(this.extractors).forEach(fields::add);
+		if (baggagePropagator != null) {
+			fields.addAll(baggagePropagator.fields());
+		}
+		this.fields = Collections.unmodifiableSet(fields);
+	}
+
+	private Stream<String> fields(Collection<TextMapPropagator> propagators) {
+		return propagators.stream().flatMap((propagator) -> propagator.fields().stream());
 	}
 
 	Collection<TextMapPropagator> getInjectors() {
@@ -80,11 +88,8 @@ class CompositeTextMapPropagator implements TextMapPropagator {
 
 	@Override
 	public <C> void inject(Context context, C carrier, TextMapSetter<C> setter) {
-		if (context == null || setter == null) {
-			return;
-		}
-		for (TextMapPropagator injector : this.injectors) {
-			injector.inject(context, carrier, setter);
+		if (context != null && setter != null) {
+			this.injectors.forEach((injector) -> injector.inject(context, carrier, setter));
 		}
 	}
 
@@ -96,99 +101,81 @@ class CompositeTextMapPropagator implements TextMapPropagator {
 		if (getter == null) {
 			return context;
 		}
-		Context currentContext = context;
-		for (TextMapPropagator extractor : this.mutuallyExclusiveExtractors) {
-			Context extractedContext = extractor.extract(currentContext, carrier, getter);
-			if (extractedContext != currentContext) {
-				currentContext = extractedContext;
-				break;
-			}
-		}
-		for (TextMapPropagator extractor : this.alwaysRunningExtractors) {
-			currentContext = extractor.extract(currentContext, carrier, getter);
-		}
-		return currentContext;
-	}
-
-	/**
-	 * Creates a new {@link CompositeTextMapPropagator}, which uses the given
-	 * {@code injectionTypes} for injection and {@code extractionTypes} for extraction.
-	 * @param injectionTypes the propagation types for injection
-	 * @param extractionTypes the propagation types for extraction
-	 * @return the {@link CompositeTextMapPropagator}
-	 */
-	static TextMapPropagator create(Collection<TracingProperties.Propagation.PropagationType> injectionTypes,
-			Collection<TracingProperties.Propagation.PropagationType> extractionTypes) {
-		return create(null, injectionTypes, extractionTypes);
-	}
-
-	/**
-	 * Creates a new {@link CompositeTextMapPropagator}, which uses the given
-	 * {@code injectionTypes} for injection and {@code extractionTypes} for extraction.
-	 * @param baggagePropagator the baggage propagator to use, or {@code null}
-	 * @param injectionTypes the propagation types for injection
-	 * @param extractionTypes the propagation types for extraction
-	 * @return the {@link CompositeTextMapPropagator}
-	 */
-	static CompositeTextMapPropagator create(TextMapPropagator baggagePropagator,
-			Collection<TracingProperties.Propagation.PropagationType> injectionTypes,
-			Collection<TracingProperties.Propagation.PropagationType> extractionTypes) {
-		List<TextMapPropagator> injectors = injectionTypes.stream()
-			.map((injection) -> forType(injection, baggagePropagator != null))
-			.collect(Collectors.toCollection(ArrayList::new));
-		if (baggagePropagator != null) {
-			injectors.add(baggagePropagator);
-		}
-		List<TextMapPropagator> extractors = extractionTypes.stream()
-			.map((extraction) -> forType(extraction, baggagePropagator != null))
-			.toList();
-		return new CompositeTextMapPropagator(injectors, extractors,
-				(baggagePropagator != null) ? List.of(baggagePropagator) : Collections.emptyList());
-	}
-
-	@SafeVarargs
-	private static <T> Stream<T> concat(Collection<T>... collections) {
-		Stream<T> result = Stream.empty();
-		for (Collection<T> collection : collections) {
-			result = Stream.concat(result, collection.stream());
+		Context result = this.extractors.stream()
+			.map((extractor) -> extractor.extract(context, carrier, getter))
+			.filter((extracted) -> extracted != context)
+			.findFirst()
+			.orElse(context);
+		if (this.baggagePropagator != null) {
+			result = this.baggagePropagator.extract(result, carrier, getter);
 		}
 		return result;
 	}
 
 	/**
-	 * Creates a new B3 propagator using a single B3 header.
-	 * @return the B3 propagator
+	 * Creates a new {@link CompositeTextMapPropagator}, which uses the given
+	 * {@code injectionTypes} for injection and {@code extractionTypes} for extraction.
+	 * @param properties the tracing properties
+	 * @param baggagePropagator the baggage propagator to use, or {@code null}
+	 * @return the {@link CompositeTextMapPropagator}
 	 */
-	private static TextMapPropagator b3Single() {
-		return B3Propagator.injectingSingleHeader();
-	}
-
-	/**
-	 * Creates a new B3 propagator using multiple B3 headers.
-	 * @return the B3 propagator
-	 */
-	private static TextMapPropagator b3Multi() {
-		return B3Propagator.injectingMultiHeaders();
-	}
-
-	/**
-	 * Creates a new W3C propagator.
-	 * @param baggage whether baggage propagation should be supported
-	 * @return the W3C propagator
-	 */
-	private static TextMapPropagator w3c(boolean baggage) {
-		if (!baggage) {
-			return W3CTraceContextPropagator.getInstance();
+	static TextMapPropagator create(TracingProperties.Propagation properties, TextMapPropagator baggagePropagator) {
+		TextMapPropagatorMapper mapper = new TextMapPropagatorMapper(baggagePropagator != null);
+		List<TextMapPropagator> injectors = properties.getEffectiveProducedTypes()
+			.stream()
+			.map(mapper::map)
+			.collect(Collectors.toCollection(ArrayList::new));
+		if (baggagePropagator != null) {
+			injectors.add(baggagePropagator);
 		}
-		return TextMapPropagator.composite(W3CTraceContextPropagator.getInstance(), W3CBaggagePropagator.getInstance());
+		List<TextMapPropagator> extractors = properties.getEffectiveProducedTypes().stream().map(mapper::map).toList();
+		return new CompositeTextMapPropagator(injectors, extractors, baggagePropagator);
 	}
 
-	private static TextMapPropagator forType(TracingProperties.Propagation.PropagationType type, boolean baggage) {
-		return switch (type) {
-			case B3 -> b3Single();
-			case B3_MULTI -> b3Multi();
-			case W3C -> w3c(baggage);
-		};
+	/**
+	 * Mapper used to create a {@link TextMapPropagator} from a {@link PropagationType}.
+	 */
+	private static class TextMapPropagatorMapper {
+
+		private final boolean baggage;
+
+		TextMapPropagatorMapper(boolean baggage) {
+			this.baggage = baggage;
+		}
+
+		TextMapPropagator map(PropagationType type) {
+			return switch (type) {
+				case B3 -> b3Single();
+				case B3_MULTI -> b3Multi();
+				case W3C -> w3c();
+			};
+		}
+
+		/**
+		 * Creates a new B3 propagator using a single B3 header.
+		 * @return the B3 propagator
+		 */
+		private TextMapPropagator b3Single() {
+			return B3Propagator.injectingSingleHeader();
+		}
+
+		/**
+		 * Creates a new B3 propagator using multiple B3 headers.
+		 * @return the B3 propagator
+		 */
+		private TextMapPropagator b3Multi() {
+			return B3Propagator.injectingMultiHeaders();
+		}
+
+		/**
+		 * Creates a new W3C propagator.
+		 * @return the W3C propagator
+		 */
+		private TextMapPropagator w3c() {
+			return (!this.baggage) ? W3CTraceContextPropagator.getInstance() : TextMapPropagator
+				.composite(W3CTraceContextPropagator.getInstance(), W3CBaggagePropagator.getInstance());
+		}
+
 	}
 
 }

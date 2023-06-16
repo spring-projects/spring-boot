@@ -392,11 +392,9 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		private boolean isUninitializedKotlinProperty(Exception ex) {
-			if (ex instanceof InvocationTargetException ite) {
-				return "kotlin.UninitializedPropertyAccessException"
-					.equals(ite.getTargetException().getClass().getName());
-			}
-			return false;
+			return (ex instanceof InvocationTargetException invocationTargetException)
+					&& "kotlin.UninitializedPropertyAccessException"
+						.equals(invocationTargetException.getTargetException().getClass().getName());
 		}
 
 		boolean isSettable() {

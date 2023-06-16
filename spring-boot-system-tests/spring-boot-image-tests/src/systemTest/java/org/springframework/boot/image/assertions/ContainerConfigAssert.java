@@ -16,6 +16,7 @@
 
 package org.springframework.boot.image.assertions;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -106,8 +107,14 @@ public class ContainerConfigAssert extends AbstractAssert<ContainerConfigAssert,
 			return this.actual.extractingJsonPathArrayValue("$.processes[?(@.type=='%s')]", type)
 				.singleElement()
 				.extracting("command", "args")
-				.flatMap((list) -> (list != null) ? ((List<?>) list).stream().map(Objects::toString).toList()
-						: Collections.emptyList());
+				.flatMap(this::getArgs);
+		}
+
+		private Collection<String> getArgs(Object obj) {
+			if (obj instanceof List<?> list) {
+				return list.stream().map(Objects::toString).toList();
+			}
+			return Collections.emptyList();
 		}
 
 	}
