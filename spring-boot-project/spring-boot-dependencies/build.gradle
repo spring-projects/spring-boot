@@ -1407,7 +1407,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2023.0.1-SNAPSHOT") {
+	library("Spring Data Bom", "2023.0.1") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"
@@ -1468,7 +1468,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Retry", "2.0.2-SNAPSHOT") {
+	library("Spring Retry", "2.0.2") {
 		group("org.springframework.retry") {
 			modules = [
 				"spring-retry"
