@@ -39,7 +39,6 @@ class ClientHttpRequestFactorySettingsTests {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS;
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
-		assertThat(settings.bufferRequestBody()).isNull();
 		assertThat(settings.sslBundle()).isNull();
 	}
 
@@ -49,7 +48,6 @@ class ClientHttpRequestFactorySettingsTests {
 			.withConnectTimeout(ONE_SECOND);
 		assertThat(settings.connectTimeout()).isEqualTo(ONE_SECOND);
 		assertThat(settings.readTimeout()).isNull();
-		assertThat(settings.bufferRequestBody()).isNull();
 		assertThat(settings.sslBundle()).isNull();
 	}
 
@@ -59,17 +57,6 @@ class ClientHttpRequestFactorySettingsTests {
 			.withReadTimeout(ONE_SECOND);
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isEqualTo(ONE_SECOND);
-		assertThat(settings.bufferRequestBody()).isNull();
-		assertThat(settings.sslBundle()).isNull();
-	}
-
-	@Test
-	void withBufferRequestBodyReturnsInstanceWithUpdatedBufferRequestBody() {
-		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS
-			.withBufferRequestBody(true);
-		assertThat(settings.connectTimeout()).isNull();
-		assertThat(settings.readTimeout()).isNull();
-		assertThat(settings.bufferRequestBody()).isTrue();
 		assertThat(settings.sslBundle()).isNull();
 	}
 
@@ -79,7 +66,6 @@ class ClientHttpRequestFactorySettingsTests {
 		ClientHttpRequestFactorySettings settings = ClientHttpRequestFactorySettings.DEFAULTS.withSslBundle(sslBundle);
 		assertThat(settings.connectTimeout()).isNull();
 		assertThat(settings.readTimeout()).isNull();
-		assertThat(settings.bufferRequestBody()).isNull();
 		assertThat(settings.sslBundle()).isSameAs(sslBundle);
 	}
 

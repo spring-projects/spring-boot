@@ -440,19 +440,18 @@ public class RestTemplateBuilder {
 	}
 
 	/**
-	 * Sets if the underlying {@link ClientHttpRequestFactory} should buffer the
-	 * {@linkplain ClientHttpRequest#getBody() request body} internally.
+	 * Has no effect as support for buffering has been removed in Spring Framework 6.1.
 	 * @param bufferRequestBody value of the bufferRequestBody parameter
 	 * @return a new builder instance.
 	 * @since 2.2.0
+	 * @deprecated since 3.2.0 for removal in 3.4.0 as support for buffering has been
+	 * removed in Spring Framework 6.1
 	 * @see SimpleClientHttpRequestFactory#setBufferRequestBody(boolean)
 	 * @see HttpComponentsClientHttpRequestFactory#setBufferRequestBody(boolean)
 	 */
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	public RestTemplateBuilder setBufferRequestBody(boolean bufferRequestBody) {
-		return new RestTemplateBuilder(this.requestFactorySettings.withBufferRequestBody(bufferRequestBody),
-				this.detectRequestFactory, this.rootUri, this.messageConverters, this.interceptors, this.requestFactory,
-				this.uriTemplateHandler, this.errorHandler, this.basicAuthentication, this.defaultHeaders,
-				this.customizers, this.requestCustomizers);
+		return this;
 	}
 
 	/**

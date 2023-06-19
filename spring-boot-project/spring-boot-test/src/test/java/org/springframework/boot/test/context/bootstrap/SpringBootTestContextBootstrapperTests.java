@@ -110,7 +110,7 @@ class SpringBootTestContextBootstrapperTests {
 	}
 
 	private MergedContextConfiguration getMergedContextConfiguration(TestContext context) {
-		return (MergedContextConfiguration) ReflectionTestUtils.getField(context, "mergedContextConfiguration");
+		return (MergedContextConfiguration) ReflectionTestUtils.getField(context, "mergedConfig");
 	}
 
 	@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)

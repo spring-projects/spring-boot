@@ -151,7 +151,6 @@ public final class ClientHttpRequestFactories {
 					settings.sslBundle());
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
-			map.from(settings::bufferRequestBody).to(requestFactory::setBufferRequestBody);
 			return requestFactory;
 		}
 
@@ -187,8 +186,6 @@ public final class ClientHttpRequestFactories {
 	static class OkHttp {
 
 		static OkHttp3ClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
-			Assert.state(settings.bufferRequestBody() == null,
-					() -> "OkHttp3ClientHttpRequestFactory does not support request body buffering");
 			OkHttp3ClientHttpRequestFactory requestFactory = createRequestFactory(settings.sslBundle());
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
@@ -227,7 +224,6 @@ public final class ClientHttpRequestFactories {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
 			map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
-			map.from(settings::bufferRequestBody).to(requestFactory::setBufferRequestBody);
 			return requestFactory;
 		}
 
@@ -274,8 +270,6 @@ public final class ClientHttpRequestFactories {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(settings::connectTimeout).to((connectTimeout) -> setConnectTimeout(unwrapped, connectTimeout));
 			map.from(settings::readTimeout).to((readTimeout) -> setReadTimeout(unwrapped, readTimeout));
-			map.from(settings::bufferRequestBody)
-				.to((bufferRequestBody) -> setBufferRequestBody(unwrapped, bufferRequestBody));
 		}
 
 		private static ClientHttpRequestFactory unwrapRequestFactoryIfNecessary(
@@ -303,11 +297,6 @@ public final class ClientHttpRequestFactories {
 			Method method = findMethod(factory, "setReadTimeout", int.class);
 			int timeout = Math.toIntExact(readTimeout.toMillis());
 			invoke(factory, method, timeout);
-		}
-
-		private static void setBufferRequestBody(ClientHttpRequestFactory factory, boolean bufferRequestBody) {
-			Method method = findMethod(factory, "setBufferRequestBody", boolean.class);
-			invoke(factory, method, bufferRequestBody);
 		}
 
 		private static Method findMethod(ClientHttpRequestFactory requestFactory, String methodName,

@@ -1021,9 +1021,6 @@ public class TestRestTemplate {
 			if (settings.connectTimeout() != null) {
 				setConnectTimeout((int) settings.connectTimeout().toMillis());
 			}
-			if (settings.bufferRequestBody() != null) {
-				setBufferRequestBody(settings.bufferRequestBody());
-			}
 		}
 
 		private HttpClient createHttpClient(Duration readTimeout, boolean ssl) {

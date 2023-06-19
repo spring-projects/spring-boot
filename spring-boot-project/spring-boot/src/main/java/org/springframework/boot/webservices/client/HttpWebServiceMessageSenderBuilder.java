@@ -113,7 +113,7 @@ public class HttpWebServiceMessageSenderBuilder {
 
 	private ClientHttpRequestFactory getRequestFactory() {
 		ClientHttpRequestFactorySettings settings = new ClientHttpRequestFactorySettings(this.connectTimeout,
-				this.readTimeout, null, this.sslBundle);
+				this.readTimeout, this.sslBundle);
 		return (this.requestFactory != null) ? this.requestFactory.apply(settings)
 				: ClientHttpRequestFactories.get(settings);
 	}

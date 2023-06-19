@@ -69,7 +69,6 @@ class ClientHttpRequestFactoriesRuntimeHints implements RuntimeHintsRegistrar {
 			Class<? extends ClientHttpRequestFactory> requestFactoryType) {
 		registerMethod(hints, requestFactoryType, "setConnectTimeout", int.class);
 		registerMethod(hints, requestFactoryType, "setReadTimeout", int.class);
-		registerMethod(hints, requestFactoryType, "setBufferRequestBody", boolean.class);
 	}
 
 	private void registerMethod(ReflectionHints hints, Class<? extends ClientHttpRequestFactory> requestFactoryType,

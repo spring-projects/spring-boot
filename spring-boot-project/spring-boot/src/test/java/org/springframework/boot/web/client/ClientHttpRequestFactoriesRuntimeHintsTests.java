@@ -59,12 +59,6 @@ class ClientHttpRequestFactoriesRuntimeHintsTests {
 		assertThat(reflection
 			.onMethod(method(HttpComponentsClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
 			.accepts(hints);
-		assertThat(
-				reflection.onMethod(method(HttpComponentsClientHttpRequestFactory.class, "setReadTimeout", int.class)))
-			.accepts(hints);
-		assertThat(reflection
-			.onMethod(method(HttpComponentsClientHttpRequestFactory.class, "setBufferRequestBody", boolean.class)))
-			.accepts(hints);
 	}
 
 	@Test
@@ -87,9 +81,6 @@ class ClientHttpRequestFactoriesRuntimeHintsTests {
 		assertThat(reflection.onMethod(method(SimpleClientHttpRequestFactory.class, "setConnectTimeout", int.class)))
 			.accepts(hints);
 		assertThat(reflection.onMethod(method(SimpleClientHttpRequestFactory.class, "setReadTimeout", int.class)))
-			.accepts(hints);
-		assertThat(reflection
-			.onMethod(method(SimpleClientHttpRequestFactory.class, "setBufferRequestBody", boolean.class)))
 			.accepts(hints);
 	}
 

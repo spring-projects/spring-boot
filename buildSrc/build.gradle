@@ -14,14 +14,9 @@ new File(new File("$projectDir").parentFile, "gradle.properties").withInputStrea
 	def properties = new Properties()
 	properties.load(it)
 	ext.set("kotlinVersion", properties["kotlinVersion"])
-	ext.set("springFrameworkVersion", properties["springFrameworkVersion"])
-	if (properties["springFrameworkVersion"].contains("-")) {
-		repositories {
-			maven { url "https://repo.spring.io/milestone" }
-			maven { url "https://repo.spring.io/snapshot" }
-		}
-	}
 }
+
+ext.set("springFrameworkVersion", "6.0.10")
 
 sourceCompatibility = 17
 targetCompatibility = 17

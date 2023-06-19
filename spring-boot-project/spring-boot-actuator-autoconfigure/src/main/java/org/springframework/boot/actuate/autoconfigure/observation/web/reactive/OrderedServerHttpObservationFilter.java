@@ -28,6 +28,7 @@ import org.springframework.web.filter.reactive.ServerHttpObservationFilter;
  *
  * @author Moritz Halbritter
  */
+@SuppressWarnings({ "deprecation", "removal" })
 class OrderedServerHttpObservationFilter extends ServerHttpObservationFilter implements OrderedWebFilter {
 
 	private final int order;
