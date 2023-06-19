@@ -50,7 +50,7 @@ bom {
 			]
 		}
 	}
-	library("Angus Mail", "1.1.0") {
+	library("Angus Mail", "2.0.2") {
 		group("org.eclipse.angus") {
 			modules = [
 				"angus-core",
