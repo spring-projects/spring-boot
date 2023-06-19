@@ -28,7 +28,6 @@ import brave.propagation.Propagation;
 import brave.propagation.Propagation.Factory;
 import brave.propagation.TraceContext;
 import brave.propagation.TraceContextOrSamplingFlags;
-import graphql.com.google.common.collect.Streams;
 import io.micrometer.tracing.BaggageManager;
 import io.micrometer.tracing.brave.bridge.W3CPropagation;
 
@@ -79,7 +78,7 @@ class CompositePropagationFactory extends Propagation.Factory {
 
 	@Override
 	public TraceContext decorate(TraceContext context) {
-		return Streams.concat(this.injectors.stream(), this.extractors.stream())
+		return Stream.concat(this.injectors.stream(), this.extractors.stream())
 			.map((factory) -> factory.decorate(context))
 			.filter((decorated) -> decorated != context)
 			.findFirst()
