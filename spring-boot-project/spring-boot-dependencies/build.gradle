@@ -116,7 +116,7 @@ bom {
 			]
 		}
 	}
-	library("Build Helper Maven Plugin", "3.3.0") {
+	library("Build Helper Maven Plugin", "3.4.0") {
 		group("org.codehaus.mojo") {
 			plugins = [
 				"build-helper-maven-plugin"
