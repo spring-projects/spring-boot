@@ -701,15 +701,13 @@ class FlywayAutoConfigurationTests {
 	void sqlServerKerberosLoginFileIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.sql-server-kerberos-login-file=/tmp/config")
-			.run((context) -> {
-				assertThat(context.getBean(Flyway.class)
-					.getConfiguration()
-					.getPluginRegister()
-					.getPlugin(SQLServerConfigurationExtension.class)
-					.getKerberos()
-					.getLogin()
-					.getFile()).isEqualTo("/tmp/config");
-			});
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(SQLServerConfigurationExtension.class)
+				.getKerberos()
+				.getLogin()
+				.getFile()).isEqualTo("/tmp/config"));
 	}
 
 	@Test
