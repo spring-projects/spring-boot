@@ -41,19 +41,32 @@ class SpringBootBanner implements Banner {
 
 	@Override
 	public void printBanner(Environment environment, Class<?> sourceClass, PrintStream printStream) {
+		printStream.println(createBanner());
+		printStream.println(createVersionInfo());
+	}
+
+	private String createBanner() {
+		StringBuilder banner = new StringBuilder();
 		for (String line : BANNER) {
-			printStream.println(line);
+			banner.append(line).append(System.lineSeparator());
 		}
+		return banner.toString();
+	}
+
+	private String createVersionInfo() {
 		String version = SpringBootVersion.getVersion();
 		version = (version != null) ? " (v" + version + ")" : "";
+		StringBuilder padding = createPaddingForVersionInfo(version);
+		return AnsiOutput.toString(AnsiColor.GREEN, SPRING_BOOT, AnsiColor.DEFAULT, padding.toString(),
+				AnsiStyle.FAINT, version);
+	}
+
+	private StringBuilder createPaddingForVersionInfo(String version) {
 		StringBuilder padding = new StringBuilder();
 		while (padding.length() < STRAP_LINE_SIZE - (version.length() + SPRING_BOOT.length())) {
 			padding.append(" ");
 		}
-
-		printStream.println(AnsiOutput.toString(AnsiColor.GREEN, SPRING_BOOT, AnsiColor.DEFAULT, padding.toString(),
-				AnsiStyle.FAINT, version));
-		printStream.println();
+		return padding;
 	}
 
 }
