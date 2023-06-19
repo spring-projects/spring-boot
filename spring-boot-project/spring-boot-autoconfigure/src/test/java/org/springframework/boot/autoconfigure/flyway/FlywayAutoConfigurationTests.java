@@ -33,6 +33,7 @@ import org.flywaydb.core.api.callback.Context;
 import org.flywaydb.core.api.callback.Event;
 import org.flywaydb.core.api.migration.JavaMigration;
 import org.flywaydb.core.internal.license.FlywayTeamsUpgradeRequiredException;
+import org.flywaydb.database.sqlserver.SQLServerConfigurationExtension;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
@@ -700,7 +701,15 @@ class FlywayAutoConfigurationTests {
 	void sqlServerKerberosLoginFileIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.sql-server-kerberos-login-file=/tmp/config")
-			.run(validateFlywayTeamsPropertyOnly("sqlserver.kerberos.login.file"));
+			.run((context) -> {
+				assertThat(context.getBean(Flyway.class)
+					.getConfiguration()
+					.getPluginRegister()
+					.getPlugin(SQLServerConfigurationExtension.class)
+					.getKerberos()
+					.getLogin()
+					.getFile()).isEqualTo("/tmp/config");
+			});
 	}
 
 	@Test

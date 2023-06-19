@@ -288,7 +288,7 @@ public class FlywayAutoConfiguration {
 			SQLServerConfigurationExtension sqlServerConfigurationExtension = configuration.getPluginRegister()
 				.getPlugin(SQLServerConfigurationExtension.class);
 			Assert.state(sqlServerConfigurationExtension != null, "Flyway SQL Server extension missing");
-			sqlServerConfigurationExtension.setKerberosLoginFile(sqlServerKerberosLoginFile);
+			sqlServerConfigurationExtension.getKerberos().getLogin().setFile(sqlServerKerberosLoginFile);
 		}
 
 		private void configureCallbacks(FluentConfiguration configuration, List<Callback> callbacks) {
