@@ -944,7 +944,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Shade Plugin", "3.4.1") {
+	library("Maven Shade Plugin", "3.5.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-shade-plugin"
