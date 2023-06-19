@@ -17,6 +17,17 @@ configurations {
 	remoteSpringApplicationExample
 	springApplicationExample
 	testSlices
+	asciidoctorExtensions {
+		resolutionStrategy {
+			eachDependency { dependency ->
+				// Downgrade SnakeYAML as Asciidoctor fails due to an incompatibility
+				// in the Pysch gem
+				if (dependency.requested.group.equals("org.yaml")) {
+					dependency.useVersion("1.33")
+				}
+			}
+		}
+	}
 }
 
 jar {

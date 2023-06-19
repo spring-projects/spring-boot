@@ -23,7 +23,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.yaml.snakeyaml.constructor.ConstructorException;
+import org.yaml.snakeyaml.composer.ComposerException;
 
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.boot.origin.TextResourceOrigin;
@@ -134,7 +134,7 @@ class OriginTrackedYamlLoaderTests {
 		String yaml = "value: !!java.net.URL [!!java.lang.String [!!java.lang.StringBuilder [\"http://localhost:9000/\"]]]";
 		Resource resource = new ByteArrayResource(yaml.getBytes(StandardCharsets.UTF_8));
 		this.loader = new OriginTrackedYamlLoader(resource);
-		assertThatExceptionOfType(ConstructorException.class).isThrownBy(this.loader::load);
+		assertThatExceptionOfType(ComposerException.class).isThrownBy(this.loader::load);
 	}
 
 	@Test
