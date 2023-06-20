@@ -444,7 +444,7 @@ bom {
 			]
 		}
 	}
-	library("HttpCore5", "5.2.1") {
+	library("HttpCore5", "5.2.2") {
 		group("org.apache.httpcomponents.core5") {
 			modules = [
 				"httpcore5",
@@ -1051,7 +1051,7 @@ bom {
 			]
 		}
 	}
-	library("Netty", "4.1.93.Final") {
+	library("Netty", "4.1.94.Final") {
 		group("io.netty") {
 			imports = [
 				"netty-bom"
@@ -1396,7 +1396,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Authorization Server", "1.1.1-SNAPSHOT") {
+	library("Spring Authorization Server", "1.1.1") {
 		group("org.springframework.security") {
 			modules = [
 					"spring-security-oauth2-authorization-server"
@@ -1424,7 +1424,7 @@ bom {
 			]
 		}
 	}
-	library("Spring GraphQL", "1.2.1-SNAPSHOT") {
+	library("Spring GraphQL", "1.2.1") {
 		group("org.springframework.graphql") {
 			modules = [
 					"spring-graphql",
@@ -1446,7 +1446,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Kafka", "3.0.7") {
+	library("Spring Kafka", "3.0.8") {
 		group("org.springframework.kafka") {
 			modules = [
 				"spring-kafka",
@@ -1478,14 +1478,14 @@ bom {
 			]
 		}
 	}
-	library("Spring Security", "6.1.1-SNAPSHOT") {
+	library("Spring Security", "6.1.1") {
 		group("org.springframework.security") {
 			imports = [
 				"spring-security-bom"
 			]
 		}
 	}
-	library("Spring Session", "3.1.1-SNAPSHOT") {
+	library("Spring Session", "3.1.1") {
 		prohibit {
 			startsWith(["Apple-", "Bean-", "Corn-", "Dragonfruit-"])
 			because "Spring Session switched to numeric version numbers"
