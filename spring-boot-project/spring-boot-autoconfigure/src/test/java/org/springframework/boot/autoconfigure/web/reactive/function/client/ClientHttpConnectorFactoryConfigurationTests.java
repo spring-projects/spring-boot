@@ -38,6 +38,8 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ClientHttpConnectorFactoryConfiguration}.
@@ -86,13 +88,14 @@ class ClientHttpConnectorFactoryConfigurationTests {
 	void shouldApplyHttpClientMapper() {
 		JksSslStoreDetails storeDetails = JksSslStoreDetails.forLocation("classpath:test.jks");
 		JksSslStoreBundle stores = new JksSslStoreBundle(storeDetails, storeDetails);
-		SslBundle sslBundle = SslBundle.of(stores, SslBundleKey.of("password"));
+		SslBundle sslBundle = spy(SslBundle.of(stores, SslBundleKey.of("password")));
 		new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ClientHttpConnectorFactoryConfiguration.ReactorNetty.class))
 			.withUserConfiguration(CustomHttpClientMapper.class)
 			.run((context) -> {
 				context.getBean(ReactorClientHttpConnectorFactory.class).createClientHttpConnector(sslBundle);
 				assertThat(CustomHttpClientMapper.called).isTrue();
+				verify(sslBundle).getManagers();
 			});
 	}
 
