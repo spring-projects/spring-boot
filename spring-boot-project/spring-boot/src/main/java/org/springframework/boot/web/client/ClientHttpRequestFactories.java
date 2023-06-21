@@ -241,6 +241,7 @@ public final class ClientHttpRequestFactories {
 
 			@Override
 			protected void prepareConnection(HttpURLConnection connection, String httpMethod) throws IOException {
+				super.prepareConnection(connection, httpMethod);
 				if (this.sslBundle != null && connection instanceof HttpsURLConnection secureConnection) {
 					SSLSocketFactory socketFactory = this.sslBundle.createSslContext().getSocketFactory();
 					secureConnection.setSSLSocketFactory(socketFactory);
