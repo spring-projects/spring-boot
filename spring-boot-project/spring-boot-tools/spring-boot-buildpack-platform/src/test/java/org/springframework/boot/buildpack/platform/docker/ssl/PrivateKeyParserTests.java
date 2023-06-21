@@ -19,7 +19,6 @@ package org.springframework.boot.buildpack.platform.docker.ssl;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.PrivateKey;
@@ -63,7 +62,6 @@ class PrivateKeyParserTests {
 		PrivateKey privateKey = PrivateKeyParser.parse(path);
 		assertThat(privateKey).isNotNull();
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
-		Files.delete(path);
 	}
 
 	@ParameterizedTest
@@ -93,7 +91,6 @@ class PrivateKeyParserTests {
 		assertThat(privateKey).isNotNull();
 		// keys in PKCS#1 format are converted to PKCS#8 for parsing
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
-		Files.delete(path);
 	}
 
 	@Test
@@ -103,7 +100,6 @@ class PrivateKeyParserTests {
 		assertThat(privateKey).isNotNull();
 		// keys in PKCS#1 format are converted to PKCS#8 for parsing
 		assertThat(privateKey.getFormat()).isEqualTo("PKCS#8");
-		Files.delete(path);
 	}
 
 	@Test
@@ -111,7 +107,6 @@ class PrivateKeyParserTests {
 		Path path = this.fileWriter.writeFile("text.pem", "plain text");
 		assertThatIllegalStateException().isThrownBy(() -> PrivateKeyParser.parse(path))
 			.withMessageContaining(path.toString());
-		Files.delete(path);
 	}
 
 	@Test
