@@ -1501,6 +1501,10 @@ bom {
 		}
 	}
 	library("RSocket", "1.1.3") {
+		prohibit {
+			versionRange "1.1.4"
+			because "it contains a regression (https://github.com/rsocket/rsocket-java/issues/1092)"
+		}
 		group("io.rsocket") {
 			imports = [
 				"rsocket-bom"
