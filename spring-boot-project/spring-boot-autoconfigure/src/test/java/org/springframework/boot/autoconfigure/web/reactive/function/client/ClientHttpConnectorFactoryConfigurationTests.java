@@ -37,9 +37,9 @@ import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 /**
  * Tests for {@link ClientHttpConnectorFactoryConfiguration}.
@@ -95,7 +95,7 @@ class ClientHttpConnectorFactoryConfigurationTests {
 			.run((context) -> {
 				context.getBean(ReactorClientHttpConnectorFactory.class).createClientHttpConnector(sslBundle);
 				assertThat(CustomHttpClientMapper.called).isTrue();
-				verify(sslBundle).getManagers();
+				then(sslBundle).should().getManagers();
 			});
 	}
 
