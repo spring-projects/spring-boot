@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,19 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
+import java.util.Collection;
+
 import reactor.netty.http.client.HttpClient;
 
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.util.Assert;
 
 /**
  * Mapper that allows for custom modification of a {@link HttpClient} before it is used as
  * the basis for a {@link ReactorClientHttpConnector}.
  *
  * @author Brian Clozel
+ * @author Phillip Webb
  * @since 2.3.0
  */
 @FunctionalInterface
@@ -36,5 +40,32 @@ public interface ReactorNettyHttpClientMapper {
 	 * @return the new client instance
 	 */
 	HttpClient configure(HttpClient httpClient);
+
+	/**
+	 * Return a new {@link ReactorNettyHttpClientMapper} composed of the given mappers.
+	 * @param mappers the mappers to compose
+	 * @return a composed {@link ReactorNettyHttpClientMapper} instance
+	 * @since 3.1.1
+	 */
+	static ReactorNettyHttpClientMapper of(Collection<ReactorNettyHttpClientMapper> mappers) {
+		Assert.notNull(mappers, "Mappers must not be null");
+		return of(mappers.toArray(ReactorNettyHttpClientMapper[]::new));
+	}
+
+	/**
+	 * Return a new {@link ReactorNettyHttpClientMapper} composed of the given mappers.
+	 * @param mappers the mappers to compose
+	 * @return a composed {@link ReactorNettyHttpClientMapper} instance
+	 * @since 3.1.1
+	 */
+	static ReactorNettyHttpClientMapper of(ReactorNettyHttpClientMapper... mappers) {
+		Assert.notNull(mappers, "Mappers must not be null");
+		return (httpClient) -> {
+			for (ReactorNettyHttpClientMapper mapper : mappers) {
+				httpClient = mapper.configure(httpClient);
+			}
+			return httpClient;
+		};
+	}
 
 }
