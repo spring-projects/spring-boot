@@ -111,8 +111,7 @@ public class ProcessAotMojo extends AbstractAotMojo {
 
 	private URL[] getClassPath() throws Exception {
 		File[] directories = new File[] { this.classesDirectory, this.generatedClasses };
-		return getClassPath(directories, new ExcludeTestScopeArtifactFilter(), DEVTOOLS_EXCLUDE_FILTER,
-				DOCKER_COMPOSE_EXCLUDE_FILTER);
+		return getClassPath(directories, new ExcludeTestScopeArtifactFilter(), DOCKER_COMPOSE_EXCLUDE_FILTER);
 	}
 
 	private RunArguments resolveArguments() {
