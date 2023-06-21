@@ -16,7 +16,10 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.net.ssl.SSLException;
@@ -36,6 +39,7 @@ import org.springframework.util.function.ThrowingConsumer;
  * {@link ClientHttpConnectorFactory} for {@link ReactorClientHttpConnector}.
  *
  * @author Phillip Webb
+ * @author Fernando Cappi
  */
 class ReactorClientHttpConnectorFactory implements ClientHttpConnectorFactory<ReactorClientHttpConnector> {
 
@@ -55,20 +59,19 @@ class ReactorClientHttpConnectorFactory implements ClientHttpConnectorFactory<Re
 
 	@Override
 	public ReactorClientHttpConnector createClientHttpConnector(SslBundle sslBundle) {
-		ReactorNettyHttpClientMapper mapper = this.mappers.get()
-			.reduce((before, after) -> (client) -> after.configure(before.configure(client)))
-			.orElse((client) -> client);
+		List<ReactorNettyHttpClientMapper> mappers = this.mappers.get()
+			.collect(Collectors.toCollection(ArrayList::new));
 		if (sslBundle != null) {
-			mapper = new SslConfigurer(sslBundle)::configure;
+			mappers.add(new SslConfigurer(sslBundle));
 		}
-		return new ReactorClientHttpConnector(this.reactorResourceFactory, mapper::configure);
-
+		return new ReactorClientHttpConnector(this.reactorResourceFactory,
+				ReactorNettyHttpClientMapper.of(mappers)::configure);
 	}
 
 	/**
 	 * Configures the Netty {@link HttpClient} with SSL.
 	 */
-	private static class SslConfigurer {
+	private static class SslConfigurer implements ReactorNettyHttpClientMapper {
 
 		private final SslBundle sslBundle;
 
@@ -76,7 +79,8 @@ class ReactorClientHttpConnectorFactory implements ClientHttpConnectorFactory<Re
 			this.sslBundle = sslBundle;
 		}
 
-		HttpClient configure(HttpClient httpClient) {
+		@Override
+		public HttpClient configure(HttpClient httpClient) {
 			return httpClient.secure(ThrowingConsumer.of(this::customizeSsl).throwing(IllegalStateException::new));
 		}
 
