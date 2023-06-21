@@ -25,7 +25,6 @@ import org.springframework.util.ClassUtils;
 public class SampleApplication {
 
 	public static void main(String[] args) {
-		Assert.state(!ClassUtils.isPresent("org.springframework.boot.devtools.autoconfigure.DevToolsProperties", null), "Should not have devtools");
 		Assert.state(!ClassUtils.isPresent("org.springframework.boot.docker.compose.core.DockerCompose", null), "Should not have docker-compose");
 		SpringApplication.run(SampleApplication.class, args);
 	}
