@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ class TestLog4J2LoggingSystem extends Log4J2LoggingSystem {
 
 	private final List<String> availableClasses = new ArrayList<>();
 
+	private String[] standardConfigLocations;
+
 	TestLog4J2LoggingSystem() {
 		super(TestLog4J2LoggingSystem.class.getClassLoader());
 	}
@@ -42,6 +44,20 @@ class TestLog4J2LoggingSystem extends Log4J2LoggingSystem {
 
 	void availableClasses(String... classNames) {
 		Collections.addAll(this.availableClasses, classNames);
+	}
+
+	@Override
+	protected String[] getStandardConfigLocations() {
+		return (this.standardConfigLocations != null) ? this.standardConfigLocations
+				: super.getStandardConfigLocations();
+	}
+
+	void setStandardConfigLocations(boolean standardConfigLocations) {
+		this.standardConfigLocations = (!standardConfigLocations) ? new String[0] : null;
+	}
+
+	void setStandardConfigLocations(String[] standardConfigLocations) {
+		this.standardConfigLocations = standardConfigLocations;
 	}
 
 }

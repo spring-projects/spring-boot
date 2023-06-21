@@ -18,6 +18,7 @@ package org.springframework.boot.logging.logback;
 
 import java.nio.charset.Charset;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import ch.qos.logback.core.util.FileSize;
 
@@ -105,6 +106,19 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 	 */
 	public LogbackLoggingSystemProperties(Environment environment, BiConsumer<String, String> setter) {
 		super(environment, setter);
+	}
+
+	/**
+	 * Create a new {@link LoggingSystemProperties} instance.
+	 * @param environment the source environment
+	 * @param defaultValueResolver function used to resolve default values or {@code null}
+	 * @param setter setter used to apply the property or {@code null} for system
+	 * properties
+	 * @since 3.2.0
+	 */
+	public LogbackLoggingSystemProperties(Environment environment, Function<String, String> defaultValueResolver,
+			BiConsumer<String, String> setter) {
+		super(environment, defaultValueResolver, setter);
 	}
 
 	@Override

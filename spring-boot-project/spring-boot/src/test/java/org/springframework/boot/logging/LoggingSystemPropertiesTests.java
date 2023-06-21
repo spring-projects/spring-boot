@@ -18,6 +18,7 @@ package org.springframework.boot.logging;
 
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.AfterEach;
@@ -36,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Eddú Meléndez
+ * @author Jonatan Ivanov
  */
 class LoggingSystemPropertiesTests {
 
@@ -113,6 +115,25 @@ class LoggingSystemPropertiesTests {
 
 	private String getSystemProperty(LoggingSystemProperty property) {
 		return System.getProperty(property.getEnvironmentVariableName());
+	}
+
+	@Test
+	void correlationPatternIsSet() {
+		new LoggingSystemProperties(
+				new MockEnvironment().withProperty("logging.pattern.correlation", "correlation pattern"))
+			.apply(null);
+		assertThat(System.getProperty(LoggingSystemProperty.CORRELATION_PATTERN.getEnvironmentVariableName()))
+			.isEqualTo("correlation pattern");
+	}
+
+	@Test
+	void defaultValueResolverIsUsed() {
+		MockEnvironment environment = new MockEnvironment();
+		Map<String, String> defaultValues = Map
+			.of(LoggingSystemProperty.CORRELATION_PATTERN.getApplicationPropertyName(), "default correlation pattern");
+		new LoggingSystemProperties(environment, defaultValues::get, null).apply(null);
+		assertThat(System.getProperty(LoggingSystemProperty.CORRELATION_PATTERN.getEnvironmentVariableName()))
+			.isEqualTo("default correlation pattern");
 	}
 
 	private Environment environment(String key, Object value) {

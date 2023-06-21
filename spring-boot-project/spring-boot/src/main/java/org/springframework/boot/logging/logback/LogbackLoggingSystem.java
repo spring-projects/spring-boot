@@ -109,7 +109,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	@Override
 	public LoggingSystemProperties getSystemProperties(ConfigurableEnvironment environment) {
-		return new LogbackLoggingSystemProperties(environment);
+		return new LogbackLoggingSystemProperties(environment, getDefaultValueResolver(environment), null);
 	}
 
 	@Override
@@ -186,6 +186,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		if (!initializeFromAotGeneratedArtifactsIfPossible(initializationContext, logFile)) {
 			super.initialize(initializationContext, configLocation, logFile);
 		}
+		loggerContext.putObject(Environment.class.getName(), initializationContext.getEnvironment());
 		loggerContext.getTurboFilterList().remove(FILTER);
 		markAsInitialized(loggerContext);
 		if (StringUtils.hasText(System.getProperty(CONFIGURATION_FILE_PROPERTY))) {
@@ -223,7 +224,8 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 		}
 		Environment environment = initializationContext.getEnvironment();
 		// Apply system properties directly in case the same JVM runs multiple apps
-		new LogbackLoggingSystemProperties(environment, context::putProperty).apply(logFile);
+		new LogbackLoggingSystemProperties(environment, getDefaultValueResolver(environment), context::putProperty)
+			.apply(logFile);
 		LogbackConfigurator configurator = debug ? new DebugLogbackConfigurator(context)
 				: new LogbackConfigurator(context);
 		new DefaultLogbackConfiguration(logFile).apply(configurator);
@@ -413,6 +415,11 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 
 	private void markAsUninitialized(LoggerContext loggerContext) {
 		loggerContext.removeObject(LoggingSystem.class.getName());
+	}
+
+	@Override
+	protected String getDefaultLogCorrelationPattern() {
+		return "%correlationId";
 	}
 
 	@Override

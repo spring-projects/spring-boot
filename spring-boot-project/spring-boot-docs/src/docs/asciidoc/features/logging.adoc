@@ -32,6 +32,7 @@ The following items are output:
 * Process ID.
 * A `---` separator to distinguish the start of actual log messages.
 * Thread name: Enclosed in square brackets (may be truncated for console output).
+* Correlation ID: If tracing is enabled (not shown in the sample above)
 * Logger name: This is usually the source class name (often abbreviated).
 * The log message.
 

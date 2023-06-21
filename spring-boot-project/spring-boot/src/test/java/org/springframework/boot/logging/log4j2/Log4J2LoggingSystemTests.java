@@ -39,6 +39,7 @@ import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.LoggerConfig;
 import org.apache.logging.log4j.core.config.Reconfigurable;
 import org.apache.logging.log4j.core.config.composite.CompositeConfiguration;
+import org.apache.logging.log4j.core.config.plugins.util.PluginRegistry;
 import org.apache.logging.log4j.core.util.ShutdownCallbackRegistry;
 import org.apache.logging.log4j.jul.Log4jBridgeHandler;
 import org.apache.logging.log4j.util.PropertiesUtil;
@@ -47,12 +48,15 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.slf4j.MDC;
 
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
+import org.springframework.boot.logging.LogFile;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
+import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.boot.logging.LoggingSystemProperty;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.logging.ConfigureClasspathToPreferLog4j2;
@@ -86,12 +90,11 @@ import static org.mockito.Mockito.times;
 @ConfigureClasspathToPreferLog4j2
 class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
-	private final TestLog4J2LoggingSystem loggingSystem = new TestLog4J2LoggingSystem();
+	private TestLog4J2LoggingSystem loggingSystem;
 
-	private final MockEnvironment environment = new MockEnvironment();
+	private MockEnvironment environment;
 
-	private final LoggingInitializationContext initializationContext = new LoggingInitializationContext(
-			this.environment);
+	private LoggingInitializationContext initializationContext;
 
 	private Logger logger;
 
@@ -99,6 +102,10 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@BeforeEach
 	void setup() {
+		PluginRegistry.getInstance().clear();
+		this.loggingSystem = new TestLog4J2LoggingSystem();
+		this.environment = new MockEnvironment();
+		this.initializationContext = new LoggingInitializationContext(this.environment);
 		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
 		this.configuration = loggerContext.getConfiguration();
 		this.loggingSystem.cleanUp();
@@ -113,6 +120,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		loggerContext.stop();
 		loggerContext.start(((Reconfigurable) this.configuration).reconfigure());
 		cleanUpPropertySources();
+		PluginRegistry.getInstance().clear();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -493,6 +501,67 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 			.havingCause()
 			.isInstanceOf(ProtocolException.class)
 			.withMessageContaining("http has not been enabled");
+	}
+
+	@Test
+	void correlationLoggingToFileWhenExpectCorrelationIdTrueAndMdcContent() {
+		this.environment.setProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "true");
+		new LoggingSystemProperties(this.environment).apply();
+		File file = new File(tmpDir(), "log4j2-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, logFile);
+		MDC.setContextMap(Map.of("traceId", "01234567890123456789012345678901", "spanId", "0123456789012345"));
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(file, "Hello world"))
+			.contains(" [01234567890123456789012345678901-0123456789012345] ");
+	}
+
+	@Test
+	void correlationLoggingToConsoleWhenExpectCorrelationIdTrueAndMdcContent(CapturedOutput output) {
+		this.environment.setProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "true");
+		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		MDC.setContextMap(Map.of("traceId", "01234567890123456789012345678901", "spanId", "0123456789012345"));
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world"))
+			.contains(" [01234567890123456789012345678901-0123456789012345] ");
+	}
+
+	@Test
+	void correlationLoggingToConsoleWhenExpectCorrelationIdFalseAndMdcContent(CapturedOutput output) {
+		this.environment.setProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "false");
+		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		MDC.setContextMap(Map.of("traceId", "01234567890123456789012345678901", "spanId", "0123456789012345"));
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world")).doesNotContain("0123456789012345");
+	}
+
+	@Test
+	void correlationLoggingToConsoleWhenExpectCorrelationIdTrueAndNoMdcContent(CapturedOutput output) {
+		this.environment.setProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "true");
+		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world"))
+			.contains(" [                                                 ] ");
+	}
+
+	@Test
+	void correlationLoggingToConsoleWhenHasCorrelationPattern(CapturedOutput output) {
+		this.environment.setProperty("logging.pattern.correlation", "%correlationId{spanId(0),traceId(0)}");
+		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		MDC.setContextMap(Map.of("traceId", "01234567890123456789012345678901", "spanId", "0123456789012345"));
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world"))
+			.contains(" [0123456789012345-01234567890123456789012345678901] ");
 	}
 
 	private String getRelativeClasspathLocation(String fileName) {

@@ -83,7 +83,12 @@ public enum LoggingSystemProperty {
 	/**
 	 * Logging system property for the date-format pattern.
 	 */
-	DATEFORMAT_PATTERN("LOG_DATEFORMAT_PATTERN", "logging.pattern.dateformat");
+	DATEFORMAT_PATTERN("LOG_DATEFORMAT_PATTERN", "logging.pattern.dateformat"),
+
+	/**
+	 * Logging system property for the correlation pattern.
+	 */
+	CORRELATION_PATTERN("LOG_CORRELATION_PATTERN", "logging.pattern.correlation");
 
 	private final String environmentVariableName;
 

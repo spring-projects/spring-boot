@@ -92,6 +92,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Ben Hale
  * @author Fahim Farook
  * @author Eddú Meléndez
+ * @author Jonatan Ivanov
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions("log4j*.jar")
@@ -467,7 +468,7 @@ class LoggingApplicationListenerTests {
 	void systemPropertiesAreSetForLoggingConfiguration() {
 		addPropertiesToEnvironment(this.context, "logging.exception-conversion-word=conversion",
 				"logging.file.name=" + this.logFile, "logging.file.path=path", "logging.pattern.console=console",
-				"logging.pattern.file=file", "logging.pattern.level=level",
+				"logging.pattern.file=file", "logging.pattern.level=level", "logging.pattern.correlation=correlation",
 				"logging.pattern.rolling-file-name=my.log.%d{yyyyMMdd}.%i.gz");
 		this.listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		assertThat(getSystemProperty(LoggingSystemProperty.CONSOLE_PATTERN)).isEqualTo("console");

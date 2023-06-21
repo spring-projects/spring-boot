@@ -65,7 +65,25 @@ Now open the Zipkin UI at `http://localhost:9411` and press the "Run Query" butt
 You should see one trace.
 Press the "Show" button to see the details of that trace.
 
-TIP: You can include the current trace and span id in the logs by setting the `logging.pattern.level` property to `%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]`
+
+
+[[actuator.micrometer-tracing.logging]]
+=== Logging Correlation IDs
+Correlation IDs provide a helpful way to link lines in your log files to distributed traces.
+By default, as long as configprop:management.tracing.enabled[] has not been set to `false`, Spring Boot will include correlation IDs in your logs whenever you are using Micrometer tracing.
+
+The default correlation ID is built from `traceId` and `spanId` https://logback.qos.ch/manual/mdc.html[MDC] values.
+For example, if Micrometer tracing has added an MDC `traceId` of `803B448A0489F84084905D3093480352` and an MDC `spanId` of `3425F23BB2432450` the log output will include the correlation ID `[803B448A0489F84084905D3093480352-3425F23BB2432450]`.
+
+If you prefer to use a different format for your correlation ID, you can use the configprop:logging.pattern.correlation[] property to define one.
+For example, the following will provide a correlation ID for Logback in format previously used by Spring Sleuth:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	logging:
+	  pattern:
+	    correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+----
 
 
 
