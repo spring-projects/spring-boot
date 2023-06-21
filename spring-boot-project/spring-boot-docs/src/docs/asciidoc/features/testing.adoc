@@ -861,15 +861,15 @@ If you <<using#using.structuring-your-code, structure your code>> in a sensible 
 
 It then becomes important not to litter the application's main class with configuration settings that are specific to a particular area of its functionality.
 
-Assume that you are using Spring Batch and you rely on the auto-configuration for it.
+Assume that you are using Spring Data MongoDB, you rely on the auto-configuration for it, and you have enabled auditing.
 You could define your `@SpringBootApplication` as follows:
 
 include::code:MyApplication[]
 
-Because this class is the source configuration for the test, any slice test actually tries to start Spring Batch, which is definitely not what you want to do.
+Because this class is the source configuration for the test, any slice test actually tries to enable Mongo auditing, which is definitely not what you want to do.
 A recommended approach is to move that area-specific configuration to a separate `@Configuration` class at the same level as your application, as shown in the following example:
 
-include::code:MyBatchConfiguration[]
+include::code:MyMongoConfiguration[]
 
 NOTE: Depending on the complexity of your application, you may either have a single `@Configuration` class for your customizations or one class per domain area.
 The latter approach lets you enable it in one of your tests, if necessary, with the `@Import` annotation.
