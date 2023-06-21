@@ -31,6 +31,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.aot.AotDetector;
 import org.springframework.boot.SpringApplicationShutdownHandlers;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.docker.compose.core.DockerCompose;
@@ -114,6 +115,30 @@ class DockerComposeLifecycleManagerTests {
 		this.lifecycleManager.start();
 		assertThat(listener.getEvent()).isNull();
 		then(this.dockerCompose).should(never()).hasDefinedServices();
+	}
+
+	@Test
+	void startWhenAotProcessingDoesNotStart() {
+		withSystemProperty("spring.aot.processing", "true", () -> {
+			EventCapturingListener listener = new EventCapturingListener();
+			this.eventListeners.add(listener);
+			setUpRunningServices();
+			this.lifecycleManager.start();
+			assertThat(listener.getEvent()).isNull();
+			then(this.dockerCompose).should(never()).hasDefinedServices();
+		});
+	}
+
+	@Test
+	void startWhenUsingAotArtifactsDoesNotStart() {
+		withSystemProperty(AotDetector.AOT_ENABLED, "true", () -> {
+			EventCapturingListener listener = new EventCapturingListener();
+			this.eventListeners.add(listener);
+			setUpRunningServices();
+			this.lifecycleManager.start();
+			assertThat(listener.getEvent()).isNull();
+			then(this.dockerCompose).should(never()).hasDefinedServices();
+		});
 	}
 
 	@Test
@@ -359,6 +384,22 @@ class DockerComposeLifecycleManagerTests {
 		}
 		else {
 			given(this.dockerCompose.getRunningServices()).willReturn(Collections.emptyList(), this.runningServices);
+		}
+	}
+
+	private void withSystemProperty(String key, String value, Runnable action) {
+		String previous = System.getProperty(key);
+		try {
+			System.setProperty(key, value);
+			action.run();
+		}
+		finally {
+			if (previous == null) {
+				System.clearProperty(key);
+			}
+			else {
+				System.setProperty(key, previous);
+			}
 		}
 	}
 
