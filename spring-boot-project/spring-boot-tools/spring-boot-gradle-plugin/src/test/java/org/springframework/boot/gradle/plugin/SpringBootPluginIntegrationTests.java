@@ -18,6 +18,8 @@ package org.springframework.boot.gradle.plugin;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
@@ -36,6 +38,7 @@ class SpringBootPluginIntegrationTests {
 	final GradleBuild gradleBuild = new GradleBuild();
 
 	@Test
+	@DisabledForJreRange(min = JRE.JAVA_20)
 	void failFastWithVersionOfGradle7LowerThanRequired() {
 		BuildResult result = this.gradleBuild.gradleVersion("7.3.3").buildAndFail();
 		assertThat(result.getOutput())
