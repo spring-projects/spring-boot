@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,13 +86,13 @@ public class LogFile {
 	 * @param properties the properties to apply to
 	 */
 	public void applyTo(Properties properties) {
-		put(properties, LoggingSystemProperties.LOG_PATH, this.path);
-		put(properties, LoggingSystemProperties.LOG_FILE, toString());
+		put(properties, LoggingSystemProperty.LOG_PATH, this.path);
+		put(properties, LoggingSystemProperty.LOG_FILE, toString());
 	}
 
-	private void put(Properties properties, String key, String value) {
+	private void put(Properties properties, LoggingSystemProperty property, String value) {
 		if (StringUtils.hasLength(value)) {
-			properties.put(key, value);
+			properties.put(property.getEnvironmentVariableName(), value);
 		}
 	}
 

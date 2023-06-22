@@ -56,6 +56,7 @@ import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
+import org.springframework.boot.logging.LoggingSystemProperty;
 import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
@@ -102,8 +103,9 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@BeforeEach
 	void setup() {
-		System.getProperties().remove(LoggingSystemProperties.CONSOLE_LOG_CHARSET);
-		System.getProperties().remove(LoggingSystemProperties.FILE_LOG_CHARSET);
+		for (LoggingSystemProperty property : LoggingSystemProperty.values()) {
+			System.getProperties().remove(property.getEnvironmentVariableName());
+		}
 		this.systemPropertyNames = new HashSet<>(System.getProperties().keySet());
 		this.loggingSystem.cleanUp();
 		this.logger = ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger(getClass());
@@ -503,7 +505,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void customExceptionConversionWord(CapturedOutput output) {
-		System.setProperty(LoggingSystemProperties.EXCEPTION_CONVERSION_WORD, "%ex");
+		System.setProperty(LoggingSystemProperty.EXCEPTION_CONVERSION_WORD.getEnvironmentVariableName(), "%ex");
 		try {
 			this.loggingSystem.beforeInitialize();
 			this.logger.info("Hidden");
@@ -514,7 +516,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 			assertThat(output).contains("java.lang.RuntimeException: Expected").doesNotContain("Wrapped by:");
 		}
 		finally {
-			System.clearProperty(LoggingSystemProperties.EXCEPTION_CONVERSION_WORD);
+			System.clearProperty(LoggingSystemProperty.EXCEPTION_CONVERSION_WORD.getEnvironmentVariableName());
 		}
 	}
 
@@ -525,7 +527,8 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.info("Hidden");
 		LogFile logFile = getLogFile(tmpDir() + "/example.log", null, false);
 		initialize(this.initializationContext, "classpath:logback-nondefault.xml", logFile);
-		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE)).endsWith("example.log");
+		assertThat(System.getProperty(LoggingSystemProperty.LOG_FILE.getEnvironmentVariableName()))
+			.endsWith("example.log");
 	}
 
 	@Test

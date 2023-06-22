@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,8 +50,9 @@ public abstract class AbstractLoggingSystemTests {
 
 	@AfterEach
 	void clear() {
-		System.clearProperty(LoggingSystemProperties.LOG_FILE);
-		System.clearProperty(LoggingSystemProperties.PID_KEY);
+		for (LoggingSystemProperty property : LoggingSystemProperty.values()) {
+			System.getProperties().remove(property.getEnvironmentVariableName());
+		}
 	}
 
 	protected final String[] getSpringConfigLocations(AbstractLoggingSystem system) {
