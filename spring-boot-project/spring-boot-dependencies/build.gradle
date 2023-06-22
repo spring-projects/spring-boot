@@ -1500,7 +1500,7 @@ bom {
 			]
 		}
 	}
-	library("Spring WS", "4.0.5-SNAPSHOT") {
+	library("Spring WS", "4.0.5") {
 		group("org.springframework.ws") {
 			imports = [
 				"spring-ws-bom"
