@@ -29,7 +29,7 @@ import brave.baggage.BaggagePropagation;
 import brave.baggage.BaggagePropagation.FactoryBuilder;
 import brave.baggage.BaggagePropagationConfig;
 import brave.baggage.BaggagePropagationCustomizer;
-import brave.baggage.CorrelationScopeConfig;
+import brave.baggage.CorrelationScopeConfig.SingleCorrelationField;
 import brave.baggage.CorrelationScopeCustomizer;
 import brave.baggage.CorrelationScopeDecorator;
 import brave.context.slf4j.MDCScopeDecorator;
@@ -51,6 +51,7 @@ import io.micrometer.tracing.exporter.SpanFilter;
 import io.micrometer.tracing.exporter.SpanReporter;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.actuate.autoconfigure.tracing.TracingProperties.Baggage.Correlation;
 import org.springframework.boot.actuate.autoconfigure.tracing.TracingProperties.Propagation.PropagationType;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -245,11 +246,13 @@ public class BraveAutoConfiguration {
 				matchIfMissing = true)
 		CorrelationScopeCustomizer correlationFieldsCorrelationScopeCustomizer() {
 			return (builder) -> {
-				List<String> correlationFields = this.tracingProperties.getBaggage().getCorrelation().getFields();
-				for (String field : correlationFields) {
-					builder.add(CorrelationScopeConfig.SingleCorrelationField.newBuilder(BaggageField.create(field))
+				Correlation correlationProperties = this.tracingProperties.getBaggage().getCorrelation();
+				for (String field : correlationProperties.getFields()) {
+					BaggageField baggageField = BaggageField.create(field);
+					SingleCorrelationField correlationField = SingleCorrelationField.newBuilder(baggageField)
 						.flushOnUpdate()
-						.build());
+						.build();
+					builder.add(correlationField);
 				}
 			};
 		}
