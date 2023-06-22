@@ -399,6 +399,7 @@ jobs:
     trigger: false
   - task: stage
     image: ci-image
+    timeout: ((task-timeout))
     file: git-repo/ci/tasks/stage.yml
     params:
       RELEASE_TYPE: M
@@ -421,6 +422,7 @@ jobs:
     trigger: false
   - task: stage
     image: ci-image
+    timeout: ((task-timeout))
     file: git-repo/ci/tasks/stage.yml
     params:
       RELEASE_TYPE: RC
@@ -443,6 +445,7 @@ jobs:
     trigger: false
   - task: stage
     image: ci-image
+    timeout: ((task-timeout))
     file: git-repo/ci/tasks/stage.yml
     params:
       RELEASE_TYPE: RELEASE
