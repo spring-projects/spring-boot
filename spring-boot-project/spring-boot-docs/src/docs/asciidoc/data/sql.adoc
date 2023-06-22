@@ -451,7 +451,7 @@ Information specified in the URL takes precedence over individual properties, th
 TIP: The "`How-to`" section includes a <<howto#howto.data-initialization.using-basic-sql-scripts, section on how to initialize a database>>.
 
 To customize the connections created by a `ConnectionFactory`, that is, set specific parameters that you do not want (or cannot) configure in your central database configuration, you can use a `ConnectionFactoryOptionsBuilderCustomizer` `@Bean`.
-The following example shows how to manually override the database port while the rest of the options is taken from the application configuration:
+The following example shows how to manually override the database port while the rest of the options are taken from the application configuration:
 
 include::code:MyR2dbcConfiguration[]
 
