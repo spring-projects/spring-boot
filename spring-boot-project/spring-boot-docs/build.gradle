@@ -293,7 +293,7 @@ task runSpringApplicationExample(type: org.springframework.boot.build.docs.Appli
 task runLoggingFormatExample(type: org.springframework.boot.build.docs.ApplicationRunner) {
 	classpath = configurations.springApplicationExample + sourceSets.main.output
 	mainClass = "org.springframework.boot.docs.features.springapplication.MyApplication"
-	args = ["--spring.main.banner-mode=off", "--server.port=0"]
+	args = ["--spring.main.banner-mode=off", "--server.port=0", "--spring.application.name=myapp"]
 	output = file("$buildDir/example-output/logging-format.txt")
 	expectedLogging = "Started MyApplication in "
 	normalizeTomcatPort()

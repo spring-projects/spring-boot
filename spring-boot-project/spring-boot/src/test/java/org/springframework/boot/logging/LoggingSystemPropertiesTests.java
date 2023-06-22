@@ -136,6 +136,25 @@ class LoggingSystemPropertiesTests {
 			.isEqualTo("default correlation pattern");
 	}
 
+	@Test
+	void loggedApplicationNameWhenHasApplicationName() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("spring.application.name", "test")).apply(null);
+		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_NAME)).isEqualTo("[test] ");
+	}
+
+	@Test
+	void loggedApplicationNameWhenHasNoApplicationName() {
+		new LoggingSystemProperties(new MockEnvironment()).apply(null);
+		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_NAME)).isNull();
+	}
+
+	@Test
+	void loggedApplicationNameWhenApplicationNameLoggingDisabled() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("spring.application.name", "test")
+			.withProperty("logging.include-application-name", "false")).apply(null);
+		assertThat(getSystemProperty(LoggingSystemProperty.APPLICATION_NAME)).isNull();
+	}
+
 	private Environment environment(String key, Object value) {
 		StandardEnvironment environment = new StandardEnvironment();
 		environment.getPropertySources().addLast(new MapPropertySource("test", Collections.singletonMap(key, value)));

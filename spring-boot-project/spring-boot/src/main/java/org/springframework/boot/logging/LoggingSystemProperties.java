@@ -27,6 +27,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Utility to set system properties that can later be used by log configuration files.
@@ -227,6 +228,7 @@ public class LoggingSystemProperties {
 
 	protected void apply(LogFile logFile, PropertyResolver resolver) {
 		String defaultCharsetName = getDefaultCharset().name();
+		setApplicationNameSystemProperty(resolver);
 		setSystemProperty(LoggingSystemProperty.PID, new ApplicationPid().toString());
 		setSystemProperty(LoggingSystemProperty.CONSOLE_CHARSET, resolver, defaultCharsetName);
 		setSystemProperty(LoggingSystemProperty.FILE_CHARSET, resolver, defaultCharsetName);
@@ -240,6 +242,16 @@ public class LoggingSystemProperties {
 		setSystemProperty(LoggingSystemProperty.CORRELATION_PATTERN, resolver);
 		if (logFile != null) {
 			logFile.applyToSystemProperties();
+		}
+	}
+
+	private void setApplicationNameSystemProperty(PropertyResolver resolver) {
+		if (resolver.getProperty("logging.include-application-name", Boolean.class, Boolean.TRUE)) {
+			String applicationName = resolver.getProperty("spring.application.name");
+			if (StringUtils.hasText(applicationName)) {
+				setSystemProperty(LoggingSystemProperty.APPLICATION_NAME.getEnvironmentVariableName(),
+						"[%s] ".formatted(applicationName));
+			}
 		}
 	}
 

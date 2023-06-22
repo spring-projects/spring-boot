@@ -564,6 +564,27 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 			.contains(" [0123456789012345-01234567890123456789012345678901] ");
 	}
 
+	@Test
+	void applicationNameLoggingWhenHasApplicationName(CapturedOutput output) {
+		this.environment.setProperty("spring.application.name", "myapp");
+		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world")).contains("[myapp] ");
+	}
+
+	@Test
+	void applicationNameLoggingWhenDisabled(CapturedOutput output) {
+		this.environment.setProperty("spring.application.name", "myapp");
+		this.environment.setProperty("logging.include-application-name", "false");
+		this.loggingSystem.setStandardConfigLocations(false);
+		this.loggingSystem.beforeInitialize();
+		this.loggingSystem.initialize(this.initializationContext, null, null);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world")).doesNotContain("myapp");
+	}
+
 	private String getRelativeClasspathLocation(String fileName) {
 		String defaultPath = ClassUtils.getPackageName(getClass());
 		defaultPath = defaultPath.replace('.', '/');

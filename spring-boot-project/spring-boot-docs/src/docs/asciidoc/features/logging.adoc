@@ -31,6 +31,7 @@ The following items are output:
 * Log Level: `ERROR`, `WARN`, `INFO`, `DEBUG`, or `TRACE`.
 * Process ID.
 * A `---` separator to distinguish the start of actual log messages.
+* Application name: Enclosed in square brackets (logged by default only if configprop:spring.application.name[] is set)
 * Thread name: Enclosed in square brackets (may be truncated for console output).
 * Correlation ID: If tracing is enabled (not shown in the sample above)
 * Logger name: This is usually the source class name (often abbreviated).
@@ -39,6 +40,7 @@ The following items are output:
 NOTE: Logback does not have a `FATAL` level.
 It is mapped to `ERROR`.
 
+TIP: If you have a configprop:spring.application.name[] property but don't want it logged you can set configprop:logging.include-application-name[] to `false`.
 
 
 [[features.logging.console-output]]

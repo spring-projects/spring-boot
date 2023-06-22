@@ -26,6 +26,11 @@ package org.springframework.boot.logging;
 public enum LoggingSystemProperty {
 
 	/**
+	 * Logging system property for the application name that should be logged.
+	 */
+	APPLICATION_NAME("LOGGED_APPLICATION_NAME"),
+
+	/**
 	 * Logging system property for the process ID.
 	 */
 	PID("PID"),

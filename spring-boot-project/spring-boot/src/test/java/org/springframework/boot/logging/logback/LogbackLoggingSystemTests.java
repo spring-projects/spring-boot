@@ -754,6 +754,23 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 			.contains(" [01234567890123456789012345678901-0123456789012345] ");
 	}
 
+	@Test
+	void applicationNameLoggingWhenHasApplicationName(CapturedOutput output) {
+		this.environment.setProperty("spring.application.name", "myapp");
+		initialize(this.initializationContext, null, null);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world")).contains("[myapp] ");
+	}
+
+	@Test
+	void applicationNameLoggingWhenDisabled(CapturedOutput output) {
+		this.environment.setProperty("spring.application.name", "myapp");
+		this.environment.setProperty("logging.include-application-name", "false");
+		initialize(this.initializationContext, null, null);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world")).doesNotContain("myapp");
+	}
+
 	private void initialize(LoggingInitializationContext context, String configLocation, LogFile logFile) {
 		this.loggingSystem.getSystemProperties((ConfigurableEnvironment) context.getEnvironment()).apply(logFile);
 		this.loggingSystem.beforeInitialize();

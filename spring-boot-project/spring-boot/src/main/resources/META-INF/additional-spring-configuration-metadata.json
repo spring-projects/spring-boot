@@ -104,6 +104,13 @@
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
+      "name": "logging.include-application-name",
+      "type": "java.lang.String>",
+      "description": "Whether to include the application name in the logs.",
+      "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
+      "defaultValue": true
+    },
+    {
       "name": "logging.level",
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "description": "Log levels severity mapping. For instance, `logging.level.org.springframework=DEBUG`.",
