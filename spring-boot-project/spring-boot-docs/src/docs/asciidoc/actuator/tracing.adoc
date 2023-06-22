@@ -69,21 +69,25 @@ Press the "Show" button to see the details of that trace.
 
 [[actuator.micrometer-tracing.logging]]
 === Logging Correlation IDs
-Correlation IDs provide a helpful way to link lines in your log files to distributed traces.
-By default, as long as configprop:management.tracing.enabled[] has not been set to `false`, Spring Boot will include correlation IDs in your logs whenever you are using Micrometer tracing.
+Correlation IDs provide a helpful way to link lines in your log files to spans/traces.
+By default, as long as configprop:management.tracing.enabled[] has not been set to `false`, Spring Boot will include correlation IDs in your logs whenever you are using Micrometer Tracing.
 
 The default correlation ID is built from `traceId` and `spanId` https://logback.qos.ch/manual/mdc.html[MDC] values.
-For example, if Micrometer tracing has added an MDC `traceId` of `803B448A0489F84084905D3093480352` and an MDC `spanId` of `3425F23BB2432450` the log output will include the correlation ID `[803B448A0489F84084905D3093480352-3425F23BB2432450]`.
+For example, if Micrometer Tracing has added an MDC `traceId` of `803B448A0489F84084905D3093480352` and an MDC `spanId` of `3425F23BB2432450` the log output will include the correlation ID `[803B448A0489F84084905D3093480352-3425F23BB2432450]`.
 
 If you prefer to use a different format for your correlation ID, you can use the configprop:logging.pattern.correlation[] property to define one.
-For example, the following will provide a correlation ID for Logback in format previously used by Spring Sleuth:
+For example, the following will provide a correlation ID for Logback in format previously used by Spring Cloud Sleuth:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	logging:
 	  pattern:
-	    correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+	    correlation: "[${spring.application.name:},%X{traceId:-},%X{spanId:-}] "
+	  include-application-name: false
 ----
+
+NOTE: In the example above, configprop:logging.include-application-name[] is set to `false` to avoid the application name being duplicated in the log messages (configprop:logging.pattern.correlation[] already contains it).
+It's also worth mentioning that configprop:logging.pattern.correlation[] contains a trailing space so that it is separated from the logger name that comes right after it by default.
 
 
 
