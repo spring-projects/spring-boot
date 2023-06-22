@@ -48,7 +48,7 @@ When doing so, the connection details take precedence over any connection-relate
 When using Spring Boot’s Docker Compose support, service connections are established to the port mapped by the container.
 
 NOTE: Docker compose is usually used in such a way that the ports inside the container are mapped to ephemeral ports on your computer.
-For example, A Postgres server may run inside the container using port 5432 but be mapped to a totally different port locally.
+For example, a Postgres server may run inside the container using port 5432 but be mapped to a totally different port locally.
 The service connection will always discover and use the locally mapped port.
 
 Service connections are established by using the image name of the container.
