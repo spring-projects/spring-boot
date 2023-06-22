@@ -37,7 +37,10 @@ Add the following application properties:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
-	management.tracing.sampling.probability: 1.0
+	management:
+	  tracing:
+	    sampling:
+	      probability: 1.0
 ----
 
 By default, Spring Boot samples only 10% of requests to prevent overwhelming the trace backend.
