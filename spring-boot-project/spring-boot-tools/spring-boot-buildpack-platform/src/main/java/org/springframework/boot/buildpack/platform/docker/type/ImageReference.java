@@ -157,6 +157,7 @@ public final class ImageReference {
 	/**
 	 * Return an {@link ImageReference} without the tag.
 	 * @return the image reference in tagless form
+	 * @since 2.7.12
 	 */
 	public ImageReference inTaglessForm() {
 		if (this.tag == null) {
