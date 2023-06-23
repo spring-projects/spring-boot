@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.r2dbc;
 
+import java.time.Duration;
+
 import io.r2dbc.spi.ConnectionFactory;
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
@@ -80,7 +82,8 @@ class R2dbcRepositoriesAutoConfigurationTests {
 					.findById(2000L)
 					.as(StepVerifier::create)
 					.expectNextCount(1)
-					.verifyComplete();
+					.expectComplete()
+					.verify(Duration.ofSeconds(30));
 			});
 	}
 
@@ -103,7 +106,8 @@ class R2dbcRepositoriesAutoConfigurationTests {
 					.findById(2000L)
 					.as(StepVerifier::create)
 					.expectNextCount(1)
-					.verifyComplete();
+					.expectComplete()
+					.verify(Duration.ofSeconds(30));
 			});
 	}
 
