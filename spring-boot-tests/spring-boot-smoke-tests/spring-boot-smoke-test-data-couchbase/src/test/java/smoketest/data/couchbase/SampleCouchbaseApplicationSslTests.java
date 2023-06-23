@@ -23,7 +23,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.data.couchbase.DataCouchbaseTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
 
@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Scott Frederick
  */
 @Testcontainers(disabledWithoutDocker = true)
-@SpringBootTest(properties = { "spring.couchbase.env.ssl.bundle=client", "spring.couchbase.env.timeouts.connect=2m",
+@DataCouchbaseTest(properties = { "spring.couchbase.env.ssl.bundle=client", "spring.couchbase.env.timeouts.connect=2m",
 		"spring.data.couchbase.bucket-name=cbbucket",
 		"spring.ssl.bundle.pem.client.keystore.certificate=classpath:ssl/test-client.crt",
 		"spring.ssl.bundle.pem.client.keystore.private-key=classpath:ssl/test-client.key",
