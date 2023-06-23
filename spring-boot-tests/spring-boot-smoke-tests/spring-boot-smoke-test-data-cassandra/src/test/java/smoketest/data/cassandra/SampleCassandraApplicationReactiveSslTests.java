@@ -16,6 +16,7 @@
 
 package smoketest.data.cassandra;
 
+import java.time.Duration;
 import java.util.UUID;
 
 import com.datastax.oss.driver.api.core.CqlSession;
@@ -25,36 +26,35 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.cassandra.core.CassandraTemplate;
+import org.springframework.data.cassandra.core.ReactiveCassandraTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Smoke tests for Cassandra with SSL.
  *
- * @author Scott Frederick
  * @author Eddú Meléndez
  */
 @Testcontainers(disabledWithoutDocker = true)
-@DataCassandraTest(properties = { "spring.cassandra.schema-action=create-if-not-exists",
+@SpringBootTest(properties = { "spring.cassandra.schema-action=create-if-not-exists",
 		"spring.cassandra.connection.connect-timeout=60s", "spring.cassandra.connection.init-query-timeout=60s",
 		"spring.cassandra.request.timeout=60s", "spring.cassandra.ssl.bundle=client",
 		"spring.ssl.bundle.jks.client.keystore.location=classpath:ssl/test-client.p12",
 		"spring.ssl.bundle.jks.client.keystore.password=password",
 		"spring.ssl.bundle.jks.client.truststore.location=classpath:ssl/test-ca.p12",
 		"spring.ssl.bundle.jks.client.truststore.password=password" })
-class SampleCassandraApplicationSslTests {
+class SampleCassandraApplicationReactiveSslTests {
 
 	@Container
 	@ServiceConnection
 	static final SecureCassandraContainer secureCassandra = new SecureCassandraContainer();
 
 	@Autowired
-	private CassandraTemplate cassandraTemplate;
+	private ReactiveCassandraTemplate cassandraTemplate;
 
 	@Autowired
 	private SampleRepository repository;
@@ -66,11 +66,11 @@ class SampleCassandraApplicationSslTests {
 		String id = UUID.randomUUID().toString();
 		entity.setId(id);
 		SampleEntity savedEntity = this.repository.save(entity);
-		SampleEntity getEntity = this.cassandraTemplate.selectOneById(id, SampleEntity.class);
+		SampleEntity getEntity = this.cassandraTemplate.selectOneById(id, SampleEntity.class)
+			.block(Duration.ofSeconds(30));
 		assertThat(getEntity).isNotNull();
 		assertThat(getEntity.getId()).isNotNull();
 		assertThat(getEntity.getId()).isEqualTo(savedEntity.getId());
-		this.repository.deleteAll();
 	}
 
 	@TestConfiguration(proxyBeanMethods = false)

@@ -24,7 +24,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.testcontainers.RedisContainer;
@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @Testcontainers(disabledWithoutDocker = true)
 @ClassPathExclusions("lettuce-core-*.jar")
-@SpringBootTest(properties = { "spring.data.redis.ssl.bundle=client",
+@DataRedisTest(properties = { "spring.data.redis.ssl.bundle=client",
 		"spring.ssl.bundle.pem.client.keystore.certificate=classpath:ssl/test-client.crt",
 		"spring.ssl.bundle.pem.client.keystore.private-key=classpath:ssl/test-client.key",
 		"spring.ssl.bundle.pem.client.truststore.certificate=classpath:ssl/test-ca.crt" })
