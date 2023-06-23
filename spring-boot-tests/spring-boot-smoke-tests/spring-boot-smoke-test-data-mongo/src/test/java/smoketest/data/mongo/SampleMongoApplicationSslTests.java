@@ -22,7 +22,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
@@ -32,9 +32,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Smoke tests for MongoDB with SSL.
  *
  * @author Scott Frederick
+ * @author Eddú Meléndez
  */
 @Testcontainers(disabledWithoutDocker = true)
-@SpringBootTest(properties = { "spring.data.mongodb.ssl.bundle=client",
+@DataMongoTest(properties = { "spring.data.mongodb.ssl.bundle=client",
 		"spring.ssl.bundle.pem.client.keystore.certificate=classpath:ssl/test-client.crt",
 		"spring.ssl.bundle.pem.client.keystore.private-key=classpath:ssl/test-client.key",
 		"spring.ssl.bundle.pem.client.truststore.certificate=classpath:ssl/test-ca.crt" })
