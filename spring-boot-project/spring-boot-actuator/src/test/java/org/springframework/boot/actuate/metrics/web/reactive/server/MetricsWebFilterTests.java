@@ -162,7 +162,7 @@ class MetricsWebFilterTests {
 				exchange.getResponse().setRawStatusCode(500);
 				return exchange.getResponse().setComplete();
 			});
-		StepVerifier.create(processing).expectComplete().verify(Duration.ofSeconds(5));
+		StepVerifier.create(processing).expectComplete().verify(Duration.ofSeconds(30));
 		assertMetricsContainsTag("uri", "/projects/{project}");
 		assertMetricsContainsTag("status", "500");
 		assertMetricsContainsTag("outcome", "UNKNOWN");

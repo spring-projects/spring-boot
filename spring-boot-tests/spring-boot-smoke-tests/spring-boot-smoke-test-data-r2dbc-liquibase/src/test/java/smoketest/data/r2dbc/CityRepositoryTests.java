@@ -16,6 +16,8 @@
 
 package smoketest.data.r2dbc;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -60,7 +62,8 @@ class CityRepositoryTests {
 	void databaseHasBeenInitialized() {
 		StepVerifier.create(this.repository.findByState("DC").filter((city) -> city.getName().equals("Washington")))
 			.consumeNextWith((city) -> assertThat(city.getId()).isNotNull())
-			.verifyComplete();
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 	}
 
 	private static String r2dbcUrl() {

@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.trace.http.reactive;
 
 import java.security.Principal;
+import java.time.Duration;
 import java.util.EnumSet;
 
 import org.junit.jupiter.api.Test;
@@ -105,7 +106,8 @@ class HttpTraceWebFilterTests {
 	private void executeFilter(ServerWebExchange exchange, WebFilterChain chain) {
 		StepVerifier
 			.create(this.filter.filter(exchange, chain).then(Mono.defer(() -> exchange.getResponse().setComplete())))
-			.verifyComplete();
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 	}
 
 }

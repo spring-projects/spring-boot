@@ -16,6 +16,8 @@
 
 package smoketest.rsocket;
 
+import java.time.Duration;
+
 import io.rsocket.metadata.WellKnownMimeType;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -56,7 +58,8 @@ class SampleRSocketApplicationTests {
 		Mono<Project> result = requester.route("find.project.spring-boot").retrieveMono(Project.class);
 		StepVerifier.create(result)
 			.assertNext((project) -> Assertions.assertThat(project.getName()).isEqualTo("spring-boot"))
-			.verifyComplete();
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 	}
 
 }
