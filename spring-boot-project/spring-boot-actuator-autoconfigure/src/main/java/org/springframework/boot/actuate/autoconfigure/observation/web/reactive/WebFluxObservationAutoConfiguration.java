@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.autoconfigure.observation.web.reactive;
 
-import java.util.List;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.config.MeterFilter;
 import io.micrometer.observation.Observation;
@@ -31,8 +29,6 @@ import org.springframework.boot.actuate.autoconfigure.metrics.OnlyOnceLoggingDen
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
-import org.springframework.boot.actuate.metrics.web.reactive.server.WebFluxTagsContributor;
-import org.springframework.boot.actuate.metrics.web.reactive.server.WebFluxTagsProvider;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -66,46 +62,21 @@ import org.springframework.web.filter.reactive.ServerHttpObservationFilter;
 @SuppressWarnings("removal")
 public class WebFluxObservationAutoConfiguration {
 
-	private final MetricsProperties metricsProperties;
-
 	private final ObservationProperties observationProperties;
 
-	public WebFluxObservationAutoConfiguration(MetricsProperties metricsProperties,
-			ObservationProperties observationProperties) {
-		this.metricsProperties = metricsProperties;
+	public WebFluxObservationAutoConfiguration(ObservationProperties observationProperties) {
 		this.observationProperties = observationProperties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(ServerHttpObservationFilter.class)
 	public OrderedServerHttpObservationFilter webfluxObservationFilter(ObservationRegistry registry,
-			ObjectProvider<ServerRequestObservationConvention> customConvention,
-			ObjectProvider<WebFluxTagsProvider> tagConfigurer,
-			ObjectProvider<WebFluxTagsContributor> contributorsProvider) {
-		String observationName = this.observationProperties.getHttp().getServer().getRequests().getName();
-		String metricName = this.metricsProperties.getWeb().getServer().getRequest().getMetricName();
-		String name = (observationName != null) ? observationName : metricName;
-		WebFluxTagsProvider tagsProvider = tagConfigurer.getIfAvailable();
-		List<WebFluxTagsContributor> tagsContributors = contributorsProvider.orderedStream().toList();
-		ServerRequestObservationConvention convention = createConvention(customConvention.getIfAvailable(), name,
-				tagsProvider, tagsContributors);
+			ObjectProvider<ServerRequestObservationConvention> customConvention) {
+		String name = this.observationProperties.getHttp().getServer().getRequests().getName();
+		ServerRequestObservationConvention convention = customConvention
+			.getIfAvailable(() -> new DefaultServerRequestObservationConvention(name));
 		int order = this.observationProperties.getHttp().getServer().getFilter().getOrder();
 		return new OrderedServerHttpObservationFilter(registry, convention, order);
-	}
-
-	private static ServerRequestObservationConvention createConvention(
-			ServerRequestObservationConvention customConvention, String name, WebFluxTagsProvider tagsProvider,
-			List<WebFluxTagsContributor> tagsContributors) {
-		if (customConvention != null) {
-			return customConvention;
-		}
-		if (tagsProvider != null) {
-			return new ServerRequestObservationConventionAdapter(name, tagsProvider);
-		}
-		if (!tagsContributors.isEmpty()) {
-			return new ServerRequestObservationConventionAdapter(name, tagsContributors);
-		}
-		return new DefaultServerRequestObservationConvention(name);
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -117,9 +88,7 @@ public class WebFluxObservationAutoConfiguration {
 		@Order(0)
 		MeterFilter metricsHttpServerUriTagFilter(MetricsProperties metricsProperties,
 				ObservationProperties observationProperties) {
-			String observationName = observationProperties.getHttp().getServer().getRequests().getName();
-			String name = (observationName != null) ? observationName
-					: metricsProperties.getWeb().getServer().getRequest().getMetricName();
+			String name = observationProperties.getHttp().getServer().getRequests().getName();
 			MeterFilter filter = new OnlyOnceLoggingDenyMeterFilter(
 					() -> "Reached the maximum number of URI tags for '%s'.".formatted(name));
 			return MeterFilter.maximumAllowableTags(name, "uri", metricsProperties.getWeb().getServer().getMaxUriTags(),

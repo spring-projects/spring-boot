@@ -154,17 +154,6 @@ public class ServerProperties {
 		this.serverHeader = serverHeader;
 	}
 
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	@DeprecatedConfigurationProperty
-	public DataSize getMaxHttpHeaderSize() {
-		return getMaxHttpRequestHeaderSize();
-	}
-
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	public void setMaxHttpHeaderSize(DataSize maxHttpHeaderSize) {
-		setMaxHttpRequestHeaderSize(maxHttpHeaderSize);
-	}
-
 	public DataSize getMaxHttpRequestHeaderSize() {
 		return this.maxHttpRequestHeaderSize;
 	}
@@ -475,7 +464,7 @@ public class ServerProperties {
 		/**
 		 * Whether to reject requests with illegal header names or values.
 		 */
-		@Deprecated(since = "2.7.12", forRemoval = true)
+		@Deprecated(since = "2.7.12", forRemoval = true) // Remove in 3.3
 		private boolean rejectIllegalHeader = true;
 
 		/**
@@ -1410,11 +1399,6 @@ public class ServerProperties {
 		private DataSize initialBufferSize = DataSize.ofBytes(128);
 
 		/**
-		 * Maximum chunk size that can be decoded for an HTTP request.
-		 */
-		private DataSize maxChunkSize = DataSize.ofKilobytes(8);
-
-		/**
 		 * Maximum length that can be decoded for an HTTP request's initial line.
 		 */
 		private DataSize maxInitialLineLength = DataSize.ofKilobytes(4);
@@ -1458,17 +1442,6 @@ public class ServerProperties {
 
 		public void setInitialBufferSize(DataSize initialBufferSize) {
 			this.initialBufferSize = initialBufferSize;
-		}
-
-		@Deprecated(since = "3.0.0", forRemoval = true)
-		@DeprecatedConfigurationProperty(reason = "Deprecated for removal in Reactor Netty")
-		public DataSize getMaxChunkSize() {
-			return this.maxChunkSize;
-		}
-
-		@Deprecated(since = "3.0.0", forRemoval = true)
-		public void setMaxChunkSize(DataSize maxChunkSize) {
-			this.maxChunkSize = maxChunkSize;
 		}
 
 		public DataSize getMaxInitialLineLength() {

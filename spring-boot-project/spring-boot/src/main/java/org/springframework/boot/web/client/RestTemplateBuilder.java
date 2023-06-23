@@ -325,8 +325,9 @@ public class RestTemplateBuilder {
 	}
 
 	/**
-	 * Set the {@link ClientHttpRequestFactorySupplier} that should be called each time we
-	 * {@link #build()} a new {@link RestTemplate} instance.
+	 * Set the request factory function that should be called to provide a
+	 * {@link ClientHttpRequestFactory} each time we {@link #build()} a new
+	 * {@link RestTemplate} instance.
 	 * @param requestFactoryFunction the settings to request factory function
 	 * @return a new builder instance
 	 * @since 3.0.0

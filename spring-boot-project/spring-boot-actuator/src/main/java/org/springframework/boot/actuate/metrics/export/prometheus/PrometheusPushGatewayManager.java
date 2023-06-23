@@ -141,7 +141,7 @@ public class PrometheusPushGatewayManager {
 		}
 		this.scheduled.cancel(false);
 		switch (shutdownOperation) {
-			case PUSH, POST -> post();
+			case POST -> post();
 			case PUT -> put();
 			case DELETE -> delete();
 		}
@@ -161,13 +161,6 @@ public class PrometheusPushGatewayManager {
 		 * Perform a POST before shutdown.
 		 */
 		POST,
-
-		/**
-		 * Perform a POST before shutdown.
-		 * @deprecated since 3.0.0 for removal in 3.2.0 in favor of {@link #POST}.
-		 */
-		@Deprecated(since = "3.0.0", forRemoval = true)
-		PUSH,
 
 		/**
 		 * Perform a PUT before shutdown.

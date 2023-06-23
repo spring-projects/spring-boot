@@ -116,12 +116,26 @@
       }
     },
     {
+      "name": "server.max-http-header-size",
+      "deprecation": {
+        "replacement": "server.max-http-request-header-size",
+        "level": "error"
+      }
+    },
+    {
       "name": "server.max-http-post-size",
       "type": "java.lang.Integer",
       "description": "Maximum size in bytes of the HTTP post content.",
       "defaultValue": 0,
       "deprecation": {
         "reason": "Use dedicated property for each container.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "server.netty.max-chunk-size",
+      "deprecation": {
+        "reason": "Deprecated for removal in Reactor Netty.",
         "level": "error"
       }
     },
@@ -210,7 +224,10 @@
     },
     {
       "name": "server.servlet.session.cookie.comment",
-      "description": "Comment for the cookie."
+      "description": "Comment for the cookie.",
+      "deprecation": {
+        "level": "error"
+      }
     },
     {
       "name": "server.servlet.session.cookie.domain",
@@ -2044,6 +2061,13 @@
       }
     },
     {
+      "name": "spring.liquibase.labels",
+      "deprecation": {
+        "replacement": "spring.liquibase.label-filter",
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.mail.test-connection",
       "description": "Whether to test that the mail server is available on startup.",
       "sourceType": "org.springframework.boot.autoconfigure.mail.MailProperties",
@@ -2104,6 +2128,13 @@
       "type": "java.lang.Boolean",
       "description": "Whether to enable Spring's HiddenHttpMethodFilter.",
       "defaultValue": false
+    },
+    {
+      "name": "spring.mvc.ignore-default-model-on-redirect",
+      "deprecation": {
+        "reason": "Deprecated for removal in Spring MVC.",
+        "level": "error"
+      }
     },
     {
       "name": "spring.mvc.locale",

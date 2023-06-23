@@ -39,6 +39,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
+import org.springframework.boot.web.server.Cookie;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.util.Assert;
@@ -335,14 +336,12 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 			configureSessionCookie(servletContext.getSessionCookieConfig());
 		}
 
-		@SuppressWarnings("removal")
 		private void configureSessionCookie(SessionCookieConfig config) {
-			Session.Cookie cookie = this.session.getCookie();
+			Cookie cookie = this.session.getCookie();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(cookie::getName).to(config::setName);
 			map.from(cookie::getDomain).to(config::setDomain);
 			map.from(cookie::getPath).to(config::setPath);
-			map.from(cookie::getComment).to(config::setComment);
 			map.from(cookie::getHttpOnly).to(config::setHttpOnly);
 			map.from(cookie::getSecure).to(config::setSecure);
 			map.from(cookie::getMaxAge).asInt(Duration::getSeconds).to(config::setMaxAge);

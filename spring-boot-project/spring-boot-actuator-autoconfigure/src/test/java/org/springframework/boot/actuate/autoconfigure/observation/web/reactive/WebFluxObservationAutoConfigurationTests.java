@@ -19,8 +19,6 @@ package org.springframework.boot.actuate.autoconfigure.observation.web.reactive;
 import java.util.List;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.Tags;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import reactor.core.publisher.Mono;
@@ -29,9 +27,6 @@ import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfigu
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.autoconfigure.metrics.web.TestController;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
-import org.springframework.boot.actuate.metrics.web.reactive.server.DefaultWebFluxTagsProvider;
-import org.springframework.boot.actuate.metrics.web.reactive.server.WebFluxTagsContributor;
-import org.springframework.boot.actuate.metrics.web.reactive.server.WebFluxTagsProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
@@ -84,28 +79,6 @@ class WebFluxObservationAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldUseConventionAdapterWhenCustomTagsProvider() {
-		this.contextRunner.withUserConfiguration(CustomTagsProviderConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(ServerHttpObservationFilter.class);
-			assertThat(context).hasSingleBean(WebFluxTagsProvider.class);
-			assertThat(context).getBean(ServerHttpObservationFilter.class)
-				.extracting("observationConvention")
-				.isInstanceOf(ServerRequestObservationConventionAdapter.class);
-		});
-	}
-
-	@Test
-	void shouldUseConventionAdapterWhenCustomTagsContributor() {
-		this.contextRunner.withUserConfiguration(CustomTagsContributorConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(ServerHttpObservationFilter.class);
-			assertThat(context).hasSingleBean(WebFluxTagsContributor.class);
-			assertThat(context).getBean(ServerHttpObservationFilter.class)
-				.extracting("observationConvention")
-				.isInstanceOf(ServerRequestObservationConventionAdapter.class);
-		});
-	}
-
-	@Test
 	void shouldUseCustomConventionWhenAvailable() {
 		this.contextRunner.withUserConfiguration(CustomConventionConfiguration.class).run((context) -> {
 			assertThat(context).hasSingleBean(ServerHttpObservationFilter.class);
@@ -125,21 +98,6 @@ class WebFluxObservationAutoConfigurationTests {
 				MeterRegistry registry = getInitializedMeterRegistry(context);
 				assertThat(registry.get("http.server.requests").meters()).hasSizeLessThanOrEqualTo(2);
 				assertThat(output).contains("Reached the maximum number of URI tags for 'http.server.requests'");
-			});
-	}
-
-	@Test
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	void afterMaxUrisReachedFurtherUrisAreDeniedWhenUsingCustomMetricName(CapturedOutput output) {
-		this.contextRunner.withUserConfiguration(TestController.class)
-			.withConfiguration(AutoConfigurations.of(MetricsAutoConfiguration.class, ObservationAutoConfiguration.class,
-					WebFluxAutoConfiguration.class))
-			.withPropertyValues("management.metrics.web.server.max-uri-tags=2",
-					"management.metrics.web.server.request.metric-name=my.http.server.requests")
-			.run((context) -> {
-				MeterRegistry registry = getInitializedMeterRegistry(context);
-				assertThat(registry.get("my.http.server.requests").meters()).hasSizeLessThanOrEqualTo(2);
-				assertThat(output).contains("Reached the maximum number of URI tags for 'my.http.server.requests'");
 			});
 	}
 
@@ -192,37 +150,6 @@ class WebFluxObservationAutoConfigurationTests {
 			client.get().uri(url).exchange().expectStatus().isOk();
 		}
 		return context.getBean(MeterRegistry.class);
-	}
-
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	@Configuration(proxyBeanMethods = false)
-	static class CustomTagsProviderConfiguration {
-
-		@Bean
-		WebFluxTagsProvider tagsProvider() {
-			return new DefaultWebFluxTagsProvider();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomTagsContributorConfiguration {
-
-		@Bean
-		WebFluxTagsContributor tagsContributor() {
-			return new CustomTagsContributor();
-		}
-
-	}
-
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	static class CustomTagsContributor implements WebFluxTagsContributor {
-
-		@Override
-		public Iterable<Tag> httpRequestTags(ServerWebExchange exchange, Throwable ex) {
-			return Tags.of("custom", "testvalue");
-		}
-
 	}
 
 	@Configuration(proxyBeanMethods = false)

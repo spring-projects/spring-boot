@@ -28,11 +28,11 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.boot.web.server.Cookie;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.Jsp;
-import org.springframework.boot.web.servlet.server.Session.Cookie;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -97,7 +97,6 @@ class ServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
 	void customizeSessionProperties() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.servlet.session.timeout", "123");
@@ -105,7 +104,6 @@ class ServletWebServerFactoryCustomizerTests {
 		map.put("server.servlet.session.cookie.name", "testname");
 		map.put("server.servlet.session.cookie.domain", "testdomain");
 		map.put("server.servlet.session.cookie.path", "/testpath");
-		map.put("server.servlet.session.cookie.comment", "testcomment");
 		map.put("server.servlet.session.cookie.http-only", "true");
 		map.put("server.servlet.session.cookie.secure", "true");
 		map.put("server.servlet.session.cookie.max-age", "60");
@@ -118,7 +116,6 @@ class ServletWebServerFactoryCustomizerTests {
 			assertThat(cookie.getName()).isEqualTo("testname");
 			assertThat(cookie.getDomain()).isEqualTo("testdomain");
 			assertThat(cookie.getPath()).isEqualTo("/testpath");
-			assertThat(cookie.getComment()).isEqualTo("testcomment");
 			assertThat(cookie.getHttpOnly()).isTrue();
 			assertThat(cookie.getMaxAge()).hasSeconds(60);
 		}));

@@ -116,8 +116,6 @@ public class MetricsProperties {
 
 		public static class Client {
 
-			private final ClientRequest request = new ClientRequest();
-
 			/**
 			 * Maximum number of unique URI tag values allowed. After the max number of
 			 * tag values is reached, metrics with additional tag values are denied by
@@ -125,44 +123,18 @@ public class MetricsProperties {
 			 */
 			private int maxUriTags = 100;
 
-			public ClientRequest getRequest() {
-				return this.request;
-			}
-
 			public int getMaxUriTags() {
 				return this.maxUriTags;
 			}
 
 			public void setMaxUriTags(int maxUriTags) {
 				this.maxUriTags = maxUriTags;
-			}
-
-			public static class ClientRequest {
-
-				/**
-				 * Name of the metric for sent requests.
-				 */
-				private String metricName = "http.client.requests";
-
-				@Deprecated(since = "3.0.0", forRemoval = true)
-				@DeprecatedConfigurationProperty(replacement = "management.observations.http.client.requests.name")
-				public String getMetricName() {
-					return this.metricName;
-				}
-
-				@Deprecated(since = "3.0.0", forRemoval = true)
-				public void setMetricName(String metricName) {
-					this.metricName = metricName;
-				}
-
 			}
 
 		}
 
 		public static class Server {
 
-			private final ServerRequest request = new ServerRequest();
-
 			/**
 			 * Maximum number of unique URI tag values allowed. After the max number of
 			 * tag values is reached, metrics with additional tag values are denied by
@@ -170,37 +142,12 @@ public class MetricsProperties {
 			 */
 			private int maxUriTags = 100;
 
-			public ServerRequest getRequest() {
-				return this.request;
-			}
-
 			public int getMaxUriTags() {
 				return this.maxUriTags;
 			}
 
 			public void setMaxUriTags(int maxUriTags) {
 				this.maxUriTags = maxUriTags;
-			}
-
-			public static class ServerRequest {
-
-				/**
-				 * Name of the metric for received requests.
-				 */
-				private String metricName = "http.server.requests";
-
-				@Deprecated(since = "3.0.0", forRemoval = true)
-				@DeprecatedConfigurationProperty(replacement = "management.observations.http.server.requests.name")
-				public String getMetricName() {
-					return this.metricName;
-				}
-
-				@Deprecated(since = "3.0.0", forRemoval = true)
-				@DeprecatedConfigurationProperty(replacement = "management.observations.http.server.requests.name")
-				public void setMetricName(String metricName) {
-					this.metricName = metricName;
-				}
-
 			}
 
 		}

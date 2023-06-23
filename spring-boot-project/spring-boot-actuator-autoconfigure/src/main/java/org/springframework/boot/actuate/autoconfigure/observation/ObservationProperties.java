@@ -91,10 +91,9 @@ public class ObservationProperties {
 			public static class ClientRequests {
 
 				/**
-				 * Name of the observation for client requests. If empty, will use the
-				 * default "http.client.requests".
+				 * Name of the observation for client requests.
 				 */
-				private String name;
+				private String name = "http.client.requests";
 
 				public String getName() {
 					return this.name;
@@ -125,10 +124,9 @@ public class ObservationProperties {
 			public static class ServerRequests {
 
 				/**
-				 * Name of the observation for server requests. If empty, will use the
-				 * default "http.server.requests".
+				 * Name of the observation for server requests.
 				 */
-				private String name;
+				private String name = "http.server.requests";
 
 				public String getName() {
 					return this.name;

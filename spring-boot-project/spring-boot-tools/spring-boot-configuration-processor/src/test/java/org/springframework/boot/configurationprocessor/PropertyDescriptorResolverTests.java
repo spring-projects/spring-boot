@@ -147,17 +147,6 @@ class PropertyDescriptorResolverTests {
 	}
 
 	@Test
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	@SuppressWarnings("removal")
-	void propertiesWithMultiConstructorAndDeprecatedAnnotation() {
-		process(org.springframework.boot.configurationsample.immutable.DeprecatedImmutableMultiConstructorProperties.class,
-				propertyNames((stream) -> assertThat(stream).containsExactly("name", "description")));
-		process(org.springframework.boot.configurationsample.immutable.DeprecatedImmutableMultiConstructorProperties.class,
-				properties((stream) -> assertThat(stream)
-					.allMatch((predicate) -> predicate instanceof ConstructorParameterPropertyDescriptor)));
-	}
-
-	@Test
 	void propertiesWithMultiConstructorNoDirective() {
 		process(TwoConstructorsExample.class, propertyNames((stream) -> assertThat(stream).containsExactly("name")));
 		process(TwoConstructorsExample.class,

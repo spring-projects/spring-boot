@@ -21,7 +21,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.validation.DefaultMessageCodesResolver;
@@ -56,12 +55,6 @@ public class WebMvcProperties {
 	 * Whether to dispatch OPTIONS requests to the FrameworkServlet doService method.
 	 */
 	private boolean dispatchOptionsRequest = true;
-
-	/**
-	 * Whether the content of the "default" model should be ignored during redirect
-	 * scenarios.
-	 */
-	private boolean ignoreDefaultModelOnRedirect = true;
 
 	/**
 	 * Whether to publish a ServletRequestHandledEvent at the end of each request.
@@ -118,17 +111,6 @@ public class WebMvcProperties {
 
 	public Format getFormat() {
 		return this.format;
-	}
-
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	@DeprecatedConfigurationProperty(reason = "Deprecated for removal in Spring MVC")
-	public boolean isIgnoreDefaultModelOnRedirect() {
-		return this.ignoreDefaultModelOnRedirect;
-	}
-
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	public void setIgnoreDefaultModelOnRedirect(boolean ignoreDefaultModelOnRedirect) {
-		this.ignoreDefaultModelOnRedirect = ignoreDefaultModelOnRedirect;
 	}
 
 	public boolean isPublishRequestHandledEvents() {

@@ -1981,10 +1981,18 @@
       }
     },
     {
+      "name": "management.metrics.web.client.request.metric-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "management.observations.http.client.requests.name",
+        "level": "error"
+      }
+    },
+    {
       "name": "management.metrics.web.client.requests-metric-name",
       "type": "java.lang.String",
       "deprecation": {
-        "replacement": "management.metrics.web.client.request.metric-name",
+        "replacement": "management.observations.http.client.requests.name",
         "level": "error"
       }
     },
@@ -2031,10 +2039,18 @@
       }
     },
     {
+      "name": "management.metrics.web.server.request.metric-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "replacement": "management.observations.http.server.requests.name",
+        "level": "error"
+      }
+    },
+    {
       "name": "management.metrics.web.server.requests-metric-name",
       "type": "java.lang.String",
       "deprecation": {
-        "replacement": "management.metrics.web.server.request.metric-name",
+        "replacement": "management.observations.http.server.requests.name",
         "level": "error"
       }
     },

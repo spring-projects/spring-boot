@@ -29,9 +29,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
-import org.springframework.boot.actuate.metrics.web.reactive.client.DefaultWebClientExchangeTagsProvider;
 import org.springframework.boot.actuate.metrics.web.reactive.client.ObservationWebClientCustomizer;
-import org.springframework.boot.actuate.metrics.web.reactive.client.WebClientExchangeTagsProvider;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.web.reactive.function.client.WebClientAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -59,7 +57,6 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  */
 @ExtendWith(OutputCaptureExtension.class)
-@SuppressWarnings("removal")
 class WebClientObservationConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
@@ -69,8 +66,7 @@ class WebClientObservationConfigurationTests {
 
 	@Test
 	void contributesCustomizerBean() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ObservationWebClientCustomizer.class)
-			.doesNotHaveBean(DefaultWebClientExchangeTagsProvider.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ObservationWebClientCustomizer.class));
 	}
 
 	@Test
@@ -80,14 +76,6 @@ class WebClientObservationConfigurationTests {
 			WebClient.Builder builder = context.getBean(WebClient.Builder.class);
 			validateWebClient(builder, registry);
 		});
-	}
-
-	@Test
-	void shouldNotOverrideCustomTagsProvider() {
-		this.contextRunner.withUserConfiguration(CustomTagsProviderConfig.class)
-			.run((context) -> assertThat(context).getBeans(WebClientExchangeTagsProvider.class)
-				.hasSize(1)
-				.containsKey("customTagsProvider"));
 	}
 
 	@Test
@@ -168,16 +156,6 @@ class WebClientObservationConfigurationTests {
 		ClientHttpConnector connector = mock(ClientHttpConnector.class);
 		given(connector.connect(any(), any(), any())).willReturn(Mono.just(new MockClientHttpResponse(HttpStatus.OK)));
 		return builder.clientConnector(connector).build();
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomTagsProviderConfig {
-
-		@Bean
-		WebClientExchangeTagsProvider customTagsProvider() {
-			return mock(WebClientExchangeTagsProvider.class);
-		}
-
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -234,24 +234,6 @@ class ConfigurationPropertiesBeanTests {
 	}
 
 	@Test
-	void forValueObjectWithDeprecatedConstructorBindingAnnotatedClassReturnsBean() {
-		ConfigurationPropertiesBean propertiesBean = ConfigurationPropertiesBean
-			.forValueObject(DeprecatedConstructorBindingOnConstructor.class, "valueObjectBean");
-		assertThat(propertiesBean.getName()).isEqualTo("valueObjectBean");
-		assertThat(propertiesBean.getInstance()).isNull();
-		assertThat(propertiesBean.getType()).isEqualTo(DeprecatedConstructorBindingOnConstructor.class);
-		assertThat(propertiesBean.asBindTarget().getBindMethod()).isEqualTo(BindMethod.VALUE_OBJECT);
-		assertThat(propertiesBean.getAnnotation()).isNotNull();
-		Bindable<?> target = propertiesBean.asBindTarget();
-		assertThat(target.getType())
-			.isEqualTo(ResolvableType.forClass(DeprecatedConstructorBindingOnConstructor.class));
-		assertThat(target.getValue()).isNull();
-		assertThat(BindConstructorProvider.DEFAULT.getBindConstructor(DeprecatedConstructorBindingOnConstructor.class,
-				false))
-			.isNotNull();
-	}
-
-	@Test
 	void forValueObjectWithRecordReturnsBean() {
 		Class<?> implicitConstructorBinding = new ByteBuddy(ClassFileVersion.JAVA_V16).makeRecord()
 			.name("org.springframework.boot.context.properties.ImplicitConstructorBinding")
@@ -554,20 +536,6 @@ class ConfigurationPropertiesBeanTests {
 
 		@ConstructorBinding
 		ConstructorBindingOnConstructor(String name, int age) {
-		}
-
-	}
-
-	@ConfigurationProperties
-	@SuppressWarnings("removal")
-	static class DeprecatedConstructorBindingOnConstructor {
-
-		DeprecatedConstructorBindingOnConstructor(String name) {
-			this(name, -1);
-		}
-
-		@org.springframework.boot.context.properties.ConstructorBinding
-		DeprecatedConstructorBindingOnConstructor(String name, int age) {
 		}
 
 	}

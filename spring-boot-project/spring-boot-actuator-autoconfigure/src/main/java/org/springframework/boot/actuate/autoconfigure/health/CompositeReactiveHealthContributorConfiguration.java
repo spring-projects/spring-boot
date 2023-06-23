@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,18 +35,6 @@ import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
  */
 public abstract class CompositeReactiveHealthContributorConfiguration<I extends ReactiveHealthIndicator, B>
 		extends AbstractCompositeHealthContributorConfiguration<ReactiveHealthContributor, I, B> {
-
-	/**
-	 * Creates a {@code CompositeReactiveHealthContributorConfiguration} that will use
-	 * reflection to create {@link ReactiveHealthIndicator} instances.
-	 * @deprecated since 3.0.0 in favor of
-	 * {@link #CompositeReactiveHealthContributorConfiguration(Function)}
-	 */
-	@SuppressWarnings("removal")
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	public CompositeReactiveHealthContributorConfiguration() {
-		super();
-	}
 
 	/**
 	 * Creates a {@code CompositeReactiveHealthContributorConfiguration} that will use the

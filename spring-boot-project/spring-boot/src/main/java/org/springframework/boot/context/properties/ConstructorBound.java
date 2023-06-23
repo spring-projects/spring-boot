@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2022 the original author or authors.
+ * Copyright 2019-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.context.properties;
 
 import org.springframework.beans.factory.BeanFactory;
+import org.springframework.boot.context.properties.bind.ConstructorBinding;
 
 /**
  * Helper class to programmatically bind configuration properties that use constructor

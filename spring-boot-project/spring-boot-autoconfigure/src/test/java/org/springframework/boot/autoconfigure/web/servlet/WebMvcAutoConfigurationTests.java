@@ -381,29 +381,6 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	@SuppressWarnings("deprecation")
-	void customThemeResolverWithMatchingNameReplacesDefaultThemeResolver() {
-		this.contextRunner.withBean("themeResolver", CustomThemeResolver.class, CustomThemeResolver::new)
-			.run((context) -> {
-				assertThat(context).hasSingleBean(org.springframework.web.servlet.ThemeResolver.class);
-				assertThat(context.getBean("themeResolver")).isInstanceOf(CustomThemeResolver.class);
-			});
-	}
-
-	@Test
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	@SuppressWarnings("deprecation")
-	void customThemeResolverWithDifferentNameDoesNotReplaceDefaultThemeResolver() {
-		this.contextRunner.withBean("customThemeResolver", CustomThemeResolver.class, CustomThemeResolver::new)
-			.run((context) -> {
-				assertThat(context.getBean("customThemeResolver")).isInstanceOf(CustomThemeResolver.class);
-				assertThat(context.getBean("themeResolver"))
-					.isInstanceOf(org.springframework.web.servlet.theme.FixedThemeResolver.class);
-			});
-	}
-
-	@Test
 	void customFlashMapManagerWithMatchingNameReplacesDefaultFlashMapManager() {
 		this.contextRunner.withBean("flashMapManager", CustomFlashMapManager.class, CustomFlashMapManager::new)
 			.run((context) -> {
@@ -491,21 +468,6 @@ class WebMvcAutoConfigurationTests {
 			.run((context) -> assertThat(
 					context.getBean(WebMvcAutoConfigurationAdapter.class).getMessageCodesResolver())
 				.isNotNull());
-	}
-
-	@Test
-	void ignoreDefaultModelOnRedirectIsTrue() {
-		this.contextRunner.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
-			.extracting("ignoreDefaultModelOnRedirect")
-			.isEqualTo(true));
-	}
-
-	@Test
-	void overrideIgnoreDefaultModelOnRedirect() {
-		this.contextRunner.withPropertyValues("spring.mvc.ignore-default-model-on-redirect:false")
-			.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
-				.extracting("ignoreDefaultModelOnRedirect")
-				.isEqualTo(false));
 	}
 
 	@Test
@@ -1460,20 +1422,6 @@ class WebMvcAutoConfigurationTests {
 
 		@Override
 		public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
-		}
-
-	}
-
-	@Deprecated(since = "3.0.0", forRemoval = true)
-	static class CustomThemeResolver implements org.springframework.web.servlet.ThemeResolver {
-
-		@Override
-		public String resolveThemeName(HttpServletRequest request) {
-			return "custom";
-		}
-
-		@Override
-		public void setThemeName(HttpServletRequest request, HttpServletResponse response, String themeName) {
 		}
 
 	}

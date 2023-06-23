@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.boot.actuate.metrics.web.reactive.client.ObservationWebClientCustomizer;
-import org.springframework.boot.actuate.metrics.web.reactive.client.WebClientExchangeTagsProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,39 +36,16 @@ import org.springframework.web.reactive.function.client.WebClient;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(WebClient.class)
-@SuppressWarnings("removal")
 class WebClientObservationConfiguration {
 
 	@Bean
 	ObservationWebClientCustomizer observationWebClientCustomizer(ObservationRegistry observationRegistry,
 			ObjectProvider<ClientRequestObservationConvention> customConvention,
-			ObservationProperties observationProperties, ObjectProvider<WebClientExchangeTagsProvider> tagsProvider,
-			MetricsProperties metricsProperties) {
-		String name = observationName(observationProperties, metricsProperties);
-		ClientRequestObservationConvention observationConvention = createConvention(customConvention.getIfAvailable(),
-				tagsProvider.getIfAvailable(), name);
+			ObservationProperties observationProperties, MetricsProperties metricsProperties) {
+		String name = observationProperties.getHttp().getClient().getRequests().getName();
+		ClientRequestObservationConvention observationConvention = customConvention
+			.getIfAvailable(() -> new DefaultClientRequestObservationConvention(name));
 		return new ObservationWebClientCustomizer(observationRegistry, observationConvention);
-	}
-
-	private static ClientRequestObservationConvention createConvention(
-			ClientRequestObservationConvention customConvention, WebClientExchangeTagsProvider tagsProvider,
-			String name) {
-		if (customConvention != null) {
-			return customConvention;
-		}
-		else if (tagsProvider != null) {
-			return new ClientObservationConventionAdapter(name, tagsProvider);
-		}
-		else {
-			return new DefaultClientRequestObservationConvention(name);
-		}
-	}
-
-	private static String observationName(ObservationProperties observationProperties,
-			MetricsProperties metricsProperties) {
-		String metricName = metricsProperties.getWeb().getClient().getRequest().getMetricName();
-		String observationName = observationProperties.getHttp().getClient().getRequests().getName();
-		return (observationName != null) ? observationName : metricName;
 	}
 
 }
