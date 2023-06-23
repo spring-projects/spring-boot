@@ -44,8 +44,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers(disabledWithoutDocker = true)
 class DataElasticsearchTestWithServiceConnectionBeanIntegrationTests {
 
-	;
-
 	@Autowired
 	private ElasticsearchTemplate elasticsearchTemplate;
 
