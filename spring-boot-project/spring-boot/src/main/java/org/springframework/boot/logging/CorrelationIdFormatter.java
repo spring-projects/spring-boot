@@ -47,7 +47,7 @@ import org.springframework.util.StringUtils;
  * <p>
  * Correlation IDs are formatted as dash separated strings surrounded in square brackets.
  * Formatted output is always of a fixed width and with trailing whitespace. Dashes are
- * omitted of none of the named items can be resolved.
+ * omitted if none of the named items can be resolved.
  * <p>
  * The following example would return a formatted result of
  * {@code "[01234567890123456789012345678901-0123456789012345] "}: <pre class="code">
@@ -164,7 +164,7 @@ public final class CorrelationIdFormatter {
 	 * @param name the name of the correlation part
 	 * @param length the expected length of the correlation part
 	 */
-	static final record Part(String name, int length) {
+	record Part(String name, int length) {
 
 		private static final Pattern pattern = Pattern.compile("^(.+?)\\((\\d+)\\)?$");
 
