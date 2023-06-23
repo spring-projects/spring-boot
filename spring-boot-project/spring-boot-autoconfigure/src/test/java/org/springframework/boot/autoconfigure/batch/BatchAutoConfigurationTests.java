@@ -28,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.batch.core.BatchStatus;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobExecutionException;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.Step;
@@ -71,6 +72,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -80,6 +82,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Vedran Pavic
  * @author Kazuki Shimizu
+ * @author Akshay Dubey
  */
 @ExtendWith(OutputCaptureExtension.class)
 class BatchAutoConfigurationTests {
@@ -167,7 +170,9 @@ class BatchAutoConfigurationTests {
 			.withPropertyValues("spring.batch.job.names:discreteLocalJob")
 			.run((context) -> {
 				assertThat(context).hasSingleBean(JobLauncher.class);
-				context.getBean(JobLauncherApplicationRunner.class).run();
+				assertThrows(JobExecutionException.class,()->{
+					context.getBean(JobLauncherApplicationRunner.class).run();
+				});
 				assertThat(context.getBean(JobRepository.class)
 					.getLastJobExecution("discreteLocalJob", new JobParameters())).isNotNull();
 			});
