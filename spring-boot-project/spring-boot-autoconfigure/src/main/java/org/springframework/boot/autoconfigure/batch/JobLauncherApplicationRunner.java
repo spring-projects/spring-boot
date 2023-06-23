@@ -187,6 +187,7 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 				}
 				catch (NoSuchJobException ex) {
 					logger.debug(LogMessage.format("No job found in registry for job name: %s", jobName));
+					throw new JobExecutionException(ex.getMessage(), ex);
 				}
 			}
 		}
