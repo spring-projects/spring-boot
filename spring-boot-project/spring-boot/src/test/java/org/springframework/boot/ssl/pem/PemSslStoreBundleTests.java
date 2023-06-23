@@ -33,6 +33,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class PemSslStoreBundleTests {
 
+	private static final char[] EMPTY_KEY_PASSWORD = new char[] {};
+
 	@Test
 	void whenNullStores() {
 		PemSslStoreDetails keyStoreDetails = null;
@@ -117,6 +119,18 @@ class PemSslStoreBundleTests {
 		assertThat(bundle.getTrustStore()).satisfies(storeContainingCertAndKey("PKCS12", "ssl"));
 	}
 
+	@Test
+	void whenHasKeyStoreDetailsAndTrustStoreDetailsAndKeyPassword() {
+		PemSslStoreDetails keyStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
+			.withPrivateKey("classpath:test-key.pem");
+		PemSslStoreDetails trustStoreDetails = PemSslStoreDetails.forCertificate("classpath:test-cert.pem")
+			.withPrivateKey("classpath:test-key.pem");
+		PemSslStoreBundle bundle = new PemSslStoreBundle(keyStoreDetails, trustStoreDetails, "test-alias", "keysecret");
+		assertThat(bundle.getKeyStore()).satisfies(storeContainingCertAndKey("test-alias", "keysecret".toCharArray()));
+		assertThat(bundle.getTrustStore())
+			.satisfies(storeContainingCertAndKey("test-alias", "keysecret".toCharArray()));
+	}
+
 	private Consumer<KeyStore> storeContainingCert(String keyAlias) {
 		return storeContainingCert(KeyStore.getDefaultType(), keyAlias);
 	}
@@ -127,7 +141,7 @@ class PemSslStoreBundleTests {
 			assertThat(keyStore.getType()).isEqualTo(keyStoreType);
 			assertThat(keyStore.containsAlias(keyAlias)).isTrue();
 			assertThat(keyStore.getCertificate(keyAlias)).isNotNull();
-			assertThat(keyStore.getKey(keyAlias, new char[] {})).isNull();
+			assertThat(keyStore.getKey(keyAlias, EMPTY_KEY_PASSWORD)).isNull();
 		});
 	}
 
@@ -136,12 +150,20 @@ class PemSslStoreBundleTests {
 	}
 
 	private Consumer<KeyStore> storeContainingCertAndKey(String keyStoreType, String keyAlias) {
+		return storeContainingCertAndKey(keyStoreType, keyAlias, EMPTY_KEY_PASSWORD);
+	}
+
+	private Consumer<KeyStore> storeContainingCertAndKey(String keyAlias, char[] keyPassword) {
+		return storeContainingCertAndKey(KeyStore.getDefaultType(), keyAlias, keyPassword);
+	}
+
+	private Consumer<KeyStore> storeContainingCertAndKey(String keyStoreType, String keyAlias, char[] keyPassword) {
 		return ThrowingConsumer.of((keyStore) -> {
 			assertThat(keyStore).isNotNull();
 			assertThat(keyStore.getType()).isEqualTo(keyStoreType);
 			assertThat(keyStore.containsAlias(keyAlias)).isTrue();
 			assertThat(keyStore.getCertificate(keyAlias)).isNotNull();
-			assertThat(keyStore.getKey(keyAlias, new char[] {})).isNotNull();
+			assertThat(keyStore.getKey(keyAlias, keyPassword)).isNotNull();
 		});
 	}
 

@@ -42,6 +42,8 @@ public class PemSslStoreBundle implements SslStoreBundle {
 
 	private final String keyAlias;
 
+	private final String keyPassword;
+
 	/**
 	 * Create a new {@link PemSslStoreBundle} instance.
 	 * @param keyStoreDetails the key store details
@@ -59,9 +61,22 @@ public class PemSslStoreBundle implements SslStoreBundle {
 	 */
 	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails,
 			String keyAlias) {
+		this(keyStoreDetails, trustStoreDetails, keyAlias, null);
+	}
+
+	/**
+	 * Create a new {@link PemSslStoreBundle} instance.
+	 * @param keyStoreDetails the key store details
+	 * @param trustStoreDetails the trust store details
+	 * @param keyAlias the key alias to use or {@code null} to use a default alias
+	 * @param keyPassword the password to use for the key
+	 */
+	public PemSslStoreBundle(PemSslStoreDetails keyStoreDetails, PemSslStoreDetails trustStoreDetails, String keyAlias,
+			String keyPassword) {
 		this.keyAlias = keyAlias;
 		this.keyStoreDetails = keyStoreDetails;
 		this.trustStoreDetails = trustStoreDetails;
+		this.keyPassword = keyPassword;
 	}
 
 	@Override
@@ -104,7 +119,8 @@ public class PemSslStoreBundle implements SslStoreBundle {
 			throws KeyStoreException {
 		String alias = (this.keyAlias != null) ? this.keyAlias : DEFAULT_KEY_ALIAS;
 		if (privateKey != null) {
-			keyStore.setKeyEntry(alias, privateKey, null, certificates);
+			keyStore.setKeyEntry(alias, privateKey, (this.keyPassword != null) ? this.keyPassword.toCharArray() : null,
+					certificates);
 		}
 		else {
 			for (int index = 0; index < certificates.length; index++) {
