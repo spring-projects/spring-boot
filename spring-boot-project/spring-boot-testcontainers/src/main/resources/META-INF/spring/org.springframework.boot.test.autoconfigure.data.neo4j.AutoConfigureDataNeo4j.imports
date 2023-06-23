@@ -1,0 +1,2 @@
+# AutoConfigureDataNeo4j auto-configuration imports
+org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration

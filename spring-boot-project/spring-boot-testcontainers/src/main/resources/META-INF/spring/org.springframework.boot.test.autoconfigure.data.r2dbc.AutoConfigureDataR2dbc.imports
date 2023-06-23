@@ -1,0 +1,2 @@
+# AutoConfigureDataR2dbc auto-configuration imports
+org.springframework.boot.testcontainers.service.connection.ServiceConnectionAutoConfiguration
