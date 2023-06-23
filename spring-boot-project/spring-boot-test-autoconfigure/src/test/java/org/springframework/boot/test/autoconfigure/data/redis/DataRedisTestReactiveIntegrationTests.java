@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.data.redis;
 
+import java.time.Duration;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -59,11 +60,16 @@ class DataRedisTestReactiveIntegrationTests {
 		String id = UUID.randomUUID().toString();
 		StepVerifier.create(this.operations.opsForValue().set(id, "Hello World"))
 			.expectNext(Boolean.TRUE)
-			.verifyComplete();
-		StepVerifier.create(this.operations.opsForValue().get(id)).expectNext("Hello World").verifyComplete();
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
+		StepVerifier.create(this.operations.opsForValue().get(id))
+			.expectNext("Hello World")
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 		StepVerifier.create(this.operations.execute((action) -> action.serverCommands().flushDb()))
 			.expectNext("OK")
-			.verifyComplete();
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 	}
 
 	@Test

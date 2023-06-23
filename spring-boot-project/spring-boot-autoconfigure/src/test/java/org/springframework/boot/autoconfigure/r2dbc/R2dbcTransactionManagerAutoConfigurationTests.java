@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.r2dbc;
 
+import java.time.Duration;
+
 import io.r2dbc.spi.Connection;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.TransactionDefinition;
@@ -67,7 +69,11 @@ class R2dbcTransactionManagerAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(SingleConnectionFactoryConfiguration.class, BaseConfiguration.class)
 			.run((context) -> {
 				TransactionalService bean = context.getBean(TransactionalService.class);
-				bean.isTransactionActive().as(StepVerifier::create).expectNext(true).verifyComplete();
+				bean.isTransactionActive()
+					.as(StepVerifier::create)
+					.expectNext(true)
+					.expectComplete()
+					.verify(Duration.ofSeconds(30));
 			});
 	}
 

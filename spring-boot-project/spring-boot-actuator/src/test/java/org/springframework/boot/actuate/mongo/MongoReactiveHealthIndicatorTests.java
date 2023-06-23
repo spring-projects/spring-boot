@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.mongo;
 
+import java.time.Duration;
+
 import com.mongodb.MongoException;
 import org.bson.Document;
 import org.junit.jupiter.api.Test;
@@ -51,7 +53,7 @@ class MongoReactiveHealthIndicatorTests {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
 			assertThat(h.getDetails()).containsOnlyKeys("maxWireVersion");
 			assertThat(h.getDetails()).containsEntry("maxWireVersion", 10);
-		}).verifyComplete();
+		}).expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 	@Test
@@ -66,7 +68,7 @@ class MongoReactiveHealthIndicatorTests {
 			assertThat(h.getStatus()).isEqualTo(Status.DOWN);
 			assertThat(h.getDetails()).containsOnlyKeys("error");
 			assertThat(h.getDetails()).containsEntry("error", MongoException.class.getName() + ": Connection failed");
-		}).verifyComplete();
+		}).expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 }

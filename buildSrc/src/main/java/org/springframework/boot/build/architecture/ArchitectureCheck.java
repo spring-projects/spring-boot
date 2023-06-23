@@ -73,7 +73,9 @@ public abstract class ArchitectureCheck extends DefaultTask {
 			.importPaths(this.classes.getFiles().stream().map(File::toPath).collect(Collectors.toList()));
 		List<EvaluationResult> violations = Stream.of(allPackagesShouldBeFreeOfTangles(),
 				allBeanPostProcessorBeanMethodsShouldBeStaticAndHaveParametersThatWillNotCausePrematureInitialization(),
-				allBeanFactoryPostProcessorBeanMethodsShouldBeStaticAndHaveNoParameters())
+				allBeanFactoryPostProcessorBeanMethodsShouldBeStaticAndHaveNoParameters(),
+				noClassesShouldCallStepVerifierStepVerifyComplete(),
+				noClassesShouldConfigureDefaultStepVerifierTimeout())
 			.map((rule) -> rule.evaluate(javaClasses))
 			.filter(EvaluationResult::hasViolation)
 			.collect(Collectors.toList());
@@ -160,6 +162,20 @@ public abstract class ArchitectureCheck extends DefaultTask {
 			}
 
 		};
+	}
+
+	private ArchRule noClassesShouldCallStepVerifierStepVerifyComplete() {
+		return ArchRuleDefinition.noClasses()
+			.should()
+			.callMethod("reactor.test.StepVerifier$Step", "verifyComplete")
+			.because("it can block indefinitely and expectComplete().verify(Duration) should be used instead");
+	}
+
+	private ArchRule noClassesShouldConfigureDefaultStepVerifierTimeout() {
+		return ArchRuleDefinition.noClasses()
+			.should()
+			.callMethod("reactor.test.StepVerifier", "setDefaultTimeout", "java.time.Duration")
+			.because("expectComplete().verify(Duration) should be used instead");
 	}
 
 	public void setClasses(FileCollection classes) {

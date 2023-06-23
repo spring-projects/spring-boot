@@ -194,8 +194,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			.retrieve()
 			.bodyToMono(String.class);
 
-		StepVerifier.setDefaultTimeout(Duration.ofSeconds(30));
-		StepVerifier.create(result).expectNext("Hello World").verifyComplete();
+		StepVerifier.create(result).expectNext("Hello World").expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 	@Test
