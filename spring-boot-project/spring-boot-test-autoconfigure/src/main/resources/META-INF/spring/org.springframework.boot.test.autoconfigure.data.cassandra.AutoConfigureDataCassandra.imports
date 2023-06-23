@@ -1,4 +1,5 @@
 # AutoConfigureDataCassandra auto-configuration imports
+org.springframework.boot.test.autoconfigure.service.connection.TestcontainersServiceConnectionAutoConfiguration
 org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration
 org.springframework.boot.autoconfigure.data.cassandra.CassandraDataAutoConfiguration
 org.springframework.boot.autoconfigure.data.cassandra.CassandraReactiveDataAutoConfiguration
