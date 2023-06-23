@@ -1,5 +1,4 @@
 # AutoConfigureDataElasticsearch auto-configuration imports
-org.springframework.boot.test.autoconfigure.service.connection.TestcontainersServiceConnectionAutoConfiguration
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchRepositoriesAutoConfiguration
 org.springframework.boot.autoconfigure.data.elasticsearch.ElasticsearchDataAutoConfiguration
 org.springframework.boot.autoconfigure.data.elasticsearch.ReactiveElasticsearchRepositoriesAutoConfiguration
