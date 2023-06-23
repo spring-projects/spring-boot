@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import reactor.core.publisher.Mono;
@@ -40,7 +42,8 @@ class ReactiveHealthIndicatorImplementationTests {
 	void healthUp(CapturedOutput output) {
 		StepVerifier.create(new SimpleReactiveHealthIndicator().health())
 			.consumeNextWith((health) -> assertThat(health).isEqualTo(Health.up().build()))
-			.verifyComplete();
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 		assertThat(output).doesNotContain("Health check failed for simple");
 	}
 
@@ -49,7 +52,8 @@ class ReactiveHealthIndicatorImplementationTests {
 		StepVerifier.create(new CustomErrorMessageReactiveHealthIndicator().health())
 			.consumeNextWith(
 					(health) -> assertThat(health).isEqualTo(Health.down(new UnsupportedOperationException()).build()))
-			.verifyComplete();
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 		assertThat(output).contains("Health check failed for custom");
 	}
 
@@ -57,7 +61,8 @@ class ReactiveHealthIndicatorImplementationTests {
 	void healthDownWithCustomErrorMessageFunction(CapturedOutput output) {
 		StepVerifier.create(new CustomErrorMessageFunctionReactiveHealthIndicator().health())
 			.consumeNextWith((health) -> assertThat(health).isEqualTo(Health.down(new RuntimeException()).build()))
-			.verifyComplete();
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 		assertThat(output).contains("Health check failed with RuntimeException");
 	}
 

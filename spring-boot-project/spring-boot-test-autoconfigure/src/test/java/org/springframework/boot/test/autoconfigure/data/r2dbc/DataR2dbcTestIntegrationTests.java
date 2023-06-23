@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.test.autoconfigure.data.r2dbc;
 
+import java.time.Duration;
 import java.util.Map;
 
 import io.r2dbc.spi.ConnectionFactory;
@@ -50,7 +51,7 @@ class DataR2dbcTestIntegrationTests {
 	@Test
 	void testDatabaseClient() {
 		Flux<Map<String, Object>> all = this.databaseClient.sql("SELECT * FROM example").fetch().all();
-		StepVerifier.create(all).expectNextCount(1).verifyComplete();
+		StepVerifier.create(all).expectNextCount(1).expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 	@Test

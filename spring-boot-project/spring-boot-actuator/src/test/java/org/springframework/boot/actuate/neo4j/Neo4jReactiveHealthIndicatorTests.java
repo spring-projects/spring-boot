@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.neo4j;
 
+import java.time.Duration;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
@@ -61,7 +62,7 @@ class Neo4jReactiveHealthIndicatorTests {
 			assertThat(health.getStatus()).isEqualTo(Status.UP);
 			assertThat(health.getDetails()).containsEntry("server", "4711@My Home");
 			assertThat(health.getDetails()).containsEntry("edition", "ultimate collectors edition");
-		}).verifyComplete();
+		}).expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 	@Test
@@ -83,7 +84,7 @@ class Neo4jReactiveHealthIndicatorTests {
 			assertThat(health.getStatus()).isEqualTo(Status.UP);
 			assertThat(health.getDetails()).containsEntry("server", "4711@My Home");
 			assertThat(health.getDetails()).containsEntry("edition", "some edition");
-		}).verifyComplete();
+		}).expectComplete().verify(Duration.ofSeconds(30));
 		then(session).should(times(2)).close();
 	}
 
@@ -96,7 +97,7 @@ class Neo4jReactiveHealthIndicatorTests {
 		healthIndicator.health().as(StepVerifier::create).consumeNextWith((health) -> {
 			assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 			assertThat(health.getDetails()).containsKeys("error");
-		}).verifyComplete();
+		}).expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 	private ReactiveResult mockStatementResult(ResultSummary resultSummary, String version, String edition) {
