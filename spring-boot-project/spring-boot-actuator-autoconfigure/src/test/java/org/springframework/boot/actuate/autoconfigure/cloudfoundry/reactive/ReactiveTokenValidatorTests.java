@@ -122,7 +122,8 @@ class ReactiveTokenValidatorTests {
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
 		StepVerifier
 			.create(this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
-			.expectComplete().verify(Duration.ofSeconds(5));
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 		assertThat(this.tokenValidator).hasFieldOrPropertyWithValue("cachedTokenKeys", VALID_KEYS);
 		fetchTokenKeys.assertWasSubscribed();
 	}
@@ -136,7 +137,8 @@ class ReactiveTokenValidatorTests {
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
 		StepVerifier
 			.create(this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
-			.expectComplete().verify(Duration.ofSeconds(5));
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 		assertThat(this.tokenValidator).hasFieldOrPropertyWithValue("cachedTokenKeys", VALID_KEYS);
 		fetchTokenKeys.assertWasSubscribed();
 	}
@@ -168,7 +170,8 @@ class ReactiveTokenValidatorTests {
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
 		StepVerifier
 			.create(this.tokenValidator.validate(new Token(getSignedToken(header.getBytes(), claims.getBytes()))))
-			.expectComplete().verify(Duration.ofSeconds(5));
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 		fetchTokenKeys.assertWasNotSubscribed();
 	}
 

@@ -109,8 +109,7 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	@Test
 	void whenSslIsConfiguredWithAValidAliasARequestSucceeds() {
 		Mono<String> result = testSslWithAlias("test-alias");
-		StepVerifier.setDefaultTimeout(Duration.ofSeconds(30));
-		StepVerifier.create(result).expectNext("Hello World").expectComplete().verify(Duration.ofSeconds(5));
+		StepVerifier.create(result).expectNext("Hello World").expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 	@Test

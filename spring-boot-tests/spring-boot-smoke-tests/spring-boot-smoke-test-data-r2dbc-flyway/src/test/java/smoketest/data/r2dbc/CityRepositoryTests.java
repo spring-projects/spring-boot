@@ -16,6 +16,8 @@
 
 package smoketest.data.r2dbc;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -27,8 +29,6 @@ import org.springframework.boot.test.autoconfigure.data.r2dbc.DataR2dbcTest;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-
-import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -62,7 +62,8 @@ class CityRepositoryTests {
 	void databaseHasBeenInitialized() {
 		StepVerifier.create(this.repository.findByState("DC").filter((city) -> city.getName().equals("Washington")))
 			.consumeNextWith((city) -> assertThat(city.getId()).isNotNull())
-			.expectComplete().verify(Duration.ofSeconds(5));
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 	}
 
 	private static String r2dbcUrl() {

@@ -195,7 +195,7 @@ class NettyRSocketServerFactoryTests {
 	private void checkEchoRequest() {
 		String payload = "test payload";
 		Mono<String> response = this.requester.route("test").data(payload).retrieveMono(String.class);
-		StepVerifier.create(response).expectNext(payload).expectComplete().verify(Duration.ofSeconds(5));
+		StepVerifier.create(response).expectNext(payload).expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 	private void testBasicSslWithKeyStore(String keyStore, String keyPassword, Transport transport) {

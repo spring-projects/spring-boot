@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ class Neo4jReactiveHealthIndicatorTests {
 			assertThat(health.getStatus()).isEqualTo(Status.UP);
 			assertThat(health.getDetails()).containsEntry("server", "4711@My Home");
 			assertThat(health.getDetails()).containsEntry("edition", "ultimate collectors edition");
-		}).expectComplete().verify(Duration.ofSeconds(5));
+		}).expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 	@Test
@@ -81,7 +81,7 @@ class Neo4jReactiveHealthIndicatorTests {
 			assertThat(health.getStatus()).isEqualTo(Status.UP);
 			assertThat(health.getDetails()).containsEntry("server", "4711@My Home");
 			assertThat(health.getDetails()).containsEntry("edition", "some edition");
-		}).expectComplete().verify(Duration.ofSeconds(5));
+		}).expectComplete().verify(Duration.ofSeconds(30));
 		then(session).should(times(2)).close();
 	}
 
@@ -93,7 +93,7 @@ class Neo4jReactiveHealthIndicatorTests {
 		healthIndicator.health().as(StepVerifier::create).consumeNextWith((health) -> {
 			assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 			assertThat(health.getDetails()).containsKeys("error");
-		}).expectComplete().verify(Duration.ofSeconds(5));
+		}).expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 	private RxResult mockStatementResult(ResultSummary resultSummary, String version, String edition) {

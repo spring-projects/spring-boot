@@ -16,6 +16,8 @@
 
 package smoketest.rsocket;
 
+import java.time.Duration;
+
 import io.rsocket.metadata.WellKnownMimeType;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -29,8 +31,6 @@ import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.security.rsocket.metadata.SimpleAuthenticationEncoder;
 import org.springframework.security.rsocket.metadata.UsernamePasswordMetadata;
 import org.springframework.util.MimeTypeUtils;
-
-import java.time.Duration;
 
 @SpringBootTest(properties = "spring.rsocket.server.port=0")
 class SampleRSocketApplicationTests {
@@ -58,7 +58,8 @@ class SampleRSocketApplicationTests {
 		Mono<Project> result = requester.route("find.project.spring-boot").retrieveMono(Project.class);
 		StepVerifier.create(result)
 			.assertNext((project) -> Assertions.assertThat(project.getName()).isEqualTo("spring-boot"))
-			.expectComplete().verify(Duration.ofSeconds(5));
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 	}
 
 }

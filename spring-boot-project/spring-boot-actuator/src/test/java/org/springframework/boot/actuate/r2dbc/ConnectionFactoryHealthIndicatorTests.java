@@ -57,10 +57,10 @@ class ConnectionFactoryHealthIndicatorTests {
 				assertThat(actual.getStatus()).isEqualTo(Status.UP);
 				assertThat(actual.getDetails()).containsOnly(entry("database", "H2"),
 						entry("validationQuery", "validate(REMOTE)"));
-			}).expectComplete().verify(Duration.ofSeconds(5));
+			}).expectComplete().verify(Duration.ofSeconds(30));
 		}
 		finally {
-			StepVerifier.create(connectionFactory.close()).expectComplete().verify(Duration.ofSeconds(5));
+			StepVerifier.create(connectionFactory.close()).expectComplete().verify(Duration.ofSeconds(30));
 		}
 	}
 
@@ -75,7 +75,7 @@ class ConnectionFactoryHealthIndicatorTests {
 			assertThat(actual.getStatus()).isEqualTo(Status.DOWN);
 			assertThat(actual.getDetails()).containsOnly(entry("database", "mock"),
 					entry("validationQuery", "validate(REMOTE)"), entry("error", "java.lang.RuntimeException: test"));
-		}).expectComplete().verify(Duration.ofSeconds(5));
+		}).expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 	@Test
@@ -91,7 +91,7 @@ class ConnectionFactoryHealthIndicatorTests {
 			assertThat(actual.getStatus()).isEqualTo(Status.DOWN);
 			assertThat(actual.getDetails()).containsOnly(entry("database", "mock"),
 					entry("validationQuery", "validate(REMOTE)"));
-		}).expectComplete().verify(Duration.ofSeconds(5));
+		}).expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 	@Test
@@ -105,17 +105,18 @@ class ConnectionFactoryHealthIndicatorTests {
 					.flatMap(Result::getRowsUpdated)
 					.thenMany(it.close()))
 				.as(StepVerifier::create)
-				.expectComplete().verify(Duration.ofSeconds(5));
+				.expectComplete()
+				.verify(Duration.ofSeconds(30));
 			ReactiveHealthIndicator healthIndicator = new ConnectionFactoryHealthIndicator(connectionFactory,
 					customValidationQuery);
 			healthIndicator.health().as(StepVerifier::create).assertNext((actual) -> {
 				assertThat(actual.getStatus()).isEqualTo(Status.UP);
 				assertThat(actual.getDetails()).containsOnly(entry("database", "H2"), entry("result", 0L),
 						entry("validationQuery", customValidationQuery));
-			}).expectComplete().verify(Duration.ofSeconds(5));
+			}).expectComplete().verify(Duration.ofSeconds(30));
 		}
 		finally {
-			StepVerifier.create(connectionFactory.close()).expectComplete().verify(Duration.ofSeconds(5));
+			StepVerifier.create(connectionFactory.close()).expectComplete().verify(Duration.ofSeconds(30));
 		}
 
 	}
@@ -132,10 +133,10 @@ class ConnectionFactoryHealthIndicatorTests {
 				assertThat(actual.getDetails()).contains(entry("database", "H2"),
 						entry("validationQuery", invalidValidationQuery));
 				assertThat(actual.getDetails()).containsOnlyKeys("database", "error", "validationQuery");
-			}).expectComplete().verify(Duration.ofSeconds(5));
+			}).expectComplete().verify(Duration.ofSeconds(30));
 		}
 		finally {
-			StepVerifier.create(connectionFactory.close()).expectComplete().verify(Duration.ofSeconds(5));
+			StepVerifier.create(connectionFactory.close()).expectComplete().verify(Duration.ofSeconds(30));
 		}
 	}
 

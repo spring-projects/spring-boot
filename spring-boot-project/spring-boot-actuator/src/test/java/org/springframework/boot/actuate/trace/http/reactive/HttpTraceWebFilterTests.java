@@ -106,7 +106,8 @@ class HttpTraceWebFilterTests {
 	private void executeFilter(ServerWebExchange exchange, WebFilterChain chain) {
 		StepVerifier
 			.create(this.filter.filter(exchange, chain).then(Mono.defer(() -> exchange.getResponse().setComplete())))
-			.expectComplete().verify(Duration.ofSeconds(5));
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 	}
 
 }

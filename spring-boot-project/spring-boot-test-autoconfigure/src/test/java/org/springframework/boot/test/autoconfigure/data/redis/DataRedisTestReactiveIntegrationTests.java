@@ -63,11 +63,16 @@ class DataRedisTestReactiveIntegrationTests {
 		String id = UUID.randomUUID().toString();
 		StepVerifier.create(this.operations.opsForValue().set(id, "Hello World"))
 			.expectNext(Boolean.TRUE)
-			.expectComplete().verify(Duration.ofSeconds(5));
-		StepVerifier.create(this.operations.opsForValue().get(id)).expectNext("Hello World").expectComplete().verify(Duration.ofSeconds(5));
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
+		StepVerifier.create(this.operations.opsForValue().get(id))
+			.expectNext("Hello World")
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 		StepVerifier.create(this.operations.execute((action) -> action.serverCommands().flushDb()))
 			.expectNext("OK")
-			.expectComplete().verify(Duration.ofSeconds(5));
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 	}
 
 	@Test

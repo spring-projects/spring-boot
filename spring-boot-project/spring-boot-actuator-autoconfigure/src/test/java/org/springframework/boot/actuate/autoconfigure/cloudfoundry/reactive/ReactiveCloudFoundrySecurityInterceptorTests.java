@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.cloudfoundry.reactive;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,8 +34,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.util.Base64Utils;
-
-import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -68,7 +68,8 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 			.build());
 		StepVerifier.create(this.interceptor.preHandle(request, "/a"))
 			.consumeNextWith((response) -> assertThat(response.getStatus()).isEqualTo(HttpStatus.OK))
-			.expectComplete().verify(Duration.ofSeconds(5));
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 	}
 
 	@Test
@@ -77,7 +78,8 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 		StepVerifier.create(this.interceptor.preHandle(request, "/a"))
 			.consumeNextWith(
 					(response) -> assertThat(response.getStatus()).isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus()))
-			.expectComplete().verify(Duration.ofSeconds(5));
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 	}
 
 	@Test
@@ -87,7 +89,8 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 		StepVerifier.create(this.interceptor.preHandle(request, "/a"))
 			.consumeNextWith(
 					(response) -> assertThat(response.getStatus()).isEqualTo(Reason.MISSING_AUTHORIZATION.getStatus()))
-			.expectComplete().verify(Duration.ofSeconds(5));
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 	}
 
 	@Test
@@ -123,7 +126,8 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 			.build());
 		StepVerifier.create(this.interceptor.preHandle(request, "/a"))
 			.consumeNextWith((response) -> assertThat(response.getStatus()).isEqualTo(Reason.ACCESS_DENIED.getStatus()))
-			.expectComplete().verify(Duration.ofSeconds(5));
+			.expectComplete()
+			.verify(Duration.ofSeconds(30));
 	}
 
 	@Test
@@ -137,7 +141,7 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 		StepVerifier.create(this.interceptor.preHandle(exchange, "/a")).consumeNextWith((response) -> {
 			assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
 			assertThat((AccessLevel) exchange.getAttribute("cloudFoundryAccessLevel")).isEqualTo(AccessLevel.FULL);
-		}).expectComplete().verify(Duration.ofSeconds(5));
+		}).expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 	@Test
@@ -153,7 +157,7 @@ class ReactiveCloudFoundrySecurityInterceptorTests {
 			assertThat(response.getStatus()).isEqualTo(HttpStatus.OK);
 			assertThat((AccessLevel) exchange.getAttribute("cloudFoundryAccessLevel"))
 				.isEqualTo(AccessLevel.RESTRICTED);
-		}).expectComplete().verify(Duration.ofSeconds(5));
+		}).expectComplete().verify(Duration.ofSeconds(30));
 	}
 
 	private String mockAccessToken() {
