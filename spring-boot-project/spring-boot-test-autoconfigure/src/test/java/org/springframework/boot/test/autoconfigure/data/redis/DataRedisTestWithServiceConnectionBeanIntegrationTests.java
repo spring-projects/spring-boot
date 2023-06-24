@@ -70,7 +70,7 @@ class DataRedisTestWithServiceConnectionBeanIntegrationTests {
 	static class ContainerConfig {
 
 		@Bean
-		@ServiceConnection
+		@ServiceConnection(name = "redis")
 		RedisContainer redis() {
 			return new RedisContainer();
 		}
