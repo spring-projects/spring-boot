@@ -17,7 +17,9 @@
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import brave.Span;
@@ -31,6 +33,7 @@ import brave.propagation.CurrentTraceContext;
 import brave.propagation.CurrentTraceContext.ScopeDecorator;
 import brave.propagation.Propagation;
 import brave.propagation.Propagation.Factory;
+import brave.propagation.TraceContext;
 import brave.sampler.Sampler;
 import io.micrometer.tracing.brave.bridge.BraveBaggageManager;
 import io.micrometer.tracing.brave.bridge.BraveSpanCustomizer;
@@ -150,6 +153,31 @@ class BraveAutoConfigurationTests {
 			assertThat(injectors).extracting(Factory::toString).containsExactly("B3Propagation");
 			assertThat(context).hasSingleBean(BaggagePropagation.FactoryBuilder.class);
 		});
+	}
+
+	@Test
+	void shouldUseB3SingleWithParentWhenPropagationTypeIsB3() {
+		this.contextRunner
+			.withPropertyValues("management.tracing.propagation.type=B3", "management.tracing.sampling.probability=1.0")
+			.run((context) -> {
+				Propagation<String> propagation = context.getBean(Factory.class).get();
+				Tracer tracer = context.getBean(Tracing.class).tracer();
+				Span child;
+				Span parent = tracer.nextSpan().name("parent");
+				try (Tracer.SpanInScope ignored = tracer.withSpanInScope(parent.start())) {
+					child = tracer.nextSpan().name("child");
+					child.start().finish();
+				}
+				finally {
+					parent.finish();
+				}
+
+				Map<String, String> map = new HashMap<>();
+				TraceContext childContext = child.context();
+				propagation.injector(this::injectToMap).inject(childContext, map);
+				assertThat(map).containsExactly(Map.entry("b3", "%s-%s-1-%s".formatted(childContext.traceIdString(),
+						childContext.spanIdString(), childContext.parentIdString())));
+			});
 	}
 
 	@Test
@@ -311,6 +339,10 @@ class BraveAutoConfigurationTests {
 				.asList()
 				.containsExactly(components.reporter1, components.reporter3, components.reporter2);
 		});
+	}
+
+	private void injectToMap(Map<String, String> map, String key, String value) {
+		map.put(key, value);
 	}
 
 	private List<Factory> getInjectors(Factory factory) {
