@@ -124,7 +124,7 @@ class CompositePropagationFactory extends Propagation.Factory {
 		 * @return the B3 propagation factory
 		 */
 		private Propagation.Factory b3Single() {
-			return B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE_NO_PARENT).build();
+			return B3Propagation.newFactoryBuilder().injectFormat(B3Propagation.Format.SINGLE).build();
 		}
 
 		/**
