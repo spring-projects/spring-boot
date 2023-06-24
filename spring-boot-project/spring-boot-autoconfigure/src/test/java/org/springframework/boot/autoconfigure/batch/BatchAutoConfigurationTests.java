@@ -80,6 +80,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Vedran Pavic
  * @author Kazuki Shimizu
+ * @author Akshay Dubey
  */
 @ExtendWith(OutputCaptureExtension.class)
 class BatchAutoConfigurationTests {
@@ -372,6 +373,17 @@ class BatchAutoConfigurationTests {
 					DataSourceTransactionManagerAutoConfiguration.class))
 			.run((context) -> assertThat(context).hasSingleBean(BatchDataSourceScriptDatabaseInitializer.class)
 				.hasBean("customInitializer"));
+	}
+
+	@Test
+	void testNonConfiguredJobThrowsException() {
+		this.contextRunner
+		.withUserConfiguration(NamedJobConfigurationWithLocalJob.class, EmbeddedDataSourceConfiguration.class)
+		.withPropertyValues("spring.batch.job.names:discreteLocalJob,nonConfiguredJob")
+		.run((context) -> {
+			assertThat(context).hasFailed().getFailure().getRootCause()
+			.hasMessageContaining("nonConfiguredJob");	
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)
