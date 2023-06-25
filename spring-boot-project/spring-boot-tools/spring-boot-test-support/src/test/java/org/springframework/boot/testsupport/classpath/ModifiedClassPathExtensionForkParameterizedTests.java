@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -28,6 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ForkedClassPath @ForkedClassPath}.
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 @ForkedClassPath
 class ModifiedClassPathExtensionForkParameterizedTests {
@@ -35,7 +36,7 @@ class ModifiedClassPathExtensionForkParameterizedTests {
 	private static final List<String> arguments = new ArrayList<>();
 
 	@ParameterizedTest
-	@CsvSource({ "one", "two", "three" })
+	@ValueSource(strings = { "one", "two", "three" })
 	void testIsInvokedOnceForEachArgument(String argument) {
 		if (argument.equals("one")) {
 			assertThat(arguments).isEmpty();

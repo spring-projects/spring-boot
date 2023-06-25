@@ -29,7 +29,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
@@ -54,6 +54,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @param <T> the {@link ClientHttpRequestFactory} to be produced
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  */
 @DirtiesUrlFactories
 abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpRequestFactory> {
@@ -102,7 +103,7 @@ abstract class AbstractClientHttpRequestFactoriesTests<T extends ClientHttpReque
 	}
 
 	@ParameterizedTest
-	@CsvSource({ "GET", "POST" })
+	@ValueSource(strings = { "GET", "POST" })
 	void connectWithSslBundle(String httpMethod) throws Exception {
 		TomcatServletWebServerFactory webServerFactory = new TomcatServletWebServerFactory(0);
 		Ssl ssl = new Ssl();
