@@ -39,13 +39,12 @@ public enum ReleaseType {
 	}
 
 	public static ReleaseType from(String releaseType) {
-		for (ReleaseType type : ReleaseType.values()) {
-			if (type.identifier.equals(releaseType)) {
-				return type;
-			}
-		}
-		throw new IllegalArgumentException("Invalid release type");
+		return Arrays.stream(ReleaseType.values())
+				.filter((type) -> type.identifier.equals(releaseType))
+				.findFirst()
+				.orElseThrow(() -> new IllegalArgumentException("Invalid release type"));
 	}
+
 
 	public String getRepo() {
 		return this.repo;

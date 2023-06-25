@@ -80,14 +80,11 @@ public enum JavaVersion {
 	 * @return the {@link JavaVersion}
 	 */
 	public static JavaVersion getJavaVersion() {
-		List<JavaVersion> candidates = Arrays.asList(JavaVersion.values());
-		Collections.reverse(candidates);
-		for (JavaVersion candidate : candidates) {
-			if (candidate.available) {
-				return candidate;
-			}
-		}
-		return SEVENTEEN;
+		return Arrays.stream(JavaVersion.values())
+				.sorted(Collections.reverseOrder())
+				.filter((javaVersion) -> javaVersion.available)
+				.findFirst()
+				.orElse(SEVENTEEN);
 	}
 
 	/**
