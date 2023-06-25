@@ -47,6 +47,7 @@ dependencies {
 	testImplementation("org.springframework:spring-core-test")
 	testImplementation("org.springframework:spring-r2dbc")
 	testImplementation("org.springframework.amqp:spring-rabbit")
+	testImplementation("org.springframework.data:spring-data-redis")
 	testImplementation("org.springframework.kafka:spring-kafka")
 	testImplementation("org.testcontainers:junit-jupiter")
 

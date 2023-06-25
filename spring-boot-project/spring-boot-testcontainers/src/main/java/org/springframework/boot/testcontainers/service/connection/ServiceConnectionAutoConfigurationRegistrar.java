@@ -16,7 +16,9 @@
 
 package org.springframework.boot.testcontainers.service.connection;
 
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.testcontainers.containers.Container;
@@ -38,6 +40,7 @@ import org.springframework.core.type.AnnotationMetadata;
  * {@link ServiceConnectionAutoConfiguration}.
  *
  * @author Phillip Webb
+ * @author Yanming Zhou
  */
 class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitionRegistrar {
 
@@ -94,8 +97,21 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 			ServiceConnection annotation) {
 		Origin origin = new BeanOrigin(beanName, beanDefinition);
 		Class<C> containerType = (Class<C>) beanFactory.getType(beanName, false);
-		String containerImageName = (beanDefinition instanceof TestcontainerBeanDefinition testcontainerBeanDefinition)
-				? testcontainerBeanDefinition.getContainerImageName() : null;
+		String containerImageName = null;
+		if (beanDefinition instanceof TestcontainerBeanDefinition testcontainerBeanDefinition) {
+			containerImageName = testcontainerBeanDefinition.getContainerImageName();
+		}
+		else {
+			if (annotation.name().isEmpty()) {
+				String serviceName = beanName;
+				if (serviceName.endsWith("Container")) {
+					serviceName = serviceName.substring(0, serviceName.length() - 9);
+				}
+				Map<String, Object> map = new HashMap<>(MergedAnnotation.from(annotation).asMap());
+				map.put("name", serviceName);
+				annotation = MergedAnnotation.of(null, ServiceConnection.class, map).synthesize();
+			}
+		}
 		return new ContainerConnectionSource<>(beanName, origin, containerType, containerImageName, annotation,
 				() -> beanFactory.getBean(beanName, containerType));
 	}
