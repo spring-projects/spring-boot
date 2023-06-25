@@ -40,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  *
  * @author Andy Wilkinson
  * @author Vedran Pavic
+ * @author Yanming Zhou
  */
 @ClassPathExclusions("kotlin-daemon-client-*")
 class BuildInfoTests {
@@ -176,7 +177,7 @@ class BuildInfoTests {
 		Project project = GradleProjectBuilder.builder().withProjectDir(projectDir).withName(projectName).build();
 		((ProjectInternal) project).getServices()
 			.get(GradlePropertiesController.class)
-			.loadGradlePropertiesFrom(projectDir);
+			.loadGradlePropertiesFrom(projectDir, false);
 		return project;
 	}
 

@@ -49,7 +49,7 @@ dependencies {
 
 task fullJar(type: Jar) {
 	dependsOn configurations.loader
-	classifier = "full"
+	archiveClassifier = "full"
 	entryCompression = "stored"
 	from(configurations.runtimeClasspath) {
 		into "BOOT-INF/lib"
@@ -73,7 +73,7 @@ task fullJar(type: Jar) {
 }
 
 def configureArchive(archive) {
-	archive.classifier = "bin"
+	archive.archiveClassifier = "bin"
 	archive.into "spring-${project.version}"
 	archive.from(fullJar) {
 		rename {
@@ -91,7 +91,7 @@ def configureArchive(archive) {
 }
 
 task zip(type: Zip) {
-	classifier = "bin"
+	archiveClassifier = "bin"
 	configureArchive it
 }
 
