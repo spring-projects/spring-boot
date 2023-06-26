@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.metrics.startup;
 
+import java.lang.management.ManagementFactory;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.concurrent.TimeUnit;
@@ -37,6 +38,7 @@ import org.springframework.context.event.SmartApplicationListener;
  *
  * @author Chris Bono
  * @author Phillip Webb
+ * @author Michał Rowicki
  * @since 2.6.0
  */
 public class StartupTimeMetricsListener implements SmartApplicationListener {
@@ -47,6 +49,11 @@ public class StartupTimeMetricsListener implements SmartApplicationListener {
 	public static final String APPLICATION_STARTED_TIME_METRIC_NAME = "application.started.time";
 
 	/**
+	 * The default name to use for the process started time metric.
+	 */
+	public static final String PROCESS_STARTED_TIME = "process.started.time";
+
+	/**
 	 * The default name to use for the application ready time metric.
 	 */
 	public static final String APPLICATION_READY_TIME_METRIC_NAME = "application.ready.time";
@@ -54,6 +61,8 @@ public class StartupTimeMetricsListener implements SmartApplicationListener {
 	private final MeterRegistry meterRegistry;
 
 	private final String startedTimeMetricName;
+
+	private final String processStartedTimeMetricName;
 
 	private final String readyTimeMetricName;
 
@@ -63,11 +72,12 @@ public class StartupTimeMetricsListener implements SmartApplicationListener {
 	 * Create a new instance using default metric names.
 	 * @param meterRegistry the registry to use
 	 * @see #APPLICATION_STARTED_TIME_METRIC_NAME
+	 * @see #PROCESS_STARTED_TIME
 	 * @see #APPLICATION_READY_TIME_METRIC_NAME
 	 */
 	public StartupTimeMetricsListener(MeterRegistry meterRegistry) {
-		this(meterRegistry, APPLICATION_STARTED_TIME_METRIC_NAME, APPLICATION_READY_TIME_METRIC_NAME,
-				Collections.emptyList());
+		this(meterRegistry, APPLICATION_STARTED_TIME_METRIC_NAME, PROCESS_STARTED_TIME,
+				APPLICATION_READY_TIME_METRIC_NAME, Collections.emptyList());
 	}
 
 	/**
@@ -77,11 +87,30 @@ public class StartupTimeMetricsListener implements SmartApplicationListener {
 	 * metric
 	 * @param readyTimeMetricName the name to use for the application ready time metric
 	 * @param tags the tags to associate to application startup metrics
+	 * @deprecated since 3.2.0 for removal in 3.3.0 in favor of
+	 * {@link #StartupTimeMetricsListener(MeterRegistry, String, String, String, Iterable)}
 	 */
+	@Deprecated(since = "3.2.0", forRemoval = true)
 	public StartupTimeMetricsListener(MeterRegistry meterRegistry, String startedTimeMetricName,
 			String readyTimeMetricName, Iterable<Tag> tags) {
+		this(meterRegistry, startedTimeMetricName, PROCESS_STARTED_TIME, readyTimeMetricName, tags);
+	}
+
+	/**
+	 * Create a new instance using the specified options.
+	 * @param meterRegistry the registry to use
+	 * @param startedTimeMetricName the name to use for the application started time
+	 * metric
+	 * @param processStartedTimeMetricName the name to use for the application started
+	 * time
+	 * @param readyTimeMetricName the name to use for the application ready time metric
+	 * @param tags the tags to associate to application startup metrics
+	 */
+	public StartupTimeMetricsListener(MeterRegistry meterRegistry, String startedTimeMetricName,
+			String processStartedTimeMetricName, String readyTimeMetricName, Iterable<Tag> tags) {
 		this.meterRegistry = meterRegistry;
 		this.startedTimeMetricName = startedTimeMetricName;
+		this.processStartedTimeMetricName = processStartedTimeMetricName;
 		this.readyTimeMetricName = readyTimeMetricName;
 		this.tags = Tags.of(tags);
 	}
@@ -105,6 +134,8 @@ public class StartupTimeMetricsListener implements SmartApplicationListener {
 	private void onApplicationStarted(ApplicationStartedEvent event) {
 		registerGauge(this.startedTimeMetricName, "Time taken (ms) to start the application", event.getTimeTaken(),
 				event.getSpringApplication());
+		registerGauge(this.processStartedTimeMetricName, "Process uptime (ms) when the application started",
+				Duration.ofMillis(ManagementFactory.getRuntimeMXBean().getUptime()), event.getSpringApplication());
 	}
 
 	private void onApplicationReady(ApplicationReadyEvent event) {

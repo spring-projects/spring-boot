@@ -23,6 +23,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.TimeGauge;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,6 +39,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link StartupTimeMetricsListener}.
  *
  * @author Chris Bono
+ * @author Michał Rowicki
  */
 class StartupTimeMetricsListenerTests {
 
@@ -56,17 +58,19 @@ class StartupTimeMetricsListenerTests {
 		this.listener.onApplicationEvent(applicationStartedEvent(2000L));
 		this.listener.onApplicationEvent(applicationReadyEvent(2200L));
 		assertMetricExistsWithValue("application.started.time", 2000L);
+		assertMetricExists("process.started.time");
 		assertMetricExistsWithValue("application.ready.time", 2200L);
 	}
 
 	@Test
 	void metricsRecordedWithCustomTagsAndMetricNames() {
 		Tags tags = Tags.of("foo", "bar");
-		this.listener = new StartupTimeMetricsListener(this.registry, "m1", "m2", tags);
+		this.listener = new StartupTimeMetricsListener(this.registry, "m1", "m2", "m3", tags);
 		this.listener.onApplicationEvent(applicationStartedEvent(1000L));
 		this.listener.onApplicationEvent(applicationReadyEvent(1050L));
 		assertMetricExistsWithCustomTagsAndValue("m1", tags, 1000L);
-		assertMetricExistsWithCustomTagsAndValue("m2", tags, 1050L);
+		assertMetricExistsWithCustomTags("m2", tags);
+		assertMetricExistsWithCustomTagsAndValue("m3", tags, 1050L);
 	}
 
 	@Test
@@ -74,15 +78,18 @@ class StartupTimeMetricsListenerTests {
 		SpringApplication application = mock(SpringApplication.class);
 		this.listener.onApplicationEvent(new ApplicationStartedEvent(application, null, null, Duration.ofSeconds(2)));
 		TimeGauge applicationStartedGauge = this.registry.find("application.started.time").timeGauge();
+		TimeGauge processStartedTime = this.registry.find("process.started.time").timeGauge();
 		assertThat(applicationStartedGauge).isNotNull();
 		assertThat(applicationStartedGauge.getId().getTags()).isEmpty();
+		assertThat(processStartedTime).isNotNull();
+		assertThat(processStartedTime.getId().getTags()).isEmpty();
 	}
 
 	@Test
 	void metricRecordedWithoutMainAppClassTagAndAdditionalTags() {
 		SpringApplication application = mock(SpringApplication.class);
 		Tags tags = Tags.of("foo", "bar");
-		this.listener = new StartupTimeMetricsListener(this.registry, "started", "ready", tags);
+		this.listener = new StartupTimeMetricsListener(this.registry, "started", "jvm", "ready", tags);
 		this.listener.onApplicationEvent(new ApplicationReadyEvent(application, null, null, Duration.ofSeconds(2)));
 		TimeGauge applicationReadyGauge = this.registry.find("ready").timeGauge();
 		assertThat(applicationReadyGauge).isNotNull();
@@ -95,6 +102,12 @@ class StartupTimeMetricsListenerTests {
 		this.listener.onApplicationEvent(applicationReadyEvent(null));
 		assertThat(this.registry.find("application.started.time").timeGauge()).isNull();
 		assertThat(this.registry.find("application.ready.time").timeGauge()).isNull();
+	}
+
+	@Test
+	void startupJvmMetricIsRecordedEvenWhenStartupTimeIsNotAvailable() {
+		this.listener.onApplicationEvent(applicationStartedEvent(null));
+		assertThat(this.registry.find("process.started.time").timeGauge()).isNotNull();
 	}
 
 	private ApplicationStartedEvent applicationStartedEvent(Long startupTimeMs) {
@@ -122,6 +135,18 @@ class StartupTimeMetricsListenerTests {
 			.timeGauge()).isNotNull()
 			.extracting((m) -> m.value(TimeUnit.MILLISECONDS))
 			.isEqualTo(expectedValueInMillis.doubleValue());
+	}
+
+	private void assertMetricExists(String metricName) {
+		assertMetricExistsWithCustomTags(metricName, Tags.empty());
+	}
+
+	private void assertMetricExistsWithCustomTags(String metricName, Tags expectedCustomTags) {
+		assertThat(this.registry.find(metricName)
+			.tags(Tags.concat(expectedCustomTags, "main.application.class", TestMainApplication.class.getName()))
+			.timeGauge()).isNotNull()
+			.extracting((m) -> m.value(TimeUnit.MILLISECONDS))
+			.satisfies(new Condition<>((d) -> d > 0.0, "greater than zero"));
 	}
 
 	static class TestMainApplication {
