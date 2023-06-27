@@ -104,6 +104,24 @@ class UndertowWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void customMaxHttpRequestHeaderSize() {
+		bind("server.max-http-request-header-size=2048");
+		assertThat(boundServerOption(UndertowOptions.MAX_HEADER_SIZE)).isEqualTo(2048);
+	}
+
+	@Test
+	void customMaxHttpRequestHeaderSizeIgnoredIfNegative() {
+		bind("server.max-http-request-header-size=-1");
+		assertThat(boundServerOption(UndertowOptions.MAX_HEADER_SIZE)).isNull();
+	}
+
+	@Test
+	void customMaxHttpRequestHeaderSizeIgnoredIfZero() {
+		bind("server.max-http-request-header-size=0");
+		assertThat(boundServerOption(UndertowOptions.MAX_HEADER_SIZE)).isNull();
+	}
+
+	@Test
 	void customMaxHttpPostSize() {
 		bind("server.undertow.max-http-post-size=256");
 		assertThat(boundServerOption(UndertowOptions.MAX_ENTITY_SIZE)).isEqualTo(256);
