@@ -236,14 +236,17 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getDryRunOutput()).to(configuration::dryRunOutput);
 			map.from(properties.getErrorOverrides()).to(configuration::errorOverrides);
 			map.from(properties.getLicenseKey()).to(configuration::licenseKey);
-			map.from(properties.getOracleSqlplus()).to(configuration::oracleSqlplus);
-			map.from(properties.getOracleSqlplusWarn()).to(configuration::oracleSqlplusWarn);
+			// No method references for Oracle props for compatibility with Flyway 9.20+
+			map.from(properties.getOracleSqlplus()).to((oracleSqlplus) -> configuration.oracleSqlplus(oracleSqlplus));
+			map.from(properties.getOracleSqlplusWarn())
+				.to((oracleSqlplusWarn) -> configuration.oracleSqlplusWarn(oracleSqlplusWarn));
+			map.from(properties.getOracleKerberosCacheFile())
+				.to((oracleKerberosCacheFile) -> configuration.oracleKerberosCacheFile(oracleKerberosCacheFile));
 			map.from(properties.getStream()).to(configuration::stream);
 			map.from(properties.getUndoSqlMigrationPrefix()).to(configuration::undoSqlMigrationPrefix);
 			map.from(properties.getCherryPick()).to(configuration::cherryPick);
 			map.from(properties.getJdbcProperties()).whenNot(Map::isEmpty).to(configuration::jdbcProperties);
 			map.from(properties.getKerberosConfigFile()).to(configuration::kerberosConfigFile);
-			map.from(properties.getOracleKerberosCacheFile()).to(configuration::oracleKerberosCacheFile);
 			map.from(properties.getOutputQueryResults()).to(configuration::outputQueryResults);
 			map.from(properties.getSqlServerKerberosLoginFile())
 				.whenNonNull()
