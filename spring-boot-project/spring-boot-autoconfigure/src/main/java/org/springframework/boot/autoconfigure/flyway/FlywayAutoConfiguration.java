@@ -224,7 +224,8 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getDryRunOutput()).to(configuration::dryRunOutput);
 			map.from(properties.getErrorOverrides()).to(configuration::errorOverrides);
 			map.from(properties.getLicenseKey()).to(configuration::licenseKey);
-			map.from(properties.getOracleSqlplus()).to(configuration::oracleSqlplus);
+			// No method reference for compatibility with Flyway 9.20+
+			map.from(properties.getOracleSqlplus()).to((oracleSqlplus) -> configuration.oracleSqlplus(oracleSqlplus));
 			// No method reference for compatibility with Flyway 5.x
 			map.from(properties.getOracleSqlplusWarn())
 				.to((oracleSqlplusWarn) -> configuration.oracleSqlplusWarn(oracleSqlplusWarn));
