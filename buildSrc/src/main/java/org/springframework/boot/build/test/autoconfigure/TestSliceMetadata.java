@@ -69,6 +69,7 @@ public class TestSliceMetadata extends DefaultTask {
 		getInputs().dir((Callable<File>) () -> this.sourceSet.getOutput().getResourcesDir())
 			.withPathSensitivity(PathSensitivity.RELATIVE)
 			.withPropertyName("resources");
+		dependsOn((Callable<String>) () -> this.sourceSet.getProcessResourcesTaskName());
 		getInputs().files((Callable<FileCollection>) () -> this.sourceSet.getOutput().getClassesDirs())
 			.withPathSensitivity(PathSensitivity.RELATIVE)
 			.withPropertyName("classes");
