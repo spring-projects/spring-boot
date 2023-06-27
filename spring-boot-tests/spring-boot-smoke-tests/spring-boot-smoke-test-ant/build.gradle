@@ -50,7 +50,7 @@ task syncTestRepository(type: Sync) {
 task antRun(type: JavaExec) {
 	dependsOn syncTestRepository, configurations.antDependencies
 	classpath = configurations.antDependencies;
-	main = "org.apache.tools.ant.launch.Launcher"
+	mainClass = "org.apache.tools.ant.launch.Launcher"
 	args = [ "clean", "build" ]
 	systemProperties = [
 		"ant-spring-boot.version" : version,
