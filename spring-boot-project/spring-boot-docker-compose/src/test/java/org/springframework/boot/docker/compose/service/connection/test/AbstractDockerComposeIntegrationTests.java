@@ -58,6 +58,7 @@ public abstract class AbstractDockerComposeIntegrationTests {
 		properties.put("spring.docker.compose.skip.in-tests", "false");
 		properties.put("spring.docker.compose.file",
 				ThrowingSupplier.of(this.composeResource::getFile).get().getAbsolutePath());
+		properties.put("spring.docker.compose.stop.command", "down");
 		application.setDefaultProperties(properties);
 		return application.run().getBean(type);
 	}
