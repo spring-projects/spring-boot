@@ -315,7 +315,7 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	protected String getStartLogMessage() {
-		return "Undertow started on port(s) " + getPortsDescription();
+		return "Undertow started on port" + (getActualPorts().size() == 1 ? "" : "s") + " " + getPortsDescription();
 	}
 
 	/**

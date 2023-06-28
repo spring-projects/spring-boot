@@ -105,7 +105,8 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	private void initialize() throws WebServerException {
-		logger.info("Tomcat initialized with port(s): " + getPortsDescription(false));
+		logger.info("Tomcat initialized with port" + (this.tomcat.getService().findConnectors().length == 1 ? "" : "s")
+				+ ": " + getPortsDescription(false));
 		synchronized (this.monitor) {
 			try {
 				addInstanceIdToEngineName();
@@ -218,8 +219,9 @@ public class TomcatWebServer implements WebServer {
 				}
 				checkThatConnectorsHaveStarted();
 				this.started = true;
-				logger.info("Tomcat started on port(s): " + getPortsDescription(true) + " with context path '"
-						+ getContextPath() + "'");
+				logger
+					.info("Tomcat started on port" + (this.tomcat.getService().findConnectors().length == 1 ? "" : "s")
+							+ ": " + getPortsDescription(true) + " with context path '" + getContextPath() + "'");
 			}
 			catch (ConnectorStartFailedException ex) {
 				stopSilently();

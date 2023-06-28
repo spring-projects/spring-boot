@@ -168,8 +168,8 @@ public class JettyWebServer implements WebServer {
 					}
 				}
 				this.started = true;
-				logger.info("Jetty started on port(s) " + getActualPortsDescription() + " with context path '"
-						+ getContextPath() + "'");
+				logger.info("Jetty started on port" + (connectors.length == 1 ? "" : "s") + " "
+						+ getActualPortsDescription() + " with context path '" + getContextPath() + "'");
 			}
 			catch (WebServerException ex) {
 				stopSilently();
