@@ -182,11 +182,21 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	private String getPortsDescription() {
+		StringBuilder portsDescription = new StringBuilder();
 		List<UndertowWebServer.Port> ports = getActualPorts();
-		if (!ports.isEmpty()) {
-			return StringUtils.collectionToDelimitedString(ports, " ");
+		portsDescription.append("port");
+		if (ports.size() != 1) {
+			portsDescription.append("s");
 		}
-		return "unknown";
+		portsDescription.append(" ");
+
+		if (!ports.isEmpty()) {
+			portsDescription.append(StringUtils.collectionToDelimitedString(ports, " "));
+		}
+		else {
+			portsDescription.append("unknown");
+		}
+		return portsDescription.toString();
 	}
 
 	private List<Port> getActualPorts() {
@@ -315,7 +325,7 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	protected String getStartLogMessage() {
-		return "Undertow started on port(s) " + getPortsDescription();
+		return "Undertow started on " + getPortsDescription();
 	}
 
 	/**
