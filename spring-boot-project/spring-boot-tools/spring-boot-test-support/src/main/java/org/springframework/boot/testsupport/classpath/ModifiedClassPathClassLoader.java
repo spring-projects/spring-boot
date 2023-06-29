@@ -26,6 +26,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,7 @@ import org.eclipse.aether.transport.http.HttpTransporterFactory;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.AntPathMatcher;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ConcurrentReferenceHashMap;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -74,10 +76,14 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 
 	private static final int MAX_RESOLUTION_ATTEMPTS = 5;
 
+	private final Set<String> excludedPackages;
+
 	private final ClassLoader junitLoader;
 
-	ModifiedClassPathClassLoader(URL[] urls, ClassLoader parent, ClassLoader junitLoader) {
+	ModifiedClassPathClassLoader(URL[] urls, Set<String> excludedPackages, ClassLoader parent,
+			ClassLoader junitLoader) {
 		super(urls, parent);
+		this.excludedPackages = excludedPackages;
 		this.junitLoader = junitLoader;
 	}
 
@@ -86,6 +92,10 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 		if (name.startsWith("org.junit") || name.startsWith("org.hamcrest")
 				|| name.startsWith("io.netty.internal.tcnative")) {
 			return Class.forName(name, false, this.junitLoader);
+		}
+		String packageName = ClassUtils.getPackageName(name);
+		if (this.excludedPackages.contains(packageName)) {
+			throw new ClassNotFoundException();
 		}
 		return super.loadClass(name);
 	}
@@ -130,7 +140,7 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 			.map((source) -> MergedAnnotations.from(source, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY))
 			.toList();
 		return new ModifiedClassPathClassLoader(processUrls(extractUrls(classLoader), annotations),
-				classLoader.getParent(), classLoader);
+				excludedPackages(annotations), classLoader.getParent(), classLoader);
 	}
 
 	private static URL[] extractUrls(ClassLoader classLoader) {
@@ -267,6 +277,17 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 			dependencies.add(new Dependency(new DefaultArtifact(coordinate), null));
 		}
 		return dependencies;
+	}
+
+	private static Set<String> excludedPackages(List<MergedAnnotations> annotations) {
+		Set<String> excludedPackages = new HashSet<>();
+		for (MergedAnnotations candidate : annotations) {
+			MergedAnnotation<ClassPathExclusions> annotation = candidate.get(ClassPathExclusions.class);
+			if (annotation.isPresent()) {
+				excludedPackages.addAll(Arrays.asList(annotation.getStringArray("packages")));
+			}
+		}
+		return excludedPackages;
 	}
 
 	/**
