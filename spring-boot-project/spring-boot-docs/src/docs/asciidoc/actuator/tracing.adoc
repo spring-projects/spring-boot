@@ -65,7 +65,7 @@ Now open the Zipkin UI at `http://localhost:9411` and press the "Run Query" butt
 You should see one trace.
 Press the "Show" button to see the details of that trace.
 
-TIP: You can include the current trace and span id in the logs by setting the `logging.pattern.level` property to `%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]`
+TIP: You can include the current trace and span id in the logs by setting the configprop:logging.pattern.level[] property to `%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]`
 
 
 
@@ -149,3 +149,18 @@ include::code:CustomObservation[]
 This will create an observation named "some-operation" with the tag "some-tag=some-value".
 
 TIP: If you want to create a span without creating a metric, you need to use the https://micrometer.io/docs/tracing#_using_micrometer_tracing_directly[lower-level `Tracer` API] from Micrometer.
+
+[[actuator.micrometer-tracing.baggage]]
+=== Baggage
+You can create baggage with the `Tracer` API:
+
+include::code:CreatingBaggage[]
+
+This example creates baggage named `baggage1` with the value `value1`.
+The baggage is automatically propagated over the network if you're using W3C propagation.
+If you're using B3 propagation, baggage is not automatically propagated.
+To manually propagate baggage over the network, use the configprop:management.tracing.baggage.remote-fields[] configuration property (this works for W3C, too).
+For the example above, setting this property to `baggage1` results in an HTTP header `baggage1: value1`.
+
+If you want to propagate the baggage to the MDC, use the configprop:management.tracing.baggage.correlation.fields[] configuration property.
+For the example above, setting this property to `baggage1` results in an MDC entry named `baggage1`.
