@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.boot.autoconfigure.template.PathBasedTemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
+import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrar;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link TemplateAvailabilityProvider} that provides availability information for
@@ -32,8 +35,10 @@ import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvi
  */
 public class FreeMarkerTemplateAvailabilityProvider extends PathBasedTemplateAvailabilityProvider {
 
+	private static final String REQUIRED_CLASS_NAME = "freemarker.template.Configuration";
+
 	public FreeMarkerTemplateAvailabilityProvider() {
-		super("freemarker.template.Configuration", FreeMarkerTemplateAvailabilityProperties.class, "spring.freemarker");
+		super(REQUIRED_CLASS_NAME, FreeMarkerTemplateAvailabilityProperties.class, "spring.freemarker");
 	}
 
 	protected static final class FreeMarkerTemplateAvailabilityProperties extends TemplateAvailabilityProperties {
@@ -56,6 +61,21 @@ public class FreeMarkerTemplateAvailabilityProvider extends PathBasedTemplateAva
 
 		public void setTemplateLoaderPath(List<String> templateLoaderPath) {
 			this.templateLoaderPath = templateLoaderPath;
+		}
+
+	}
+
+	static class FreeMarkerTemplateAvailabilityRuntimeHints extends BindableRuntimeHintsRegistrar {
+
+		FreeMarkerTemplateAvailabilityRuntimeHints() {
+			super(FreeMarkerTemplateAvailabilityProperties.class);
+		}
+
+		@Override
+		public void registerHints(RuntimeHints hints, ClassLoader classLoader) {
+			if (ClassUtils.isPresent(REQUIRED_CLASS_NAME, classLoader)) {
+				super.registerHints(hints, classLoader);
+			}
 		}
 
 	}
