@@ -1,4 +1,6 @@
 org.springframework.aot.hint.RuntimeHintsRegistrar=\
+org.springframework.boot.autoconfigure.freemarker.FreeMarkerTemplateAvailabilityProvider.FreeMarkerTemplateAvailabilityRuntimeHints,\
+org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAvailabilityProvider.GroovyTemplateAvailabilityRuntimeHints,\
 org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration.JacksonAutoConfigurationRuntimeHints,\
 org.springframework.boot.autoconfigure.template.TemplateRuntimeHints
 
