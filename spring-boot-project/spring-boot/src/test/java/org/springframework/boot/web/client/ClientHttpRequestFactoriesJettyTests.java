@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,31 +16,35 @@
 
 package org.springframework.boot.web.client;
 
+import org.eclipse.jetty.client.HttpClient;
+
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
- * Tests for {@link ClientHttpRequestFactories} when the simple JDK-based client is the
+ * Tests for {@link ClientHttpRequestFactories} when Jetty Http Components is the
  * predominant HTTP client.
  *
  * @author Andy Wilkinson
  */
-@ClassPathExclusions({ "httpclient5-*.jar", "okhttp-*.jar", "jetty-client-*.jar" })
-class ClientHttpRequestFactoriesSimpleTests
-		extends AbstractClientHttpRequestFactoriesTests<SimpleClientHttpRequestFactory> {
+@ClassPathExclusions({ "httpclient5-*.jar", "okhttp-*.jar" })
+class ClientHttpRequestFactoriesJettyTests
+		extends AbstractClientHttpRequestFactoriesTests<JettyClientHttpRequestFactory> {
 
-	ClientHttpRequestFactoriesSimpleTests() {
-		super(SimpleClientHttpRequestFactory.class);
+	ClientHttpRequestFactoriesJettyTests() {
+		super(JettyClientHttpRequestFactory.class);
 	}
 
 	@Override
-	protected long connectTimeout(SimpleClientHttpRequestFactory requestFactory) {
-		return (int) ReflectionTestUtils.getField(requestFactory, "connectTimeout");
+	protected long connectTimeout(JettyClientHttpRequestFactory requestFactory) {
+		HttpClient client = (HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient");
+		return client.getConnectTimeout();
 	}
 
 	@Override
-	protected long readTimeout(SimpleClientHttpRequestFactory requestFactory) {
+	@SuppressWarnings("unchecked")
+	protected long readTimeout(JettyClientHttpRequestFactory requestFactory) {
 		return (int) ReflectionTestUtils.getField(requestFactory, "readTimeout");
 	}
 

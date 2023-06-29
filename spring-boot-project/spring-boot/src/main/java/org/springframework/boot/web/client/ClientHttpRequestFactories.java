@@ -26,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
@@ -38,6 +39,9 @@ import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuil
 import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
 import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
 import org.apache.hc.core5.http.io.SocketConfig;
+import org.eclipse.jetty.client.dynamic.HttpClientTransportDynamic;
+import org.eclipse.jetty.io.ClientConnector;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.ssl.SslBundle;
@@ -45,6 +49,7 @@ import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.Assert;
@@ -70,6 +75,10 @@ public final class ClientHttpRequestFactories {
 
 	private static final boolean OKHTTP_CLIENT_PRESENT = ClassUtils.isPresent(OKHTTP_CLIENT_CLASS, null);
 
+	static final String JETTY_CLIENT_CLASS = "org.eclipse.jetty.client.HttpClient";
+
+	private static final boolean JETTY_CLIENT_PRESENT = ClassUtils.isPresent(JETTY_CLIENT_CLASS, null);
+
 	private ClientHttpRequestFactories() {
 	}
 
@@ -86,6 +95,9 @@ public final class ClientHttpRequestFactories {
 		}
 		if (OKHTTP_CLIENT_PRESENT) {
 			return OkHttp.get(settings);
+		}
+		if (JETTY_CLIENT_PRESENT) {
+			return Jetty.get(settings);
 		}
 		return Simple.get(settings);
 	}
@@ -206,6 +218,37 @@ public final class ClientHttpRequestFactories {
 				return new OkHttp3ClientHttpRequestFactory(client);
 			}
 			return new OkHttp3ClientHttpRequestFactory();
+		}
+
+	}
+
+	/**
+	 * Support for {@link JettyClientHttpRequestFactory}.
+	 */
+	static class Jetty {
+
+		static JettyClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
+			JettyClientHttpRequestFactory requestFactory = createRequestFactory(settings.sslBundle());
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(settings::connectTimeout).asInt(Duration::toMillis).to(requestFactory::setConnectTimeout);
+			map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
+			return requestFactory;
+		}
+
+		private static JettyClientHttpRequestFactory createRequestFactory(SslBundle sslBundle) {
+			if (sslBundle != null) {
+				SSLContext sslContext = sslBundle.createSslContext();
+
+				SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
+				sslContextFactory.setSslContext(sslContext);
+
+				ClientConnector connector = new ClientConnector();
+				connector.setSslContextFactory(sslContextFactory);
+				org.eclipse.jetty.client.HttpClient httpClient =
+						new org.eclipse.jetty.client.HttpClient(new HttpClientTransportDynamic(connector));
+				return new JettyClientHttpRequestFactory(httpClient);
+			}
+			return new JettyClientHttpRequestFactory();
 		}
 
 	}
