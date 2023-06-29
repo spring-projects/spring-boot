@@ -23,10 +23,10 @@ import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
- * Tests for {@link ClientHttpRequestFactories} when Jetty Http Components is the
+ * Tests for {@link ClientHttpRequestFactories} when Jetty is the
  * predominant HTTP client.
  *
- * @author Andy Wilkinson
+ * @author Arjen Poutsma
  */
 @ClassPathExclusions({ "httpclient5-*.jar", "okhttp-*.jar" })
 class ClientHttpRequestFactoriesJettyTests
