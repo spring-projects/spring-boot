@@ -153,7 +153,7 @@ public final class ClientHttpRequestFactories {
 			PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
 				.setDefaultSocketConfig(socketConfig)
 				.build();
-			return HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+			return HttpClientBuilder.create().useSystemProperties().setConnectionManager(connectionManager).build();
 		}
 
 	}
