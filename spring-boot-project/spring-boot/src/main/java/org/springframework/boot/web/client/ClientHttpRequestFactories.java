@@ -175,7 +175,7 @@ public final class ClientHttpRequestFactories {
 				connectionManagerBuilder.setSSLSocketFactory(socketFactory);
 			}
 			PoolingHttpClientConnectionManager connectionManager = connectionManagerBuilder.build();
-			return HttpClientBuilder.create().setConnectionManager(connectionManager).build();
+			return HttpClientBuilder.create().useSystemProperties().setConnectionManager(connectionManager).build();
 		}
 
 	}
