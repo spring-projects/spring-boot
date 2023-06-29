@@ -24,7 +24,7 @@ import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
- * Tests for {@link ClientHttpRequestFactories} when Apache Http Components is the
+ * Tests for {@link ClientHttpRequestFactories} when JDK HttpClient is the
  * predominant HTTP client.
  *
  * @author Andy Wilkinson
