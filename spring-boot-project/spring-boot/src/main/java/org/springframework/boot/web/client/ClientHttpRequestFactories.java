@@ -123,6 +123,9 @@ public final class ClientHttpRequestFactories {
 		if (requestFactoryType == OkHttp3ClientHttpRequestFactory.class) {
 			return (T) OkHttp.get(settings);
 		}
+		if (requestFactoryType == JettyClientHttpRequestFactory.class) {
+			return (T) Jetty.get(settings);
+		}
 		if (requestFactoryType == SimpleClientHttpRequestFactory.class) {
 			return (T) Simple.get(settings);
 		}
