@@ -49,6 +49,7 @@ import org.springframework.boot.ssl.SslOptions;
 import org.springframework.http.client.AbstractClientHttpRequestFactoryWrapper;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
@@ -79,6 +80,10 @@ public final class ClientHttpRequestFactories {
 
 	private static final boolean JETTY_CLIENT_PRESENT = ClassUtils.isPresent(JETTY_CLIENT_CLASS, null);
 
+	static final String JDK_CLIENT_CLASS = "java.net.http.HttpClient";
+
+	private static final boolean JDK_CLIENT_PRESENT = ClassUtils.isPresent(JDK_CLIENT_CLASS, null);
+
 	private ClientHttpRequestFactories() {
 	}
 
@@ -98,6 +103,9 @@ public final class ClientHttpRequestFactories {
 		}
 		if (JETTY_CLIENT_PRESENT) {
 			return Jetty.get(settings);
+		}
+		if (JDK_CLIENT_PRESENT) {
+			return Jdk.get(settings);
 		}
 		return Simple.get(settings);
 	}
@@ -125,6 +133,9 @@ public final class ClientHttpRequestFactories {
 		}
 		if (requestFactoryType == JettyClientHttpRequestFactory.class) {
 			return (T) Jetty.get(settings);
+		}
+		if (requestFactoryType == JdkClientHttpRequestFactory.class) {
+			return (T) Jdk.get(settings);
 		}
 		if (requestFactoryType == SimpleClientHttpRequestFactory.class) {
 			return (T) Simple.get(settings);
@@ -250,6 +261,32 @@ public final class ClientHttpRequestFactories {
 				return new JettyClientHttpRequestFactory(httpClient);
 			}
 			return new JettyClientHttpRequestFactory();
+		}
+
+	}
+
+	/**
+	 * Support for {@link JdkClientHttpRequestFactory}.
+	 */
+	static class Jdk {
+
+		static JdkClientHttpRequestFactory get(ClientHttpRequestFactorySettings settings) {
+			java.net.http.HttpClient httpClient = createHttpClient(settings.connectTimeout(), settings.sslBundle());
+			JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
+			return requestFactory;
+		}
+
+		private static java.net.http.HttpClient createHttpClient(Duration connectTimeout, SslBundle sslBundle) {
+			java.net.http.HttpClient.Builder builder = java.net.http.HttpClient.newBuilder();
+			if (connectTimeout != null) {
+				builder.connectTimeout(connectTimeout);
+			}
+			if (sslBundle != null) {
+				builder.sslContext(sslBundle.createSslContext());
+			}
+			return builder.build();
 		}
 
 	}
