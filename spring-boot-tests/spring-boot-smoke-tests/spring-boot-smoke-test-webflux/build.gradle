@@ -8,6 +8,7 @@ description = "Spring Boot WebFlux smoke test"
 dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-webflux"))
+	implementation 'io.micrometer:micrometer-tracing-bridge-brave'
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 	testImplementation("io.projectreactor:reactor-test")
