@@ -78,12 +78,14 @@ The properties supported by auto configuration are shown in the <<application-pr
 Note that, for the most part, these properties (hyphenated or camelCase) map directly to the Apache Kafka dotted properties.
 See the Apache Kafka documentation for details.
 
-The first few of these properties apply to all components (producers, consumers, admins, and streams) but can be specified at the component level if you wish to use different values.
+Properties that don't include a client type (`producer`, `consumer`, `admin`, or `streams`) in their name are considered to be common and apply to all clients.
+Most of these common properties can be overridden for one or more of the client types, if needed.
+
 Apache Kafka designates properties with an importance of HIGH, MEDIUM, or LOW.
 Spring Boot auto-configuration supports all HIGH importance properties, some selected MEDIUM and LOW properties, and any properties that do not have a default value.
 
 Only a subset of the properties supported by Kafka are available directly through the `KafkaProperties` class.
-If you wish to configure the producer or consumer with additional properties that are not directly supported, use the following properties:
+If you wish to configure the individual client types with additional properties that are not directly supported, use the following properties:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -105,7 +107,7 @@ If you wish to configure the producer or consumer with additional properties tha
 	        "[prop.five]": "fifth"
 ----
 
-This sets the common `prop.one` Kafka property to `first` (applies to producers, consumers and admins), the `prop.two` admin property to `second`, the `prop.three` consumer property to `third`, the `prop.four` producer property to `fourth` and the `prop.five` streams property to `fifth`.
+This sets the common `prop.one` Kafka property to `first` (applies to producers, consumers, admins, and streams), the `prop.two` admin property to `second`, the `prop.three` consumer property to `third`, the `prop.four` producer property to `fourth` and the `prop.five` streams property to `fifth`.
 
 You can also configure the Spring Kafka `JsonDeserializer` as follows:
 
