@@ -182,21 +182,20 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	private String getPortsDescription() {
-		StringBuilder portsDescription = new StringBuilder();
+		StringBuilder description = new StringBuilder();
 		List<UndertowWebServer.Port> ports = getActualPorts();
-		portsDescription.append("port");
+		description.append("port");
 		if (ports.size() != 1) {
-			portsDescription.append("s");
+			description.append("s");
 		}
-		portsDescription.append(" ");
-
+		description.append(" ");
 		if (!ports.isEmpty()) {
-			portsDescription.append(StringUtils.collectionToDelimitedString(ports, " "));
+			description.append(StringUtils.collectionToDelimitedString(ports, ", "));
 		}
 		else {
-			portsDescription.append("unknown");
+			description.append("unknown");
 		}
-		return portsDescription.toString();
+		return description.toString();
 	}
 
 	private List<Port> getActualPorts() {

@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import org.springframework.boot.testsupport.web.servlet.Servlet5ClassPathOverrides;
+import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactoryTests;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.http.client.reactive.JettyResourceFactory;
@@ -159,6 +160,20 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		ConnectionLimit connectionLimit = server.getBean(ConnectionLimit.class);
 		assertThat(connectionLimit).isNotNull();
 		assertThat(connectionLimit.getMaxConnections()).isOne();
+	}
+
+	@Override
+	protected String startedLogMessage() {
+		return ((JettyWebServer) this.webServer).getStartedLogMessage();
+	}
+
+	@Override
+	protected void addConnector(int port, AbstractReactiveWebServerFactory factory) {
+		((JettyReactiveWebServerFactory) factory).addServerCustomizers((server) -> {
+			ServerConnector connector = new ServerConnector(server);
+			connector.setPort(port);
+			server.addConnector(connector);
+		});
 	}
 
 }
