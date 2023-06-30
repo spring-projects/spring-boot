@@ -1336,6 +1336,35 @@ public abstract class AbstractServletWebServerFactoryTests {
 		}
 	}
 
+	@Test
+	void startedLogMessageWithSinglePort() {
+		AbstractServletWebServerFactory factory = getFactory();
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		assertThat(startedLogMessage()).matches("(Jetty|Tomcat|Undertow) started on port " + this.webServer.getPort()
+				+ " \\(http(/1.1)?\\)( with context path '(/)?')?");
+	}
+
+	@Test
+	void startedLogMessageWithSinglePortAndContextPath() {
+		AbstractServletWebServerFactory factory = getFactory();
+		factory.setContextPath("/test");
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		assertThat(startedLogMessage()).matches("(Jetty|Tomcat|Undertow) started on port " + this.webServer.getPort()
+				+ " \\(http(/1.1)?\\) with context path '/test'");
+	}
+
+	@Test
+	void startedLogMessageWithMultiplePorts() {
+		AbstractServletWebServerFactory factory = getFactory();
+		addConnector(0, factory);
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		assertThat(startedLogMessage()).matches("(Jetty|Tomcat|Undertow) started on ports " + this.webServer.getPort()
+				+ " \\(http(/1.1)?\\), [0-9]+ \\(http(/1.1)?\\)( with context path '(/)?')?");
+	}
+
 	protected Future<Object> initiateGetRequest(int port, String path) {
 		return initiateGetRequest(HttpClients.createMinimal(), port, path);
 	}
@@ -1583,6 +1612,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 			keyStore.load(stream, "secret".toCharArray());
 		}
 	}
+
+	protected abstract String startedLogMessage();
 
 	private class TestGzipInputStreamFactory implements InputStreamFactory {
 

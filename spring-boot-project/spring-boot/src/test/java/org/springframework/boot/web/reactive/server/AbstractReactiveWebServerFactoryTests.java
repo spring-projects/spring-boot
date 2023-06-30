@@ -602,6 +602,25 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
 	}
 
+	@Test
+	void startedLogMessageWithSinglePort() {
+		AbstractReactiveWebServerFactory factory = getFactory();
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		assertThat(startedLogMessage()).matches("(Jetty|Netty|Tomcat|Undertow) started on port "
+				+ this.webServer.getPort() + "( \\(http(/1.1)?\\))?( with context path '(/)?')?");
+	}
+
+	@Test
+	protected void startedLogMessageWithMultiplePorts() {
+		AbstractReactiveWebServerFactory factory = getFactory();
+		addConnector(0, factory);
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		assertThat(startedLogMessage()).matches("(Jetty|Tomcat|Undertow) started on ports " + this.webServer.getPort()
+				+ "( \\(http(/1.1)?\\))?, [0-9]+( \\(http(/1.1)?\\))?( with context path '(/)?')?");
+	}
+
 	protected WebClient prepareCompressionTest() {
 		Compression compression = new Compression();
 		compression.setEnabled(true);
@@ -672,6 +691,10 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			action.run(blockedPort);
 		}
 	}
+
+	protected abstract String startedLogMessage();
+
+	protected abstract void addConnector(int port, AbstractReactiveWebServerFactory factory);
 
 	public interface BlockedPortAction {
 

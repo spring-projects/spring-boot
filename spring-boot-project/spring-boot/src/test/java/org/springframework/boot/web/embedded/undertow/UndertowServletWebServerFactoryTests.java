@@ -333,4 +333,9 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 		handleExceptionCausedByBlockedPortOnPrimaryConnector(ex, blockedPort);
 	}
 
+	@Override
+	protected String startedLogMessage() {
+		return ((UndertowServletWebServer) this.webServer).getStartLogMessage();
+	}
+
 }

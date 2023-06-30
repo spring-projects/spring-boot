@@ -689,4 +689,9 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		assertThat(((ConnectorStartFailedException) ex).getPort()).isEqualTo(blockedPort);
 	}
 
+	@Override
+	protected String startedLogMessage() {
+		return ((TomcatWebServer) this.webServer).getStartedLogMessage();
+	}
+
 }
