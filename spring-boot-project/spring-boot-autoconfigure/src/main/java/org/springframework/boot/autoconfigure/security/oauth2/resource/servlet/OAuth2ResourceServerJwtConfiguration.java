@@ -110,6 +110,9 @@ class OAuth2ResourceServerJwtConfiguration {
 				validators.add(new JwtClaimValidator<List<String>>(JwtClaimNames.AUD,
 						(aud) -> aud != null && !Collections.disjoint(aud, audiences)));
 			}
+			if (validators.size() == 1) {
+				return validators.get(0);
+			}
 			return new DelegatingOAuth2TokenValidator<>(validators);
 		}
 

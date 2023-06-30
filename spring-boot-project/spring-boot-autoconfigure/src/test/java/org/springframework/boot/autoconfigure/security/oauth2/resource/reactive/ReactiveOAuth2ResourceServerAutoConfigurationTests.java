@@ -457,13 +457,11 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ReactiveJwtDecoder.class);
 				ReactiveJwtDecoder reactiveJwtDecoder = context.getBean(ReactiveJwtDecoder.class);
-				assertThat(reactiveJwtDecoder).extracting("jwtValidator.tokenValidators")
-					.asInstanceOf(InstanceOfAssertFactories.collection(OAuth2TokenValidator.class))
-					.hasSize(1)
-					.first()
-					.extracting("tokenValidators")
-					.asInstanceOf(InstanceOfAssertFactories.collection(OAuth2TokenValidator.class))
-					.hasAtLeastOneElementOfType(JwtIssuerValidator.class);
+				DelegatingOAuth2TokenValidator<Jwt> jwtValidator = (DelegatingOAuth2TokenValidator<Jwt>) ReflectionTestUtils
+					.getField(reactiveJwtDecoder, "jwtValidator");
+				Collection<OAuth2TokenValidator<Jwt>> tokenValidators = (Collection<OAuth2TokenValidator<Jwt>>) ReflectionTestUtils
+					.getField(jwtValidator, "tokenValidators");
+				assertThat(tokenValidators).hasAtLeastOneElementOfType(JwtIssuerValidator.class);
 			});
 	}
 
@@ -481,15 +479,13 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context).hasSingleBean(ReactiveJwtDecoder.class);
 				ReactiveJwtDecoder reactiveJwtDecoder = context.getBean(ReactiveJwtDecoder.class);
-				assertThat(reactiveJwtDecoder).extracting("jwtValidator.tokenValidators")
-					.asInstanceOf(InstanceOfAssertFactories.collection(OAuth2TokenValidator.class))
-					.hasSize(1)
-					.first()
-					.extracting("tokenValidators")
-					.asInstanceOf(InstanceOfAssertFactories.collection(OAuth2TokenValidator.class))
-					.hasExactlyElementsOfTypes(JwtTimestampValidator.class)
-					.doesNotHaveAnyElementsOfTypes(JwtClaimValidator.class)
-					.doesNotHaveAnyElementsOfTypes(JwtIssuerValidator.class);
+				DelegatingOAuth2TokenValidator<Jwt> jwtValidator = (DelegatingOAuth2TokenValidator<Jwt>) ReflectionTestUtils
+					.getField(reactiveJwtDecoder, "jwtValidator");
+				Collection<OAuth2TokenValidator<Jwt>> tokenValidators = (Collection<OAuth2TokenValidator<Jwt>>) ReflectionTestUtils
+					.getField(jwtValidator, "tokenValidators");
+				assertThat(tokenValidators).hasExactlyElementsOfTypes(JwtTimestampValidator.class);
+				assertThat(tokenValidators).doesNotHaveAnyElementsOfTypes(JwtClaimValidator.class);
+				assertThat(tokenValidators).doesNotHaveAnyElementsOfTypes(JwtIssuerValidator.class);
 			});
 	}
 
@@ -785,7 +781,6 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@EnableWebFluxSecurity
 	static class CustomTokenValidatorsConfig {
 
 		@Bean

@@ -476,10 +476,6 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
 				assertThat(jwtDecoder).extracting("jwtValidator.tokenValidators")
 					.asInstanceOf(InstanceOfAssertFactories.collection(OAuth2TokenValidator.class))
-					.hasSize(1)
-					.first()
-					.extracting("tokenValidators")
-					.asInstanceOf(InstanceOfAssertFactories.collection(OAuth2TokenValidator.class))
 					.hasAtLeastOneElementOfType(JwtIssuerValidator.class);
 			});
 	}
@@ -498,10 +494,6 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				assertThat(context).hasSingleBean(JwtDecoder.class);
 				JwtDecoder jwtDecoder = context.getBean(JwtDecoder.class);
 				assertThat(jwtDecoder).extracting("jwtValidator.tokenValidators")
-					.asInstanceOf(InstanceOfAssertFactories.collection(OAuth2TokenValidator.class))
-					.hasSize(1)
-					.first()
-					.extracting("tokenValidators")
 					.asInstanceOf(InstanceOfAssertFactories.collection(OAuth2TokenValidator.class))
 					.hasExactlyElementsOfTypes(JwtTimestampValidator.class)
 					.doesNotHaveAnyElementsOfTypes(JwtClaimValidator.class)
@@ -794,7 +786,6 @@ class OAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@EnableWebSecurity
 	static class CustomTokenValidatorsConfig {
 
 		@Bean
