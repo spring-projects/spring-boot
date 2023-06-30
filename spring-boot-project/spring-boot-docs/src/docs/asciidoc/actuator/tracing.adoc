@@ -67,6 +67,13 @@ Press the "Show" button to see the details of that trace.
 
 TIP: You can include the current trace and span id in the logs by setting the configprop:logging.pattern.level[] property to `%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]`
 
+[[actuator.micrometer-tracing.propagating-traces]]
+=== Propagating Traces
+
+To automatically propagate traces over the network, use the auto-configured <<io#io.rest-client.resttemplate, `RestTemplateBuilder`>> or <<io#io.rest-client.webclient, `WebClient.Builder`>> to construct the client.
+
+WARNING: If you create the `WebClient` or the `RestTemplate` without using the auto-configured builders, automatic trace propagation won't work!
+
 
 
 [[actuator.micrometer-tracing.tracer-implementations]]
