@@ -114,6 +114,20 @@ class ScheduledTasksEndpointTests {
 	}
 
 	@Test
+	void noInitialDelayFixedDelayTriggerIsReported() {
+		run(NoInitialDelayFixedDelayTriggerTask.class, (tasks) -> {
+			assertThat(tasks.getCron()).isEmpty();
+			assertThat(tasks.getFixedRate()).isEmpty();
+			assertThat(tasks.getCustom()).isEmpty();
+			assertThat(tasks.getFixedDelay()).hasSize(1);
+			FixedDelayTaskDescriptor description = (FixedDelayTaskDescriptor) tasks.getFixedDelay().get(0);
+			assertThat(description.getInitialDelay()).isEqualTo(0);
+			assertThat(description.getInterval()).isEqualTo(1000);
+			assertThat(description.getRunnable().getTarget()).isEqualTo(FixedDelayTriggerRunnable.class.getName());
+		});
+	}
+
+	@Test
 	void fixedRateScheduledMethodIsReported() {
 		run(FixedRateScheduledMethod.class, (tasks) -> {
 			assertThat(tasks.getCron()).isEmpty();
@@ -137,6 +151,20 @@ class ScheduledTasksEndpointTests {
 			assertThat(tasks.getFixedRate()).hasSize(1);
 			FixedRateTaskDescriptor description = (FixedRateTaskDescriptor) tasks.getFixedRate().get(0);
 			assertThat(description.getInitialDelay()).isEqualTo(3000);
+			assertThat(description.getInterval()).isEqualTo(2000);
+			assertThat(description.getRunnable().getTarget()).isEqualTo(FixedRateTriggerRunnable.class.getName());
+		});
+	}
+
+	@Test
+	void noInitialDelayFixedRateTriggerIsReported() {
+		run(NoInitialDelayFixedRateTriggerTask.class, (tasks) -> {
+			assertThat(tasks.getCron()).isEmpty();
+			assertThat(tasks.getFixedDelay()).isEmpty();
+			assertThat(tasks.getCustom()).isEmpty();
+			assertThat(tasks.getFixedRate()).hasSize(1);
+			FixedRateTaskDescriptor description = (FixedRateTaskDescriptor) tasks.getFixedRate().get(0);
+			assertThat(description.getInitialDelay()).isEqualTo(0);
 			assertThat(description.getInterval()).isEqualTo(2000);
 			assertThat(description.getRunnable().getTarget()).isEqualTo(FixedRateTriggerRunnable.class.getName());
 		});
@@ -223,12 +251,33 @@ class ScheduledTasksEndpointTests {
 
 	}
 
+	static class NoInitialDelayFixedDelayTriggerTask implements SchedulingConfigurer {
+
+		@Override
+		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+			PeriodicTrigger trigger = new PeriodicTrigger(Duration.ofSeconds(1));
+			taskRegistrar.addTriggerTask(new FixedDelayTriggerRunnable(), trigger);
+		}
+
+	}
+
 	static class FixedRateTriggerTask implements SchedulingConfigurer {
 
 		@Override
 		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
 			PeriodicTrigger trigger = new PeriodicTrigger(Duration.ofSeconds(2));
 			trigger.setInitialDelay(Duration.ofSeconds(3));
+			trigger.setFixedRate(true);
+			taskRegistrar.addTriggerTask(new FixedRateTriggerRunnable(), trigger);
+		}
+
+	}
+
+	static class NoInitialDelayFixedRateTriggerTask implements SchedulingConfigurer {
+
+		@Override
+		public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+			PeriodicTrigger trigger = new PeriodicTrigger(Duration.ofSeconds(2));
 			trigger.setFixedRate(true);
 			taskRegistrar.addTriggerTask(new FixedRateTriggerRunnable(), trigger);
 		}
