@@ -45,7 +45,7 @@ tasks.register("resourcesJar", Jar) { jar ->
 			rename (".*", 'nested-reserved-!#\\$%&()*+,:=?@[]-meta-inf-resource.txt')
 		}
 	}
-	classifier = 'resources'
+	archiveClassifier = 'resources'
 }
 
 dependencies {
@@ -71,7 +71,7 @@ def boolean isWindows() {
 		task.dependsOn resourcesJar
 		task.mainClass = "com.example.ResourceHandlingApplication"
 		task.classpath = sourceSets.main.runtimeClasspath.plus(configurations.getByName(container))
-		task.classifier = container
+		task.archiveClassifier = container
 	}
 	tasks.register("${container}BootJar", BootJar, configurer)
 	tasks.register("${container}BootWar", BootWar, configurer)
