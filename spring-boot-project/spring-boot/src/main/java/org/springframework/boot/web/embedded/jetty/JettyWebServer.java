@@ -168,8 +168,8 @@ public class JettyWebServer implements WebServer {
 					}
 				}
 				this.started = true;
-				logger.info("Jetty started on port" + (connectors.length == 1 ? "" : "s") + " "
-						+ getActualPortsDescription() + " with context path '" + getContextPath() + "'");
+				logger.info("Jetty started on " + getActualPortsDescription() + " with context path '"
+						+ getContextPath() + "'");
 			}
 			catch (WebServerException ex) {
 				stopSilently();
@@ -184,10 +184,18 @@ public class JettyWebServer implements WebServer {
 
 	private String getActualPortsDescription() {
 		StringBuilder ports = new StringBuilder();
-		for (Connector connector : this.server.getConnectors()) {
-			if (ports.length() != 0) {
+		Connector[] connectors = this.server.getConnectors();
+		ports.append("port");
+		if (connectors.length != 1) {
+			ports.append("s");
+		}
+		ports.append(" ");
+
+		for (int i = 0; i < connectors.length; i++) {
+			if (i != 0) {
 				ports.append(", ");
 			}
+			Connector connector = connectors[i];
 			ports.append(getLocalPort(connector)).append(getProtocols(connector));
 		}
 		return ports.toString();

@@ -105,8 +105,8 @@ public class ApplicationRunner extends DefaultTask {
 	}
 
 	public void normalizeTomcatPort() {
-		this.normalizations.put("(Tomcat started on port\\(s\\): )[\\d]+( \\(http\\))", "$18080$2");
-		this.normalizations.put("(Tomcat initialized with port\\(s\\): )[\\d]+( \\(http\\))", "$18080$2");
+		this.normalizations.put("(Tomcat started on port )[\\d]+( \\(http\\))", "$18080$2");
+		this.normalizations.put("(Tomcat initialized with port )[\\d]+( \\(http\\))", "$18080$2");
 	}
 
 	public void normalizeLiveReloadPort() {

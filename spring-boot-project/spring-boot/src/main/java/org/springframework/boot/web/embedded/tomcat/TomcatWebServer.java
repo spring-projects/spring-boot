@@ -105,8 +105,7 @@ public class TomcatWebServer implements WebServer {
 	}
 
 	private void initialize() throws WebServerException {
-		logger.info("Tomcat initialized with port" + (this.tomcat.getService().findConnectors().length == 1 ? "" : "s")
-				+ ": " + getPortsDescription(false));
+		logger.info("Tomcat initialized with " + getPortsDescription(false));
 		synchronized (this.monitor) {
 			try {
 				addInstanceIdToEngineName();
@@ -219,9 +218,8 @@ public class TomcatWebServer implements WebServer {
 				}
 				checkThatConnectorsHaveStarted();
 				this.started = true;
-				logger
-					.info("Tomcat started on port" + (this.tomcat.getService().findConnectors().length == 1 ? "" : "s")
-							+ ": " + getPortsDescription(true) + " with context path '" + getContextPath() + "'");
+				logger.info("Tomcat started on " + getPortsDescription(true) + " with context path '" + getContextPath()
+						+ "'");
 			}
 			catch (ConnectorStartFailedException ex) {
 				stopSilently();
@@ -358,10 +356,14 @@ public class TomcatWebServer implements WebServer {
 
 	private String getPortsDescription(boolean localPort) {
 		StringBuilder ports = new StringBuilder();
-		for (Connector connector : this.tomcat.getService().findConnectors()) {
-			if (ports.length() != 0) {
-				ports.append(' ');
-			}
+		Connector[] connectors = this.tomcat.getService().findConnectors();
+		ports.append("port");
+		if (connectors.length != 1) {
+			ports.append("s");
+		}
+
+		for (Connector connector : connectors) {
+			ports.append(' ');
 			int port = localPort ? connector.getLocalPort() : connector.getPort();
 			ports.append(port).append(" (").append(connector.getScheme()).append(')');
 		}
