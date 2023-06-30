@@ -16,8 +16,14 @@
 
 package org.springframework.boot.actuate.autoconfigure.tracing;
 
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Stream;
 
 import io.micrometer.tracing.SpanCustomizer;
@@ -30,18 +36,26 @@ import io.micrometer.tracing.otel.bridge.Slf4JBaggageEventListener;
 import io.micrometer.tracing.otel.bridge.Slf4JEventListener;
 import io.micrometer.tracing.otel.propagation.BaggageTextMapPropagator;
 import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.api.trace.propagation.W3CTraceContextPropagator;
 import io.opentelemetry.context.propagation.ContextPropagators;
 import io.opentelemetry.context.propagation.TextMapPropagator;
 import io.opentelemetry.extension.trace.propagation.B3Propagator;
+import io.opentelemetry.sdk.common.CompletableResultCode;
+import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SpanProcessor;
+import io.opentelemetry.sdk.trace.data.SpanData;
+import io.opentelemetry.sdk.trace.export.SpanExporter;
 import io.opentelemetry.sdk.trace.samplers.Sampler;
+import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -141,6 +155,26 @@ class OpenTelemetryAutoConfigurationTests {
 			assertThat(context).hasBean("customSpanCustomizer");
 			assertThat(context).hasSingleBean(SpanCustomizer.class);
 		});
+	}
+
+	@Test
+	void shouldSetupDefaultResourceAttributes() {
+		this.contextRunner
+			.withConfiguration(
+					AutoConfigurations.of(ObservationAutoConfiguration.class, MicrometerTracingAutoConfiguration.class))
+			.withUserConfiguration(InMemoryRecordingSpanExporterConfiguration.class)
+			.withPropertyValues("management.tracing.sampling.probability=1.0")
+			.run((context) -> {
+				context.getBean(io.micrometer.tracing.Tracer.class).nextSpan().name("test").end();
+				InMemoryRecordingSpanExporter exporter = context.getBean(InMemoryRecordingSpanExporter.class);
+				exporter.await(Duration.ofSeconds(10));
+				SpanData spanData = exporter.getExportedSpans().get(0);
+				Map<AttributeKey<?>, Object> expectedAttributes = Resource.getDefault()
+					.merge(Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, "application")))
+					.getAttributes()
+					.asMap();
+				assertThat(spanData.getResource().getAttributes().asMap()).isEqualTo(expectedAttributes);
+			});
 	}
 
 	@Test
@@ -293,6 +327,52 @@ class OpenTelemetryAutoConfigurationTests {
 		@Bean
 		SpanCustomizer customSpanCustomizer() {
 			return mock(SpanCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	private static class InMemoryRecordingSpanExporterConfiguration {
+
+		@Bean
+		InMemoryRecordingSpanExporter spanExporter() {
+			return new InMemoryRecordingSpanExporter();
+		}
+
+	}
+
+	private static class InMemoryRecordingSpanExporter implements SpanExporter {
+
+		private final List<SpanData> exportedSpans = new ArrayList<>();
+
+		private final CountDownLatch latch = new CountDownLatch(1);
+
+		@Override
+		public CompletableResultCode export(Collection<SpanData> spans) {
+			this.exportedSpans.addAll(spans);
+			this.latch.countDown();
+			return CompletableResultCode.ofSuccess();
+		}
+
+		@Override
+		public CompletableResultCode flush() {
+			return CompletableResultCode.ofSuccess();
+		}
+
+		@Override
+		public CompletableResultCode shutdown() {
+			this.exportedSpans.clear();
+			return CompletableResultCode.ofSuccess();
+		}
+
+		List<SpanData> getExportedSpans() {
+			return this.exportedSpans;
+		}
+
+		void await(Duration timeout) throws InterruptedException, TimeoutException {
+			if (!this.latch.await(timeout.toMillis(), TimeUnit.MILLISECONDS)) {
+				throw new TimeoutException("Waiting for exporting spans timed out (%s)".formatted(timeout));
+			}
 		}
 
 	}
