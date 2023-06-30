@@ -123,17 +123,6 @@ class TaskSchedulingAutoConfigurationTests {
 	}
 
 	@Test
-	void enableSchedulingWithConfigurerBacksOff() {
-		this.contextRunner.withUserConfiguration(SchedulingConfiguration.class, SchedulingConfigurerConfiguration.class)
-			.run((context) -> {
-				assertThat(context).doesNotHaveBean(TaskScheduler.class);
-				TestBean bean = context.getBean(TestBean.class);
-				assertThat(bean.latch.await(30, TimeUnit.SECONDS)).isTrue();
-				assertThat(bean.threadNames).containsExactly("test-1");
-			});
-	}
-
-	@Test
 	void enableSchedulingWithLazyInitializationInvokeScheduledMethods() {
 		List<String> threadNames = new ArrayList<>();
 		new ApplicationContextRunner()
