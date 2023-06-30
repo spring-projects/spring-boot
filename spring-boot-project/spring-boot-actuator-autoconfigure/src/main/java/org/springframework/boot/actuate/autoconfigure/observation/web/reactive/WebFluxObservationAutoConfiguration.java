@@ -38,6 +38,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.server.reactive.observation.DefaultServerRequestObservationConvention;
 import org.springframework.http.server.reactive.observation.ServerRequestObservationConvention;
@@ -50,7 +51,6 @@ import org.springframework.web.filter.reactive.ServerHttpObservationFilter;
  * @author Brian Clozel
  * @author Jon Schneider
  * @author Dmytro Nosan
- * @author Moritz Halbritter
  * @since 3.0.0
  */
 @AutoConfiguration(after = { MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class,
@@ -70,13 +70,13 @@ public class WebFluxObservationAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ServerHttpObservationFilter.class)
-	public OrderedServerHttpObservationFilter webfluxObservationFilter(ObservationRegistry registry,
+	@Order(Ordered.HIGHEST_PRECEDENCE + 1)
+	public ServerHttpObservationFilter webfluxObservationFilter(ObservationRegistry registry,
 			ObjectProvider<ServerRequestObservationConvention> customConvention) {
 		String name = this.observationProperties.getHttp().getServer().getRequests().getName();
 		ServerRequestObservationConvention convention = customConvention
 			.getIfAvailable(() -> new DefaultServerRequestObservationConvention(name));
-		int order = this.observationProperties.getHttp().getServer().getFilter().getOrder();
-		return new OrderedServerHttpObservationFilter(registry, convention, order);
+		return new ServerHttpObservationFilter(registry, convention);
 	}
 
 	@Configuration(proxyBeanMethods = false)
