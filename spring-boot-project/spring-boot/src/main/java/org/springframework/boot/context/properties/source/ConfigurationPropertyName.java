@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -406,7 +406,7 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		int i2 = 0;
 		while (i1 < l1) {
 			if (i2 >= l2) {
-				return false;
+				return remainderIsDashes(e1, i, i1);
 			}
 			char ch1 = e1.charAt(i, i1);
 			char ch2 = e2.charAt(i, i2);
@@ -480,6 +480,21 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		do {
 			char c = Character.toLowerCase(elements.charAt(element, index++));
 			if (ElementsParser.isAlphaNumeric(c)) {
+				return false;
+			}
+		}
+		while (index < length);
+		return true;
+	}
+
+	private boolean remainderIsDashes(Elements elements, int element, int index) {
+		if (elements.getType(element).isIndexed()) {
+			return false;
+		}
+		int length = elements.getLength(element);
+		do {
+			char c = Character.toLowerCase(elements.charAt(element, index++));
+			if (c != '-') {
 				return false;
 			}
 		}

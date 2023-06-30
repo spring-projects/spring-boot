@@ -692,13 +692,20 @@ class ConfigurationPropertyNameTests {
 		assertThat(n2).isNotEqualTo(n1);
 	}
 
-	@Test
-	void equalsWhenAdaptedNameMatchesDueToRemovalOfTrailingCharacters() {
-		// gh-30317
+	@Test // gh-30317
+	void equalsWhenAdaptedNameMatchesDueToRemovalOfTrailingNonUniformCharacters() {
 		ConfigurationPropertyName name1 = ConfigurationPropertyName.of("example.demo");
 		ConfigurationPropertyName name2 = ConfigurationPropertyName.adapt("example.demo$$", '.');
 		assertThat(name1).isEqualTo(name2);
 		assertThat(name2).isEqualTo(name1);
+	}
+
+	@Test // gh-34804
+	void equalsSymmetricWhenNameMatchesDueToIgnoredTrailingDashes() {
+		ConfigurationPropertyName n1 = ConfigurationPropertyName.of("example.demo");
+		ConfigurationPropertyName n2 = ConfigurationPropertyName.of("example.demo--");
+		assertThat(n2).isEqualTo(n1);
+		assertThat(n1).isEqualTo(n2);
 	}
 
 	@Test
