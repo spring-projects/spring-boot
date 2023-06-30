@@ -27,7 +27,9 @@
       "description": "Test delete deprecated.",
       "defaultValue": "delete",
       "deprecation": {
-        "level": "error"
+        "level": "error",
+        "replacement": "test.add",
+        "reason": "it was just bad"
       }
     }
   ]
