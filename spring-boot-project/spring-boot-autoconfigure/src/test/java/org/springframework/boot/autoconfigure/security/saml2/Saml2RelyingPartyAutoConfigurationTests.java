@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.security.saml2;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -55,6 +56,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Madhura Bhave
  * @author Moritz Halbritter
+ * @author Lasse Lindqvist
  */
 class Saml2RelyingPartyAutoConfigurationTests {
 
@@ -401,6 +403,39 @@ class Saml2RelyingPartyAutoConfigurationTests {
 	void samlLogoutShouldBeConfigured() {
 		this.contextRunner.withPropertyValues(getPropertyValues(false))
 			.run((context) -> assertThat(hasFilter(context, Saml2LogoutRequestFilter.class)).isTrue());
+	}
+
+	@Test
+	void autoconfigurationWhenMultipleProvidersAndNoSpecifiedEntityId() throws Exception {
+		testMultipleProviders(null, "https://idp.example.com/idp/shibboleth");
+	}
+
+	@Test
+	void autoconfigurationWhenMultipleProvidersAndSpecifiedEntityId() throws Exception {
+		testMultipleProviders("https://idp.example.com/idp/shibboleth", "https://idp.example.com/idp/shibboleth");
+		testMultipleProviders("https://idp2.example.com/idp/shibboleth", "https://idp2.example.com/idp/shibboleth");
+	}
+
+	private void testMultipleProviders(String specifiedEntityId, String expected) throws IOException, Exception {
+		try (MockWebServer server = new MockWebServer()) {
+			server.start();
+			String metadataUrl = server.url("").toString();
+			setupMockResponse(server, new ClassPathResource("saml/idp-metadata-with-multiple-providers"));
+			WebApplicationContextRunner contextRunner = this.contextRunner
+				.withPropertyValues(PREFIX + ".foo.assertingparty.metadata-uri=" + metadataUrl);
+			if (specifiedEntityId != null) {
+				contextRunner = contextRunner
+					.withPropertyValues(PREFIX + ".foo.assertingparty.entity-id=" + specifiedEntityId);
+			}
+			contextRunner.run((context) -> {
+				assertThat(context).hasSingleBean(RelyingPartyRegistrationRepository.class);
+				assertThat(server.getRequestCount()).isOne();
+				RelyingPartyRegistrationRepository repository = context
+					.getBean(RelyingPartyRegistrationRepository.class);
+				RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
+				assertThat(registration.getAssertingPartyDetails().getEntityId()).isEqualTo(expected);
+			});
+		}
 	}
 
 	private String[] getPropertyValuesWithoutSigningCredentials(boolean signRequests, boolean useDeprecated) {

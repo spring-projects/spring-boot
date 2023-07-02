@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -63,6 +64,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Moritz Halbritter
+ * @author Lasse Lindqvist
  */
 @Configuration(proxyBeanMethods = false)
 @Conditional(RegistrationConfiguredCondition.class)
@@ -88,9 +90,8 @@ class Saml2RelyingPartyRegistrationConfiguration {
 	private RelyingPartyRegistration asRegistration(String id, Registration properties) {
 		AssertingPartyProperties assertingParty = new AssertingPartyProperties(properties, id);
 		boolean usingMetadata = StringUtils.hasText(assertingParty.getMetadataUri());
-		Builder builder = (usingMetadata)
-				? RelyingPartyRegistrations.fromMetadataLocation(assertingParty.getMetadataUri()).registrationId(id)
-				: RelyingPartyRegistration.withRegistrationId(id);
+		Builder builder = (!usingMetadata) ? RelyingPartyRegistration.withRegistrationId(id)
+				: createBuilderUsingMetadata(id, assertingParty).registrationId(id);
 		builder.assertionConsumerServiceLocation(properties.getAcs().getLocation());
 		builder.assertionConsumerServiceBinding(properties.getAcs().getBinding());
 		builder.assertingPartyDetails(mapAssertingParty(properties, id, usingMetadata));
@@ -117,6 +118,25 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		boolean signRequest = registration.getAssertingPartyDetails().getWantAuthnRequestsSigned();
 		validateSigningCredentials(properties, signRequest);
 		return registration;
+	}
+
+	private RelyingPartyRegistration.Builder createBuilderUsingMetadata(String id,
+			AssertingPartyProperties properties) {
+		String requiredEntityId = properties.getEntityId();
+		Collection<Builder> candidates = RelyingPartyRegistrations
+			.collectionFromMetadataLocation(properties.getMetadataUri());
+		for (RelyingPartyRegistration.Builder candidate : candidates) {
+			if (requiredEntityId == null || requiredEntityId.equals(getEntityId(candidate))) {
+				return candidate;
+			}
+		}
+		throw new IllegalStateException("No relying party with Entity ID '" + requiredEntityId + "' found");
+	}
+
+	private Object getEntityId(RelyingPartyRegistration.Builder candidate) {
+		String[] result = new String[1];
+		candidate.assertingPartyDetails((builder) -> result[0] = builder.build().getEntityId());
+		return result[0];
 	}
 
 	private Consumer<AssertingPartyDetails.Builder> mapAssertingParty(Registration registration, String id,
