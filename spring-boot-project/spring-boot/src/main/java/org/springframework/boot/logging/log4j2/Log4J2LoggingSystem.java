@@ -249,8 +249,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	@Override
 	protected void loadDefaults(LoggingInitializationContext initializationContext, LogFile logFile) {
-		String location = (logFile != null) ? getPackagedConfigFile("log4j2-file.xml")
-				: getPackagedConfigFile("log4j2.xml");
+		String location = getPackagedConfigFile((logFile != null) ? "log4j2-file.xml" : "log4j2.xml");
 		load(initializationContext, location, logFile);
 	}
 

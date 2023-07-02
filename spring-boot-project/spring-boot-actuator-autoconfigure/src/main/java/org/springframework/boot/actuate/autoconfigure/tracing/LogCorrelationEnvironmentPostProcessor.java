@@ -26,7 +26,7 @@ import org.springframework.util.ClassUtils;
 
 /**
  * {@link EnvironmentPostProcessor} to add a {@link PropertySource} to support log
- * correlation IDs when Micrometer is present. Adds support for the
+ * correlation IDs when Micrometer Tracing is present. Adds support for the
  * {@value LoggingSystem#EXPECT_CORRELATION_ID_PROPERTY} property by delegating to
  * {@code management.tracing.enabled}.
  *
