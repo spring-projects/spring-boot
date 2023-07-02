@@ -96,7 +96,7 @@ class CorrelationIdFormatterTests {
 		context.put("traceId", "01234567890123456789012345678901");
 		context.put("spanId", "0123456789012345");
 		StringBuilder formatted = new StringBuilder();
-		CorrelationIdFormatter.of("").formatTo(context::get, formatted);
+		CorrelationIdFormatter.DEFAULT.formatTo(context::get, formatted);
 		assertThat(formatted).hasToString("[01234567890123456789012345678901-0123456789012345] ");
 	}
 
