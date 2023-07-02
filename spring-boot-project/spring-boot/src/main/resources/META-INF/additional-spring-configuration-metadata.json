@@ -105,7 +105,7 @@
     },
     {
       "name": "logging.include-application-name",
-      "type": "java.lang.String>",
+      "type": "java.lang.Boolean",
       "description": "Whether to include the application name in the logs.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": true
