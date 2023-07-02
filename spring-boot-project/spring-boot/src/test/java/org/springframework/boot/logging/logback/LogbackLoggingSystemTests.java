@@ -743,7 +743,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	}
 
 	@Test
-	void correlationLoggingToConsoleWhenUsingFileConfiguration() {
+	void correlationLoggingToFileWhenUsingFileConfiguration() {
 		this.environment.setProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, "true");
 		File file = new File(tmpDir(), "logback-test.log");
 		LogFile logFile = getLogFile(file.getPath(), null);

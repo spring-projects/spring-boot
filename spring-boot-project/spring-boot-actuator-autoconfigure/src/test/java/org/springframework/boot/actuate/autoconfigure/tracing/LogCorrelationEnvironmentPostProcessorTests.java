@@ -42,7 +42,7 @@ class LogCorrelationEnvironmentPostProcessorTests {
 	private final LogCorrelationEnvironmentPostProcessor postProcessor = new LogCorrelationEnvironmentPostProcessor();
 
 	@Test
-	void getExpectCorrelationIdPropertyWhenMicrometerPresentReturnsTrue() {
+	void getExpectCorrelationIdPropertyWhenMicrometerTracingPresentReturnsTrue() {
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment.getProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, Boolean.class, false))
 			.isTrue();
@@ -50,7 +50,7 @@ class LogCorrelationEnvironmentPostProcessorTests {
 
 	@Test
 	@ClassPathExclusions("micrometer-tracing-*.jar")
-	void getExpectCorrelationIdPropertyWhenMicrometerMissingReturnsFalse() {
+	void getExpectCorrelationIdPropertyWhenMicrometerTracingMissingReturnsFalse() {
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment.getProperty(LoggingSystem.EXPECT_CORRELATION_ID_PROPERTY, Boolean.class, false))
 			.isFalse();
