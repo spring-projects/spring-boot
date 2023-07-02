@@ -385,7 +385,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	private Object stringifyIfNecessary(Object value) {
-		if (value == null || value.getClass().isPrimitive()) {
+		if (value == null || ClassUtils.isPrimitiveOrWrapper(value.getClass()) || value instanceof String) {
 			return value;
 		}
 		if (CharSequence.class.isAssignableFrom(value.getClass())) {
