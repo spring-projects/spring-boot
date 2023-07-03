@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
-import java.util.stream.Collectors;
-
 import jakarta.jms.ConnectionFactory;
 import jakarta.transaction.TransactionManager;
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -51,7 +49,7 @@ class ActiveMQXAConnectionFactoryConfiguration {
 			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers, XAConnectionFactoryWrapper wrapper)
 			throws Exception {
 		ActiveMQXAConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(properties,
-				factoryCustomizers.orderedStream().collect(Collectors.toList()))
+				factoryCustomizers.orderedStream().toList())
 			.createConnectionFactory(ActiveMQXAConnectionFactory.class);
 		return wrapper.wrapConnectionFactory(connectionFactory);
 	}
@@ -61,8 +59,7 @@ class ActiveMQXAConnectionFactoryConfiguration {
 			matchIfMissing = true)
 	ActiveMQConnectionFactory nonXaJmsConnectionFactory(ActiveMQProperties properties,
 			ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
-		return new ActiveMQConnectionFactoryFactory(properties,
-				factoryCustomizers.orderedStream().collect(Collectors.toList()))
+		return new ActiveMQConnectionFactoryFactory(properties, factoryCustomizers.orderedStream().toList())
 			.createConnectionFactory(ActiveMQConnectionFactory.class);
 	}
 

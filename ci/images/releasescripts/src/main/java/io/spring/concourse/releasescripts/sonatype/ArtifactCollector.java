@@ -50,7 +50,7 @@ class ArtifactCollector {
 	Collection<DeployableArtifact> collectArtifacts(Path root) {
 		try (Stream<Path> artifacts = Files.walk(root)) {
 			return artifacts.filter(Files::isRegularFile).filter(this.excludeFilter)
-					.map((artifact) -> deployableArtifact(artifact, root)).collect(Collectors.toList());
+					.map((artifact) -> deployableArtifact(artifact, root)).toList();
 		}
 		catch (IOException ex) {
 			throw new RuntimeException("Could not read artifacts from '" + root + "'");

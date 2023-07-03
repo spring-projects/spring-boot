@@ -89,7 +89,7 @@ class ChangelogWriter implements AutoCloseable {
 	private void writeDeprecated(List<Difference> differences) {
 		List<Difference> rows = sortProperties(differences, Difference::newProperty).stream()
 			.filter(this::isDeprecatedInRelease)
-			.collect(Collectors.toList());
+			.toList();
 		writeTable("| Key | Replacement | Reason", rows, this::writeDeprecated);
 	}
 
