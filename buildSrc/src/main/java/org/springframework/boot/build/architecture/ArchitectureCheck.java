@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.tngtech.archunit.base.DescribedPredicate;
@@ -70,7 +69,7 @@ public abstract class ArchitectureCheck extends DefaultTask {
 	@TaskAction
 	void checkArchitecture() throws IOException {
 		JavaClasses javaClasses = new ClassFileImporter()
-			.importPaths(this.classes.getFiles().stream().map(File::toPath).collect(Collectors.toList()));
+			.importPaths(this.classes.getFiles().stream().map(File::toPath).toList());
 		List<EvaluationResult> violations = Stream.of(allPackagesShouldBeFreeOfTangles(),
 				allBeanPostProcessorBeanMethodsShouldBeStaticAndHaveParametersThatWillNotCausePrematureInitialization(),
 				allBeanFactoryPostProcessorBeanMethodsShouldBeStaticAndHaveNoParameters(),
@@ -78,7 +77,7 @@ public abstract class ArchitectureCheck extends DefaultTask {
 				noClassesShouldConfigureDefaultStepVerifierTimeout())
 			.map((rule) -> rule.evaluate(javaClasses))
 			.filter(EvaluationResult::hasViolation)
-			.collect(Collectors.toList());
+			.toList();
 		File outputFile = getOutputDirectory().file("failure-report.txt").get().getAsFile();
 		outputFile.getParentFile().mkdirs();
 		if (!violations.isEmpty()) {
