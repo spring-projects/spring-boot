@@ -39,7 +39,7 @@ class ClientHttpRequestFactoriesHttpComponentsTests
 
 	@Override
 	protected long connectTimeout(HttpComponentsClientHttpRequestFactory requestFactory) {
-		return (int) ReflectionTestUtils.getField(requestFactory, "connectTimeout");
+		return (long) ReflectionTestUtils.getField(requestFactory, "connectTimeout");
 	}
 
 	@Override
