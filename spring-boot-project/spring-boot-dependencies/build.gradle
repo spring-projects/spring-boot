@@ -1336,12 +1336,8 @@ bom {
 	}
 	library("Spring AMQP", "3.0.5") {
 		group("org.springframework.amqp") {
-			modules = [
-				"spring-amqp",
-				"spring-rabbit",
-				"spring-rabbit-stream",
-				"spring-rabbit-junit",
-				"spring-rabbit-test"
+			imports = [
+				"spring-amqp-bom"
 			]
 		}
 	}
