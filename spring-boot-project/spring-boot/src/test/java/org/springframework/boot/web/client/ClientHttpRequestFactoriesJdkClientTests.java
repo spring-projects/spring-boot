@@ -46,7 +46,7 @@ class ClientHttpRequestFactoriesJdkClientTests
 	@Override
 	@SuppressWarnings("unchecked")
 	protected long readTimeout(JdkClientHttpRequestFactory requestFactory) {
-		return (int) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+		return ((Duration) ReflectionTestUtils.getField(requestFactory, "readTimeout")).toMillis();
 	}
 
 }
