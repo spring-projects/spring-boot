@@ -241,14 +241,12 @@ public final class ClientHttpRequestFactories {
 		private static JettyClientHttpRequestFactory createRequestFactory(SslBundle sslBundle) {
 			if (sslBundle != null) {
 				SSLContext sslContext = sslBundle.createSslContext();
-
 				SslContextFactory.Client sslContextFactory = new SslContextFactory.Client();
 				sslContextFactory.setSslContext(sslContext);
-
 				ClientConnector connector = new ClientConnector();
 				connector.setSslContextFactory(sslContextFactory);
-				org.eclipse.jetty.client.HttpClient httpClient =
-						new org.eclipse.jetty.client.HttpClient(new HttpClientTransportDynamic(connector));
+				org.eclipse.jetty.client.HttpClient httpClient = new org.eclipse.jetty.client.HttpClient(
+						new HttpClientTransportDynamic(connector));
 				return new JettyClientHttpRequestFactory(httpClient);
 			}
 			return new JettyClientHttpRequestFactory();

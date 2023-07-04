@@ -23,8 +23,7 @@ import org.springframework.http.client.JettyClientHttpRequestFactory;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
- * Tests for {@link ClientHttpRequestFactories} when Jetty is the
- * predominant HTTP client.
+ * Tests for {@link ClientHttpRequestFactories} when Jetty is the predominant HTTP client.
  *
  * @author Arjen Poutsma
  */
@@ -38,14 +37,12 @@ class ClientHttpRequestFactoriesJettyTests
 
 	@Override
 	protected long connectTimeout(JettyClientHttpRequestFactory requestFactory) {
-		HttpClient client = (HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient");
-		return client.getConnectTimeout();
+		return ((HttpClient) ReflectionTestUtils.getField(requestFactory, "httpClient")).getConnectTimeout();
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected long readTimeout(JettyClientHttpRequestFactory requestFactory) {
-		return (int) ReflectionTestUtils.getField(requestFactory, "readTimeout");
+		return (long) ReflectionTestUtils.getField(requestFactory, "readTimeout");
 	}
 
 }
