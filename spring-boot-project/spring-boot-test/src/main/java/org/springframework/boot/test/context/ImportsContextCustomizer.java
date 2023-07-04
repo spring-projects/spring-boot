@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2022 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,9 @@ import org.springframework.context.annotation.ImportSelector;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.core.type.AnnotationMetadata;
@@ -251,7 +254,9 @@ class ImportsContextCustomizer implements ContextCustomizer {
 
 		private void collectElementAnnotations(AnnotatedElement element, Set<Annotation> annotations,
 				Set<Class<?>> seen) {
-			for (Annotation annotation : element.getDeclaredAnnotations()) {
+			for (MergedAnnotation<Annotation> mergedAnnotation : MergedAnnotations.from(element,
+					SearchStrategy.DIRECT)) {
+				Annotation annotation = mergedAnnotation.synthesize();
 				if (!isIgnoredAnnotation(annotation)) {
 					annotations.add(annotation);
 					collectClassAnnotations(annotation.annotationType(), annotations, seen);
