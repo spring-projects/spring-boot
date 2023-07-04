@@ -80,10 +80,6 @@ public final class ClientHttpRequestFactories {
 
 	private static final boolean JETTY_CLIENT_PRESENT = ClassUtils.isPresent(JETTY_CLIENT_CLASS, null);
 
-	static final String JDK_CLIENT_CLASS = "java.net.http.HttpClient";
-
-	private static final boolean JDK_CLIENT_PRESENT = ClassUtils.isPresent(JDK_CLIENT_CLASS, null);
-
 	private ClientHttpRequestFactories() {
 	}
 
@@ -103,9 +99,6 @@ public final class ClientHttpRequestFactories {
 		}
 		if (JETTY_CLIENT_PRESENT) {
 			return Jetty.get(settings);
-		}
-		if (JDK_CLIENT_PRESENT) {
-			return Jdk.get(settings);
 		}
 		return Simple.get(settings);
 	}
