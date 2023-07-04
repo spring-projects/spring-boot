@@ -1014,8 +1014,10 @@ This can be done by setting the following property:
 	management.endpoint.health.probes.add-additional-paths=true
 ----
 
-This would make `liveness` group available at `/livez` and `readiness` group at `readyz` on the main server port.
-Paths could be customized using `additional-path` property on each group, see <<actuator#actuator.endpoints.health.groups, health groups>> for more detail.
+This would make the `liveness` group available at `/livez` and the `readiness` group available at `/readyz` on the main server port.
+Paths can be customized using the `additional-path` property on each group, see <<actuator#actuator.endpoints.health.groups, health groups>> for details.
+
+
 
 [[actuator.endpoints.kubernetes-probes.external-state]]
 ==== Checking External State With Kubernetes Probes
