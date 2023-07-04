@@ -502,6 +502,12 @@
       "defaultValue": true
     },
     {
+      "name": "spring.batch.job.modular",
+      "type": "java.lang.Boolean",
+      "description": "Whether the job configuration is going to be modularized like @EnableBatchProcessing(modular=true)",
+      "defaultValue": false
+    },
+    {
       "name": "spring.batch.schema",
       "type": "java.lang.String",
       "deprecation": {

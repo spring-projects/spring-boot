@@ -37,13 +37,17 @@ import org.springframework.batch.core.configuration.DuplicateJobException;
 import org.springframework.batch.core.configuration.JobFactory;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.configuration.support.ApplicationContextFactory;
+import org.springframework.batch.core.configuration.support.ClasspathXmlApplicationContextsFactoryBean;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
+import org.springframework.batch.core.configuration.support.GenericApplicationContextFactory;
 import org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -75,6 +79,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.support.ConfigurableConversionService;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -93,6 +99,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Vedran Pavic
  * @author Kazuki Shimizu
+ * @author Yanming Zhou
  */
 @ExtendWith(OutputCaptureExtension.class)
 class BatchAutoConfigurationTests {
@@ -422,6 +429,19 @@ class BatchAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void testModular() {
+		this.contextRunner.withUserConfiguration(ModularConfiguration.class, EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.batch.job.modular=true")
+			.run((context) -> {
+				JobRegistry jobRegistry = context.getBean(JobRegistry.class);
+				assertThat(jobRegistry.getJobNames()).containsExactlyInAnyOrder("job", "discreteLocalJob", "simpleJob");
+				context.getBean(JobLauncher.class).run(jobRegistry.getJob("discreteLocalJob"), new JobParameters());
+				assertThat(context.getBean(JobRepository.class)
+					.getLastJobExecution("discreteLocalJob", new JobParameters())).isNotNull();
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	protected static class BatchDataSourceConfiguration {
 
@@ -715,6 +735,28 @@ class BatchAutoConfigurationTests {
 		@Order(2)
 		BatchConversionServiceCustomizer anotherBatchConversionServiceCustomizer() {
 			return mock(BatchConversionServiceCustomizer.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ModularConfiguration {
+
+		@Bean
+		ApplicationContextFactory jobConfiguration() {
+			return new GenericApplicationContextFactory(JobConfiguration.class);
+		}
+
+		@Bean
+		ApplicationContextFactory namedJobConfigurationWithLocalJob() {
+			return new GenericApplicationContextFactory(NamedJobConfigurationWithLocalJob.class);
+		}
+
+		@Bean
+		FactoryBean<ApplicationContextFactory[]> applicationContextFactoryArrayFactoryBean() {
+			ClasspathXmlApplicationContextsFactoryBean factoryBean = new ClasspathXmlApplicationContextsFactoryBean();
+			factoryBean.setResources(new Resource[] { new ClassPathResource("batch/simpleJob.xml") });
+			return factoryBean;
 		}
 
 	}

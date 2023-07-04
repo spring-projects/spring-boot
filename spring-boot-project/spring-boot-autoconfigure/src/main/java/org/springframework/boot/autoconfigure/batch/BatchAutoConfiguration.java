@@ -17,12 +17,19 @@
 package org.springframework.boot.autoconfigure.batch;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
+import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.ListableJobLocator;
+import org.springframework.batch.core.configuration.StepRegistry;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.configuration.support.ApplicationContextFactory;
+import org.springframework.batch.core.configuration.support.AutomaticJobRegistrar;
 import org.springframework.batch.core.configuration.support.DefaultBatchConfiguration;
+import org.springframework.batch.core.configuration.support.DefaultJobLoader;
+import org.springframework.batch.core.configuration.support.JobLoader;
 import org.springframework.batch.core.converter.JobParametersConverter;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
@@ -66,6 +73,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Kazuki Shimizu
  * @author Mahmoud Ben Hassine
+ * @author Yanming Zhou
  * @since 1.0.0
  */
 @AutoConfiguration(after = { HibernateJpaAutoConfiguration.class, TransactionAutoConfiguration.class })
@@ -158,6 +166,32 @@ public class BatchAutoConfiguration {
 				customizer.customize(conversionService);
 			}
 			return conversionService;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.batch.job", name = "modular", havingValue = "true")
+	static class SpringBootModularBatchConfiguration {
+
+		@Bean
+		JobLoader jobLoader(JobRegistry jobRegistry, ObjectProvider<StepRegistry> stepRegistry) {
+			DefaultJobLoader jobLoader = new DefaultJobLoader(jobRegistry);
+			stepRegistry.ifAvailable(jobLoader::setStepRegistry);
+			return jobLoader;
+		}
+
+		@Bean
+		AutomaticJobRegistrar automaticJobRegistrar(JobLoader jobLoader,
+				ObjectProvider<ApplicationContextFactory> applicationContextFactories,
+				ObjectProvider<ApplicationContextFactory[]> applicationContextFactoryArrays) {
+			AutomaticJobRegistrar automaticJobRegistrar = new AutomaticJobRegistrar();
+			automaticJobRegistrar.setJobLoader(jobLoader);
+			applicationContextFactories.forEach(automaticJobRegistrar::addApplicationContextFactory);
+			applicationContextFactoryArrays.stream()
+				.flatMap(Stream::of)
+				.forEach(automaticJobRegistrar::addApplicationContextFactory);
+			return automaticJobRegistrar;
 		}
 
 	}

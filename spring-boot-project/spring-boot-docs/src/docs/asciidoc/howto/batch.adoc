@@ -26,7 +26,7 @@ Spring Batch auto-configuration is enabled by adding `spring-boot-starter-batch`
 If a single `Job` is found in the application context, it is executed on startup (see {spring-boot-autoconfigure-module-code}/batch/JobLauncherApplicationRunner.java[`JobLauncherApplicationRunner`] for details).
 If multiple `Job` beans are found, the job that should be executed must be specified using configprop:spring.batch.job.name[].
 
-To disable running a `Job` found in the application context, set the configprop:spring.batch.job.enabled[] to `false.`
+To disable running a `Job` found in the application context, set the configprop:spring.batch.job.enabled[] to `false`.
 
 See {spring-boot-autoconfigure-module-code}/batch/BatchAutoConfiguration.java[BatchAutoConfiguration] for more details.
 
@@ -60,3 +60,45 @@ This provides only one argument to the batch job: `someParameter=someValue`.
 Spring Batch requires a data store for the `Job` repository.
 If you use Spring Boot, you must use an actual database.
 Note that it can be an in-memory database, see {spring-batch-docs}job.html#configuringJobRepository[Configuring a Job Repository].
+
+
+
+[[howto.batch.modularizing-job-configuration]]
+=== Modularizing Job Configuration
+To modularize job configuration into multiple application contexts, set the configprop:spring.batch.job.modular[] to `true`,
+and supply them in separate (child) contexts through an {spring-batch-api}/core/configuration/support/ApplicationContextFactory.html[`ApplicationContextFactory`] or array of it.
+
+Example for JavaConfig:
+[source,java,indent=0,subs="verbatim"]
+----
+	@Configuration(proxyBeanMethods = false)
+	static class ModularBatchConfiguration {
+
+		@Bean
+		ApplicationContextFactory job1Configuration() {
+			return new GenericApplicationContextFactory(Job1Configuration.class);
+		}
+
+		@Bean
+		ApplicationContextFactory job2Configuration() {
+			return new GenericApplicationContextFactory(Job2Configuration.class);
+		}
+
+	}
+----
+
+Example for XML:
+[source,java,indent=0,subs="verbatim"]
+----
+	@Configuration(proxyBeanMethods = false)
+	static class ModularBatchConfiguration {
+
+		@Bean
+		FactoryBean<ApplicationContextFactory[]> jobConfiguration(@Value("${jobConfiguration.resources:classpath*:batch/*.xml}") Resource[] resources) {
+			ClasspathXmlApplicationContextsFactoryBean factoryBean = new ClasspathXmlApplicationContextsFactoryBean();
+			factoryBean.setResources(resources);
+			return factoryBean;
+		}
+
+	}
+----
