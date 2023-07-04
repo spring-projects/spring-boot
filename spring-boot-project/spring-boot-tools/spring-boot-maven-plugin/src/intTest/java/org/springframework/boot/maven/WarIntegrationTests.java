@@ -122,8 +122,9 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 			List<String> sortedLibs = Arrays.asList(
 					// these libraries are copied from the original war, sorted when
 					// packaged by Maven
-					"WEB-INF/lib/spring-aop", "WEB-INF/lib/spring-beans", "WEB-INF/lib/spring-context",
-					"WEB-INF/lib/spring-core", "WEB-INF/lib/spring-expression", "WEB-INF/lib/spring-jcl",
+					"WEB-INF/lib/micrometer-commons", "WEB-INF/lib/micrometer-observation", "WEB-INF/lib/spring-aop",
+					"WEB-INF/lib/spring-beans", "WEB-INF/lib/spring-context", "WEB-INF/lib/spring-core",
+					"WEB-INF/lib/spring-expression", "WEB-INF/lib/spring-jcl",
 					// these libraries are contributed by Spring Boot repackaging, and
 					// sorted separately
 					"WEB-INF/lib/spring-boot-jarmode-layertools");
