@@ -16,8 +16,13 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
+import java.time.Duration;
+
 import com.mongodb.ConnectionString;
+import com.mongodb.reactivestreams.client.MongoCollection;
+import com.mongodb.reactivestreams.client.gridfs.GridFSBucket;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -68,20 +73,26 @@ class MongoReactiveDataAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void usesMongoConnectionDetailsIfAvailable() {
 		this.contextRunner.withUserConfiguration(ConnectionDetailsConfiguration.class).run((context) -> {
 			assertThat(grisFsTemplateDatabaseName(context)).isEqualTo("grid-database-1");
 			ReactiveGridFsTemplate template = context.getBean(ReactiveGridFsTemplate.class);
-			assertThat(template).hasFieldOrPropertyWithValue("bucket", "connection-details-bucket");
+			GridFSBucket bucket = ((Mono<GridFSBucket>) ReflectionTestUtils.getField(template, "bucketSupplier"))
+				.block(Duration.ofSeconds(30));
+			assertThat(bucket.getBucketName()).isEqualTo("connection-details-bucket");
 		});
 	}
 
 	@Test
+	@SuppressWarnings("unchecked")
 	void whenGridFsBucketIsConfiguredThenGridFsTemplateUsesIt() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.gridfs.bucket:test-bucket").run((context) -> {
 			assertThat(context).hasSingleBean(ReactiveGridFsTemplate.class);
 			ReactiveGridFsTemplate template = context.getBean(ReactiveGridFsTemplate.class);
-			assertThat(template).hasFieldOrPropertyWithValue("bucket", "test-bucket");
+			GridFSBucket bucket = ((Mono<GridFSBucket>) ReflectionTestUtils.getField(template, "bucketSupplier"))
+				.block(Duration.ofSeconds(30));
+			assertThat(bucket.getBucketName()).isEqualTo("test-bucket");
 		});
 	}
 
@@ -150,12 +161,14 @@ class MongoReactiveDataAutoConfigurationTests {
 			.run((context) -> assertThat(context).getFailure().hasMessageContaining("Database name must not be empty"));
 	}
 
+	@SuppressWarnings("unchecked")
 	private String grisFsTemplateDatabaseName(AssertableApplicationContext context) {
 		assertThat(context).hasSingleBean(ReactiveGridFsTemplate.class);
 		ReactiveGridFsTemplate template = context.getBean(ReactiveGridFsTemplate.class);
-		ReactiveMongoDatabaseFactory factory = (ReactiveMongoDatabaseFactory) ReflectionTestUtils.getField(template,
-				"dbFactory");
-		return factory.getMongoDatabase().block().getName();
+		GridFSBucket bucket = ((Mono<GridFSBucket>) ReflectionTestUtils.getField(template, "bucketSupplier"))
+			.block(Duration.ofSeconds(30));
+		MongoCollection<?> collection = (MongoCollection<?>) ReflectionTestUtils.getField(bucket, "filesCollection");
+		return collection.getNamespace().getDatabaseName();
 	}
 
 	@Configuration(proxyBeanMethods = false)
