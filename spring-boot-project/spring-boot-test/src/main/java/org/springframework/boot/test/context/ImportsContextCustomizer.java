@@ -16,13 +16,12 @@
 
 package org.springframework.boot.test.context;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -42,16 +41,18 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.AnnotationFilter;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.util.ReflectionUtils;
+
+import static org.springframework.core.annotation.AnnotationFilter.packages;
 
 /**
  * {@link ContextCustomizer} to allow {@code @Import} annotations to be used directly on
@@ -217,82 +218,41 @@ class ImportsContextCustomizer implements ContextCustomizer {
 	 */
 	static class ContextCustomizerKey {
 
-		private static final Class<?>[] NO_IMPORTS = {};
+		private static final AnnotationFilter ANNOTATION_FILTERS = or(packages("java.lang.annotation"),
+				packages("org.spockframework", "spock"),
+				or(isEqualTo("kotlin.Metadata"), packages("kotlin.annotation")), packages(("org.junit")));
 
-		private static final Set<AnnotationFilter> ANNOTATION_FILTERS;
-
-		static {
-			Set<AnnotationFilter> filters = new HashSet<>();
-			filters.add(new JavaLangAnnotationFilter());
-			filters.add(new KotlinAnnotationFilter());
-			filters.add(new SpockAnnotationFilter());
-			filters.add(new JUnitAnnotationFilter());
-			ANNOTATION_FILTERS = Collections.unmodifiableSet(filters);
-		}
-
-		private final Set<Object> key;
+		private final Object key;
 
 		ContextCustomizerKey(Class<?> testClass) {
-			Set<Annotation> annotations = new HashSet<>();
-			Set<Class<?>> seen = new HashSet<>();
-			collectClassAnnotations(testClass, annotations, seen);
-			Set<Object> determinedImports = determineImports(annotations, testClass);
-			this.key = Collections.unmodifiableSet((determinedImports != null) ? determinedImports : annotations);
-		}
-
-		private void collectClassAnnotations(Class<?> classType, Set<Annotation> annotations, Set<Class<?>> seen) {
-			if (seen.add(classType)) {
-				collectElementAnnotations(classType, annotations, seen);
-				for (Class<?> interfaceType : classType.getInterfaces()) {
-					collectClassAnnotations(interfaceType, annotations, seen);
-				}
-				if (classType.getSuperclass() != null) {
-					collectClassAnnotations(classType.getSuperclass(), annotations, seen);
-				}
+			MergedAnnotations mergedAnnotations = MergedAnnotations
+				.search(MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
+				.withAnnotationFilter(ANNOTATION_FILTERS)
+				.from(testClass);
+			Set<Object> determinedImports = determineImports(mergedAnnotations, testClass);
+			if (determinedImports != null) {
+				this.key = determinedImports;
+			}
+			else {
+				this.key = AnnotatedElementUtils.findAllMergedAnnotations(testClass,
+						mergedAnnotations.stream().map(MergedAnnotation::getType).collect(Collectors.toSet()));
 			}
 		}
 
-		private void collectElementAnnotations(AnnotatedElement element, Set<Annotation> annotations,
-				Set<Class<?>> seen) {
-			for (MergedAnnotation<Annotation> mergedAnnotation : MergedAnnotations.from(element,
-					SearchStrategy.DIRECT)) {
-				Annotation annotation = mergedAnnotation.synthesize();
-				if (!isIgnoredAnnotation(annotation)) {
-					annotations.add(annotation);
-					collectClassAnnotations(annotation.annotationType(), annotations, seen);
-				}
-			}
-		}
-
-		private boolean isIgnoredAnnotation(Annotation annotation) {
-			for (AnnotationFilter annotationFilter : ANNOTATION_FILTERS) {
-				if (annotationFilter.isIgnored(annotation)) {
-					return true;
-				}
-			}
-			return false;
-		}
-
-		private Set<Object> determineImports(Set<Annotation> annotations, Class<?> testClass) {
-			Set<Object> determinedImports = new LinkedHashSet<>();
+		private Set<Object> determineImports(MergedAnnotations mergedAnnotations, Class<?> testClass) {
 			AnnotationMetadata testClassMetadata = AnnotationMetadata.introspect(testClass);
-			for (Annotation annotation : annotations) {
-				for (Class<?> source : getImports(annotation)) {
-					Set<Object> determinedSourceImports = determineImports(source, testClassMetadata);
-					if (determinedSourceImports == null) {
+			return mergedAnnotations.stream(Import.class)
+				.flatMap((ma) -> Stream.of(ma.getClassArray("value")))
+				.map((source) -> determineImports(source, testClassMetadata))
+				.reduce(new HashSet<>(), (a, b) -> {
+					if (a == null || b == null) {
 						return null;
 					}
-					determinedImports.addAll(determinedSourceImports);
-				}
-			}
-			return determinedImports;
-		}
-
-		private Class<?>[] getImports(Annotation annotation) {
-			if (annotation instanceof Import importAnnotation) {
-				return importAnnotation.value();
-			}
-			return NO_IMPORTS;
+					else {
+						a.add(b);
+						return a;
+					}
+				});
 		}
 
 		private Set<Object> determineImports(Class<?> source, AnnotationMetadata metadata) {
@@ -340,67 +300,12 @@ class ImportsContextCustomizer implements ContextCustomizer {
 
 	}
 
-	/**
-	 * Filter used to limit considered annotations.
-	 */
-	private interface AnnotationFilter {
-
-		boolean isIgnored(Annotation annotation);
-
+	static AnnotationFilter or(AnnotationFilter... filters) {
+		return typeName -> Stream.of(filters).anyMatch(filter -> filter.matches(typeName));
 	}
 
-	/**
-	 * {@link AnnotationFilter} for {@literal java.lang} annotations.
-	 */
-	private static final class JavaLangAnnotationFilter implements AnnotationFilter {
-
-		@Override
-		public boolean isIgnored(Annotation annotation) {
-			return AnnotationUtils.isInJavaLangAnnotationPackage(annotation);
-		}
-
-	}
-
-	/**
-	 * {@link AnnotationFilter} for Kotlin annotations.
-	 */
-	private static final class KotlinAnnotationFilter implements AnnotationFilter {
-
-		@Override
-		public boolean isIgnored(Annotation annotation) {
-			return "kotlin.Metadata".equals(annotation.annotationType().getName())
-					|| isInKotlinAnnotationPackage(annotation);
-		}
-
-		private boolean isInKotlinAnnotationPackage(Annotation annotation) {
-			return annotation.annotationType().getName().startsWith("kotlin.annotation.");
-		}
-
-	}
-
-	/**
-	 * {@link AnnotationFilter} for Spock annotations.
-	 */
-	private static final class SpockAnnotationFilter implements AnnotationFilter {
-
-		@Override
-		public boolean isIgnored(Annotation annotation) {
-			return annotation.annotationType().getName().startsWith("org.spockframework.")
-					|| annotation.annotationType().getName().startsWith("spock.");
-		}
-
-	}
-
-	/**
-	 * {@link AnnotationFilter} for JUnit annotations.
-	 */
-	private static final class JUnitAnnotationFilter implements AnnotationFilter {
-
-		@Override
-		public boolean isIgnored(Annotation annotation) {
-			return annotation.annotationType().getName().startsWith("org.junit.");
-		}
-
+	static AnnotationFilter isEqualTo(String expectedTypeName) {
+		return typeName -> typeName.equals(expectedTypeName);
 	}
 
 }
