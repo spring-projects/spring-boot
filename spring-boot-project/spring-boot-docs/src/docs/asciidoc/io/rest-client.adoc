@@ -18,6 +18,19 @@ For example, to add BASIC auth support, you can use `builder.basicAuthentication
 
 
 
+[[io.rest-client.resttemplate.http-client]]
+==== RestTemplate HTTP Client
+Spring Boot will auto-detect which HTTP client to use with `RestTemplate` depending on the libraries available on the application classpath.
+In order of preference, the following clients are supported:
+
+. Apache HttpClient
+. OkHttp
+. Simple JDK client (`HttpURLConnection`)
+
+If multiple clients are available on the classpath, the most preferred client will be used.
+
+
+
 [[io.rest-client.resttemplate.customization]]
 ==== RestTemplate Customization
 There are three main approaches to `RestTemplate` customization, depending on how broadly you want the customizations to apply.
@@ -62,8 +75,15 @@ include::code:MyService[]
 
 [[io.rest-client.webclient.runtime]]
 ==== WebClient Runtime
-Spring Boot will auto-detect which `ClientHttpConnector` to use to drive `WebClient`, depending on the libraries available on the application classpath.
-For now, Reactor Netty, Jetty ReactiveStream client, Apache HttpClient, and the JDK's HttpClient are supported.
+Spring Boot will auto-detect which `ClientHttpConnector` to use to drive `WebClient` depending on the libraries available on the application classpath.
+In order of preference, the following clients are supported:
+
+. Reactor Netty
+. Jetty RS client
+. Apache HttpClient
+. JDK HttpClient
+
+If multiple clients are available on the classpath, the most preferred client will be used.
 
 The `spring-boot-starter-webflux` starter depends on `io.projectreactor.netty:reactor-netty` by default, which brings both server and client implementations.
 If you choose to use Jetty as a reactive server instead, you should add a dependency on the Jetty Reactive HTTP client library, `org.eclipse.jetty:jetty-reactive-httpclient`.
