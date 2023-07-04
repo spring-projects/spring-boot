@@ -18,10 +18,9 @@ package org.springframework.boot.test.context;
 
 import java.lang.reflect.Constructor;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
@@ -41,7 +40,6 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationFilter;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -52,14 +50,13 @@ import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.util.ReflectionUtils;
 
-import static org.springframework.core.annotation.AnnotationFilter.packages;
-
 /**
  * {@link ContextCustomizer} to allow {@code @Import} annotations to be used directly on
  * test classes.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Laurent Martelli
  * @see ImportsContextCustomizerFactory
  */
 class ImportsContextCustomizer implements ContextCustomizer {
@@ -218,41 +215,43 @@ class ImportsContextCustomizer implements ContextCustomizer {
 	 */
 	static class ContextCustomizerKey {
 
-		private static final AnnotationFilter ANNOTATION_FILTERS = or(packages("java.lang.annotation"),
-				packages("org.spockframework", "spock"),
-				or(isEqualTo("kotlin.Metadata"), packages("kotlin.annotation")), packages(("org.junit")));
-
-		private final Object key;
+		private static final Set<AnnotationFilter> ANNOTATION_FILTERS;
+		static {
+			Set<AnnotationFilter> annotationFilters = new LinkedHashSet<>();
+			annotationFilters.add(AnnotationFilter.PLAIN);
+			annotationFilters.add("kotlin.Metadata"::equals);
+			annotationFilters.add(AnnotationFilter.packages("kotlin.annotation"));
+			annotationFilters.add(AnnotationFilter.packages("org.spockframework", "spock"));
+			annotationFilters.add(AnnotationFilter.packages("org.junit"));
+			ANNOTATION_FILTERS = Collections.unmodifiableSet(annotationFilters);
+		}
+		private final Set<Object> key;
 
 		ContextCustomizerKey(Class<?> testClass) {
-			MergedAnnotations mergedAnnotations = MergedAnnotations
-				.search(MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
-				.withAnnotationFilter(ANNOTATION_FILTERS)
+			MergedAnnotations annotations = MergedAnnotations.search(MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
+				.withAnnotationFilter(this::isFilteredAnnotation)
 				.from(testClass);
-			Set<Object> determinedImports = determineImports(mergedAnnotations, testClass);
-			if (determinedImports != null) {
-				this.key = determinedImports;
-			}
-			else {
-				this.key = AnnotatedElementUtils.findAllMergedAnnotations(testClass,
-						mergedAnnotations.stream().map(MergedAnnotation::getType).collect(Collectors.toSet()));
-			}
+			Set<Object> determinedImports = determineImports(annotations, testClass);
+			this.key = (determinedImports != null) ? determinedImports : synthesize(annotations);
 		}
 
-		private Set<Object> determineImports(MergedAnnotations mergedAnnotations, Class<?> testClass) {
-			AnnotationMetadata testClassMetadata = AnnotationMetadata.introspect(testClass);
-			return mergedAnnotations.stream(Import.class)
-				.flatMap((ma) -> Stream.of(ma.getClassArray("value")))
-				.map((source) -> determineImports(source, testClassMetadata))
-				.reduce(new HashSet<>(), (a, b) -> {
-					if (a == null || b == null) {
+		private boolean isFilteredAnnotation(String typeName) {
+			return ANNOTATION_FILTERS.stream().anyMatch((filter) -> filter.matches(typeName));
+		}
+
+		private Set<Object> determineImports(MergedAnnotations annotations, Class<?> testClass) {
+			Set<Object> determinedImports = new LinkedHashSet<>();
+			AnnotationMetadata metadata = AnnotationMetadata.introspect(testClass);
+			for (MergedAnnotation<Import> annotation : annotations.stream(Import.class).toList()) {
+				for (Class<?> source : annotation.getClassArray(MergedAnnotation.VALUE)) {
+					Set<Object> determinedSourceImports = determineImports(source, metadata);
+					if (determinedSourceImports == null) {
 						return null;
 					}
-					else {
-						a.add(b);
-						return a;
-					}
-				});
+					determinedImports.addAll(determinedSourceImports);
+				}
+			}
+			return determinedImports;
 		}
 
 		private Set<Object> determineImports(Class<?> source, AnnotationMetadata metadata) {
@@ -268,6 +267,10 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			}
 			// The source itself is the import
 			return Collections.singleton(source.getName());
+		}
+
+		private Set<Object> synthesize(MergedAnnotations annotations) {
+			return annotations.stream().map(MergedAnnotation::synthesize).collect(Collectors.toSet());
 		}
 
 		@SuppressWarnings("unchecked")
@@ -298,14 +301,6 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			return this.key.toString();
 		}
 
-	}
-
-	static AnnotationFilter or(AnnotationFilter... filters) {
-		return typeName -> Stream.of(filters).anyMatch(filter -> filter.matches(typeName));
-	}
-
-	static AnnotationFilter isEqualTo(String expectedTypeName) {
-		return typeName -> typeName.equals(expectedTypeName);
 	}
 
 }
