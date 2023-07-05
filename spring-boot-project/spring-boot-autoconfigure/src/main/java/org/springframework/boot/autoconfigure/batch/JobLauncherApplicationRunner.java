@@ -24,6 +24,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import javax.annotation.PostConstruct;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -112,6 +114,21 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 		this.jobRepository = jobRepository;
 	}
 
+	@PostConstruct
+	public void validate() throws NoSuchJobException {
+		if (StringUtils.hasText(this.jobNames)) {
+			String[] jobsToRun = this.jobNames.split(",");
+			for (Job job : this.jobs) {
+				for(String jobName: jobsToRun) {
+					if (!PatternMatchUtils.simpleMatch(jobName, job.getName())
+							&& !this.jobRegistry.getJobNames().contains(jobName)) {
+						throw new NoSuchJobException("Job with name " + jobName + " does not exist.");
+					}
+				}
+			}
+		}
+	}
+
 	public void setOrder(int order) {
 		this.order = order;
 	}
@@ -188,9 +205,6 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 				}
 				catch (NoSuchJobException ex) {
 					logger.debug(LogMessage.format("No job found in registry for job name: %s", jobName));
-					if(this.jobExplorer != null && this.jobExplorer.getLastJobInstance(jobName) == null) {
-						throw ex;
-					}
 				}
 			}
 		}
