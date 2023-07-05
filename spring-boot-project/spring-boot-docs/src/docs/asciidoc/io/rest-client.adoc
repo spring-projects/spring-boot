@@ -107,6 +107,22 @@ In that case, no auto-configuration or `RestClientCustomizer` is applied.
 
 
 
+[[io.rest-client.restclient.ssl]]
+==== RestClient SSL Support
+If you need custom SSL configuration on the `ClientHttpRequestFactory` used by the `RestClient`, you can inject a `RestClientSsl` instance that can be used with the builder's `apply` method.
+
+The `RestClientSsl` interface provides access to any <<features#features.ssl.bundles,SSL bundles>> that you have defined in your `application.properties` or `application.yaml` file.
+
+The following code shows a typical example:
+
+include::code:MyService[]
+
+If you need to apply other customization in addition to an SSL bundle, you can use the `ClientHttpRequestFactorySettings` class with `ClientHttpRequestFactories`:
+
+include::code:settings/MyService[]
+
+
+
 [[io.rest-client.resttemplate]]
 === RestTemplate
 Spring Framework's {spring-framework-api}/web/client/RestTemplate.html[`RestTemplate`] class predates `RestClient` and is the classic way that many applications use to call remote REST services.
