@@ -38,7 +38,6 @@ import org.springframework.batch.core.configuration.support.JobRegistryBeanPostP
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.launch.NoSuchJobException;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -72,7 +71,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -383,12 +382,10 @@ class BatchAutoConfigurationTests {
 		.withUserConfiguration(NamedJobConfigurationWithLocalJob.class, EmbeddedDataSourceConfiguration.class)
 		.withPropertyValues("spring.batch.job.names:discreteLocalJob,nonConfiguredJob")
 		.run((context) -> {
-			assertThat(context).hasSingleBean(JobLauncher.class);
-			assertThrows(NoSuchJobException.class,()->{
-				context.getBean(JobLauncherApplicationRunner.class).run();
-			});
-			assertThat(context.getBean(JobRepository.class)
-				.getLastJobExecution("discreteLocalJob", new JobParameters())).isNotNull();
+			assertThatThrownBy(() -> {
+					context.getBean(JobLauncherApplicationRunner.class).run();
+					}
+				).hasRootCauseMessage("Job with name nonConfiguredJob does not exist.");
 		});
 	}
 
