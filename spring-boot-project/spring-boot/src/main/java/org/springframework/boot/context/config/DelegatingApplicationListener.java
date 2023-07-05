@@ -41,6 +41,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 1.0.0
  */
+@Deprecated
 public class DelegatingApplicationListener implements ApplicationListener<ApplicationEvent>, Ordered {
 
 	// NOTE: Similar to org.springframework.web.context.ContextLoader

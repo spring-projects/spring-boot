@@ -39,6 +39,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 1.0.0
  */
+@Deprecated
 public class DelegatingApplicationContextInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
 
