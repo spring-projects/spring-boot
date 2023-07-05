@@ -72,12 +72,12 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 
 		private final OAuth2ResourceServerProperties.Jwt properties;
 
-		private final List<OAuth2TokenValidator<Jwt>> customOAuth2TokenValidators;
+		private final List<OAuth2TokenValidator<Jwt>> additionalValidators;
 
 		JwtConfiguration(OAuth2ResourceServerProperties properties,
-				List<OAuth2TokenValidator<Jwt>> customOAuth2TokenValidators) {
+				ObjectProvider<OAuth2TokenValidator<Jwt>> additionalValidators) {
 			this.properties = properties.getJwt();
-			this.customOAuth2TokenValidators = customOAuth2TokenValidators;
+			this.additionalValidators = additionalValidators.orderedStream().toList();
 		}
 
 		@Bean
@@ -102,17 +102,17 @@ class ReactiveOAuth2ResourceServerJwkConfiguration {
 		}
 
 		private OAuth2TokenValidator<Jwt> getValidators(OAuth2TokenValidator<Jwt> defaultValidator) {
+			List<String> audiences = this.properties.getAudiences();
+			if (CollectionUtils.isEmpty(audiences) && this.additionalValidators.isEmpty()) {
+				return defaultValidator;
+			}
 			List<OAuth2TokenValidator<Jwt>> validators = new ArrayList<>();
 			validators.add(defaultValidator);
-			validators.addAll(this.customOAuth2TokenValidators);
-			List<String> audiences = this.properties.getAudiences();
 			if (!CollectionUtils.isEmpty(audiences)) {
 				validators.add(new JwtClaimValidator<List<String>>(JwtClaimNames.AUD,
 						(aud) -> aud != null && !Collections.disjoint(aud, audiences)));
 			}
-			if (validators.size() == 1) {
-				return validators.get(0);
-			}
+			validators.addAll(this.additionalValidators);
 			return new DelegatingOAuth2TokenValidator<>(validators);
 		}
 
