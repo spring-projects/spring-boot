@@ -62,6 +62,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
  * @author Artsiom Yudovin
  * @author HaiTao Zhang
  * @author Mushtaq Ahmed
+ * @author Roman Golovin
  */
 @Configuration(proxyBeanMethods = false)
 class OAuth2ResourceServerJwtConfiguration {
@@ -72,8 +73,12 @@ class OAuth2ResourceServerJwtConfiguration {
 
 		private final OAuth2ResourceServerProperties.Jwt properties;
 
-		JwtDecoderConfiguration(OAuth2ResourceServerProperties properties) {
+		private final List<OAuth2TokenValidator<Jwt>> additionalValidators;
+
+		JwtDecoderConfiguration(OAuth2ResourceServerProperties properties,
+				ObjectProvider<OAuth2TokenValidator<Jwt>> additionalValidators) {
 			this.properties = properties.getJwt();
+			this.additionalValidators = additionalValidators.orderedStream().toList();
 		}
 
 		@Bean
@@ -98,13 +103,16 @@ class OAuth2ResourceServerJwtConfiguration {
 
 		private OAuth2TokenValidator<Jwt> getValidators(OAuth2TokenValidator<Jwt> defaultValidator) {
 			List<String> audiences = this.properties.getAudiences();
-			if (CollectionUtils.isEmpty(audiences)) {
+			if (CollectionUtils.isEmpty(audiences) && this.additionalValidators.isEmpty()) {
 				return defaultValidator;
 			}
 			List<OAuth2TokenValidator<Jwt>> validators = new ArrayList<>();
 			validators.add(defaultValidator);
-			validators.add(new JwtClaimValidator<List<String>>(JwtClaimNames.AUD,
-					(aud) -> aud != null && !Collections.disjoint(aud, audiences)));
+			if (!CollectionUtils.isEmpty(audiences)) {
+				validators.add(new JwtClaimValidator<List<String>>(JwtClaimNames.AUD,
+						(aud) -> aud != null && !Collections.disjoint(aud, audiences)));
+			}
+			validators.addAll(this.additionalValidators);
 			return new DelegatingOAuth2TokenValidator<>(validators);
 		}
 
