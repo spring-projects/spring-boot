@@ -40,7 +40,10 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Phillip Webb
  * @since 1.0.0
+ *
+ * @deprecated since 3.2 for removal in 3.4 as property based initialization is no longer recommended
  */
+@Deprecated(since = "3.2.0", forRemoval = true)
 public class DelegatingApplicationListener implements ApplicationListener<ApplicationEvent>, Ordered {
 
 	// NOTE: Similar to org.springframework.web.context.ContextLoader
