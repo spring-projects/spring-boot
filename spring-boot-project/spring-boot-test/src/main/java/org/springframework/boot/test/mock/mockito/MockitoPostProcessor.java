@@ -248,29 +248,22 @@ public class MockitoPostProcessor implements InstantiationAwareBeanPostProcessor
 		return candidates;
 	}
 
-	private Set<String> getExistingBeans(ConfigurableListableBeanFactory beanFactory, ResolvableType type) {
-		Set<String> beans = new LinkedHashSet<>(Arrays.asList(beanFactory.getBeanNamesForType(type, true, false)));
-		String typeName = type.resolve(Object.class).getName();
+	private Set<String> getExistingBeans(ConfigurableListableBeanFactory beanFactory, ResolvableType resolvableType) {
+		Set<String> beans = new LinkedHashSet<>(
+				Arrays.asList(beanFactory.getBeanNamesForType(resolvableType, true, false)));
+		Class<?> type = resolvableType.resolve(Object.class);
+		String typeName = type.getName();
 		for (String beanName : beanFactory.getBeanNamesForType(FactoryBean.class, true, false)) {
 			beanName = BeanFactoryUtils.transformedBeanName(beanName);
 			BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
 			Object attribute = beanDefinition.getAttribute(FactoryBean.OBJECT_TYPE_ATTRIBUTE);
-			if(attribute instanceof Class) {
-				Class<?> attributeClass = (Class<?>) attribute;
-				if (typeName.equals(attributeClass.getName())) {
-					beans.add(beanName);
-				}
-			} else if (attribute instanceof ResolvableType) {
-				ResolvableType resolvableType = (ResolvableType) attribute;
-				if (typeName.equals(resolvableType.resolve(Object.class).getName())) {
-					beans.add(beanName);
-				}
-			} else if (typeName.equals(attribute)){
+			if (resolvableType.equals(attribute) || type.equals(attribute) || typeName.equals(attribute)) {
 				beans.add(beanName);
 			}
 		}
 		beans.removeIf(this::isScopedTarget);
 		return beans;
+
 	}
 
 	private boolean isScopedTarget(String beanName) {

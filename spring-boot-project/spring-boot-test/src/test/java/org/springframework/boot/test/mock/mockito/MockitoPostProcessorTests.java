@@ -74,7 +74,7 @@ class MockitoPostProcessorTests {
 	}
 
 	@Test
-	void canMockBeanProducedByFactoryBeanWithObjectTypeAttribute() {
+	void canMockBeanProducedByFactoryBeanWithStringObjectTypeAttribute() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		RootBeanDefinition factoryBeanDefinition = new RootBeanDefinition(TestFactoryBean.class);
@@ -86,7 +86,7 @@ class MockitoPostProcessorTests {
 	}
 
 	@Test
-	void canMockBeanProducedByFactoryBeanWithClassAttribute() {
+	void canMockBeanProducedByFactoryBeanWithClassObjectTypeAttribute() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		RootBeanDefinition factoryBeanDefinition = new RootBeanDefinition(TestFactoryBean.class);
@@ -98,7 +98,7 @@ class MockitoPostProcessorTests {
 	}
 
 	@Test
-	void canMockBeanProducedByFactoryBeanWithResolvableTypeAttribute() {
+	void canMockBeanProducedByFactoryBeanWithResolvableTypeObjectTypeAttribute() {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		MockitoPostProcessor.register(context);
 		RootBeanDefinition factoryBeanDefinition = new RootBeanDefinition(TestFactoryBean.class);
