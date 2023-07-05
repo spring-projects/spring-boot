@@ -208,7 +208,7 @@ public class SonatypeService {
 			List<String> failureMessages = Stream.of(activities).flatMap((activity) -> activity.events.stream())
 					.filter((event) -> event.severity > 0).flatMap((event) -> event.properties.stream())
 					.filter((property) -> "failureMessage".equals(property.name))
-					.map((property) -> "    " + property.value).collect(Collectors.toList());
+					.map((property) -> "    " + property.value).toList();
 			if (failureMessages.isEmpty()) {
 				logger.error("Close failed for unknown reasons");
 			}

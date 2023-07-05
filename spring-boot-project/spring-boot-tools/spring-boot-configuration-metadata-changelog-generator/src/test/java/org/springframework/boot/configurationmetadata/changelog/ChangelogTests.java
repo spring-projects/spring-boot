@@ -17,7 +17,6 @@
 package org.springframework.boot.configurationmetadata.changelog;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -43,13 +42,13 @@ class ChangelogTests {
 		List<Difference> added = differences.differences()
 			.stream()
 			.filter((difference) -> difference.type() == DifferenceType.ADDED)
-			.collect(Collectors.toList());
+			.toList();
 		assertThat(added).hasSize(1);
 		assertProperty(added.get(0).newProperty(), "test.add", String.class, "new");
 		List<Difference> deleted = differences.differences()
 			.stream()
 			.filter((difference) -> difference.type() == DifferenceType.DELETED)
-			.collect(Collectors.toList());
+			.toList();
 		assertThat(deleted).hasSize(2)
 			.anySatisfy((entry) -> assertProperty(entry.oldProperty(), "test.delete", String.class, "delete"))
 			.anySatisfy(
@@ -57,7 +56,7 @@ class ChangelogTests {
 		List<Difference> deprecated = differences.differences()
 			.stream()
 			.filter((difference) -> difference.type() == DifferenceType.DEPRECATED)
-			.collect(Collectors.toList());
+			.toList();
 		assertThat(deprecated).hasSize(1);
 		assertProperty(deprecated.get(0).oldProperty(), "test.deprecate", String.class, "wrong");
 		assertProperty(deprecated.get(0).newProperty(), "test.deprecate", String.class, "wrong");
