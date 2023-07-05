@@ -1,80 +1,23 @@
 [[io.rest-client]]
 == Calling REST Services
-If your application calls remote REST services, Spring Boot makes that very convenient using a `RestTemplate` or a `WebClient`.
-
-[[io.rest-client.resttemplate]]
-=== RestTemplate
-If you need to call remote REST services from your application, you can use the Spring Framework's {spring-framework-api}/web/client/RestTemplate.html[`RestTemplate`] class.
-Since `RestTemplate` instances often need to be customized before being used, Spring Boot does not provide any single auto-configured `RestTemplate` bean.
-It does, however, auto-configure a `RestTemplateBuilder`, which can be used to create `RestTemplate` instances when needed.
-The auto-configured `RestTemplateBuilder` ensures that sensible `HttpMessageConverters` are applied to `RestTemplate` instances.
-
-The following code shows a typical example:
-
-include::code:MyService[]
-
-`RestTemplateBuilder` includes a number of useful methods that can be used to quickly configure a `RestTemplate`.
-For example, to add BASIC authentication support, you can use `builder.basicAuthentication("user", "password").build()`.
-
-
-
-[[io.rest-client.resttemplate.http-client]]
-==== RestTemplate HTTP Client
-Spring Boot will auto-detect which HTTP client to use with `RestTemplate` depending on the libraries available on the application classpath.
-In order of preference, the following clients are supported:
-
-. Apache HttpClient
-. OkHttp
-. Jetty HttpClient
-. Simple JDK client (`HttpURLConnection`)
-
-If multiple clients are available on the classpath, the most preferred client will be used.
-
-
-
-[[io.rest-client.resttemplate.customization]]
-==== RestTemplate Customization
-There are three main approaches to `RestTemplate` customization, depending on how broadly you want the customizations to apply.
-
-To make the scope of any customizations as narrow as possible, inject the auto-configured `RestTemplateBuilder` and then call its methods as required.
-Each method call returns a new `RestTemplateBuilder` instance, so the customizations only affect this use of the builder.
-
-To make an application-wide, additive customization, use a `RestTemplateCustomizer` bean.
-All such beans are automatically registered with the auto-configured `RestTemplateBuilder` and are applied to any templates that are built with it.
-
-The following example shows a customizer that configures the use of a proxy for all hosts except `192.168.0.5`:
-
-include::code:MyRestTemplateCustomizer[]
-
-Finally, you can define your own `RestTemplateBuilder` bean.
-Doing so will replace the auto-configured builder.
-If you want any `RestTemplateCustomizer` beans to be applied to your custom builder, as the auto-configuration would have done, configure it using a `RestTemplateBuilderConfigurer`.
-The following example exposes a `RestTemplateBuilder` that matches what Spring Boot's auto-configuration would have done, except that custom connect and read timeouts are also specified:
-
-include::code:MyRestTemplateBuilderConfiguration[]
-
-The most extreme (and rarely used) option is to create your own `RestTemplateBuilder` bean without using a configurer.
-In addition to replacing the auto-configured builder, this also prevents any `RestTemplateCustomizer` beans from being used.
-
-
-
-[[io.rest-client.resttemplate.ssl]]
-==== RestTemplate SSL Support
-If you need custom SSL configuration on the `RestTemplate`, you can apply an <<features#features.ssl.bundles,SSL bundle>> to the `RestTemplateBuilder` as shown in this example:
-
-include::code:MyService[]
+Spring Boot provides various convenient ways to call remote REST services.
+If you are developing a non-blocking reactive application and you're using Spring WebFlux, then you can use `WebClient`.
+If you prefer blocking APIs then you can use `RestClient` or `RestTemplate`.
 
 
 
 [[io.rest-client.webclient]]
 === WebClient
-If you have Spring WebFlux on your classpath, you can also choose to use `WebClient` to call remote REST services.
-Compared to `RestTemplate`, this client has a more functional feel and is fully reactive.
+If you have Spring WebFlux on your classpath we recommend that you use `WebClient` to call remote REST services.
+The `WebClient` interface provides a functional style API and is fully reactive.
 You can learn more about the `WebClient` in the dedicated {spring-framework-docs}/web-reactive.html#webflux-client[section in the Spring Framework docs].
 
-Spring Boot creates and pre-configures a `WebClient.Builder` for you.
+TIP: If you are not writing a reactive Spring WebFlux application you can use the a <<io#io.rest-client.restclient,`RestClient`>> instead of a `WebClient`.
+This provides a similar functional API, but is blocking rather than reactive.
+
+Spring Boot creates and pre-configures a prototype `WebClient.Builder` bean for you.
 It is strongly advised to inject it in your components and use it to create `WebClient` instances.
-Spring Boot is configuring that builder to share HTTP resources, reflect codecs setup in the same fashion as the server ones (see <<web#web.reactive.webflux.httpcodecs,WebFlux HTTP codecs auto-configuration>>), and more.
+Spring Boot is configuring that builder to share HTTP resources and reflect codecs setup in the same fashion as the server ones (see <<web#web.reactive.webflux.httpcodecs,WebFlux HTTP codecs auto-configuration>>), and more.
 
 The following code shows a typical example:
 
@@ -131,3 +74,99 @@ The following code shows a typical example:
 
 include::code:MyService[]
 
+
+
+[[io.rest-client.restclient]]
+=== RestClient
+If you are not using Spring WebFlux or Project Reactor in your application we recommend that you use `RestClient` to call remote REST services.
+
+The `RestClient` interface provides a functional style blocking API.
+
+Spring Boot creates and pre-configures a prototype `RestClient.Builder` bean for you.
+It is strongly advised to inject it in your components and use it to create `RestClient` instances.
+Spring Boot is configuring that builder with `HttpMessageConverters` and an appropriate `ClientHttpRequestFactory`.
+
+The following code shows a typical example:
+
+include::code:MyService[]
+
+
+
+[[io.rest-client.restclient.customization]]
+==== RestClient Customization
+There are three main approaches to `RestClient` customization, depending on how broadly you want the customizations to apply.
+
+To make the scope of any customizations as narrow as possible, inject the auto-configured `RestClient.Builder` and then call its methods as required.
+`RestClient.Builder` instances are stateful: Any change on the builder is reflected in all clients subsequently created with it.
+If you want to create several clients with the same builder, you can also consider cloning the builder with `RestClient.Builder other = builder.clone();`.
+
+To make an application-wide, additive customization to all `RestClient.Builder` instances, you can declare `RestClientCustomizer` beans and change the `RestClient.Builder` locally at the point of injection.
+
+Finally, you can fall back to the original API and use `RestClient.create()`.
+In that case, no auto-configuration or `RestClientCustomizer` is applied.
+
+
+
+[[io.rest-client.resttemplate]]
+=== RestTemplate
+Spring Framework's {spring-framework-api}/web/client/RestTemplate.html[`RestTemplate`] class predates `RestClient` and is the classic way that many applications use to call remote REST services.
+You might choose to use `RestTemplate` when you have existing code that you don't want to migrate to `RestClient`, or because you're already familiar with the `RestTemplate` API.
+
+Since `RestTemplate` instances often need to be customized before being used, Spring Boot does not provide any single auto-configured `RestTemplate` bean.
+It does, however, auto-configure a `RestTemplateBuilder`, which can be used to create `RestTemplate` instances when needed.
+The auto-configured `RestTemplateBuilder` ensures that sensible `HttpMessageConverters` and an appropriate `ClientHttpRequestFactory` are applied to `RestTemplate` instances.
+
+The following code shows a typical example:
+
+include::code:MyService[]
+
+`RestTemplateBuilder` includes a number of useful methods that can be used to quickly configure a `RestTemplate`.
+For example, to add BASIC authentication support, you can use `builder.basicAuthentication("user", "password").build()`.
+
+
+
+[[io.rest-client.resttemplate.customization]]
+==== RestTemplate Customization
+There are three main approaches to `RestTemplate` customization, depending on how broadly you want the customizations to apply.
+
+To make the scope of any customizations as narrow as possible, inject the auto-configured `RestTemplateBuilder` and then call its methods as required.
+Each method call returns a new `RestTemplateBuilder` instance, so the customizations only affect this use of the builder.
+
+To make an application-wide, additive customization, use a `RestTemplateCustomizer` bean.
+All such beans are automatically registered with the auto-configured `RestTemplateBuilder` and are applied to any templates that are built with it.
+
+The following example shows a customizer that configures the use of a proxy for all hosts except `192.168.0.5`:
+
+include::code:MyRestTemplateCustomizer[]
+
+Finally, you can define your own `RestTemplateBuilder` bean.
+Doing so will replace the auto-configured builder.
+If you want any `RestTemplateCustomizer` beans to be applied to your custom builder, as the auto-configuration would have done, configure it using a `RestTemplateBuilderConfigurer`.
+The following example exposes a `RestTemplateBuilder` that matches what Spring Boot's auto-configuration would have done, except that custom connect and read timeouts are also specified:
+
+include::code:MyRestTemplateBuilderConfiguration[]
+
+The most extreme (and rarely used) option is to create your own `RestTemplateBuilder` bean without using a configurer.
+In addition to replacing the auto-configured builder, this also prevents any `RestTemplateCustomizer` beans from being used.
+
+
+
+[[io.rest-client.resttemplate.ssl]]
+==== RestTemplate SSL Support
+If you need custom SSL configuration on the `RestTemplate`, you can apply an <<features#features.ssl.bundles,SSL bundle>> to the `RestTemplateBuilder` as shown in this example:
+
+include::code:MyService[]
+
+
+
+[[io.rest-client.clienthttprequestfactory]]
+=== HTTP Client Detection for RestClient and RestTemplate
+Spring Boot will auto-detect which HTTP client to use with `RestClient` and `RestTemplate` depending on the libraries available on the application classpath.
+In order of preference, the following clients are supported:
+
+. Apache HttpClient
+. OkHttp
+. Jetty HttpClient
+. Simple JDK client (`HttpURLConnection`)
+
+If multiple clients are available on the classpath, the most preferred client will be used.
