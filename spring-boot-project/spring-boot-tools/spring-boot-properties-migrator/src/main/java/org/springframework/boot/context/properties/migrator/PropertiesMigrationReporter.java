@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepository;
@@ -82,9 +81,7 @@ class PropertiesMigrationReporter {
 	private PropertySource<?> mapPropertiesWithReplacement(PropertiesMigrationReport report, String name,
 			List<PropertyMigration> properties) {
 		report.add(name, properties);
-		List<PropertyMigration> renamed = properties.stream()
-			.filter(PropertyMigration::isCompatibleType)
-			.collect(Collectors.toList());
+		List<PropertyMigration> renamed = properties.stream().filter(PropertyMigration::isCompatibleType).toList();
 		if (renamed.isEmpty()) {
 			return null;
 		}
@@ -118,10 +115,7 @@ class PropertiesMigrationReporter {
 	private Map<String, List<PropertyMigration>> getMatchingProperties(
 			Predicate<ConfigurationMetadataProperty> filter) {
 		MultiValueMap<String, PropertyMigration> result = new LinkedMultiValueMap<>();
-		List<ConfigurationMetadataProperty> candidates = this.allProperties.values()
-			.stream()
-			.filter(filter)
-			.collect(Collectors.toList());
+		List<ConfigurationMetadataProperty> candidates = this.allProperties.values().stream().filter(filter).toList();
 		getPropertySourcesAsMap().forEach((propertySourceName, propertySource) -> candidates.forEach((metadata) -> {
 			ConfigurationPropertyName metadataName = ConfigurationPropertyName.isValid(metadata.getId())
 					? ConfigurationPropertyName.of(metadata.getId())
