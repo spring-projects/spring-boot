@@ -21,6 +21,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.web.client.ClientHttpRequestFactories;
 import org.springframework.boot.web.client.ClientHttpRequestFactorySettings;
@@ -28,6 +29,8 @@ import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Scope;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.client.RestClient;
 
 /**
@@ -44,6 +47,14 @@ import org.springframework.web.client.RestClient;
 @ConditionalOnClass(RestClient.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
 public class RestClientAutoConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean
+	@Order(Ordered.LOWEST_PRECEDENCE)
+	public HttpMessageConvertersRestClientCustomizer httpMessageConvertersRestClientCustomizer(
+			ObjectProvider<HttpMessageConverters> messageConverters) {
+		return new HttpMessageConvertersRestClientCustomizer(messageConverters.getIfUnique());
+	}
 
 	@Bean
 	@Scope("prototype")

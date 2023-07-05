@@ -16,14 +16,21 @@
 
 package org.springframework.boot.autoconfigure.web.client;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
+import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.web.client.RestClientCustomizer;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -77,6 +84,49 @@ class RestClientAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	@SuppressWarnings("unchecked")
+	void restClientWhenMessageConvertersDefinedShouldHaveMessageConverters() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
+			.withUserConfiguration(RestClientConfig.class)
+			.run((context) -> {
+				RestClient restClient = context.getBean(RestClient.class);
+				List<HttpMessageConverter<?>> expectedConverters = context.getBean(HttpMessageConverters.class)
+					.getConverters();
+				List<HttpMessageConverter<?>> actualConverters = (List<HttpMessageConverter<?>>) ReflectionTestUtils
+					.getField(restClient, "messageConverters");
+				assertThat(actualConverters).containsExactlyElementsOf(expectedConverters);
+			});
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void restClientWhenNoMessageConvertersDefinedShouldHaveDefaultMessageConverters() {
+		this.contextRunner.withUserConfiguration(RestClientConfig.class).run((context) -> {
+			RestClient restClient = context.getBean(RestClient.class);
+			RestClient defaultRestClient = RestClient.builder().build();
+			List<HttpMessageConverter<?>> actualConverters = (List<HttpMessageConverter<?>>) ReflectionTestUtils
+				.getField(restClient, "messageConverters");
+			List<HttpMessageConverter<?>> expectedConverters = (List<HttpMessageConverter<?>>) ReflectionTestUtils
+				.getField(defaultRestClient, "messageConverters");
+			assertThat(actualConverters).hasSameSizeAs(expectedConverters);
+		});
+	}
+
+	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	void restClientWhenHasCustomMessageConvertersShouldHaveMessageConverters() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
+			.withUserConfiguration(CustomHttpMessageConverter.class, RestClientConfig.class)
+			.run((context) -> {
+				RestClient restClient = context.getBean(RestClient.class);
+				List<HttpMessageConverter<?>> actualConverters = (List<HttpMessageConverter<?>>) ReflectionTestUtils
+					.getField(restClient, "messageConverters");
+				assertThat(actualConverters).extracting(HttpMessageConverter::getClass)
+					.contains((Class) CustomHttpMessageConverter.class);
+			});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class CodecConfiguration {
 
@@ -108,6 +158,20 @@ class RestClientAutoConfigurationTests {
 	}
 
 	interface MyWebClientBuilder extends RestClient.Builder {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class RestClientConfig {
+
+		@Bean
+		RestClient restClient(RestClient.Builder restClientBuilder) {
+			return restClientBuilder.build();
+		}
+
+	}
+
+	static class CustomHttpMessageConverter extends StringHttpMessageConverter {
 
 	}
 
