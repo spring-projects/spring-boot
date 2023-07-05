@@ -21,12 +21,8 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
-import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration.NotReactiveWebApplicationCondition;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.boot.web.client.RestTemplateRequestCustomizer;
@@ -67,19 +63,6 @@ public class RestTemplateAutoConfiguration {
 	public RestTemplateBuilder restTemplateBuilder(RestTemplateBuilderConfigurer restTemplateBuilderConfigurer) {
 		RestTemplateBuilder builder = new RestTemplateBuilder();
 		return restTemplateBuilderConfigurer.configure(builder);
-	}
-
-	static class NotReactiveWebApplicationCondition extends NoneNestedConditions {
-
-		NotReactiveWebApplicationCondition() {
-			super(ConfigurationPhase.PARSE_CONFIGURATION);
-		}
-
-		@ConditionalOnWebApplication(type = Type.REACTIVE)
-		private static class ReactiveWebApplication {
-
-		}
-
 	}
 
 }
