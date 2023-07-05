@@ -103,7 +103,7 @@ class StandardLibraryUpdateResolver implements LibraryUpdateResolver {
 			.flatMap(SortedSet::stream)
 			.distinct()
 			.filter((dependencyVersion) -> isPermitted(dependencyVersion, library.getProhibitedVersions()))
-			.collect(Collectors.toList());
+			.toList();
 		if (allVersions.isEmpty()) {
 			return Collections.emptyList();
 		}

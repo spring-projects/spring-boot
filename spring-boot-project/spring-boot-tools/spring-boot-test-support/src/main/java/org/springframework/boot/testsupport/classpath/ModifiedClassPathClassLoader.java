@@ -33,7 +33,6 @@ import java.util.Set;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
@@ -97,7 +96,7 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 		candidates.addAll(getAnnotatedElements(arguments.toArray()));
 		List<AnnotatedElement> annotatedElements = candidates.stream()
 			.filter(ModifiedClassPathClassLoader::hasAnnotation)
-			.collect(Collectors.toList());
+			.toList();
 		if (annotatedElements.isEmpty()) {
 			return null;
 		}

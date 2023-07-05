@@ -70,15 +70,15 @@ public abstract class ArchitectureCheck extends DefaultTask {
 	@TaskAction
 	void checkArchitecture() throws IOException {
 		JavaClasses javaClasses = new ClassFileImporter()
-			.importPaths(this.classes.getFiles().stream().map(File::toPath).collect(Collectors.toList()));
+			.importPaths(this.classes.getFiles().stream().map(File::toPath).toList());
 		List<EvaluationResult> violations = Stream.of(allPackagesShouldBeFreeOfTangles(),
 				allBeanPostProcessorBeanMethodsShouldBeStaticAndHaveParametersThatWillNotCausePrematureInitialization(),
 				allBeanFactoryPostProcessorBeanMethodsShouldBeStaticAndHaveNoParameters(),
 				noClassesShouldCallStepVerifierStepVerifyComplete(),
-				noClassesShouldConfigureDefaultStepVerifierTimeout())
+				noClassesShouldConfigureDefaultStepVerifierTimeout(), noClassesShouldCallCollectorsToList())
 			.map((rule) -> rule.evaluate(javaClasses))
 			.filter(EvaluationResult::hasViolation)
-			.collect(Collectors.toList());
+			.toList();
 		File outputFile = getOutputDirectory().file("failure-report.txt").get().getAsFile();
 		outputFile.getParentFile().mkdirs();
 		if (!violations.isEmpty()) {
@@ -176,6 +176,13 @@ public abstract class ArchitectureCheck extends DefaultTask {
 			.should()
 			.callMethod("reactor.test.StepVerifier", "setDefaultTimeout", "java.time.Duration")
 			.because("expectComplete().verify(Duration) should be used instead");
+	}
+
+	private ArchRule noClassesShouldCallCollectorsToList() {
+		return ArchRuleDefinition.noClasses()
+			.should()
+			.callMethod(Collectors.class, "toList")
+			.because("java.util.stream.Stream.toList() should be used instead");
 	}
 
 	public void setClasses(FileCollection classes) {

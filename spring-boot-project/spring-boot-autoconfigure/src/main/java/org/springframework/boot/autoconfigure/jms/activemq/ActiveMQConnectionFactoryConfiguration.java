@@ -16,8 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jms.activemq;
 
-import java.util.stream.Collectors;
-
 import jakarta.jms.ConnectionFactory;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.commons.pool2.PooledObject;
@@ -60,8 +58,7 @@ class ActiveMQConnectionFactoryConfiguration {
 
 		private static ActiveMQConnectionFactory createJmsConnectionFactory(ActiveMQProperties properties,
 				ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
-			return new ActiveMQConnectionFactoryFactory(properties,
-					factoryCustomizers.orderedStream().collect(Collectors.toList()))
+			return new ActiveMQConnectionFactoryFactory(properties, factoryCustomizers.orderedStream().toList())
 				.createConnectionFactory(ActiveMQConnectionFactory.class);
 		}
 
@@ -96,7 +93,7 @@ class ActiveMQConnectionFactoryConfiguration {
 		JmsPoolConnectionFactory jmsConnectionFactory(ActiveMQProperties properties,
 				ObjectProvider<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
 			ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactoryFactory(properties,
-					factoryCustomizers.orderedStream().collect(Collectors.toList()))
+					factoryCustomizers.orderedStream().toList())
 				.createConnectionFactory(ActiveMQConnectionFactory.class);
 			return new JmsPoolConnectionFactoryFactory(properties.getPool())
 				.createPooledConnectionFactory(connectionFactory);
