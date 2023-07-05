@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.tngtech.archunit.base.DescribedPredicate;
@@ -74,7 +75,7 @@ public abstract class ArchitectureCheck extends DefaultTask {
 				allBeanPostProcessorBeanMethodsShouldBeStaticAndHaveParametersThatWillNotCausePrematureInitialization(),
 				allBeanFactoryPostProcessorBeanMethodsShouldBeStaticAndHaveNoParameters(),
 				noClassesShouldCallStepVerifierStepVerifyComplete(),
-				noClassesShouldConfigureDefaultStepVerifierTimeout())
+				noClassesShouldConfigureDefaultStepVerifierTimeout(), noClassesShouldCallCollectorsToList())
 			.map((rule) -> rule.evaluate(javaClasses))
 			.filter(EvaluationResult::hasViolation)
 			.toList();
@@ -175,6 +176,13 @@ public abstract class ArchitectureCheck extends DefaultTask {
 			.should()
 			.callMethod("reactor.test.StepVerifier", "setDefaultTimeout", "java.time.Duration")
 			.because("expectComplete().verify(Duration) should be used instead");
+	}
+
+	private ArchRule noClassesShouldCallCollectorsToList() {
+		return ArchRuleDefinition.noClasses()
+			.should()
+			.callMethod(Collectors.class, "toList")
+			.because("java.util.stream.Stream.toList() should be used instead");
 	}
 
 	public void setClasses(FileCollection classes) {
