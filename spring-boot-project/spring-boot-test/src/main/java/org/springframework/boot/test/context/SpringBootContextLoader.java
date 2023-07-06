@@ -235,10 +235,20 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, getInlinedProperties(mergedConfig));
 	}
 
+	private boolean containsProhibitedCharacters(String str){
+		String regex = ".*[*&!|].*";
+		return str.matches(regex);
+	}
+
 	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles,
 			boolean applicationEnvironment) {
 		if (ObjectUtils.isEmpty(profiles)) {
 			return;
+		}
+		for (String profile : profiles) {
+			if (containsProhibitedCharacters(profile)) {
+				throw new IllegalArgumentException("Invalid profile: '" + profile + "'. Profile names can't contain '*', '&', '!' or '|'.");
+			}
 		}
 		if (!applicationEnvironment) {
 			environment.setActiveProfiles(profiles);

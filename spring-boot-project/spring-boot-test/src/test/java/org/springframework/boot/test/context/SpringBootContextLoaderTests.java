@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -49,8 +50,7 @@ import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.context.WebApplicationContext;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.*;
 
 /**
  * Tests for {@link SpringBootContextLoader}
@@ -128,6 +128,34 @@ class SpringBootContextLoaderTests {
 	@Test
 	void activeProfileWithComma() {
 		assertThat(getActiveProfiles(ActiveProfileWithComma.class)).containsExactly("profile1,2");
+	}
+
+	@Test
+	void activeProfileWithAsterisk() {
+		Assertions.assertThrows(Exception.class, () ->
+			assertThat(getActiveProfiles(ActiveProfileWithAsterisk.class)).containsExactly("foo*bar")
+		);
+	}
+
+	@Test
+	void activeProfileWithAmpersand() {
+		Assertions.assertThrows(Exception.class, () ->
+			assertThat(getActiveProfiles(ActiveProfileWithAmpersand.class)).containsExactly("foo&bar")
+		);
+	}
+
+	@Test
+	void activeProfileWithExclamationMark() {
+		Assertions.assertThrows(Exception.class, () ->
+			assertThat(getActiveProfiles(ActiveProfileWithExclamationMark.class)).containsExactly("!foobar")
+		);
+	}
+
+	@Test
+	void activeProfileWithPipe() {
+		Assertions.assertThrows(Exception.class, () ->
+			assertThat(getActiveProfiles(ActiveProfileWithPipe.class)).containsExactly("foobar|")
+		);
 	}
 
 	@Test // gh-28776
@@ -308,6 +336,30 @@ class SpringBootContextLoaderTests {
 	@SpringBootTest(classes = Config.class)
 	@ActiveProfiles({ "profile1,2" })
 	static class ActiveProfileWithComma {
+
+	}
+
+	@SpringBootTest(classes = Config.class)
+	@ActiveProfiles("foo*bar")
+	static class ActiveProfileWithAsterisk {
+
+	}
+
+	@SpringBootTest(classes = Config.class)
+	@ActiveProfiles("!foobar")
+	static class ActiveProfileWithExclamationMark {
+
+	}
+
+	@SpringBootTest(classes = Config.class)
+	@ActiveProfiles("foobar|")
+	static class ActiveProfileWithPipe {
+
+	}
+
+	@SpringBootTest(classes = Config.class)
+	@ActiveProfiles("foo&bar")
+	static class ActiveProfileWithAmpersand {
 
 	}
 
