@@ -184,7 +184,7 @@ class JerseyWebEndpointManagementContextConfiguration {
 			JerseyHealthEndpointAdditionalPathResourceFactory resourceFactory = new JerseyHealthEndpointAdditionalPathResourceFactory(
 					WebServerNamespace.MANAGEMENT, this.groups);
 			Collection<Resource> endpointResources = resourceFactory
-				.createEndpointResources(mapping, Collections.singletonList(this.endpoint), null, null, false)
+				.createEndpointResources(mapping, Collections.singletonList(this.endpoint))
 				.stream()
 				.filter(Objects::nonNull)
 				.collect(Collectors.toList());
