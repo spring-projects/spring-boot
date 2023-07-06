@@ -29,7 +29,7 @@ jobs:
         env:
           CI: 'true'
           GRADLE_ENTERPRISE_URL: 'https://ge.spring.io'
-        run: ./gradlew -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false --no-daemon --max-workers=4 --continue build
+        run: ./gradlew -Dorg.gradle.internal.launcher.welcomeMessageEnabled=false --no-daemon --no-parallel --continue build
 
       - name: Print JVM thread dumps when cancelled
         uses: ./.github/actions/print-jvm-thread-dumps
