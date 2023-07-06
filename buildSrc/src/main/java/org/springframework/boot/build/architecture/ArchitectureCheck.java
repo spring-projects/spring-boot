@@ -23,7 +23,6 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import com.tngtech.archunit.base.DescribedPredicate;
 import com.tngtech.archunit.core.domain.JavaClass;
@@ -46,9 +45,12 @@ import org.gradle.api.Task;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTree;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.tasks.IgnoreEmptyDirectories;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
@@ -66,17 +68,21 @@ public abstract class ArchitectureCheck extends DefaultTask {
 
 	public ArchitectureCheck() {
 		getOutputDirectory().convention(getProject().getLayout().getBuildDirectory().dir(getName()));
+		getRules().addAll(allPackagesShouldBeFreeOfTangles(),
+				allBeanPostProcessorBeanMethodsShouldBeStaticAndHaveParametersThatWillNotCausePrematureInitialization(),
+				allBeanFactoryPostProcessorBeanMethodsShouldBeStaticAndHaveNoParameters(),
+				noClassesShouldCallStepVerifierStepVerifyComplete(),
+				noClassesShouldConfigureDefaultStepVerifierTimeout());
+		getRuleDescriptions()
+			.set(getRules().map((rules) -> rules.stream().map(ArchRule::getDescription).collect(Collectors.toList())));
 	}
 
 	@TaskAction
 	void checkArchitecture() throws IOException {
 		JavaClasses javaClasses = new ClassFileImporter()
 			.importPaths(this.classes.getFiles().stream().map(File::toPath).collect(Collectors.toList()));
-		List<EvaluationResult> violations = Stream.of(allPackagesShouldBeFreeOfTangles(),
-				allBeanPostProcessorBeanMethodsShouldBeStaticAndHaveParametersThatWillNotCausePrematureInitialization(),
-				allBeanFactoryPostProcessorBeanMethodsShouldBeStaticAndHaveNoParameters(),
-				noClassesShouldCallStepVerifierStepVerifyComplete(),
-				noClassesShouldConfigureDefaultStepVerifierTimeout())
+		List<EvaluationResult> violations = getRules().get()
+			.stream()
 			.map((rule) -> rule.evaluate(javaClasses))
 			.filter(EvaluationResult::hasViolation)
 			.collect(Collectors.toList());
@@ -196,7 +202,20 @@ public abstract class ArchitectureCheck extends DefaultTask {
 		return this.classes.getAsFileTree();
 	}
 
+	@Optional
+	@InputFiles
+	@PathSensitive(PathSensitivity.RELATIVE)
+	public abstract DirectoryProperty getResourcesDirectory();
+
 	@OutputDirectory
 	public abstract DirectoryProperty getOutputDirectory();
+
+	@Internal
+	public abstract ListProperty<ArchRule> getRules();
+
+	@Input
+	// The rules themselves can't be an input as they aren't serializable so we use their
+	// descriptions instead
+	abstract ListProperty<String> getRuleDescriptions();
 
 }

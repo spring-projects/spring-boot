@@ -50,6 +50,7 @@ public class ArchitecturePlugin implements Plugin<Project> {
 				.register("checkArchitecture" + StringUtils.capitalize(sourceSet.getName()), ArchitectureCheck.class,
 						(task) -> {
 							task.setClasses(sourceSet.getOutput().getClassesDirs());
+							task.getResourcesDirectory().set(sourceSet.getOutput().getResourcesDir());
 							task.setDescription("Checks the architecture of the classes of the " + sourceSet.getName()
 									+ " source set.");
 							task.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
