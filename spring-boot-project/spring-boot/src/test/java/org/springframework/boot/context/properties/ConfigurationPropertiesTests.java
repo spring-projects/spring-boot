@@ -644,24 +644,36 @@ class ConfigurationPropertiesTests {
 
 	@Test
 	void loadShouldUseConverterBean() {
-		prepareConverterContext(ConverterConfiguration.class, PersonProperties.class);
+		prepareConverterContext(PersonConverterConfiguration.class, PersonProperties.class);
 		Person person = this.context.getBean(PersonProperties.class).getPerson();
 		assertThat(person.firstName).isEqualTo("John");
 		assertThat(person.lastName).isEqualTo("Smith");
 	}
 
 	@Test
-	void loadWhenBeanFactoryConversionServiceAndConverterBean() {
+	void loadWhenBeanFactoryConversionServiceAndConverterBeanCanUseBeanFactoryConverter() {
 		DefaultConversionService conversionService = new DefaultConversionService();
 		conversionService.addConverter(new AlienConverter());
 		this.context.getBeanFactory().setConversionService(conversionService);
-		load(new Class<?>[] { ConverterConfiguration.class, PersonAndAlienProperties.class }, "test.person=John Smith",
-				"test.alien=Alf Tanner");
+		load(new Class<?>[] { PersonConverterConfiguration.class, PersonAndAlienProperties.class },
+				"test.person=John Smith", "test.alien=Alf Tanner");
 		PersonAndAlienProperties properties = this.context.getBean(PersonAndAlienProperties.class);
 		assertThat(properties.getPerson().firstName).isEqualTo("John");
 		assertThat(properties.getPerson().lastName).isEqualTo("Smith");
-		assertThat(properties.getAlien().firstName).isEqualTo("Alf");
-		assertThat(properties.getAlien().lastName).isEqualTo("Tanner");
+		assertThat(properties.getAlien().name).isEqualTo("rennaT flA");
+	}
+
+	@Test
+	void loadWhenBeanFactoryConversionServiceAndConverterBeanCanUseConverterBean() {
+		DefaultConversionService conversionService = new DefaultConversionService();
+		conversionService.addConverter(new PersonConverter());
+		this.context.getBeanFactory().setConversionService(conversionService);
+		load(new Class<?>[] { AlienConverterConfiguration.class, PersonAndAlienProperties.class },
+				"test.person=John Smith", "test.alien=Alf Tanner");
+		PersonAndAlienProperties properties = this.context.getBean(PersonAndAlienProperties.class);
+		assertThat(properties.getPerson().firstName).isEqualTo("John");
+		assertThat(properties.getPerson().lastName).isEqualTo("Smith");
+		assertThat(properties.getAlien().name).isEqualTo("rennaT flA");
 	}
 
 	@Test
@@ -1440,12 +1452,23 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class ConverterConfiguration {
+	static class PersonConverterConfiguration {
 
 		@Bean
 		@ConfigurationPropertiesBinding
 		Converter<String, Person> personConverter() {
 			return new PersonConverter();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class AlienConverterConfiguration {
+
+		@Bean
+		@ConfigurationPropertiesBinding
+		Converter<String, Alien> alienConverter() {
+			return new AlienConverter();
 		}
 
 	}
@@ -2398,8 +2421,7 @@ class ConfigurationPropertiesTests {
 
 		@Override
 		public Alien convert(String source) {
-			String[] content = StringUtils.split(source, " ");
-			return new Alien(content[0], content[1]);
+			return new Alien(new StringBuilder(source).reverse().toString());
 		}
 
 	}
@@ -2467,21 +2489,14 @@ class ConfigurationPropertiesTests {
 
 	static class Alien {
 
-		private final String firstName;
+		private final String name;
 
-		private final String lastName;
-
-		Alien(String firstName, String lastName) {
-			this.firstName = firstName;
-			this.lastName = lastName;
+		Alien(String name) {
+			this.name = name;
 		}
 
-		String getFirstName() {
-			return this.firstName;
-		}
-
-		String getLastName() {
-			return this.lastName;
+		String getName() {
+			return this.name;
 		}
 
 	}
