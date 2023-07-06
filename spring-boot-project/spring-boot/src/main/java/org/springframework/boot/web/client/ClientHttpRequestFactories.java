@@ -74,8 +74,14 @@ public final class ClientHttpRequestFactories {
 	}
 
 	/**
-	 * Return a new {@link ClientHttpRequestFactory} instance using the most appropriate
-	 * implementation.
+	 * Return a {@link ClientHttpRequestFactory} implementation with the given
+	 * {@code settings} applied. The first of the following implementations whose
+	 * dependencies {@link ClassUtils#isPresent are available} is returned:
+	 * <ol>
+	 * <li>{@link HttpComponentsClientHttpRequestFactory}</li>
+	 * <li>{@link OkHttp3ClientHttpRequestFactory}</li>
+	 * <li>{@link SimpleClientHttpRequestFactory}</li>
+	 * </ol>
 	 * @param settings the settings to apply
 	 * @return a new {@link ClientHttpRequestFactory}
 	 */
@@ -91,8 +97,17 @@ public final class ClientHttpRequestFactories {
 	}
 
 	/**
-	 * Return a new {@link ClientHttpRequestFactory} of the given type, applying
-	 * {@link ClientHttpRequestFactorySettings} using reflection if necessary.
+	 * Return a new {@link ClientHttpRequestFactory} of the given
+	 * {@code requestFactoryType}, applying {@link ClientHttpRequestFactorySettings} using
+	 * reflection if necessary. The following implementations are supported without the
+	 * use of reflection:
+	 * <ul>
+	 * <li>{@link HttpComponentsClientHttpRequestFactory}</li>
+	 * <li>{@link OkHttp3ClientHttpRequestFactory}</li>
+	 * <li>{@link SimpleClientHttpRequestFactory}</li>
+	 * </ul>
+	 * A {@code requestFactoryType} of {@link ClientHttpRequestFactory} is equivalent to
+	 * calling {@link #get(ClientHttpRequestFactorySettings)}.
 	 * @param <T> the {@link ClientHttpRequestFactory} type
 	 * @param requestFactoryType the {@link ClientHttpRequestFactory} type
 	 * @param settings the settings to apply
