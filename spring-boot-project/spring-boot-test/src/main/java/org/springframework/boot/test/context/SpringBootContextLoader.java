@@ -236,7 +236,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	private boolean containsProhibitedCharacters(String str){
-		String regex = ".*[*&!|].*";
+		String regex = ".*[*&!|,].*";
 		return str.matches(regex);
 	}
 
@@ -247,7 +247,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 		}
 		for (String profile : profiles) {
 			if (containsProhibitedCharacters(profile)) {
-				throw new IllegalArgumentException("Invalid profile: '" + profile + "'. Profile names can't contain '*', '&', '!' or '|'.");
+				throw new IllegalArgumentException("Invalid profile: '" + profile + "'. Profile names can't contain '*', '&', '!', ',' or '|'.");
 			}
 		}
 		if (!applicationEnvironment) {

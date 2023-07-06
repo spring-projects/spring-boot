@@ -127,7 +127,9 @@ class SpringBootContextLoaderTests {
 
 	@Test
 	void activeProfileWithComma() {
-		assertThat(getActiveProfiles(ActiveProfileWithComma.class)).containsExactly("profile1,2");
+		Assertions.assertThrows(Exception.class, () ->
+			assertThat(getActiveProfiles(ActiveProfileWithComma.class)).containsExactly("profile1,2")
+		);
 	}
 
 	@Test
@@ -364,7 +366,7 @@ class SpringBootContextLoaderTests {
 	}
 
 	@SpringBootTest(properties = { "key=myValue" }, classes = Config.class)
-	@ActiveProfiles({ "profile1,2" })
+	@ActiveProfiles({ "profile1" })
 	static class ActiveProfileWithInlinedProperties {
 
 	}
