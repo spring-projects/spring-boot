@@ -27,6 +27,7 @@ import org.springframework.http.client.BufferingClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpRequest;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.client.JdkClientHttpRequestFactory;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
@@ -73,6 +74,13 @@ class ClientHttpRequestFactoriesTests {
 		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(OkHttp3ClientHttpRequestFactory.class,
 				ClientHttpRequestFactorySettings.DEFAULTS);
 		assertThat(requestFactory).isInstanceOf(OkHttp3ClientHttpRequestFactory.class);
+	}
+
+	@Test
+	void getOfJdkFactoryReturnsJdkFactory() {
+		ClientHttpRequestFactory requestFactory = ClientHttpRequestFactories.get(JdkClientHttpRequestFactory.class,
+				ClientHttpRequestFactorySettings.DEFAULTS);
+		assertThat(requestFactory).isInstanceOf(JdkClientHttpRequestFactory.class);
 	}
 
 	@Test
