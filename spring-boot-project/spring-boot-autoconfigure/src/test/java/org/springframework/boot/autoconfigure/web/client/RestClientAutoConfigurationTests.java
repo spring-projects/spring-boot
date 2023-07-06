@@ -61,7 +61,7 @@ class RestClientAutoConfigurationTests {
 	void restClientShouldApplyCustomizers() {
 		this.contextRunner.withUserConfiguration(RestClientCustomizerConfig.class).run((context) -> {
 			RestClient.Builder builder = context.getBean(RestClient.Builder.class);
-			RestClientCustomizer customizer = context.getBean("webClientCustomizer", RestClientCustomizer.class);
+			RestClientCustomizer customizer = context.getBean("restClientCustomizer", RestClientCustomizer.class);
 			builder.build();
 			then(customizer).should().customize(any(RestClient.Builder.class));
 		});
@@ -80,7 +80,7 @@ class RestClientAutoConfigurationTests {
 	void shouldNotCreateClientBuilderIfAlreadyPresent() {
 		this.contextRunner.withUserConfiguration(CustomRestClientBuilderConfig.class).run((context) -> {
 			RestClient.Builder builder = context.getBean(RestClient.Builder.class);
-			assertThat(builder).isInstanceOf(MyWebClientBuilder.class);
+			assertThat(builder).isInstanceOf(MyRestClientBuilder.class);
 		});
 	}
 
@@ -141,7 +141,7 @@ class RestClientAutoConfigurationTests {
 	static class RestClientCustomizerConfig {
 
 		@Bean
-		RestClientCustomizer webClientCustomizer() {
+		RestClientCustomizer restClientCustomizer() {
 			return mock(RestClientCustomizer.class);
 		}
 
@@ -151,13 +151,13 @@ class RestClientAutoConfigurationTests {
 	static class CustomRestClientBuilderConfig {
 
 		@Bean
-		MyWebClientBuilder myWebClientBuilder() {
-			return mock(MyWebClientBuilder.class);
+		MyRestClientBuilder myRestClientBuilder() {
+			return mock(MyRestClientBuilder.class);
 		}
 
 	}
 
-	interface MyWebClientBuilder extends RestClient.Builder {
+	interface MyRestClientBuilder extends RestClient.Builder {
 
 	}
 

@@ -59,7 +59,7 @@ public class RestClientAutoConfiguration {
 	@Bean
 	@Scope("prototype")
 	@ConditionalOnMissingBean
-	public RestClient.Builder webClientBuilder(ObjectProvider<RestClientCustomizer> customizerProvider) {
+	public RestClient.Builder restClientBuilder(ObjectProvider<RestClientCustomizer> customizerProvider) {
 		RestClient.Builder builder = RestClient.builder()
 			.requestFactory(ClientHttpRequestFactories.get(ClientHttpRequestFactorySettings.DEFAULTS));
 		customizerProvider.orderedStream().forEach((customizer) -> customizer.customize(builder));
