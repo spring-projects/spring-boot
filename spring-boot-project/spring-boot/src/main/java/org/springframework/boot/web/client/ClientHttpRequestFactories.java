@@ -285,7 +285,7 @@ public final class ClientHttpRequestFactories {
 			java.net.http.HttpClient httpClient = createHttpClient(settings.connectTimeout(), settings.sslBundle());
 			JdkClientHttpRequestFactory requestFactory = new JdkClientHttpRequestFactory(httpClient);
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			map.from(settings::readTimeout).asInt(Duration::toMillis).to(requestFactory::setReadTimeout);
+			map.from(settings::readTimeout).to(requestFactory::setReadTimeout);
 			return requestFactory;
 		}
 
