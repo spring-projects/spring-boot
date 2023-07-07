@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.glassfish.jersey.server.model.Resource;
@@ -60,7 +59,7 @@ public final class JerseyHealthEndpointAdditionalPathResourceFactory {
 		return endpoints.stream()
 			.flatMap((endpoint) -> endpoint.getOperations().stream())
 			.flatMap((operation) -> createResources(endpointMapping, operation))
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	private Stream<Resource> createResources(EndpointMapping endpointMapping, WebOperation operation) {
