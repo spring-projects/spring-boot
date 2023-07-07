@@ -59,6 +59,20 @@ class SampleWebFluxApplicationTests {
 	}
 
 	@Test
+	void testAcceptEncodingGzip() {
+		String payload = "a".repeat(10_000);
+		this.webClient.post()
+				.uri("/echo")
+				.contentType(MediaType.TEXT_PLAIN)
+				.accept(MediaType.TEXT_PLAIN)
+				.header("Accept-Encoding", "gzip")
+				.body(Mono.just(payload), String.class)
+				.exchange()
+				.expectBody(String.class)
+				.isEqualTo(payload);
+	}
+
+	@Test
 	void testActuatorStatus() {
 		this.webClient.get()
 			.uri("/actuator/health")
