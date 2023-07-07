@@ -115,17 +115,14 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 	}
 
 	@PostConstruct
-	public void validate() throws NoSuchJobException {
+	public void validate() {
 		if (StringUtils.hasText(this.jobNames)) {
 			String[] jobsToRun = this.jobNames.split(",");
-			for (Job job : this.jobs) {
-				for(String jobName: jobsToRun) {
-					if (!PatternMatchUtils.simpleMatch(jobName, job.getName())
-							&& !this.jobRegistry.getJobNames().contains(jobName)) {
-						throw new NoSuchJobException("Job with name " + jobName + " does not exist.");
-					}
+			for(String jobName: jobsToRun) {
+				if (!isLocalJob(jobName) && !isRegisteredJob(jobName)) {
+						throw new IllegalArgumentException("No job instances were found for job name [" + jobName + "]");
 				}
-			}
+			}	
 		}
 	}
 
@@ -179,6 +176,14 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 		executeRegisteredJobs(jobParameters);
 	}
 
+	private boolean isLocalJob(String jobName) {
+		return this.jobs.stream().anyMatch((job) -> job.getName().equals(jobName));
+	}
+
+	private boolean isRegisteredJob(String jobName) {
+		return this.jobRegistry != null && this.jobRegistry.getJobNames().contains(jobName);
+	}
+
 	private void executeLocalJobs(JobParameters jobParameters) throws JobExecutionException {
 		for (Job job : this.jobs) {
 			if (StringUtils.hasText(this.jobNames)) {
@@ -196,15 +201,9 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 		if (this.jobRegistry != null && StringUtils.hasText(this.jobNames)) {
 			String[] jobsToRun = this.jobNames.split(",");
 			for (String jobName : jobsToRun) {
-				try {
+				if(isRegisteredJob(jobName) && !isLocalJob(jobName)) {
 					Job job = this.jobRegistry.getJob(jobName);
-					if (this.jobs.contains(job)) {
-						continue;
-					}
 					execute(job, jobParameters);
-				}
-				catch (NoSuchJobException ex) {
-					logger.debug(LogMessage.format("No job found in registry for job name: %s", jobName));
 				}
 			}
 		}

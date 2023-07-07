@@ -71,7 +71,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -377,15 +376,13 @@ class BatchAutoConfigurationTests {
 	}
 
 	@Test
-	void testExecuteLocalAndNonConfiguredJob() {
+	void testNonConfiguredJobThrowsException() {
 		this.contextRunner
 		.withUserConfiguration(NamedJobConfigurationWithLocalJob.class, EmbeddedDataSourceConfiguration.class)
 		.withPropertyValues("spring.batch.job.names:discreteLocalJob,nonConfiguredJob")
 		.run((context) -> {
-			assertThatThrownBy(() -> {
-					context.getBean(JobLauncherApplicationRunner.class).run();
-					}
-				).hasRootCauseMessage("Job with name nonConfiguredJob does not exist.");
+			assertThat(context).hasFailed().getFailure().getRootCause()
+			.hasMessageContaining("nonConfiguredJob");	
 		});
 	}
 
