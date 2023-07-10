@@ -155,6 +155,18 @@ class MongoAutoConfigurationTests {
 	}
 
 	@Test
+	void configuresCredentialsFromPropertiesWithSpecialCharacters() {
+		this.contextRunner
+			.withPropertyValues("spring.data.mongodb.username=us:er", "spring.data.mongodb.password=sec@ret")
+			.run((context) -> {
+				MongoCredential credential = getSettings(context).getCredential();
+				assertThat(credential.getUserName()).isEqualTo("us:er");
+				assertThat(credential.getPassword()).isEqualTo("sec@ret".toCharArray());
+				assertThat(credential.getSource()).isEqualTo("test");
+			});
+	}
+
+	@Test
 	void doesNotConfigureCredentialsWithoutUsernameInUri() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.uri=mongodb://localhost/mydb?authSource=authdb")
 			.run((context) -> assertThat(getSettings(context).getCredential()).isNull());
