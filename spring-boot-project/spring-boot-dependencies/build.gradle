@@ -984,7 +984,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer Tracing", "1.1.2") {
+	library("Micrometer Tracing", "1.1.3-SNAPSHOT") {
 		group("io.micrometer") {
 			imports = [
 				"micrometer-tracing-bom"
