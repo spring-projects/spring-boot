@@ -1836,7 +1836,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Security", "5.7.9") {
+	library("Spring Security", "5.7.10-SNAPSHOT") {
 		prohibit {
 			versionRange "[6.0.0-M1,)"
 			because "it uses Spring Framework 6"
