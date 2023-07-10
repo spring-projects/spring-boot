@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,10 +48,10 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 		}
 		StringBuilder builder = new StringBuilder("mongodb://");
 		if (this.properties.getUsername() != null) {
-			builder.append(this.properties.getUsername());
+			builder.append(encode(this.properties.getUsername()));
 			builder.append(":");
 			if (this.properties.getPassword() != null) {
-				builder.append(this.properties.getPassword());
+				builder.append(encode(this.properties.getPassword()));
 			}
 			builder.append("@");
 		}
@@ -69,6 +71,14 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 			builder.append(String.join("&", options));
 		}
 		return new ConnectionString(builder.toString());
+	}
+
+	private String encode(String input) {
+		return URLEncoder.encode(input, StandardCharsets.UTF_8);
+	}
+
+	private char[] encode(char[] input) {
+		return URLEncoder.encode(new String(input), StandardCharsets.UTF_8).toCharArray();
 	}
 
 	@Override
