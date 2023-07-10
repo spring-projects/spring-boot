@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import jakarta.validation.ValidatorFactory;
 import org.aspectj.lang.JoinPoint;
@@ -80,6 +81,7 @@ import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.filter.reactive.HiddenHttpMethodFilter;
+import org.springframework.web.method.ControllerAdviceBean;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
 import org.springframework.web.reactive.config.BlockingExecutionConfigurer;
@@ -672,6 +674,24 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
+	void problemDetailsIsOrderedBetweenLowestAndHighestOrderedControllerHandlers() {
+		this.contextRunner.withPropertyValues("spring.webflux.problemdetails.enabled:true")
+			.withUserConfiguration(OrderedControllerAdviceBeansConfiguration.class)
+			.run((context) -> {
+
+				List<Class<?>> controllerAdviceClasses = ControllerAdviceBean.findAnnotatedBeans(context)
+					.stream()
+					.map(ControllerAdviceBean::getBeanType)
+					.collect(Collectors.toList());
+
+				assertThat(controllerAdviceClasses).containsExactly(
+						OrderedControllerAdviceBeansConfiguration.HighestOrderedControllerAdvice.class,
+						ProblemDetailsExceptionHandler.class,
+						OrderedControllerAdviceBeansConfiguration.LowestOrderedControllerAdvice.class);
+			});
+	}
+
+	@Test
 	void asyncTaskExecutorWithApplicationTaskExecutor() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
 			.run((context) -> {
@@ -1013,6 +1033,25 @@ class WebFluxAutoConfigurationTests {
 
 	@ControllerAdvice
 	static class CustomExceptionHandler extends ResponseEntityExceptionHandler {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import({ OrderedControllerAdviceBeansConfiguration.LowestOrderedControllerAdvice.class,
+			OrderedControllerAdviceBeansConfiguration.HighestOrderedControllerAdvice.class })
+	static class OrderedControllerAdviceBeansConfiguration {
+
+		@ControllerAdvice
+		@Order
+		static class LowestOrderedControllerAdvice {
+
+		}
+
+		@ControllerAdvice
+		@Order(Ordered.HIGHEST_PRECEDENCE)
+		static class HighestOrderedControllerAdvice {
+
+		}
 
 	}
 
