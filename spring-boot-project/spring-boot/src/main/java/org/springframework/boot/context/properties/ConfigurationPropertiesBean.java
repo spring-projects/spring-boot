@@ -216,9 +216,6 @@ public final class ConfigurationPropertiesBean {
 		if (bindTarget.getBindMethod() == null && factoryMethod != null) {
 			bindTarget = bindTarget.withBindMethod(JAVA_BEAN_BIND_METHOD);
 		}
-		if (bindTarget.getBindMethod() == null) {
-			bindTarget = bindTarget.withBindMethod(deduceBindMethod(bindTarget));
-		}
 		if (bindTarget.getBindMethod() != VALUE_OBJECT_BIND_METHOD) {
 			bindTarget = bindTarget.withExistingValue(bean);
 		}
