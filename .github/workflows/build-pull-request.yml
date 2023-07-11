@@ -34,3 +34,9 @@ jobs:
       - name: Print JVM thread dumps when cancelled
         uses: ./.github/actions/print-jvm-thread-dumps
         if: cancelled()
+
+      - name: Upload build reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-reports
+          path: '**/build/reports/'
