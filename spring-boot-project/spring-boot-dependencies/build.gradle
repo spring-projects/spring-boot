@@ -536,7 +536,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta WebSocket", "2.1.0") {
+	library("Jakarta WebSocket", "2.1.1") {
 		group("jakarta.websocket") {
 			modules = [
 				"jakarta.websocket-api",
