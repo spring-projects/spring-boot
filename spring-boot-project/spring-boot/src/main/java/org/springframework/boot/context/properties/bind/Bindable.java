@@ -230,7 +230,7 @@ public final class Bindable<T> {
 	}
 
 	/**
-	 * Create an updated {@link Bindable} instance with a specifc bind method. To use
+	 * Create an updated {@link Bindable} instance with a specific bind method. To use
 	 * {@link BindMethod#VALUE_OBJECT value object binding}, the current instance must not
 	 * have an existing or supplied value.
 	 * @param bindMethod the method to use to bind the bindable

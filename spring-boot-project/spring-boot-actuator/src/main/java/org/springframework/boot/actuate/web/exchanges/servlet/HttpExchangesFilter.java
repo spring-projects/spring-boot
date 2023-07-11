@@ -83,7 +83,7 @@ public class HttpExchangesFilter extends OncePerRequestFilter implements Ordered
 			return;
 		}
 		RecordableServletHttpRequest sourceRequest = new RecordableServletHttpRequest(request);
-		HttpExchange.Started startedHtppExchange = HttpExchange.start(sourceRequest);
+		HttpExchange.Started startedHttpExchange = HttpExchange.start(sourceRequest);
 		int status = HttpStatus.INTERNAL_SERVER_ERROR.value();
 		try {
 			filterChain.doFilter(request, response);
@@ -91,7 +91,7 @@ public class HttpExchangesFilter extends OncePerRequestFilter implements Ordered
 		}
 		finally {
 			RecordableServletHttpResponse sourceResponse = new RecordableServletHttpResponse(response, status);
-			HttpExchange finishedExchange = startedHtppExchange.finish(sourceResponse, request::getUserPrincipal,
+			HttpExchange finishedExchange = startedHttpExchange.finish(sourceResponse, request::getUserPrincipal,
 					() -> getSessionId(request), this.includes);
 			this.repository.add(finishedExchange);
 		}

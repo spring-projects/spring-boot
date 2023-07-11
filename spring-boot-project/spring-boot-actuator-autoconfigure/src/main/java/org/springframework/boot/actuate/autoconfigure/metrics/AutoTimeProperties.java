@@ -32,7 +32,7 @@ public final class AutoTimeProperties {
 	private boolean enabled = true;
 
 	/**
-	 * Whether to publish percentile histrograms.
+	 * Whether to publish percentile histograms.
 	 */
 	private boolean percentilesHistogram;
 
