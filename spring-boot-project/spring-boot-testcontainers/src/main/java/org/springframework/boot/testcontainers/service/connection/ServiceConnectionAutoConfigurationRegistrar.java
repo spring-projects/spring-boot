@@ -68,15 +68,15 @@ class ServiceConnectionAutoConfigurationRegistrar implements ImportBeanDefinitio
 
 	private Set<ServiceConnection> getAnnotations(ConfigurableListableBeanFactory beanFactory, String beanName,
 			BeanDefinition beanDefinition) {
-		Set<ServiceConnection> annoations = new LinkedHashSet<>();
-		annoations.addAll(beanFactory.findAllAnnotationsOnBean(beanName, ServiceConnection.class, false));
+		Set<ServiceConnection> annotations = new LinkedHashSet<>();
+		annotations.addAll(beanFactory.findAllAnnotationsOnBean(beanName, ServiceConnection.class, false));
 		if (beanDefinition instanceof TestcontainerBeanDefinition testcontainerBeanDefinition) {
 			testcontainerBeanDefinition.getAnnotations()
 				.stream(ServiceConnection.class)
 				.map(MergedAnnotation::synthesize)
-				.forEach(annoations::add);
+				.forEach(annotations::add);
 		}
-		return annoations;
+		return annotations;
 	}
 
 	private BeanDefinition getBeanDefinition(ConfigurableListableBeanFactory beanFactory, String beanName) {
