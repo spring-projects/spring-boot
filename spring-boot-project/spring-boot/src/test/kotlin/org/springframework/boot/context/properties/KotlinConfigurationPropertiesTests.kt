@@ -22,6 +22,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry
 import org.springframework.beans.factory.support.RootBeanDefinition
 import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Import
 import org.springframework.test.context.support.TestPropertySourceUtils
 
 import org.assertj.core.api.Assertions.assertThat
@@ -68,6 +69,14 @@ class KotlinConfigurationPropertiesTests {
 		assertThat(properties.inner.bravo).isEqualTo("two")
 	}
 
+	@Test
+	fun `mutable data class properties can be imported`() {
+		this.context.register(MutableDataClassPropertiesImporter::class.java)
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, "mutable.prop=alpha");
+		this.context.refresh();
+		assertThat(this.context.getBean(MutableDataClassProperties::class.java).prop).isEqualTo("alpha")
+	}
+
 	@ConfigurationProperties(prefix = "foo")
 	class BingProperties(@Suppress("UNUSED_PARAMETER") bar: String) {
 
@@ -105,5 +114,16 @@ class KotlinConfigurationPropertiesTests {
 	class EnableLateInitProperties {
 
 	}
+
+	@EnableConfigurationProperties
+	@Configuration(proxyBeanMethods = false)
+	@Import(MutableDataClassProperties::class)
+	class MutableDataClassPropertiesImporter {
+	}
+
+	@ConfigurationProperties(prefix = "mutable")
+	data class MutableDataClassProperties(
+		var prop: String = ""
+	)
 
 }
