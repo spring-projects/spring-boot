@@ -24,14 +24,14 @@ Spring Boot supports the following embedded servlet containers:
 |===
 | Name | Servlet Version
 
-| Tomcat 10.0
-| 5.0
+| Tomcat 10.1
+| 6.0
 
 | Jetty 11.0
-| 5.1
-
-| Undertow 2.2 (Jakarta EE 9 variant)
 | 5.0
+
+| Undertow 2.3
+| 6.0
 |===
 
 You can also deploy Spring Boot applications to any servlet 5.0+ compatible container.
