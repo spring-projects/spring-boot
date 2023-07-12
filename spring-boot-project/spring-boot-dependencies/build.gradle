@@ -65,7 +65,7 @@ bom {
 			]
 		}
 	}
-	library("Artemis", "2.28.0") {
+	library("Artemis", "2.29.0") {
 		group("org.apache.activemq") {
 			modules = [
 				"artemis-amqp-protocol",
