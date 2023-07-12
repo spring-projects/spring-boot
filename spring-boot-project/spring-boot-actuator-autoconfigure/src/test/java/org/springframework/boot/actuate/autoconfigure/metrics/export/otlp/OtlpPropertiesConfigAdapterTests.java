@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.micrometer.registry.otlp.AggregationTemporality;
 import org.junit.jupiter.api.Test;
@@ -65,6 +66,19 @@ class OtlpPropertiesConfigAdapterTests {
 		OtlpProperties properties = new OtlpProperties();
 		properties.setHeaders(Map.of("header", "value"));
 		assertThat(new OtlpPropertiesConfigAdapter(properties).headers()).containsEntry("header", "value");
+	}
+
+	@Test
+	void whenPropertiesBaseTimeUnitIsNotSetAdapterBaseTimeUnitReturnsMillis() {
+		OtlpProperties properties = new OtlpProperties();
+		assertThat(new OtlpPropertiesConfigAdapter(properties).baseTimeUnit()).isSameAs(TimeUnit.MILLISECONDS);
+	}
+
+	@Test
+	void whenPropertiesBaseTimeUnitIsSetAdapterBaseTimeUnitReturnsIt() {
+		OtlpProperties properties = new OtlpProperties();
+		properties.setBaseTimeUnit(TimeUnit.SECONDS);
+		assertThat(new OtlpPropertiesConfigAdapter(properties).baseTimeUnit()).isSameAs(TimeUnit.SECONDS);
 	}
 
 }

@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.autoconfigure.metrics.export.otlp;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.micrometer.registry.otlp.AggregationTemporality;
 
@@ -55,6 +56,11 @@ public class OtlpProperties extends StepRegistryProperties {
 	 */
 	private Map<String, String> headers;
 
+	/**
+	 * Time unit for exported metrics.
+	 */
+	private TimeUnit baseTimeUnit = TimeUnit.MILLISECONDS;
+
 	public String getUrl() {
 		return this.url;
 	}
@@ -85,6 +91,14 @@ public class OtlpProperties extends StepRegistryProperties {
 
 	public void setHeaders(Map<String, String> headers) {
 		this.headers = headers;
+	}
+
+	public TimeUnit getBaseTimeUnit() {
+		return this.baseTimeUnit;
+	}
+
+	public void setBaseTimeUnit(TimeUnit baseTimeUnit) {
+		this.baseTimeUnit = baseTimeUnit;
 	}
 
 }

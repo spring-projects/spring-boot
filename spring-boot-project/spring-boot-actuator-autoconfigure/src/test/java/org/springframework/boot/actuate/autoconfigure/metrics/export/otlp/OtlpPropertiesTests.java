@@ -37,6 +37,7 @@ class OtlpPropertiesTests extends StepRegistryPropertiesTests {
 		assertStepRegistryDefaultValues(properties, config);
 		assertThat(properties.getUrl()).isEqualTo(config.url());
 		assertThat(properties.getAggregationTemporality()).isSameAs(config.aggregationTemporality());
+		assertThat(properties.getBaseTimeUnit()).isSameAs(config.baseTimeUnit());
 	}
 
 }
