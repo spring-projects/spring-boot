@@ -122,6 +122,12 @@ abstract class DataSourceConfiguration {
 			return dataSource;
 		}
 
+		@Bean
+		@ConditionalOnClass(name = "org.crac.Resource")
+		HikariLifecycle dataSourceLifecycle(HikariDataSource hikariDataSource) {
+			return new HikariLifecycle(hikariDataSource);
+		}
+
 	}
 
 	/**
