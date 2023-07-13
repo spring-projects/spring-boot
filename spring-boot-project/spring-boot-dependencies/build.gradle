@@ -279,10 +279,11 @@ bom {
 			]
 		}
 	}
-	library("Flyway", "9.19.4") {
+	library("Flyway", "9.20.1") {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-core",
+				"flyway-database-oracle",
 				"flyway-firebird",
 				"flyway-mysql",
 				"flyway-sqlserver"

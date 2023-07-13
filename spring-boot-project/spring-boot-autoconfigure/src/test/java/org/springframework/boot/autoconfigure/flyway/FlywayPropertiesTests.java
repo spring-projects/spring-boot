@@ -109,6 +109,9 @@ class FlywayPropertiesTests {
 				PropertyAccessorFactory.forBeanPropertyAccess(new ClassicConfiguration()));
 		// Properties specific settings
 		ignoreProperties(properties, "url", "driverClassName", "user", "password", "enabled");
+		// Property that moved to a separate Oracle plugin
+		ignoreProperties(properties, "oracleSqlplus", "oracleSqlplusWarn", "oracleKerberosCacheFile",
+				"oracleWalletLocation");
 		// Property that moved to a separate SQL plugin
 		ignoreProperties(properties, "sqlServerKerberosLoginFile");
 		// High level object we can't set with properties
@@ -128,7 +131,7 @@ class FlywayPropertiesTests {
 		// Handled as createSchemas
 		ignoreProperties(configuration, "shouldCreateSchemas");
 		// Getters for the DataSource settings rather than actual properties
-		ignoreProperties(configuration, "password", "url", "user");
+		ignoreProperties(configuration, "databaseType", "password", "url", "user");
 		// Properties not exposed by Flyway
 		ignoreProperties(configuration, "failOnMissingTarget");
 		List<String> configurationKeys = new ArrayList<>(configuration.keySet());

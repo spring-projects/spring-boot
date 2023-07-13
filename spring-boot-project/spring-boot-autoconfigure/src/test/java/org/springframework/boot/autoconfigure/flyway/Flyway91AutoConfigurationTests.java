@@ -23,18 +23,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link FlywayAutoConfiguration} with Flyway 9.20.
+ * Tests for {@link FlywayAutoConfiguration} with Flyway 9.19.
  *
  * @author Andy Wilkinson
  */
-@ClassPathOverrides({ "org.flywaydb:flyway-core:9.20.0", "org.flywaydb:flyway-sqlserver:9.20.0",
-		"com.h2database:h2:2.1.210" })
-class Flyway920AutoConfigurationTests {
+@ClassPathExclusions("flyway-*.jar")
+@ClassPathOverrides("org.flywaydb:flyway-core:9.19.4")
+class Flyway91AutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 		.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
