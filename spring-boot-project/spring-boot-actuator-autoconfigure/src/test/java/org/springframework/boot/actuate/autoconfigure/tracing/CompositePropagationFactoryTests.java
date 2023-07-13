@@ -21,8 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import brave.Span;
-import brave.Tracing;
 import brave.internal.propagation.StringPropagationAdapter;
 import brave.propagation.Propagation;
 import brave.propagation.TraceContext;
@@ -30,8 +28,6 @@ import brave.propagation.TraceContextOrSamplingFlags;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -71,9 +67,6 @@ class CompositePropagationFactoryTests {
 	@Nested
 	static class CompostePropagationTests {
 
-		private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(CompositePropagationFactory.class));
-
 		@Test
 		void keys() {
 			CompositePropagationFactory factory = new CompositePropagationFactory(List.of(field("a")),
@@ -91,23 +84,6 @@ class CompositePropagationFactoryTests {
 			Map<String, String> request = new HashMap<>();
 			propagation.injector(new MapSetter()).inject(context, request);
 			assertThat(request).containsOnly(entry("a", "a-value"), entry("b", "b-value"));
-		}
-
-		@Test
-		void thisIsATest() {
-			this.contextRunner
-					.withPropertyValues("management.tracing.propagation.type=B3",
-							"management.tracing.brave.span-joining-supported=true")
-					.run((context) -> {
-						CompositePropagationFactory factory = new CompositePropagationFactory(List.of(field("a"), field("b")),
-								List.of(field("c")));
-						Propagation<String> propagation = factory.get();
-						Tracing tracing = context.getBean(Tracing.class);
-						Span parentSpan = tracing.tracer().nextSpan();
-						Span childSpan = tracing.tracer().joinSpan(parentSpan.context());
-						Map<String, String> request = new HashMap<>();
-						propagation.injector(new CompositePropagationFactoryTests.MapSetter()).inject(parentSpan.context(), request);
-					});
 		}
 
 		@Test
