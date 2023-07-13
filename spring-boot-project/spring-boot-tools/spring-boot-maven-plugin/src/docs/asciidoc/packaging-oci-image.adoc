@@ -28,7 +28,8 @@ The `spring-boot-devtools` and `spring-boot-docker-compose` modules are automati
 [[build-image.docker-daemon]]
 == Docker Daemon
 The `build-image` goal requires access to a Docker daemon.
-By default, it will communicate with a Docker daemon over a local connection.
+The goal will inspect local Docker CLI https://docs.docker.com/engine/reference/commandline/cli/#configuration-files[configuration files] to determine the current https://docs.docker.com/engine/context/working-with-contexts/[context] and use the context connection information to communicate with a Docker daemon.
+If the current context can not be determined or the context does not have connection information, then the goal will use a default local connection.
 This works with https://docs.docker.com/install/[Docker Engine] on all supported platforms without configuration.
 
 Environment variables can be set to configure the `build-image` goal to use an alternative local or remote connection.
@@ -36,6 +37,12 @@ The following table shows the environment variables and their values:
 
 |===
 | Environment variable | Description
+
+| DOCKER_CONFIG
+| Location of Docker CLI https://docs.docker.com/engine/reference/commandline/cli/#configuration-files[configuration files] used to determine the current context (defaults to `$HOME/.docker`)
+
+| DOCKER_CONTEXT
+| Name of a https://docs.docker.com/engine/context/working-with-contexts/[context] that should be used to retrieve host information from Docker CLI configuration files (overrides `DOCKER_HOST`)
 
 | DOCKER_HOST
 | URL containing the host and port for the Docker daemon - for example `tcp://192.168.99.100:2376`
@@ -52,6 +59,9 @@ The following table summarizes the available parameters:
 
 |===
 | Parameter | Description
+
+| `context`
+| Name of a https://docs.docker.com/engine/context/working-with-contexts/[context] that should be used to retrieve host information from Docker CLI https://docs.docker.com/engine/reference/commandline/cli/#configuration-files[configuration files]
 
 | `host`
 | URL containing the host and port for the Docker daemon - for example `tcp://192.168.99.100:2376`
