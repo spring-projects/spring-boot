@@ -23,7 +23,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchClientConfigurations.ElasticsearchClientConfiguration;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchClientConfigurations.ElasticsearchTransportConfiguration;
-import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
 import org.springframework.context.annotation.Import;
 
@@ -33,8 +32,7 @@ import org.springframework.context.annotation.Import;
  * @author Andy Wilkinson
  * @since 3.0.0
  */
-@AutoConfiguration(after = { JacksonAutoConfiguration.class, JsonbAutoConfiguration.class,
-		ElasticsearchRestClientAutoConfiguration.class })
+@AutoConfiguration(after = { JsonbAutoConfiguration.class, ElasticsearchRestClientAutoConfiguration.class })
 @ConditionalOnClass(ElasticsearchClient.class)
 @Import({ ElasticsearchTransportConfiguration.class, ElasticsearchClientConfiguration.class })
 public class ElasticsearchClientAutoConfiguration {
