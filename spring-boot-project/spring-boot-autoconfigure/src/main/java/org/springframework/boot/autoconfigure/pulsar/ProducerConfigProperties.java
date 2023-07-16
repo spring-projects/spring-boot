@@ -37,7 +37,7 @@ import org.springframework.util.unit.DataSize;
  * Configuration properties used to specify Pulsar producers.
  *
  * @author Chris Bono
- * @since 3.2
+ * @since 3.2.0
  */
 public class ProducerConfigProperties {
 

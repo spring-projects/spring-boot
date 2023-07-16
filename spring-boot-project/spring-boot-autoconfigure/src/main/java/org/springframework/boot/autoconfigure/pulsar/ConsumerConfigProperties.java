@@ -42,7 +42,7 @@ import org.springframework.pulsar.core.ConsumerBuilderCustomizer;
  * Configuration properties used to specify Pulsar consumers.
  *
  * @author Chris Bono
- * @since 3.2
+ * @since 3.2.0
  */
 public class ConsumerConfigProperties {
 

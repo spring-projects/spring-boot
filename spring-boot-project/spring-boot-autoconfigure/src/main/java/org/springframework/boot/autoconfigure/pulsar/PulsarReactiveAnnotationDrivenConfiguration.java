@@ -34,7 +34,7 @@ import org.springframework.pulsar.reactive.listener.ReactivePulsarContainerPrope
  * Configuration for Reactive Pulsar annotation-driven support.
  *
  * @author Christophe Bornet
- * @since 3.2
+ * @since 3.2.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EnableReactivePulsar.class)

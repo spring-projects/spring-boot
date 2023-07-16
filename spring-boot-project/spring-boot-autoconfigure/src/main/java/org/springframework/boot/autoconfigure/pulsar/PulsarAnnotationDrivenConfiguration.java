@@ -41,7 +41,7 @@ import org.springframework.util.unit.DataSize;
  *
  * @author Soby Chacko
  * @author Chris Bono
- * @since 3.2
+ * @since 3.2.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EnablePulsar.class)

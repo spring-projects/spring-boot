@@ -58,7 +58,7 @@ import org.springframework.pulsar.function.PulsarSource;
  * @author Soby Chacko
  * @author Chris Bono
  * @author Alexander Preuß
- * @since 3.2
+ * @since 3.2.0
  */
 @AutoConfiguration
 @ConditionalOnClass(PulsarTemplate.class)

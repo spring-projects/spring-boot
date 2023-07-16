@@ -62,7 +62,7 @@ import org.springframework.util.unit.DataSize;
  * these properties.
  *
  * @author Christophe Bornet
- * @since 3.2
+ * @since 3.2.0
  */
 @ConfigurationProperties(prefix = "spring.pulsar.reactive")
 public class PulsarReactiveProperties {

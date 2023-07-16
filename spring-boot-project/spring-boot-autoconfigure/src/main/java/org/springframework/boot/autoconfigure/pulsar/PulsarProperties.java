@@ -50,7 +50,7 @@ import org.springframework.util.unit.DataSize;
  * @author Christophe Bornet
  * @author Chris Bono
  * @author Kevin Lu
- * @since 3.2
+ * @since 3.2.0
  */
 @ConfigurationProperties(prefix = "spring.pulsar")
 public class PulsarProperties {

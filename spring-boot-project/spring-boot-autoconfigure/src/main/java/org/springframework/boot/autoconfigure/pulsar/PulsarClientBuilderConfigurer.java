@@ -40,7 +40,7 @@ import org.springframework.util.unit.DataSize;
  * optional {@link PulsarClientBuilderCustomizer customizers}.
  *
  * @author Chris Bono
- * @since 3.2
+ * @since 3.2.0
  */
 public class PulsarClientBuilderConfigurer {
 

@@ -49,7 +49,7 @@ import org.springframework.pulsar.reactive.core.ReactivePulsarTemplate;
  *
  * @author Chris Bono
  * @author Christophe Bornet
- * @since 3.2
+ * @since 3.2.0
  */
 @AutoConfiguration(after = PulsarAutoConfiguration.class)
 @ConditionalOnClass({ ReactivePulsarTemplate.class, ReactivePulsarClient.class, Flux.class })
