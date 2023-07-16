@@ -70,7 +70,7 @@ import static org.mockito.Mockito.never;
  * @author Christophe Bornet
  * @author Soby Chacko
  */
-public class PulsarPropertiesTests {
+class PulsarPropertiesTests {
 
 	private PulsarProperties newConfigPropsFromUserProps(Map<String, String> map) {
 		var targetProps = new PulsarProperties();

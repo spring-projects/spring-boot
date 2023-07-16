@@ -41,15 +41,14 @@ import org.springframework.util.unit.DataSize;
  *
  * @author Soby Chacko
  * @author Chris Bono
- * @since 3.2.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EnablePulsar.class)
-public class PulsarAnnotationDrivenConfiguration {
+class PulsarAnnotationDrivenConfiguration {
 
 	private final PulsarProperties pulsarProperties;
 
-	public PulsarAnnotationDrivenConfiguration(PulsarProperties pulsarProperties) {
+	PulsarAnnotationDrivenConfiguration(PulsarProperties pulsarProperties) {
 		this.pulsarProperties = pulsarProperties;
 	}
 

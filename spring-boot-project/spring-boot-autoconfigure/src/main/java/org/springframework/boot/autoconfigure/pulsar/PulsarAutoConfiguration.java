@@ -68,20 +68,20 @@ public class PulsarAutoConfiguration {
 
 	private final PulsarProperties properties;
 
-	public PulsarAutoConfiguration(PulsarProperties properties) {
+	PulsarAutoConfiguration(PulsarProperties properties) {
 		this.properties = properties;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PulsarClientBuilderConfigurer pulsarClientBuilderConfigurer(PulsarProperties pulsarProperties,
+	PulsarClientBuilderConfigurer pulsarClientBuilderConfigurer(PulsarProperties pulsarProperties,
 			ObjectProvider<PulsarClientBuilderCustomizer> customizers) {
 		return new PulsarClientBuilderConfigurer(pulsarProperties, customizers.orderedStream().toList());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PulsarClient pulsarClient(PulsarClientBuilderConfigurer configurer) {
+	PulsarClient pulsarClient(PulsarClientBuilderConfigurer configurer) {
 		var clientFactory = new DefaultPulsarClientFactory(configurer::configure);
 		try {
 			return clientFactory.createClient();
@@ -94,7 +94,7 @@ public class PulsarAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "false")
-	public PulsarProducerFactory<?> pulsarProducerFactory(PulsarClient pulsarClient, TopicResolver topicResolver) {
+	PulsarProducerFactory<?> pulsarProducerFactory(PulsarClient pulsarClient, TopicResolver topicResolver) {
 		return new DefaultPulsarProducerFactory<>(pulsarClient, this.properties.getProducer().getTopicName(),
 				this.properties.getProducer().toProducerBuilderCustomizer(), topicResolver);
 	}
@@ -102,8 +102,7 @@ public class PulsarAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(name = "spring.pulsar.producer.cache.enabled", havingValue = "true", matchIfMissing = true)
-	public PulsarProducerFactory<?> cachingPulsarProducerFactory(PulsarClient pulsarClient,
-			TopicResolver topicResolver) {
+	PulsarProducerFactory<?> cachingPulsarProducerFactory(PulsarClient pulsarClient, TopicResolver topicResolver) {
 		return new CachingPulsarProducerFactory<>(pulsarClient, this.properties.getProducer().getTopicName(),
 				this.properties.getProducer().toProducerBuilderCustomizer(), topicResolver,
 				this.properties.getProducer().getCache().getExpireAfterAccess(),
@@ -113,7 +112,7 @@ public class PulsarAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PulsarTemplate<?> pulsarTemplate(PulsarProducerFactory<?> pulsarProducerFactory,
+	PulsarTemplate<?> pulsarTemplate(PulsarProducerFactory<?> pulsarProducerFactory,
 			ObjectProvider<ProducerInterceptor> interceptorsProvider, SchemaResolver schemaResolver,
 			TopicResolver topicResolver) {
 		return new PulsarTemplate<>(pulsarProducerFactory, interceptorsProvider.orderedStream().toList(),
@@ -122,7 +121,7 @@ public class PulsarAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(SchemaResolver.class)
-	public DefaultSchemaResolver schemaResolver(PulsarProperties pulsarProperties,
+	DefaultSchemaResolver schemaResolver(PulsarProperties pulsarProperties,
 			Optional<SchemaResolverCustomizer<DefaultSchemaResolver>> schemaResolverCustomizer) {
 		var schemaResolver = new DefaultSchemaResolver();
 		if (pulsarProperties.getDefaults().getTypeMappings() != null) {
@@ -143,7 +142,7 @@ public class PulsarAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(TopicResolver.class)
-	public DefaultTopicResolver topicResolver(PulsarProperties pulsarProperties) {
+	DefaultTopicResolver topicResolver(PulsarProperties pulsarProperties) {
 		var topicResolver = new DefaultTopicResolver();
 		if (pulsarProperties.getDefaults().getTypeMappings() != null) {
 			pulsarProperties.getDefaults()
@@ -157,21 +156,21 @@ public class PulsarAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PulsarConsumerFactory<?> pulsarConsumerFactory(PulsarClient pulsarClient) {
+	PulsarConsumerFactory<?> pulsarConsumerFactory(PulsarClient pulsarClient) {
 		return new DefaultPulsarConsumerFactory<>(pulsarClient,
 				this.properties.getConsumer().toConsumerBuilderCustomizer());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PulsarAdministration pulsarAdministration() {
+	PulsarAdministration pulsarAdministration() {
 		return new PulsarAdministration(this.properties.getAdministration().toPulsarAdminBuilderCustomizer());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty(name = "spring.pulsar.function.enabled", havingValue = "true", matchIfMissing = true)
-	public PulsarFunctionAdministration pulsarFunctionAdministration(PulsarAdministration pulsarAdministration,
+	PulsarFunctionAdministration pulsarFunctionAdministration(PulsarAdministration pulsarAdministration,
 			ObjectProvider<PulsarFunction> pulsarFunctions, ObjectProvider<PulsarSink> pulsarSinks,
 			ObjectProvider<PulsarSource> pulsarSources) {
 		return new PulsarFunctionAdministration(pulsarAdministration, pulsarFunctions, pulsarSinks, pulsarSources,
@@ -181,7 +180,7 @@ public class PulsarAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public PulsarReaderFactory<?> pulsarReaderFactory(PulsarClient pulsarClient) {
+	PulsarReaderFactory<?> pulsarReaderFactory(PulsarClient pulsarClient) {
 		return new DefaultPulsarReaderFactory<>(pulsarClient, this.properties.getReader().toReaderBuilderCustomizer());
 	}
 

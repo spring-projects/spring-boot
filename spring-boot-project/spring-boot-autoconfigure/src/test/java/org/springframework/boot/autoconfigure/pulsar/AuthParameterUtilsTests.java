@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Alexander Preuß
  */
-public class AuthParameterUtilsTests {
+class AuthParameterUtilsTests {
 
 	@ParameterizedTest(name = "{0}")
 	@MethodSource("encodedParamStringConversionProvider")

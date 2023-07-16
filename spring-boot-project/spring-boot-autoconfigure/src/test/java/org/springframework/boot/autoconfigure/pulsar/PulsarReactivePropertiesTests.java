@@ -54,7 +54,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Christophe Bornet
  */
-public class PulsarReactivePropertiesTests {
+class PulsarReactivePropertiesTests {
 
 	private PulsarReactiveProperties newConfigPropsFromUserProps(Map<String, String> map) {
 		PulsarReactiveProperties targetProps = new PulsarReactiveProperties();
