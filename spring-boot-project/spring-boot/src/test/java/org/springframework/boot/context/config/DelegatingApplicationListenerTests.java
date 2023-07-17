@@ -36,10 +36,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link DelegatingApplicationListener}.
  *
  * @author Dave Syer
- *
- * @deprecated since 3.2 for removal in 3.4 as property based initialization is no longer recommended
  */
 @Deprecated(since = "3.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class DelegatingApplicationListenerTests {
 
 	private final DelegatingApplicationListener listener = new DelegatingApplicationListener();
