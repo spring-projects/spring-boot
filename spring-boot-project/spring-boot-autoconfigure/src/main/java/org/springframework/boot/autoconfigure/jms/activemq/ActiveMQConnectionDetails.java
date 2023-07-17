@@ -22,14 +22,27 @@ import org.springframework.boot.autoconfigure.service.connection.ConnectionDetai
  * Details required to establish a connection to an ActiveMQ service.
  *
  * @author Eddú Meléndez
- * @since 3.1.0
+ * @author Stephane Nicoll
+ * @since 3.2.0
  */
 public interface ActiveMQConnectionDetails extends ConnectionDetails {
 
+	/**
+	 * Broker URL to use.
+	 * @return the url of the broker
+	 */
 	String getBrokerUrl();
 
+	/**
+	 * Login user to authenticate to the broker.
+	 * @return the login user to authenticate to the broker or {@code null}
+	 */
 	String getUser();
 
+	/**
+	 * Login to authenticate against the broker.
+	 * @return the login to authenticate against the broker or {@code null}
+	 */
 	String getPassword();
 
 }

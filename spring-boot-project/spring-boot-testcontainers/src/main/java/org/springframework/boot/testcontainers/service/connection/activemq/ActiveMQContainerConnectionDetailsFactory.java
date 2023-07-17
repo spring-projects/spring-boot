@@ -16,8 +16,6 @@
 
 package org.springframework.boot.testcontainers.service.connection.activemq;
 
-import java.util.Map;
-
 import org.testcontainers.containers.Container;
 import org.testcontainers.containers.GenericContainer;
 
@@ -34,7 +32,7 @@ import org.springframework.boot.testcontainers.service.connection.ServiceConnect
  * @author Eddú Meléndez
  */
 class ActiveMQContainerConnectionDetailsFactory
-		extends ContainerConnectionDetailsFactory<ActiveMQConnectionDetails, Container<?>> {
+		extends ContainerConnectionDetailsFactory<Container<?>, ActiveMQConnectionDetails> {
 
 	ActiveMQContainerConnectionDetailsFactory() {
 		super("symptoma/activemq");
@@ -45,33 +43,26 @@ class ActiveMQContainerConnectionDetailsFactory
 		return new ActiveMQContainerConnectionDetails(source);
 	}
 
-	private static final class ActiveMQContainerConnectionDetails extends ContainerConnectionDetails
+	private static final class ActiveMQContainerConnectionDetails extends ContainerConnectionDetails<Container<?>>
 			implements ActiveMQConnectionDetails {
-
-		private final String brokerUrl;
-
-		private final Map<String, String> envVars;
 
 		private ActiveMQContainerConnectionDetails(ContainerConnectionSource<Container<?>> source) {
 			super(source);
-			this.brokerUrl = "tcp://" + source.getContainer().getHost() + ":"
-					+ source.getContainer().getFirstMappedPort();
-			this.envVars = source.getContainer().getEnvMap();
 		}
 
 		@Override
 		public String getBrokerUrl() {
-			return this.brokerUrl;
+			return "tcp://" + getContainer().getHost() + ":" + getContainer().getFirstMappedPort();
 		}
 
 		@Override
 		public String getUser() {
-			return this.envVars.get("ACTIVEMQ_USERNAME");
+			return getContainer().getEnvMap().get("ACTIVEMQ_USERNAME");
 		}
 
 		@Override
 		public String getPassword() {
-			return this.envVars.get("ACTIVEMQ_PASSWORD");
+			return getContainer().getEnvMap().get("ACTIVEMQ_PASSWORD");
 		}
 
 	}
