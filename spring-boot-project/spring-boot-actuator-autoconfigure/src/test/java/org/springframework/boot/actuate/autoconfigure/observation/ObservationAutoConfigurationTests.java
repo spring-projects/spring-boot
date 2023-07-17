@@ -181,6 +181,14 @@ class ObservationAutoConfigurationTests {
 	}
 
 	@Test
+	void allowsObservedAspectToBeCustomized() {
+		this.contextRunner.withUserConfiguration(CustomObservedAspectConfiguration.class)
+			.run((context) -> assertThat(context).hasSingleBean(ObservedAspect.class)
+				.getBean(ObservedAspect.class)
+				.isSameAs(context.getBean("customObservedAspect")));
+	}
+
+	@Test
 	void autoConfiguresObservationPredicates() {
 		this.contextRunner.withUserConfiguration(ObservationPredicates.class).run((context) -> {
 			ObservationRegistry observationRegistry = context.getBean(ObservationRegistry.class);
@@ -349,6 +357,16 @@ class ObservationAutoConfigurationTests {
 		@Order(0)
 		ObservationFilter observationFilterTwo() {
 			return (context) -> context.addLowCardinalityKeyValue(KeyValue.of("filter", "two"));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomObservedAspectConfiguration {
+
+		@Bean
+		ObservedAspect customObservedAspect(ObservationRegistry observationRegistry) {
+			return new ObservedAspect(observationRegistry);
 		}
 
 	}
