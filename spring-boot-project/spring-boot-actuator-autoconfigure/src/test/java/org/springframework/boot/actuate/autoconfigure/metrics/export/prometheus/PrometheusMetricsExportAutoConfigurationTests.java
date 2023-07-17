@@ -20,8 +20,6 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.exemplars.DefaultExemplarSampler;
-import io.prometheus.client.exemplars.Exemplar;
 import io.prometheus.client.exemplars.ExemplarSampler;
 import io.prometheus.client.exemplars.tracer.common.SpanContextSupplier;
 import io.prometheus.client.exporter.BasicAuthHttpConnectionFactory;
@@ -47,6 +45,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link PrometheusMetricsExportAutoConfiguration}.
@@ -64,12 +63,6 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	@Test
 	void backsOffWithoutAClock() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(PrometheusMeterRegistry.class));
-	}
-
-	@Test
-	void backsOfWhenExemplarSamplerIsPresent() {
-		this.contextRunner.withUserConfiguration(CustomExemplarSamplerConfiguration.class)
-			.run((context) -> assertThat(context).doesNotHaveBean(DefaultExemplarSampler.class));
 	}
 
 	@Test
@@ -127,10 +120,19 @@ class PrometheusMetricsExportAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresExemplarSamplerIfSpanContextSupplierIsPresent() {
-		this.contextRunner.withUserConfiguration(DefaultExemplarSamplerConfiguration.class)
+		this.contextRunner.withUserConfiguration(ExemplarsConfiguration.class)
 			.run((context) -> assertThat(context).hasSingleBean(SpanContextSupplier.class)
 				.hasSingleBean(ExemplarSampler.class)
 				.hasSingleBean(PrometheusMeterRegistry.class));
+	}
+
+	@Test
+	void allowsCustomExemplarSamplerToBeUsed() {
+		this.contextRunner.withUserConfiguration(ExemplarsConfiguration.class)
+			.withBean("customExemplarSampler", ExemplarSampler.class, () -> mock(ExemplarSampler.class))
+			.run((context) -> assertThat(context).hasSingleBean(ExemplarSampler.class)
+				.getBean(ExemplarSampler.class)
+				.isSameAs(context.getBean("customExemplarSampler")));
 	}
 
 	@Test
@@ -295,7 +297,7 @@ class PrometheusMetricsExportAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@Import(BaseConfiguration.class)
-	static class DefaultExemplarSamplerConfiguration {
+	static class ExemplarsConfiguration {
 
 		@Bean
 		SpanContextSupplier spanContextSupplier() {
@@ -316,28 +318,6 @@ class PrometheusMetricsExportAutoConfigurationTests {
 					return false;
 				}
 
-			};
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@Import(BaseConfiguration.class)
-	static class CustomExemplarSamplerConfiguration {
-
-		@Bean
-		ExemplarSampler exemplarSampler() {
-			return new ExemplarSampler() {
-
-				@Override
-				public Exemplar sample(double value, double bucketFrom, double bucketTo, Exemplar previous) {
-					return null;
-				}
-
-				@Override
-				public Exemplar sample(double increment, Exemplar previous) {
-					return null;
-				}
 			};
 		}
 
