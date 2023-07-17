@@ -54,7 +54,6 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
- * @author Yanming Zhou
  */
 class ConfigDataEnvironmentTests {
 
