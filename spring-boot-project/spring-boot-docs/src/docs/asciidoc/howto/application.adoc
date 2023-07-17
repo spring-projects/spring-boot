@@ -61,7 +61,6 @@ Spring Boot loads a number of such customizations for use internally from `META-
 There is more than one way to register additional customizations:
 
 * Programmatically, per application, by calling the `addListeners` and `addInitializers` methods on `SpringApplication` before you run it.
-* Declaratively, per application, by setting the `context.initializer.classes` or `context.listener.classes` properties.
 * Declaratively, for all applications, by adding a `META-INF/spring.factories` and packaging a jar file that the applications all use as a library.
 
 The `SpringApplication` sends some special `ApplicationEvents` to the listeners (some even before the context is created) and then registers the listeners for events published by the `ApplicationContext` as well.

@@ -36,6 +36,8 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
+@Deprecated(since = "3.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 class DelegatingApplicationContextInitializerTests {
 
 	private final DelegatingApplicationContextInitializer initializer = new DelegatingApplicationContextInitializer();
