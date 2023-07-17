@@ -26,7 +26,7 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 public class MyContainersConfiguration {
 
 	@Bean
-	public MongoDBContainer monogDbContainer(DynamicPropertyRegistry properties) {
+	public MongoDBContainer mongoDbContainer(DynamicPropertyRegistry properties) {
 		MongoDBContainer container = new MongoDBContainer("mongo:5.0");
 		properties.add("spring.data.mongodb.host", container::getHost);
 		properties.add("spring.data.mongodb.port", container::getFirstMappedPort);
