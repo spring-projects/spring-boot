@@ -28,6 +28,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.task.TaskExecutorBuilder;
 import org.springframework.boot.task.TaskExecutorCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.TaskExecutor;
@@ -44,6 +45,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @ConditionalOnClass(ThreadPoolTaskExecutor.class)
 @AutoConfiguration
 @EnableConfigurationProperties(TaskExecutionProperties.class)
+@Import({ TaskExecutorConfigurations.VirtualThreadTaskExecutorConfiguration.class,
+		TaskExecutorConfigurations.ThreadPoolTaskExecutorConfiguration.class })
 public class TaskExecutionAutoConfiguration {
 
 	/**

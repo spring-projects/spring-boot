@@ -17,11 +17,16 @@
 package org.springframework.boot.autoconfigure.task;
 
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -34,6 +39,7 @@ import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.SyncTaskExecutor;
 import org.springframework.core.task.TaskDecorator;
 import org.springframework.core.task.TaskExecutor;
@@ -98,7 +104,7 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
-	void taskExecutorAutoConfiguredIsLazy() {
+	void whenThreadPoolTaskExecutorIsAutoConfiguredThenItIsLazy() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(Executor.class).hasBean("applicationTaskExecutor");
 			BeanDefinition beanDefinition = context.getSourceApplicationContext()
@@ -110,11 +116,67 @@ class TaskExecutionAutoConfigurationTests {
 	}
 
 	@Test
+	@DisabledForJreRange(max = JRE.JAVA_20)
+	void whenVirtualThreadsAreEnabledThenSimpleAsyncTaskExecutorWithVirtualThreadsIsAutoConfigured() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true").run((context) -> {
+			assertThat(context).hasSingleBean(Executor.class).hasBean("applicationTaskExecutor");
+			assertThat(context).getBean("applicationTaskExecutor").isInstanceOf(SimpleAsyncTaskExecutor.class);
+			SimpleAsyncTaskExecutor taskExecutor = context.getBean("applicationTaskExecutor",
+					SimpleAsyncTaskExecutor.class);
+			assertThat(virtualThreadName(taskExecutor)).startsWith("task-");
+		});
+	}
+
+	@Test
+	@DisabledForJreRange(max = JRE.JAVA_20)
+	void whenTaskNamePrefixIsConfiguredThenSimpleAsyncTaskExecutorWithVirtualThreadsUsesIt() {
+		this.contextRunner
+			.withPropertyValues("spring.threads.virtual.enabled=true",
+					"spring.task.execution.thread-name-prefix=custom-")
+			.run((context) -> {
+				SimpleAsyncTaskExecutor taskExecutor = context.getBean("applicationTaskExecutor",
+						SimpleAsyncTaskExecutor.class);
+				assertThat(virtualThreadName(taskExecutor)).startsWith("custom-");
+			});
+	}
+
+	@Test
+	@DisabledForJreRange(max = JRE.JAVA_20)
+	void whenVirtualThreadsAreAvailableButNotEnabledThenThreadPoolTaskExecutorIsAutoConfigured() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(Executor.class).hasBean("applicationTaskExecutor");
+			assertThat(context).getBean("applicationTaskExecutor").isInstanceOf(ThreadPoolTaskExecutor.class);
+		});
+	}
+
+	@Test
+	@DisabledForJreRange(max = JRE.JAVA_20)
+	void whenTaskDecoratorIsDefinedThenSimpleAsyncTaskExecutorWithVirtualThreadsUsesIt() {
+		this.contextRunner.withPropertyValues("spring.threads.virtual.enabled=true")
+			.withUserConfiguration(TaskDecoratorConfig.class)
+			.run((context) -> {
+				SimpleAsyncTaskExecutor executor = context.getBean(SimpleAsyncTaskExecutor.class);
+				assertThat(executor).extracting("taskDecorator").isSameAs(context.getBean(TaskDecorator.class));
+			});
+	}
+
+	@Test
 	void taskExecutorWhenHasCustomTaskExecutorShouldBackOff() {
 		this.contextRunner.withUserConfiguration(CustomTaskExecutorConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(Executor.class);
 			assertThat(context.getBean(Executor.class)).isSameAs(context.getBean("customTaskExecutor"));
 		});
+	}
+
+	@Test
+	@DisabledForJreRange(max = JRE.JAVA_20)
+	void whenVirtualThreadsAreEnabledAndCustomTaskExecutorIsDefinedThenSimpleAsyncTaskExecutorThatUsesVirtualThreadsBacksOff() {
+		this.contextRunner.withUserConfiguration(CustomTaskExecutorConfig.class)
+			.withPropertyValues("spring.threads.virtual.enabled=true")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(Executor.class);
+				assertThat(context.getBean(Executor.class)).isSameAs(context.getBean("customTaskExecutor"));
+			});
 	}
 
 	@Test
@@ -157,6 +219,20 @@ class TaskExecutionAutoConfigurationTests {
 			TaskExecutorBuilder builder = context.getBean(TaskExecutorBuilder.class);
 			taskExecutor.accept(builder.build());
 		};
+	}
+
+	private String virtualThreadName(SimpleAsyncTaskExecutor taskExecutor) throws InterruptedException {
+		AtomicReference<Thread> threadReference = new AtomicReference<>();
+		CountDownLatch latch = new CountDownLatch(1);
+		taskExecutor.execute(() -> {
+			Thread currentThread = Thread.currentThread();
+			threadReference.set(currentThread);
+			latch.countDown();
+		});
+		latch.await(30, TimeUnit.SECONDS);
+		Thread thread = threadReference.get();
+		assertThat(thread).extracting("virtual").as("%s is virtual", thread).isEqualTo(true);
+		return thread.getName();
 	}
 
 	@Configuration(proxyBeanMethods = false)
