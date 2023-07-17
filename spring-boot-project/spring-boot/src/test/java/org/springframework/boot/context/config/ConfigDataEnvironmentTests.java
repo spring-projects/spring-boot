@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.DefaultBootstrapContext;
@@ -229,7 +229,7 @@ class ConfigDataEnvironmentTests {
 	}
 
 	@ParameterizedTest
-	@CsvSource({ "include", "include[0]" })
+	@ValueSource(strings = { "include", "include[0]" })
 	void processAndApplyWhenHasProfileIncludeInProfileSpecificDocumentThrowsException(String property, TestInfo info) {
 		this.environment.setProperty("spring.config.location", getConfigLocation(info));
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
@@ -253,7 +253,7 @@ class ConfigDataEnvironmentTests {
 	}
 
 	@ParameterizedTest
-	@CsvSource({ "spring.profiles.include", "spring.profiles.include[0]" })
+	@ValueSource(strings = { "spring.profiles.include", "spring.profiles.include[0]" })
 	void processAndApplyIncludesProfilesFromSpringProfilesInclude(String property, TestInfo info) {
 		this.environment.setProperty("spring.config.location", getConfigLocation(info));
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
