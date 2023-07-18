@@ -3,11 +3,17 @@
 In the absence of an `Executor` bean in the context, Spring Boot auto-configures an `AsyncTaskExecutor`.
 When virtual threads are enabled (using Java 21+ and configprop:spring.threads.virtual.enabled[] set to `true`) this will be a `SimpleAsyncTaskExecutor` that uses virtual threads.
 Otherwise, it will be a `ThreadPoolTaskExecutor` with sensible defaults.
-In either case, the auto-configured executor will be automatically used for asynchronous task execution (`@EnableAsync`), Spring MVC asynchronous request processing, and Spring WebFlux blocking execution.
+In either case, the auto-configured executor will be automatically used for:
+
+- asynchronous task execution (`@EnableAsync`)
+- Spring for GraphQL's asynchronous handling of `Callable` return values from controller methods
+- Spring MVC's asynchronous request processing
+- Spring WebFlux's blocking execution support
 
 [TIP]
 ====
-If you have defined a custom `Executor` in the context, regular task execution (that is `@EnableAsync`) will use it transparently but the Spring MVC and Spring WebFlux support will not be configured as they require an `AsyncTaskExecutor` implementation (named `applicationTaskExecutor`).
+If you have defined a custom `Executor` in the context, both regular task execution (that is `@EnableAsync`) and Spring for GraphQL will use it.
+However, the Spring MVC and Spring WebFlux support will only use it if it is an `AsyncTaskExecutor` implementation (named `applicationTaskExecutor`).
 Depending on your target arrangement, you could change your `Executor` into an `AsyncTaskExecutor` or define both an `AsyncTaskExecutor` and an `AsyncConfigurer` wrapping your custom `Executor`.
 
 The auto-configured `TaskExecutorBuilder` allows you to easily create instances that reproduce what the auto-configuration does by default.

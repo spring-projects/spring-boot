@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.graphql;
 
 import java.nio.charset.StandardCharsets;
+import java.util.concurrent.Executor;
 
 import graphql.GraphQL;
 import graphql.execution.instrumentation.ChainedInstrumentation;
@@ -34,6 +35,7 @@ import org.springframework.aot.hint.RuntimeHints;
 import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.graphql.GraphQlAutoConfiguration.GraphQlResourcesRuntimeHints;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -209,6 +211,26 @@ class GraphQlAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void whenApplicationTaskExecutorIsDefinedThenAnnotatedControllerConfigurerShouldUseIt() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+			.run((context) -> {
+				AnnotatedControllerConfigurer annotatedControllerConfigurer = context
+					.getBean(AnnotatedControllerConfigurer.class);
+				assertThat(annotatedControllerConfigurer).extracting("executor")
+					.isSameAs(context.getBean("applicationTaskExecutor"));
+			});
+	}
+
+	@Test
+	void whenCustomExecutorIsDefinedThenAnnotatedControllerConfigurerDoesNotUseIt() {
+		this.contextRunner.withUserConfiguration(CustomExecutorConfiguration.class).run((context) -> {
+			AnnotatedControllerConfigurer annotatedControllerConfigurer = context
+				.getBean(AnnotatedControllerConfigurer.class);
+			assertThat(annotatedControllerConfigurer).extracting("executor").isNull();
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class CustomGraphQlBuilderConfiguration {
 
@@ -290,6 +312,16 @@ class GraphQlAutoConfigurationTests {
 				this.applied = true;
 			}
 
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomExecutorConfiguration {
+
+		@Bean
+		Executor customExecutor() {
+			return mock(Executor.class);
 		}
 
 	}
