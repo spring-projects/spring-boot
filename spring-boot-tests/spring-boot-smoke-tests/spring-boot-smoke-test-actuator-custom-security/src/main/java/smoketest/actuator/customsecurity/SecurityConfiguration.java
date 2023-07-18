@@ -66,8 +66,8 @@ public class SecurityConfiguration {
 			requests.requestMatchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class))
 				.hasRole("ACTUATOR");
 			requests.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
-			requests.requestMatchers("/foo").permitAll();
-			requests.requestMatchers(new AntPathRequestMatcher("/error")).permitAll();
+			requests.requestMatchers(new AntPathRequestMatcher("/foo")).permitAll();
+			requests.requestMatchers(new MvcRequestMatcher(handlerMappingIntrospector, "/error")).permitAll();
 			requests.requestMatchers(new AntPathRequestMatcher("/**")).hasRole("USER");
 		});
 		http.cors(Customizer.withDefaults());
