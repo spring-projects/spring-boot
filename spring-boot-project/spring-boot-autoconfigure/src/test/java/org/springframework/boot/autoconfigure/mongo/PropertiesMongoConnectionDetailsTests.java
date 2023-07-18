@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
+import java.util.List;
+
 import com.mongodb.ConnectionString;
 import org.junit.jupiter.api.Test;
 
@@ -100,6 +102,15 @@ class PropertiesMongoConnectionDetailsTests {
 		ConnectionString connectionString = getConnectionString();
 		assertThat(connectionString.getDatabase()).isEqualTo("db");
 		assertThat(connectionString.getRequiredReplicaSetName()).isEqualTo("test");
+	}
+
+	@Test
+	void whenAdditionalHostsAreConfiguredThenTheyAreIncludedInHostsOfConnectionString() {
+		this.properties.setHost("mongo1.example.com");
+		this.properties.setAdditionalHosts(List.of("mongo2.example.com", "mongo3.example.com"));
+		ConnectionString connectionString = getConnectionString();
+		assertThat(connectionString.getHosts()).containsExactly("mongo1.example.com", "mongo2.example.com",
+				"mongo3.example.com");
 	}
 
 	private PropertiesMongoConnectionDetails createConnectionDetails() {
