@@ -61,6 +61,7 @@ public class PropertiesMongoConnectionDetails implements MongoConnectionDetails 
 			builder.append(this.properties.getPort());
 		}
 		if (this.properties.getAdditionalHosts() != null) {
+			builder.append(",");
 			builder.append(String.join(",", this.properties.getAdditionalHosts()));
 		}
 		builder.append("/");
