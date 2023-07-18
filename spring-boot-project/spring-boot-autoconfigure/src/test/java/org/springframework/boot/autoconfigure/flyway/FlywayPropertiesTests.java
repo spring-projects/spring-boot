@@ -109,13 +109,11 @@ class FlywayPropertiesTests {
 				PropertyAccessorFactory.forBeanPropertyAccess(new ClassicConfiguration()));
 		// Properties specific settings
 		ignoreProperties(properties, "url", "driverClassName", "user", "password", "enabled");
-		// Property that moved to a separate Oracle plugin
-		ignoreProperties(properties, "oracleSqlplus", "oracleSqlplusWarn", "oracleKerberosCacheFile",
-				"oracleWalletLocation");
-		// Postgresql extension
-		ignoreProperties(properties, "postgresql");
-		// Property that moved to a separate SQL plugin
-		ignoreProperties(properties, "sqlServerKerberosLoginFile");
+		// Deprecated properties
+		ignoreProperties(properties, "oracleKerberosCacheFile", "oracleSqlplus", "oracleSqlplusWarn",
+				"oracleWalletLocation", "sqlServerKerberosLoginFile");
+		// Properties that are managed by specific extensions
+		ignoreProperties(properties, "oracle", "postgresql", "sqlserver");
 		// High level object we can't set with properties
 		ignoreProperties(configuration, "callbacks", "classLoader", "dataSource", "javaMigrations",
 				"javaMigrationClassProvider", "pluginRegister", "resourceProvider", "resolvers");

@@ -52,6 +52,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayAutoConfigurationRuntimeHints;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayDataSourceCondition;
+import org.springframework.boot.autoconfigure.flyway.FlywayProperties.Oracle;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcConnectionDetails;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
@@ -477,10 +478,11 @@ public class FlywayAutoConfiguration {
 						Assert.notNull(extension, "Flyway Oracle extension missing");
 						return extension;
 					});
-			map.apply(this.properties.getOracleSqlplus(), OracleConfigurationExtension::setSqlplus);
-			map.apply(this.properties.getOracleSqlplusWarn(), OracleConfigurationExtension::setSqlplusWarn);
-			map.apply(this.properties.getOracleWalletLocation(), OracleConfigurationExtension::setWalletLocation);
-			map.apply(this.properties.getOracleKerberosCacheFile(), OracleConfigurationExtension::setKerberosCacheFile);
+			Oracle oracle = this.properties.getOracle();
+			map.apply(oracle.getSqlplus(), OracleConfigurationExtension::setSqlplus);
+			map.apply(oracle.getSqlplusWarn(), OracleConfigurationExtension::setSqlplusWarn);
+			map.apply(oracle.getWalletLocation(), OracleConfigurationExtension::setWalletLocation);
+			map.apply(oracle.getKerberosCacheFile(), OracleConfigurationExtension::setKerberosCacheFile);
 		}
 
 	}
@@ -528,7 +530,7 @@ public class FlywayAutoConfiguration {
 						return extension;
 					});
 
-			map.apply(this.properties.getSqlServerKerberosLoginFile(),
+			map.apply(this.properties.getSqlserver().getKerberosLoginFile(),
 					(extension, file) -> extension.getKerberos().getLogin().setFile(file));
 		}
 
