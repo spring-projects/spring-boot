@@ -372,6 +372,8 @@ public class FlywayProperties {
 	 */
 	private Boolean detectEncoding;
 
+	private final Postgresql postgresql = new Postgresql();
+
 	public boolean isEnabled() {
 		return this.enabled;
 	}
@@ -866,6 +868,31 @@ public class FlywayProperties {
 
 	public void setDetectEncoding(final Boolean detectEncoding) {
 		this.detectEncoding = detectEncoding;
+	}
+
+	public Postgresql getPostgresql() {
+		return this.postgresql;
+	}
+
+	/**
+	 * {@code PostgreSQLConfigurationExtension} properties.
+	 */
+	public static class Postgresql {
+
+		/**
+		 * Whether transactional advisory locks should be used. If set to false,
+		 * session-level locks are used instead.
+		 */
+		private Boolean transactionalLock;
+
+		public Boolean getTransactionalLock() {
+			return this.transactionalLock;
+		}
+
+		public void setTransactionalLock(Boolean transactionalLock) {
+			this.transactionalLock = transactionalLock;
+		}
+
 	}
 
 }

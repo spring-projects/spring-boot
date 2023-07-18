@@ -36,6 +36,7 @@ import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.flywaydb.core.api.migration.JavaMigration;
 import org.flywaydb.core.extensibility.ConfigurationExtension;
+import org.flywaydb.core.internal.database.postgresql.PostgreSQLConfigurationExtension;
 import org.flywaydb.database.oracle.OracleConfigurationExtension;
 import org.flywaydb.database.sqlserver.SQLServerConfigurationExtension;
 
@@ -151,6 +152,12 @@ public class FlywayAutoConfiguration {
 		@ConditionalOnClass(name = "org.flywaydb.database.oracle.OracleConfigurationExtension")
 		OracleFlywayConfigurationCustomizer oracleFlywayConfigurationCustomizer() {
 			return new OracleFlywayConfigurationCustomizer(this.properties);
+		}
+
+		@Bean
+		@ConditionalOnClass(name = "org.flywaydb.core.internal.database.postgresql.PostgreSQLConfigurationExtension")
+		PostgresqlFlywayConfigurationCustomizer postgresqlFlywayConfigurationCustomizer() {
+			return new PostgresqlFlywayConfigurationCustomizer(this.properties);
 		}
 
 		@Bean
@@ -474,6 +481,30 @@ public class FlywayAutoConfiguration {
 			map.apply(this.properties.getOracleSqlplusWarn(), OracleConfigurationExtension::setSqlplusWarn);
 			map.apply(this.properties.getOracleWalletLocation(), OracleConfigurationExtension::setWalletLocation);
 			map.apply(this.properties.getOracleKerberosCacheFile(), OracleConfigurationExtension::setKerberosCacheFile);
+		}
+
+	}
+
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	static final class PostgresqlFlywayConfigurationCustomizer implements FlywayConfigurationCustomizer {
+
+		private final FlywayProperties properties;
+
+		PostgresqlFlywayConfigurationCustomizer(FlywayProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public void customize(FluentConfiguration configuration) {
+			ConfigurationExtensionMapper<PostgreSQLConfigurationExtension> map = new ConfigurationExtensionMapper<>(
+					PropertyMapper.get().alwaysApplyingWhenNonNull(), () -> {
+						PostgreSQLConfigurationExtension extension = configuration.getPluginRegister()
+							.getPlugin(PostgreSQLConfigurationExtension.class);
+						Assert.notNull(extension, "PostgreSQL extension missing");
+						return extension;
+					});
+			map.apply(this.properties.getPostgresql().getTransactionalLock(),
+					PostgreSQLConfigurationExtension::setTransactionalLock);
 		}
 
 	}

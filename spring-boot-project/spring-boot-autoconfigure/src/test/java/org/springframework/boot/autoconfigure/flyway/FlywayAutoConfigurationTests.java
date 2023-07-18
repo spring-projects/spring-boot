@@ -33,6 +33,7 @@ import org.flywaydb.core.api.callback.Context;
 import org.flywaydb.core.api.callback.Event;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.flywaydb.core.api.migration.JavaMigration;
+import org.flywaydb.core.internal.database.postgresql.PostgreSQLConfigurationExtension;
 import org.flywaydb.core.internal.license.FlywayTeamsUpgradeRequiredException;
 import org.flywaydb.database.oracle.OracleConfigurationExtension;
 import org.flywaydb.database.sqlserver.SQLServerConfigurationExtension;
@@ -52,6 +53,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayAutoConfigurationRuntimeHints;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.OracleFlywayConfigurationCustomizer;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.PostgresqlFlywayConfigurationCustomizer;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.SqlServerFlywayConfigurationCustomizer;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -731,6 +733,24 @@ class FlywayAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 			.withPropertyValues("spring.flyway.output-query-results=false")
 			.run(validateFlywayTeamsPropertyOnly("outputQueryResults"));
+	}
+
+	@Test
+	void postgresqlExtensionIsNotLoadedByDefault() {
+		FluentConfiguration configuration = mock(FluentConfiguration.class);
+		new PostgresqlFlywayConfigurationCustomizer(new FlywayProperties()).customize(configuration);
+		then(configuration).shouldHaveNoInteractions();
+	}
+
+	@Test
+	void postgresqlTransactionalLockIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+			.withPropertyValues("spring.flyway.postgresql.transactional-lock=false")
+			.run((context) -> assertThat(context.getBean(Flyway.class)
+				.getConfiguration()
+				.getPluginRegister()
+				.getPlugin(PostgreSQLConfigurationExtension.class)
+				.isTransactionalLock()).isFalse());
 	}
 
 	@Test

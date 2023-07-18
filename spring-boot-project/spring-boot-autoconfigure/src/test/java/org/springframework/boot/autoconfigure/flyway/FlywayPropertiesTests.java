@@ -112,6 +112,8 @@ class FlywayPropertiesTests {
 		// Property that moved to a separate Oracle plugin
 		ignoreProperties(properties, "oracleSqlplus", "oracleSqlplusWarn", "oracleKerberosCacheFile",
 				"oracleWalletLocation");
+		// Postgresql extension
+		ignoreProperties(properties, "postgresql");
 		// Property that moved to a separate SQL plugin
 		ignoreProperties(properties, "sqlServerKerberosLoginFile");
 		// High level object we can't set with properties
