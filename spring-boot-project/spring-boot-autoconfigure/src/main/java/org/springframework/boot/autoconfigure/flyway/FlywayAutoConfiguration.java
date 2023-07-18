@@ -142,6 +142,12 @@ public class FlywayAutoConfiguration {
 		}
 
 		@Bean
+		@ConditionalOnClass(name = "org.flywaydb.database.sqlserver.SQLServerConfigurationExtension")
+		SqlServerFlywayConfigurationCustomizer sqlServerFlywayConfigurationCustomizer() {
+			return new SqlServerFlywayConfigurationCustomizer(this.properties);
+		}
+
+		@Bean
 		@ConditionalOnClass(name = "org.flywaydb.database.oracle.OracleConfigurationExtension")
 		OracleFlywayConfigurationCustomizer oracleFlywayConfigurationCustomizer() {
 			return new OracleFlywayConfigurationCustomizer(this.properties);
@@ -267,10 +273,6 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getJdbcProperties()).whenNot(Map::isEmpty).to(configuration::jdbcProperties);
 			map.from(properties.getKerberosConfigFile()).to(configuration::kerberosConfigFile);
 			map.from(properties.getOutputQueryResults()).to(configuration::outputQueryResults);
-			map.from(properties.getSqlServerKerberosLoginFile())
-				.whenNonNull()
-				.to((sqlServerKerberosLoginFile) -> configureSqlServerKerberosLoginFile(configuration,
-						sqlServerKerberosLoginFile));
 			map.from(properties.getSkipExecutingMigrations()).to(configuration::skipExecutingMigrations);
 			map.from(properties.getIgnoreMigrationPatterns())
 				.whenNot(List::isEmpty)
@@ -287,14 +289,6 @@ public class FlywayAutoConfiguration {
 			catch (NoSuchMethodError ex) {
 				// Flyway < 9.14
 			}
-		}
-
-		private void configureSqlServerKerberosLoginFile(FluentConfiguration configuration,
-				String sqlServerKerberosLoginFile) {
-			SQLServerConfigurationExtension sqlServerConfigurationExtension = configuration.getPluginRegister()
-				.getPlugin(SQLServerConfigurationExtension.class);
-			Assert.state(sqlServerConfigurationExtension != null, "Flyway SQL Server extension missing");
-			sqlServerConfigurationExtension.getKerberos().getLogin().setFile(sqlServerKerberosLoginFile);
 		}
 
 		private void configureCallbacks(FluentConfiguration configuration, List<Callback> callbacks) {
@@ -480,6 +474,31 @@ public class FlywayAutoConfiguration {
 			map.apply(this.properties.getOracleSqlplusWarn(), OracleConfigurationExtension::setSqlplusWarn);
 			map.apply(this.properties.getOracleWalletLocation(), OracleConfigurationExtension::setWalletLocation);
 			map.apply(this.properties.getOracleKerberosCacheFile(), OracleConfigurationExtension::setKerberosCacheFile);
+		}
+
+	}
+
+	@Order(Ordered.HIGHEST_PRECEDENCE)
+	static final class SqlServerFlywayConfigurationCustomizer implements FlywayConfigurationCustomizer {
+
+		private final FlywayProperties properties;
+
+		SqlServerFlywayConfigurationCustomizer(FlywayProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public void customize(FluentConfiguration configuration) {
+			ConfigurationExtensionMapper<SQLServerConfigurationExtension> map = new ConfigurationExtensionMapper<>(
+					PropertyMapper.get().alwaysApplyingWhenNonNull(), () -> {
+						SQLServerConfigurationExtension extension = configuration.getPluginRegister()
+							.getPlugin(SQLServerConfigurationExtension.class);
+						Assert.notNull(extension, "Flyway SQL Server extension missing");
+						return extension;
+					});
+
+			map.apply(this.properties.getSqlServerKerberosLoginFile(),
+					(extension, file) -> extension.getKerberos().getLogin().setFile(file));
 		}
 
 	}
