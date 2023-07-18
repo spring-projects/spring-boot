@@ -28,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -43,6 +44,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.aop.support.AopUtils;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -62,6 +64,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.format.Parser;
 import org.springframework.format.Printer;
 import org.springframework.format.support.FormattingConversionService;
@@ -79,6 +82,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.filter.reactive.HiddenHttpMethodFilter;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.accept.RequestedContentTypeResolver;
+import org.springframework.web.reactive.config.BlockingExecutionConfigurer;
 import org.springframework.web.reactive.config.DelegatingWebFluxConfiguration;
 import org.springframework.web.reactive.config.WebFluxConfigurationSupport;
 import org.springframework.web.reactive.config.WebFluxConfigurer;
@@ -667,6 +671,47 @@ class WebFluxAutoConfigurationTests {
 				.hasSingleBean(CustomExceptionHandler.class));
 	}
 
+	@Test
+	void asyncTaskExecutorWithApplicationTaskExecutor() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(AsyncTaskExecutor.class);
+				assertThat(context.getBean(RequestMappingHandlerAdapter.class)).extracting("scheduler.executor")
+					.isSameAs(context.getBean("applicationTaskExecutor"));
+			});
+	}
+
+	@Test
+	void asyncTaskExecutorWithNonMatchApplicationTaskExecutorBean() {
+		this.contextRunner.withUserConfiguration(CustomApplicationTaskExecutorConfig.class)
+			.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).doesNotHaveBean(AsyncTaskExecutor.class);
+				assertThat(context.getBean(RequestMappingHandlerAdapter.class)).extracting("scheduler.executor")
+					.isNotSameAs(context.getBean("applicationTaskExecutor"));
+			});
+	}
+
+	@Test
+	void asyncTaskExecutorWithWebFluxConfigurerCanOverrideExecutor() {
+		this.contextRunner.withUserConfiguration(CustomAsyncTaskExecutorConfigurer.class)
+			.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+			.run((context) -> assertThat(context.getBean(RequestMappingHandlerAdapter.class))
+				.extracting("scheduler.executor")
+				.isSameAs(context.getBean(CustomAsyncTaskExecutorConfigurer.class).taskExecutor));
+	}
+
+	@Test
+	void asyncTaskExecutorWithCustomNonApplicationTaskExecutor() {
+		this.contextRunner.withUserConfiguration(CustomAsyncTaskExecutorConfig.class)
+			.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(AsyncTaskExecutor.class);
+				assertThat(context.getBean(RequestMappingHandlerAdapter.class)).extracting("scheduler.executor")
+					.isNotSameAs(context.getBean("customTaskExecutor"));
+			});
+	}
+
 	private ContextConsumer<ReactiveWebApplicationContext> assertExchangeWithSession(
 			Consumer<MockServerWebExchange> exchange) {
 		return (context) -> {
@@ -977,6 +1022,38 @@ class WebFluxAutoConfigurationTests {
 		@AfterReturning(pointcut = "@annotation(org.springframework.web.bind.annotation.ExceptionHandler)",
 				returning = "returnValue")
 		void exceptionHandlerIntercept(JoinPoint joinPoint, Object returnValue) {
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomApplicationTaskExecutorConfig {
+
+		@Bean
+		Executor applicationTaskExecutor() {
+			return mock(Executor.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomAsyncTaskExecutorConfig {
+
+		@Bean
+		AsyncTaskExecutor customTaskExecutor() {
+			return mock(AsyncTaskExecutor.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomAsyncTaskExecutorConfigurer implements WebFluxConfigurer {
+
+		private final AsyncTaskExecutor taskExecutor = mock(AsyncTaskExecutor.class);
+
+		@Override
+		public void configureBlockingExecution(BlockingExecutionConfigurer configurer) {
+			configurer.setExecutor(this.taskExecutor);
 		}
 
 	}
