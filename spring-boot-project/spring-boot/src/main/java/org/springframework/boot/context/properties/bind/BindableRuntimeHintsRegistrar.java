@@ -317,7 +317,8 @@ public class BindableRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 		 * @return whether the specified {@code propertyType} is a nested type
 		 */
 		private boolean isNestedType(String propertyName, Class<?> propertyType) {
-			if (this.type.equals(propertyType.getDeclaringClass())) {
+			Class<?> declaringClass = propertyType.getDeclaringClass();
+			if (declaringClass != null && declaringClass.isAssignableFrom(this.type)) {
 				return true;
 			}
 			Field field = ReflectionUtils.findField(this.type, propertyName);
