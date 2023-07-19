@@ -23,17 +23,18 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Supplier;
+import java.util.function.Function;
 
+import javax.sql.DataSource;
+
+import com.zaxxer.hikari.HikariConfigMXBean;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.HikariPoolMXBean;
 import com.zaxxer.hikari.pool.HikariPool;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.springframework.aop.TargetSource;
-import org.springframework.aop.framework.Advised;
-import org.springframework.aop.support.AopUtils;
+import org.springframework.boot.jdbc.DataSourceUnwrapper;
 import org.springframework.context.Lifecycle;
 import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
@@ -101,29 +102,41 @@ class HikariLifecycle implements Lifecycle {
 
 		private static final Log logger = LogFactory.getLog(LifecycleExecutor.class);
 
+		private static final Field CLOSE_CONNECTION_EXECUTOR;
+
 		private final HikariDataSource dataSource;
 
-		private Supplier<Boolean> hasOpenConnections;
+		private final Function<HikariPool, Boolean> hasOpenConnections;
+
+		static {
+
+			Field closeConnectionExecutor = ReflectionUtils.findField(HikariPool.class, "closeConnectionExecutor");
+			Assert.notNull(closeConnectionExecutor, "Unable to locate closeConnectionExecutor for HikariPool");
+			Assert.isAssignable(ThreadPoolExecutor.class, closeConnectionExecutor.getType(),
+					"Expected ThreadPoolExecutor for closeConnectionExecutor but found %s"
+						.formatted(closeConnectionExecutor.getType()));
+
+			ReflectionUtils.makeAccessible(closeConnectionExecutor);
+
+			CLOSE_CONNECTION_EXECUTOR = closeConnectionExecutor;
+		}
 
 		LifecycleExecutor(HikariDataSource hikariDataSource) {
 
 			this.dataSource = getUltimateTargetObject(hikariDataSource);
+			this.hasOpenConnections = new Function<>() {
 
-			if (hikariDataSource.getHikariPoolMXBean() instanceof HikariPool pool) {
+				@Override
+				public Boolean apply(HikariPool pool) {
 
-				Field closeConnectionExecutor = ReflectionUtils.findField(HikariPool.class, "closeConnectionExecutor");
-				if (closeConnectionExecutor != null) {
-
-					ReflectionUtils.makeAccessible(closeConnectionExecutor);
-					Object field = ReflectionUtils.getField(closeConnectionExecutor, pool);
-					if (field instanceof ThreadPoolExecutor executor) {
-						this.hasOpenConnections = () -> executor.getActiveCount() > 0;
+					ThreadPoolExecutor closeConnectionExecutor = (ThreadPoolExecutor) ReflectionUtils
+						.getField(CLOSE_CONNECTION_EXECUTOR, pool);
+					if (closeConnectionExecutor == null) {
+						throw new IllegalStateException("CloseConnectionExecutor was null");
 					}
+					return closeConnectionExecutor.getActiveCount() > 0;
 				}
-			}
-			if (this.hasOpenConnections == null) {
-				this.hasOpenConnections = () -> hikariDataSource.getHikariPoolMXBean().getTotalConnections() > 0;
-			}
+			};
 		}
 
 		/**
@@ -185,7 +198,13 @@ class HikariLifecycle implements Lifecycle {
 		}
 
 		private void waitForConnectionsToClose() {
-			while (this.hasOpenConnections.get()) {
+
+			if (!(this.dataSource.getHikariPoolMXBean() instanceof HikariPool pool)) {
+				throw new IllegalStateException(
+						"Expected HikariPool instance but was %s".formatted(this.dataSource.getHikariPoolMXBean()));
+			}
+
+			while (this.hasOpenConnections.apply(pool)) {
 				try {
 					TimeUnit.MILLISECONDS.sleep(50);
 				}
@@ -197,23 +216,8 @@ class HikariLifecycle implements Lifecycle {
 		}
 
 		@SuppressWarnings("unchecked")
-		private static <T> T getUltimateTargetObject(Object candidate) {
-			Assert.notNull(candidate, "Candidate must not be null");
-			try {
-				if (AopUtils.isAopProxy(candidate) && candidate instanceof Advised advised) {
-					TargetSource targetSource = advised.getTargetSource();
-					if (targetSource.isStatic()) {
-						Object target = targetSource.getTarget();
-						if (target != null) {
-							return getUltimateTargetObject(target);
-						}
-					}
-				}
-			}
-			catch (Throwable ex) {
-				throw new IllegalStateException("Failed to unwrap proxied object", ex);
-			}
-			return (T) candidate;
+		private static HikariDataSource getUltimateTargetObject(DataSource candidate) {
+			return DataSourceUnwrapper.unwrap(candidate, HikariConfigMXBean.class, HikariDataSource.class);
 		}
 
 	}
