@@ -34,6 +34,7 @@ import org.springframework.aot.hint.predicate.RuntimeHintsPredicates;
 import org.springframework.boot.context.properties.BoundConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.context.properties.bind.BindableRuntimeHintsRegistrarTests.BaseProperties.InheritedNested;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.EnvironmentAware;
@@ -241,6 +242,21 @@ class BindableRuntimeHintsRegistrarTests {
 		assertThat(runtimeHints.reflection().typeHints()).singleElement()
 			.satisfies(javaBeanBinding(PackagePrivateGettersAndSetters.class, "getAlpha", "setAlpha", "getBravo",
 					"setBravo"));
+	}
+
+	@Test
+	void registerHintsWhenHasInheritedNestedProperties() {
+		RuntimeHints runtimeHints = registerHints(ExtendingProperties.class);
+		assertThat(runtimeHints.reflection().typeHints()).hasSize(3);
+		assertThat(runtimeHints.reflection().getTypeHint(BaseProperties.class)).satisfies((entry) -> {
+			assertThat(entry.getMemberCategories()).isEmpty();
+			assertThat(entry.methods()).extracting(ExecutableHint::getName)
+				.containsExactlyInAnyOrder("getInheritedNested", "setInheritedNested");
+		});
+		assertThat(runtimeHints.reflection().getTypeHint(ExtendingProperties.class))
+			.satisfies(javaBeanBinding(ExtendingProperties.class, "getBravo", "setBravo"));
+		assertThat(runtimeHints.reflection().getTypeHint(InheritedNested.class))
+			.satisfies(javaBeanBinding(InheritedNested.class, "getAlpha", "setAlpha"));
 	}
 
 	private Consumer<TypeHint> javaBeanBinding(Class<?> type, String... expectedMethods) {
@@ -661,6 +677,48 @@ class BindableRuntimeHintsRegistrarTests {
 
 			}
 
+		}
+
+	}
+
+	public abstract static class BaseProperties {
+
+		private InheritedNested inheritedNested;
+
+		public InheritedNested getInheritedNested() {
+			return this.inheritedNested;
+		}
+
+		public void setInheritedNested(InheritedNested inheritedNested) {
+			this.inheritedNested = inheritedNested;
+		}
+
+		public static class InheritedNested {
+
+			private String alpha;
+
+			public String getAlpha() {
+				return this.alpha;
+			}
+
+			public void setAlpha(String alpha) {
+				this.alpha = alpha;
+			}
+
+		}
+
+	}
+
+	public static class ExtendingProperties extends BaseProperties {
+
+		private String bravo;
+
+		public String getBravo() {
+			return this.bravo;
+		}
+
+		public void setBravo(String bravo) {
+			this.bravo = bravo;
 		}
 
 	}
