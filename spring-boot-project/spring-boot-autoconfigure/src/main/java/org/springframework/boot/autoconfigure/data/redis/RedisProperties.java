@@ -41,7 +41,7 @@ public class RedisProperties {
 	private int database = 0;
 
 	/**
-	 * Connection URL. Overrides host, port, and password. User is ignored. Example:
+	 * Connection URL. Overrides host, port, username, and password. Example:
 	 * redis://user:password@example.com:6379
 	 */
 	private String url;
