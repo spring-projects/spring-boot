@@ -57,13 +57,10 @@ class ConfigDataLocationBindHandler extends AbstractBindHandler {
 			return list;
 		}
 		if (result instanceof ConfigDataLocation[] unfilteredLocations) {
-			ConfigDataLocation[] locations = Arrays.stream(unfilteredLocations)
+			return Arrays.stream(unfilteredLocations)
 				.filter(Objects::nonNull)
+				.map(e -> withOrigin(context, e))
 				.toArray(ConfigDataLocation[]::new);
-			for (int i = 0; i < locations.length; i++) {
-				locations[i] = withOrigin(context, locations[i]);
-			}
-			return locations;
 		}
 		return result;
 	}
