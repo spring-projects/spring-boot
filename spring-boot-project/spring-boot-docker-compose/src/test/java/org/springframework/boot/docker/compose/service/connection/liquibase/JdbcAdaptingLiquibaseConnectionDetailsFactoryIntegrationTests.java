@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JdbcAdaptingLiquibaseConnectionDetailsFactoryIntegrationTests extends AbstractDockerComposeIntegrationTests {
 
 	JdbcAdaptingLiquibaseConnectionDetailsFactoryIntegrationTests() {
-		super("liquibase-compose.yaml");
+		super("liquibase-compose.yaml", DockerImageNames.postgresql());
 	}
 
 	@Test

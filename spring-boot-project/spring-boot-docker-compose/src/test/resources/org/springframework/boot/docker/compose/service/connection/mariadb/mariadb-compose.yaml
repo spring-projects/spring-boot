@@ -1,6 +1,6 @@
 services:
   database:
-    image: 'mariadb:10.10'
+    image: '{imageName}'
     ports:
       - '3306'
     environment:

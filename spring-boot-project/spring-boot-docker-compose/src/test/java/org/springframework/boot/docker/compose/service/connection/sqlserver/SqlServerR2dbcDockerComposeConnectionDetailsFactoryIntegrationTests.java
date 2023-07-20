@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.r2dbc.R2dbcConnectionDetails;
 import org.springframework.boot.docker.compose.service.connection.test.AbstractDockerComposeIntegrationTests;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.testsupport.junit.DisabledOnOs;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.r2dbc.core.DatabaseClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,7 +43,7 @@ class SqlServerR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests
 		extends AbstractDockerComposeIntegrationTests {
 
 	SqlServerR2dbcDockerComposeConnectionDetailsFactoryIntegrationTests() {
-		super("mssqlserver-compose.yaml");
+		super("mssqlserver-compose.yaml", DockerImageNames.sqlserver());
 	}
 
 	@Test

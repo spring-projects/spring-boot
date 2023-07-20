@@ -29,6 +29,7 @@ dependencies {
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.springframework:spring-core-test")
 	testImplementation("org.springframework:spring-test")
+	testImplementation("org.testcontainers:testcontainers")
 
 	testRuntimeOnly("com.microsoft.sqlserver:mssql-jdbc")
 	testRuntimeOnly("com.oracle.database.r2dbc:oracle-r2dbc")

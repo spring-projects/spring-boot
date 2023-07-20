@@ -1,5 +1,5 @@
 services:
   redis:
-    image: 'redis:7.0'
+    image: '{imageName}'
     ports:
       - '6379'

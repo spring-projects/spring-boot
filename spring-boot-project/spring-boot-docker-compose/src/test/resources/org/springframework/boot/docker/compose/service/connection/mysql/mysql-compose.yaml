@@ -1,6 +1,6 @@
 services:
   database:
-    image: 'mysql:8.0'
+    image: '{imageName}'
     ports:
       - '3306'
     environment:
