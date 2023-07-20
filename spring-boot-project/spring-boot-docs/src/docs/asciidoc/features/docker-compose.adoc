@@ -58,6 +58,9 @@ The following service connections are currently supported:
 |===
 | Connection Details | Matched on
 
+| `ActiveMQConnectionDetails`
+| Containers named "symptoma/activemq"
+
 | `CassandraConnectionDetails`
 | Containers named "cassandra"
 

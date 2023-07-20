@@ -32,20 +32,22 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Venil Noronha
+ * @author Eddú Meléndez
  */
 class ActiveMQConnectionFactoryFactory {
-
-	private static final String DEFAULT_NETWORK_BROKER_URL = "tcp://localhost:61616";
 
 	private final ActiveMQProperties properties;
 
 	private final List<ActiveMQConnectionFactoryCustomizer> factoryCustomizers;
 
+	private final ActiveMQConnectionDetails connectionDetails;
+
 	ActiveMQConnectionFactoryFactory(ActiveMQProperties properties,
-			List<ActiveMQConnectionFactoryCustomizer> factoryCustomizers) {
+			List<ActiveMQConnectionFactoryCustomizer> factoryCustomizers, ActiveMQConnectionDetails connectionDetails) {
 		Assert.notNull(properties, "Properties must not be null");
 		this.properties = properties;
 		this.factoryCustomizers = (factoryCustomizers != null) ? factoryCustomizers : Collections.emptyList();
+		this.connectionDetails = connectionDetails;
 	}
 
 	<T extends ActiveMQConnectionFactory> T createConnectionFactory(Class<T> factoryClass) {
@@ -79,9 +81,9 @@ class ActiveMQConnectionFactoryFactory {
 
 	private <T extends ActiveMQConnectionFactory> T createConnectionFactoryInstance(Class<T> factoryClass)
 			throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		String brokerUrl = determineBrokerUrl();
-		String user = this.properties.getUser();
-		String password = this.properties.getPassword();
+		String brokerUrl = this.connectionDetails.getBrokerUrl();
+		String user = this.connectionDetails.getUser();
+		String password = this.connectionDetails.getPassword();
 		if (StringUtils.hasLength(user) && StringUtils.hasLength(password)) {
 			return factoryClass.getConstructor(String.class, String.class, String.class)
 				.newInstance(user, password, brokerUrl);
@@ -93,13 +95,6 @@ class ActiveMQConnectionFactoryFactory {
 		for (ActiveMQConnectionFactoryCustomizer factoryCustomizer : this.factoryCustomizers) {
 			factoryCustomizer.customize(connectionFactory);
 		}
-	}
-
-	String determineBrokerUrl() {
-		if (this.properties.getBrokerUrl() != null) {
-			return this.properties.getBrokerUrl();
-		}
-		return DEFAULT_NETWORK_BROKER_URL;
 	}
 
 }
