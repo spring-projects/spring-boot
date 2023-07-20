@@ -11,7 +11,8 @@ Spring Data provides additional projects that help you access a variety of NoSQL
 * {spring-data-couchbase}[Couchbase]
 * {spring-data-ldap}[LDAP]
 
-Spring Boot provides auto-configuration for Redis, MongoDB, Neo4j, Elasticsearch, Cassandra, Couchbase, LDAP and InfluxDB.
+Spring Boot provides auto-configuration for Redis, MongoDB, Neo4j, Elasticsearch, Cassandra, Couchbase, LDAP.
+Auto-configuration for InfluxDB is also provided but it is deprecated in favor of https://github.com/influxdata/influxdb-client-java[the new InfluxDB Java client] that provides its own Spring Boot integration.
 Additionally, {spring-boot-for-apache-geode}[Spring Boot for Apache Geode] provides {spring-boot-for-apache-geode-docs}#geode-repositories[auto-configuration for Apache Geode].
 You can make use of the other projects, but you must configure them yourself.
 See the appropriate reference documentation at {spring-data}.
@@ -637,22 +638,17 @@ If you have custom attributes, you can use configprop:spring.ldap.embedded.valid
 
 [[data.nosql.influxdb]]
 === InfluxDB
+WARNING: Auto-configuration for InfluxDB is deprecated and scheduled for removal in Spring Boot 3.4 in favor of https://github.com/influxdata/influxdb-client-java[the new InfluxDB Java client] that provides its own Spring Boot integration.
+
 https://www.influxdata.com/[InfluxDB] is an open-source time series database optimized for fast, high-availability storage and retrieval of time series data in fields such as operations monitoring, application metrics, Internet-of-Things sensor data, and real-time analytics.
 
 
 
 [[data.nosql.influxdb.connecting]]
 ==== Connecting to InfluxDB
-Spring Boot auto-configures an `InfluxDB` instance, provided the `influxdb-java` client is on the classpath and the URL of the database is set, as shown in the following example:
+Spring Boot auto-configures an `InfluxDB` instance, provided the `influxdb-java` client is on the classpath and the URL of the database is set using configprop:spring.influx.url[deprecated].
 
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
-----
-	spring:
-	  influx:
-	    url: "https://172.0.0.1:8086"
-----
-
-If the connection to InfluxDB requires a user and password, you can set the `spring.influx.user` and `spring.influx.password` properties accordingly.
+If the connection to InfluxDB requires a user and password, you can set the configprop:spring.influx.user[deprecated] and configprop:spring.influx.password[deprecated] properties accordingly.
 
 InfluxDB relies on OkHttp.
 If you need to tune the http client `InfluxDB` uses behind the scenes, you can register an `InfluxDbOkHttpClientBuilderProvider` bean.

@@ -42,6 +42,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
+@SuppressWarnings("removal")
+@Deprecated(since = "3.2.0", forRemoval = true)
 class InfluxDbAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -102,6 +104,7 @@ class InfluxDbAutoConfigurationTests {
 	static class CustomOkHttpClientBuilderProviderConfig {
 
 		@Bean
+		@SuppressWarnings("removal")
 		InfluxDbOkHttpClientBuilderProvider influxDbOkHttpClientBuilderProvider() {
 			return () -> new OkHttpClient.Builder().readTimeout(40, TimeUnit.SECONDS);
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,11 @@ import org.springframework.util.Assert;
  *
  * @author Eddú Meléndez
  * @since 2.0.0
+ * @deprecated since 3.2.0 for removal in 3.4.0 in favor of the
+ * <a href="https://github.com/influxdata/influxdb-client-java">new client</a> and its own
+ * Spring Boot integration.
  */
+@Deprecated(since = "3.2.0", forRemoval = true)
 public class InfluxDbHealthIndicator extends AbstractHealthIndicator {
 
 	private final InfluxDB influxDb;

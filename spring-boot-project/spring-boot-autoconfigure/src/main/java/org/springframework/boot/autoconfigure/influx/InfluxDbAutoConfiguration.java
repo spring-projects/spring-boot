@@ -39,11 +39,16 @@ import org.springframework.context.annotation.Bean;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @since 2.0.0
+ * @deprecated since 3.2.0 for removal in 3.4.0 in favor of the
+ * <a href="https://github.com/influxdata/influxdb-client-java">new client</a> and its own
+ * Spring Boot integration.
  */
 @AutoConfiguration
 @ConditionalOnClass(InfluxDB.class)
 @EnableConfigurationProperties(InfluxDbProperties.class)
 @ConditionalOnProperty("spring.influx.url")
+@Deprecated(since = "3.2.0", forRemoval = true)
+@SuppressWarnings("removal")
 public class InfluxDbAutoConfiguration {
 
 	@Bean
