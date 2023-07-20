@@ -322,6 +322,10 @@ bom {
 		}
 	}
 	library("GraphQL Java", "20.4") {
+		prohibit {
+			startsWith(["2018-", "2019-", "2020-", "2021-", "230521-"])
+			because "These are snapshots that we don't want to see"
+		}
 		group("com.graphql-java") {
 			modules = [
 					"graphql-java"
