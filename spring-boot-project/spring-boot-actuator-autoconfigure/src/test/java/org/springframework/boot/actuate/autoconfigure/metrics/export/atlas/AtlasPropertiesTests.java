@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2023 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,8 @@ class AtlasPropertiesTests {
 		assertThat(properties.getUri()).isEqualTo(config.uri());
 		assertThat(properties.getMeterTimeToLive()).isEqualTo(config.meterTTL());
 		assertThat(properties.isLwcEnabled()).isEqualTo(config.lwcEnabled());
+		assertThat(properties.getLwcStep()).isEqualTo(config.lwcStep());
+		assertThat(properties.isLwcIgnorePublishStep()).isEqualTo(config.lwcIgnorePublishStep());
 		assertThat(properties.getConfigRefreshFrequency()).isEqualTo(config.configRefreshFrequency());
 		assertThat(properties.getConfigTimeToLive()).isEqualTo(config.configTTL());
 		assertThat(properties.getConfigUri()).isEqualTo(config.configUri());
