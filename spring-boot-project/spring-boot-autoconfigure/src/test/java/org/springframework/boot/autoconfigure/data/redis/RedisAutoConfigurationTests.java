@@ -138,8 +138,8 @@ class RedisAutoConfigurationTests {
 	@Test
 	void testOverrideUrlRedisConfiguration() {
 		this.contextRunner
-			.withPropertyValues("spring.data.redis.host:foo", "spring.data.redis.password:xyz",
-					"spring.data.redis.port:1000", "spring.data.redis.ssl:false",
+			.withPropertyValues("spring.data.redis.host:foo", "spring.redis.data.user:alice",
+					"spring.data.redis.password:xyz", "spring.data.redis.port:1000", "spring.data.redis.ssl:false",
 					"spring.data.redis.url:rediss://user:password@example:33")
 			.run((context) -> {
 				LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
