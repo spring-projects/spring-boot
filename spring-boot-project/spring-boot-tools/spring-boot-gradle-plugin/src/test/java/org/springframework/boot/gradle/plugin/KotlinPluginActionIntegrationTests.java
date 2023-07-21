@@ -24,6 +24,8 @@ import java.util.Set;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
@@ -36,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
+@DisabledForJreRange(min = JRE.JAVA_20)
 @ExtendWith(GradleBuildExtension.class)
 class KotlinPluginActionIntegrationTests {
 
